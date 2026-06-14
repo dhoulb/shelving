@@ -8,9 +8,25 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import PREFORMATTED_CSS from "./Preformatted.module.css";
 
+/**
+ * CSS class applied to the root element of every `Preformatted` block.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/PREFORMATTED_CLASS
+ */
 export const PREFORMATTED_CLASS = getModuleClass(PREFORMATTED_CSS, "preformatted");
+
+/**
+ * CSS class that styles a `Preformatted` block when it appears inside `Prose` longform content.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/PREFORMATTED_PROSE_CLASS
+ */
 export const PREFORMATTED_PROSE_CLASS = getModuleClass(PREFORMATTED_CSS, "prose");
 
+/**
+ * Props for `Preformatted` — space, colour, typography, width, and padding variants plus a `wrap` toggle.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/PreformattedProps
+ */
 export interface PreformattedProps
 	extends SpaceVariants,
 		ColorVariants,
@@ -26,6 +42,11 @@ export interface PreformattedProps
  * Preformatted block of text — rendered as `<pre>`.
  * - Lines are not wrapped by default — overflowing content scrolls horizontally within the block.
  * - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
+ *
+ * @param props Space, colour, typography, width, and padding variants plus the `wrap` toggle and `children`.
+ * @returns Rendered `<pre>` element.
+ * @example <Preformatted>{"line one\nline two"}</Preformatted>
+ * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/Preformatted
  */
 export function Preformatted({ children, ...variants }: PreformattedProps): ReactElement {
 	return (

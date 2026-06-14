@@ -15,15 +15,22 @@ import { FormFooter } from "./FormFooter.js";
 import { FormStore } from "./FormStore.js";
 
 /**
- * Handler for a clickable `onClick` event.
- * - Returned value (if defined) is notified to the user using `notifySuccess()`
- * - Thrown value is notified to the user using `notifyError()`
+ * Callback invoked when a `Form` is submitted with its validated data.
+ * - Returned value (if defined) is notified to the user using `notifySuccess()`.
+ * - Thrown value is notified to the user using `notifyError()`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/FormCallback
  */
 export type FormCallback<T extends Data> = (
 	data: T,
 	event: SubmitEvent<HTMLFormElement>,
 ) => ReactNode | void | PromiseLike<ReactNode | void>;
 
+/**
+ * Props for `Form`, the schema-driven form wrapper component.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Form/FormProps
+ */
 export interface FormProps<T extends Data> extends OptionalChildProps {
 	/** Schema for the form. */
 	schema: DataSchema<T>;

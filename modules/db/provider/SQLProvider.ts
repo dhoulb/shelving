@@ -9,7 +9,10 @@ import { getUpdates, type Update, type Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
 
-/** SQL fragment made from template strings plus embedded expressions. */
+/**
+ * SQL fragment made from template strings plus embedded expressions, ready to be composed into a query.
+ * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLFragment
+ */
 export interface SQLFragment {
 	readonly strings: ImmutableArray<string>;
 	readonly values: ImmutableArray<unknown>;
@@ -19,8 +22,28 @@ type CountRow = {
 	readonly count: number;
 };
 
-/** Shared SQL execution and CRUD/query behavior. */
+/**
+ * Abstract database provider that implements CRUD and query operations by generating and executing SQL.
+ *
+ * - Subclasses implement `exec()` to run a query against a concrete database (e.g. SQLite, PostgreSQL).
+ * - The `sql*` helpers build composable `SQLFragment` objects so dialect differences can be overridden.
+ * - Realtime subscriptions are unsupported and throw `UnimplementedError`.
+ *
+ * @example
+ *  class MyProvider extends SQLProvider { async exec(strings, ...values) { ... } }
+ *  const item = await new MyProvider().getItem(collection, "abc");
+ * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider
+ */
 export abstract class SQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
+	/**
+	 * Execute an SQL query built from a template literal and return the resulting rows.
+	 *
+	 * @param strings The template string parts of the query.
+	 * @param values The interpolated values to bind into the query.
+	 * @returns Promise resolving to the array of rows returned by the database.
+	 * @example await provider.exec`SELECT * FROM ${table}`
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/exec
+	 */
 	abstract exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>>;
 
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
@@ -122,30 +145,68 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 
 	/**
 	 * Define an SQL fragment using Javascript template literal format.
+	 *
+	 * @param strings The template string parts of the fragment.
+	 * @param values The interpolated values to embed into the fragment.
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sql`SELECT * FROM ${table}`; // SQLFragment
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sql
 	 */
 	sql(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): SQLFragment {
 		return { strings, values };
 	}
 
-	/** Define an SQL fragment for an identifier, e.g. `"myTable"` */
+	/**
+	 * Define an SQL fragment for an escaped identifier, e.g. `"myTable"`.
+	 *
+	 * @param name The identifier (table or column name) to escape.
+	 * @returns An `SQLFragment` containing the quoted identifier.
+	 * @example this.sqlIdentifier("myTable"); // "myTable"
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlIdentifier
+	 */
 	sqlIdentifier(name: string): SQLFragment {
 		return { strings: [_escapeIdentifier(name)], values: [] };
 	}
 
-	/** Define an SQL fragment that extracts a deeply nested value for comparison, e.g. `"a" #>> {"b","c"}` in Postgres */
+	/**
+	 * Define an SQL fragment that extracts a value at a key for comparison, e.g. `"a" #>> {"b","c"}` in Postgres.
+	 * - Base implementation only supports flat (single-segment) keys; subclasses override for nested JSON paths.
+	 *
+	 * @param key The key segments identifying the column (and any nested path).
+	 * @returns An `SQLFragment` extracting the value.
+	 * @throws {UnimplementedError} If the key is nested (multi-segment).
+	 * @example this.sqlExtract(["name"]); // "name"
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlExtract
+	 */
 	sqlExtract(key: Segments): SQLFragment {
 		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested filter keys");
 		return this.sqlIdentifier(key[0]);
 	}
 
-	/** Define an SQL fragment to generate a series of values with a separator, e.g. `"a" = 1 AND "b" = 2` */
+	/**
+	 * Define an SQL fragment that joins a series of fragments with a separator, e.g. `"a" = 1 AND "b" = 2`.
+	 *
+	 * @param values The fragments to join.
+	 * @param separator The separator placed between fragments.
+	 * @param before Text placed before the first fragment.
+	 * @param after Text placed after the last fragment.
+	 * @returns The joined `SQLFragment`.
+	 * @example this.sqlConcat([a, b], " AND "); // a AND b
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlConcat
+	 */
 	sqlConcat(values: ImmutableArray<SQLFragment>, separator = ", ", before = "", after = ""): SQLFragment {
 		const strings = [before, ...new Array(Math.max(0, values.length - 1)).fill(separator), after];
 		return { strings, values };
 	}
 
-	/** Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2` */
+	/**
+	 * Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2`.
+	 *
+	 * @param data The data whose entries become `column = value` assignments.
+	 * @returns The composed `SQLFragment`.
+	 * @example this.sqlSetters({ a: 1, b: 2 }); // "a" = 1, "b" = 2
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlSetters
+	 */
 	sqlSetters<TT extends Data>(data: TT): SQLFragment {
 		const entries = Object.entries(data);
 		return this.sqlConcat(
@@ -154,7 +215,14 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		);
 	}
 
-	/** Define an SQL fragment for updates, e.g. `"a" = 1, "b" = "b" + 5` */
+	/**
+	 * Define an SQL fragment for a set of updates, e.g. `"a" = 1, "b" = "b" + 5`.
+	 *
+	 * @param updates The updates to convert into SQL assignments.
+	 * @returns The composed `SQLFragment`.
+	 * @example this.sqlUpdates({ a: 1 }); // "a" = 1
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlUpdates
+	 */
 	sqlUpdates<TT extends Data>(updates: Updates<TT>): SQLFragment {
 		return this.sqlConcat(
 			getUpdates(updates).map(update => this.sqlUpdate(update)),

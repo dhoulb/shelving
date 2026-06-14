@@ -11,32 +11,74 @@ import type { Collection } from "../collection/Collection.js";
 import type { DBProvider } from "../provider/DBProvider.js";
 import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 
-/** Store that queries multiple items in a collection from a database provider. */
+/**
+ * Store that runs a query against a collection from a database provider and tracks its matching items.
+ *
+ * - Holds an `Items` value (the array of matching items) and is iterable over those items.
+ * - Seeds from a `MemoryDBProvider` snapshot when available, and subscribes to realtime updates.
+ *
+ * @example
+ *  const store = new QueryStore(collection, query, provider);
+ *  for (const item of store) console.log(item);
+ * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore
+ */
 export class QueryStore<I extends Identifier, T extends Data> extends FetchStore<Items<I, T>> implements Iterable<Item<I, T>> {
+	/**
+	 * The database provider this store fetches its items from.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/provider
+	 */
 	readonly provider: DBProvider<I>;
+	/**
+	 * The collection the query runs against.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/collection
+	 */
 	readonly collection: Collection<string, I, T>;
+	/**
+	 * The query that selects the items tracked by this store.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/query
+	 */
 	readonly query: Query<Item<I, T>>;
+	/**
+	 * The maximum number of items the query can return, or `Infinity` if unlimited.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/limit
+	 */
 	get limit(): number {
 		return getQueryLimit(this.query) ?? Number.POSITIVE_INFINITY;
 	}
 
-	/** Can more items be loaded after the current result. */
+	/**
+	 * Whether more items can be loaded after the current result.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/hasMore
+	 */
 	get hasMore(): boolean {
 		return this._hasMore;
 	}
 	private _hasMore = false;
 
-	/** Get the first item in this store or `null` if this query has no items. */
+	/**
+	 * The first item in this store, or `undefined` if the query has no items.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/optionalFirst
+	 */
 	get optionalFirst(): Item<I, T> | undefined {
 		return getFirst(this.value);
 	}
 
-	/** Get the last item in this store or `null` if this query has no items. */
+	/**
+	 * The last item in this store, or `undefined` if the query has no items.
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/optionalLast
+	 */
 	get optionalLast(): Item<I, T> | undefined {
 		return getLast(this.value);
 	}
 
-	/** Get the first item in this store. */
+	/**
+	 * The first item in this store.
+	 *
+	 * @returns The first matching item including its ID.
+	 * @throws {RequiredError} If the query has no items.
+	 * @example store.first // Item<I, T>
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/first
+	 */
 	get first(): Item<I, T> {
 		const first = this.optionalFirst;
 		if (!first)
@@ -50,7 +92,14 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		return first;
 	}
 
-	/** Get the last item in this store. */
+	/**
+	 * The last item in this store.
+	 *
+	 * @returns The last matching item including its ID.
+	 * @throws {RequiredError} If the query has no items.
+	 * @example store.last // Item<I, T>
+	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/last
+	 */
 	get last(): Item<I, T> {
 		const last = this.optionalLast;
 		if (!last)
@@ -64,6 +113,15 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		return last;
 	}
 
+	/**
+	 * Create a store that tracks the items matching a query.
+	 *
+	 * @param collection The collection the query runs against.
+	 * @param query The query that selects the items to track.
+	 * @param provider The database provider to fetch the items from.
+	 * @param memory Optional memory provider used to seed the initial value and drive realtime updates.
+	 * @example new QueryStore(collection, query, provider)
+	 */
 	constructor(collection: Collection<string, I, T>, query: Query<Item<I, T>>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const items = memory?.getTable(collection).getQuery(query);
 		super(items ?? NONE); // Use the current memory snapshot if available.

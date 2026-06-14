@@ -13,6 +13,11 @@ import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 import { TextInput } from "./TextInput.js";
 
+/**
+ * Props for `DictionaryInput`, a repeating input that edits a dictionary of schema-validated items.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/DictionaryInput/DictionaryInputProps
+ */
 export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictionary<T>> {
 	one?: string;
 	many?: string;
@@ -22,6 +27,16 @@ export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictio
 	items: Schema<T>;
 }
 
+/**
+ * Repeating input that edits a dictionary, with an editable key and schema-validated value per entry.
+ * - Each value is validated and rendered using the supplied `items` schema.
+ * - Enforces `min`/`max` entry count and offers add, remove, and clear controls.
+ *
+ * @param props Props including `value`, `onValue`, the `items` schema, and `min`/`max` entry bounds.
+ * @returns Element rendering one key/value row per entry plus add/clear controls.
+ * @example <DictionaryInput name="meta" items={STRING} value={meta} onValue={setMeta} />
+ * @see https://dhoulb.github.io/shelving/ui/form/DictionaryInput/DictionaryInput
+ */
 export function DictionaryInput<T>(props: DictionaryInputProps<T>): ReactElement;
 export function DictionaryInput({
 	name,

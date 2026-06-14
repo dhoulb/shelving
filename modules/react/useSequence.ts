@@ -3,10 +3,20 @@ import { runSequence } from "../util/sequence.js";
 
 /**
  * Subscribe to an async iterable for the lifetime of the component.
+ * - Re-renders the component with each value yielded by the sequence.
  *
  * @param sequence An object implementing the `AsyncIterable` interface.
  * - Subscription is recreated every time this value changes.
  * - Memoise this value to persist the subscription for the lifetime of the component.
+ * @returns The most recent value yielded by `sequence`, or `undefined` before the first value arrives.
+ * @throws unknown Re-throws (during render) any error thrown by the sequence, for an error boundary to catch.
+ *
+ * @example
+ * ```tsx
+ * const value = useSequence(myAsyncIterable);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/useSequence
  */
 export function useSequence<T>(sequence?: AsyncIterable<T>): T | undefined {
 	const [value, setValue] = useState<T | undefined>(undefined);

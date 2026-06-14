@@ -8,6 +8,8 @@ import type { ImmutableURI } from "./uri.js";
  * A URL string has a protocol and a `//`.
  * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
  * - URLs have a concept of "absolute" or "relative" URLs, since they have a path.
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/URLString
  */
 export type URLString = `${string}://${string}`;
 
@@ -17,6 +19,8 @@ export type URLString = `${string}://${string}`;
  * - Requires a URL string, URL object, or path as input, and optionally a base URL.
  * - If a path is provided as input, a base URL _must_ also be provided.
  * - The returned type is
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/ImmutableURLConstructor
  */
 export interface ImmutableURLConstructor {
 	new (input: URLString | ImmutableURL, base?: URLString | ImmutableURL): ImmutableURL;
@@ -39,6 +43,8 @@ export interface ImmutableURLConstructor {
  * - It's more "correct" terminology to use `URI` to refer to what the Javascript `URL` class represents.
  * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
  * - Javascript URLs are mutable which can lead to subtle bugs.
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/ImmutableURL
  */
 export interface ImmutableURL extends ImmutableURI {
 	readonly href: URLString;
@@ -47,12 +53,26 @@ export interface ImmutableURL extends ImmutableURI {
 }
 export const ImmutableURL = URL as ImmutableURLConstructor;
 
-/** Values that can be converted to a URL instance. */
+/**
+ * Values that can be converted to a URL instance.
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/PossibleURL
+ */
 export type PossibleURL = string | URL;
 
 /**
  * Is an unknown value a URL object?
  * - Must be a `URL` instance and its origin must start with `scheme://`
+ *
+ * @param value Unknown value to test.
+ * @returns `true` if `value` is a true `scheme://host` URL object, otherwise `false`.
+ *
+ * @example
+ * ```ts
+ * if (isURL(value)) value.pathname; // `value` is narrowed to `ImmutableURL`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/isURL
  */
 export function isURL(value: unknown): value is ImmutableURL {
 	return value instanceof URL && _isURL(value);
@@ -61,7 +81,21 @@ function _isURL(uri: URL): uri is ImmutableURL {
 	return uri.href.startsWith(`${uri.protocol}//`);
 }
 
-/** Assert that an unknown value is a URL object. */
+/**
+ * Assert that an unknown value is a URL object.
+ *
+ * @param value Unknown value to test.
+ * @param caller Function to attribute a thrown error to — defaults to `assertURL`.
+ * @throws RequiredError If `value` is not a true `scheme://host` URL object.
+ *
+ * @example
+ * ```ts
+ * assertURL(value);
+ * value.pathname; // `value` is narrowed to `ImmutableURL`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/assertURL
+ */
 export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is ImmutableURL {
 	if (!isURL(value)) throw new RequiredError("Invalid URL", { received: value, caller });
 }
@@ -74,6 +108,17 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
  * Note: the base is normalised with `getBaseURL()`, so it is always treated as if it ends in a slash.
  * - e.g. if `base` is `http://p.com/a/b/c` the path resolves relative to `c/` as if a trailing slash was present.
  * - This differs from the default behaviour of `new URL()`, but is the more natural expected result.
+ *
+ * @param input URI string, URL object, or path to resolve — falsy values return `undefined`.
+ * @param base Base URL to resolve a relative `input` against.
+ * @returns Resolved `ImmutableURI`, or `undefined` if conversion fails.
+ *
+ * @example
+ * ```ts
+ * getBasedURI("path/to/page", "http://example.com/base/"); // `http://example.com/base/path/to/page`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/getBasedURI
  */
 export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURI | undefined {
 	if (!input) return;
@@ -88,13 +133,40 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
 /**
  * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
  * - Like `getBasedURI()` but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
+ *
+ * @param target URL string, URL object, or path to resolve — falsy values return `undefined`.
+ * @param base Base URL to resolve a relative `target` against.
+ * @returns Resolved `ImmutableURL`, or `undefined` if conversion fails or the result is not a true URL.
+ *
+ * @example
+ * ```ts
+ * getURL("/page", "http://example.com/"); // `http://example.com/page`
+ * getURL("mailto:a@b.com"); // `undefined` — not a hierarchical URL
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/getURL
  */
 export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
 	const uri = getBasedURI(target, base);
 	if (uri && _isURL(uri)) return uri;
 }
 
-/** Convert a possible URL to a URL, or throw `RequiredError` if conversion fails. */
+/**
+ * Convert a possible URL to a URL, or throw `RequiredError` if conversion fails.
+ *
+ * @param target URL string, URL object, or path to resolve.
+ * @param base Base URL to resolve a relative `target` against.
+ * @param caller Function to attribute a thrown error to — defaults to `requireURL`.
+ * @returns Resolved `ImmutableURL`.
+ * @throws RequiredError If `target` cannot be resolved to a true `scheme://host` URL.
+ *
+ * @example
+ * ```ts
+ * requireURL("/page", "http://example.com/"); // `http://example.com/page`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/requireURL
+ */
 export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): ImmutableURL {
 	const url = getURL(target, base);
 	assertURL(url, caller);
@@ -109,8 +181,18 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  * - Relative targets are resolved against the normalized base URL.
  *
  * @param target URL to match against `base` — if this is a relative path it will be resolved against `base`
+ * @param base Base URL the `target` is matched against.
+ * @param caller Function to attribute a thrown error to — defaults to `matchURLPrefix`.
  *
  * @returns Absolute path starting with `/`, or `undefined` for origin mismatches or non-matching paths.
+ * @throws RequiredError If `target` or `base` cannot be resolved to a true URL.
+ *
+ * @example
+ * ```ts
+ * matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/matchURLPrefix
  */
 export function matchURLPrefix(
 	target: PossibleURL | undefined,
@@ -137,6 +219,15 @@ export function matchURLPrefix(
  *
  * @param target URL whose status to test — relative paths resolve against `base`.
  * @param base Base URL to test against.
+ * @param caller Function to attribute a thrown error to — defaults to `isURLActive`.
+ * @returns `true` if `target` resolves to exactly the same URL as `base`, otherwise `false`.
+ *
+ * @example
+ * ```ts
+ * isURLActive("http://x.com/a", "http://x.com/a"); // `true`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/isURLActive
  */
 export function isURLActive(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLActive): boolean {
 	return !!target && !!base && matchURLPrefix(target, base, caller) === "/";
@@ -150,17 +241,43 @@ export function isURLActive(target: PossibleURL | undefined, base: PossibleURL |
  *
  * @param target URL whose status to test — relative paths resolve against `base`.
  * @param base Base URL to test against.
+ * @param caller Function to attribute a thrown error to — defaults to `isURLProud`.
+ * @returns `true` if `target` is `base` or a descendant of `base`, otherwise `false`.
+ *
+ * @example
+ * ```ts
+ * isURLProud("http://x.com/a/b", "http://x.com/a"); // `true`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/isURLProud
  */
 export function isURLProud(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLProud): boolean {
 	return !!target && !!base && matchURLPrefix(target, base, caller) !== undefined;
 }
 
-/** BaseURL is a URL with a guaranteed trailing slash on pathname. */
+/**
+ * BaseURL is a URL with a guaranteed trailing slash on pathname.
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/BaseURL
+ */
 export interface BaseURL extends ImmutableURL {
 	readonly pathname: `/` | `/${string}/`;
 }
 
-/** Is an unknown value a valid Base URL. */
+/**
+ * Is an unknown value a valid Base URL?
+ * - Must be a true URL whose `pathname` ends in a trailing slash.
+ *
+ * @param value Value to test.
+ * @returns `true` if `value` is a `BaseURL` (a URL with a trailing-slash pathname), otherwise `false`.
+ *
+ * @example
+ * ```ts
+ * isBaseURL(new URL("http://x.com/a/")); // `true`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/isBaseURL
+ */
 export function isBaseURL(value: PossibleURL): value is BaseURL {
 	return isURL(value) && _isBaseURL(value);
 }
@@ -168,7 +285,21 @@ function _isBaseURL(uri: URL): uri is BaseURL {
 	return uri.pathname.endsWith("/");
 }
 
-/** Get a Base URL. */
+/**
+ * Get a Base URL — a true URL whose `pathname` is normalised to end in a trailing slash.
+ * - Falsy or non-URL input returns `undefined`.
+ * - A URL without a trailing slash is cloned and given one (the input is never mutated).
+ *
+ * @param input URL string, URL object, or path to normalise.
+ * @returns `BaseURL` with a trailing-slash pathname, or `undefined` if `input` is not a true URL.
+ *
+ * @example
+ * ```ts
+ * getBaseURL("http://x.com/a"); // `http://x.com/a/`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/getBaseURL
+ */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	if (!input) return;
 	const uri = getBasedURI(input, undefined);
@@ -180,7 +311,21 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	return base as BaseURL;
 }
 
-/** Require a Base URL. */
+/**
+ * Require a Base URL — a true URL whose `pathname` is normalised to end in a trailing slash.
+ *
+ * @param value URL string, URL object, or path to normalise.
+ * @param caller Function to attribute a thrown error to.
+ * @returns `BaseURL` with a trailing-slash pathname.
+ * @throws RequiredError If `value` cannot be resolved to a true URL.
+ *
+ * @example
+ * ```ts
+ * requireBaseURL("http://x.com/a", requireBaseURL); // `http://x.com/a/`
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/util/url/requireBaseURL
+ */
 export function requireBaseURL(value: PossibleURL, caller: AnyCaller): BaseURL {
 	const url = getBaseURL(value);
 	if (!url) throw new RequiredError("Invalid base URL", { received: value, caller });

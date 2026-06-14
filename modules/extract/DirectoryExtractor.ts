@@ -25,7 +25,11 @@ const DEFAULT_EXTRACTORS: ImmutableDictionary<FileExtractor> = {
  */
 const DEFAULT_IGNORE: Matchables = [/\.test\.tsx?$/i, /\.spec\.tsx?$/i, /^node_modules$/i, /^[_.]/i];
 
-/** Options for a directory extractor. */
+/**
+ * Options for a directory extractor.
+ *
+ * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor/DirectoryExtractorOptions
+ */
 export interface DirectoryExtractorOptions {
 	/**
 	 * Extractor dispatch table keyed by file extension (without the leading dot, e.g. `"md"`).

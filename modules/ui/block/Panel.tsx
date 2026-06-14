@@ -8,9 +8,18 @@ import PANEL_CSS from "./Panel.module.css";
 
 const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
 
-/** Allowed semantic elements for a `<Panel>`. */
+/**
+ * Allowed semantic elements for a `<Panel>`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Panel/PanelElement
+ */
 export type PanelElement = "section" | "header" | "footer" | "nav" | "aside" | "article" | "div";
 
+/**
+ * Props for `Panel` — colour, status, and typography variants plus optional `children`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Panel/PanelProps
+ */
 export interface PanelProps extends ColorVariants, StatusVariants, TypographyVariants, OptionalChildProps {}
 
 /**
@@ -20,8 +29,11 @@ export interface PanelProps extends ColorVariants, StatusVariants, TypographyVar
  *
  * Renders as a `<section>` by default; pass `as="header"` etc. for other semantic elements.
  *
+ * @param props Colour, status, and typography variants plus `children`.
+ * @returns Rendered full-width panel region.
  * @example <Panel><Block narrow><Title>Welcome</Title></Block></Panel>
  * @example <Panel as="header" color="primary"><Title>Welcome</Title></Panel>
+ * @see https://dhoulb.github.io/shelving/ui/block/Panel/Panel
  */
 export function Panel({ children, ...props }: PanelProps): ReactElement {
 	return (
