@@ -12,7 +12,12 @@ import { SEPARATOR_RULE } from "./separator.js";
 import { TABLE_RULE } from "./table.js";
 import { UNORDERED_RULE } from "./unordered.js";
 
-/** Markup rules that work in a block context. */
+/**
+ * Default markup rules that render in a block context — fenced code, headings, separators, lists, blockquotes, tables, and paragraphs.
+ *
+ * @example new MarkupParser({ rules: MARKUP_RULES_BLOCK })
+ * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES_BLOCK
+ */
 export const MARKUP_RULES_BLOCK: MarkupRules = [
 	FENCED_RULE,
 	HEADING_RULE,
@@ -24,7 +29,12 @@ export const MARKUP_RULES_BLOCK: MarkupRules = [
 	PARAGRAPH_RULE,
 ];
 
-/** Markup rules that work in an inline context. */
+/**
+ * Default markup rules that render in an inline context — inline code, links, autolinks, emphasis, and hard linebreaks.
+ *
+ * @example new MarkupParser({ rules: MARKUP_RULES_INLINE })
+ * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES_INLINE
+ */
 export const MARKUP_RULES_INLINE: MarkupRules = [
 	CODE_RULE, //
 	LINK_RULE,
@@ -34,12 +44,15 @@ export const MARKUP_RULES_INLINE: MarkupRules = [
 ];
 
 /**
- * Default markup rules
+ * Default markup rules — the combined block and inline rules `MarkupParser` uses when none are supplied.
  *
  * These rules define a syntax similar to Markdown but with improvements:
  * 1. Syntax is more intuitive (e.g. `*strong*` always uses `*` asterisk and `_em_` always uses `_` underscore, and URLs are always autolinked).
  * 2. More compatible with textboxes that wrap lines by default (e.g. single `\n` linebreaks don't need the trailing double space to, they're always treated as `<br />`).
  * 3. Don't support fussy fragile syntax that lets users make mistakes (e.g. literal HTML tags or `&amp;` character entities).
+ *
+ * @example new MarkupParser({ rules: MARKUP_RULES }).parse("This is a *bold* string.")
+ * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES
  */
 export const MARKUP_RULES: MarkupRules = [
 	...MARKUP_RULES_BLOCK, //

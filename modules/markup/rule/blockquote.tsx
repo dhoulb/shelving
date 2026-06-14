@@ -9,6 +9,9 @@ const INDENT = new RegExp(`^${PREFIX}`, "gm");
  * - `>` quote character followed by zero or more spaces.
  * - No spaces can appear before the `>` quote character.
  * - Quote block is only broken by `\n\n` two newline characters.
+ *
+ * @example new MarkupParser({ rules: [BLOCKQUOTE_RULE] }).parse("> Quoted text")
+ * @see https://dhoulb.github.io/shelving/markup/rule/blockquote/BLOCKQUOTE_RULE
  */
 export const BLOCKQUOTE_RULE = createMarkupRule<{
 	quote: string;

@@ -3,12 +3,25 @@ import { createDeferred, getDelay } from "./async.js";
 import { ABORT } from "./constants.js";
 import type { AnyCaller, ErrorCallback, ValueCallback } from "./function.js";
 
+/**
+ * Result of an iterator that was aborted via an external signal rather than concluding itself.
+ * - `done` is the `ABORT` symbol, distinguishing it from an iterator's own `done: true` result.
+ *
+ * @see https://dhoulb.github.io/shelving/util/sequence/IteratorAbortResult
+ */
 export interface IteratorAbortResult<R> {
+	/** Always the `ABORT` symbol, marking this result as an external abort rather than the iterator finishing. */
 	done: typeof ABORT;
+	/** The value the abort signal resolved with. */
 	value: R;
 }
 
-/** An extension of  */
+/**
+ * Result of stepping an iterator that may either yield, finish itself, or be aborted externally.
+ * - Union of a normal `IteratorResult<T, R>` and an `IteratorAbortResult<R>`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/sequence/IteratorAbortableResult
+ */
 export type IteratorAbortableResult<T, R> = IteratorResult<T, R> | IteratorAbortResult<R>;
 
 /** Turn a `Promise<R>` into an `IteratorAbortResult<R>` */
@@ -37,14 +50,28 @@ async function _iteratorReturn<T, R, N>(
 
 /**
  * Is a value an async iterable object?
- * - Any object with a `Symbol.iterator` property is iterable.
- * - Note: Array and Map instances etc will return true because they implement `Symbol.iterator`
+ * - Any object with a `Symbol.asyncIterator` property is an async iterable.
+ *
+ * @param value The value to test.
+ * @returns `true` if `value` is an `AsyncIterable`, narrowing its type.
+ * @example isSequence((async function* () {})()) // true
+ * @see https://dhoulb.github.io/shelving/util/sequence/isSequence
  */
 export function isSequence(value: unknown): value is AsyncIterable<unknown> {
 	return typeof value === "object" && !!value && Symbol.asyncIterator in value;
 }
 
-/** Infinite sequence that yields until a `SIGNAL` is received. */
+/**
+ * Infinite sequence that relays a source sequence until one of the abort signals resolves.
+ * - Races each step of `source` against the supplied signal promises; when a signal wins, tells the source iterator to clean up and returns the signal's value.
+ *
+ * @param source The source sequence to relay values from.
+ * @param signals One or more promises that, when resolved, abort the relay and end the sequence.
+ * @returns The value the winning abort signal resolved with, or the source's own return value if it finishes first.
+ * @throws {UnexpectedError} If the source iterator's `return()` does not return a `done` result.
+ * @example for await (const item of repeatUntil(source, stopSignal)) doSomething(item);
+ * @see https://dhoulb.github.io/shelving/util/sequence/repeatUntil
+ */
 export async function* repeatUntil<T = void, R = void, N = void>(
 	source: AsyncIterable<T, R | undefined, N | undefined>,
 	...signals: [PromiseLike<R>, ...PromiseLike<R>[]]
@@ -76,7 +103,14 @@ export async function* repeatUntil<T = void, R = void, N = void>(
 	}
 }
 
-/** Infinite sequence that yields every X milliseconds (yields a count of the number of iterations). */
+/**
+ * Infinite sequence that yields every X milliseconds (yields a count of the number of iterations).
+ *
+ * @param ms The number of milliseconds to wait between each yield.
+ * @returns An infinite async generator yielding `1`, `2`, `3`… one per interval.
+ * @example for await (const count of repeatDelay(1000)) console.log(count); // 1, 2, 3… one per second
+ * @see https://dhoulb.github.io/shelving/util/sequence/repeatDelay
+ */
 export async function* repeatDelay(ms: number): AsyncGenerator<number, void, void> {
 	let count = 1;
 	while (true) {
@@ -85,7 +119,16 @@ export async function* repeatDelay(ms: number): AsyncGenerator<number, void, voi
 	}
 }
 
-/** Dispatch items in a sequence to a (possibly async) callback. */
+/**
+ * Dispatch items in a sequence to a (possibly async) callback.
+ * - Calls `callback` with each item as it arrives, then re-yields the item unchanged.
+ *
+ * @param sequence The source sequence to relay.
+ * @param callback Callback invoked with each yielded item.
+ * @returns An async generator that yields the same items as `sequence`.
+ * @example for await (const item of callSequence(source, console.log)) use(item);
+ * @see https://dhoulb.github.io/shelving/util/sequence/callSequence
+ */
 export async function* callSequence<T>(sequence: AsyncIterable<T, void, void>, callback: ValueCallback<T>): AsyncGenerator<T, void, void> {
 	for await (const item of sequence) {
 		callback(item);
@@ -101,7 +144,14 @@ export async function* callSequence<T>(sequence: AsyncIterable<T, void, void>, c
  * - On the following iterator after throwing an error, a "generator" will return `done: true` (because they regard errors as concluding the iteration).
  * - But the iterator protocol does not require this, so this continues to iterate until it's explicitly ended via the returned `stop()` callback.
  *
- * @return Callback function that can end the sequence run.
+ * @param sequence The source sequence to iterate over.
+ * @param onNext Called with each yielded value; its return value is fed back into the iterator as the next `next()` argument.
+ * @param onError Called with any error thrown during iteration (iteration continues regardless).
+ * @param onReturn Called with the final return value when the sequence ends or is stopped.
+ * @returns Callback function that can end the sequence run, optionally with a return value.
+ * @throws {UnexpectedError} If the source iterator's `return()` does not return a `done` result.
+ * @example const stop = runSequence(source, onNext, onError, onReturn); stop(); // ends the run
+ * @see https://dhoulb.github.io/shelving/util/sequence/runSequence
  */
 export function runSequence<T, R, N>(
 	sequence: AsyncIterable<T, R | undefined, N | undefined>,
@@ -143,7 +193,15 @@ async function _runSequenceIterator<T, R, N>(
 	}
 }
 
-/** Merge several sequences (calls the sequences in series). */
+/**
+ * Merge several sequences (calls the sequences in series).
+ * - Yields all items from the first sequence, then all items from the second, and so on.
+ *
+ * @param sequences The sequences to merge, drained one after another in order.
+ * @returns An async iterable that yields every item from each sequence in turn.
+ * @example for await (const item of mergeSequences(a, b)) use(item); // all of `a`, then all of `b`
+ * @see https://dhoulb.github.io/shelving/util/sequence/mergeSequences
+ */
 export async function* mergeSequences<T>(...sequences: AsyncIterable<T>[]): AsyncIterable<T> {
 	for await (const sequence of sequences) yield* sequence;
 }

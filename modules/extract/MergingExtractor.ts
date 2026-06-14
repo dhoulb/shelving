@@ -17,7 +17,11 @@ const DEFAULT_MERGES: ImmutableDictionary<readonly string[]> = {
 	"{base}.md": ["{base}.ts", "{base}.tsx", "{base}.js", "{base}.jsx"],
 };
 
-/** Options for a `MergingExtractor`. */
+/**
+ * Options for a `MergingExtractor`.
+ *
+ * @see https://dhoulb.github.io/shelving/extract/MergingExtractor/MergingExtractorOptions
+ */
 export interface MergingExtractorOptions {
 	/**
 	 * Templated key pairs that should merge. Each key is a `{base}` template matched against the secondary element's key;
@@ -35,15 +39,46 @@ export interface MergingExtractorOptions {
  * - The primary (winning) element keeps its `key`, `source`, and `type`; the secondary's `title`, `description`,
  *   `content`, and `children` are folded in via `mergeTreeElements()`.
  * - A secondary with no matching primary is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
+ *
+ * @example
+ * ```ts
+ * const extractor = new MergingExtractor(new DirectoryExtractor());
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/extract/MergingExtractor
  */
 export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _merges: ImmutableDictionary<readonly string[]>;
 
+	/**
+	 * Wrap a source extractor so its produced tree has same-template sibling elements merged.
+	 *
+	 * @param source Upstream extractor that produces the `tree-element` tree to merge.
+	 * @param options Options including the `merges` template map.
+	 *
+	 * @example
+	 * ```ts
+	 * const extractor = new MergingExtractor(new DirectoryExtractor());
+	 * ```
+	 */
 	constructor(source: Extractor<I, TreeElement>, { merges = DEFAULT_MERGES }: MergingExtractorOptions = {}) {
 		super(source);
 		this._merges = merges;
 	}
 
+	/**
+	 * Extract the source tree and merge same-template sibling elements at every level.
+	 *
+	 * @param input Input forwarded to the wrapped source extractor.
+	 * @returns The source tree with matching sibling elements merged together.
+	 *
+	 * @example
+	 * ```ts
+	 * const tree = await new MergingExtractor(source).extract(input);
+	 * ```
+	 *
+	 * @see https://dhoulb.github.io/shelving/extract/MergingExtractor/extract
+	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
 		return _mergeElement(root, this._merges);

@@ -3,13 +3,23 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
- * Define a valid slug, e.g. `this-is-a-slug`
+ * Schema that defines a valid slug, e.g. `this-is-a-slug`.
  *
  * - Useful for URL components, usernames, etc.
- * - Minimum slug length is 2 characters.
- * - Maximum slug length is 64 characters.
+ * - Input is sanitized into a lowercase, hyphen-separated slug.
+ * - Slugs are limited to 32 characters.
+ *
+ * @example
+ * 	const schema = new SlugSchema({});
+ * 	schema.validate("This is a Slug!") // "this-is-a-slug"
+ * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchema
  */
 export class SlugSchema extends StringSchema {
+	/**
+	 * Create a new `SlugSchema`.
+	 *
+	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
+	 */
 	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "rows">) {
 		super({
 			...options,
@@ -18,13 +28,36 @@ export class SlugSchema extends StringSchema {
 			rows: 1,
 		});
 	}
+
+	/**
+	 * Sanitize a string before validation by converting it into a slug.
+	 *
+	 * @param str The raw string to sanitize.
+	 * @returns The sanitized slug, or an empty string when nothing usable remains.
+	 * @example schema.sanitize("This is a Slug!") // "this-is-a-slug"
+	 * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchema/sanitize
+	 */
 	override sanitize(str: string): string {
 		return getSlug(str) || "";
 	}
 }
 
-/** Valid slug, e.g. `this-is-a-slug` */
+/**
+ * Valid slug, e.g. `this-is-a-slug`.
+ *
+ * *Factory for `SlugSchema`.*
+ *
+ * @example SLUG.validate("This is a Slug!") // "this-is-a-slug"
+ * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SLUG
+ */
 export const SLUG = new SlugSchema({});
 
-/** Valid slug, e.g. `this-is-a-slug`, or `null` */
+/**
+ * Valid slug, e.g. `this-is-a-slug`, or `null`.
+ *
+ * *Factory for `NullableSchema`.*
+ *
+ * @example NULLABLE_SLUG.validate(null) // null
+ * @see https://dhoulb.github.io/shelving/schema/SlugSchema/NULLABLE_SLUG
+ */
 export const NULLABLE_SLUG = NULLABLE(SLUG);

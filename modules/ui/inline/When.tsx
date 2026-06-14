@@ -23,27 +23,66 @@ function _getWhen(
 	);
 }
 
+/**
+ * Props for `When`, `Ago`, and `Until` — a `target` date plus an optional `current` reference date and `full` toggle.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/WhenProps
+ */
 export interface WhenProps extends OptionalChildProps {
 	target: PossibleDate | undefined;
 	current?: PossibleDate | undefined;
 	full?: boolean | undefined;
 }
 
-/** Show a string like `in 6d` or `3w ago` wrapped with a `<time>` element providing the machine-readable format of the same date. */
+/**
+ * Relative time — shows a signed string like `in 6d` or `3w ago` wrapped in a `<time>` element carrying the machine-readable date.
+ *
+ * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
+ * @returns Rendered `<time>` element showing the relative time.
+ * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @example <When target="2030-01-01" />
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/When
+ */
 export function When(props: WhenProps): ReactElement {
 	return _getWhen(formatWhen, props, When);
 }
 
+/**
+ * Props for `Ago` — identical to `WhenProps`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/AgoProps
+ */
 export interface AgoProps extends WhenProps {}
 
-/** Show a string like `6d` or `3w` wrapped with a `<time>` element providing the machine-readable format of the same date. */
+/**
+ * Elapsed time — shows an unsigned string like `6d` or `3w` for a past date wrapped in a `<time>` element carrying the machine-readable date.
+ *
+ * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
+ * @returns Rendered `<time>` element showing the elapsed time.
+ * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @example <Ago target="2020-01-01" />
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/Ago
+ */
 export function Ago(props: AgoProps): ReactElement {
 	return _getWhen(formatAgo, props, Ago);
 }
 
+/**
+ * Props for `Until` — identical to `WhenProps`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/UntilProps
+ */
 export interface UntilProps extends WhenProps {}
 
-/** Show a string like `6d` or `3w` wrapped with a `<time>` element providing the machine-readable format of the same date. */
+/**
+ * Remaining time — shows an unsigned string like `6d` or `3w` for a future date wrapped in a `<time>` element carrying the machine-readable date.
+ *
+ * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
+ * @returns Rendered `<time>` element showing the remaining time.
+ * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @example <Until target="2030-01-01" />
+ * @see https://dhoulb.github.io/shelving/ui/inline/When/Until
+ */
 export function Until(props: UntilProps): ReactElement {
 	return _getWhen(formatUntil, props, Until);
 }

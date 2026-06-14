@@ -7,12 +7,18 @@ import type { ChildProps } from "../util/props.js";
  * Dispatch table from a `JSX.IntrinsicElements` key to a renderer component.
  * - Each entry is optional — unmapped elements fall through and render as themselves (e.g. an unmapped `<tree-foo>` appears as a raw `<tree-foo>` HTML element).
  * - Per-entry component receives `JSX.IntrinsicElements[K] & E` — the declared props for that element type, plus any extra props `E` the mapper is configured to thread through.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Mapper/Mapping
  */
 export type Mapping<E = unknown> = {
 	[K in keyof JSX.IntrinsicElements]?: ComponentType<JSX.IntrinsicElements[K] & E>;
 };
 
-/** Props for the `Mapping` component returned by `createMapper()`. */
+/**
+ * Props for the `Mapping` component returned by `createMapper()`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Mapper/MappingProps
+ */
 export interface MappingProps<E = unknown> extends ChildProps {
 	/** Mapping entries that extend or override the inherited mapping inside this subtree. */
 	readonly mapping: Mapping<E>;
@@ -22,6 +28,8 @@ export interface MappingProps<E = unknown> extends ChildProps {
  * Props for the `Mapper` component returned by `createMapper()`.
  * - `children` holds the pre-walked elements to dispatch.
  * - All other props are spread onto every mapped child as additional props (`E`).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Mapper/MapperProps
  */
 export type MapperProps<E = unknown> = E & {
 	readonly children?: Elements;
@@ -40,6 +48,8 @@ type AnyMapping = Record<string, ComponentType<any> | undefined>;
  * Each call creates its own context — independent mappers don't interfere with each other.
  *
  * @typeParam E The shape of any extra props the mapper threads through to every dispatched child. Defaults to `unknown` (no extras).
+ * @param defaults The initial mapping of element types to renderer components.
+ * @returns A `[Mapping, Mapper]` tuple of components sharing a private context.
  *
  * @example
  * // No extras:
@@ -54,6 +64,8 @@ type AnyMapping = Record<string, ComponentType<any> | undefined>;
  *   "tree-element": TreeMenuItem,
  * });
  * <TreeMenuMapper path="/foo">{queryElements(children, query)}</TreeMenuMapper>
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Mapper/createMapper
  */
 export function createMapper<E = unknown>(
 	defaults: Mapping<E> = {},

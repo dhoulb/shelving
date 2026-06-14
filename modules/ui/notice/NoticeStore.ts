@@ -14,12 +14,27 @@ type NoticeData<S extends string> = {
 	readonly children?: ReactNode | undefined;
 };
 
-/** Store a single notice. */
+/**
+ * Store holding a single notice's content and status, owned by a `NoticesStore`.
+ *
+ * - Auto-closes itself a few seconds after opening unless its status is `"loading"`.
+ * - Adds itself to its parent `NoticesStore` on construction and removes itself on `close()` or disposal.
+ *
+ * @example const notice = notices.show("Saved", "success"); notice.close();
+ * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore
+ */
 export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	private _notices: NoticesStore<S>;
 
 	readonly key = getRandomKey();
 
+	/**
+	 * Create a notice and register it with its parent `NoticesStore`.
+	 *
+	 * @param notices The parent store to add this notice to.
+	 * @param children The notice content (optional).
+	 * @param status The notice status (optional).
+	 */
 	constructor(notices: NoticesStore<S>, children?: ReactNode | null, status?: S | undefined) {
 		super({ status, children });
 		this._notices = notices;
@@ -27,11 +42,24 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 		this._autoclose();
 	}
 
+	/**
+	 * Update the notice's content and status, resetting its auto-close timer.
+	 *
+	 * @param children The new notice content.
+	 * @param status The new status (defaults to the current status).
+	 * @example notice.show("Updating…", "loading");
+	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore/show
+	 */
 	show(children?: ReactNode | undefined, status: S | undefined = this.value.status): void {
 		this.value = { children, status };
 	}
 
-	/** Close this notice (permanently). */
+	/**
+	 * Close this notice permanently, removing it from its parent `NoticesStore`.
+	 *
+	 * @example notice.close();
+	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore/close
+	 */
 	close() {
 		this._notices.delete(this);
 	}

@@ -15,6 +15,11 @@ import { StatusIcon } from "./StatusIcon.js";
 const RetryContext = createContext<Callback | undefined>(undefined);
 RetryContext.displayName = "RetryContext";
 
+/**
+ * Props for `<RetryButton>` — `<Button>` variants plus optional `children` to override the default "Retry" label.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButtonProps
+ */
 export interface RetryButtonProps extends ButtonVariants, OptionalChildProps {}
 
 const RETRY_CHILDREN = (
@@ -24,6 +29,17 @@ const RETRY_CHILDREN = (
 	</>
 );
 
+/**
+ * Button that retries the nearest `<Catcher>` error boundary when clicked.
+ *
+ * - Reads the retry callback from `<Catcher>`'s private context, so it renders `null` when there is no boundary above it to retry.
+ * - Defaults to an "Retry" label with a refresh icon; pass `children` to override.
+ *
+ * @param props `<Button>` variants and optional `children` for the label.
+ * @returns The retry button, or `null` when not inside a `<Catcher>`.
+ * @example <RetryButton small />
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButton
+ */
 export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButtonProps): ReactElement | null {
 	const retry = use(RetryContext);
 	if (!retry) return null;
@@ -34,10 +50,20 @@ export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButton
 	);
 }
 
+/**
+ * Props for a component that renders a caught error `reason`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorComponentProps
+ */
 export interface ErrorComponentProps {
 	reason: unknown;
 }
 
+/**
+ * Props for `<Catcher>` — the `children` to guard plus the `as` component used to render any caught error.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/CatcherProps
+ */
 export interface CatcherProps extends ChildProps {
 	/** Component to render an error (defaults to `<ErrorNotice />`) */
 	as: (props: ErrorComponentProps) => ReactElement;
@@ -49,8 +75,14 @@ type CatcherState = {
 };
 
 /**
- * React component that provides an Error Boundary.
- * If an error occurs in any component under this, a general error will be shown to the user.
+ * React error boundary that renders a fallback component when any descendant throws.
+ *
+ * - Catches render-time errors below it and shows the `as` component (defaults to `<ErrorNotice>`) with the caught `reason`.
+ * - Provides a retry callback to descendant `<RetryButton>`s that clears the error and re-renders `children`.
+ *
+ * @example <Catcher><RiskyComponent /></Catcher>
+ * @example <Catcher as={ErrorPage}><RiskyComponent /></Catcher>
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/Catcher
  */
 export class Catcher extends Component<CatcherProps, CatcherState> {
 	static defaultProps: Pick<CatcherProps, "as"> = {
@@ -78,16 +110,42 @@ export class Catcher extends Component<CatcherProps, CatcherState> {
 	}
 }
 
+/**
+ * Props for `<PageCatcher>` — the page `children` to guard.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/PageCatcherProps
+ */
 export interface PageCatcherProps extends ChildProps {}
 
-/** Catch errors in a page. */
+/**
+ * Error boundary for a whole page that renders a full `<ErrorPage>` fallback on error.
+ *
+ * @param children The page content to guard.
+ * @returns A `<Catcher>` configured to render `<ErrorPage>` on error.
+ * @example <PageCatcher><SettingsPage /></PageCatcher>
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/PageCatcher
+ */
 export function PageCatcher({ children }: PageCatcherProps): ReactElement {
 	return <Catcher as={ErrorPage}>{children}</Catcher>;
 }
 
+/**
+ * Props for `<ErrorNotice>` — the caught error `reason`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorNoticeProps
+ */
 export interface ErrorNoticeProps extends ErrorComponentProps {}
 
-/** Output a `<Notice>` for an unknown error reason. */
+/**
+ * Render a caught error as an inline `<Notice>` with a retry button.
+ *
+ * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
+ *
+ * @param reason The caught error to display.
+ * @returns An error `<Notice>` containing the message and a `<RetryButton>`.
+ * @example <ErrorNotice reason={thrown} />
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorNotice
+ */
 export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
 	return (
@@ -98,9 +156,23 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	);
 }
 
+/**
+ * Props for `<ErrorPage>` — the caught error `reason`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorPageProps
+ */
 export interface ErrorPageProps extends ErrorComponentProps {}
 
-/** Output a `<Page>` with an error `<Card>` for an unknown error reason. */
+/**
+ * Render a caught error as a full-page `<Page>` with an error `<Card>` and retry button.
+ *
+ * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
+ *
+ * @param reason The caught error to display.
+ * @returns A centered error page containing the message and a `<RetryButton>`.
+ * @example <ErrorPage reason={thrown} />
+ * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorPage
+ */
 export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
 	return (

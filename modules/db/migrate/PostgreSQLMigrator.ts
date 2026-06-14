@@ -32,7 +32,14 @@ type PostgreSQLColumnRow = {
 	readonly value: string | null;
 };
 
-/** PostgreSQL migrator using pg_catalog-style schema inspection. */
+/**
+ * PostgreSQL migrator that inspects the live schema via `pg_catalog` tables to diff and migrate columns.
+ *
+ * @example
+ *  const migrator = new PostgreSQLMigrator(provider);
+ *  await migrator.migrate(users, posts);
+ * @see https://dhoulb.github.io/shelving/db/migrate/PostgreSQLMigrator/PostgreSQLMigrator
+ */
 export class PostgreSQLMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {
 		const rows = await this.provider.exec<{ name: string }>`

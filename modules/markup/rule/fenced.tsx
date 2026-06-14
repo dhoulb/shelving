@@ -11,6 +11,9 @@ const FENCE = "`{3,}|~{3,}";
  * - Closing fence must be exactly the same as the opening fence, and can be made of three or more "```" backticks, or three or more `~~~` tildes.
  * - If there's no closing fence the code block will run to the end of the current string.
  * - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
+ *
+ * @example new MarkupParser({ rules: [FENCED_RULE] }).parse("```\ncode block\n```")
+ * @see https://dhoulb.github.io/shelving/markup/rule/fenced/FENCED_RULE
  */
 export const FENCED_RULE = createMarkupRule<{
 	fence: string;

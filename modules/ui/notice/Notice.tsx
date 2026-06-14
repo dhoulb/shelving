@@ -8,11 +8,29 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import NOTICE_CSS from "./Notice.module.css";
 
+/**
+ * Props for `<Notice>` — flex/colour/status styling variants, optional `children`, and an optional `icon`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/notice/Notice/NoticeProps
+ */
 export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants, OptionalChildProps {
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
 }
 
+/**
+ * Block-level status callout with an icon and message, used to highlight feedback.
+ *
+ * - Shows a `<StatusIcon>` for the current `status` by default; pass `icon` to override, or `false`/`null` to hide it.
+ * - Sets an ARIA `role` of `"alert"` for error/danger statuses, otherwise `"status"`.
+ *
+ * @param children The notice content.
+ * @param icon Optional icon override (`false`/`null` hides it; defaults to the matching `<StatusIcon>`).
+ * @param props Flex, colour, and status styling variants.
+ * @returns The notice callout element.
+ * @example <Notice status="success">Saved your changes</Notice>
+ * @see https://dhoulb.github.io/shelving/ui/notice/Notice/Notice
+ */
 export function Notice({
 	children, //
 	icon,
@@ -36,4 +54,10 @@ export function Notice({
 	);
 }
 
+/**
+ * Shared loading `<Notice>` element showing the loading spinner.
+ *
+ * @example <Suspense fallback={LOADING_NOTICE}>…</Suspense>
+ * @see https://dhoulb.github.io/shelving/ui/notice/Notice/LOADING_NOTICE
+ */
 export const LOADING_NOTICE = <Notice status="loading" />;

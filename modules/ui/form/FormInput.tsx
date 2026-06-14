@@ -3,15 +3,34 @@ import { requireForm, useField } from "./FormContext.js";
 import type { InputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
+/**
+ * Props for `FormInput`, a bare `SchemaInput` bound to a named form field.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInputProps
+ */
 export interface FormInputProps extends InputProps {}
 
-/** Show a `SchemaInput` for each property in the current form. */
+/**
+ * Show a `SchemaInput` for a single named property of the current form.
+ * - Reads the field's value, schema, and message from the form context via `useField()`.
+ *
+ * @param props Input props including the field `name`.
+ * @returns A `SchemaInput` bound to the named field.
+ * @example <FormInput name="email" />
+ * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInput
+ */
 export function FormInput({ name, ...props }: FormInputProps): ReactElement {
 	const field = useField(name);
 	return <SchemaInput {...field} {...props} />;
 }
 
-/** Show a `SchemaInput` for a named property in the current form. */
+/**
+ * Show a `SchemaInput` for every property in the current form's schema.
+ *
+ * @returns A fragment of `FormInput` elements, one per schema property.
+ * @example <FormInputs />
+ * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInputs
+ */
 export function FormInputs(): ReactElement {
 	return (
 		<>

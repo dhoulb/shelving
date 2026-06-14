@@ -3,7 +3,11 @@ import type { Element, ElementProps, Elements } from "./element.js";
 import { walkElements } from "./element.js";
 import { type AbsolutePath, joinPath } from "./path.js";
 
-/** Props for a tree element — must have a `tree-` prefixed type. */
+/**
+ * Props for a tree element — must have a `tree-` prefixed type.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/TreeElementProps
+ */
 export interface TreeElementProps extends ElementProps {
 	/**
 	 * The primary identifier shown in menus, cards, and other listings.
@@ -51,16 +55,26 @@ export interface TreeElementProps extends ElementProps {
  * - Has a `tree-` prefixed type string.
  * - Requires a string `key` prop (can be resolved to a path).
  * - Props can include `title`, `description`, and/or `content` to be useful.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/TreeElement
  */
 export interface TreeElement<P extends TreeElementProps = TreeElementProps> extends Element<P> {
 	readonly key: string;
 	readonly type: `tree-${string}`;
 }
 
-/** Collection of tree elements. */
+/**
+ * Collection of tree elements.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/TreeElements
+ */
 export type TreeElements = Elements<TreeElement>;
 
-/** A single parameter for a documented code symbol. */
+/**
+ * A single parameter for a documented code symbol.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationParam
+ */
 export interface DocumentationParam {
 	readonly name: string;
 	/** Type expression (e.g. `"string"`, `"number"`); renderers default to `"unknown"` when missing. */
@@ -69,21 +83,33 @@ export interface DocumentationParam {
 	readonly optional?: boolean | undefined;
 }
 
-/** A single `@returns` entry — multiple allowed to document union return types separately. */
+/**
+ * A single `@returns` entry — multiple allowed to document union return types separately.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationReturn
+ */
 export interface DocumentationReturn {
 	/** Type expression for the return value; renderers default to `"unknown"` when missing. */
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 }
 
-/** A single `@throws` entry — multiple allowed to document distinct error types. */
+/**
+ * A single `@throws` entry — multiple allowed to document distinct error types.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationThrow
+ */
 export interface DocumentationThrow {
 	/** Type expression for the thrown value; renderers default to `"unknown"` when missing. */
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 }
 
-/** A single `@example` entry — the example text/code block. */
+/**
+ * A single `@example` entry — the example text/code block.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationExample
+ */
 export interface DocumentationExample {
 	readonly description?: string | undefined;
 }
@@ -93,6 +119,8 @@ export interface DocumentationExample {
  * - `kind` distinguishes the symbol category (e.g. `"function"`, `"class"`, `"property"`, or any string).
  * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
  * - `signatures` is an array so overloaded function/method declarations can each contribute their own signature to the same documentation element.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationElementProps
  */
 export interface DocumentationElementProps extends TreeElementProps {
 	// `name` is inherited from `TreeElementProps` — the declared symbol name (e.g. `"getFirst"`).
@@ -116,6 +144,8 @@ export interface DocumentationElementProps extends TreeElementProps {
 /**
  * Element representing a documented code symbol.
  * - The `kind` prop distinguishes specific symbol types (function, class, property, etc.) without baking the list in.
+ *
+ * @see https://dhoulb.github.io/shelving/util/tree/DocumentationElement
  */
 export interface DocumentationElement extends TreeElement<DocumentationElementProps> {
 	readonly type: "tree-documentation";
@@ -145,6 +175,9 @@ declare module "react" {
  *
  * @param root The root element to flatten.
  * @param base An existing map to merge onto (copied, not mutated). Useful to combine several trees into one lookup.
+ * @returns A new `Map` keyed by both flat key and canonical path, whose values are copies of every element stamped with its canonical `path`.
+ * @example flattenTree(root).get("/schema/BooleanSchema") // the stamped `BooleanSchema` element
+ * @see https://dhoulb.github.io/shelving/util/tree/flattenTree
  */
 export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeElement>): Map<string, TreeElement> {
 	const map = new Map<string, TreeElement>(base);

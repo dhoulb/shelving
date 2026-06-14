@@ -4,6 +4,11 @@ import { getClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import styles from "./Field.module.css";
 
+/**
+ * Props for `Field`, a labelled wrapper around a form control.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/Field/FieldProps
+ */
 export interface FieldProps extends ChildProps {
 	title?: ReactNode | undefined;
 	description?: ReactNode | undefined;

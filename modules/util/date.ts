@@ -1,18 +1,34 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 
-/** Values that can be converted to dates. */
+/**
+ * Values that can be converted to dates.
+ *
+ * @see https://dhoulb.github.io/shelving/util/date/PossibleDate
+ */
 export type PossibleDate = "now" | "today" | "tomorrow" | "yesterday" | Date | number | string;
 
 /**
- * Is a value a valid date?
+ * Is a value a valid `Date` instance?
  * - Note: `Date` instances can be invalid (e.g. `new Date("blah blah").getTime()` returns `NaN`). These are detected and will always return `false`
+ *
+ * @param value The value to check.
+ * @returns `true` if the value is a `Date` instance representing a valid date, narrowing it to `Date`.
+ * @see https://dhoulb.github.io/shelving/util/date/isDate
  */
 export function isDate(value: unknown): value is Date {
 	return value instanceof Date && Number.isFinite(value.getTime());
 }
 
-/** Assert that a value is a `Date` instance. */
+/**
+ * Assert that a value is a valid `Date` instance.
+ *
+ * @param value The value to check.
+ * @param caller The function to attribute a thrown error to (defaults to `assertDate`).
+ * @throws {RequiredError} If the value is not a valid `Date` instance.
+ * @example assertDate(value); // throws unless `value` is a valid `Date`
+ * @see https://dhoulb.github.io/shelving/util/date/assertDate
+ */
 export function assertDate(value: unknown, caller: AnyCaller = assertDate): asserts value is Date {
 	if (!isDate(value)) throw new RequiredError("Must be valid date", { received: value, caller });
 }
@@ -33,7 +49,10 @@ export function assertDate(value: unknown, caller: AnyCaller = assertDate): asse
  * - Numbers are return the corresponding date (using `new Date(number)`, i.e. milliseconds since 01/01/1970).
  * - Anything else returns `undefined`
  *
- * @returns `Date` instance if the value could be converted to a valid date, and `null` if not.
+ * @returns `Date` instance if the value could be converted to a valid date, or `undefined` if not.
+ * @example getDate("2003-09-12") // Date instance for 2003-09-12
+ * @example getDate("nope") // undefined
+ * @see https://dhoulb.github.io/shelving/util/date/getDate
  */
 export function getDate(value: unknown): Date | undefined {
 	if (value === "now") return getNow();
@@ -49,12 +68,24 @@ export function getDate(value: unknown): Date | undefined {
 	}
 }
 
-/** Get a date representing this exact moment. */
+/**
+ * Get a date representing this exact moment.
+ *
+ * @returns A new `Date` instance for the current moment.
+ * @example getNow() // Date instance for right now
+ * @see https://dhoulb.github.io/shelving/util/date/getNow
+ */
 export function getNow(): Date {
 	return new Date();
 }
 
-/** Get a date representing midnight of the previous day. */
+/**
+ * Get a date representing midnight of the previous day.
+ *
+ * @returns A new `Date` instance at midnight yesterday.
+ * @example getYesterday() // Date instance for yesterday at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getYesterday
+ */
 export function getYesterday(): Date {
 	const date = new Date();
 	date.setHours(0, 0, 0, 0);
@@ -62,14 +93,26 @@ export function getYesterday(): Date {
 	return date;
 }
 
-/** Get a date representing midnight of the current day. */
+/**
+ * Get a date representing midnight of the current day.
+ *
+ * @returns A new `Date` instance at midnight today.
+ * @example getToday() // Date instance for today at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getToday
+ */
 export function getToday(): Date {
 	const date = new Date();
 	date.setHours(0, 0, 0, 0);
 	return date;
 }
 
-/** Get a date representing midnight of the next day. */
+/**
+ * Get a date representing midnight of the next day.
+ *
+ * @returns A new `Date` instance at midnight tomorrow.
+ * @example getTomorrow() // Date instance for tomorrow at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getTomorrow
+ */
 export function getTomorrow(): Date {
 	const date = new Date();
 	date.setHours(0, 0, 0, 0);
@@ -77,14 +120,32 @@ export function getTomorrow(): Date {
 	return date;
 }
 
-/** Get a Date representing exactly midnight of the specified date. */
+/**
+ * Get a `Date` representing exactly midnight of the specified date.
+ *
+ * @param target The date to find midnight for (defaults to `"now"`).
+ * @param caller The function to attribute a thrown error to (defaults to `getMidnight`).
+ * @returns A new `Date` instance at midnight of the target date.
+ * @throws {RequiredError} If `target` couldn't be converted to a valid date.
+ * @example getMidnight("2003-09-12") // Date instance for 2003-09-12 at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getMidnight
+ */
 export function getMidnight(target?: PossibleDate, caller: AnyCaller = getMidnight): Date {
 	const date = new Date(requireDate(target, caller));
 	date.setHours(0, 0, 0, 0);
 	return date;
 }
 
-/** Get a Date representing midnight on Monday of the specified week. */
+/**
+ * Get a `Date` representing midnight on Monday of the specified week.
+ *
+ * @param target The date whose week to find Monday for (defaults to `"now"`).
+ * @param caller The function to attribute a thrown error to (defaults to `getMonday`).
+ * @returns A new `Date` instance at midnight on Monday of the target week.
+ * @throws {RequiredError} If `target` couldn't be converted to a valid date.
+ * @example getMonday("2003-09-12") // Date instance for the Monday of that week at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getMonday
+ */
 export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday): Date {
 	const date = getMidnight(target, caller);
 	const day = date.getDay();
@@ -93,7 +154,16 @@ export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday):
 	return date;
 }
 
-/** Get a Date representing the first day of the specified month. */
+/**
+ * Get a `Date` representing midnight on the first day of the specified month.
+ *
+ * @param target The date whose month to find the start of (defaults to `"now"`).
+ * @param caller The function to attribute a thrown error to (defaults to `getMonthStart`).
+ * @returns A new `Date` instance at midnight on the 1st of the target month.
+ * @throws {RequiredError} If `target` couldn't be converted to a valid date.
+ * @example getMonthStart("2003-09-12") // Date instance for 2003-09-01 at 00:00
+ * @see https://dhoulb.github.io/shelving/util/date/getMonthStart
+ */
 export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMonthStart): Date {
 	const date = getMidnight(target, caller);
 	date.setDate(1);
@@ -102,7 +172,13 @@ export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMont
 
 /**
  * Convert a possible date to a `Date` instance, or throw `RequiredError` if it couldn't be converted.
+ *
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
+ * @param caller The function to attribute a thrown error to (defaults to `requireDate`).
+ * @returns A valid `Date` instance.
+ * @throws {RequiredError} If `value` couldn't be converted to a valid date.
+ * @example requireDate("2003-09-12") // Date instance for 2003-09-12
+ * @see https://dhoulb.github.io/shelving/util/date/requireDate
  */
 export function requireDate(value: PossibleDate = "now", caller: AnyCaller = requireDate): Date {
 	const date = getDate(value);
@@ -110,12 +186,27 @@ export function requireDate(value: PossibleDate = "now", caller: AnyCaller = req
 	return date;
 }
 
-/** Convert an unknown value to a timestamp (milliseconds past Unix epoch), or `undefined` if it couldn't be converted. */
+/**
+ * Convert an unknown value to a timestamp (milliseconds past Unix epoch), or `undefined` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date.
+ * @returns The timestamp in milliseconds, or `undefined` if the value couldn't be converted.
+ * @example getTimestamp("1970-01-01T00:00:00Z") // 0
+ * @see https://dhoulb.github.io/shelving/util/date/getTimestamp
+ */
 export function getTimestamp(value?: unknown): number | undefined {
 	return getDate(value)?.getTime();
 }
 
-/** Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `RequiredError` if it couldn't be converted. */
+/**
+ * Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `RequiredError` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
+ * @returns The timestamp in milliseconds.
+ * @throws {RequiredError} If `value` couldn't be converted to a valid date.
+ * @example requireTimestamp("1970-01-01T00:00:00Z") // 0
+ * @see https://dhoulb.github.io/shelving/util/date/requireTimestamp
+ */
 export function requireTimestamp(value?: PossibleDate): number {
 	return requireDate(value, requireTimestamp).getTime();
 }
@@ -134,18 +225,41 @@ function _datetime(date: Date): string {
 	return `${_date(date)}T${_time(date)}`;
 }
 
-/** Convert an unknown value to a local date string like "2015-09-12T18:30:00", or `undefined` if it couldn't be converted. */
+/**
+ * Convert an unknown value to a local date string like "2015-09-12T18:30:00", or `undefined` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date.
+ * @returns The local datetime string, or `undefined` if `value` couldn't be converted.
+ * @example getDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
+ * @see https://dhoulb.github.io/shelving/util/date/getDateTimeString
+ */
 export function getDateTimeString(value?: unknown): string | undefined {
 	const date = getDate(value);
 	if (date) return _datetime(date);
 }
 
-/** Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.  */
+/**
+ * Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
+ * @param caller Function to attribute a thrown error to (defaults to `requireDateTimeString` itself).
+ * @returns The local datetime string.
+ * @throws {RequiredError} If `value` couldn't be converted to a valid date.
+ * @example requireDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
+ * @see https://dhoulb.github.io/shelving/util/date/requireDateTimeString
+ */
 export function requireDateTimeString(value?: PossibleDate, caller: AnyCaller = requireDateTimeString): string {
 	return _datetime(requireDate(value, caller));
 }
 
-/** Convert an unknown value to a local date string like "2015-09-12", or `undefined` if it couldn't be converted. */
+/**
+ * Convert an unknown value to a local date string like "2015-09-12", or `undefined` if it couldn't be converted.
+ *
+ * @param value Any value that we want to parse as a valid date.
+ * @returns The local date string, or `undefined` if `value` couldn't be converted.
+ * @example getDateString("2015-09-12T18:30:00") // "2015-09-12"
+ * @see https://dhoulb.github.io/shelving/util/date/getDateString
+ */
 export function getDateString(value?: unknown): string | undefined {
 	const date = getDate(value);
 	if (date) return _date(date);
@@ -230,14 +344,34 @@ export function addMinutes(change: number, target?: PossibleDate, caller: AnyCal
 	return date;
 }
 
-/** Return a new date that increase or decreases the minute based on an input date. */
+/**
+ * Return a new date that increases or decreases the seconds based on an input date.
+ *
+ * @param change The number of seconds to add (negative numbers subtract).
+ * @param target Any value that can be converted to a date (defaults to `"now"`).
+ * @param caller Function to attribute a thrown error to (defaults to `addSeconds` itself).
+ * @returns A new `Date` instance offset by `change` seconds.
+ * @throws {RequiredError} If `target` couldn't be converted to a valid date.
+ * @example addSeconds(30, "2003-09-12T00:00:00") // Date instance for 2003-09-12T00:00:30
+ * @see https://dhoulb.github.io/shelving/util/date/addSeconds
+ */
 export function addSeconds(change: number, target?: PossibleDate, caller: AnyCaller = addSeconds): Date {
 	const date = new Date(requireDate(target, caller));
 	date.setSeconds(date.getSeconds() + change);
 	return date;
 }
 
-/** Return a new date that increase or decreases the minute based on an input date. */
+/**
+ * Return a new date that increases or decreases the milliseconds based on an input date.
+ *
+ * @param change The number of milliseconds to add (negative numbers subtract).
+ * @param target Any value that can be converted to a date (defaults to `"now"`).
+ * @param caller Function to attribute a thrown error to (defaults to `addMilliseconds` itself).
+ * @returns A new `Date` instance offset by `change` milliseconds.
+ * @throws {RequiredError} If `target` couldn't be converted to a valid date.
+ * @example addMilliseconds(500, "2003-09-12T00:00:00") // Date instance for 2003-09-12T00:00:00.500
+ * @see https://dhoulb.github.io/shelving/util/date/addMilliseconds
+ */
 export function addMilliseconds(change: number, target?: PossibleDate, caller: AnyCaller = addMilliseconds): Date {
 	const date = new Date(requireDate(target, caller));
 	date.setMilliseconds(date.getMilliseconds() + change);

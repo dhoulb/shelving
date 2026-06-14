@@ -24,6 +24,12 @@ function _getKey(caller: AnyFunction, secret: PossibleBytes, ...usages: KeyUsage
 	return crypto.subtle.importKey("raw", requireBytes(secret), ALGORITHM, false, usages);
 }
 
+/**
+ * Claims payload accepted when encoding a JWT.
+ * - Extends `Data`, so any additional custom claims may be included alongside the standard `iat` / `nbf` / `exp` fields.
+ *
+ * @see https://dhoulb.github.io/shelving/util/jwt/TokenClaims
+ */
 export interface TokenClaims extends Data {
 	/**
 	 * "Issued at" date (defaults to "now").
@@ -46,12 +52,14 @@ export interface TokenClaims extends Data {
 /**
  * Encode a JWT and return the string token.
  * - Currently only supports HMAC SHA-512 signing.
+ * - The `exp` claim defaults to 30 days from now, and `iat` / `nbf` default to "now".
  *
- * @param claims The payload claims to include in the JWT.
- * @param secret The secret key to sign the JWT with.
- * @param expiry The expiry time in milliseconds (defaults to 30 days).
- *
- * @throws ValueError If the input parameters, e.g. `secret` or `issuer`, are invalid.
+ * @param claims The payload claims to include in the JWT, including optional `iat`, `nbf`, and `exp` values.
+ * @param secret The secret key to sign the JWT with (minimum 64 bytes / 512 bits).
+ * @returns A promise resolving to the signed JWT string token.
+ * @throws ValueError If the `secret` is not a byte sequence of at least 64 bytes.
+ * @example const token = await encodeToken({ sub: "user1" }, secret)
+ * @see https://dhoulb.github.io/shelving/util/jwt/encodeToken
  */
 export async function encodeToken(
 	{ nbf = "now", iat = "now", exp = DAY * 30, ...claims }: TokenClaims,
@@ -78,7 +86,11 @@ export async function encodeToken(
 	return `${header}.${payload}.${signature}`;
 }
 
-/** Parts that make up a JSON Web Token. */
+/**
+ * Parts that make up a JSON Web Token — the raw encoded segments plus their decoded contents.
+ *
+ * @see https://dhoulb.github.io/shelving/util/jwt/TokenData
+ */
 export type TokenData = {
 	header: string;
 	payload: string;
@@ -90,6 +102,14 @@ export type TokenData = {
 
 /**
  * Split a JSON Web Token into its header, payload, and signature, and decode and parse the JSON.
+ * - Does not verify the signature — use `verifyToken` for that.
+ *
+ * @param token The JWT string to split and decode.
+ * @param caller Identity of the calling function for error attribution.
+ * @returns A `TokenData` object with the raw segments and their decoded header, payload, and signature.
+ * @throws UnauthorizedError If the token is malformed, or its segments are not valid Base64URL-encoded JSON.
+ * @example splitToken("aaa.bbb.ccc") // { header, payload, signature, headerData, payloadData, signatureBytes }
+ * @see https://dhoulb.github.io/shelving/util/jwt/splitToken
  */
 export function splitToken(token: string, caller: AnyCaller = splitToken): TokenData {
 	// Split token.
@@ -127,10 +147,16 @@ export function splitToken(token: string, caller: AnyCaller = splitToken): Token
 /**
  * Decode a JWT, verify it, and return the full payload data.
  * - Currently only supports HMAC SHA-512 signing.
+ * - Allows a small amount of clock skew when checking `nbf` and `exp`.
  *
- * @throws ValueError If the input parameters, e.g. `secret` or `issuer`, are invalid.
- * @throws UnauthorizedError If the token is invalid or malformed.
- * @throws UnauthorizedError If the token signature is incorrect, token is expired or not issued yet.
+ * @param token The JWT string to verify.
+ * @param secret The secret key to verify the JWT signature with (minimum 64 bytes / 512 bits).
+ * @param caller Identity of the calling function for error attribution.
+ * @returns A promise resolving to the decoded payload claims.
+ * @throws ValueError If the `secret` is not a byte sequence of at least 64 bytes.
+ * @throws UnauthorizedError If the token is malformed, the signature is incorrect, or the token is expired or not yet valid.
+ * @example const { sub } = await verifyToken(token, secret)
+ * @see https://dhoulb.github.io/shelving/util/jwt/verifyToken
  */
 export async function verifyToken(token: string, secret: PossibleBytes, caller: AnyCaller = verifyToken): Promise<Data> {
 	const { header, payload, signature, headerData, payloadData } = splitToken(token, caller);
@@ -161,7 +187,10 @@ export async function verifyToken(token: string, secret: PossibleBytes, caller: 
  * Set the `Authorization: Bearer {token}` on a `Request` object (by reference).
  *
  * @param request The `Request` object to set the token on.
+ * @param token The JWT string to set in the `Authorization` header.
  * @returns The same `Request` object that was passed in.
+ * @example setRequestToken(request, token)
+ * @see https://dhoulb.github.io/shelving/util/jwt/setRequestToken
  */
 export function setRequestToken(request: Request, token: string): Request {
 	request.headers.set("Authorization", `Bearer ${token}`);
@@ -173,6 +202,8 @@ export function setRequestToken(request: Request, token: string): Request {
  *
  * @param request The `Request` object possibly containing an `Authorization: Bearer {token}` header to extract the token from.
  * @returns The string token extracted from the `Authorization` header, or `undefined` if not set.
+ * @example getRequestToken(request) // "eyJ..." or undefined
+ * @see https://dhoulb.github.io/shelving/util/jwt/getRequestToken
  */
 export function getRequestToken(request: Request): string | undefined {
 	const auth = request.headers.get("Authorization");
@@ -183,8 +214,11 @@ export function getRequestToken(request: Request): string | undefined {
  * Extract the `Authorization: Bearer {token}` from a `Request` object, or throw `UnauthorizedError` if not set or malformed.
  *
  * @param request The `Request` object containing an `Authorization: Bearer {token}` header to extract the token from.
+ * @param caller Identity of the calling function for error attribution.
  * @returns The string token extracted from the `Authorization` header.
  * @throws UnauthorizedError If the `Authorization` header is not set, or the JWT it contains is not well-formed.
+ * @example requireRequestToken(request) // "eyJ..."
+ * @see https://dhoulb.github.io/shelving/util/jwt/requireRequestToken
  */
 export function requireRequestToken(request: Request, caller: AnyCaller = requireRequestToken): string {
 	const token = getRequestToken(request);
@@ -198,11 +232,11 @@ export function requireRequestToken(request: Request, caller: AnyCaller = requir
  *
  * @param request The `Request` object containing an `Authorization: Bearer {token}` header to extract the token from.
  * @param secret The secret key to verify the JWT signature with.
- *
- * @returns The decoded payload data from the JWT.
+ * @param caller Identity of the calling function for error attribution.
+ * @returns A promise resolving to the decoded payload data from the JWT.
  * @throws UnauthorizedError If the `Authorization` header is not set, the JWT it contains is not well-formed, or the JWT signature is invalid.
- *
- * @example `const { sub, iss, customClaim } = await verifyRequestToken(request, secret);`
+ * @example const { sub, iss, customClaim } = await verifyRequestToken(request, secret)
+ * @see https://dhoulb.github.io/shelving/util/jwt/verifyRequestToken
  */
 export function verifyRequestToken(request: Request, secret: PossibleBytes, caller: AnyCaller = verifyRequestToken): Promise<Data> {
 	const token = requireRequestToken(request, caller);

@@ -6,7 +6,15 @@ import type { OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
 import { requireForm } from "./FormContext.js";
 
-/** `<button>` element that does an asynchronous form action (defaults to strong, full-width, primary styling). */
+/**
+ * Submit button for a form that disables itself and shows a spinner while the form is busy.
+ * - Defaults to strong, full-width, primary styling and a "Save" label.
+ *
+ * @param props Button variants and optional `children` label content.
+ * @returns A `<button type="submit">` element bound to the current form.
+ * @example <SubmitButton>Save changes</SubmitButton>
+ * @see https://dhoulb.github.io/shelving/ui/form/SubmitButton/SubmitButton
+ */
 export function SubmitButton({
 	children = SUBMIT_CHILDREN,
 	strong = true,
@@ -23,6 +31,11 @@ export function SubmitButton({
 	);
 }
 
+/**
+ * Props for `SubmitButton`, a form submit button.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/SubmitButton/SubmitButtonProps
+ */
 export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps {}
 
 const SUBMIT_CHILDREN = (

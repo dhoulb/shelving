@@ -9,6 +9,9 @@ import { createMarkupRule } from "../MarkupRule.js";
  *   - We just directly convert any `\n` linebreak into a `<br />` tag (lines without two spaces are not joined together).
  *   - This is more intuitive (a linebreak becomes a linebreak is isn't silently ignored).
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
+ *
+ * @example new MarkupParser({ rules: [LINEBREAK_RULE] }).parse("Line one\nLine two")
+ * @see https://dhoulb.github.io/shelving/markup/rule/linebreak/LINEBREAK_RULE
  */
 export const LINEBREAK_RULE = createMarkupRule(
 	/[^\n\S]*\n[^\n\S]*/, //

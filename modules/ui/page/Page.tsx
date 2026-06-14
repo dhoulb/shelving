@@ -4,12 +4,23 @@ import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";
 import { Head } from "./Head.js";
 
+/**
+ * Props for `<Page>` — per-page `Meta` (title, description, etc.) plus the page `children`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/page/Page/PageProps
+ */
 export interface PageProps extends PossibleMeta, ChildProps {}
 
 /**
- * Component for a single page (or screen) within an app.
+ * Wrap a single page (or screen) within an app, applying its meta and head tags.
  * - Sets the document title and other head metadata via `<Head>`, which emits hoistable tags inline; React 19 hoists each one into the document `<head>`. `<base>` is not emitted here — it lives in the `<HTML>` shell's `<Head>`.
  * - Also updates `window.history` to match the page URL.
+ *
+ * @param children The page content.
+ * @param meta Per-page meta (title, description, etc.) merged with the surrounding `<Meta>` context.
+ * @returns The page element with its meta applied.
+ * @example <Page title="Settings"><SettingsForm /></Page>
+ * @see https://dhoulb.github.io/shelving/ui/page/Page/Page
  */
 export function Page({ children, ...meta }: PageProps): ReactElement {
 	const merged = requireMeta(meta);

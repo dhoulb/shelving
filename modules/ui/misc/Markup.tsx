@@ -2,7 +2,11 @@ import type { ReactNode } from "react";
 import { type MarkupOptions, MarkupParser } from "../../markup/MarkupParser.js";
 import { requireMeta } from "./MetaContext.js";
 
-/** Props for `<Markup>` — extends `MarkupOptions` so callers can override `rules`, `rel`, `url`, `root`, or `schemes` directly. */
+/**
+ * Props for `<Markup>` — extends `MarkupOptions` so callers can override `rules`, `rel`, `url`, `root`, or `schemes` directly.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Markup/MarkupProps
+ */
 export interface MarkupProps extends Partial<MarkupOptions> {
 	/** The source string to parse and render. */
 	children?: string | undefined;
@@ -14,7 +18,11 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * - `url`/`root` default to the current `<Meta>` context so link rules resolve site-absolute and relative hrefs.
  * - Renders inside whatever ancestor element the caller provides — wrap in `<Prose>` to get the standard prose typography for the produced `<p>` / `<ul>` / `<pre>` / etc.
  *
+ * @param children The source markup string to parse and render (renders `null` when empty).
+ * @param options Optional `MarkupOptions` overrides (`rules`, `rel`, `url`, `root`, `schemes`).
+ * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>
+ * @see https://dhoulb.github.io/shelving/ui/misc/Markup/Markup
  */
 export function Markup({ children, ...options }: MarkupProps): ReactNode {
 	if (!children) return null;

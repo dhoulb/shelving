@@ -4,7 +4,11 @@ import type { OptionalChildProps } from "../util/props.js";
 import FLEX_CSS from "./Flex.module.css";
 import { type GapVariants, getGapClass } from "./Gap.js";
 
-/** Variants for flex layout — opt-in modifiers any component can mix in via `getFlexClass()`. */
+/**
+ * Variant props for flex layout — opt-in modifiers any component can mix in via `getFlexClass()`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/FlexVariants
+ */
 export interface FlexVariants extends GapVariants {
 	/** Wrap overflowing elements onto the next line (defaults to no wrapping). */
 	wrap?: boolean | undefined;
@@ -64,21 +68,54 @@ export interface FlexVariants extends GapVariants {
 	baseline?: boolean | undefined;
 }
 
-/** Get the flex class for a component. Composes the Gap prop so `<Flex gap="large">` etc. just works. */
+/**
+ * Get the flex layout class for a component from its flex variant props.
+ *
+ * - Composes the `gap` prop so `<Flex gap="large">` etc. just works.
+ *
+ * @param props Flex variant props (direction, justification, alignment, wrap, gap).
+ * @returns The combined flex + gap class string.
+ * @example getFlexClass({ column: true, center: true, gap: "large" })
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/getFlexClass
+ */
 export function getFlexClass(props: FlexVariants): string {
 	return getClass(getModuleClass(FLEX_CSS, "flex", props), getGapClass(props));
 }
 
+/**
+ * Props for the `Row` component — flex variants plus optional children.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/RowProps
+ */
 export interface RowProps extends FlexVariants, OptionalChildProps {}
 
-/** Flex contents arranged as a row by default. */
+/**
+ * Flex container that arranges its children as a row by default.
+ *
+ * @param props Flex variant props plus `children`.
+ * @returns A `<div>` element with the computed flex class.
+ * @example <Row gap="small" center>{items}</Row>
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/Row
+ */
 export function Row({ children, ...props }: RowProps): ReactElement {
 	return <div className={getFlexClass(props)}>{children}</div>;
 }
 
+/**
+ * Props for the `Column` component — flex variants plus optional children.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/ColumnProps
+ */
 export interface ColumnProps extends FlexVariants, OptionalChildProps {}
 
-/** Flex contents stacked as a column by default. */
+/**
+ * Flex container that stacks its children as a column by default.
+ *
+ * @param props Flex variant props plus `children` (`column` defaults to `true`).
+ * @returns A `<div>` element with the computed flex class.
+ * @example <Column gap="small">{items}</Column>
+ * @see https://dhoulb.github.io/shelving/ui/style/Flex/Column
+ */
 export function Column({ children, column = true, ...props }: ColumnProps): ReactElement {
 	return <div className={getFlexClass({ column, ...props })}>{children}</div>;
 }

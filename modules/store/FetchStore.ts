@@ -4,21 +4,42 @@ import { ABORT, type NONE, SKIP } from "../util/constants.js";
 import { BusyStore } from "./BusyStore.js";
 import type { AsyncStoreInput, StoreInput } from "./Store.js";
 
-/** Zero passed to `refresh()` means "always refresh this value" (this is the default). */
+/**
+ * `maxAge` of zero passed to `refresh()` means "always refresh this value" (this is the default).
+ *
+ * @see https://dhoulb.github.io/shelving/store/FetchStore/ALWAYS_REFRESH
+ */
 export const ALWAYS_REFRESH = 0;
 
-/** Infinity passed to `refresh()` means "only refresh if this value is not loaded or invalid". */
+/**
+ * `maxAge` of `Infinity` passed to `refresh()` means "only refresh if this value is not loaded or invalid".
+ *
+ * @see https://dhoulb.github.io/shelving/store/FetchStore/AVOID_REFRESH
+ */
 export const AVOID_REFRESH = Infinity;
 
-/** Callback for a callback fetch store. */
+/**
+ * Callback that fetches the next value for a `FetchStore`.
+ * - Receives the current `AbortSignal` so it can cancel in-flight HTTP requests when the fetch is aborted.
+ * - May return a value synchronously or a `PromiseLike` resolving to one (which the store will await).
+ *
+ * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchCallback
+ */
 export type FetchCallback<T> = (signal: AbortSignal) => StoreInput<T> | PromiseLike<StoreInput<T>>;
 
 /**
- * Store that fetches its values from a remote source.
+ * Store that fetches its values from a remote source on demand.
+ * - Reading `value` or `loading` optimistically triggers a fetch so the value is available next time.
+ * - Fetches are de-duplicated, can be aged out with `maxAge`, and can be forced stale with `invalidate()`.
+ * - Provide a `callback` to fetch values, or subclass and override `this._fetch()` for custom behaviour.
  *
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called when the `refresh()` method is invoked to fetch the next value.
  * - Override `this._fetch()` in subclasses to define custom fetching behaviour for a subclass.
+ * @example
+ * const store = new FetchStore(NONE, async signal => (await fetch("/api/thing", { signal })).json());
+ * store.value; // throws a `Promise` while loading, then resolves to the fetched value
+ * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchStore
  */
 export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	// Override to trigger a refresh when `this.loading` is read.
@@ -66,6 +87,10 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * - `0` zero means "always refresh" (this is the default).
 	 * - `Infinity` means "refresh only if store is still in a loading state.
 	 * - Any other value may or may not be stale based on `this.age`
+	 * @returns `true` if the value was set synchronously, `false` if no refresh happened, or a `Promise` resolving to whether the awaited fetch succeeded.
+	 * @throws {never} Never throws — fetch errors are stored as `reason` instead.
+	 * @example store.refresh(MINUTE); // refresh only if the current value is older than a minute
+	 * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchStore/refresh
 	 */
 	refresh(maxAge: number = ALWAYS_REFRESH): Promise<boolean> | boolean {
 		if (this._pendingRefresh) return this._pendingRefresh;
@@ -85,7 +110,10 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	/**
 	 * Current `AbortSignal` for this store's in-flight fetch.
 	 * - Created lazily; a new signal is issued each time `refresh()` starts a new fetch or `abort()` is called.
-	 * - Triggers `abort()` so any current awaits are cancelled.
+	 * - Reading this triggers `abort()` so any current awaits are cancelled.
+	 *
+	 * @returns A fresh `AbortSignal` for the next fetch.
+	 * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchStore/signal
 	 */
 	get signal(): AbortSignal {
 		this.abort();
@@ -104,7 +132,12 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	}
 	private _callback: FetchCallback<TT> | undefined;
 
-	/** Whether this store is has currently been invalidated and needs a refresh. */
+	/**
+	 * Whether this store has currently been invalidated and needs a refresh.
+	 *
+	 * @returns `true` if a refresh is pending after an `invalidate()` call, otherwise `false`.
+	 * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchStore/invalidated
+	 */
 	get invalidated(): boolean {
 		return !!this._invalidation;
 	}
@@ -112,6 +145,10 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	/**
 	 * Invalidate this store so a new fetch is triggered on the next read of `loading` or `value`.
 	 * - Triggers `abort()` so any current awaits are cancelled.
+	 *
+	 * @returns Nothing.
+	 * @example store.invalidate(); // next read of `value` refetches
+	 * @see https://dhoulb.github.io/shelving/store/FetchStore/FetchStore/invalidate
 	 */
 	invalidate(): void {
 		this.abort();

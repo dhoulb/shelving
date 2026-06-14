@@ -4,20 +4,35 @@ import { awaitDispose } from "../util/dispose.js";
 import { FetchStore } from "./FetchStore.js";
 import { type AsyncStoreInput, Store } from "./Store.js";
 
+/**
+ * Callback that fetches the next value for a `PayloadFetchStore` from a payload.
+ * - Receives the current payload plus the `AbortSignal` so it can cancel in-flight requests.
+ * - May return a value synchronously or a `PromiseLike` resolving to one (which the store will await).
+ *
+ * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchCallback
+ */
 export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => AsyncStoreInput<R>;
 
 /**
- * Store that fetches its values from a remote source by sending a payload to them.
+ * Store that fetches its values from a remote source by sending it a payload.
+ * - Holds the current payload in a nested `this.payload` store; setting `this.payload.value` triggers a fresh fetch.
+ * - Optionally debounces fetches so rapid payload changes only result in a single request.
  *
  * @param payload The initial payload for the store.
  * @param value The initial value for the store, or `NONE` if it does not have one yet.
  * @param callback An optional callback that, if set, will be called with the current payload when the `fetch()` method is invoked to fetch the next value.
  * @param debounce Delay in milliseconds before the fetch is triggered after a payload change. `busy` becomes `true` immediately; the actual fetch waits for the debounce period to expire. If the payload changes again before the delay expires the previous fetch is cancelled and the timer resets.
+ * @example
+ * const store = new PayloadFetchStore("dave", NONE, async (name, signal) => (await fetch(`/api/user/${name}`, { signal })).json());
+ * store.payload.value = "sam"; // triggers a new fetch
+ * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchStore
  */
 export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	/**
 	 * Store keeping the current payload to send to the fetch on send.
 	 * - New payloads can be set using `this.payload.value`
+	 *
+	 * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchStore/payload
 	 */
 	readonly payload: Store<P>;
 

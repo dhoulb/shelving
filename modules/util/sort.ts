@@ -2,7 +2,12 @@ import type { ImmutableArray, MutableArray } from "./array.js";
 import { isArray } from "./array.js";
 import type { Arguments } from "./function.js";
 
-/** Function that can compare two values for sorting. */
+/**
+ * Function that can compare two values for sorting.
+ * - Returns a negative number if `left` sorts before `right`, positive if after, or `0` if equally ranked (like `Array.prototype.sort()`).
+ *
+ * @see https://dhoulb.github.io/shelving/util/sort/Compare
+ */
 export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: A) => number;
 
 /**
@@ -17,10 +22,11 @@ export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: 
  * 6. Unsorted values (objects that can't be converted to number or string, symbols, NaN, etc)
  * 7. `undefined`
  *
- * @param x The first value to rank.
- * @param y The second value to rank.
- *
- * @returns Number below zero if `a` is higher, number above zero if `b` is higher, or `0` if they're equally sorted.
+ * @param left The first value to rank.
+ * @param right The second value to rank.
+ * @returns Number below zero if `left` is higher, number above zero if `right` is higher, or `0` if they're equally sorted.
+ * @example compareAscending(1, 2) // -1
+ * @see https://dhoulb.github.io/shelving/util/sort/compareAscending
  */
 export function compareAscending(left: unknown, right: unknown): number {
 	// Exactly equal is easy.
@@ -62,7 +68,16 @@ export function compareAscending(left: unknown, right: unknown): number {
 	return -1;
 }
 
-/** Compare two unknown values in descending order. */
+/**
+ * Compare two unknown values in descending order.
+ * - The exact inverse of `compareAscending`.
+ *
+ * @param left The first value to rank.
+ * @param right The second value to rank.
+ * @returns Number below zero if `right` is higher, number above zero if `left` is higher, or `0` if they're equally sorted.
+ * @example compareDescending(1, 2) // 1
+ * @see https://dhoulb.github.io/shelving/util/sort/compareDescending
+ */
 export function compareDescending(left: unknown, right: unknown): number {
 	return 0 - compareAscending(left, right);
 }
@@ -122,7 +137,17 @@ function _quicksort<T, A extends Arguments>(
 	return changed;
 }
 
-/** Sort an iterable set of items using a ranker (defaults to sorting in ascending order). */
+/**
+ * Sort an iterable set of items using a ranker (defaults to sorting in ascending order).
+ * - When the input is already an array and the sort makes no change, the original array reference is returned unchanged.
+ *
+ * @param input The array or iterable of items to sort.
+ * @param compare A `Compare` function ranking two items (defaults to `compareAscending`).
+ * @param args Extra arguments forwarded to `compare` on each call.
+ * @returns A sorted array (the original reference if it was an already-sorted array).
+ * @example sortArray([3, 1, 2]) // [1, 2, 3]
+ * @see https://dhoulb.github.io/shelving/util/sort/sortArray
+ */
 export function sortArray<T, A extends Arguments = []>(
 	input: ImmutableArray<T> | Iterable<T>,
 	compare: Compare<T, A> = compareAscending as unknown as Compare<T, A>,

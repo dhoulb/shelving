@@ -2,27 +2,36 @@ import { isArray } from "../../util/array.js";
 import { getDictionaryItems, type ImmutableDictionary, isDictionary } from "../../util/dictionary.js";
 
 /**
- * Set of classnames that can be joined.
+ * Set of classnames that can be joined into a single `className` string.
  *
  * - `string` — used directly as a classname.
  * - `null` or `undefined` — ignored.
  * - Array of classnames — recursively parsed.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/css/Classes
  */
 export type Classes = string | null | undefined | readonly Classes[] | Variants;
 
 /**
- * Variants list is a dictionary of booleans.
+ * Dictionary of boolean variant flags whose `true`-valued keys become class names.
+ *
  * - `true` or `false` item values in dictionaries use the string `key` of the item if the value is `true`, or ignore it if the value is falsy.
  * - Anything that is not `true` has no effect, so other values can be passed in and will be ignored. This means you can pass the entire `props` into this and it'll work just fine.
  *
  * Typed as `object` (not `Data`/`Record<string, unknown>`) so plain `interface` types are accepted —
  * interfaces lack an implicit string index signature, so they don't satisfy index-signature types.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/css/Variants
  */
 export interface Variants {
 	readonly [key: string]: boolean;
 }
 
-/** CSS modules mapping of local class names to hashed runtime class names. */
+/**
+ * CSS modules mapping of local class names to hashed runtime class names.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/util/css/CSSModule
+ */
 export type CSSModule = ImmutableDictionary<string | undefined>;
 
 /**
@@ -31,6 +40,8 @@ export type CSSModule = ImmutableDictionary<string | undefined>;
  *
  * @param classes The input set of classes to merge.
  * @returns The merged string classname.
+ * @example getClass("button", { active: true, disabled: false }) // "button active"
+ * @see https://dhoulb.github.io/shelving/ui/util/css/getClass
  */
 export function getClass(...classes: unknown[]): string {
 	return Array.from(getClasses(classes)).join(" ");
@@ -67,7 +78,9 @@ function* getClasses(classes: unknown): Iterable<string> {
  * - This allows this situation to be handled gracefully and classes will be silently ignored in this environment.
  *
  * @param classes Class keys/values to merge.
- * @returns The merged string classname.
+ * @returns The merged string classname, or `undefined` when `module` is a string (unprocessed CSS module).
+ * @example getModuleClass(styles, "base", { active: true }) // "base_x7q active_p2k"
+ * @see https://dhoulb.github.io/shelving/ui/util/css/getModuleClass
  */
 export function getModuleClass(module: CSSModule | string, ...classes: unknown[]): string | undefined {
 	if (isDictionary(module)) return Array.from(getModuleClasses(module, classes)).join(" ");

@@ -1,10 +1,22 @@
 import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./BaseError.js";
 
-/** Thrown in the event of network issues e.g. the user's internet connection is down, or the server is down. */
+/**
+ * Thrown in the event of network issues e.g. the user's internet connection is down, or the server is down.
+ *
+ * @example
+ * 	throw new NetworkError("Connection lost");
+ * @see https://dhoulb.github.io/shelving/error/NetworkError/NetworkError
+ */
 export class NetworkError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
 	readonly [key: string]: unknown;
 
+	/**
+	 * Create a new `NetworkError`.
+	 *
+	 * @param message Optional human-readable description of the network problem.
+	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 */
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);
 		setBaseErrorOptions(NetworkError, this, options);

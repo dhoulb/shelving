@@ -7,10 +7,23 @@ import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
-/** `type=""` prop for HTML `<input />` tags that are relevant for dates. */
+/**
+ * `type=""` prop for HTML `<input />` tags that are relevant for dates.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateInputType
+ */
 export type DateInputType = "time" | "date" | "datetime-local";
 
-/** Allowed options for `DateSchema` */
+/**
+ * Options for `DateSchema`.
+ *
+ * - `value` — default date used when the input is `undefined`.
+ * - `min`/`max` — earliest and latest allowed dates (`null` for no bound).
+ * - `input` — HTML `<input />` `type=""` hint for downstream UIs.
+ * - `step` — rounding step in milliseconds.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchemaOptions
+ */
 export interface DateSchemaOptions extends SchemaOptions {
 	readonly value?: PossibleDate | undefined;
 	readonly min?: Nullish<PossibleDate>;
@@ -24,13 +37,34 @@ export interface DateSchemaOptions extends SchemaOptions {
 	readonly step?: number | undefined;
 }
 
+/**
+ * Schema that defines a valid date stored as a `YYYY-MM-DD` string, e.g. `2005-09-12`.
+ *
+ * - Validates an abstract date without a timezone; use `DateTimeSchema` for UTC datetimes and `TimeSchema` for times.
+ * - The input is coerced to a `Date`, optionally rounded to `step`, range-checked against `min`/`max`, then stringified.
+ *
+ * @example
+ *  const schema = new DateSchema({ min: "2000-01-01" });
+ *  schema.validate("2005-09-12"); // "2005-09-12"
+ * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchema
+ */
 export class DateSchema extends Schema<string> {
+	/** Default date used when `validate()` is called with an `undefined` value. */
 	declare readonly value: PossibleDate | undefined;
+	/** Earliest allowed date, or `undefined` for no minimum. */
 	readonly min: Date | undefined;
+	/** Latest allowed date, or `undefined` for no maximum. */
 	readonly max: Date | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
 	readonly input: DateInputType;
+	/** Rounding step in milliseconds, or `undefined` for no rounding. */
 	readonly step: number | undefined;
 
+	/**
+	 * Create a new `DateSchema`.
+	 *
+	 * @param options Options for the schema (`min`, `max`, `value`, `input`, `step`, plus base `SchemaOptions`).
+	 */
 	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
@@ -39,6 +73,15 @@ export class DateSchema extends Schema<string> {
 		this.step = step;
 	}
 
+	/**
+	 * Validate an unknown input value and return a valid date string.
+	 *
+	 * @param value The value to validate (defaults to this schema's `value`).
+	 * @returns The validated date as a `YYYY-MM-DD` string.
+	 * @throws `string` `"Required"` if the value is empty, `` `Invalid ${one} format` `` if it is not a date, or `` `Minimum…` `` / `` `Maximum…` `` if outside the allowed range.
+	 * @example schema.validate("2005-09-12") // "2005-09-12"
+	 * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchema/validate
+	 */
 	override validate(value: unknown = this.value): string {
 		const date = getDate(value);
 		if (!date) throw value ? `Invalid ${this.one} format` : "Required";
@@ -51,17 +94,43 @@ export class DateSchema extends Schema<string> {
 		return this.stringify(stepped);
 	}
 
+	/**
+	 * Convert a `Date` object to the string representation used by this schema.
+	 *
+	 * @param value The `Date` to convert.
+	 * @returns The date as a `YYYY-MM-DD` string.
+	 * @example schema.stringify(new Date("2005-09-12")) // "2005-09-12"
+	 * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchema/stringify
+	 */
 	stringify(value: Date): string {
 		return requireDateString(value);
 	}
 
+	/**
+	 * Format a validated date string as a human-readable string for display.
+	 *
+	 * @param value The validated date string to format.
+	 * @returns The date formatted for display.
+	 * @example schema.format("2005-09-12") // "12 Sep 2005"
+	 * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchema/format
+	 */
 	override format(value: string): string {
 		return formatDate(value, undefined, this.format);
 	}
 }
 
-/** Valid date, e.g. `2005-09-12` (required because falsy values are invalid). */
+/**
+ * Valid date, e.g. `2005-09-12` (required because falsy values are invalid).
+ *
+ * @example DATE.validate("2005-09-12") // "2005-09-12"
+ * @see https://dhoulb.github.io/shelving/schema/DateSchema/DATE
+ */
 export const DATE = new DateSchema({});
 
-/** Valid date, e.g. `2005-09-12`, or `null` */
+/**
+ * Valid date, e.g. `2005-09-12`, or `null`.
+ *
+ * @example NULLABLE_DATE.validate(null) // null
+ * @see https://dhoulb.github.io/shelving/schema/DateSchema/NULLABLE_DATE
+ */
 export const NULLABLE_DATE = NULLABLE(DATE);

@@ -10,7 +10,14 @@ import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 import type { Segments } from "./string.js";
 
-/** Query that can be applied to a list of data objects. */
+/**
+ * Query that can be applied to a list of data objects.
+ *
+ * - Keys encode filters: `key` (is), `!key` (not), arrays for in/out, `key<`/`key<=`/`key>`/`key>=` for ranges, and `key[]` for array contains.
+ * - `$order` sets the sort order (prefix `!` for descending) and `$limit` caps the number of results.
+ *
+ * @see https://dhoulb.github.io/shelving/util/query/Query
+ */
 export type Query<T extends Data = Data> = {
 	readonly [K in LeafDataPath<T> as `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
 } & {
@@ -26,7 +33,13 @@ export type Query<T extends Data = Data> = {
 	readonly $limit?: number | undefined;
 };
 
-/** A single filter that can be applied to a list of data objects. */
+/**
+ * A single filter that can be applied to a list of data objects.
+ *
+ * - Discriminated by `operator`: `"is"`, `"not"`, `"in"`, `"out"`, `"contains"`, `"lt"`, `"lte"`, `"gt"`, or `"gte"`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/query/QueryFilter
+ */
 export type QueryFilter =
 	| { key: Segments; operator: "is"; value: unknown }
 	| { key: Segments; operator: "not"; value: unknown }
@@ -38,7 +51,11 @@ export type QueryFilter =
 	| { key: Segments; operator: "gt"; value: unknown }
 	| { key: Segments; operator: "gte"; value: unknown };
 
-/** A single sort order that can be applied to a list of data objects. */
+/**
+ * A single sort order that can be applied to a list of data objects.
+ *
+ * @see https://dhoulb.github.io/shelving/util/query/QueryOrder
+ */
 export type QueryOrder = {
 	key: Segments;
 	direction: "asc" | "desc";
@@ -59,7 +76,14 @@ const MATCHERS: {
 	gte: isEqualGreater,
 };
 
-/** Get the `Filter` objects for a query. */
+/**
+ * Get the `QueryFilter` objects decoded from a query.
+ *
+ * @param query The query to extract filters from.
+ * @returns Array of decoded `QueryFilter` objects (excludes `$order` and `$limit` and any `undefined` values).
+ * @example getQueryFilters({ name: "Alice" }) // [{ key: ["name"], operator: "is", value: "Alice" }]
+ * @see https://dhoulb.github.io/shelving/util/query/getQueryFilters
+ */
 export function getQueryFilters<T extends Data>(query: Query<T>): ImmutableArray<QueryFilter> {
 	return Array.from(yieldQueryFilters(query));
 }
@@ -79,7 +103,14 @@ function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilt
 	}
 }
 
-/** Get the `Order` objects for a query. */
+/**
+ * Get the `QueryOrder` objects decoded from a query.
+ *
+ * @param query The query to extract sort orders from (reads its `$order` prop).
+ * @returns Array of decoded `QueryOrder` objects (`!`-prefixed keys are descending, others ascending).
+ * @example getQueryOrders({ $order: "!date" }) // [{ key: ["date"], direction: "desc" }]
+ * @see https://dhoulb.github.io/shelving/util/query/getQueryOrders
+ */
 export function getQueryOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<QueryOrder> {
 	return Array.from(yieldQueryOrders($order));
 }
@@ -91,12 +122,28 @@ function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | 
 	}
 }
 
-/** Get the limit for a query. */
+/**
+ * Get the limit for a query.
+ *
+ * @param query The query to read the limit from (reads its `$limit` prop).
+ * @returns The maximum number of results, or `undefined` if the query is unlimited.
+ * @example getQueryLimit({ $limit: 10 }) // 10
+ * @see https://dhoulb.github.io/shelving/util/query/getQueryLimit
+ */
 export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
 	return $limit;
 }
 
-/** Query a set of data items using a query. */
+/**
+ * Query a set of data items using a query.
+ * - Filters, then sorts, then limits the items according to the query.
+ *
+ * @param items The iterable of data items to query.
+ * @param query The query to apply (filters, sort order, and limit).
+ * @returns Iterable of items matching the query, in sorted and limited order.
+ * @example Array.from(queryItems(items, { name: "Alice", $limit: 1 })) // matching items
+ * @see https://dhoulb.github.io/shelving/util/query/queryItems
+ */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
 	return limitQueryItems(sortQueryItems(filterQueryItems(items, getQueryFilters(query)), getQueryOrders(query)), getQueryLimit(query));
 }
@@ -104,12 +151,26 @@ export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>):
 /**
  * Query a set of data items for writing using a query.
  * - If no limit is set on the data sorting can be avoided too for performance reasons.
+ *
+ * @param items The iterable of data items to query.
+ * @param query The query to apply (filters, sort order, and limit).
+ * @returns Iterable of matching items (skips sorting when the query has no limit).
+ * @example Array.from(queryWritableItems(items, { name: "Alice" })) // matching items (unsorted)
+ * @see https://dhoulb.github.io/shelving/util/query/queryWritableItems
  */
 export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
 	return getQueryLimit(query) === undefined ? filterQueryItems(items, getQueryFilters(query)) : queryItems(items, query);
 }
 
-/** Match a single data item againt a set of filters. */
+/**
+ * Match a single data item against a set of filters.
+ *
+ * @param item The data item to test.
+ * @param filters The set of filters that the item must satisfy.
+ * @returns `true` if the item matches every filter, `false` otherwise.
+ * @example matchQueryItem({ name: "Alice" }, [{ key: ["name"], operator: "is", value: "Alice" }]) // true
+ * @see https://dhoulb.github.io/shelving/util/query/matchQueryItem
+ */
 export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<QueryFilter>): boolean {
 	for (const { key, operator, value } of filters) {
 		const matcher = MATCHERS[operator] as Match<[unknown, unknown]>;
@@ -118,7 +179,15 @@ export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<
 	return true;
 }
 
-/**  Filter a set of data items using a set of filters. */
+/**
+ * Filter a set of data items using a set of filters.
+ *
+ * @param items The iterable of data items to filter.
+ * @param filters The set of filters that each yielded item must satisfy.
+ * @yields Items that match every filter (yields all items when `filters` is empty).
+ * @example Array.from(filterQueryItems(items, filters)) // matching items
+ * @see https://dhoulb.github.io/shelving/util/query/filterQueryItems
+ */
 export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: ImmutableArray<QueryFilter>): Iterable<T> {
 	if (filters.length) {
 		for (const item of items) if (matchQueryItem(item, filters)) yield item;

@@ -8,10 +8,14 @@ import type { Segments } from "./string.js";
 import { isDefined } from "./undefined.js";
 
 /**
- * Set of named updates for a data object.
+ * Set of named updates for a data object, keyed by encoded update syntax.
+ *
+ * - Plain key `a.b` sets a value, `=a.b` sets a leaf value, `+=`/`-=` sum numbers, and `+[]`/`-[]` add/remove array items.
  *
  * Note: string templates infer best when you have fixed character(s) at the start,
  *   so our `Update` syntax always
+ *
+ * @see https://dhoulb.github.io/shelving/util/update/Updates
  */
 export type Updates<T extends Data = Data> = {
 	/**
@@ -44,14 +48,30 @@ export type Updates<T extends Data = Data> = {
 		: never;
 };
 
-/** A single update to a keyed property in an object. */
+/**
+ * A single decoded update to a keyed property in an object.
+ *
+ * - Discriminated by `action`: `"set"`, `"with"` (add array items), `"omit"` (remove array items), or `"sum"` (add to a number).
+ *
+ * @see https://dhoulb.github.io/shelving/util/update/Update
+ */
 export type Update =
 	| { action: "set"; key: Segments; value: unknown } //
 	| { action: "with"; key: Segments; value: ImmutableArray<unknown> } //
 	| { action: "omit"; key: Segments; value: ImmutableArray<unknown> } //
 	| { action: "sum"; key: Segments; value: number };
 
-/** Yield the prop updates in an `Updates` object as a set of `Update` objects. */
+/**
+ * Decode the prop updates in an `Updates` object into a set of `Update` objects.
+ *
+ * - Props with `undefined` value are skipped.
+ *
+ * @param data The `Updates` object to decode.
+ * @returns Array of decoded `Update` objects.
+ * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
+ * @example getUpdates({ "+=count": 1 }) // [{ action: "sum", key: ["count"], value: 1 }]
+ * @see https://dhoulb.github.io/shelving/util/update/getUpdates
+ */
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
 	return getProps(data).map(_getUpdate).filter(isDefined);
 }
@@ -72,7 +92,19 @@ function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
 	}
 }
 
-/** Update a data object with a set of updates. */
+/**
+ * Return a copy of a data object with a set of updates applied.
+ *
+ * - Returns the original reference unchanged when no update changed a value.
+ * - Supports nested paths, sum/increment, and array add/remove updates via the encoded `Updates` syntax.
+ *
+ * @param data The data object to update.
+ * @param updates The set of updates to apply.
+ * @returns The updated data object (or the original reference if nothing changed).
+ * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
+ * @example updateData({ count: 1 }, { "+=count": 2 }) // { count: 3 }
+ * @see https://dhoulb.github.io/shelving/util/update/updateData
+ */
 export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 	return reduceItems(getUpdates(updates), _updateProp, data);
 }

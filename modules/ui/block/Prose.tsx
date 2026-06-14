@@ -53,9 +53,22 @@ const PROSE_STYLES = getClass(
 	DIVIDER_PROSE_CLASS,
 );
 
+/**
+ * Props for `Prose` — just the longform `children` to style.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Prose/ProseProps
+ */
 export interface ProseProps extends OptionalChildProps {}
 
-/** A section of longform text containing lots of `<p>` or `<ul>` style elements. */
+/**
+ * A section of longform text containing lots of `<p>` or `<ul>` style elements.
+ * - Applies the prose variant of every block and inline component so nested content picks up the right longform spacing and typography.
+ *
+ * @param props The longform `children` to render inside the prose container.
+ * @returns Rendered `<div>` wrapping the prose content.
+ * @example <Prose><Paragraph>First.</Paragraph><Paragraph>Second.</Paragraph></Prose>
+ * @see https://dhoulb.github.io/shelving/ui/block/Prose/Prose
+ */
 export function Prose({ children }: ProseProps): ReactElement {
 	return <div className={PROSE_STYLES}>{children}</div>;
 }

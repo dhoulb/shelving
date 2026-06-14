@@ -9,12 +9,21 @@ import type { PossibleMeta } from "../util/index.js";
 import { TreeProvider, useTreeMap } from "./TreeContext.js";
 import { TreePage } from "./TreePage.js";
 
-/** Mapping + Mapper pair for tree routers — wrap children in `<TreeRouterMapping>` to override. */
+/**
+ * Mapping + Mapper pair for tree routers — wrap children in `<TreeRouterMapping>` to override the per-type page renderers.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouterMapping
+ */
 export const [TreeRouterMapping, TreeRouterMapper] = createMapper({
 	"tree-element": TreePage,
 	"tree-documentation": DocumentationPage,
 });
 
+/**
+ * Props for the `TreeRouter` component — the tree to route plus an optional fallback and app meta.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouterProps
+ */
 export interface TreeRouterProps extends PossibleMeta {
 	/** The tree of elements to match routes for. */
 	readonly tree: TreeElement;
@@ -28,11 +37,17 @@ export interface TreeRouterProps extends PossibleMeta {
 
 /**
  * Resolve a URL path to a tree element and render it as a full page.
+ *
  * - Flattens the tree once (via `<TreeProvider>`) into a `path` → element map, then resolves the current URL with a single `map.get(path)`.
  * - `/` renders the root itself; deeper paths render the matching descendant (composite module names like `/util/string` resolve for free — they're whole keys in the map).
  * - The resolved element is already stamped with its canonical `path`, so the page and its cards link straight to their own paths — nothing needs threading.
- * - Throws `NotFoundError` if no element matches and no `fallback` is given.
  * - To override the renderer for a specific element type, wrap in `<TreeRouterMapping mapping={…}>`.
+ *
+ * @param props The `tree` to route, an optional `fallback`, and app meta.
+ * @returns The resolved element rendered as a page, or the `fallback`.
+ * @throws NotFoundError When no element matches the URL and no `fallback` is given.
+ * @example <TreeRouter tree={tree} />
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouter
  */
 export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactNode {
 	const { path, ...combined } = requireMetaURL(meta);

@@ -5,9 +5,22 @@ import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { CHECKBOX_CLASS, LABEL_INPUT_CLASS, PLACEHOLDER_CLASS, type ValueInputProps } from "./Input.js";
 
+/**
+ * Props for `CheckboxInput`, a boolean-valued checkbox input.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxProps
+ */
 export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants {}
 
-/** Checkbox element. */
+/**
+ * Checkbox input bound to a `boolean` value, rendered as a labelled `<input type="checkbox">`.
+ * - The label content comes from `children`, falling back to `placeholder`/`title`.
+ *
+ * @param props Props including `value`, `onValue`, label `children`, and `Flex` variants.
+ * @returns A `<label>` wrapping the checkbox and its label content.
+ * @example <CheckboxInput name="agree" value={agree} onValue={setAgree}>I agree</CheckboxInput>
+ * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxInput
+ */
 export function CheckboxInput({
 	name,
 	title,

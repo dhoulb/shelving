@@ -5,7 +5,14 @@ import { requireForm, useField } from "./FormContext.js";
 import type { InputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
-/** Show a `<Field>` for a named property in the current form. */
+/**
+ * Show a `<Field>` (label, input, and message) for a single named property of the current form.
+ *
+ * @param props Input props including the field `name`.
+ * @returns A `<Field>` wrapping a `SchemaInput` bound to the named field.
+ * @example <FormField name="email" />
+ * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormField
+ */
 export function FormField({ name, ...props }: InputProps): ReactElement {
 	const field = useField(name);
 	const { schema, message } = field;
@@ -17,7 +24,13 @@ export function FormField({ name, ...props }: InputProps): ReactElement {
 	);
 }
 
-/** List of `<Field>` elements for every schema property in the current form. */
+/**
+ * Show a `<Field>` for every property in the current form's schema.
+ *
+ * @returns A fragment of `FormField` elements, one per schema property.
+ * @example <FormFields />
+ * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormFields
+ */
 export function FormFields(): ReactElement {
 	const form = useStore(requireForm());
 	return (

@@ -10,6 +10,11 @@ import { ButtonInput } from "./ButtonInput.js";
 import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
+/**
+ * Props for `ArrayInput`, a repeating input that edits an array of schema-validated items.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInputProps
+ */
 export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
 	one?: string;
 	many?: string;
@@ -19,6 +24,16 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
 	items: Schema<T>;
 }
 
+/**
+ * Repeating input that edits an array of items, adding a `SchemaInput` row per item.
+ * - Each item is validated and rendered using the supplied `items` schema.
+ * - Enforces `min`/`max` length and offers add, remove, and clear controls.
+ *
+ * @param props Props including `value`, `onValue`, the `items` schema, and `min`/`max` length bounds.
+ * @returns Element rendering one input row per array item plus add/clear controls.
+ * @example <ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
+ * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInput
+ */
 export function ArrayInput<T>(props: ArrayInputProps<T>): ReactElement;
 export function ArrayInput({
 	name,

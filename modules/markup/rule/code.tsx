@@ -9,6 +9,9 @@ import { BLOCK_CONTENT_REGEXP } from "../util/regexp.js";
  * - Closing characters must exactly match opening characters.
  * - Works inside link text too, e.g. `` [`code`](url) ``.
  * - Same as Markdown syntax.
+ *
+ * @example new MarkupParser({ rules: [CODE_RULE] }).parse("Some `inline code` here")
+ * @see https://dhoulb.github.io/shelving/markup/rule/code/CODE_RULE
  */
 // Priority 10: code is a higher-precedence tier, resolved and masked before links/emphasis, so a
 // code span that straddles a link delimiter wins and the link cannot form across it.

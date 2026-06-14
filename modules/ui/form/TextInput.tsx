@@ -5,6 +5,11 @@ import { MULTILINE_TEXT_INPUT_CLASS, TEXT_INPUT_CLASS, type ValueInputProps } fr
 
 type TextFormatter = (str: string) => string;
 
+/**
+ * Props for `TextInput`, a single- or multi-line text input bound to a `string` value.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInputProps
+ */
 export interface TextInputProps extends ValueInputProps<string> {
 	rows?: number | undefined;
 	multiline?: boolean;
@@ -15,6 +20,16 @@ export interface TextInputProps extends ValueInputProps<string> {
 	formatter?: TextFormatter | undefined;
 }
 
+/**
+ * Text input bound to a `string` value, rendered as an `<input>` or a `<textarea>` when `rows > 1`.
+ * - Applies an optional `formatter` on initial display and on blur.
+ * - Multiline mode auto-grows the textarea to fit its content.
+ *
+ * @param props Props including `value`, `onValue`, `rows`, `input` type, `min`/`max` length, and `formatter`.
+ * @returns A text `<input>` or `<textarea>` element.
+ * @example <TextInput name="name" value={name} onValue={setName} />
+ * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInput
+ */
 export function TextInput({
 	name,
 	title = "",

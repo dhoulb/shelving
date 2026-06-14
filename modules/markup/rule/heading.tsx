@@ -6,6 +6,9 @@ import { createLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../uti
  * - `#` 1-6 hashes, then one or more spaces, then the title.
  * - `#` must be the first character on the line.
  * - Markdown's underline syntax is not supported (for simplification).
+ *
+ * @example new MarkupParser({ rules: [HEADING_RULE] }).parse("# Title")
+ * @see https://dhoulb.github.io/shelving/markup/rule/heading/HEADING_RULE
  */
 export const HEADING_RULE = createMarkupRule<{
 	prefix: string;

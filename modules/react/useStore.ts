@@ -15,7 +15,22 @@ const EXTERNAL_BLACKHOLE: ExternalStore = {
 	getSnapshot: BLACKHOLE,
 };
 
-/** Subscribe to a Shelving `Store` instance to refresh this component when its value changes. */
+/**
+ * Subscribe to a Shelving `Store` instance to refresh this component when its value changes.
+ * - Re-renders the component whenever the store's value changes for as long as it is mounted.
+ * - Pass `undefined` to subscribe to nothing (e.g. for conditional subscriptions).
+ *
+ * @param store `Store` instance to subscribe to, or `undefined` to subscribe to nothing.
+ * @returns The same `store` that was passed in (or `undefined`).
+ *
+ * @example
+ * ```tsx
+ * const store = useStore(myStore);
+ * return <>{store.value}</>;
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/useStore
+ */
 export function useStore<T extends AnyStore>(store: T): T;
 export function useStore<T extends AnyStore>(store?: T | undefined): T | undefined;
 export function useStore<T, TT>(store: Store<T, TT> | undefined): Store<T, TT> | undefined {

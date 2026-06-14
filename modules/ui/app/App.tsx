@@ -4,11 +4,23 @@ import "../style/base.css";
 import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";
 
+/**
+ * Props for `<App>` — the root `Meta` plus the application `children`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/app/App/AppProps
+ */
 export interface AppProps extends PossibleMeta, ChildProps {}
 
 /**
- * Root component for an application. Provides a `Meta` context to its children so descendants can read
- * or update metadata. Design tokens and body baseline typography are set globally via `style/base.css`.
+ * Root component for an application, providing the top-level `Meta` context and global styles.
+ * - Descendants can read or update metadata via the provided `<Meta>` context.
+ * - Design tokens and body baseline typography are set globally via `style/base.css`.
+ *
+ * @param children The application content.
+ * @param meta The root meta (app name, root URL, language, etc.).
+ * @returns The app root element wrapping `children`.
+ * @example <App app="My App" root="https://example.com/"><Navigation>…</Navigation></App>
+ * @see https://dhoulb.github.io/shelving/ui/app/App/App
  */
 export function App({ children, ...meta }: AppProps): ReactElement {
 	return <MetaContext value={requireMeta(meta)}>{children}</MetaContext>;

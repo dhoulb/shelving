@@ -28,14 +28,24 @@ type TemplateChunks = ImmutableArray<TemplateChunk>;
  * `PossibleString` — Single string used for every `{placeholder}`
  * `ImmutableArray<string>` — Array of strings (or functions that return strings) used for `*` numbered placeholders e.g. `["John"]`
  * `ImmutableDictionary<PossibleString>` — Object containing named strings used for named placeholders, e.g. `{ val1: "Ellie", val2: 123 }`
- * `(placeholder: string) => string` — Function that returns the right string for a named `{placeholder}`.v
+ * `(placeholder: string) => string` — Function that returns the right string for a named `{placeholder}`.
+ *
+ * @see https://dhoulb.github.io/shelving/util/template/TemplateValues
  */
 export type TemplateValues = PossibleString | ImmutableArray<unknown> | ImmutableDictionary<unknown> | ((placeholder: string) => string);
 
-/** The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format. */
+/**
+ * The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format.
+ *
+ * @see https://dhoulb.github.io/shelving/util/template/TemplateMatches
+ */
 export type TemplateMatches = ImmutableDictionary<string>;
 
-/** List of `{placeholders}` found in a template string. */
+/**
+ * List of `{placeholders}` found in a template string.
+ *
+ * @see https://dhoulb.github.io/shelving/util/template/TemplatePlaceholders
+ */
 export type TemplatePlaceholders = ImmutableArray<string>;
 
 /**
@@ -95,6 +105,8 @@ function _splitTemplateCached(template: string, caller: AnyCaller): TemplateChun
  *
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
+ * @example getPlaceholders(":name-${country}/{city}") // ["name", "country", "city"]
+ * @see https://dhoulb.github.io/shelving/util/template/getPlaceholders
  */
 export function getPlaceholders(template: string): TemplatePlaceholders {
 	return _splitTemplateCached(template, getPlaceholders).map(_getPlaceholder);
@@ -110,8 +122,11 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  *
  * @param template The template string, e.g. `:name-${country}/{city}`.
  * @param target The string containing values, e.g. `Dave-UK/Manchester`.
- *
- * @return An object containing values (e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`), or `undefined` if no match.
+ * @param caller Function to attribute a thrown error to (defaults to `matchTemplate` itself).
+ * @returns An object containing values (e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`), or `undefined` if no match.
+ * @throws {ValueError} If two template placeholders are not separated by at least one character.
+ * @example matchTemplate(":name-${country}/{city}", "Dave-UK/Manchester") // { name: "Dave", country: "UK", city: "Manchester" }
+ * @see https://dhoulb.github.io/shelving/util/template/matchTemplate
  */
 export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateMatches | undefined {
 	return _matchTemplate(template, target, "", caller);
@@ -121,6 +136,14 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
  * Match a path-shaped template against a target path.
  * - Like `matchTemplate`, but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
  * - A trailing catchall (e.g. `/files/{...path}`) also matches when the trailing separator is absent (e.g. `/files`), with the catchall value as `""`.
+ *
+ * @param template The path-shaped template string, e.g. `/users/{name}`.
+ * @param target The path containing values, e.g. `/users/Dave`.
+ * @param caller Function to attribute a thrown error to (defaults to `matchPathTemplate` itself).
+ * @returns An object containing values (e.g. `{ name: "Dave" }`), or `undefined` if no match.
+ * @throws {ValueError} If two template placeholders are not separated by at least one character.
+ * @example matchPathTemplate("/users/{name}", "/users/Dave") // { name: "Dave" }
+ * @see https://dhoulb.github.io/shelving/util/template/matchPathTemplate
  */
 export function matchPathTemplate(
 	template: AbsolutePath,
@@ -171,7 +194,15 @@ function _matchTemplate(template: string, target: string, separator: string, cal
 	return values;
 }
 
-/** Match multiple templates against a target string and return the first match (no separator semantics). */
+/**
+ * Match multiple templates against a target string and return the first match (no separator semantics).
+ *
+ * @param templates Iterable of template strings to try in order, e.g. `[":name-:age", ":name"]`.
+ * @param target The string containing values, e.g. `Dave-40`.
+ * @returns An object of values for the first matching template, or `undefined` if none match.
+ * @example matchTemplates([":name-:age", ":name"], "Dave-40") // { name: "Dave", age: "40" }
+ * @see https://dhoulb.github.io/shelving/util/template/matchTemplates
+ */
 export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateMatches | undefined {
 	for (const template of templates) {
 		const values = matchTemplate(template, target);
@@ -179,7 +210,15 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
 	}
 }
 
-/** Match multiple path-shaped templates against a target path and return the first match. */
+/**
+ * Match multiple path-shaped templates against a target path and return the first match.
+ *
+ * @param templates Iterable of path-shaped template strings to try in order, e.g. `["/users/{name}", "/users"]`.
+ * @param target The path containing values, e.g. `/users/Dave`.
+ * @returns An object of values for the first matching template, or `undefined` if none match.
+ * @example matchPathTemplates(["/users/{name}", "/users"], "/users/Dave") // { name: "Dave" }
+ * @see https://dhoulb.github.io/shelving/util/template/matchPathTemplates
+ */
 export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString, target: AbsolutePath): TemplateMatches | undefined {
 	for (const template of templates) {
 		const values = matchPathTemplate(template, target);
@@ -192,9 +231,11 @@ export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString
  *
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @param values An object containing values, e.g. `{ name: "Dave", country: "UK", city: "Manchester" }` (functions are called, everything else converted to string), or a function or string to use for all placeholders.
- * @return The rendered string, e.g. `Dave-UK/Manchester`
- *
+ * @param caller Function to attribute a thrown error to (defaults to `renderTemplate` itself).
+ * @returns The rendered string, e.g. `Dave-UK/Manchester`
  * @throws {RequiredError} If a placeholder in the template string is not specified in values.
+ * @example renderTemplate(":name-${country}/{city}", { name: "Dave", country: "UK", city: "Manchester" }) // "Dave-UK/Manchester"
+ * @see https://dhoulb.github.io/shelving/util/template/renderTemplate
  */
 export function renderTemplate(template: string, values: TemplateValues, caller: AnyCaller = renderTemplate): string {
 	const chunks = _splitTemplateCached(template, caller);
@@ -225,6 +266,14 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 
 /**
  * Render a path-shaped template. Behaviourally identical to `renderTemplate` — substitution doesn't need separator awareness — but provided as a sibling to `matchPathTemplate` so callers can pair them.
+ *
+ * @param template The path-shaped template including placeholders, e.g. `/users/{name}`.
+ * @param values An object containing values (functions are called, everything else converted to string), or a function or string to use for all placeholders.
+ * @param caller Function to attribute a thrown error to (defaults to `renderPathTemplate` itself).
+ * @returns The rendered path, e.g. `/users/Dave`.
+ * @throws {RequiredError} If a placeholder in the template string is not specified in values.
+ * @example renderPathTemplate("/users/{name}", { name: "Dave" }) // "/users/Dave"
+ * @see https://dhoulb.github.io/shelving/util/template/renderPathTemplate
  */
 export function renderPathTemplate(template: AbsolutePath, values: TemplateValues, caller: AnyCaller = renderPathTemplate): AbsolutePath {
 	return renderTemplate(template, values, caller) as AbsolutePath;

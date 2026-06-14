@@ -2,8 +2,21 @@ import type { ReactElement } from "react";
 import "./VerticalTransition.css";
 import { Transition, type TransitionProps } from "./Transition.js";
 
+/**
+ * Props for the `VerticalTransition` component — the shared transition variant props.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/transition/VerticalTransition/VerticalTransitionProps
+ */
 export interface VerticalTransitionProps extends TransitionProps {}
 
+/**
+ * Transition that slides its children vertically — down when moving forward, up when moving back.
+ *
+ * @param props Shared transition variant props plus `children`.
+ * @returns A `<Transition>` element configured with the vertical slide classes.
+ * @example <VerticalTransition>{currentStep}</VerticalTransition>
+ * @see https://dhoulb.github.io/shelving/ui/transition/VerticalTransition/VerticalTransition
+ */
 export function VerticalTransition(props: VerticalTransitionProps): ReactElement {
 	return <Transition default="slideDown" forward="slideDown" back="slideUp" {...props} />;
 }

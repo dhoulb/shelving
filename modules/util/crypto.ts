@@ -14,7 +14,14 @@ function _getKey(password: string): Promise<CryptoKey> {
 	return crypto.subtle.importKey("raw", requireBytes(password), ALGORITHM, false, ["deriveBits"]);
 }
 
-/** Get random bytes from the crypto API. */
+/**
+ * Get cryptographically-random bytes from the platform crypto API.
+ *
+ * @param length The number of random bytes to generate.
+ * @returns A `Bytes` (`Uint8Array`) of the requested length filled with random values.
+ * @example getRandomBytes(16) // Uint8Array(16) [ ... ]
+ * @see https://dhoulb.github.io/shelving/util/crypto/getRandomBytes
+ */
 export function getRandomBytes(length: number): Bytes {
 	const bytes: Bytes = new Uint8Array(length);
 	crypto.getRandomValues(bytes);
@@ -29,6 +36,11 @@ export function getRandomBytes(length: number): Bytes {
  *
  * @returns Hash in the format `salt$iterations$hash`, where `salt` and `hash` are base64-encoded.
  * - Returned hash tring will be about 128 characters long (16 byte salt + iteration count + 64 byte hash + 2 separators = 116 characters once base64 encoded).
+ *
+ * @throws {ValueError} If the password is shorter than the minimum length, or `iterations` is less than 1.
+ *
+ * @example const hash = await hashPassword("correct-horse"); // "abc…$500000$def…"
+ * @see https://dhoulb.github.io/shelving/util/crypto/hashPassword
  */
 export async function hashPassword(password: string, iterations = ITERATIONS): Promise<string> {
 	// Checks.
@@ -56,6 +68,10 @@ export async function hashPassword(password: string, iterations = ITERATIONS): P
  * @param hash String in the format `salt$iterations$hash`, where `salt` and `hash` are base64-encoded.
  *
  * @returns True if the password matches the hash, false otherwise.
+ * - Returns `false` (never throws) for malformed hash strings or invalid iteration counts.
+ *
+ * @example await verifyPassword("correct-horse", storedHash) // true
+ * @see https://dhoulb.github.io/shelving/util/crypto/verifyPassword
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
 	// Check salthash.

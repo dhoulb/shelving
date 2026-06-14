@@ -20,7 +20,11 @@ import { type PossibleURL, requireBaseURL, requireURL } from "../../util/url.js"
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import { APIProvider } from "./APIProvider.js";
 
-/** Options for a `ClientAPIProvider`. */
+/**
+ * Options for constructing a `ClientAPIProvider`.
+ *
+ * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProviderOptions
+ */
 export interface ClientAPIProviderOptions {
 	/**
 	 * The common base URL for all rendered endpoint requests.
@@ -53,17 +57,43 @@ export interface ClientAPIProviderOptions {
  * - Parses JSON responses and throws `ResponseError` for non-2xx responses.
  * - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
  * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
+ *
+ * @example
+ * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
+ * const user = await provider.call(getUser, { id: "abc" });
+ *
+ * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
-	/** The common base URL for all rendered endpoint requests. */
+	/**
+	 * The common base URL for all rendered endpoint requests.
+	 *
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/url
+	 */
 	override readonly url: URL;
 
-	/** Default options used for HTTP requests created with `this.createRequest()` and `this.fetch()` */
+	/**
+	 * Default options used for HTTP requests created with `this.createRequest()` and `this.fetch()`
+	 *
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/options
+	 */
 	readonly options: RequestOptions;
 
-	/** Timeout in milliseconds before the request is aborted, or `0` for no timeout. */
+	/**
+	 * Timeout in milliseconds before the request is aborted, or `0` for no timeout.
+	 *
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/timeout
+	 */
 	readonly timeout: number;
 
+	/**
+	 * Create a `ClientAPIProvider` from a base URL and request options.
+	 *
+	 * @param options The `ClientAPIProviderOptions` configuring the base `url`, default request `options`, and `timeout`.
+	 * @throws {RequiredError} if `url` cannot be resolved to a valid base URL.
+	 * @example new ClientAPIProvider({ url: "https://api.example.com" })
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider
+	 */
 	constructor({ url, options = {}, timeout = 20_000 }: ClientAPIProviderOptions) {
 		super();
 		this.url = requireBaseURL(url, ClientAPIProvider);
@@ -71,6 +101,18 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		this.timeout = timeout;
 	}
 
+	/**
+	 * Render the full request URL, appending `?query` params for `HEAD` and `GET` requests.
+	 *
+	 * @param endpoint The endpoint whose path is rendered into the base URL.
+	 * @param payload The payload supplying `{placeholder}` and query-param values.
+	 * @param caller The function to attribute thrown errors to (defaults to this method).
+	 * @returns The fully resolved request `URL`.
+	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
+	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
+	 * @example provider.renderURL(getUser, { id: "abc" })
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/renderURL
+	 */
 	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		// Construct the full URL from `this.url` and the rendered path.
 		// Adding the `.` turns the absolute path from `renderPath()` into a relative URL.
@@ -90,6 +132,21 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return url;
 	}
 
+	/**
+	 * Create a `Request` for an endpoint, rendering payload into the URL or body depending on the method.
+	 * - `HEAD` and `GET` requests carry their payload as `?query` params; other methods carry it as the body.
+	 * - Merges `options` over the provider's default options and attaches a timeout `AbortSignal` when `timeout` is set.
+	 *
+	 * @param endpoint The endpoint the request targets.
+	 * @param payload The payload to embed into the `Request`.
+	 * @param options Per-call `RequestOptions` merged over the provider's defaults.
+	 * @param caller The function to attribute thrown errors to (defaults to this method).
+	 * @returns The created `Request`.
+	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
+	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
+	 * @example provider.createRequest(getUser, { id: "abc" })
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/createRequest
+	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
@@ -134,11 +191,29 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return createRequest(method, url, payload, options, caller);
 	}
 
-	// Override to set default functionality of a client provider to send requests over the network with `fetch()` and parse responses with `parseResponse()`.
+	/**
+	 * Send the request over the network using the global `fetch()` API.
+	 *
+	 * @param request The `Request` to send.
+	 * @returns A promise resolving to the `Response`.
+	 * @example await provider.fetch(request)
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/fetch
+	 */
 	override async fetch(request: Request): Promise<Response> {
 		return fetch(request);
 	}
 
+	/**
+	 * Parse a response body into a result, throwing `ResponseError` for non-2xx responses.
+	 *
+	 * @param _endpoint The endpoint the response was produced for.
+	 * @param response The `Response` to parse.
+	 * @param caller The function to attribute thrown errors to (defaults to this method).
+	 * @returns A promise resolving to the parsed result.
+	 * @throws {ResponseError} if the response status is non-2xx.
+	 * @example await provider.parseResponse(getUser, response)
+	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/parseResponse
+	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,
 		response: Response,

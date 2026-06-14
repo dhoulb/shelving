@@ -3,19 +3,22 @@ import { isFunction } from "./function.js";
 
 /**
  * Lazy value: a plain value, or an initialiser function that returns that value.
- * @param ...args Any arguments the lazy value needs if it's a function.
+ *
+ * @see https://dhoulb.github.io/shelving/util/lazy/Lazy
  */
 export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | T;
 
 /**
  * Initialise a lazy value.
+ * - If `value` is a plain value, that value is returned.
+ * - If `value` is a function, it is called with `args` and its returned value is returned.
  *
  * @param value The lazy value to resolve.
- * - If this is a plain value, that value is returned.
- * - If this is a function, it is called and its returned value is returned.
- *
- * @param ...args Any additional arguments the initialiser needs.
- * - This array of values is passed into the function or class constructor as its parameters.
+ * @param args Any additional arguments passed into the initialiser function as its parameters.
+ * @returns The resolved value.
+ * @example getLazy(() => 123) // 123
+ * @example getLazy(123) // 123
+ * @see https://dhoulb.github.io/shelving/util/lazy/getLazy
  */
 export function getLazy<T, A extends Arguments>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function getLazy<T, A extends Arguments>(value: Lazy<T, A>, ...args: A): T;

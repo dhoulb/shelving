@@ -1,14 +1,23 @@
 import { getModuleClass } from "../util/css.js";
 import styles from "./Layout.module.css";
 
-/** Resolved `.layout` class — for components that want to compose the layout's padding/scroll/safe-area behaviour onto their own element (e.g. `CenteredLayout`). */
+/**
+ * Resolved `.layout` class for composing the layout's padding/scroll/safe-area behaviour onto a custom element.
+ *
+ * @example <main className={LAYOUT_CLASS}>…</main>
+ * @see https://dhoulb.github.io/shelving/ui/layout/Layout/LAYOUT_CLASS
+ */
 export const LAYOUT_CLASS = getModuleClass(styles, "layout");
 
 /**
- * Adapt the property to the dynamic height of the view port when the keyboard pops up.
- * - This dynamically updates the value we use as the "safe area"
+ * Track the dynamic viewport height so layout safe-area insets follow the on-screen keyboard.
  *
+ * - Writes a `--layout-inset-bottom` custom property reflecting the space hidden behind the keyboard.
+ *
+ * @returns A cleanup function that removes the listeners and property, or `undefined` when `visualViewport` is unavailable.
  * @todo This can be removed once Safari iOS supports interactive-widget viewport property. https://caniuse.com/mdn-html_elements_meta_name_viewport_interactive-widget
+ * @example useEffect(useSafeKeyboardArea, []);
+ * @see https://dhoulb.github.io/shelving/ui/layout/Layout/useSafeKeyboardArea
  */
 export function useSafeKeyboardArea() {
 	const vv = window.visualViewport;

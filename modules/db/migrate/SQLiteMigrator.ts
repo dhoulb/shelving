@@ -8,7 +8,14 @@ import type { Collection } from "../collection/Collection.js";
 import type { SQLProvider } from "../provider/SQLProvider.js";
 import { SQLMigrator, type SQLTable, type SQLTableColumn } from "./SQLMigrator.js";
 
-/** SQLite and D1 migrator using sqlite_master as the schema source of truth. */
+/**
+ * SQLite (and Cloudflare D1) migrator that uses `sqlite_master` as the schema source of truth.
+ *
+ * @example
+ *  const migrator = new SQLiteMigrator(provider);
+ *  await migrator.migrate(users, posts);
+ * @see https://dhoulb.github.io/shelving/db/migrate/SQLiteMigrator/SQLiteMigrator
+ */
 export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {
 		const rows = await this.provider.exec<{ name: string }>`

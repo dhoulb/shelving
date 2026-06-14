@@ -16,13 +16,33 @@ import { CollectionCache } from "./CollectionCache.js";
  * Cache of `CollectionCache` objects for multiple collections.
  * - Use `get(collection)` to retrieve or create the `CollectionCache` for a given collection,
  *   then `getItem(id)` / `getQuery(query)` on that to get a specific store.
+ * - If the provider chain contains a `CacheDBProvider`, its memory is reused so stores can seed synchronously.
+ *
+ * @example
+ *  const cache = new DBCache(provider);
+ *  const store = cache.getItem(collection, "abc");
+ * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache
  */
 export class DBCache<I extends Identifier = Identifier, T extends Data = Data> implements AsyncDisposable {
 	private readonly _collections = new Map<Collection<string, I, T>, CollectionCache<I, T>>();
 
+	/**
+	 * The database provider the cached stores fetch from.
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/provider
+	 */
 	readonly provider: DBProvider<I, T>;
+	/**
+	 * Memory provider reused from the provider chain to seed stores synchronously, if available.
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/memory
+	 */
 	readonly memory: MemoryDBProvider<I, T> | undefined;
 
+	/**
+	 * Create a cache of collection caches for a database provider.
+	 *
+	 * @param provider The database provider the cached stores fetch from.
+	 * @example new DBCache(provider)
+	 */
 	constructor(provider: DBProvider<I, T>) {
 		this.provider = provider;
 		// If the provider chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
@@ -34,33 +54,82 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 		return this._collections.get(collection);
 	}
 
-	/** Get (or create) the `CollectionCache` for the given collection. */
+	/**
+	 * Get (or create) the `CollectionCache` for the given collection.
+	 *
+	 * @param collection The collection to get a cache for.
+	 * @returns The cached (or newly created) `CollectionCache` for the collection.
+	 * @example cache.get(collection)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/get
+	 */
 	get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT>;
 	get(collection: Collection<string, I, T>): CollectionCache<I, T> {
 		return this._get(collection) || setMapItem(this._collections, collection, new CollectionCache(collection, this.provider, this.memory));
 	}
 
-	/** Get (or create) an `ItemStore` for a collection/id in one hop. */
+	/**
+	 * Get (or create) an `ItemStore` for a collection/id in one hop.
+	 *
+	 * @param collection The collection the item lives in.
+	 * @param id The ID of the item to get a store for.
+	 * @returns The cached (or newly created) `ItemStore`.
+	 * @example cache.getItem(collection, "abc")
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/getItem
+	 */
 	getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): ItemStore<II, TT> {
 		return this.get(collection).getItem(id);
 	}
 
-	/** Get (or create) a `QueryStore` for a collection/query in one hop. */
+	/**
+	 * Get (or create) a `QueryStore` for a collection/query in one hop.
+	 *
+	 * @param collection The collection the query runs against.
+	 * @param query The query to get a store for.
+	 * @returns The cached (or newly created) `QueryStore`.
+	 * @example cache.getQuery(collection, query)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/getQuery
+	 */
 	getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): QueryStore<II, TT> {
 		return this.get(collection).getQuery(query);
 	}
 
-	/** Refresh a specific item store for a collection. */
+	/**
+	 * Refresh a specific item store for a collection.
+	 *
+	 * @param collection The collection the item lives in.
+	 * @param id The ID of the item store to refresh.
+	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
+	 * @returns Promise that resolves once the refresh has completed.
+	 * @example await cache.refreshItem(collection, "abc")
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshItem
+	 */
 	async refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshItem(id, maxAge);
 	}
 
-	/** Refresh every cached item store for a collection. */
+	/**
+	 * Refresh every cached item store for a collection.
+	 *
+	 * @param collection The collection whose item stores should be refreshed.
+	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
+	 * @returns Promise that resolves once every item store has refreshed.
+	 * @example await cache.refreshItems(collection)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshItems
+	 */
 	async refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshItems(maxAge);
 	}
 
-	/** Refresh a specific query store for a collection. */
+	/**
+	 * Refresh a specific query store for a collection.
+	 *
+	 * @param collection The collection the query runs against.
+	 * @param query The query whose store should be refreshed.
+	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
+	 * @returns Promise that resolves once the refresh has completed.
+	 * @example await cache.refreshQuery(collection, query)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshQuery
+	 */
 	async refreshQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -69,12 +138,28 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 		await this._get(collection)?.refreshQuery(query, maxAge);
 	}
 
-	/** Refresh every cached query store for a collection. */
+	/**
+	 * Refresh every cached query store for a collection.
+	 *
+	 * @param collection The collection whose query stores should be refreshed.
+	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
+	 * @returns Promise that resolves once every query store has refreshed.
+	 * @example await cache.refreshQueries(collection)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshQueries
+	 */
 	async refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshQueries(maxAge);
 	}
 
-	/** Refresh every cached store (items and queries) for a collection. */
+	/**
+	 * Refresh every cached store (items and queries) for a collection.
+	 *
+	 * @param collection The collection whose stores should be refreshed.
+	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
+	 * @returns Promise that resolves once every store has refreshed.
+	 * @example await cache.refreshAll(collection)
+	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshAll
+	 */
 	async refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshAll(maxAge);
 	}

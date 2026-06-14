@@ -25,8 +25,29 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
+ *
+ * @example
+ * ```ts
+ * const element = new TypescriptExtractor().extractProps("string.ts", sourceText);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor
  */
 export class TypescriptExtractor extends FileExtractor {
+	/**
+	 * Parse a TypeScript source file into the props of a `tree-element`.
+	 *
+	 * @param name Filename of the source (used as the source file name and the element `name`).
+	 * @param text Full TypeScript source text to parse.
+	 * @returns Partial `tree-element` props with `name`, `description`, `content`, and `children`.
+	 *
+	 * @example
+	 * ```ts
+	 * const props = new TypescriptExtractor().extractProps("string.ts", sourceText);
+	 * ```
+	 *
+	 * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor/extractProps
+	 */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 		const content = _getFileDocComment(source);

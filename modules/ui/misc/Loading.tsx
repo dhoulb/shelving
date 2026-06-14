@@ -3,10 +3,24 @@ import styles from "./Loading.module.css";
 
 declare const _componentProps: unique symbol;
 
+/**
+ * Props for `<Loading>` — takes no props (branded empty interface).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/misc/Loading/LoadingProps
+ */
 export interface LoadingProps {
 	readonly [_componentProps]?: never;
 }
 
+/**
+ * Animated spinner SVG used as a loading indicator.
+ *
+ * - Self-contained inline SVG with a rotating indicator arc; inherits its colour and size from the surrounding text.
+ *
+ * @returns The spinner element.
+ * @example <Loading />
+ * @see https://dhoulb.github.io/shelving/ui/misc/Loading/Loading
+ */
 export function Loading(): ReactElement {
 	return (
 		<svg aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={styles.spinner} data-slot="icon">
@@ -28,4 +42,10 @@ export function Loading(): ReactElement {
 	);
 }
 
+/**
+ * Shared `<Loading>` element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
+ *
+ * @example <Suspense fallback={LOADING}>…</Suspense>
+ * @see https://dhoulb.github.io/shelving/ui/misc/Loading/LOADING
+ */
 export const LOADING = <Loading key="loading" />;

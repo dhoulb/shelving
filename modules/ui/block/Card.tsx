@@ -9,6 +9,11 @@ import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import CARD_CSS from "./Card.module.css";
 
+/**
+ * Props for `Card` — combines `ClickableProps` (for navigable cards) with colour, status, padding, space, typography, and width variants.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Card/CardProps
+ */
 export interface CardProps
 	extends ClickableProps,
 		ColorVariants,
@@ -27,6 +32,7 @@ export interface CardProps
  * @example <Card><Subheading>Static</Subheading></Card>
  * @example <Card href="/foo" title="Open foo"><Subheading>Clickable</Subheading></Card>
  * @example <Card status="error"><Subheading>Not found</Subheading></Card>
+ * @see https://dhoulb.github.io/shelving/ui/block/Card/Card
  */
 export function Card({ children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {
 	const overlay = (href || onClick) && <Clickable title={title} href={href} onClick={onClick} {...props} className={CARD_CSS.overlay} />;

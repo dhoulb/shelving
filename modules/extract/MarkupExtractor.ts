@@ -11,8 +11,21 @@ import { FileExtractor } from "./FileExtractor.js";
  * - When a `title` is found, strips the leading `# h1` from `content` so renderers (which show
  *   `title` separately) don't display the heading twice.
  * - Sets `description` to the first prose paragraph as a plain-text summary (used for card listings and `<meta>`).
+ *
+ * @example new MarkupExtractor().extract(Bun.file("/abs/path/README.md"))
+ * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/MarkupExtractor
  */
 export class MarkupExtractor extends FileExtractor {
+	/**
+	 * Build the file element props for a Markdown file — storing the text as `content` and deriving `title` and `description`.
+	 * - When a `# h1` title is found it is stripped from `content` so it isn't rendered twice.
+	 *
+	 * @param name The basename of the file without extension.
+	 * @param text The raw Markdown source.
+	 * @returns The element props with `name`, `content`, and (when present) `title` and `description`.
+	 * @example new MarkupExtractor().extractProps("guide", "# Guide\n\nIntro text.")
+	 * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/MarkupExtractor/extractProps
+	 */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
 		// The title `# h1` is surfaced separately as `title`, so strip it from the body to avoid rendering it twice.
@@ -28,6 +41,8 @@ export class MarkupExtractor extends FileExtractor {
  *
  * @param text The markdown source string (a markdown file's text, or a JSDoc description).
  * @returns An object whose `title` and `description` are each a plain string, or `undefined` when absent.
+ * @example extractMarkdownProps("# Title\n\nSome intro.") // { title: "Title", description: "Some intro." }
+ * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/extractMarkdownProps
  */
 export function extractMarkdownProps(text: string): { title: string | undefined; description: string | undefined } {
 	let title: string | undefined;

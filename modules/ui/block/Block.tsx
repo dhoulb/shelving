@@ -8,15 +8,37 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import BLOCK_CSS from "./Block.module.css";
 
+/**
+ * CSS class applied to the root element of every `Block`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Block/BLOCK_CLASS
+ */
 export const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
 
+/**
+ * Semantic element names a `Block` may render as via its `as` prop.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Block/BlockElement
+ */
 export type BlockElement = "div" | "section" | "header" | "footer" | "nav" | "aside" | "figure";
 
+/**
+ * Props for `Block` — colour, space, typography, and width variants plus an optional `as` element override.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/block/Block/BlockProps
+ */
 export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	as?: BlockElement | undefined;
 }
 
-/** Plain `<div>` block with block-level spacing. */
+/**
+ * Plain `<div>` block with block-level spacing.
+ * - Pass `as` to render a different semantic element (`section`, `header`, `footer`, `nav`, `aside`, `figure`).
+ *
+ * @example <Block><Paragraph>Hello</Paragraph></Block>
+ * @example <Block as="aside" narrow><Paragraph>Sidebar</Paragraph></Block>
+ * @see https://dhoulb.github.io/shelving/ui/block/Block/Block
+ */
 export function Block({ as: Component = "div", children, ...props }: BlockProps): ReactElement {
 	return (
 		<Component

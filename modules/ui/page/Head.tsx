@@ -8,10 +8,14 @@ import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../u
 const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 
 /**
- * Per-page meta tags plus history navigation.
+ * Emit the current page's head metadata and sync browser history to its URL.
  * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
  * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
  * - Updates `window.history` to match the page URL.
+ *
+ * @returns The hoistable head elements derived from the current `<Meta>` context.
+ * @example <Page title="Settings"><Head />…</Page>
+ * @see https://dhoulb.github.io/shelving/ui/page/Head/Head
  */
 export function Head(): ReactElement {
 	const meta = requireMeta();

@@ -2,16 +2,36 @@ import { awaitDispose } from "../util/dispose.js";
 import { type StartCallback, Starter } from "../util/start.js";
 import { ThroughSequence } from "./ThroughSequence.js";
 
-/** Sequence of values that calls a `StartCallback` when it has iterators that are iterating, and calls the corresponding `StopCallback` when all iterators have finished. */
+/**
+ * Sequence of values that calls a `StartCallback` when it has iterators that are iterating, and calls the corresponding `StopCallback` when all iterators have finished.
+ * - The `start` callback runs lazily on the first active iterator and the returned stop callback runs when the last iterator finishes.
+ *
+ * @example
+ * 	const seq = new LazySequence(source, () => {
+ * 		const timer = setInterval(tick, 1000);
+ * 		return () => clearInterval(timer); // Stop callback.
+ * 	});
+ * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence
+ */
 export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<T, R, N> implements AsyncDisposable {
 	private _iterators = new Set<LazyIterator<T, R, N>>(); // Keep track of the iterators that are iterating.
 	private _starter: Starter;
 
-	/** Get the number of iterators currently registered. */
+	/**
+	 * Number of iterators currently registered as iterating.
+	 *
+	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/iterators
+	 */
 	get iterators(): number {
 		return this._iterators.size;
 	}
 
+	/**
+	 * Create a new `LazySequence`.
+	 *
+	 * @param source Async iterator to pull values from.
+	 * @param start Callback run when the first iterator starts; its returned stop callback runs when the last iterator finishes.
+	 */
 	constructor(source: AsyncIterator<T, R, N>, start: StartCallback) {
 		super(source);
 		this._starter = new Starter(start);
@@ -35,6 +55,10 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 	 * An iterator started iterating.
 	 * - Add this iterator to the register.
 	 * - Start the starter if this is the first iterator.
+	 *
+	 * @param iterator The iterator that has started iterating.
+	 * @example sequence.start(iterator);
+	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/start
 	 */
 	start(iterator: LazyIterator<T, R, N>) {
 		const before = this._iterators.size;
@@ -46,6 +70,10 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 	 * An iterator stopped iterating.
 	 * - Add this iterator to the register
 	 * - Stop the starter if this is the last iterator.
+	 *
+	 * @param iterator The iterator that has stopped iterating.
+	 * @example sequence.stop(iterator);
+	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/stop
 	 */
 	stop(iterator: LazyIterator<T, R, N>) {
 		const before = this._iterators.size;

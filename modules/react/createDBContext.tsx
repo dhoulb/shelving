@@ -12,6 +12,11 @@ import type { Query } from "../util/query.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
 
+/**
+ * Bundle of hooks and a provider component returned by `createDBContext()`.
+ *
+ * @see https://dhoulb.github.io/shelving/react/createDBContext/DBContext
+ */
 export interface DBContext<I extends Identifier, T extends Data> {
 	/** Get an `ItemStore` for the specified collection item in the current `DataProvider` context and subscribe to any changes in it. */
 	useItem<II extends I, TT extends T>(
@@ -41,6 +46,16 @@ export interface DBContext<I extends Identifier, T extends Data> {
  * Create a data context
  * - Allows React elements to call `useItem()` and `useQuery()` to access items/queries in a database provider.
  * - If the database has a `CacheDBProvider` in its chain then in-memory data will be used in the returned stores.
+ *
+ * @param provider `DBProvider` the created context resolves item and query stores against.
+ * @returns `DBContext` bundle containing the `useItem()` and `useQuery()` hooks and the `<DBContext>` wrapper component.
+ *
+ * @example
+ * ```tsx
+ * const { useItem, useQuery, DBContext } = createDBContext(provider);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/createDBContext
  */
 export function createDBContext<I extends Identifier, T extends Data>(provider: DBProvider<I, T>): DBContext<I, T> {
 	const CacheContext = createContext<DBCache<I, T> | undefined>(undefined);

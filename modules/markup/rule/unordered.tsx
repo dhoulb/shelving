@@ -32,6 +32,9 @@ const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n`);
  * - A list with blank lines between its items (or before a continuation paragraph) is "loose": its items are wrapped in `<p>` tags.
  * - An item starting with `[ ]` or `[x]` (case-insensitive) is a todo item: a checkbox `<input>` plus the content wrapped in a `<label>` so clicking it toggles the checkbox.
  * - Sparse lists are not supported.
+ *
+ * @example new MarkupParser({ rules: [UNORDERED_RULE] }).parse("- First\n- Second")
+ * @see https://dhoulb.github.io/shelving/markup/rule/unordered/UNORDERED_RULE
  */
 export const UNORDERED_RULE = createMarkupRule<{
 	list: string;

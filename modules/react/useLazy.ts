@@ -7,6 +7,17 @@ import { getLazy, type Lazy } from "../util/lazy.js";
  * Use a memoised value with lazy initialisation.
  * - Returns `value` (if not a function) or the result of calling `value(...args)` (if a function).
  * - Returns same `value` for as long as `args` is equal to previous `args`.
+ *
+ * @param value Value to return, or a function called with `args` to lazily produce it.
+ * @param args Arguments passed to `value()` when it is a function — a change in `args` recomputes the value.
+ * @returns The memoised value, recomputed only when `args` changes.
+ *
+ * @example
+ * ```tsx
+ * const config = useLazy(() => expensiveConfig(id), id);
+ * ```
+ *
+ * @see https://dhoulb.github.io/shelving/react/useLazy
  */
 export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function useLazy<T>(value: T, ...args: Arguments): T;

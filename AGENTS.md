@@ -373,3 +373,31 @@ A **factory** is a function (or constant) whose purpose is to call `new SomeClas
   ```
 
 - The canonical wording is exactly `*Factory for \`ClassName\`.*` (italicised, backtick-quoted class name). When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+
+### Docblock standards
+
+Every public token now ships as a page on the docs site, so docblock quality directly determines docs quality. Hold every class, function, method, interface, type, and constant to this standard, and match the voice and rigour of the existing well-written docblocks (terse, declarative, backtick-quoted type names, bullet caveats) rather than inventing a new style.
+
+- **Strong first line (becomes the `description`).** Open with one short, clear line stating the token's purpose — what it's for and how it relates to the rest of the module. The extractor lifts this first paragraph as the `description` shown on cards and `<meta>` tags, so it must stand alone. Imperative or declarative voice, no hedging. Put further detail — behaviour, caveats, gotchas — on later lines or bullets.
+- **`@example`.** Every **class**, **function**, and **method** gets at least one `@example` unless it's genuinely micro / self-evident (e.g. a one-line type guard). Show the shortest call site that conveys real usage. **Properties** don't need examples.
+- **`@param` / `@returns` / `@throws`.** Document parameters, return value, and thrown errors on every class constructor, method, and standalone function. These feed the docs site's Parameters / Returns / Throws sections. (Schema validation throws a `string` message — document those with `@throws` too.)
+- **`@see` docs-site link.** Every token published on the docs site gets a `@see` block tag pointing at its page, so VS Code hover reveals a clickable link. Prefer the `@see` block tag over inline `{@link}` — it renders better in the hover popup. The URL pattern mirrors the docs-site routing:
+
+  ```
+  @see https://dhoulb.github.io/shelving/<path>/<name>
+  ```
+
+  where `<path>` is the source file's path relative to `modules/` with the extension dropped, and `<name>` is the exported symbol. So `modules/schema/BooleanSchema.ts`'s `BooleanSchema` class → `https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchema`; `modules/util/array.ts`'s `getArray` → `https://dhoulb.github.io/shelving/util/array/getArray`; a class member appends its own name → `.../schema/BooleanSchema/BooleanSchema/validate`.
+
+Example shape:
+
+```ts
+/**
+ * Get the first item of an array, or `undefined` if it's empty.
+ *
+ * @param arr The array to read from.
+ * @returns The first item, or `undefined` when the array is empty.
+ * @example getArray(["a", "b"]) // "a"
+ * @see https://dhoulb.github.io/shelving/util/array/getArray
+ */
+```

@@ -3,6 +3,11 @@ import type { AnyCaller } from "./function.js";
 
 /**
  * Get a `process.env` variable safely in all environments, or `undefined` if it doesn't exist or this environment does not support `process.env` (i.e. web environments).
+ *
+ * @param name Name of the environment variable to read.
+ * @returns The variable's string value, or `undefined` if missing or unsupported.
+ * @example getEnv("NODE_ENV") // "production"
+ * @see https://dhoulb.github.io/shelving/util/env/getEnv
  */
 export function getEnv(name: string): string | undefined {
 	if (typeof process === "object" && typeof process.env === "object") return process.env[name];
@@ -10,6 +15,13 @@ export function getEnv(name: string): string | undefined {
 
 /**
  * Get a `process.env` variable safely in all environments, or throw `RequiredError` if it doesn't exist or this environment does not support `process.env` (i.e. web environments).
+ *
+ * @param name Name of the environment variable to read.
+ * @param caller Function to attribute a thrown error to (defaults to `requireEnv`).
+ * @returns The variable's string value.
+ * @throws `RequiredError` if the variable is missing or `process.env` is unsupported.
+ * @example requireEnv("DATABASE_URL") // "postgres://..."
+ * @see https://dhoulb.github.io/shelving/util/env/requireEnv
  */
 export function requireEnv(name: string, caller: AnyCaller = requireEnv): string {
 	const env = getEnv(name);
@@ -18,7 +30,14 @@ export function requireEnv(name: string, caller: AnyCaller = requireEnv): string
 }
 
 /**
- * Get a `process.env` variable and resolve it to to `true` or `false`, or `undefined` if it isn't a true/false value.
+ * Get a `process.env` variable and resolve it to `true` or `false`, or `undefined` if it isn't a true/false value.
+ * - Truthy values: `1`, `on`, `yes`, `true` (case-insensitive).
+ * - Falsy values: `0`, `off`, `no`, `false` (case-insensitive).
+ *
+ * @param name Name of the environment variable to read.
+ * @returns `true` or `false` if the value is recognised, otherwise `undefined`.
+ * @example getEnvBoolean("FEATURE_FLAG") // true
+ * @see https://dhoulb.github.io/shelving/util/env/getEnvBoolean
  */
 export function getEnvBoolean(name: string): boolean | undefined {
 	const env = getEnv(name)?.toLowerCase();
@@ -29,11 +48,14 @@ const _TRUES = [`1`, `on`, `yes`, `true`];
 const _FALSES = [`0`, `off`, `no`, `false`];
 
 /**
- * Get a `process.env` variable and resolve it to to `true` or `false`
+ * Get a `process.env` variable and resolve it to `true` or `false`, or throw `RequiredError` if it isn't a true/false value.
  *
- * @returns `false` if the environment variable is `0`, `off`, `no`, `false`
- * @returns `true` if the environment variable is `1`, `on`, `yes`, `true`
+ * @param name Name of the environment variable to read.
+ * @param caller Function to attribute a thrown error to (defaults to `requireEnvBoolean`).
+ * @returns `false` if the environment variable is `0`, `off`, `no`, `false`; `true` if it is `1`, `on`, `yes`, `true`.
  * @throws `RequiredError` if the env variable is any other value.
+ * @example requireEnvBoolean("FEATURE_FLAG") // true
+ * @see https://dhoulb.github.io/shelving/util/env/requireEnvBoolean
  */
 export function requireEnvBoolean(name: string, caller: AnyCaller = requireEnvBoolean): boolean {
 	const env = getEnv(name);

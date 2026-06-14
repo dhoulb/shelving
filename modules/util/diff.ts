@@ -4,7 +4,12 @@ import { isArrayEqual, isDeepEqual } from "./equal.js";
 import type { DeepPartial, ImmutableObject, MutableObject } from "./object.js";
 import { isObject } from "./object.js";
 
-/** The `SAME` symbol indicates sameness. */
+/**
+ * The `SAME` symbol indicates sameness.
+ * - Returned by the diff functions when two values are deeply equal and no transformation is needed.
+ *
+ * @see https://dhoulb.github.io/shelving/util/diff/SAME
+ */
 export const SAME: unique symbol = Symbol("shelving/SAME");
 
 /**
@@ -13,11 +18,15 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  * @param left The old value.
  * @param right The new/target value.
  *
- * @return The transformation needed to transform `left` into `right`
+ * @returns The transformation needed to transform `left` into `right`
  * - If the two values are deeply equal the `SAME` constant is returned.
  * - Unequal scalar values can't be diffed, so `right` is always returned.
  * - If `right` is an array, returns whatever `deepDiffArray()` returns.
  * - If `right` is an object, returns whatever `deepDiffObject()` returns.
+ *
+ * @example deepDiff({ a: 1 }, { a: 1 }) // SAME
+ * @example deepDiff({ a: 1 }, { a: 2 }) // { a: 2 }
+ * @see https://dhoulb.github.io/shelving/util/diff/deepDiff
  */
 export function deepDiff<R extends ImmutableObject>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiff<R>(left: unknown, right: R): R | typeof SAME;
@@ -32,8 +41,13 @@ export function deepDiff(left: unknown, right: unknown): unknown {
  * Diff two arrays to produce the transformation needed to transform `left` into `right`
  * DH: Currently arrays don't diff at an item level, they return the entire new array if not deeply equal.
  *
+ * @param left The old array.
+ * @param right The new/target array.
  * @returns The `right` array if it is different to `left`, or the exact `SAME` constant otherwise.
  * - If the two values are deeply equal the `SAME` constant is returned.
+ * @example deepDiffArray([1, 2], [1, 2]) // SAME
+ * @example deepDiffArray([1, 2], [1, 3]) // [1, 3]
+ * @see https://dhoulb.github.io/shelving/util/diff/deepDiffArray
  */
 export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, right: R): R | typeof SAME {
 	if (left === right) return SAME;
@@ -47,9 +61,14 @@ export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, ri
  * - Includes a constructor check — if `left` and `right` have different constructors they will not be merged and `right` will be returned (ensures arrays aren't compared with objects).
  * - Properties that exist in `left` but not `right` (i.e. have been deleted) are represented with `undefined`
  *
- * @return Object containing the missing/updated properties that `left` needs to become `right`.
+ * @param left The old object.
+ * @param right The new/target object.
+ * @returns Object containing the missing/updated properties that `left` needs to become `right`.
  * - If the two values are deeply equal the `SAME` constant is returned.
  * - If `left` isn't an object then the result can't be diffed so entire `right` is returned.
+ * @example deepDiffObject({ a: 1 }, { a: 1 }) // SAME
+ * @example deepDiffObject({ a: 1, b: 2 }, { a: 1 }) // { b: undefined }
+ * @see https://dhoulb.github.io/shelving/util/diff/deepDiffObject
  */
 export function deepDiffObject<R extends ImmutableObject>(left: ImmutableObject, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiffObject(left: ImmutableObject, right: ImmutableObject): ImmutableObject | typeof SAME {

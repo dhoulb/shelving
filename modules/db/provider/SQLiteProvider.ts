@@ -13,9 +13,23 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
  * Note the following compatibility caveats:
  * - For `with` and `omit` updates this does not preserve ordering of the original array.
  * - For `with` and `omit` updates this does not guarantee equality for de-duplication when working with nested objects or arrays.
+ *
+ * @example
+ *  class MyProvider extends SQLiteProvider { async exec(strings, ...values) { ... } }
+ *  const item = await new MyProvider().getItem(collection, "abc");
+ * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider
  */
 export abstract class SQLiteProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
-	// Override `addItem` to support string (UUID) IDs in SQLite.
+	/**
+	 * Insert a new item and return its ID, generating a UUID client-side for string-keyed collections.
+	 * - SQLite has no native UUID generation, so for `StringSchema` IDs the UUID is generated here and delegated to `setItem`.
+	 *
+	 * @param collection The collection to insert into.
+	 * @param data The data of the item to insert.
+	 * @returns Promise resolving to the ID of the inserted item.
+	 * @example await provider.addItem(collection, { name: "Dave" })
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/addItem
+	 */
 	// SQLite has no native UUID generation, so when the collection uses a `StringSchema` ID
 	// we generate the UUID client-side and delegate to `setItem`.
 	// Note: `as II` is required here because TypeScript cannot narrow the generic `II` from `instanceof StringSchema`.
@@ -37,7 +51,14 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 		);
 	}
 
-	/** Get the SQLite JSON extract syntax, e.g. `json_extract("a", $.b.c)` */
+	/**
+	 * Get the SQLite JSON extract syntax for a key, e.g. `json_extract("a", $.b.c)`.
+	 *
+	 * @param key The key segments identifying the column and any nested JSON path.
+	 * @returns An `SQLFragment` extracting the value.
+	 * @example this.sqlExtract(["a", "b"]); // json_extract("a", $.b)
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlExtract
+	 */
 	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
 		if (key.length > 1) {
@@ -47,7 +68,15 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 		return column;
 	}
 
-	// Override to implement `with` and `omit` updates and deeply nested JSONB values.
+	/**
+	 * Define an SQL fragment for a single update action, with SQLite JSON1 support for nested keys and `with`/`omit` array mutations.
+	 *
+	 * @param update The update action (`action`, `key`, `value`) to convert.
+	 * @returns The composed `SQLFragment`.
+	 * @throws {UnimplementedError} If the action is unsupported.
+	 * @example this.sqlUpdate({ action: "set", key: ["a", "b"], value: 1 })
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlUpdate
+	 */
 	override sqlUpdate(update: Update): SQLFragment {
 		const { action, key, value } = update;
 		const column = this.sqlIdentifier(key[0]);
@@ -112,7 +141,15 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 		return super.sqlUpdate(update);
 	}
 
-	// Override to implement `contains` queries and deeply-nested JSONB queries.
+	/**
+	 * Define an SQL fragment for a filter clause, with SQLite JSON1 support for `contains` and deeply-nested JSON queries.
+	 *
+	 * @param filter The filter (`key`, `operator`, `value`) to translate.
+	 * @returns The composed `SQLFragment`.
+	 * @throws {UnimplementedError} If the operator is unsupported.
+	 * @example this.sqlFilter({ key: ["tags"], operator: "contains", value: "x" })
+	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlFilter
+	 */
 	override sqlFilter(filter: QueryFilter): SQLFragment {
 		const { key, operator, value } = filter;
 

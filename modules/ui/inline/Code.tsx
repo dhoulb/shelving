@@ -5,14 +5,45 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
 import CODE_CSS from "./Code.module.css";
 
+/**
+ * CSS class applied to the root element of every `Code`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/Code/CODE_CLASS
+ */
 export const CODE_CLASS = getModuleClass(CODE_CSS, "code");
+
+/**
+ * CSS class that strips the default background and padding when `Code` is rendered `plain`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/Code/CODE_PLAIN_CLASS
+ */
 export const CODE_PLAIN_CLASS = getModuleClass(CODE_CSS, "plain");
+
+/**
+ * CSS class that styles `Code` when it appears inside `Prose` longform content.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/Code/CODE_PROSE_CLASS
+ */
 export const CODE_PROSE_CLASS = getModuleClass(CODE_CSS, "prose");
 
+/**
+ * Props for `Code` — colour and typography variants, optional `children`, plus a `plain` toggle.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/inline/Code/CodeProps
+ */
 export interface CodeProps extends ColorVariants, TypographyVariants, OptionalChildProps {
 	plain?: boolean | undefined;
 }
 
+/**
+ * Inline code span — renders a `<code>` element.
+ * - Pass `plain` to drop the default background and padding.
+ *
+ * @param props Colour and typography variants, `children`, plus an optional `plain` toggle.
+ * @returns Rendered `<code>` element.
+ * @example <Code>npm install</Code>
+ * @see https://dhoulb.github.io/shelving/ui/inline/Code/Code
+ */
 export function Code({ children, plain, ...props }: CodeProps): ReactElement {
 	return (
 		<code
