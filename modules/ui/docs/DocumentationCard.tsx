@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { type AbsolutePath, joinPath } from "../../util/path.js";
 import type { DocumentationElementProps } from "../../util/tree.js";
 import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
@@ -8,10 +7,6 @@ import { Row } from "../style/Flex.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
-
-interface DocumentationCardProps extends DocumentationElementProps {
-	path: AbsolutePath;
-}
 
 /**
  * Card renderer for a `tree-documentation` element — a summary card.
@@ -28,11 +23,11 @@ export function DocumentationCard({
 	// Drop `class` so cards omit the "member of" relation — a member card almost always sits on its own class's page already.
 	class: _memberOf,
 	...props
-}: DocumentationCardProps): ReactNode {
-	const href = joinPath(path, name);
+}: DocumentationElementProps): ReactNode {
+	// `path` is the symbol's own canonical URL, stamped by `flattenTree()` — link straight to it.
 	const color = kind ? getDocumentationKindColor(kind) : undefined;
 	return (
-		<Card href={href} color={color}>
+		<Card href={path} color={color}>
 			<Subheading space="none">
 				<Row left wrap gap="xsmall">
 					{title ?? name}

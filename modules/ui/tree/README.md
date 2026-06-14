@@ -6,13 +6,13 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreeApp>` is the entry point.** It wraps `<App>` with error catching and a sidebar layout, then wires `<Navigation>` and a `<Router>` covering two routes: `/` renders the root via `<TreePage>`, and `/{...path}` passes every deeper URL to `<TreePage>` as well. The sidebar is always a `<TreeSidebar>`.
 
-**`<TreePage>` resolves and dispatches.** It walks the tree by matching each URL path segment to a descendant's `key`, then hands the matched element to the right page renderer via `<TreePageMapper>`. It throws `NotFoundError` if nothing matches.
+**`<TreeRouter>` resolves and dispatches.** It resolves the current URL to an element with a single `map.get(path)` against the flattened tree (provided by `<TreeProvider>`), then hands the matched element to the right page renderer via `<TreeRouterMapper>`. It throws `NotFoundError` if nothing matches and no `fallback` is given.
 
 **`<TreeMenu>` and `<TreeSidebar>` build navigation.** `<TreeSidebar>` renders a single home link for the root, then its children via `<TreeMenuMapper>`. `<TreeMenu>` renders a menu from a tree element's children directly. Only generic `tree-element` nodes appear — code symbols are kept off the navigation.
 
-**`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
+**`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`; each card links straight to its element's stamped `path`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
 
-**`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `flattenTree()`) into a `name`/`path` → element lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<TreeButton>`, breadcrumbs) by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`), then link to the resolved element's `path`. Nested providers merge their maps, so links resolve across a combined set of trees.
+**`<TreeProvider>` flattens the tree — the one transform the UI runs on.** It flattens the tree once (via `flattenTree()`), which stamps a canonical `path` on every element and indexes them into a map keyed by both flat name and canonical path, then shares it on `TreeContext`. Descendants read it with `useTreeMap()`: the router resolves a URL with `map.get(path)`, and cross-references (`<TreeButton>`, breadcrumbs) resolve by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`) and link to the resolved element's `path`. Nested providers merge their maps, so links resolve across a combined set of trees.
 
 **`<TreeBreadcrumbs>` renders an ancestor trail.** Given a page's `path`, it looks each ancestor prefix up in the tree map (so it needs a `<TreeProvider>` above) and renders a `<nav>` of links separated by `›` icons, with section-level block spacing (`BLOCK_CLASS`, overridable via the `space` prop). Works with any tree — the current page is omitted (the page title already names it).
 

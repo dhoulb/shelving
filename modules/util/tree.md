@@ -6,41 +6,30 @@ These types and helpers describe a **tree of elements** — a hierarchical struc
 
 - `TreeElement` requires a non-null `key` (a slug string) and a `type` starting with `"tree-"`. Plain `Element` values can have `key: null`.
 - The JSX intrinsics (`tree-element`, `tree-documentation`) are declared here so TSX files get type-checked props.
-- `resolveTreePath` treats the root element as a container: its own `name` is never matched. A child `name` may contain `/` (e.g. a module `"util/string"`), in which case it spans multiple path segments.
-- `resolveTreePath` / `getTreePaths` work in raw `string[]` segments — join them however the caller needs. For a stamped canonical URL string, read `element.props.path` instead (set by `stampTreePaths`).
-- `stampTreePaths` stamps a canonical site-root-relative `path` (e.g. `"/schema/BooleanSchema"`) onto every element by joining ancestor names — the exact URL it renders at, and the canonical key it's flattened under.
+- `flattenTree` is the one transform from a raw extracted tree to the structure the UI runs on: it stamps a canonical `path` on every element and indexes them into a `Map` keyed by both flat name and canonical path.
+- A child `name` may contain `/` (e.g. a module `"util/string"`), in which case it becomes its own multi-segment chunk of the canonical path.
 
 ## Usage
 
-### Resolving a path inside a tree
+### Flattening a tree for lookup, routing, and rendering
 
 ```ts
-import { resolveTreePath, getTreePaths } from "shelving/util";
+import { flattenTree } from "shelving/util";
 
-// Walk to a specific descendant by name segments.
-const el = resolveTreePath(root, ["util", "array"]);
-// el.props.name === "array", or undefined if the path doesn't exist.
+// One pass: stamps each element's canonical `path` and indexes it under both keys.
+const map = flattenTree(root);
 
-// Enumerate all paths in the tree (up to a given depth).
-for (const path of getTreePaths(root, 2)) {
-  console.log(path); // e.g. [], ["util"], ["util", "array"]
-}
-```
-
-### Flattening a tree for fast lookup
-
-```ts
-import { flattenTree, stampTreePaths } from "shelving/util";
-
-// Stamp canonical `path`s first, then flatten — each element is keyed by both forms.
-const map = flattenTree(stampTreePaths(root));
-map.get("Store");                  // the `Store` element (flat key)
+// Flat keys — what cross-references (`extends` / `overrides`) and README links resolve through.
+map.get("Store");                  // the `Store` element
 map.get("Store.get");              // the `Store.get` member (qualified `Class.member` key)
-map.get("/store/Store");           // the same `Store` element (canonical path key)
-map.get("Store")?.props.path;      // "/store/Store"
+map.get("Store")?.props.path;      // "/store/Store" — its stamped canonical URL
 
-// Merge several trees into one lookup (later writers win on key collisions).
-const merged = flattenTree(stampTreePaths(otherRoot), map);
+// Canonical path keys — what the router resolves a URL to.
+map.get("/store/Store");           // the same `Store` element
+map.get("/store/Store")?.props.children; // …with its (stamped) children, so the map doubles as the tree
+
+// Merge several trees into one lookup (later writers win on the rare key collision).
+const merged = flattenTree(otherRoot, map);
 ```
 
 ### Working with `DocumentationElement` props

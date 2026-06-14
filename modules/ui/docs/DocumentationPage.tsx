@@ -1,6 +1,5 @@
 import { Fragment, type ReactNode } from "react";
 import { type Element, queryElements } from "../../util/element.js";
-import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
@@ -35,11 +34,6 @@ const KIND_SECTIONS = {
 	property: "Properties",
 };
 
-interface DocumentationPageProps extends DocumentationElementProps {
-	/** Site-root-relative path of this page — threaded down so child cards build correct hrefs. */
-	readonly path: AbsolutePath;
-}
-
 /**
  * Page renderer for a `tree-documentation` element.
  * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`, `overrides`), signatures (one per overload), content, parameters, returns, throws, and examples.
@@ -47,7 +41,6 @@ interface DocumentationPageProps extends DocumentationElementProps {
  * - All sections are conditional — only render when they have entries.
  */
 export function DocumentationPage({
-	path,
 	title,
 	name,
 	kind = "unknown",
@@ -60,7 +53,7 @@ export function DocumentationPage({
 	examples,
 	children,
 	...props
-}: DocumentationPageProps): ReactNode {
+}: DocumentationElementProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
@@ -150,7 +143,7 @@ export function DocumentationPage({
 					return group.length ? (
 						<Section wide key={kind}>
 							<Heading>{label}</Heading>
-							<TreeCards path={path}>{group}</TreeCards>
+							<TreeCards>{group}</TreeCards>
 						</Section>
 					) : null;
 				})}

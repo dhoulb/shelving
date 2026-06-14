@@ -37,8 +37,9 @@ export interface TreeElementProps extends ElementProps {
 	 */
 	readonly source?: AbsolutePath | undefined;
 	/**
-	 * Canonical site-root-relative URL path of this element (e.g. `"/schema/BooleanSchema"`), stamped during extraction by `stampTreePaths()`.
+	 * Canonical site-root-relative URL path of this element (e.g. `"/schema/BooleanSchema"`), stamped by `flattenTree()`.
 	 * - This is the exact URL the element renders at, and the canonical key it's registered under in `flattenTree()`.
+	 * - Absent on a freshly-extracted tree — paths are derived from tree structure when the tree is flattened, not at extraction.
 	 */
 	readonly path?: AbsolutePath | undefined;
 	/** Children of a tree element must be other tree elements. */
@@ -135,99 +136,12 @@ declare module "react" {
 }
 
 /**
- * Resolve an element in a tree by walking a sequence of names from `root`.
- * - The `root` element's own name is never matched against path segments — it's the container, not a step in the path.
- * - A child's `name` may contain `/` separators, in which case it matches multiple consecutive path segments
- *   (e.g. a module named `"util/string"` matches the segments `["util", "string"]`).
- * - If `path` is empty, returns `root` itself.
- * - Returns `undefined` if no descendant matches at any level.
- *
- * Splitting the path:
- * - We accept a raw `Segments` array, so callers can join paths later however they wish.
- * - Element paths have no canonical string representation so we use `Segments` instead.
- * - To split the names in `a.b.c` dotted data format use `mapItems(getTreePaths(root), splitDataPath)`
- * - To split the names in `/a/b/c` absolute path format use `mapItems(getTreePaths(root), splitAbsolutePath)`
- *
- * @param root The root element to walk from. Its own `name` is treated as a label, not a path segment.
- * @param path An array of path segments naming descendants of `root`.
- *
- * @example resolveTreePath(root, ["util", "array"]) // Element with name "array" inside child with name "util"
- * @example resolveTreePath(root, ["util", "string"]) // Module child with composite name "util/string"
- * @example resolveTreePath(root, []) // `root` itself
- */
-export function resolveTreePath(root: TreeElement, path: readonly string[]): TreeElement | undefined {
-	if (!path.length) return root;
-	for (const el of walkElements(root.props.children)) {
-		const child = el as TreeElement;
-		const nameSegments = child.props.name.split("/");
-		if (nameSegments.length > path.length) continue;
-		let matches = true;
-		for (let i = 0; i < nameSegments.length; i++) {
-			if (nameSegments[i] !== path[i]) {
-				matches = false;
-				break;
-			}
-		}
-		if (!matches) continue;
-		const result = resolveTreePath(child, path.slice(nameSegments.length));
-		if (result) return result;
-	}
-	return undefined;
-}
-
-/**
- * Deeply iterate a tree from `root` and yield path segments for each reachable element.
- * - Yields `[]` for `root` itself.
- * - Yields `[name]` for each immediate child, `[name, name]` for grandchildren, etc.
- * - The `root` element's own name never appears in any yielded path — it's the container.
- * - Children with no `name` prop are skipped (and their descendants are not yielded).
- *
- * Joining the paths:
- * - We return a `Segments` array for each element, so callers can join paths later however they wish.
- * - Element paths have no canonical string representation so we use `Segments` instead.
- * - To join the names in `a.b.c` dotted data format use `mapItems(getTreePaths(root), joinDataPath)`
- * - To join the names in `/a/b/c` absolute path format use `mapItems(getTreePaths(root), p => joinPath("/", p))`
- *
- * @param root The root element to walk from. Its own `name` is treated as a label, not a path segment.
- * @param depth Controls how many levels of children to recurse into (defaults to infinite depth).
- * - `depth=0` yields only `[]` (the root itself).
- *
- * @returns Iterable set of path segment arrays, each representing one descendant (or the root).
- */
-export function getTreePaths(root: TreeElement, depth = Infinity): Iterable<readonly string[]> {
-	return _walkTreePaths(root, depth, []);
-}
-function* _walkTreePaths(element: TreeElement, depth: number, path: readonly string[]): Iterable<readonly string[]> {
-	yield path;
-	if (depth <= 0) return;
-	for (const child of walkElements(element.props.children)) {
-		// Skip elements with no `name` prop (and their descendants).
-		const name = child.props.name;
-		yield* _walkTreePaths(child, depth - 1, [...path, name]);
-	}
-}
-
-/**
- * Return a copy of `root` with a canonical `path` stamped on every element.
- * - The root is `/`; each descendant is `parentPath + "/" + name`, so a module `schema` → `/schema`, its class `BooleanSchema` → `/schema/BooleanSchema`, its member `validate` → `/schema/BooleanSchema/validate`.
- * - A composite module name (e.g. `"util/string"`) becomes its own multi-segment chunk of the path.
- * - This is the exact URL the element renders at, and the canonical key it's registered under in `flattenTree()`.
- *
- * @param root The root element. Its own `name` is *not* part of the path — the root is `/`.
- */
-export function stampTreePaths(root: TreeElement): TreeElement {
-	return _stampElement(root, "/");
-}
-function _stampElement(element: TreeElement, path: AbsolutePath): TreeElement {
-	const children = Array.from(walkElements(element.props.children), child => _stampElement(child, joinPath(path, child.props.name)));
-	return { ...element, props: { ...element.props, path, children: children.length ? children : undefined } };
-}
-
-/**
- * Flatten a tree into a `Map<key, element>` for O(1) cross-reference lookup, optionally merged onto an existing `base` map.
- * - Every element is registered under two keys, both pointing at the element itself:
+ * Flatten a tree into a `Map` for O(1) lookup, stamping a canonical `path` onto every element as it walks.
+ * - Returns a *copy* of the tree, indexed. Each element is rebuilt with its canonical site-root-relative `path`: the root is `/`, each descendant is `parentPath + "/" + name` — so a module `schema` → `/schema`, its class `BooleanSchema` → `/schema/BooleanSchema`, its member `validate` → `/schema/BooleanSchema/validate`. A composite module name (e.g. `"util/string"`) becomes its own multi-segment chunk.
+ * - Every element is registered under two keys, both pointing at the (stamped) element:
  *   - its **flat key** — bare `name` (e.g. `"BooleanSchema"`), or qualified `"Class.member"` for members (e.g. `"BooleanSchema.validate"`). This is what cross-refs (`extends` / `overrides`) and README links resolve through.
- *   - its **canonical path** (`element.props.path`, e.g. `"/schema/BooleanSchema"`) when stamped — what the router resolves a URL to.
+ *   - its **canonical path** (`element.props.path`, e.g. `"/schema/BooleanSchema"`) — what the router resolves a URL to.
+ * - The map values keep their (stamped) children, so the map doubles as the navigable tree: `map.get("/")` is the stamped root and flattening never throws away the hierarchy. The router resolves a URL with `map.get(path)`; the static builder enumerates pages from the path-shaped keys.
  * - Exported names are unique across the package (barrel re-exports enforce it at compile time), so flat-key collisions are vanishingly rare; on a collision the last writer simply wins.
  * - Missing keys (e.g. builtins like `Serializable`) resolve to `undefined` → callers fall back to plain text.
  *
@@ -236,16 +150,16 @@ function _stampElement(element: TreeElement, path: AbsolutePath): TreeElement {
  */
 export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeElement>): Map<string, TreeElement> {
 	const map = new Map<string, TreeElement>(base);
-	for (const element of _walkTree(root)) {
-		map.set(_flatKey(element), element);
-		const { path } = element.props;
-		if (path) map.set(path, element);
-	}
+	_flattenElement(root, "/", map);
 	return map;
 }
-function* _walkTree(element: TreeElement): Iterable<TreeElement> {
-	yield element;
-	for (const child of walkElements(element.props.children)) yield* _walkTree(child);
+function _flattenElement(element: TreeElement, path: AbsolutePath, map: Map<string, TreeElement>): TreeElement {
+	// Rebuild children first (bottom-up) so the stamped element carries stamped children — the map doubles as the nested tree.
+	const children = Array.from(walkElements(element.props.children), child => _flattenElement(child, joinPath(path, child.props.name), map));
+	const stamped: TreeElement = { ...element, props: { ...element.props, path, children: children.length ? children : undefined } };
+	map.set(_flatKey(stamped), stamped);
+	map.set(path, stamped);
+	return stamped;
 }
 /** The module-less flat key for an element — `Class.member` for class/interface members, the bare `name` otherwise. */
 function _flatKey(element: TreeElement): string {

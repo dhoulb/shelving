@@ -74,7 +74,7 @@ Internally `<TreeApp>` wires together:
 
 ### 3. Build static pages
 
-`docs/build.tsx` shows the production build: extract the tree, write `tree.json`, bundle the browser and server scripts, then render every page to static HTML. `docs/render.tsx`'s `renderApp` walks every path with `getTreePaths()` and writes one `index.html` per page. The browser later fetches `tree.json` and hydrates the same React tree the server rendered.
+`docs/build.tsx` shows the production build: extract the tree, write `tree.json`, bundle the browser and server scripts, then render every page to static HTML. `docs/render.tsx`'s `renderApp` enumerates every page from the canonical path keys of `flattenTree()` and writes one `index.html` per page. The browser later fetches `tree.json` and hydrates the same React tree the server rendered.
 
 ## Customising
 

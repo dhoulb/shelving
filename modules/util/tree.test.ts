@@ -1,55 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { DocumentationElement, TreeElement } from "../index.js";
-import { flattenTree, getTreePaths, resolveTreePath, stampTreePaths } from "../index.js";
+import { flattenTree, walkElements } from "../index.js";
 
-const RESOLVE_TREE: TreeElement = {
-	key: "modules",
-	type: "tree-element",
-	props: {
-		name: "modules",
-		children: [
-			{
-				key: "util",
-				type: "tree-element",
-				props: {
-					name: "util",
-					children: [
-						{ key: "array", type: "tree-element", props: { name: "array", title: "Array" } },
-						{ key: "string", type: "tree-element", props: { name: "string", title: "String" } },
-					],
-				},
-			},
-			{ key: "README", type: "tree-element", props: { name: "README", title: "README" } },
-		],
-	},
-};
-
-describe("resolveTreePath()", () => {
-	test("returns the root itself for an empty path", () => {
-		expect(resolveTreePath(RESOLVE_TREE, [])).toMatchObject({ key: "modules", type: "tree-element" });
-	});
-
-	test("resolves a descendant by key", () => {
-		expect(resolveTreePath(RESOLVE_TREE, ["util"])).toMatchObject({ key: "util", type: "tree-element" });
-		expect(resolveTreePath(RESOLVE_TREE, ["util", "array"])).toMatchObject({ key: "array", props: { title: "Array" } });
-	});
-
-	test("does not match the root's own key", () => {
-		expect(resolveTreePath(RESOLVE_TREE, ["modules"])).toBeUndefined();
-	});
-
-	test("returns undefined for non-existent keys", () => {
-		expect(resolveTreePath(RESOLVE_TREE, ["nonexistent"])).toBeUndefined();
-		expect(resolveTreePath(RESOLVE_TREE, ["util", "nonexistent"])).toBeUndefined();
-	});
-});
-
-describe("getTreePaths()", () => {
-	test("yields the root as [] plus every descendant relative to it", () => {
-		const keys = Array.from(getTreePaths(RESOLVE_TREE));
-		expect(keys).toEqual([[], ["util"], ["util", "array"], ["util", "string"], ["README"]]);
-	});
-});
+/** First child of a tree element (children are an `Elements` iterable, not necessarily an array). */
+function firstChild(element: TreeElement | undefined): TreeElement | undefined {
+	return element ? (Array.from(walkElements(element.props.children))[0] as TreeElement | undefined) : undefined;
+}
 
 // Tree with a composite module name and a class member, for path/flatten tests.
 const PATH_TREE: TreeElement = {
@@ -88,50 +44,54 @@ const PATH_TREE: TreeElement = {
 	},
 };
 
-describe("stampTreePaths()", () => {
-	test("stamps `/` on the root and a prefixed path on every descendant", () => {
-		const stamped = stampTreePaths(PATH_TREE);
-		expect(stamped.props.path).toBe("/");
-		const schema = resolveTreePath(stamped, ["schema"]);
-		expect(schema?.props.path).toBe("/schema");
-		const cls = resolveTreePath(stamped, ["schema", "BooleanSchema"]);
-		expect(cls?.props.path).toBe("/schema/BooleanSchema");
-		const member = resolveTreePath(stamped, ["schema", "BooleanSchema", "validate"]);
-		expect(member?.props.path).toBe("/schema/BooleanSchema/validate");
+describe("flattenTree()", () => {
+	test("stamps `/` on the root and a prefixed canonical path on every descendant", () => {
+		const map = flattenTree(PATH_TREE);
+		expect(map.get("/")?.props.path).toBe("/");
+		expect(map.get("schema")?.props.path).toBe("/schema");
+		expect(map.get("BooleanSchema")?.props.path).toBe("/schema/BooleanSchema");
+		expect(map.get("BooleanSchema.validate")?.props.path).toBe("/schema/BooleanSchema/validate");
 	});
 
 	test("a composite module name becomes a multi-segment path chunk", () => {
-		const stamped = stampTreePaths(PATH_TREE);
-		const mod = resolveTreePath(stamped, ["util", "string"]);
-		expect(mod?.props.path).toBe("/util/string");
+		const map = flattenTree(PATH_TREE);
+		expect(map.get("util/string")?.props.path).toBe("/util/string");
 	});
 
-	test("does not mutate the original tree", () => {
-		stampTreePaths(PATH_TREE);
-		expect(PATH_TREE.props.path).toBeUndefined();
-	});
-});
-
-describe("flattenTree()", () => {
 	test("registers every element under its flat key", () => {
-		const map = flattenTree(stampTreePaths(PATH_TREE));
+		const map = flattenTree(PATH_TREE);
 		expect(map.get("schema")?.key).toBe("schema");
 		expect(map.get("BooleanSchema")?.key).toBe("BooleanSchema");
-		// Class members are keyed `Class.member`.
+		// Class members are keyed `Class.member`, never the bare member name.
 		expect(map.get("BooleanSchema.validate")?.key).toBe("validate");
 		expect(map.get("validate")).toBeUndefined();
 	});
 
 	test("registers every element under its canonical path too", () => {
-		const map = flattenTree(stampTreePaths(PATH_TREE));
+		const map = flattenTree(PATH_TREE);
 		expect(map.get("/")?.key).toBe("shelving");
 		expect(map.get("/schema/BooleanSchema")?.key).toBe("BooleanSchema");
 		expect(map.get("/schema/BooleanSchema/validate")?.key).toBe("validate");
 	});
 
+	test("the stamped value keeps its (stamped) children, so the map doubles as the nested tree", () => {
+		const map = flattenTree(PATH_TREE);
+		const schema = firstChild(map.get("/"));
+		expect(schema?.key).toBe("schema");
+		expect(schema?.props.path).toBe("/schema");
+		// The same stamped element is reachable both ways.
+		expect(schema).toBe(map.get("/schema"));
+	});
+
+	test("does not mutate the original tree", () => {
+		flattenTree(PATH_TREE);
+		expect(PATH_TREE.props.path).toBeUndefined();
+		expect(firstChild(PATH_TREE)?.props.path).toBeUndefined();
+	});
+
 	test("merges onto a base map without mutating it", () => {
 		const base = new Map<string, TreeElement>([["existing", PATH_TREE]]);
-		const map = flattenTree(stampTreePaths(PATH_TREE), base);
+		const map = flattenTree(PATH_TREE, base);
 		expect(map.get("existing")).toBe(PATH_TREE);
 		expect(map.get("schema")).toBeDefined();
 		expect(base.has("schema")).toBe(false);

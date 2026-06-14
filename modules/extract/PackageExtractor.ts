@@ -1,7 +1,7 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { walkElements } from "../util/element.js";
 import { type AbsolutePath, type Path, requirePath } from "../util/path.js";
-import { type DocumentationElement, stampTreePaths, type TreeElement } from "../util/tree.js";
+import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
 
@@ -86,8 +86,8 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		}
 
 		const tree = this._tree;
-		// Stamp the canonical URL `path` on every element (root → `/`, each module/symbol/member prefixed by its ancestors).
-		return stampTreePaths({
+		// Canonical URL `path`s aren't stamped here — they're derived from tree structure when the tree is flattened (`flattenTree()`) in the UI layer.
+		return {
 			type: "tree-element",
 			key: pkg.name ?? tree.key,
 			props: {
@@ -98,7 +98,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 				content: tree.props.content,
 				children: modules,
 			},
-		});
+		};
 	}
 
 	/** Source extensions to try for an export `target`, derived from the target's own extension via the `extensions` mapping. */
