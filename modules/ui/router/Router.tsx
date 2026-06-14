@@ -7,6 +7,11 @@ import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.j
 import type { PossibleMeta } from "../util/meta.js";
 import type { Routes } from "./Routes.js";
 
+/**
+ * Props for `<Router>` — the `routes` to match against plus an optional `fallback`.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/router/Router/RouterProps
+ */
 export interface RouterProps extends PossibleMeta {
 	/** List of routes for the router to match against. */
 	readonly routes: Routes;
@@ -26,7 +31,13 @@ export interface RouterProps extends PossibleMeta {
  * - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  *
- * @throws {NotFoundError} if no route matches and `fallback` is `undefined`
+ * @param routes The route table to match the current URL against.
+ * @param fallback Element to render when nothing matches; explicit `null` renders nothing instead of throwing.
+ * @param meta Optional meta (url/base) overrides for this router scope.
+ * @returns The matched route element, or `null`/`fallback` when nothing matches.
+ * @throws NotFoundError If no route matches and `fallback` is `undefined`.
+ * @example <Router routes={{ "/": HomePage, "/about": AboutPage }} />
+ * @see https://dhoulb.github.io/shelving/ui/router/Router/Router
  */
 export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement | null {
 	const combined = requireMetaURL(meta);

@@ -5,9 +5,21 @@ import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
 import { INPUT_CLASS, type InputProps, PLACEHOLDER_CLASS } from "./Input.js";
 
+/**
+ * Props for `OutputInput`, a read-only `<output>` styled to match form inputs.
+ *
+ * @see https://dhoulb.github.io/shelving/ui/form/OutputInput/OutputInputProps
+ */
 export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVariants {}
 
-/** Return static "output" styled as an input, based on whether an `onClick` or `href` prop is provided. */
+/**
+ * Show static read-only content styled as an input, falling back to `placeholder` when empty.
+ *
+ * @param props Props including `children`/`title` content, `placeholder`, and `Flex` variants.
+ * @returns An `<output>` element styled like an input.
+ * @example <OutputInput title="Status">Active</OutputInput>
+ * @see https://dhoulb.github.io/shelving/ui/form/OutputInput/OutputInput
+ */
 export function OutputInput({ title, placeholder, children = title, ...props }: OutputInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
