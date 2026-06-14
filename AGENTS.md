@@ -94,6 +94,7 @@ Before writing new code, find what already exists. The codebase deliberately exp
 ## Pull Requests
 
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
+- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://dhoulb.github.io/shelving/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
 
 ## Naming
 
