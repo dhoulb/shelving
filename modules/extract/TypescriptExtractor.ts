@@ -195,7 +195,7 @@ function _getHeritage(
 
 /**
  * Combine the JSDoc leading-description text and any unhandled `@rule` blocks into a single markup content string.
- * - Unhandled rules (anything not `@param`/`@returns`/`@throws`/`@example`) are appended after the description, separated by blank lines, with their `@name` preserved.
+ * - Unhandled rules (anything not `@param`/`@returns`/`@throws`/`@example`/`@see`) are appended after the description, separated by blank lines, with their `@name` preserved.
  * - Returns `undefined` if both are empty.
  */
 function _buildJSDocContent(description: string | undefined, unhandled: string | undefined): string | undefined {
@@ -475,8 +475,13 @@ interface JSDocResult {
 	unhandled?: string | undefined;
 }
 
-/** `@rule` names handled by dedicated parsers — everything else is appended to `unhandled` as raw markup. */
-const _HANDLED_RULES = new Set(["kind", "param", "params", "return", "returns", "throw", "throws", "example", "examples"]);
+/**
+ * `@rule` names handled (parsed or deliberately discarded) — everything else is appended to `unhandled` as raw markup.
+ * - `@kind` is parsed by `_parseJSDocKind` to override the AST-inferred kind, so it must not also leak into `unhandled`.
+ * - `@see` is recognised here purely to strip it: it's a VS Code hover affordance (a link back to the docs site) and must
+ *   never leak into the rendered page content. It has no dedicated parser; it's simply discarded from the `unhandled` bucket.
+ */
+const _HANDLED_RULES = new Set(["kind", "param", "params", "return", "returns", "throw", "throws", "example", "examples", "see"]);
 
 /** Extract JSDoc from a node. */
 function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefined {

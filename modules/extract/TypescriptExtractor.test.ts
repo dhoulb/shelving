@@ -574,6 +574,37 @@ export function add(a: number, b: number): number { return a + b; }
 		);
 	});
 
+	test("strips `@see` lines from content (VS Code hover affordance, never rendered)", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add two numbers.
+ * @see https://dhoulb.github.io/shelving/math/add
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { content?: string } }[];
+		// The description survives; the `@see` link is discarded rather than leaking into the page body.
+		expect(children[0]?.props.content).toBe("Add two numbers.");
+	});
+
+	test("strips `@see` while still appending other unhandled `@rule` blocks", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add two numbers.
+ * @see https://dhoulb.github.io/shelving/math/add
+ * @deprecated Use \`sum()\` instead.
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { content?: string } }[];
+		// `@see` is dropped; `@deprecated` (genuinely unhandled) is still appended.
+		expect(children[0]?.props.content).toBe("Add two numbers.\n\n@deprecated Use `sum()` instead.");
+	});
+
 	test("derives description from the first paragraph of a symbol's JSDoc", async () => {
 		const element = await extractor.extract(
 			file(`
