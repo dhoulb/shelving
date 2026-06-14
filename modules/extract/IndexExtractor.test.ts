@@ -45,6 +45,20 @@ describe("IndexExtractor", () => {
 		expect(kids[0]?.key).toBe("string.ts");
 	});
 
+	test("prefers README.md over an index.ts barrel regardless of child order", async () => {
+		// `index.ts` is listed first on disk but carries no prose; the README must still win.
+		const root = _dir("ui", [
+			_file("index.ts", { content: "" }),
+			_file("README.md", { title: "UI", description: "Component library.", content: "The README body." }),
+		]);
+		const out = await new IndexExtractor(new _StubExtractor(root)).extract(undefined);
+		expect(out.props.title).toBe("UI");
+		expect(out.props.content).toBe("The README body.");
+		// The barrel stays as a child (it just isn't the absorbed index).
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids.map(c => c.key)).toEqual(["index.ts"]);
+	});
+
 	test("leaves the directory untouched when no index child is found", async () => {
 		const root = _dir("util", [_file("string.ts", { content: "ts" })]);
 		const out = await new IndexExtractor(new _StubExtractor(root)).extract(undefined);

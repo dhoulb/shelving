@@ -36,9 +36,11 @@ export interface MergingExtractorOptions {
 /**
  * Through extractor that walks a tree of `tree-element` nodes and merges sibling tree elements whose keys match a `merges` template pair.
  * - Purely key-based: it doesn't care whether siblings are directories or files — any element with children is processed, at every level.
+ * - **Token-first:** a secondary (e.g. `Card.md`) is preferentially folded into the same-named documentation token declared by a sibling file (the `Card` symbol inside `Card.tsx`), not the file element. Exported names are unique across the package, so this is unambiguous — and it lands the prose on the published symbol page, which survives the module flatten (file-element content does not).
+ * - **File fallback:** when no same-named token exists, the secondary folds into a sibling *file* whose key matches a `merges` candidate (whole-file prose like `template.md` → `template.ts`).
  * - The primary (winning) element keeps its `key`, `source`, and `type`; the secondary's `title`, `description`,
  *   `content`, and `children` are folded in via `mergeTreeElements()`.
- * - A secondary with no matching primary is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
+ * - A secondary with no matching token or file is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
  *
  * @example
  * ```ts
@@ -95,9 +97,23 @@ function _mergeElement(element: TreeElement, merges: ImmutableDictionary<readonl
 
 /** Merge same-template siblings at one directory level. */
 function _mergeChildren(children: readonly TreeElement[], merges: ImmutableDictionary<readonly string[]>): TreeElement[] {
-	// Index children by key so we can look up primary candidates quickly.
+	// Index children by key so we can look up primary file candidates quickly.
 	const byKey = new Map<string, TreeElement>();
 	for (const child of children) byKey.set(child.key, child);
+
+	// Index exported documentation tokens by name, recording the key of the file element that declares each.
+	// Exported names are unique across the package, so a `Foo.md` can target the symbol `Foo` directly.
+	const tokensByName = new Map<string, { readonly fileKey: string; readonly token: TreeElement }>();
+	for (const child of children) {
+		if (child.type !== "tree-element") continue;
+		for (const token of walkElements(child.props.children)) {
+			const t = token as TreeElement;
+			if (t.type === "tree-documentation") tokensByName.set(t.props.name, { fileKey: child.key, token: t });
+		}
+	}
+
+	// Accumulate token replacements per declaring file: fileKey → (tokenKey → merged token).
+	const tokenUpdates = new Map<string, Map<string, TreeElement>>();
 
 	// Walk in original order, deciding for each whether it's a secondary that should fold into a primary.
 	const skip = new Set<TreeElement>();
@@ -105,6 +121,20 @@ function _mergeChildren(children: readonly TreeElement[], merges: ImmutableDicti
 		for (const [lhs, candidates] of Object.entries(merges)) {
 			const matches = matchTemplate(lhs, secondary.key);
 			if (!matches) continue;
+
+			// Prefer folding a `.md` into the same-named documentation token (e.g. `Card.md` → the `Card` component) so the
+			// prose lands on the published symbol page — the module flatten keeps tokens but discards file-element content.
+			const base = Object.values(matches)[0];
+			const hit = base ? tokensByName.get(base) : undefined;
+			if (hit && hit.token !== secondary) {
+				const fileMap = tokenUpdates.get(hit.fileKey) ?? new Map<string, TreeElement>();
+				fileMap.set(hit.token.key, mergeTreeElements(fileMap.get(hit.token.key) ?? hit.token, secondary));
+				tokenUpdates.set(hit.fileKey, fileMap);
+				skip.add(secondary);
+				break;
+			}
+
+			// Otherwise fall back to merging into a sibling file (whole-file prose like `template.md` → `template.ts`).
 			for (const rhs of candidates) {
 				const primaryKey = renderTemplate(rhs, matches);
 				const primary = byKey.get(primaryKey);
@@ -117,5 +147,14 @@ function _mergeChildren(children: readonly TreeElement[], merges: ImmutableDicti
 		}
 	}
 
-	return children.filter(c => !skip.has(c)).map(c => byKey.get(c.key) ?? c);
+	// Rebuild: drop merged `.md` secondaries, apply file-level merges, and fold token updates into their file elements.
+	return children
+		.filter(c => !skip.has(c))
+		.map(c => {
+			const updated = byKey.get(c.key) ?? c;
+			const fileMap = tokenUpdates.get(c.key);
+			if (!fileMap) return updated;
+			const merged = Array.from(walkElements(updated.props.children), child => fileMap.get((child as TreeElement).key) ?? child);
+			return { ...updated, props: { ...updated.props, children: merged } };
+		});
 }
