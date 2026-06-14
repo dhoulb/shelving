@@ -12,16 +12,20 @@ export interface DocumentationKindProps extends TagProps {
 	readonly kind: string;
 }
 
-/** Mapping from a documented symbol's `kind` to its raw colour variant. */
+/**
+ * Mapping from a documented symbol's `kind` to its raw colour variant.
+ * - Related kinds share a hue: component/class (purple), function/method (blue), interface/type (aqua).
+ * - Leaves `orange`, `pink`, and the brand aliases free for future kinds.
+ */
 const KIND_COLOR: { readonly [K in string]?: UIColor } = {
 	module: "red",
-	component: "green",
-	function: "blue",
+	component: "purple",
 	class: "purple",
+	function: "blue",
+	method: "blue",
 	interface: "aqua",
-	type: "pink",
-	constant: "gray",
-	method: "orange",
+	type: "aqua",
+	constant: "green",
 	property: "yellow",
 };
 
