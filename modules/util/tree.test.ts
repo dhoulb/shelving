@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { TreeElement } from "../index.js";
-import { getTreePaths, resolveTreePath } from "../index.js";
+import type { DocumentationElement, TreeElement } from "../index.js";
+import { flattenTree, getTreePaths, resolveTreePath, stampTreePaths } from "../index.js";
 
 const RESOLVE_TREE: TreeElement = {
 	key: "modules",
@@ -51,5 +51,89 @@ describe("getTreePaths()", () => {
 	});
 });
 
-// TODO: `flattenTree()` tests removed temporarily — the map is mid-refactor to path-keyed `{ path, element }`
-// entries (path-based linking). Re-add once the normalisation pass + path-keyed map land.
+// Tree with a composite module name and a class member, for path/flatten tests.
+const PATH_TREE: TreeElement = {
+	key: "shelving",
+	type: "tree-element",
+	props: {
+		name: "shelving",
+		children: [
+			{
+				key: "schema",
+				type: "tree-documentation",
+				props: {
+					name: "schema",
+					kind: "module",
+					children: [
+						{
+							key: "BooleanSchema",
+							type: "tree-documentation",
+							props: {
+								name: "BooleanSchema",
+								kind: "class",
+								children: [
+									{
+										key: "validate",
+										type: "tree-documentation",
+										props: { name: "validate", kind: "method", class: "BooleanSchema" },
+									} as DocumentationElement,
+								],
+							},
+						} as DocumentationElement,
+					],
+				},
+			} as DocumentationElement,
+			{ key: "util/string", type: "tree-documentation", props: { name: "util/string", kind: "module" } } as DocumentationElement,
+		],
+	},
+};
+
+describe("stampTreePaths()", () => {
+	test("stamps `/` on the root and a prefixed path on every descendant", () => {
+		const stamped = stampTreePaths(PATH_TREE);
+		expect(stamped.props.path).toBe("/");
+		const schema = resolveTreePath(stamped, ["schema"]);
+		expect(schema?.props.path).toBe("/schema");
+		const cls = resolveTreePath(stamped, ["schema", "BooleanSchema"]);
+		expect(cls?.props.path).toBe("/schema/BooleanSchema");
+		const member = resolveTreePath(stamped, ["schema", "BooleanSchema", "validate"]);
+		expect(member?.props.path).toBe("/schema/BooleanSchema/validate");
+	});
+
+	test("a composite module name becomes a multi-segment path chunk", () => {
+		const stamped = stampTreePaths(PATH_TREE);
+		const mod = resolveTreePath(stamped, ["util", "string"]);
+		expect(mod?.props.path).toBe("/util/string");
+	});
+
+	test("does not mutate the original tree", () => {
+		stampTreePaths(PATH_TREE);
+		expect(PATH_TREE.props.path).toBeUndefined();
+	});
+});
+
+describe("flattenTree()", () => {
+	test("registers every element under its flat key", () => {
+		const map = flattenTree(stampTreePaths(PATH_TREE));
+		expect(map.get("schema")?.key).toBe("schema");
+		expect(map.get("BooleanSchema")?.key).toBe("BooleanSchema");
+		// Class members are keyed `Class.member`.
+		expect(map.get("BooleanSchema.validate")?.key).toBe("validate");
+		expect(map.get("validate")).toBeUndefined();
+	});
+
+	test("registers every element under its canonical path too", () => {
+		const map = flattenTree(stampTreePaths(PATH_TREE));
+		expect(map.get("/")?.key).toBe("shelving");
+		expect(map.get("/schema/BooleanSchema")?.key).toBe("BooleanSchema");
+		expect(map.get("/schema/BooleanSchema/validate")?.key).toBe("validate");
+	});
+
+	test("merges onto a base map without mutating it", () => {
+		const base = new Map<string, TreeElement>([["existing", PATH_TREE]]);
+		const map = flattenTree(stampTreePaths(PATH_TREE), base);
+		expect(map.get("existing")).toBe(PATH_TREE);
+		expect(map.get("schema")).toBeDefined();
+		expect(base.has("schema")).toBe(false);
+	});
+});

@@ -1,29 +1,30 @@
 import type { ReactElement, ReactNode } from "react";
-import { joinPath } from "../../util/path.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { useTreeMap } from "./TreeContext.js";
 
 /** Props for `TreeButton`. */
 export interface TreeButtonProps extends ButtonVariants {
-	/** Name of an element in the tree, e.g. `"Store"` or `"Store.get"`. */
+	/** Reference to an element in the tree — a flat key (`"Store"`, `"Store.get"`) or a canonical path (`"/schema/BooleanSchema"`). */
 	readonly name: string;
-	/** Visible label — defaults to `to`. */
+	/** Visible label — defaults to the resolved element's `title`, falling back to `name`. */
 	readonly children?: ReactNode | undefined;
 }
 
 /**
- * Small button linking to a specific `tree-documentation` element, resolved by reference string.
- * - Looks `to` up in the flattened tree map (`useTreeMap()`); a hit becomes an `<a>` link, a miss a disabled `<button>` so builtins still read as labels.
+ * Small button linking to a specific tree element, resolved by reference string.
+ * - Looks `name` up in the flattened tree map (`useTreeMap()`) — by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`) — and links to the element's canonical `path`.
+ * - A hit becomes an `<a>` link; a miss (e.g. a builtin like `Serializable`) stays a plain non-link label so it still reads as text.
  * - Defaults to `small plain` styling; pass other `ButtonVariants` to override.
  *
- * @example <TreeButton to="Store.get">Store.get()</TreeButton>
+ * @example <TreeButton name="Store.get">Store.get()</TreeButton>
  */
 export function TreeButton({ name, children, small = true, plain = true, ...variants }: TreeButtonProps): ReactElement {
-	const entry = useTreeMap().get(name);
-	const href = entry ? joinPath("/", entry.path) : undefined;
+	const element = useTreeMap().get(name);
+	const href = element?.props.path;
+	// A resolved element links via its canonical `path`; an unresolved reference is disabled (no `href`) so it renders as a non-link label rather than an empty `<a>`.
 	return (
-		<Button small={small} plain={plain} {...variants} href={href} disabled={!href}>
-			{children ?? entry?.element.props.title ?? name}
+		<Button small={small} plain={plain} {...variants} {...(href ? { href } : { disabled: true })}>
+			{children ?? element?.props.title ?? name}
 		</Button>
 	);
 }

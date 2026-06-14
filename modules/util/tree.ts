@@ -1,7 +1,7 @@
 import type { ImmutableArray } from "./array.js";
 import type { Element, ElementProps, Elements } from "./element.js";
 import { walkElements } from "./element.js";
-import type { AbsolutePath } from "./path.js";
+import { type AbsolutePath, joinPath } from "./path.js";
 
 /** Props for a tree element — must have a `tree-` prefixed type. */
 export interface TreeElementProps extends ElementProps {
@@ -36,6 +36,11 @@ export interface TreeElementProps extends ElementProps {
 	 * - Optional: synthesised elements (e.g. `kind: "module"` documentation) have no single source.
 	 */
 	readonly source?: AbsolutePath | undefined;
+	/**
+	 * Canonical site-root-relative URL path of this element (e.g. `"/schema/BooleanSchema"`), stamped during extraction by `stampTreePaths()`.
+	 * - This is the exact URL the element renders at, and the canonical key it's registered under in `flattenTree()`.
+	 */
+	readonly path?: AbsolutePath | undefined;
 	/** Children of a tree element must be other tree elements. */
 	readonly children?: TreeElements | undefined;
 }
@@ -202,43 +207,48 @@ function* _walkTreePaths(element: TreeElement, depth: number, path: readonly str
 	}
 }
 
-/** An entry in the flattened tree map — enough to render a cross-link (its `path` builds the href, its `title` the label). */
-export interface TreeMapEntry {
-	/** Path segments from the root down to the element (consumable by `joinPath()` / `resolveTreePath()`). */
-	readonly path: readonly string[];
-	/** The original tree element. */
-	readonly element: TreeElement;
+/**
+ * Return a copy of `root` with a canonical `path` stamped on every element.
+ * - The root is `/`; each descendant is `parentPath + "/" + name`, so a module `schema` → `/schema`, its class `BooleanSchema` → `/schema/BooleanSchema`, its member `validate` → `/schema/BooleanSchema/validate`.
+ * - A composite module name (e.g. `"util/string"`) becomes its own multi-segment chunk of the path.
+ * - This is the exact URL the element renders at, and the canonical key it's registered under in `flattenTree()`.
+ *
+ * @param root The root element. Its own `name` is *not* part of the path — the root is `/`.
+ */
+export function stampTreePaths(root: TreeElement): TreeElement {
+	return _stampElement(root, "/");
+}
+function _stampElement(element: TreeElement, path: AbsolutePath): TreeElement {
+	const children = Array.from(walkElements(element.props.children), child => _stampElement(child, joinPath(path, child.props.name)));
+	return { ...element, props: { ...element.props, path, children: children.length ? children : undefined } };
 }
 
 /**
- * Flatten a tree into a map for O(1) cross-reference lookup, optionally merged onto an existing `base` map.
- * - Walks the whole tree once and records every element (including the root) under several keys pointing at one `{ path, title }` entry:
- *   - its bare `name` (e.g. `"Store"`, `"get"`),
- *   - its qualified `"Class.member"` key when it's a documented member (e.g. `"Store.get"`), so a raw reference resolves unambiguously,
- *   - its joined path (e.g. `"store/Store/get"`, or `""` for the root), so an ancestor path resolves back to its title for breadcrumbs.
- * - On a key collision the first writer wins — pass a `base` map (e.g. a parent context's map) to merge several trees into one lookup; the base always wins, so outer trees take precedence.
- * - References with no entry (e.g. builtins like `Serializable`) are simply absent — callers fall back to plain text.
+ * Flatten a tree into a `Map<key, element>` for O(1) cross-reference lookup, optionally merged onto an existing `base` map.
+ * - Every element is registered under two keys, both pointing at the element itself:
+ *   - its **flat key** — bare `name` (e.g. `"BooleanSchema"`), or qualified `"Class.member"` for members (e.g. `"BooleanSchema.validate"`). This is what cross-refs (`extends` / `overrides`) and README links resolve through.
+ *   - its **canonical path** (`element.props.path`, e.g. `"/schema/BooleanSchema"`) when stamped — what the router resolves a URL to.
+ * - Exported names are unique across the package (barrel re-exports enforce it at compile time), so flat-key collisions are vanishingly rare; on a collision the last writer simply wins.
+ * - Missing keys (e.g. builtins like `Serializable`) resolve to `undefined` → callers fall back to plain text.
  *
- * @param root The root element to flatten. Its own name is treated as a container label, never a path segment (matching `getTreePaths()`).
- * @param base An existing map to merge onto (copied, not mutated). Its entries take precedence on collision.
- * @returns A map from reference/path key to its `{ path, title }` entry.
+ * @param root The root element to flatten.
+ * @param base An existing map to merge onto (copied, not mutated). Useful to combine several trees into one lookup.
  */
-export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeMapEntry>): Map<string, TreeMapEntry> {
-	const map = new Map<string, TreeMapEntry>(base);
-	_flattenElement(root, [], map);
+export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeElement>): Map<string, TreeElement> {
+	const map = new Map<string, TreeElement>(base);
+	for (const element of _walkTree(root)) {
+		map.set(_flatKey(element), element);
+		const { path } = element.props;
+		if (path) map.set(path, element);
+	}
 	return map;
 }
-function _flattenElement(element: TreeElement, path: readonly string[], map: Map<string, TreeMapEntry>): void {
-	const { name } = element.props;
-	const entry: TreeMapEntry = { path, element };
-	// Joined-path key (reverse lookup for breadcrumbs), bare name and qualified `Class.member` key — first writer wins for each.
-	for (const key of [path.join("/"), name, _qualifiedKey(element)]) if (key !== undefined && !map.has(key)) map.set(key, entry);
-	for (const child of walkElements(element.props.children)) _flattenElement(child, [...path, child.props.name], map);
+function* _walkTree(element: TreeElement): Iterable<TreeElement> {
+	yield element;
+	for (const child of walkElements(element.props.children)) yield* _walkTree(child);
 }
-function _qualifiedKey(element: TreeElement | DocumentationElement): string | undefined {
-	if ("class" in element.props) {
-		const { class: className, name } = element.props;
-		if (className) return `${className}.${name}`;
-	}
-	return element.props.name;
+/** The module-less flat key for an element — `Class.member` for class/interface members, the bare `name` otherwise. */
+function _flatKey(element: TreeElement): string {
+	const { class: className, name } = element.props as DocumentationElementProps;
+	return className ? `${className}.${name}` : name;
 }

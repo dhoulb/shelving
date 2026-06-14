@@ -12,7 +12,7 @@ Shell components for a tree-based documentation site. Given a `TreeElement` from
 
 **`<TreeCards>` renders a card list.** It dispatches each child element to a card renderer via `<TreeCardMapper>`. Used by the page renderers in [ui/docs](/ui/docs) to fill out directory and file pages.
 
-**`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `flattenTree()`) into a `name`/`path` → `{ path, title }` lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<DocumentationButton>`, breadcrumbs) without re-walking the tree. Nested providers merge their maps, so links resolve across a combined set of trees.
+**`<TreeProvider>` exposes the tree for cross-linking.** It flattens the tree once (via `flattenTree()`) into a `name`/`path` → element lookup and shares it on `TreeContext`; descendants read it with `useTreeMap()` to resolve cross-references (e.g. `<TreeButton>`, breadcrumbs) by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`), then link to the resolved element's `path`. Nested providers merge their maps, so links resolve across a combined set of trees.
 
 **`<TreeBreadcrumbs>` renders an ancestor trail.** Given a page's `path`, it looks each ancestor prefix up in the tree map (so it needs a `<TreeProvider>` above) and renders a `<nav>` of links separated by `›` icons, with section-level block spacing (`BLOCK_CLASS`, overridable via the `space` prop). Works with any tree — the current page is omitted (the page title already names it).
 

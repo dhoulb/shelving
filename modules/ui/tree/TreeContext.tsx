@@ -1,8 +1,8 @@
 import { createContext, type ReactNode, use, useMemo } from "react";
-import { flattenTree, type TreeElement, type TreeMapEntry } from "../../util/tree.js";
+import { flattenTree, type TreeElement } from "../../util/tree.js";
 
-/** A flattened `name`/`path` → `{ path, title }` map of the surrounding tree(s), for fast cross-reference lookup. */
-export const TreeContext = createContext<ReadonlyMap<string, TreeMapEntry>>(new Map());
+/** A flattened `key` → `element` map of the surrounding tree(s) — keyed by flat name (`"BooleanSchema"`, `"Class.member"`) and canonical path (`"/schema/BooleanSchema"`) — for fast cross-reference lookup. */
+export const TreeContext = createContext<ReadonlyMap<string, TreeElement>>(new Map());
 TreeContext.displayName = "TreeContext";
 
 /**
@@ -20,6 +20,6 @@ export function TreeProvider({ tree, children }: { readonly tree: TreeElement; r
  * Use the flattened tree lookup map from context.
  * - Returns an empty map when there's no `<TreeProvider>` above (e.g. an isolated card rendered outside the tree shell), so callers can look up freely and fall back to plain text on a miss.
  */
-export function useTreeMap(): ReadonlyMap<string, TreeMapEntry> {
+export function useTreeMap(): ReadonlyMap<string, TreeElement> {
 	return use(TreeContext);
 }

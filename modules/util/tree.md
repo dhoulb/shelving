@@ -7,7 +7,8 @@ These types and helpers describe a **tree of elements** — a hierarchical struc
 - `TreeElement` requires a non-null `key` (a slug string) and a `type` starting with `"tree-"`. Plain `Element` values can have `key: null`.
 - The JSX intrinsics (`tree-element`, `tree-documentation`) are declared here so TSX files get type-checked props.
 - `resolveTreePath` treats the root element as a container: its own `name` is never matched. A child `name` may contain `/` (e.g. a module `"util/string"`), in which case it spans multiple path segments.
-- Element paths have no canonical string form, so `resolveTreePath` / `getTreePaths` work in raw `string[]` segments — join them however the caller needs.
+- `resolveTreePath` / `getTreePaths` work in raw `string[]` segments — join them however the caller needs. For a stamped canonical URL string, read `element.props.path` instead (set by `stampTreePaths`).
+- `stampTreePaths` stamps a canonical site-root-relative `path` (e.g. `"/schema/BooleanSchema"`) onto every element by joining ancestor names — the exact URL it renders at, and the canonical key it's flattened under.
 
 ## Usage
 
@@ -29,15 +30,17 @@ for (const path of getTreePaths(root, 2)) {
 ### Flattening a tree for fast lookup
 
 ```ts
-import { flattenTree } from "shelving/util";
+import { flattenTree, stampTreePaths } from "shelving/util";
 
-// Build an O(1) lookup keyed by name, qualified "Class.member", and joined path.
-const map = flattenTree(root);
-map.get("Store");      // { path: ["store", "Store"], title: "Store" }
-map.get("Store.get");  // { path: ["store", "Store", "get"], title: "Store.get()" }
+// Stamp canonical `path`s first, then flatten — each element is keyed by both forms.
+const map = flattenTree(stampTreePaths(root));
+map.get("Store");                  // the `Store` element (flat key)
+map.get("Store.get");              // the `Store.get` member (qualified `Class.member` key)
+map.get("/store/Store");           // the same `Store` element (canonical path key)
+map.get("Store")?.props.path;      // "/store/Store"
 
-// Merge several trees into one lookup (the base map wins on key collisions).
-const merged = flattenTree(otherRoot, map);
+// Merge several trees into one lookup (later writers win on key collisions).
+const merged = flattenTree(stampTreePaths(otherRoot), map);
 ```
 
 ### Working with `DocumentationElement` props

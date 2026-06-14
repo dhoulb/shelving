@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { DocumentationElement, TreeElement } from "../../util/tree.js";
+import { type DocumentationElement, stampTreePaths, type TreeElement } from "../../util/tree.js";
 import { MetaContext } from "../misc/MetaContext.js";
 import { TreeProvider } from "../tree/TreeContext.js";
 import { createMeta } from "../util/meta.js";
@@ -18,11 +18,12 @@ const abstractStore: DocumentationElement = {
 	key: "abstract-store",
 	props: { name: "AbstractStore", kind: "class", children: [get] },
 };
-const tree: TreeElement = {
+// Stamped so every element carries its canonical `path` (as `PackageExtractor` does) — that's what `<TreeButton>` links to.
+const tree: TreeElement = stampTreePaths({
 	type: "tree-element",
 	key: "root",
 	props: { name: "shelving", children: [abstractStore] },
-};
+});
 
 /** Render `children` inside the meta + tree contexts the buttons need to resolve links. */
 function render(children: ReactNode): string {
