@@ -45,7 +45,7 @@ The item link's hooks (defined in `Menu.module.css`):
 
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on [`Menu`](/ui/Menu).
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--stroke-focus`, `--stroke-normal`, `--color-focus`, and `--weight-strong`.
+**Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--stroke-focus`](/ui/getStrokeClass), [`--stroke-normal`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--weight-strong`](/ui/getWeightClass).
 
 ## See also
 

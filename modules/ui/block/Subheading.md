@@ -48,7 +48,7 @@ import { Title, Heading, Subheading } from "shelving/ui";
 | `--subheading-size` | Font size | `var(--size-large)` |
 | `--subheading-leading` | Line height | `var(--leading)` |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading`.
+**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-large`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
 
 ## See also
 

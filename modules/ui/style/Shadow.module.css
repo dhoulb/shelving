@@ -1,0 +1,42 @@
+@import "layers.css";
+
+@layer defaults {
+	:root {
+		/* Shadows — elevation drop-shadows. */
+		--shadow-xxsmall: 0 0.125rem 0.5rem -0.25rem #0006;
+		--shadow-xsmall: 0 0.25rem 1rem -0.5rem #0006;
+		--shadow-small: 0 0.375rem 1.5rem -0.75rem #0006;
+		--shadow-normal: 0 0.5rem 2rem -1rem #0006;
+		--shadow-large: 0 0.75rem 3rem -1.5rem #0006;
+		--shadow-xlarge: 0 1rem 4rem -2rem #0006;
+		--shadow-xxlarge: 0 1.5rem 6rem -3rem #0006;
+	}
+}
+
+@layer variants {
+	/* Drop-shadow variants. */
+	.shadow-none {
+		box-shadow: none;
+	}
+	.shadow-xxsmall {
+		box-shadow: var(--shadow-xxsmall);
+	}
+	.shadow-xsmall {
+		box-shadow: var(--shadow-xsmall);
+	}
+	.shadow-small {
+		box-shadow: var(--shadow-small);
+	}
+	.shadow-normal {
+		box-shadow: var(--shadow-normal);
+	}
+	.shadow-large {
+		box-shadow: var(--shadow-large);
+	}
+	.shadow-xlarge {
+		box-shadow: var(--shadow-xlarge);
+	}
+	.shadow-xxlarge {
+		box-shadow: var(--shadow-xxlarge);
+	}
+}

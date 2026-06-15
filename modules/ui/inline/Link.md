@@ -31,13 +31,13 @@ import { Link } from "shelving/ui";
 
 ## Styling
 
-`Link` exposes a couple of inline hooks; the link colour comes from the global `--color-link` token.
+`Link` exposes a couple of inline hooks; the link colour comes from the global [`--color-link`](/ui/getColorClass) token.
 
 | Variable | Styles | Default |
 |---|---|---|
 | `--link-weight` | Text colour and font weight | `var(--color-link)` colour / `var(--weight-strong)` weight |
 
-**Global tokens it reads:** `--color-link`, `--weight-strong`, and `--stroke-normal` (the underline thickness).
+**Global tokens it reads:** [`--color-link`](/ui/getColorClass), [`--weight-strong`](/ui/getWeightClass), and [`--stroke-normal`](/ui/getStrokeClass) (the underline thickness).
 
 ## See also
 

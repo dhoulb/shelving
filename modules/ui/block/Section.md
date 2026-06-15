@@ -46,7 +46,7 @@ import { Header, Nav, Footer } from "shelving/ui";
 | `--section-indent` | Inline gutter kept on each side so text doesn't touch the edges | `var(--space-normal)` (16px) |
 | `--section-space` | Outer block margin (top + bottom) | `var(--space-section)` (2rem) |
 
-**Global tokens it reads:** `--space-normal` and `--space-section`. The `narrow` / `wide` / `full` width variants come from the shared [`ui`](/ui) styling system.
+**Global tokens it reads:** [`--space-normal`](/ui/getSpaceClass) and [`--space-section`](/ui/getSpaceClass). The `narrow` / `wide` / `full` width variants come from the shared [`ui`](/ui) styling system.
 
 ## See also
 

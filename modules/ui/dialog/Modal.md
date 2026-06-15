@@ -24,7 +24,7 @@ import { Modal } from "shelving/ui";
 | Variable | Styles | Default |
 |---|---|---|
 | `--modal-width` | Box width | `var(--width-narrow)` |
-| `--modal-border` | Border shorthand | `var(--stroke-normal)` solid, 50% of `--tint-50` |
+| `--modal-border` | Border shorthand | `var(--stroke-normal)` solid, 50% of [`--tint-50`](/ui/TINT_CLASS) |
 | `--modal-radius` | Corner radius | `var(--radius-normal)` (16px) |
 | `--modal-color-bg` | Surface fill | `var(--tint-100)` |
 | `--modal-padding` | Inner padding | `var(--space-normal)` (16px) |
@@ -32,7 +32,7 @@ import { Modal } from "shelving/ui";
 | `--modal-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-50` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--stroke-normal`, `--shadow-normal`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-50`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--width-narrow`](/ui/getWidthClass), [`--space-normal`](/ui/getSpaceClass), [`--radius-normal`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--shadow-normal`](/ui/getShadowClass), and [`--duration-fast`](/ui/getDurationClass).
 
 ## See also
 

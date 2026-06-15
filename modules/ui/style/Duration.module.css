@@ -1,0 +1,23 @@
+@import "layers.css";
+
+@layer defaults {
+	:root {
+		/* Durations — transition/animation timings. */
+		--duration-fast: 150ms;
+		--duration-normal: 300ms;
+		--duration-slow: 600ms;
+	}
+}
+
+@layer variants {
+	/* Transition-duration variants. */
+	.duration-fast {
+		transition-duration: var(--duration-fast);
+	}
+	.duration-normal {
+		transition-duration: var(--duration-normal);
+	}
+	.duration-slow {
+		transition-duration: var(--duration-slow);
+	}
+}

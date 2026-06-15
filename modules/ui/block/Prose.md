@@ -39,7 +39,7 @@ import { Prose, Paragraph } from "shelving/ui";
 |---|---|---|
 | `--prose-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
-**Global tokens it reads:** `--space-paragraph`.
+**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass).
 
 ## See also
 

@@ -43,7 +43,7 @@ import { LOADING_NOTICE } from "shelving/ui";
 | `--notice-size` | Font size | `var(--size-normal)` |
 | `--notice-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-small`, `--radius-xsmall`, `--stroke-normal`, `--size-normal`, and `--weight-strong`.
+**Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-small`](/ui/getSpaceClass), [`--radius-xsmall`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--size-normal`](/ui/getSizeClass), and [`--weight-strong`](/ui/getWeightClass).
 
 ## See also
 

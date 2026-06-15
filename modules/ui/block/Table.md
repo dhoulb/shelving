@@ -45,7 +45,7 @@ import { Table } from "shelving/ui";
 | `--table-label-case` | Label letter case | `var(--case-label)` |
 | `--table-label-color` | Label colour | `var(--tint-70)` |
 
-**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-80`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
+**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--stroke-normal`](/ui/getStrokeClass), the tint-ladder steps [`--tint-70`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS), and the label tokens [`--font-label`](/ui/getFontClass) / [`--weight-label`](/ui/getWeightClass) / [`--size-label`](/ui/getSizeClass) / [`--case-label`](/ui/getFontClass) / [`--weight-strong`](/ui/getWeightClass).
 
 ## See also
 

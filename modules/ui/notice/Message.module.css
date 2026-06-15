@@ -1,4 +1,6 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Tint.module.css";
+@import "../style/Weight.module.css";
 
 @layer components {
 	.message {

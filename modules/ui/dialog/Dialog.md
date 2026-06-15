@@ -61,7 +61,7 @@ function DeleteButton({ id }: { id: string }) {
 | `--dialog-transition` | Open / close transition | `all var(--duration-fast)` (150ms) |
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (8px) |
 
-**Global tokens it reads** — move these to retheme broadly: `--space-normal`, `--space-small`, `--color-shadow`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: [`--space-normal`](/ui/getSpaceClass), [`--space-small`](/ui/getSpaceClass), [`--color-shadow`](/ui/getColorClass), and [`--duration-fast`](/ui/getDurationClass).
 
 ## See also
 

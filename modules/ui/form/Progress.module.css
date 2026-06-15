@@ -1,4 +1,7 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Color.module.css";
+@import "../style/Duration.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	/* Continuous progress bar — a single track that fills horizontally. */

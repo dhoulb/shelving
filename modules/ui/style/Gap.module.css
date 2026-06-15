@@ -1,4 +1,5 @@
-@import "base.css";
+@import "layers.css";
+@import "Space.module.css";
 
 @layer variants {
 	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the spacing between their items. */

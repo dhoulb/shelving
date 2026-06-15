@@ -1,0 +1,26 @@
+@import "layers.css";
+
+@layer defaults {
+	:root {
+		/* Strokes — border thicknesses. Components hard-code to these and expose per-component
+		 * `--x-border` / `--x-stroke` hooks to override. */
+		--stroke: 2px;
+		--stroke-normal: calc(var(--stroke) * 1);
+		--stroke-thick: calc(var(--stroke) * 1.5);
+
+		/* Semantic strokes */
+		--stroke-focus: var(--stroke-thick);
+	}
+}
+
+@layer variants {
+	/* Border-thickness variants. */
+	.stroke-normal {
+		border-style: solid;
+		border-width: var(--stroke-normal);
+	}
+	.stroke-thick {
+		border-style: solid;
+		border-width: var(--stroke-thick);
+	}
+}

@@ -1,4 +1,9 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Radius.module.css";
+@import "../style/Shadow.module.css";
+@import "../style/Space.module.css";
+@import "../style/Stroke.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.wrap {

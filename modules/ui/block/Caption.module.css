@@ -1,4 +1,7 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Size.module.css";
+@import "../style/Space.module.css";
+@import "../style/Weight.module.css";
 
 @layer components {
 	.caption,

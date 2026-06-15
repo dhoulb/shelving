@@ -1,72 +1,8 @@
-@import "base.css";
+@import "layers.css";
 @import "Tint.module.css";
 
 @layer variants {
-	/* Font-family variants. */
-	.title {
-		font-family: var(--font-heading);
-	}
-	.body {
-		font-family: var(--font-body);
-	}
-	.code {
-		font-family: var(--font-code);
-	}
-	.label {
-		font-family: var(--font-code);
-	}
-
-	/* Font weight variants. */
-	.weight-title {
-		font-weight: var(--weight-heading);
-	}
-	.weight-body {
-		font-weight: var(--weight-body);
-	}
-	.weight-code {
-		font-weight: var(--weight-code);
-	}
-	.weight-label {
-		font-weight: var(--weight-code);
-	}
-	.weight-normal {
-		font-weight: var(--weight-normal);
-	}
-	.weight-strong {
-		font-weight: var(--weight-strong);
-	}
-
-	/* Font-size variants. */
-	.xxsmall {
-		font-size: var(--size-xxsmall);
-		line-height: var(--leading);
-	}
-	.xsmall {
-		font-size: var(--size-xsmall);
-		line-height: var(--leading);
-	}
-	.small {
-		font-size: var(--size-small);
-		line-height: var(--leading);
-	}
-	.normal {
-		font-size: var(--size-normal);
-		line-height: var(--leading);
-	}
-	.large {
-		font-size: var(--size-large);
-		line-height: var(--leading);
-	}
-	.xlarge {
-		font-size: var(--size-xlarge);
-		line-height: var(--leading);
-	}
-	.xxlarge {
-		font-size: var(--size-xxlarge);
-		line-height: var(--leading);
-	}
-
-	/* Text tint variants */
+	/* Text tint variants — set CSS `color:` to a shade of the current tint ladder. */
 	.tint-00 {
 		color: var(--tint-00);
 	}
