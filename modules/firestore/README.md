@@ -1,18 +1,18 @@
 # firestore
 
-[DBProvider](/db) implementations for Google Firestore. Three variants are available, each targeting a different SDK and runtime context. Choose the one that matches where your code runs.
+[`DBProvider`](/db/DBProvider) implementations for Google Firestore. Three variants are available, each targeting a different SDK and runtime context. Choose the one that matches where your code runs.
 
 | Provider | SDK | Realtime | Bundle size |
 |---|---|---|---|
-| `FirestoreClientProvider` | `firebase/firestore` | Yes | Full |
-| `FirestoreLiteProvider` | `firebase/firestore/lite` | No | Smaller |
-| `FirestoreServerProvider` | `@google-cloud/firestore` | Yes | Server only |
+| [`FirestoreClientProvider`](/firestore/client/FirestoreClientProvider) | `firebase/firestore` | Yes | Full |
+| [`FirestoreLiteProvider`](/firestore/lite/FirestoreLiteProvider) | `firebase/firestore/lite` | No | Smaller |
+| [`FirestoreServerProvider`](/firestore/server/FirestoreServerProvider) | `@google-cloud/firestore` | Yes | Server only |
 
-All three support filtering, sorting, pagination, partial updates, and `countQuery()`. The difference is in realtime support, SDK size, and where the code runs.
+All three support filtering, sorting, pagination, partial updates, and [`.countQuery()`](/db/DBProvider/countQuery). The difference is in realtime support, SDK size, and where the code runs.
 
 ## Client SDK (`FirestoreClientProvider`)
 
-Use in the browser or in any environment where the full Firebase JS SDK is appropriate. Supports offline persistence and realtime subscriptions via `getItemSequence()` and `getQuerySequence()`.
+Use in the browser or in any environment where the full Firebase JS SDK is appropriate. Supports offline persistence and realtime subscriptions via [`.getItemSequence()`](/db/DBProvider/getItemSequence) and [`.getQuerySequence()`](/db/DBProvider/getQuerySequence).
 
 **Install:**
 
@@ -41,7 +41,7 @@ const provider = new FirestoreClientProvider(db);
 
 A lighter alternative to the full client SDK, suitable for browser or server environments where realtime updates are not needed. Produces a smaller bundle and avoids the overhead of persistent connections.
 
-`getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+`.getItemSequence()` and `.getQuerySequence()` throw [`UnimplementedError`](/error/UnimplementedError).
 
 **Install:**
 

@@ -1,16 +1,16 @@
 # Providers
 
-This directory contains `DBProvider` — the abstract base every backend implements — and all the built-in provider implementations. Providers are composable: wrap a backend in any combination of `ValidationDBProvider`, `CacheDBProvider`, or `DebugDBProvider` to add behaviour without touching call sites.
+This directory contains [`DBProvider`](/db/DBProvider) — the abstract base every backend implements — and all the built-in provider implementations. Providers are composable: wrap a backend in any combination of [`ValidationDBProvider`](/db/ValidationDBProvider), [`CacheDBProvider`](/db/CacheDBProvider), or [`DebugDBProvider`](/db/DebugDBProvider) to add behaviour without touching call sites.
 
 ## Concepts
 
 ### DBProvider
 
-`DBProvider` is the abstract base class. Concrete backends implement its abstract methods; the base class provides default implementations for `requireItem`, `countQuery`, `getFirst`, and `requireFirst` built on top of them.
+`DBProvider` is the abstract base class. Concrete backends implement its abstract methods; the base class provides default implementations for [`.requireItem()`](/db/DBProvider/requireItem), [`.countQuery()`](/db/DBProvider/countQuery), [`.getFirst()`](/db/DBProvider/getFirst), and [`.requireFirst()`](/db/DBProvider/requireFirst) built on top of them.
 
 `DBProvider` implements `AsyncDisposable`. Use `await using provider = …` or `await provider[Symbol.asyncDispose]()` to release underlying connections.
 
-SQLite realtime sequences (`getItemSequence`, `getQuerySequence`) are not supported by `SQLProvider` — they throw `UnimplementedError`. Realtime is available from `MemoryDBProvider` and cloud providers.
+SQLite realtime sequences ([`.getItemSequence()`](/db/DBProvider/getItemSequence), [`.getQuerySequence()`](/db/DBProvider/getQuerySequence)) are not supported by [`SQLProvider`](/db/SQLProvider) — they throw [`UnimplementedError`](/error/UnimplementedError). Realtime is available from [`MemoryDBProvider`](/db/MemoryDBProvider) and cloud providers.
 
 ### Provider chain
 
@@ -19,15 +19,15 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | Provider | Role |
 |---|---|
 | `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests and as the cache layer. |
-| `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws `ValueError` on bad backend data. |
+| `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws [`ValueError`](/error/ValueError) on bad backend data. |
 | `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. |
-| `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |
+| [`ThroughDBProvider`](/db/ThroughDBProvider) | Identity passthrough. Extend this to override only specific methods. |
 | `DebugDBProvider` | Logs all operations to the console (ANSI-formatted). Extends `ThroughDBProvider`. |
-| `ChangesDBProvider` | Accumulates a `.changes` log of every write. Useful for audit trails and testing. Extends `ThroughDBProvider`. |
-| `MockDBProvider` | Extends `MemoryDBProvider` and records every call in `.calls`. Use in tests to assert operations. |
+| [`ChangesDBProvider`](/db/ChangesDBProvider) | Accumulates a [`.changes`](/db/ChangesDBProvider/changes) log of every write. Useful for audit trails and testing. Extends `ThroughDBProvider`. |
+| [`MockDBProvider`](/db/MockDBProvider) | Extends `MemoryDBProvider` and records every call in [`.calls`](/db/MockDBProvider/calls). Use in tests to assert operations. |
 | `SQLProvider` | Abstract SQL base — concrete subclasses bind it to a driver. |
-| `SQLiteProvider` | Abstract SQL backend targeting SQLite / D1 with JSON1 support for nested keys and array operations. |
-| `PostgreSQLProvider` | Abstract SQL backend targeting PostgreSQL with JSONB support. |
+| [`SQLiteProvider`](/db/SQLiteProvider) | Abstract SQL backend targeting SQLite / D1 with JSON1 support for nested keys and array operations. |
+| [`PostgreSQLProvider`](/db/PostgreSQLProvider) | Abstract SQL backend targeting PostgreSQL with JSONB support. |
 
 ## Usage
 
@@ -49,9 +49,9 @@ const provider = new CacheDBProvider(
 
 ## See also
 
-- [db](/db) — overview and full usage examples
-- [db/collection](/db/collection) — `Collection` / `COLLECTION` definition
-- [db/cache](/db/cache) — `DBCache` and `CollectionCache` for reactive store management
-- [db/migrate](/db/migrate) — `SQLiteMigrator` / `PostgreSQLMigrator` for schema migration
-- [cloudflare](/cloudflare) — Cloudflare KV and D1 provider implementations
-- [firestore](/firestore) — Firestore provider implementation
+- [`db`](/db) — overview and full usage examples
+- [`db`](/db) — [`Collection`](/db/Collection) / [`COLLECTION()`](/db/COLLECTION) definition
+- [`db`](/db) — [`DBCache`](/db/DBCache) and [`CollectionCache`](/db/CollectionCache) for reactive store management
+- [`db`](/db) — [`SQLiteMigrator`](/db/SQLiteMigrator) / [`PostgreSQLMigrator`](/db/PostgreSQLMigrator) for schema migration
+- [`cloudflare`](/cloudflare) — Cloudflare KV and D1 provider implementations
+- [`firestore`](/firestore/client) — Firestore provider implementation

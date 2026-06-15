@@ -426,6 +426,37 @@ Checklist:
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
 
+### Cross-references and token display
+
+Whenever a README, per-symbol `.md` page, or docblock names another module or token — a class, function, constant, type, method, property, or component — link it to its canonical docs-site page. Use a backtick-quoted name as the link text and a site-root-relative path as the target:
+
+```
+[`BooleanSchema`](/schema/BooleanSchema)
+```
+
+i.e. ``[`nameOfToken`](/canonical/path)``. This is mandatory for **"See also" lists** and for **inline references** to classes / functions / methods / properties / components alike — not just link lists. Link the first mention in a passage; don't re-link the same token on every line.
+
+**Canonical paths** mirror the docs-site router (the path the page actually resolves at — note this is *not* the same as the longer `@see` page URL):
+
+- A top-level module is `/<module>` — `/schema`, `/db`, `/store`, `/ui`.
+- A token is `/<module>/<Token>` — `/schema/BooleanSchema`, `/db/Collection`, `/store/Store`.
+- A member is `/<module>/<Token>/<member>` — `/schema/BooleanSchema/validate`, `/store/Store/value`.
+- The `util` module is published per-file, so its tokens are `/util/<file>/<Token>` — `/util/array/getArray`, `/util/format/formatDate`, `/util/object/withProp`.
+
+**Only link to paths that resolve to a real page.** The docs tree is flat per top-level module: there are no submodule pages (`/db/collection`, `/api/provider`, `/markup/rule`, `/ui/tree`), and no bare `/firestore` or `/util` page. Link a submodule or module concept to its nearest real page instead — `/db`, `/api`, `/markup`, `/firestore/client`, or the specific `/util/<file>`.
+
+**Token display style.** Format a token name so its kind reads from the text, then put the styled name inside the link:
+
+| Kind | Style | Example |
+|---|---|---|
+| Function | trailing parens | `formatDate()` |
+| Method | leading dot + trailing parens | `.validate()` |
+| Property | leading dot | `.value` |
+| Component | angle brackets | `<Section>` |
+| Class / interface / type / constant | bare name | `BooleanSchema`, `STRING` |
+
+So a linked reference reads ``[`<Section>`](/ui/Section)``, ``[`formatDate()`](/util/format/formatDate)``, ``[`.validate()`](/schema/BooleanSchema/validate)``, or ``[`.value`](/store/Store/value)``. Apply the same styling to unlinked mentions (e.g. a builtin or external symbol with no page) so the kind is still obvious.
+
 ### UI component pages and CSS-variable documentation
 
 Each reusable UI component's sibling `.md` (e.g. `modules/ui/block/Card.md`) follows the same shape as other per-symbol pages — a `# Name` heading, a short purpose paragraph, a "Things to know" bullet list, runnable `tsx` usage examples — plus a **Styling** section that documents the component's themeable surface. The CSS custom properties are written inline in the `.module.css` (`var(--card-background, …)`), so there's no declaration site for an extractor to read; the Styling table is the documented source of truth and must be kept in sync by hand.
