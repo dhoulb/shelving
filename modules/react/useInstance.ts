@@ -11,10 +11,7 @@ import type { Arguments } from "../util/function.js";
  * @param args Constructor arguments — a change in `args` constructs a fresh instance.
  * @returns The memoised instance, reconstructed only when `args` changes.
  *
- * @example
- * ```tsx
- * const cache = useInstance(DBCache, provider);
- * ```
+ * @example const cache = useInstance(DBCache, provider);
  *
  * @see https://dhoulb.github.io/shelving/react/useInstance
  */

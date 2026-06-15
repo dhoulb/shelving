@@ -24,10 +24,8 @@ const EXTERNAL_BLACKHOLE: ExternalStore = {
  * @returns The same `store` that was passed in (or `undefined`).
  *
  * @example
- * ```tsx
  * const store = useStore(myStore);
  * return <>{store.value}</>;
- * ```
  *
  * @see https://dhoulb.github.io/shelving/react/useStore
  */

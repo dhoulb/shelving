@@ -12,10 +12,7 @@ import { getLazy, type Lazy } from "../util/lazy.js";
  * @param args Arguments passed to `value()` when it is a function — a change in `args` recomputes the value.
  * @returns The memoised value, recomputed only when `args` changes.
  *
- * @example
- * ```tsx
- * const config = useLazy(() => expensiveConfig(id), id);
- * ```
+ * @example const config = useLazy(() => expensiveConfig(id), id);
  *
  * @see https://dhoulb.github.io/shelving/react/useLazy
  */

@@ -55,10 +55,7 @@ export interface DirectoryExtractorOptions {
  * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
  *   and/or `IndexExtractor` to opt in to those behaviours.
  *
- * @example
- * ```ts
- * const tree = await new DirectoryExtractor().extract("modules/util");
- * ```
+ * @example const tree = await new DirectoryExtractor().extract("modules/util");
  *
  * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor
  */
@@ -72,10 +69,7 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	 *
 	 * @param options Options including the `extractors` dispatch table, `base` path, and `ignore` patterns.
 	 *
-	 * @example
-	 * ```ts
-	 * const extractor = new DirectoryExtractor({ base: "/repo/modules" });
-	 * ```
+	 * @example const extractor = new DirectoryExtractor({ base: "/repo/modules" });
 	 */
 	constructor({ extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {
 		super();
@@ -90,10 +84,7 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	 * @param source Path of the directory to walk — resolved against the configured `base`.
 	 * @returns Promise of the root `tree-element` for the walked directory.
 	 *
-	 * @example
-	 * ```ts
-	 * const tree = await new DirectoryExtractor().extract("modules/util");
-	 * ```
+	 * @example const tree = await new DirectoryExtractor().extract("modules/util");
 	 *
 	 * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor/extract
 	 */

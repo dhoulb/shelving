@@ -50,10 +50,7 @@ export interface DBContext<I extends Identifier, T extends Data> {
  * @param provider `DBProvider` the created context resolves item and query stores against.
  * @returns `DBContext` bundle containing the `useItem()` and `useQuery()` hooks and the `<DBContext>` wrapper component.
  *
- * @example
- * ```tsx
- * const { useItem, useQuery, DBContext } = createDBContext(provider);
- * ```
+ * @example const { useItem, useQuery, DBContext } = createDBContext(provider);
  *
  * @see https://dhoulb.github.io/shelving/react/createDBContext
  */
