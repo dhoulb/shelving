@@ -1,14 +1,15 @@
 import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
-import { EMPTY_OPTION_CLASS, SELECT_INPUT_CLASS, VALUE_OPTION_CLASS, type ValueInputProps } from "./Input.js";
+import { getClass } from "../util/css.js";
+import { EMPTY_OPTION_CLASS, getInputClass, type InputVariants, SELECT_CLASS, VALUE_OPTION_CLASS, type ValueInputProps } from "./Input.js";
 
 /**
  * Props for `SelectInput`, a dropdown `<select>` bound to a string value.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectProps
  */
-export interface SelectProps<T extends string> extends ValueInputProps<T> {
+export interface SelectProps<T extends string> extends ValueInputProps<T>, InputVariants {
 	/** The options for the select. */
 	options: ChoiceOptions<T>;
 }
@@ -32,13 +33,14 @@ export function SelectInput({
 	value = "",
 	onValue,
 	options,
+	...variants
 }: SelectProps<string>): ReactElement {
 	return (
 		<select
 			name={name}
 			defaultValue={value}
 			onChange={e => onValue(e.currentTarget.value || undefined)}
-			className={SELECT_INPUT_CLASS}
+			className={getClass(getInputClass(variants), SELECT_CLASS)}
 			title={message}
 			aria-invalid={!!message}
 			disabled={disabled}

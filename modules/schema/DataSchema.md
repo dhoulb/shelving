@@ -2,7 +2,7 @@
 
 Validates a plain object whose properties each have their own schema. The term `Data` in Shelving refers to a plain object with known named properties; a `DataSchema` is the validator for one.
 
-When several properties fail, the errors are joined by `\n` with each field name prepended — e.g. `"name: Required\nprice: Minimum 0"`. This file also exports the `DATA`, `ITEM`, and `PARTIAL` factories that build `DataSchema` instances.
+When several properties fail, the errors are joined by `\n` with each field name prepended — e.g. `"name: Required\nprice: Minimum 0"`. This file also exports the [`DATA`](/schema/DATA), [`ITEM`](/schema/ITEM), and [`PARTIAL`](/schema/PARTIAL) sugar factories that build `DataSchema` instances.
 
 ## Usage
 

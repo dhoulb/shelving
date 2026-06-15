@@ -1,7 +1,8 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { StringInputType } from "../../schema/StringSchema.js";
 import { PASSTHROUGH } from "../../util/function.js";
-import { MULTILINE_TEXT_INPUT_CLASS, TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
+import { getClass } from "../util/css.js";
+import { getInputClass, type InputVariants, MULTILINE_CLASS, TEXT_CLASS, type ValueInputProps } from "./Input.js";
 
 type TextFormatter = (str: string) => string;
 
@@ -10,7 +11,7 @@ type TextFormatter = (str: string) => string;
  *
  * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInputProps
  */
-export interface TextInputProps extends ValueInputProps<string> {
+export interface TextInputProps extends ValueInputProps<string>, InputVariants {
 	rows?: number | undefined;
 	multiline?: boolean;
 	input?: StringInputType;
@@ -44,6 +45,7 @@ export function TextInput({
 	max = Number.POSITIVE_INFINITY,
 	rows = 1,
 	formatter = PASSTHROUGH,
+	...variants
 }: TextInputProps): ReactElement {
 	const onBlur = ({ currentTarget }: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		currentTarget.value = formatter(currentTarget.value);
@@ -66,7 +68,7 @@ export function TextInput({
 				required={required && min > 0}
 				disabled={disabled}
 				placeholder={placeholder || " "}
-				className={MULTILINE_TEXT_INPUT_CLASS}
+				className={getClass(getInputClass(variants), TEXT_CLASS, MULTILINE_CLASS)}
 				onInput={onChange}
 				onChange={onChange}
 				onBlur={onBlur}
@@ -90,7 +92,7 @@ export function TextInput({
 			required={required && min > 0}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={TEXT_INPUT_CLASS}
+			className={getClass(getInputClass(variants), TEXT_CLASS)}
 			onInput={onChange}
 			onChange={onChange}
 			onBlur={onBlur}

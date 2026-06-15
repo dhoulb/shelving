@@ -20,7 +20,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
- * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
+ * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
@@ -341,10 +341,11 @@ function _getReturns(
 
 /**
  * Extract class or interface members as child elements.
- * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance); the title stays the bare member `name` / `name()`.
+ * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance) and is prebaked into the member `title` (`Class.name` / `Class.name()`).
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
  * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
  * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
+ * - `static` members are labelled `static method` / `static property` so the docs site groups them in their own sections, separate from instance `method` / `property`, and their rendered signature is prefixed with the `static ` keyword.
  */
 function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, className: string): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
@@ -361,6 +362,11 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		// Skip `declare` members — ambient type-only re-declarations (e.g. a subclass narrowing an inherited property's type), not new API.
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
 
+		// `static` members are grouped and labelled separately from instance members (`static method` / `static property`),
+		// and carry the `static ` keyword in their rendered signature.
+		const isStatic = modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword);
+		const staticPrefix = isStatic ? "static " : "";
+
 		const memberJSDoc = _getJSDoc(member, source);
 		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
 		const description = extractMarkdownProps(memberJSDoc?.description ?? "").description;
@@ -368,7 +374,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
 			const ret = member.type ? member.type.getText(source) : "void";
-			const signature = `${name}(${params}): ${ret}`;
+			const signature = `${staticPrefix}${name}(${params}): ${ret}`;
 			const key = name;
 			const existingIndex = members.findIndex(m => m.key === key);
 			const existing = members[existingIndex];
@@ -383,10 +389,10 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					key,
 					props: {
 						name,
-						title: `${name}()`,
+						title: `${className}.${name}()`,
 						description,
 						content,
-						kind: "method",
+						kind: isStatic ? "static method" : "method",
 						class: className,
 						signatures: [signature],
 					},
@@ -400,13 +406,13 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 				key: name,
 				props: {
 					name,
-					title: name,
+					title: `${className}.${name}`,
 					description,
 					content,
-					kind: "property",
+					kind: isStatic ? "static property" : "property",
 					class: className,
 					readonly,
-					signatures: type ? [`${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
+					signatures: type ? [`${staticPrefix}${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
 				},
 			});
 		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
@@ -422,7 +428,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 						...existing.props,
 						// A getter + setter pair is writable — drop the read-only flag and the `readonly ` signature prefix.
 						readonly: undefined,
-						signatures: type ? [`${name}: ${type}`] : existing.props.signatures,
+						signatures: type ? [`${staticPrefix}${name}: ${type}`] : existing.props.signatures,
 					},
 				};
 			} else {
@@ -431,13 +437,13 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					key,
 					props: {
 						name,
-						title: name,
+						title: `${className}.${name}`,
 						description,
 						content,
-						kind: "property",
+						kind: isStatic ? "static property" : "property",
 						class: className,
 						readonly: ts.isGetAccessor(member) || undefined,
-						signatures: type ? [`${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
+						signatures: type ? [`${staticPrefix}${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
 					},
 				});
 			}

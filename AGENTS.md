@@ -441,25 +441,41 @@ A component that exposes no own hooks and only inherits says so explicitly in on
 
 The TypeScript extractor infers a symbol's `kind` from its declaration (`function`, `class`, `interface`, `type`, `constant`). A `@kind <name>` tag in the docblock overrides that. Its primary use is `@kind component` on every reusable React component so the docs site groups and colours components separately from plain functions. The tag is consumed by the extractor (it does not appear in the rendered page body), and a non-`function` kind renders the title as a bare name (`Card`, not `Card()`). New documented kinds need a colour in `DocumentationKind` and a section in `DocumentationPage`'s `KIND_SECTIONS`.
 
-### Factory functions
+### Sugar instances and factories
 
-A **factory** is a function (or constant) whose purpose is to call `new SomeClass(...)` with sensible defaults — e.g. `DATA` is a factory for `DataSchema`, `NULLABLE` for `NullableSchema`.
+For convenience the `schema` module ships **sugar** — pre-built shortcuts that improve the readability of code that creates schemas. There are two kinds, named consistently:
 
-- Write factories as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section)
-- Mark a factory in its docblock with a short italic line naming the class it builds, on its own paragraph after the summary:
+- A **sugar instance** is a pre-instantiated copy of a `Schema` class exported as an `ALL_CAPS` constant — e.g. `STRING` is `new StringSchema({})`, `REQUIRED_STRING` is `new StringSchema({ min: 1 })`.
+- A **sugar factory** is a `function` whose purpose is to call `new SomeClass(...)` with sensible defaults — e.g. `DATA` builds a `DataSchema`, `NULLABLE` a `NullableSchema`.
+
+**Sugar instances.** Open the docblock with one line that states the class it instantiates (as a docs-site markdown link) and the equivalent constructor call, since that first line becomes the card `description`:
+
+  ```ts
+  /**
+   * Sugar instance of [`StringSchema`](/schema/StringSchema) for an unconstrained string. Equivalent to `new StringSchema({})`.
+   *
+   * @example STRING.validate(123); // Returns "123"
+   * @see https://dhoulb.github.io/shelving/schema/StringSchema/STRING
+   */
+  export const STRING = new StringSchema({});
+  ```
+
+  When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and link the wrapped sugar instance (`` [`TITLE`](/schema/TITLE) ``).
+
+**Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
 
   ```ts
   /**
    * Create a `DataSchema` for a set of properties.
    *
-   * *Factory for `DataSchema`.*
+   * Sugar factory for [`DataSchema`](/schema/DataSchema).
    */
   export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
   	return new DataSchema({ props });
   }
   ```
 
-- The canonical wording is exactly `*Factory for \`ClassName\`.*` (italicised, backtick-quoted class name). When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+- The canonical wording is exactly `Sugar factory for [\`ClassName\`](/schema/ClassName).` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with a backtick-quoted class name linked to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
 
 ### Docblock standards
 

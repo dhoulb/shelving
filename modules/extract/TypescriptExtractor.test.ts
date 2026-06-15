@@ -75,9 +75,59 @@ export class Store {
 		expect(cls.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "property", name: "value", title: "value", class: "Store", signatures: ["value: string"] },
+				props: { kind: "property", name: "value", title: "Store.value", class: "Store", signatures: ["value: string"] },
 			},
-			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "set()", class: "Store" } },
+			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "Store.set()", class: "Store" } },
+		]);
+	});
+
+	test("labels static members as `static method` / `static property`", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A colour. */
+export class Color {
+	/** Parse a colour. */
+	static from(possible: unknown): Color | undefined { return undefined; }
+	/** Default colour. */
+	static DEFAULT: string = "#000";
+	/** Format the colour. */
+	toString(): string { return ""; }
+	/** Red channel. */
+	red: number;
+}
+`),
+		);
+		const children = element.props.children as unknown[];
+		const cls = children[0] as { props: { children: unknown[] } };
+		expect(cls.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "static method",
+					name: "from",
+					title: "Color.from()",
+					class: "Color",
+					signatures: ["static from(possible: unknown): Color | undefined"],
+				},
+			},
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "static property",
+					name: "DEFAULT",
+					title: "Color.DEFAULT",
+					class: "Color",
+					signatures: ["static DEFAULT: string"],
+				},
+			},
+			{
+				type: "tree-documentation",
+				props: { kind: "method", name: "toString", title: "Color.toString()", class: "Color", signatures: ["toString(): string"] },
+			},
+			{
+				type: "tree-documentation",
+				props: { kind: "property", name: "red", title: "Color.red", class: "Color", signatures: ["red: number"] },
+			},
 		]);
 	});
 
@@ -154,7 +204,7 @@ export class Foo {
 		expect(element.key).toBe("array.ts");
 	});
 
-	test("sets title with () for functions and methods, bare name for other kinds", async () => {
+	test("sets title with () for functions, Class.name() for methods, Class.name for properties, bare name for other kinds", async () => {
 		const element = await extractor.extract(
 			file(`
 /** A function. */
@@ -182,8 +232,8 @@ export class Widget {
 					name: "Widget",
 					title: "Widget",
 					children: [
-						{ props: { kind: "property", name: "size", title: "size" } },
-						{ props: { kind: "method", name: "resize", title: "resize()" } },
+						{ props: { kind: "property", name: "size", title: "Widget.size" } },
+						{ props: { kind: "method", name: "resize", title: "Widget.resize()" } },
 					],
 				},
 			},
@@ -274,7 +324,7 @@ export class MemoryStore extends AbstractStore {
 		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
 		// Only the directly-implemented `value` survives — `get()` and `size` carry `override` and are documented on the base class.
 		expect(cls?.props.children).toMatchObject([
-			{ props: { kind: "property", name: "value", title: "value", class: "MemoryStore", readonly: true } },
+			{ props: { kind: "property", name: "value", title: "MemoryStore.value", class: "MemoryStore", readonly: true } },
 		]);
 		expect(cls?.props.children).toHaveLength(1);
 	});
@@ -298,13 +348,13 @@ export class Store {
 				props: {
 					kind: "property",
 					name: "size",
-					title: "size",
+					title: "Store.size",
 					class: "Store",
 					readonly: true,
 					signatures: ["readonly size: number"],
 				},
 			},
-			{ props: { kind: "property", name: "name", title: "name", class: "Store", signatures: ["name: string"] } },
+			{ props: { kind: "property", name: "name", title: "Store.name", class: "Store", signatures: ["name: string"] } },
 		]);
 		// The getter+setter pair must NOT be flagged readonly.
 		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
@@ -346,7 +396,7 @@ export class BooleanSchema extends Schema {
 		);
 		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
 		// The `declare` field is omitted; only the genuinely-new `check()` survives.
-		expect(cls?.props.children).toMatchObject([{ props: { kind: "method", name: "check", title: "check()" } }]);
+		expect(cls?.props.children).toMatchObject([{ props: { kind: "method", name: "check", title: "BooleanSchema.check()" } }]);
 		expect(cls?.props.children).toHaveLength(1);
 	});
 

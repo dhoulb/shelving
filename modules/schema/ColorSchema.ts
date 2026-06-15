@@ -60,7 +60,7 @@ export class ColorSchema extends StringSchema {
 }
 
 /**
- * Valid color hex string, e.g. `#00CCFF` (required because empty string is invalid).
+ * Sugar instance of [`ColorSchema`](/schema/ColorSchema) for a required hex color string, e.g. `#00CCFF`. Equivalent to `new ColorSchema({})`.
  *
  * @example COLOR.validate("#00CCFF"); // Returns "#00CCFF"
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/COLOR
@@ -68,7 +68,7 @@ export class ColorSchema extends StringSchema {
 export const COLOR = new ColorSchema({});
 
 /**
- * Valid color hex string, e.g. `#00CCFF`, or `null`
+ * Sugar instance allowing a [`COLOR`](/schema/COLOR) or `null`. Equivalent to `NULLABLE(COLOR)`.
  *
  * @example NULLABLE_COLOR.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/NULLABLE_COLOR

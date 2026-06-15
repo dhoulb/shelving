@@ -2,7 +2,7 @@
 
 Wraps another schema to allow `null` as a valid value. Following the robustness principle, `undefined` and the empty string `""` also coerce to `null`; any other value is delegated to the wrapped schema.
 
-`NULLABLE(schema)` is the factory that builds a `NullableSchema` around an existing schema.
+[`NULLABLE(schema)`](/schema/NULLABLE) is the sugar factory that builds a `NullableSchema` around an existing schema.
 
 ## Usage
 

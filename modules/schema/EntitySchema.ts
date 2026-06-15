@@ -58,7 +58,7 @@ export class EntitySchema<T extends string> extends StringSchema {
 }
 
 /**
- * Valid entity, e.g. `challenge:a1b2c3`
+ * Sugar instance of [`EntitySchema`](/schema/EntitySchema) for an entity string, e.g. `challenge:a1b2c3`. Equivalent to `new EntitySchema({})`.
  *
  * @example ENTITY.validate("challenge:a1b2c3") // "challenge:a1b2c3"
  * @see https://dhoulb.github.io/shelving/schema/EntitySchema/ENTITY
@@ -66,7 +66,7 @@ export class EntitySchema<T extends string> extends StringSchema {
 export const ENTITY = new EntitySchema({});
 
 /**
- * Valid optional entity, e.g. `challenge:a1b2c3`, or `null`
+ * Sugar instance allowing an [`ENTITY`](/schema/ENTITY) or `null`. Equivalent to `NULLABLE(ENTITY)`.
  *
  * @example NULLABLE_ENTITY.validate("") // null
  * @see https://dhoulb.github.io/shelving/schema/EntitySchema/NULLABLE_ENTITY

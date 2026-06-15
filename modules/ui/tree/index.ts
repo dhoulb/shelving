@@ -4,6 +4,7 @@ export * from "./TreeButton.js";
 export * from "./TreeCard.js";
 export * from "./TreeCards.js";
 export * from "./TreeContext.js";
+export * from "./TreeIndexPage.js";
 export * from "./TreeMenu.js";
 export * from "./TreePage.js";
 export * from "./TreeRouter.js";

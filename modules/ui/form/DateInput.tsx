@@ -1,7 +1,8 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { DateInputType } from "../../schema/DateSchema.js";
 import { getDateString, getDateTimeString, getTimeString, type PossibleDate } from "../../util/date.js";
-import { TEXT_INPUT_CLASS, type ValueInputProps } from "./Input.js";
+import { getClass } from "../util/css.js";
+import { getInputClass, type InputVariants, TEXT_CLASS, type ValueInputProps } from "./Input.js";
 
 /** Convert a `PossibleDate` to a string for a specific date `<input type="etc">` type. */
 const _DATE_TO_STRING: { [K in DateInputType]: (d: PossibleDate | undefined) => string | undefined } = {
@@ -15,7 +16,7 @@ const _DATE_TO_STRING: { [K in DateInputType]: (d: PossibleDate | undefined) => 
  *
  * @see https://dhoulb.github.io/shelving/ui/form/DateInput/DateInputProps
  */
-export interface DateInputProps extends ValueInputProps<string, PossibleDate> {
+export interface DateInputProps extends ValueInputProps<string, PossibleDate>, InputVariants {
 	min?: PossibleDate | undefined;
 	max?: PossibleDate | undefined;
 	input?: DateInputType | undefined;
@@ -44,6 +45,7 @@ export function DateInput({
 	max,
 	input = "date",
 	step,
+	...variants
 }: DateInputProps): ReactElement {
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
 		onValue?.(e.currentTarget.value ?? undefined);
@@ -61,7 +63,7 @@ export function DateInput({
 			required={required}
 			defaultValue={dateToString(value)}
 			placeholder={placeholder || " "}
-			className={TEXT_INPUT_CLASS}
+			className={getClass(getInputClass(variants), TEXT_CLASS)}
 			onChange={onChange}
 			onInput={onChange}
 			title={message}
