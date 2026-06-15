@@ -24,6 +24,7 @@ export interface TreeSidebarProps {
  * - The home link uses `path` as its href (defaulting to `/`). The children's hrefs are computed by appending their `name` to the root's path.
  * - To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
  *
+ * @kind component
  * @param props The root `tree` element and optional root `path`.
  * @returns A `<Menu>` with a home link plus the root's children as navigation items.
  * @example <TreeSidebar tree={tree} />

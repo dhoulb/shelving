@@ -61,6 +61,7 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
  * @param props Props including the `schema` plus value input props.
  * @returns The matching input element for the schema.
  * @throws `UnexpectedError` if no input matches the schema type.
+ * @kind component
  * @example <SchemaInput name="email" schema={EMAIL} /> // Outputs a `<TextInput>` for the "email" property.
  * @example <SchemaInput name="age" schema={AGE} /> // Outputs a `<NumberInput>` for the "age" property.
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaInput

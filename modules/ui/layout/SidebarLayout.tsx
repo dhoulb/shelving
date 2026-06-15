@@ -27,6 +27,7 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
  * - Use the `--sidebar-layout-width`, `--sidebar-layout-bg`, `--sidebar-layout-border`, and `--sidebar-layout-color-border` custom properties to override defaults.
  *
+ * @kind component
  * @param sidebar The side-column content, rendered inside a `<nav>`.
  * @param children The main scrollable content.
  * @param right Render the sidebar on the right rather than the left (defaults to `false`).

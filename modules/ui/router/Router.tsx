@@ -31,6 +31,7 @@ export interface RouterProps extends PossibleMeta {
  * - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  *
+ * @kind component
  * @param routes The route table to match the current URL against.
  * @param fallback Element to render when nothing matches; explicit `null` renders nothing instead of throwing.
  * @param meta Optional meta (url/base) overrides for this router scope.

@@ -84,6 +84,7 @@ export interface TreeMenuProps {
  * - To customise renderers for specific types, wrap in `<TreeMenuMapping mapping={…}>`.
  * - Only directories and files appear — code symbols are kept off the navigation.
  *
+ * @kind component
  * @param props The root `tree` element and optional root `path`.
  * @returns A `<Menu>` of navigation links to the root's children.
  * @example <TreeMenu tree={tree} />

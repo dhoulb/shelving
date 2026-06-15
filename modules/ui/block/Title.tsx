@@ -31,6 +31,7 @@ export type TitleProps = HeadingProps;
  * Page title — renders an `<h1>`.
  * - The most prominent heading on a page; there should normally be exactly one.
  *
+ * @kind component
  * @param props Colour, space, and typography variants plus an optional `level` override and `children`.
  * @returns Rendered `<h1>` heading element.
  * @example <Title>Welcome</Title>

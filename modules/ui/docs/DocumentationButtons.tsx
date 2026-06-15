@@ -34,6 +34,8 @@ function* _relations({
  * - The target is a `<DocumentationButton>`, so it links to the referenced page when it exists in the tree and stays a plain label otherwise.
  * - Block spacing defaults to paragraph spacing (via `PARAGRAPH_CLASS`); pass `space` to override. Inner spacing is the flex gap.
  * - Renders nothing when the symbol has no relations.
+ *
+ * @kind component
  */
 export function DocumentationButtons({ wrap = true, left = true, gap = "none", ...props }: DocumentationButtonsProps): ReactElement | null {
 	const relations = Array.from(_relations(props));

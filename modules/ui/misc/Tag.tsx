@@ -46,6 +46,7 @@ export interface TagProps extends TagVariants, ClickableProps {}
  *
  * @param props Tag styling variants and clickable props.
  * @returns The tag element.
+ * @kind component
  * @example <Tag success>Active</Tag>
  * @example <Tag color="purple" href="/beta">Beta</Tag>
  * @see https://dhoulb.github.io/shelving/ui/misc/Tag/Tag

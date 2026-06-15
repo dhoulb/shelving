@@ -80,6 +80,7 @@ type CatcherState = {
  * - Catches render-time errors below it and shows the `as` component (defaults to `<ErrorNotice>`) with the caught `reason`.
  * - Provides a retry callback to descendant `<RetryButton>`s that clears the error and re-renders `children`.
  *
+ * @kind component
  * @example <Catcher><RiskyComponent /></Catcher>
  * @example <Catcher as={ErrorPage}><RiskyComponent /></Catcher>
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/Catcher

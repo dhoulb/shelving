@@ -21,6 +21,7 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * @param children The source markup string to parse and render (renders `null` when empty).
  * @param options Optional `MarkupOptions` overrides (`rules`, `rel`, `url`, `root`, `schemes`).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
+ * @kind component
  * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>
  * @see https://dhoulb.github.io/shelving/ui/misc/Markup/Markup
  */

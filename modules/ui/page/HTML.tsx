@@ -14,6 +14,7 @@ export interface HTMLProps extends PossibleMeta, ChildProps {}
  * Render the full `<html>` document shell wrapping `<head>` and `<body>`.
  * - Emits the literal `<head>` with `<base>` and other shell-level metadata; per-page hoistable elements (title, meta, links, stylesheets, scripts) come from `<Head>` inside `<Page>` and are hoisted into this `<head>` by React 19.
  *
+ * @kind component
  * @param children The document body content.
  * @param meta Initial meta (language/root/app) merged with the surrounding `<Meta>` context.
  * @returns The `<html>` document element.

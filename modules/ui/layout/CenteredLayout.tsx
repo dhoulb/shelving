@@ -18,6 +18,7 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  * Layout that centres its content with no header/footer and a narrow max-width.
  * - Used for e.g. login/register/error/form pages where the content is the only focus.
  *
+ * @kind component
  * @param children The content to centre.
  * @param fullWidth Drop the narrow max-width and let content fill the width (defaults to `false`).
  * @returns The centred layout element.

@@ -12,6 +12,7 @@ export interface CollapseTransitionProps extends TransitionProps {}
 /**
  * Transition that collapses its children in and out by animating their size.
  *
+ * @kind component
  * @param props Shared transition variant props plus `children`.
  * @returns A `<Transition>` element configured with the `collapse` class.
  * @example <CollapseTransition>{visible && <Panel />}</CollapseTransition>

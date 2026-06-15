@@ -21,6 +21,7 @@ export interface DialogProps extends OptionalChildProps {
  * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, or the close button.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
  *
+ * @kind component
  * @example dialogs.show(<Dialog><p>Are you sure?</p></Dialog>);
  * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/Dialog
  */

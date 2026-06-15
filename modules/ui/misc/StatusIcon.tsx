@@ -35,6 +35,7 @@ export interface StatusIconProps {
  * @param status The status to represent (defaults to `"info"`).
  * @param size Optional icon size (defaults to the current line height).
  * @returns The status icon element.
+ * @kind component
  * @example <StatusIcon status="error" size="large" />
  * @see https://dhoulb.github.io/shelving/ui/misc/StatusIcon/StatusIcon
  */

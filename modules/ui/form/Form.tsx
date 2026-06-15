@@ -51,6 +51,7 @@ export interface FormProps<T extends Data> extends OptionalChildProps {
  *
  * @param props Props including `schema`, initial `data`, `onSubmit`, `submit` content, and initial `messages`.
  * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
+ * @kind component
  * @example <Form schema={USER_SCHEMA} onSubmit={save} />
  * @see https://dhoulb.github.io/shelving/ui/form/Form/Form
  */

@@ -13,6 +13,7 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
  * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
  * - Updates `window.history` to match the page URL.
  *
+ * @kind component
  * @returns The hoistable head elements derived from the current `<Meta>` context.
  * @example <Page title="Settings"><Head />…</Page>
  * @see https://dhoulb.github.io/shelving/ui/page/Head/Head

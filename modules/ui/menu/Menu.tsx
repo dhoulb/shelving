@@ -25,6 +25,7 @@ export interface MenuProps extends OptionalChildProps {}
  * - Renders as a bare `<menu>` element — semantically equivalent to `<ul>` per HTML spec but more meaningful for menu contexts. Place inside a `<nav>` (or use the sidebar-style nav at the layout level) if a navigation landmark is needed.
  * - Nested `<Menu>` instances (typically inside a `<MenuItem>`) get indented via the `.menu .menu` CSS rule.
  *
+ * @kind component
  * @param children The `<MenuItem>` entries to list.
  * @returns The menu element.
  * @example <Menu><MenuItem href="/home">Home</MenuItem></Menu>
@@ -52,6 +53,7 @@ export interface MenuItemProps extends ClickableProps {
  * - Reads the current page URL from `<Meta>` and computes `active` / `proud` against its own `href`.
  * - Splits `children` into `[label, ...after]`: label goes inside the `<a>`; `after` is rendered as siblings below it, only when proud.
  *
+ * @kind component
  * @param href The link target, used to compute `active`/`proud` against the current URL.
  * @param children The label (first node) and optional submenu (remaining nodes).
  * @param props Additional `<Clickable>` props.

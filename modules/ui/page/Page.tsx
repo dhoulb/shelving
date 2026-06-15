@@ -16,6 +16,7 @@ export interface PageProps extends PossibleMeta, ChildProps {}
  * - Sets the document title and other head metadata via `<Head>`, which emits hoistable tags inline; React 19 hoists each one into the document `<head>`. `<base>` is not emitted here — it lives in the `<HTML>` shell's `<Head>`.
  * - Also updates `window.history` to match the page URL.
  *
+ * @kind component
  * @param children The page content.
  * @param meta Per-page meta (title, description, etc.) merged with the surrounding `<Meta>` context.
  * @returns The page element with its meta applied.
