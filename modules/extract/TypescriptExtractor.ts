@@ -627,15 +627,38 @@ function _parseJSDocThrows(text: string): DocumentationThrow[] {
 	return results;
 }
 
-/** Parse `@example` tags from a JSDoc comment. */
+/**
+ * Parse `@example` tags from a JSDoc comment.
+ * - Strips the `/** ... *​/` delimiters and per-line `*` continuation markers first, so example bodies never include a leading `*`.
+ * - Each `@example` block extends from its tag line (content may start on the same line) up to the next `@tag` or the end of the docblock, so multi-line examples are captured in full.
+ */
 function _parseJSDocExamples(text: string): DocumentationExample[] {
+	const body = text
+		.replace(/^\/\*\*\s*/, "")
+		.replace(/\s*\*\/$/, "")
+		.split("\n")
+		.map(l => l.replace(/^\s*\*\s?/, ""))
+		.join("\n");
+
 	const results: DocumentationExample[] = [];
-	// `@example` followed by the rest of the line.
-	const regexp = /@examples?\s+(.+)/g;
-	let match: RegExpExecArray | null;
-	while ((match = regexp.exec(text))) {
-		const description = match[1]?.trim();
-		if (description) results.push({ description });
+	let currentLines: string[] | undefined;
+	const flush = () => {
+		if (currentLines) {
+			const description = currentLines.join("\n").trim();
+			if (description) results.push({ description });
+		}
+		currentLines = undefined;
+	};
+	for (const line of body.split("\n")) {
+		const match = line.match(/^@(\w+)\s*(.*)$/);
+		if (match) {
+			flush();
+			// Start collecting a new example block; keep any content that followed the tag on the same line.
+			if (match[1] === "example" || match[1] === "examples") currentLines = match[2] ? [match[2]] : [];
+		} else if (currentLines) {
+			currentLines.push(line);
+		}
 	}
+	flush();
 	return results;
 }

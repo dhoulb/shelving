@@ -602,6 +602,28 @@ export function add(a: number, b: number): number { return a + b; }
 		expect(children[0]?.props.examples).toEqual([{ description: "add(1, 2)" }, { description: "add(3, 4)" }]);
 	});
 
+	test("parses multi-line @example blocks without leaking the docblock `*` prefix", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Make an endpoint.
+ * @example
+ * const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);
+ * const user = await provider.call(getUser, { id: "abc" });
+ * @see https://example.com/
+ */
+export function make(): void {}
+`),
+		);
+		const children = element.props.children as { props: { examples?: unknown } }[];
+		expect(children[0]?.props.examples).toEqual([
+			{
+				description:
+					'const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);\nconst user = await provider.call(getUser, { id: "abc" });',
+			},
+		]);
+	});
+
 	test("appends unhandled @rule blocks to content", async () => {
 		const element = await extractor.extract(
 			file(`
