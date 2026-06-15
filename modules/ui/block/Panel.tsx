@@ -29,6 +29,7 @@ export interface PanelProps extends ColorVariants, StatusVariants, TypographyVar
  *
  * Renders as a `<section>` by default; pass `as="header"` etc. for other semantic elements.
  *
+ * @kind component
  * @param props Colour, status, and typography variants plus `children`.
  * @returns Rendered full-width panel region.
  * @example <Panel><Block narrow><Title>Welcome</Title></Block></Panel>

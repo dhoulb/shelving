@@ -12,6 +12,7 @@ export interface HorizontalTransitionProps extends TransitionProps {}
 /**
  * Transition that slides its children horizontally — right when moving forward, left when moving back.
  *
+ * @kind component
  * @param props Shared transition variant props plus `children`.
  * @returns A `<Transition>` element configured with the horizontal slide classes.
  * @example <HorizontalTransition>{currentStep}</HorizontalTransition>

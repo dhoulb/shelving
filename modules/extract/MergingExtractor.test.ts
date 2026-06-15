@@ -52,6 +52,46 @@ describe("MergingExtractor", () => {
 		expect(Array.from(merged.props.children as Iterable<TreeElement>)).toHaveLength(1);
 	});
 
+	test("folds a .md into the same-named documentation token inside a sibling file", async () => {
+		const root = _dir("block", [
+			_file("Card.tsx", {
+				children: [
+					{ type: "tree-documentation", key: "Card", props: { name: "Card", content: "Docblock summary." } },
+					{ type: "tree-documentation", key: "CardProps", props: { name: "CardProps" } },
+				],
+			}),
+			_file("Card.md", { title: "Card", content: "Usage and styling." }),
+		]);
+		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		// The .md is consumed, the file element stays.
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("Card.tsx");
+		const tokens = Array.from(kids[0]?.props.children as Iterable<TreeElement>);
+		const card = tokens.find(t => t.key === "Card");
+		// Prose folded onto the token (docblock first, .md appended), not the file element.
+		expect(card?.props.content).toBe("Docblock summary.\n\nUsage and styling.");
+		// The file element itself stays prose-free; the sibling token CardProps is untouched.
+		expect(kids[0]?.props.content).toBeUndefined();
+		expect(tokens.find(t => t.key === "CardProps")?.props.content).toBeUndefined();
+	});
+
+	test("falls back to file-level merge when no same-named token exists", async () => {
+		// `template.md` documents a whole file/family — no `template` symbol — so it folds into the file element.
+		const root = _dir("util", [
+			_file("template.ts", {
+				content: "ts",
+				children: [{ type: "tree-documentation", key: "matchTemplate", props: { name: "matchTemplate" } }],
+			}),
+			_file("template.md", { content: "md" }),
+		]);
+		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);
+		const kids = Array.from(out.props.children as Iterable<TreeElement>);
+		expect(kids).toHaveLength(1);
+		expect(kids[0]?.key).toBe("template.ts");
+		expect(kids[0]?.props.content).toBe("ts\n\nmd");
+	});
+
 	test("leaves a standalone .md in place when no primary candidate exists", async () => {
 		const root = _dir("util", [_file("concepts.md", { title: "Concepts", content: "Standalone prose." })]);
 		const out = await new MergingExtractor(new _StubExtractor(root)).extract(undefined);

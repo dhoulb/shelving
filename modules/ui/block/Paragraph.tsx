@@ -30,6 +30,7 @@ export interface ParagraphProps extends ColorVariants, SpaceVariants, Typography
 /**
  * Paragraph block of body text — rendered as `<p>`.
  *
+ * @kind component
  * @param props Colour, space, and typography variants plus `children`.
  * @returns Rendered `<p>` paragraph element.
  * @example <Paragraph>Hello world.</Paragraph>

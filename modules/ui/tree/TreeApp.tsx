@@ -31,6 +31,7 @@ export interface TreeAppProps extends PossibleMeta {
  * - Element rendering uses the default mappings on `<TreePage>`, `<TreeMenu>`, `<TreeCards>`.
  *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
  *
+ * @kind component
  * @param props The `tree` to render, optional extra `routes`, and app meta.
  * @returns The configured `<App>` element with sidebar layout and tree routing.
  * @example <TreeApp tree={tree} title="Docs" />

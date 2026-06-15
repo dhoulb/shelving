@@ -13,6 +13,7 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
  * - Leads with the symbol's signature(s) as calm code blocks (`<DocumentationSignatures>`, same as the detail page), which already carry the name; falls back to the bare name for symbols with no signature (classes, interfaces, modules).
  * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
  *
+ * @kind component
  * @param props The documentation element's flattened props (`path`, `title`, `name`, `kind`, `description`, `signatures`, plus relational metadata); the `class` relation is dropped so member cards omit the redundant "member of" link.
  * @returns A `<Card>` linking to the symbol's own page.
  * @example <DocumentationCard {...element.props} />

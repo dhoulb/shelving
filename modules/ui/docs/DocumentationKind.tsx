@@ -8,19 +8,24 @@ import type { UIColor } from "../style/Color.js";
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKindProps
  */
 export interface DocumentationKindProps extends TagProps {
-	/** The documentation kind (e.g. `"function"`, `"class"`, `"interface"`, `"type"`, `"constant"`, `"method"`, `"property"`). */
+	/** The documentation kind (e.g. `"component"`, `"function"`, `"class"`, `"interface"`, `"type"`, `"constant"`, `"method"`, `"property"`). */
 	readonly kind: string;
 }
 
-/** Mapping from a documented symbol's `kind` to its raw colour variant. */
+/**
+ * Mapping from a documented symbol's `kind` to its raw colour variant.
+ * - Related kinds share a hue: component/class (purple), function/method (blue), interface/type (aqua).
+ * - Leaves `orange`, `pink`, and the brand aliases free for future kinds.
+ */
 const KIND_COLOR: { readonly [K in string]?: UIColor } = {
 	module: "red",
-	function: "blue",
+	component: "purple",
 	class: "purple",
+	function: "blue",
+	method: "blue",
 	interface: "aqua",
-	type: "pink",
+	type: "aqua",
 	constant: "green",
-	method: "orange",
 	property: "yellow",
 };
 

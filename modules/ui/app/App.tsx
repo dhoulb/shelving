@@ -19,6 +19,7 @@ export interface AppProps extends PossibleMeta, ChildProps {}
  * @param children The application content.
  * @param meta The root meta (app name, root URL, language, etc.).
  * @returns The app root element wrapping `children`.
+ * @kind component
  * @example <App app="My App" root="https://example.com/"><Navigation>…</Navigation></App>
  * @see https://dhoulb.github.io/shelving/ui/app/App/App
  */

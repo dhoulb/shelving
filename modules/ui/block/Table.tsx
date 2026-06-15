@@ -32,6 +32,7 @@ export interface TableProps extends ColorVariants, SpaceVariants, TypographyVari
  * - Wrap in a `<Scroll horizontal>` if the table may exceed the container width on small screens.
  * - `<th>` / `<td>` cells draw the borders (the `<table>` element itself has none); override their weight via the `--table-border` / `--table-stroke` hooks.
  *
+ * @kind component
  * @param props Colour, space, and typography variants plus `children`.
  * @returns Rendered `<table>` element.
  * @example <Table><tbody><tr><td>Cell</td></tr></tbody></Table>

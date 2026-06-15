@@ -25,6 +25,7 @@ const DEFAULT_TYPE = "unknown";
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
 const KIND_SECTIONS = {
+	component: "Components",
 	function: "Functions",
 	class: "Classes",
 	interface: "Interfaces",
@@ -40,6 +41,7 @@ const KIND_SECTIONS = {
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
  * - All sections are conditional — only render when they have entries.
  *
+ * @kind component
  * @param props The documentation element's flattened props (`title`, `name`, `kind`, `description`, `content`, `signatures`, `params`, `returns`, `throws`, `examples`, `children`, plus relational metadata).
  * @returns A `<Page>` containing the symbol's full documentation.
  * @example <DocumentationPage {...element.props} />

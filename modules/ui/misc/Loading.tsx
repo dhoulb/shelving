@@ -18,6 +18,7 @@ export interface LoadingProps {
  * - Self-contained inline SVG with a rotating indicator arc; inherits its colour and size from the surrounding text.
  *
  * @returns The spinner element.
+ * @kind component
  * @example <Loading />
  * @see https://dhoulb.github.io/shelving/ui/misc/Loading/Loading
  */

@@ -23,6 +23,7 @@ export interface NoticesProps extends FlexVariants {}
  *
  * @param props Flex styling variants for the container.
  * @returns The notices container element.
+ * @kind component
  * @example <Notices column />
  * @see https://dhoulb.github.io/shelving/ui/notice/Notices/Notices
  */

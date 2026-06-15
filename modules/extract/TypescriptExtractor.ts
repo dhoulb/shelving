@@ -18,6 +18,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
  * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
+ * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Top-of-file JSDoc comment becomes the file's `content`.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
@@ -139,7 +140,8 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	if (name.startsWith("_")) return;
 
 	const jsDoc = _getJSDoc(statement, source);
-	const kind = _getKind(statement);
+	// A `@kind` tag overrides the AST-inferred kind (e.g. `@kind component` for a React component declared as a function).
+	const kind = jsDoc?.kind ?? _getKind(statement);
 	if (!kind) return;
 
 	const signatures = _getSignatures(statement, source, name);
@@ -463,6 +465,8 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 
 interface JSDocResult {
 	description?: string | undefined;
+	/** Explicit kind override from an `@kind` tag (e.g. `"component"`), or `undefined` to use the AST-inferred kind. */
+	kind?: string | undefined;
 	params?: DocumentationParam[] | undefined;
 	returns?: DocumentationReturn[] | undefined;
 	throws?: DocumentationThrow[] | undefined;
@@ -473,10 +477,11 @@ interface JSDocResult {
 
 /**
  * `@rule` names handled (parsed or deliberately discarded) — everything else is appended to `unhandled` as raw markup.
+ * - `@kind` is parsed by `_parseJSDocKind` to override the AST-inferred kind, so it must not also leak into `unhandled`.
  * - `@see` is recognised here purely to strip it: it's a VS Code hover affordance (a link back to the docs site) and must
  *   never leak into the rendered page content. It has no dedicated parser; it's simply discarded from the `unhandled` bucket.
  */
-const _HANDLED_RULES = new Set(["param", "params", "return", "returns", "throw", "throws", "example", "examples", "see"]);
+const _HANDLED_RULES = new Set(["kind", "param", "params", "return", "returns", "throw", "throws", "example", "examples", "see"]);
 
 /** Extract JSDoc from a node. */
 function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefined {
@@ -491,6 +496,7 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 		if (!text.startsWith("/**")) continue;
 
 		const description = _parseJSDocComment(text);
+		const kind = _parseJSDocKind(text);
 		const params = _parseJSDocParams(text);
 		const returns = _parseJSDocReturns(text);
 		const throws = _parseJSDocThrows(text);
@@ -499,6 +505,7 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 
 		return {
 			description: description || undefined,
+			kind,
 			params: params.length ? params : undefined,
 			returns: returns.length ? returns : undefined,
 			throws: throws.length ? throws : undefined,
@@ -563,6 +570,12 @@ function _parseJSDocComment(text: string): string | undefined {
 
 	const result = description.join("\n").trim();
 	return result || undefined;
+}
+
+/** Parse a single `@kind` override from a JSDoc comment (e.g. `@kind component`), or `undefined` when absent. */
+function _parseJSDocKind(text: string): string | undefined {
+	// `@kind name` — a single identifier-ish token (letters, digits, hyphens).
+	return text.match(/@kind\s+([\w-]+)/)?.[1];
 }
 
 /** Parse `@param` tags from a JSDoc comment. Duplicates are kept (overloads). */

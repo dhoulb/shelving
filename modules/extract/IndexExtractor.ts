@@ -85,8 +85,14 @@ function _absorbIndex(element: TreeElement, index: Matchables): TreeElement {
 		notNullish(child.props.children) ? _absorbIndex(child, index) : child,
 	) as TreeElement[];
 
-	// Find the index child by key.
-	const indexChild = recursed.find(child => anyMatch(child.key, ...index));
+	// Find the index child by pattern priority: the earliest `index` pattern with a matching child wins, so a
+	// README.md is preferred over an index.ts barrel even when the barrel is listed first on disk (a barrel carries
+	// no prose, so absorbing it instead of the README would silently drop the directory's documentation).
+	let indexChild: TreeElement | undefined;
+	for (const matcher of index) {
+		indexChild = recursed.find(child => anyMatch(child.key, matcher));
+		if (indexChild) break;
+	}
 	if (!indexChild) return { ...element, props: { ...element.props, children: recursed } };
 
 	// Fold the index child into the parent, and drop it from children.
