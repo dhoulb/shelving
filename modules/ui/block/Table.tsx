@@ -6,19 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import TABLE_CSS from "./Table.module.css";
 
-/**
- * CSS class applied to the root element of every `Table`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Table/TABLE_CLASS
- */
-export const TABLE_CLASS = getModuleClass(TABLE_CSS, "divider");
-
-/**
- * CSS class that styles a `Table` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Table/TABLE_PROSE_CLASS
- */
-export const TABLE_PROSE_CLASS = getModuleClass(TABLE_CSS, "prose");
+const TABLE_CLASS = getModuleClass(TABLE_CSS, "divider");
 
 /**
  * Props for `Table` — colour, space, and typography variants plus `children`.

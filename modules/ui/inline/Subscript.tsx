@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import SUBSCRIPT_CSS from "./Subscript.module.css";
 
-/**
- * CSS class applied to the root element of every `Subscript`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Subscript/SUBSCRIPT_CLASS
- */
-export const SUBSCRIPT_CLASS = getModuleClass(SUBSCRIPT_CSS, "subscript");
-
-/**
- * CSS class that styles `Subscript` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Subscript/SUBSCRIPT_PROSE_CLASS
- */
-export const SUBSCRIPT_PROSE_CLASS = getModuleClass(SUBSCRIPT_CSS, "prose");
+const SUBSCRIPT_CLASS = getModuleClass(SUBSCRIPT_CSS, "subscript");
 
 /**
  * Props for `Subscript` — optional `children`.

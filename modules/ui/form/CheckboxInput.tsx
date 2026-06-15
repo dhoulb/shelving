@@ -3,7 +3,8 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { CHECKBOX_CLASS, getInputClass, type InputVariants, LABEL_CLASS, PLACEHOLDER_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 /**
  * Props for `CheckboxInput`, a boolean-valued checkbox input.
@@ -36,7 +37,7 @@ export function CheckboxInput({
 	const hasChildren = notNullish(children);
 	return (
 		<label
-			className={getClass(getInputClass(variants), LABEL_CLASS, getFlexClass(variants), hasChildren && PLACEHOLDER_CLASS)}
+			className={getClass(getInputClass(variants), INPUT_CSS.label, getFlexClass(variants), hasChildren && INPUT_CSS.placeholder)}
 			aria-invalid={!!message}
 		>
 			<input
@@ -47,7 +48,7 @@ export function CheckboxInput({
 				required={required}
 				disabled={disabled}
 				title={message}
-				className={CHECKBOX_CLASS}
+				className={INPUT_CSS.radio}
 			/>
 			<span>{hasChildren ? children : placeholder}</span>
 		</label>

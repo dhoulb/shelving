@@ -32,15 +32,15 @@ getModuleClass(BUTTON_CSS, "button", variants);
 The canonical component pattern combines both:
 
 ```tsx
-import { getClass, getModuleClass } from "shelving/ui";
+import { getClass, getModuleClass, getTypographyClass } from "shelving/ui";
 import BUTTON_CSS from "./Button.module.css";
 
 export function Button({ children, ...variants }: ButtonProps): ReactElement {
   return (
     <button
       className={getClass(
-        BLOCK_CLASS, //
-        getModuleClass(BUTTON_CSS, "button", variants),
+        getModuleClass(BUTTON_CSS, "button", variants), //
+        getTypographyClass(variants),
       )}
     >
       {children}

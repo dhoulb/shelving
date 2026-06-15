@@ -3,19 +3,7 @@ import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { getModuleClass } from "../util/css.js";
 import LINK_CSS from "./Link.module.css";
 
-/**
- * CSS class applied to the root element of every `Link`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Link/LINK_CLASS
- */
-export const LINK_CLASS = getModuleClass(LINK_CSS, "link");
-
-/**
- * CSS class that styles a `Link` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Link/LINK_PROSE_CLASS
- */
-export const LINK_PROSE_CLASS = getModuleClass(LINK_CSS, "prose");
+const LINK_CLASS = getModuleClass(LINK_CSS, "link");
 
 /**
  * Props for `Link` — identical to `ClickableProps` (`href` for navigation or `onClick` for actions).

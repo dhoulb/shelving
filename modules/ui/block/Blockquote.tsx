@@ -6,19 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import BLOCKQUOTE_CSS from "./Blockquote.module.css";
 
-/**
- * CSS class applied to the root `<blockquote>` element of every `Blockquote`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Blockquote/BLOCKQUOTE_CLASS
- */
-export const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
-
-/**
- * CSS class that styles `<blockquote>` elements when they appear inside `Prose`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Blockquote/BLOCKQUOTE_PROSE_CLASS
- */
-export const BLOCKQUOTE_PROSE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "prose");
+const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
 
 /**
  * Props for `Blockquote` — colour, space, and typography variants plus optional children.

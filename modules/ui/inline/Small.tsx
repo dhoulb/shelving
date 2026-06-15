@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import SMALL_CSS from "./Small.module.css";
 
-/**
- * CSS class applied to the root element of every `Small`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Small/SMALL_CLASS
- */
-export const SMALL_CLASS = getModuleClass(SMALL_CSS, "small");
-
-/**
- * CSS class that styles `Small` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Small/SMALL_PROSE_CLASS
- */
-export const SMALL_PROSE_CLASS = getModuleClass(SMALL_CSS, "prose");
+const SMALL_CLASS = getModuleClass(SMALL_CSS, "small");
 
 /**
  * Props for `Small` — optional `children`.
@@ -33,5 +21,5 @@ export interface SmallProps extends OptionalChildProps {}
  * @see https://dhoulb.github.io/shelving/ui/inline/Small/Small
  */
 export function Small({ children }: SmallProps): ReactElement {
-	return <small className={SMALL_CSS}>{children}</small>;
+	return <small className={SMALL_CLASS}>{children}</small>;
 }

@@ -2,7 +2,8 @@ import type { ReactElement, SyntheticEvent } from "react";
 import type { StringInputType } from "../../schema/StringSchema.js";
 import { PASSTHROUGH } from "../../util/function.js";
 import { getClass } from "../util/css.js";
-import { getInputClass, type InputVariants, MULTILINE_CLASS, TEXT_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 type TextFormatter = (str: string) => string;
 
@@ -68,7 +69,7 @@ export function TextInput({
 				required={required && min > 0}
 				disabled={disabled}
 				placeholder={placeholder || " "}
-				className={getClass(getInputClass(variants), TEXT_CLASS, MULTILINE_CLASS)}
+				className={getClass(getInputClass(variants), INPUT_CSS.text, INPUT_CSS.multiline)}
 				onInput={onChange}
 				onChange={onChange}
 				onBlur={onBlur}
@@ -92,7 +93,7 @@ export function TextInput({
 			required={required && min > 0}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), TEXT_CLASS)}
+			className={getClass(getInputClass(variants), INPUT_CSS.text)}
 			onInput={onChange}
 			onChange={onChange}
 			onBlur={onBlur}

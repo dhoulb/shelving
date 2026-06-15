@@ -2,7 +2,8 @@ import type { ReactElement, SyntheticEvent } from "react";
 import type { DateInputType } from "../../schema/DateSchema.js";
 import { getDateString, getDateTimeString, getTimeString, type PossibleDate } from "../../util/date.js";
 import { getClass } from "../util/css.js";
-import { getInputClass, type InputVariants, TEXT_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 /** Convert a `PossibleDate` to a string for a specific date `<input type="etc">` type. */
 const _DATE_TO_STRING: { [K in DateInputType]: (d: PossibleDate | undefined) => string | undefined } = {
@@ -63,7 +64,7 @@ export function DateInput({
 			required={required}
 			defaultValue={dateToString(value)}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), TEXT_CLASS)}
+			className={getClass(getInputClass(variants), INPUT_CSS.text)}
 			onChange={onChange}
 			onInput={onChange}
 			title={message}

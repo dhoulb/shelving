@@ -2,7 +2,8 @@ import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
 import { getClass } from "../util/css.js";
-import { EMPTY_OPTION_CLASS, getInputClass, type InputVariants, SELECT_CLASS, VALUE_OPTION_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 /**
  * Props for `SelectInput`, a dropdown `<select>` bound to a string value.
@@ -40,19 +41,19 @@ export function SelectInput({
 			name={name}
 			defaultValue={value}
 			onChange={e => onValue(e.currentTarget.value || undefined)}
-			className={getClass(getInputClass(variants), SELECT_CLASS)}
+			className={getClass(getInputClass(variants), INPUT_CSS.select)}
 			title={message}
 			aria-invalid={!!message}
 			disabled={disabled}
 			required={required}
 		>
 			{!required || !value ? (
-				<option value="" className={EMPTY_OPTION_CLASS}>
+				<option value="" className={INPUT_CSS.empty}>
 					{placeholder}
 				</option>
 			) : null}
 			{getProps(options).map(([k, t]) => (
-				<option key={k} value={k} className={VALUE_OPTION_CLASS}>
+				<option key={k} value={k} className={INPUT_CSS.value}>
 					{t}
 				</option>
 			))}

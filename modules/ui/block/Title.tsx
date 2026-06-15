@@ -6,19 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
 import TITLE_CSS from "./Title.module.css";
 
-/**
- * CSS class applied to the root element of every `Title`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Title/TITLE_CLASS
- */
-export const TITLE_CLASS = getModuleClass(TITLE_CSS, "title");
-
-/**
- * CSS class that styles a `Title` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Title/TITLE_PROSE_CLASS
- */
-export const TITLE_PROSE_CLASS = getModuleClass(TITLE_CSS, "prose");
+const TITLE_CLASS = getModuleClass(TITLE_CSS, "title");
 
 /**
  * Props for `Title` — identical to `HeadingProps`.

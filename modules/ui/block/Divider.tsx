@@ -3,19 +3,7 @@ import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import DIVIDER_CSS from "./Divider.module.css";
 
-/**
- * CSS class applied to the root `<hr>` element of every `Divider`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Divider/DIVIDER_CLASS
- */
-export const DIVIDER_CLASS = getModuleClass(DIVIDER_CSS, "divider");
-
-/**
- * CSS class that styles `<hr>` elements when they appear inside `Prose`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Divider/DIVIDER_PROSE_CLASS
- */
-export const DIVIDER_PROSE_CLASS = getModuleClass(DIVIDER_CSS, "prose");
+const DIVIDER_CLASS = getModuleClass(DIVIDER_CSS, "divider");
 
 /**
  * Props for `Divider` — space and colour variants.

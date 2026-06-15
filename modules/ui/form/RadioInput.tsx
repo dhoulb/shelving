@@ -3,7 +3,8 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { getInputClass, type InputVariants, LABEL_CLASS, PLACEHOLDER_CLASS, RADIO_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 /**
  * Props for `RadioInput`, a single labelled radio button styled as an input.
@@ -35,9 +36,9 @@ export function RadioInput({
 }: RadioInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<label className={getClass(getInputClass(props), LABEL_CLASS, getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
+		<label className={getClass(getInputClass(props), INPUT_CSS.label, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}>
 			<input
-				className={RADIO_CLASS}
+				className={INPUT_CSS.radio}
 				type="radio"
 				name={name}
 				defaultChecked={value}

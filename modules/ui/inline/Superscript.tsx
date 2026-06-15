@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import SUPERSCRIPT_CSS from "./Superscript.module.css";
 
-/**
- * CSS class applied to the root element of every `Superscript`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Superscript/SUPERSCRIPT_CLASS
- */
-export const SUPERSCRIPT_CLASS = getModuleClass(SUPERSCRIPT_CSS, "superscript");
-
-/**
- * CSS class that styles `Superscript` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Superscript/SUPERSCRIPT_PROSE_CLASS
- */
-export const SUPERSCRIPT_PROSE_CLASS = getModuleClass(SUPERSCRIPT_CSS, "prose");
+const SUPERSCRIPT_CLASS = getModuleClass(SUPERSCRIPT_CSS, "superscript");
 
 /**
  * Props for `Superscript` — optional `children`.

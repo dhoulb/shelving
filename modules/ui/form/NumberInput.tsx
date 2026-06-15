@@ -2,7 +2,8 @@ import type { ReactElement, SyntheticEvent } from "react";
 import { formatNumber } from "../../util/format.js";
 import { getNumber } from "../../util/number.js";
 import { getClass } from "../util/css.js";
-import { getInputClass, type InputVariants, TEXT_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 type NumberFormatter = (num: number) => string;
 
@@ -59,7 +60,7 @@ export function NumberInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), TEXT_CLASS)}
+			className={getClass(getInputClass(variants), INPUT_CSS.text)}
 			onChange={onChange}
 			onInput={onChange}
 			onBlur={onBlur}

@@ -7,19 +7,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import DEFINITIONS_CSS from "./Definitions.module.css";
 
-/**
- * CSS class applied to the root `<dl>` element of every `Definitions`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Definitions/DEFINITIONS_CLASS
- */
-export const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
-
-/**
- * CSS class that styles `<dl>` elements when they appear inside `Prose`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Definitions/DEFINITIONS_PROSE_CLASS
- */
-export const DEFINITIONS_PROSE_CLASS = getModuleClass(DEFINITIONS_CSS, "prose");
+const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
 
 /**
  * Props for `Definitions` — colour, gap, space, and typography variants plus optional children.
