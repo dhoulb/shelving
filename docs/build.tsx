@@ -5,21 +5,9 @@ import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
 import { IndexExtractor } from "../modules/extract/IndexExtractor.js";
 import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
 import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
-import { walkElements } from "../modules/util/element.js";
 import type { AbsolutePath } from "../modules/util/path.js";
 import type { TreeElement } from "../modules/util/tree.js";
 import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
-
-/** Append a synthetic `tree-index` child so the site gets a single searchable "all elements" page (routed by `TreeRouterMapping`). */
-function withTreeIndex(root: TreeElement): TreeElement {
-	const all: TreeElement = {
-		key: "all",
-		type: "tree-index",
-		props: { name: "all", title: "All elements", description: "Search every documented element in the system." },
-	};
-	const children = Array.from(walkElements<TreeElement>(root.props.children));
-	return { ...root, props: { ...root.props, children: [...children, all] } };
-}
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */
 interface RenderModule {
@@ -51,7 +39,7 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 	// package.json exports. Write the resulting tree for the browser to fetch and hydrate from.
 	console.warn("Extracting tree...");
 	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(sourceDir);
-	const root = withTreeIndex(await new PackageExtractor({ tree }).extract(packageJson));
+	const root = await new PackageExtractor({ tree }).extract(packageJson);
 	await Bun.write(join(outdir, "tree.json"), JSON.stringify(root));
 
 	const tempdir = await mkdtemp(join(tmpdir(), "shelving-docs-"));

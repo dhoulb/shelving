@@ -163,7 +163,6 @@ declare module "react" {
 		interface IntrinsicElements {
 			"tree-element": TreeElementProps;
 			"tree-documentation": DocumentationElementProps;
-			"tree-index": TreeElementProps;
 		}
 	}
 }

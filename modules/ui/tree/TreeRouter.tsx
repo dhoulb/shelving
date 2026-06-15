@@ -7,7 +7,6 @@ import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
 import { TreeProvider, useTreeMap } from "./TreeContext.js";
-import { TreeIndexPage } from "./TreeIndexPage.js";
 import { TreePage } from "./TreePage.js";
 
 /**
@@ -18,7 +17,6 @@ import { TreePage } from "./TreePage.js";
 export const [TreeRouterMapping, TreeRouterMapper] = createMapper({
 	"tree-element": TreePage,
 	"tree-documentation": DocumentationPage,
-	"tree-index": TreeIndexPage,
 });
 
 /**

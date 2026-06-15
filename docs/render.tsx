@@ -10,6 +10,7 @@ import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { renderToString } from "react-dom/server";
 import { HTML } from "../modules/ui/page/HTML.js";
+import { TREE_INDEX_PATH } from "../modules/ui/tree/TreeIndexPage.js";
 import type { PossibleMeta } from "../modules/ui/util/meta.js";
 import { requireURL } from "../modules/util/index.js";
 import { type AbsolutePath, isAbsolutePath } from "../modules/util/path.js";
@@ -27,7 +28,8 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
  */
 export async function renderApp(root: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
 	// Flattening stamps a canonical `path` on every element and keys the map by it; the path-shaped keys are exactly the set of pages to render (one per element).
-	const paths: AbsolutePath[] = Array.from(flattenTree(root).keys()).filter(isAbsolutePath);
+	// The index page (`/all`) is a `<TreeApp>` fallback route, not a tree node, so add it explicitly.
+	const paths: AbsolutePath[] = [...Array.from(flattenTree(root).keys()).filter(isAbsolutePath), TREE_INDEX_PATH];
 
 	for (const path of paths) {
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.

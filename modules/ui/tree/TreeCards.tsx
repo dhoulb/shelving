@@ -13,7 +13,6 @@ import { TreeCard } from "./TreeCard.js";
 export const [TreeCardMapping, TreeCardMapper] = createMapper({
 	"tree-element": TreeCard,
 	"tree-documentation": DocumentationCard,
-	"tree-index": TreeCard,
 });
 
 /**
