@@ -127,12 +127,12 @@ export function DocumentationPage({
 											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => (
 												<tr key={`${name}-${type}-${description}`}>
 													<td>
-														<Code size="normal">{name}</Code>
+														<Code>{name}</Code>
 													</td>
 													<td>
-														<Code size="normal">{type}</Code>
+														<Code>{type}</Code>
 													</td>
-													<td>{def ? <Code size="normal">{def}</Code> : "-"}</td>
+													<td>{def ? <Code>{def}</Code> : "-"}</td>
 													<td>{description}</td>
 												</tr>
 											))}
@@ -155,7 +155,7 @@ export function DocumentationPage({
 											{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
-														<Code size="normal">{type}</Code>
+														<Code>{type}</Code>
 													</td>
 													<td>{description}</td>
 												</tr>
@@ -179,7 +179,7 @@ export function DocumentationPage({
 											{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
-														<Code size="normal">{type}</Code>
+														<Code>{type}</Code>
 													</td>
 													<td>{description}</td>
 												</tr>
