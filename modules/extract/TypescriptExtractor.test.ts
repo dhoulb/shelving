@@ -100,10 +100,31 @@ export class Color {
 		const children = element.props.children as unknown[];
 		const cls = children[0] as { props: { children: unknown[] } };
 		expect(cls.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "static method", name: "from", title: "from()", class: "Color" } },
-			{ type: "tree-documentation", props: { kind: "static property", name: "DEFAULT", title: "DEFAULT", class: "Color" } },
-			{ type: "tree-documentation", props: { kind: "method", name: "toString", title: "toString()", class: "Color" } },
-			{ type: "tree-documentation", props: { kind: "property", name: "red", title: "red", class: "Color" } },
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "static method",
+					name: "from",
+					title: "from()",
+					class: "Color",
+					signatures: ["static from(possible: unknown): Color | undefined"],
+				},
+			},
+			{
+				type: "tree-documentation",
+				props: {
+					kind: "static property",
+					name: "DEFAULT",
+					title: "DEFAULT",
+					class: "Color",
+					signatures: ["static DEFAULT: string"],
+				},
+			},
+			{
+				type: "tree-documentation",
+				props: { kind: "method", name: "toString", title: "toString()", class: "Color", signatures: ["toString(): string"] },
+			},
+			{ type: "tree-documentation", props: { kind: "property", name: "red", title: "red", class: "Color", signatures: ["red: number"] } },
 		]);
 	});
 

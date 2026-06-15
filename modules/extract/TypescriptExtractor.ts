@@ -361,7 +361,7 @@ function _getReturns(
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
  * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
  * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
- * - `static` members are labelled `static method` / `static property` so the docs site groups them in their own sections, separate from instance `method` / `property`.
+ * - `static` members are labelled `static method` / `static property` so the docs site groups them in their own sections, separate from instance `method` / `property`, and their rendered signature is prefixed with the `static ` keyword.
  */
 function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, className: string): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
@@ -378,8 +378,10 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		// Skip `declare` members — ambient type-only re-declarations (e.g. a subclass narrowing an inherited property's type), not new API.
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
 
-		// `static` members are grouped and labelled separately from instance members (`static method` / `static property`).
+		// `static` members are grouped and labelled separately from instance members (`static method` / `static property`),
+		// and carry the `static ` keyword in their rendered signature.
 		const isStatic = modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword);
+		const staticPrefix = isStatic ? "static " : "";
 
 		const memberJSDoc = _getJSDoc(member, source);
 		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
@@ -388,7 +390,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		if (ts.isMethodDeclaration(member) || ts.isMethodSignature(member)) {
 			const params = member.parameters.map(p => p.getText(source)).join(", ");
 			const ret = member.type ? member.type.getText(source) : "void";
-			const signature = `${name}(${params}): ${ret}`;
+			const signature = `${staticPrefix}${name}(${params}): ${ret}`;
 			const key = name;
 			const existingIndex = members.findIndex(m => m.key === key);
 			const existing = members[existingIndex];
@@ -426,7 +428,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					kind: isStatic ? "static property" : "property",
 					class: className,
 					readonly,
-					signatures: type ? [`${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
+					signatures: type ? [`${staticPrefix}${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
 				},
 			});
 		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
@@ -442,7 +444,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 						...existing.props,
 						// A getter + setter pair is writable — drop the read-only flag and the `readonly ` signature prefix.
 						readonly: undefined,
-						signatures: type ? [`${name}: ${type}`] : existing.props.signatures,
+						signatures: type ? [`${staticPrefix}${name}: ${type}`] : existing.props.signatures,
 					},
 				};
 			} else {
@@ -457,7 +459,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 						kind: isStatic ? "static property" : "property",
 						class: className,
 						readonly: ts.isGetAccessor(member) || undefined,
-						signatures: type ? [`${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
+						signatures: type ? [`${staticPrefix}${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
 					},
 				});
 			}
