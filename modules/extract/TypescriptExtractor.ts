@@ -19,8 +19,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
  * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
- * - Top-of-file JSDoc comment becomes the file's `content`.
- * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
+ * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
@@ -51,7 +50,6 @@ export class TypescriptExtractor extends FileExtractor {
 	 */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
-		const content = _getFileDocComment(source);
 
 		// Collect elements by key, merging overloads (same name) by appending signatures.
 		const byKey = new Map<string, DocumentationElement>();
@@ -62,9 +60,9 @@ export class TypescriptExtractor extends FileExtractor {
 			byKey.set(element.key, existing ? _mergeOverloads(existing, element) : element);
 		}
 
-		// The file element itself gets no `title` — a TS source file has no confident title source (the filename isn't one),
-		// so renderers fall back to `name`. The `tree-documentation` children each carry their own `title`.
-		return { name, description: extractMarkdownProps(content ?? "").description, content, children: Array.from(byKey.values()) };
+		// The file element itself gets no `title` (a TS source file has no confident title source — the filename isn't one) and no
+		// `description` / `content`: file-level prose lives in the sibling README / `.md`, which the merge step folds onto this element.
+		return { name, children: Array.from(byKey.values()) };
 	}
 }
 
@@ -111,33 +109,6 @@ function _concatUnique<T>(
 	}
 	// Preserve the original reference when nothing new was added.
 	return result.length === a.length ? a : result;
-}
-
-/**
- * Get the leading JSDoc comment of the file (before the first statement) as its description text.
- * - The file-level comment isn't attached to an AST node, so the compiler doesn't model it as JSDoc — strip the delimiters and `*` margins by hand and take the text up to the first `@tag`.
- */
-function _getFileDocComment(source: ts.SourceFile): string | undefined {
-	const { statements } = source;
-	if (!statements.length) return;
-	const first = statements[0];
-	if (!first) return;
-	const ranges = ts.getLeadingCommentRanges(source.text, first.pos);
-	if (!ranges?.length) return;
-	const range = ranges[0];
-	if (!range || range.kind !== ts.SyntaxKind.MultiLineCommentTrivia) return;
-	const text = source.text.slice(range.pos, range.end);
-	if (!text.startsWith("/**")) return;
-	const description: string[] = [];
-	for (const line of text
-		.replace(/^\/\*\*\s*/, "")
-		.replace(/\s*\*\/$/, "")
-		.split("\n")) {
-		const stripped = line.replace(/^\s*\*\s?/, "");
-		if (stripped.startsWith("@")) break;
-		description.push(stripped);
-	}
-	return description.join("\n").trim() || undefined;
 }
 
 /** Extract an element from a top-level statement, or return undefined if it should be skipped. */

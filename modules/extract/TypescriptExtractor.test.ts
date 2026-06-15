@@ -147,20 +147,6 @@ export class Foo {
 		expect(cls.props.children).toHaveLength(1);
 	});
 
-	test("extracts file-level JSDoc comment as content", async () => {
-		const element = await extractor.extract(
-			file(`
-/**
- * This module handles array utilities.
- */
-export function first<T>(arr: T[]): T | undefined {
-	return arr[0];
-}
-`),
-		);
-		expect(element.props.content).toBe("This module handles array utilities.");
-	});
-
 	test("leaves the file element title undefined (no confident source for a TS source file)", async () => {
 		const element = await extractor.extract(file("export const X = 1;", "/tmp/array.ts"));
 		expect(element.props.title).toBeUndefined();
@@ -697,20 +683,6 @@ export class Store {
 		const cls = (element.props.children as { props: { children: { props: { description?: string } }[] } }[])[0];
 		expect(cls?.props.children[0]?.props.description).toBe("The current value of the store.");
 		expect(cls?.props.children[1]?.props.description).toBe("Replace the stored value.");
-	});
-
-	test("derives the file description from the file-level JSDoc", async () => {
-		const element = await extractor.extract(
-			file(`
-/**
- * This module handles array utilities.
- */
-export function first<T>(arr: T[]): T | undefined {
-	return arr[0];
-}
-`),
-		);
-		expect(element.props.description).toBe("This module handles array utilities.");
 	});
 
 	test("leaves description undefined when a symbol has no JSDoc", async () => {
