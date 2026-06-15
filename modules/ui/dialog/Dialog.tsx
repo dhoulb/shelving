@@ -35,9 +35,9 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	return (
 		<Suspense fallback={null}>
 			{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
-			<dialog ref={ref} className={styles.dialog} onClick={_closeOnBackdropClick} onClose={onClose} {...props}>
+			<dialog ref={ref} className={getModuleClass(styles, "dialog")} onClick={_closeOnBackdropClick} onClose={onClose} {...props}>
 				{children}
-				<div className={styles.close}>
+				<div className={getModuleClass(styles, "close")}>
 					<DialogCloseButton plain />
 				</div>
 			</dialog>

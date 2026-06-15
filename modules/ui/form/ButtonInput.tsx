@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 import { getInputClass, type InputProps, type InputVariants } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
@@ -27,7 +27,12 @@ export function ButtonInput({ title, placeholder, children = title, ...props }: 
 	return (
 		<Clickable
 			{...props}
-			className={getClass(getInputClass(props), INPUT_CSS.button, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}
+			className={getClass(
+				getInputClass(props),
+				getModuleClass(INPUT_CSS, "button"),
+				getFlexClass(props),
+				hasChildren && getModuleClass(INPUT_CSS, "placeholder"),
+			)}
 		>
 			{hasChildren ? children : placeholder}
 		</Clickable>

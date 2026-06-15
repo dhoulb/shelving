@@ -2,7 +2,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, type ReactNode, useEffect, useState } from "react";
 import { Button } from "../form/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { LAYOUT_CLASS } from "./Layout.js";
 import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
@@ -45,25 +45,34 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 	}, [path]);
 
 	const sidebarEl = (
-		<nav key="sidebar" className={getClass(SIDEBAR_LAYOUT_CSS.sidebar, open && SIDEBAR_LAYOUT_CSS.open)}>
+		<nav
+			key="sidebar"
+			className={getClass(getModuleClass(SIDEBAR_LAYOUT_CSS, "sidebar"), open && getModuleClass(SIDEBAR_LAYOUT_CSS, "open"))}
+		>
 			{sidebar}
 		</nav>
 	);
 	const contentEl = (
-		<div key={path} className={getClass(LAYOUT_CLASS, SIDEBAR_LAYOUT_CSS.content)}>
-			<div className={SIDEBAR_LAYOUT_CSS.toggle}>
+		<div key={path} className={getClass(LAYOUT_CLASS, getModuleClass(SIDEBAR_LAYOUT_CSS, "content"))}>
+			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "toggle")}>
 				<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 					{open ? <XMarkIcon /> : <Bars3Icon />}
 				</Button>
 			</div>
-			<div className={SIDEBAR_LAYOUT_CSS.contentInner}>{children}</div>
+			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "contentInner")}>{children}</div>
 		</div>
 	);
 	const overlayEl = open && (
-		<button key="overlay" type="button" className={SIDEBAR_LAYOUT_CSS.overlay} aria-label="Close menu" onClick={() => setOpen(false)} />
+		<button
+			key="overlay"
+			type="button"
+			className={getModuleClass(SIDEBAR_LAYOUT_CSS, "overlay")}
+			aria-label="Close menu"
+			onClick={() => setOpen(false)}
+		/>
 	);
 	return (
-		<main className={getClass(SIDEBAR_LAYOUT_CSS.main, LAYOUT_CLASS)}>
+		<main className={getClass(getModuleClass(SIDEBAR_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
 			{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}
 		</main>
 	);

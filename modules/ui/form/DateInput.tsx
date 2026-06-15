@@ -1,7 +1,7 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { DateInputType } from "../../schema/DateSchema.js";
 import { getDateString, getDateTimeString, getTimeString, type PossibleDate } from "../../util/date.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
@@ -64,7 +64,7 @@ export function DateInput({
 			required={required}
 			defaultValue={dateToString(value)}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), INPUT_CSS.text)}
+			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"))}
 			onChange={onChange}
 			onInput={onChange}
 			title={message}

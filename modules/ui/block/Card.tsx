@@ -36,7 +36,9 @@ export interface CardProps
  * @see https://dhoulb.github.io/shelving/ui/block/Card/Card
  */
 export function Card({ children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {
-	const overlay = (href || onClick) && <Clickable title={title} href={href} onClick={onClick} {...props} className={CARD_CSS.overlay} />;
+	const overlay = (href || onClick) && (
+		<Clickable title={title} href={href} onClick={onClick} {...props} className={getModuleClass(CARD_CSS, "overlay")} />
+	);
 	return (
 		<article
 			className={getClass(

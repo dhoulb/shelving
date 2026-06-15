@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { getModuleClass } from "../util/css.js";
 import styles from "./Loading.module.css";
 
 declare const _componentProps: unique symbol;
@@ -24,9 +25,15 @@ export interface LoadingProps {
  */
 export function Loading(): ReactElement {
 	return (
-		<svg aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={styles.spinner} data-slot="icon">
+		<svg
+			aria-hidden="true"
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+			className={getModuleClass(styles, "spinner")}
+			data-slot="icon"
+		>
 			<title>Loading...</title>
-			<circle className={styles.track} cx="12" cy="12" r="9" pathLength="100" />
+			<circle className={getModuleClass(styles, "track")} cx="12" cy="12" r="9" pathLength="100" />
 			<g>
 				<animateTransform
 					attributeName="transform"
@@ -37,7 +44,7 @@ export function Loading(): ReactElement {
 					dur="0.5s"
 					repeatCount="indefinite"
 				/>
-				<circle className={styles.indicator} cx="12" cy="12" r="9" pathLength="100" />
+				<circle className={getModuleClass(styles, "indicator")} cx="12" cy="12" r="9" pathLength="100" />
 			</g>
 		</svg>
 	);
