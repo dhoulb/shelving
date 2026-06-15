@@ -44,4 +44,36 @@
 	.xxlarge {
 		margin-block: var(--space-xxlarge);
 	}
+
+	/* Numeric block-space multiples of `--space-normal` (`1x` … `10x`). */
+	.\31 x {
+		margin-block: calc(var(--space-normal) * 1);
+	}
+	.\32 x {
+		margin-block: calc(var(--space-normal) * 2);
+	}
+	.\33 x {
+		margin-block: calc(var(--space-normal) * 3);
+	}
+	.\34 x {
+		margin-block: calc(var(--space-normal) * 4);
+	}
+	.\35 x {
+		margin-block: calc(var(--space-normal) * 5);
+	}
+	.\36 x {
+		margin-block: calc(var(--space-normal) * 6);
+	}
+	.\37 x {
+		margin-block: calc(var(--space-normal) * 7);
+	}
+	.\38 x {
+		margin-block: calc(var(--space-normal) * 8);
+	}
+	.\39 x {
+		margin-block: calc(var(--space-normal) * 9);
+	}
+	.\31 0x {
+		margin-block: calc(var(--space-normal) * 10);
+	}
 }

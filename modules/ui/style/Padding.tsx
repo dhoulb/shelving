@@ -6,7 +6,25 @@ import PADDING_CSS from "./Padding.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Padding/UIPadding
  */
-export type UIPadding = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type UIPadding =
+	| "none"
+	| "xxsmall"
+	| "xsmall"
+	| "small"
+	| "normal"
+	| "large"
+	| "xlarge"
+	| "xxlarge"
+	| "1x"
+	| "2x"
+	| "3x"
+	| "4x"
+	| "5x"
+	| "6x"
+	| "7x"
+	| "8x"
+	| "9x"
+	| "10x";
 
 /**
  * Variant props for the block-padding (top + bottom) of a component, e.g. `padding="large"`.

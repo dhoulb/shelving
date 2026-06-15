@@ -105,7 +105,7 @@ export class Color {
 				props: {
 					kind: "static method",
 					name: "from",
-					title: "from()",
+					title: "Color.from()",
 					class: "Color",
 					signatures: ["static from(possible: unknown): Color | undefined"],
 				},
@@ -115,16 +115,19 @@ export class Color {
 				props: {
 					kind: "static property",
 					name: "DEFAULT",
-					title: "DEFAULT",
+					title: "Color.DEFAULT",
 					class: "Color",
 					signatures: ["static DEFAULT: string"],
 				},
 			},
 			{
 				type: "tree-documentation",
-				props: { kind: "method", name: "toString", title: "toString()", class: "Color", signatures: ["toString(): string"] },
+				props: { kind: "method", name: "toString", title: "Color.toString()", class: "Color", signatures: ["toString(): string"] },
 			},
-			{ type: "tree-documentation", props: { kind: "property", name: "red", title: "red", class: "Color", signatures: ["red: number"] } },
+			{
+				type: "tree-documentation",
+				props: { kind: "property", name: "red", title: "Color.red", class: "Color", signatures: ["red: number"] },
+			},
 		]);
 	});
 
