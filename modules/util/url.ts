@@ -67,10 +67,7 @@ export type PossibleURL = string | URL;
  * @param value Unknown value to test.
  * @returns `true` if `value` is a true `scheme://host` URL object, otherwise `false`.
  *
- * @example
- * ```ts
- * if (isURL(value)) value.pathname; // `value` is narrowed to `ImmutableURL`
- * ```
+ * @example if (isURL(value)) value.pathname; // `value` is narrowed to `ImmutableURL`
  *
  * @see https://dhoulb.github.io/shelving/util/url/isURL
  */
@@ -89,10 +86,8 @@ function _isURL(uri: URL): uri is ImmutableURL {
  * @throws RequiredError If `value` is not a true `scheme://host` URL object.
  *
  * @example
- * ```ts
  * assertURL(value);
  * value.pathname; // `value` is narrowed to `ImmutableURL`
- * ```
  *
  * @see https://dhoulb.github.io/shelving/util/url/assertURL
  */
@@ -113,10 +108,7 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
  * @param base Base URL to resolve a relative `input` against.
  * @returns Resolved `ImmutableURI`, or `undefined` if conversion fails.
  *
- * @example
- * ```ts
- * getBasedURI("path/to/page", "http://example.com/base/"); // `http://example.com/base/path/to/page`
- * ```
+ * @example getBasedURI("path/to/page", "http://example.com/base/"); // `http://example.com/base/path/to/page`
  *
  * @see https://dhoulb.github.io/shelving/util/url/getBasedURI
  */
@@ -139,10 +131,8 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
  * @returns Resolved `ImmutableURL`, or `undefined` if conversion fails or the result is not a true URL.
  *
  * @example
- * ```ts
  * getURL("/page", "http://example.com/"); // `http://example.com/page`
  * getURL("mailto:a@b.com"); // `undefined` — not a hierarchical URL
- * ```
  *
  * @see https://dhoulb.github.io/shelving/util/url/getURL
  */
@@ -160,10 +150,7 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
  * @returns Resolved `ImmutableURL`.
  * @throws RequiredError If `target` cannot be resolved to a true `scheme://host` URL.
  *
- * @example
- * ```ts
- * requireURL("/page", "http://example.com/"); // `http://example.com/page`
- * ```
+ * @example requireURL("/page", "http://example.com/"); // `http://example.com/page`
  *
  * @see https://dhoulb.github.io/shelving/util/url/requireURL
  */
@@ -187,10 +174,7 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  * @returns Absolute path starting with `/`, or `undefined` for origin mismatches or non-matching paths.
  * @throws RequiredError If `target` or `base` cannot be resolved to a true URL.
  *
- * @example
- * ```ts
- * matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
- * ```
+ * @example matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
  *
  * @see https://dhoulb.github.io/shelving/util/url/matchURLPrefix
  */
@@ -222,10 +206,7 @@ export function matchURLPrefix(
  * @param caller Function to attribute a thrown error to — defaults to `isURLActive`.
  * @returns `true` if `target` resolves to exactly the same URL as `base`, otherwise `false`.
  *
- * @example
- * ```ts
- * isURLActive("http://x.com/a", "http://x.com/a"); // `true`
- * ```
+ * @example isURLActive("http://x.com/a", "http://x.com/a"); // `true`
  *
  * @see https://dhoulb.github.io/shelving/util/url/isURLActive
  */
@@ -244,10 +225,7 @@ export function isURLActive(target: PossibleURL | undefined, base: PossibleURL |
  * @param caller Function to attribute a thrown error to — defaults to `isURLProud`.
  * @returns `true` if `target` is `base` or a descendant of `base`, otherwise `false`.
  *
- * @example
- * ```ts
- * isURLProud("http://x.com/a/b", "http://x.com/a"); // `true`
- * ```
+ * @example isURLProud("http://x.com/a/b", "http://x.com/a"); // `true`
  *
  * @see https://dhoulb.github.io/shelving/util/url/isURLProud
  */
@@ -271,10 +249,7 @@ export interface BaseURL extends ImmutableURL {
  * @param value Value to test.
  * @returns `true` if `value` is a `BaseURL` (a URL with a trailing-slash pathname), otherwise `false`.
  *
- * @example
- * ```ts
- * isBaseURL(new URL("http://x.com/a/")); // `true`
- * ```
+ * @example isBaseURL(new URL("http://x.com/a/")); // `true`
  *
  * @see https://dhoulb.github.io/shelving/util/url/isBaseURL
  */
@@ -293,10 +268,7 @@ function _isBaseURL(uri: URL): uri is BaseURL {
  * @param input URL string, URL object, or path to normalise.
  * @returns `BaseURL` with a trailing-slash pathname, or `undefined` if `input` is not a true URL.
  *
- * @example
- * ```ts
- * getBaseURL("http://x.com/a"); // `http://x.com/a/`
- * ```
+ * @example getBaseURL("http://x.com/a"); // `http://x.com/a/`
  *
  * @see https://dhoulb.github.io/shelving/util/url/getBaseURL
  */
@@ -319,10 +291,7 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
  * @returns `BaseURL` with a trailing-slash pathname.
  * @throws RequiredError If `value` cannot be resolved to a true URL.
  *
- * @example
- * ```ts
- * requireBaseURL("http://x.com/a", requireBaseURL); // `http://x.com/a/`
- * ```
+ * @example requireBaseURL("http://x.com/a", requireBaseURL); // `http://x.com/a/`
  *
  * @see https://dhoulb.github.io/shelving/util/url/requireBaseURL
  */

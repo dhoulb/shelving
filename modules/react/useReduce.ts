@@ -13,10 +13,8 @@ import type { Arguments } from "../util/function.js";
  * @returns Whatever `reduce()` returned on this render.
  *
  * @example
- * ```tsx
  * // Keep the highest count ever seen.
  * const max = useReduce((previous = 0, next: number) => Math.max(previous, next), count);
- * ```
  *
  * @see https://dhoulb.github.io/shelving/react/useReduce
  */

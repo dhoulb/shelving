@@ -32,10 +32,7 @@ export interface IndexExtractorOptions {
  * - The matched child is removed from the parent's children list.
  * - Purely name-based: it doesn't care whether an element is a directory or a file — any element with children is processed, deepest level first.
  *
- * @example
- * ```ts
- * const extractor = new IndexExtractor(new DirectoryExtractor());
- * ```
+ * @example const extractor = new IndexExtractor(new DirectoryExtractor());
  *
  * @see https://dhoulb.github.io/shelving/extract/IndexExtractor
  */
@@ -48,10 +45,7 @@ export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * @param source Upstream extractor that produces the `tree-element` tree to process.
 	 * @param options Options including the `index` filename patterns.
 	 *
-	 * @example
-	 * ```ts
-	 * const extractor = new IndexExtractor(new DirectoryExtractor());
-	 * ```
+	 * @example const extractor = new IndexExtractor(new DirectoryExtractor());
 	 */
 	constructor(source: Extractor<I, TreeElement>, { index = DEFAULT_INDEX }: IndexExtractorOptions = {}) {
 		super(source);
@@ -64,10 +58,7 @@ export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * @param input Input forwarded to the wrapped source extractor.
 	 * @returns The source tree with index children folded into their parents.
 	 *
-	 * @example
-	 * ```ts
-	 * const tree = await new IndexExtractor(source).extract(input);
-	 * ```
+	 * @example const tree = await new IndexExtractor(source).extract(input);
 	 *
 	 * @see https://dhoulb.github.io/shelving/extract/IndexExtractor/extract
 	 */

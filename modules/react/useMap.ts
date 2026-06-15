@@ -7,10 +7,8 @@ import { useRef } from "react";
  * @returns Stable `Map` instance that lives for the lifetime of the component.
  *
  * @example
- * ```tsx
  * const cache = useMap<string, number>();
  * cache.set("a", 1);
- * ```
  *
  * @see https://dhoulb.github.io/shelving/react/useMap
  */

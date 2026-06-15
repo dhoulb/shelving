@@ -42,10 +42,7 @@ export interface MergingExtractorOptions {
  *   `content`, and `children` are folded in via `mergeTreeElements()`.
  * - A secondary with no matching token or file is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
  *
- * @example
- * ```ts
- * const extractor = new MergingExtractor(new DirectoryExtractor());
- * ```
+ * @example const extractor = new MergingExtractor(new DirectoryExtractor());
  *
  * @see https://dhoulb.github.io/shelving/extract/MergingExtractor
  */
@@ -58,10 +55,7 @@ export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * @param source Upstream extractor that produces the `tree-element` tree to merge.
 	 * @param options Options including the `merges` template map.
 	 *
-	 * @example
-	 * ```ts
-	 * const extractor = new MergingExtractor(new DirectoryExtractor());
-	 * ```
+	 * @example const extractor = new MergingExtractor(new DirectoryExtractor());
 	 */
 	constructor(source: Extractor<I, TreeElement>, { merges = DEFAULT_MERGES }: MergingExtractorOptions = {}) {
 		super(source);
@@ -74,10 +68,7 @@ export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * @param input Input forwarded to the wrapped source extractor.
 	 * @returns The source tree with matching sibling elements merged together.
 	 *
-	 * @example
-	 * ```ts
-	 * const tree = await new MergingExtractor(source).extract(input);
-	 * ```
+	 * @example const tree = await new MergingExtractor(source).extract(input);
 	 *
 	 * @see https://dhoulb.github.io/shelving/extract/MergingExtractor/extract
 	 */

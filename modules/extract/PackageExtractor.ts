@@ -54,10 +54,7 @@ export interface PackageExtractorOptions {
  * - The `"."` root export is skipped — its content is the root tree element itself.
  * - Throws if a static export key has no matching source element in the tree.
  *
- * @example
- * ```ts
- * const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
- * ```
+ * @example const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
  *
  * @see https://dhoulb.github.io/shelving/extract/PackageExtractor
  */
@@ -72,10 +69,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	 *
 	 * @param options Options including the source `tree`, `extensions` mapping, `module` extractor, and `base` path.
 	 *
-	 * @example
-	 * ```ts
-	 * const extractor = new PackageExtractor({ tree: sourceTree });
-	 * ```
+	 * @example const extractor = new PackageExtractor({ tree: sourceTree });
 	 */
 	constructor({ tree, extensions = DEFAULT_EXTENSIONS, module = new ModuleExtractor(), base }: PackageExtractorOptions) {
 		super();
@@ -92,10 +86,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	 * @returns Promise of the root `tree-element` whose children are the module elements.
 	 * @throws Error If a static export key has no matching source element in the tree, or a wildcard export is malformed.
 	 *
-	 * @example
-	 * ```ts
-	 * const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
-	 * ```
+	 * @example const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
 	 *
 	 * @see https://dhoulb.github.io/shelving/extract/PackageExtractor/extract
 	 */

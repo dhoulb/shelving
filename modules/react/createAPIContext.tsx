@@ -32,10 +32,7 @@ export interface APIContext<P, R> {
  *
  * @todo Use and integreate our `EndpointCache` functionality and use it in this.
  *
- * @example
- * ```tsx
- * const { useAPI, APIContext } = createAPIContext(provider);
- * ```
+ * @example const { useAPI, APIContext } = createAPIContext(provider);
  *
  * @see https://dhoulb.github.io/shelving/react/createAPIContext
  */

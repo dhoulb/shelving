@@ -11,10 +11,7 @@ import { runSequence } from "../util/sequence.js";
  * @returns The most recent value yielded by `sequence`, or `undefined` before the first value arrives.
  * @throws unknown Re-throws (during render) any error thrown by the sequence, for an error boundary to catch.
  *
- * @example
- * ```tsx
- * const value = useSequence(myAsyncIterable);
- * ```
+ * @example const value = useSequence(myAsyncIterable);
  *
  * @see https://dhoulb.github.io/shelving/react/useSequence
  */
