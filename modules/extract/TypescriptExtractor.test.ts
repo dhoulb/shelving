@@ -124,7 +124,10 @@ export class Color {
 				type: "tree-documentation",
 				props: { kind: "method", name: "toString", title: "Color.toString()", class: "Color", signatures: ["toString(): string"] },
 			},
-			{ type: "tree-documentation", props: { kind: "property", name: "red", title: "Color.red", class: "Color", signatures: ["red: number"] } },
+			{
+				type: "tree-documentation",
+				props: { kind: "property", name: "red", title: "Color.red", class: "Color", signatures: ["red: number"] },
+			},
 		]);
 	});
 
