@@ -231,6 +231,29 @@ export function Card(props: CardProps): ReactElement { return null as never; }
 		]);
 	});
 
+	test("ignores an @kind mentioned inline in prose (not a real tag)", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * A class that documents the \`@kind component\` override in its own prose.
+ * @example new Thing()
+ */
+export class Thing {}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{
+				type: "tree-documentation",
+				props: {
+					// The inline \`@kind component\` mention must not override the AST-inferred class kind.
+					kind: "class",
+					name: "Thing",
+					title: "Thing",
+				},
+			},
+		]);
+	});
+
 	test("extracts extends and implements from a class declaration", async () => {
 		const element = await extractor.extract(
 			file(`

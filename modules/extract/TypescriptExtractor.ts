@@ -575,7 +575,8 @@ function _parseJSDocComment(text: string): string | undefined {
 /** Parse a single `@kind` override from a JSDoc comment (e.g. `@kind component`), or `undefined` when absent. */
 function _parseJSDocKind(text: string): string | undefined {
 	// `@kind name` — a single identifier-ish token (letters, digits, hyphens).
-	return text.match(/@kind\s+([\w-]+)/)?.[1];
+	// Anchored to the start of a line (after the `*` prefix) so a `@kind` mentioned inline in prose doesn't get picked up as a tag.
+	return text.match(/^\s*\*?\s*@kind\s+([\w-]+)/m)?.[1];
 }
 
 /** Parse `@param` tags from a JSDoc comment. Duplicates are kept (overloads). */
