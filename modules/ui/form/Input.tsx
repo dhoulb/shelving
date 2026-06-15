@@ -17,7 +17,6 @@ export interface InputVariants extends WidthVariants {}
 
 /**
  * Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
- * - Compose the result with the type-modifier classes from `Input.module.css` (`INPUT_CSS.text`, `INPUT_CSS.select`, `INPUT_CSS.button`, `INPUT_CSS.label`, …) for a specific input type; `getInputClass()` never applies them itself.
  *
  * @param props The input's styling variants (width, …).
  * @returns The merged base input `className` string.
