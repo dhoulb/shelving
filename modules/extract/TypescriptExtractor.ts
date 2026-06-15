@@ -113,7 +113,10 @@ function _concatUnique<T>(
 	return result.length === a.length ? a : result;
 }
 
-/** Get the leading JSDoc comment of the file (before the first statement). */
+/**
+ * Get the leading JSDoc comment of the file (before the first statement) as its description text.
+ * - The file-level comment isn't attached to an AST node, so the compiler doesn't model it as JSDoc — strip the delimiters and `*` margins by hand and take the text up to the first `@tag`.
+ */
 function _getFileDocComment(source: ts.SourceFile): string | undefined {
 	const { statements } = source;
 	if (!statements.length) return;
@@ -124,7 +127,17 @@ function _getFileDocComment(source: ts.SourceFile): string | undefined {
 	const range = ranges[0];
 	if (!range || range.kind !== ts.SyntaxKind.MultiLineCommentTrivia) return;
 	const text = source.text.slice(range.pos, range.end);
-	return _parseJSDocComment(text);
+	if (!text.startsWith("/**")) return;
+	const description: string[] = [];
+	for (const line of text
+		.replace(/^\/\*\*\s*/, "")
+		.replace(/\s*\*\/$/, "")
+		.split("\n")) {
+		const stripped = line.replace(/^\s*\*\s?/, "");
+		if (stripped.startsWith("@")) break;
+		description.push(stripped);
+	}
+	return description.join("\n").trim() || undefined;
 }
 
 /** Extract an element from a top-level statement, or return undefined if it should be skipped. */
@@ -475,162 +488,63 @@ interface JSDocResult {
 	unhandled?: string | undefined;
 }
 
-/**
- * `@rule` names handled (parsed or deliberately discarded) — everything else is appended to `unhandled` as raw markup.
- * - `@kind` is parsed by `_parseJSDocKind` to override the AST-inferred kind, so it must not also leak into `unhandled`.
- * - `@see` is recognised here purely to strip it: it's a VS Code hover affordance (a link back to the docs site) and must
- *   never leak into the rendered page content. It has no dedicated parser; it's simply discarded from the `unhandled` bucket.
- */
-const _HANDLED_RULES = new Set(["kind", "param", "params", "return", "returns", "throw", "throws", "example", "examples", "see"]);
+/** Nodes carry their parsed `/** *​/` blocks on this property — the compiler attaches them when the source is parsed with comments (`setParentNodes`). */
+interface NodeWithJSDoc {
+	jsDoc?: ts.JSDoc[] | undefined;
+}
 
-/** Extract JSDoc from a node. */
+/**
+ * Extract JSDoc from a node via the TypeScript compiler's parsed JSDoc AST.
+ * - Reads the compiler's structured tags rather than re-scanning the raw comment text, so tags are only ever recognised at real tag positions — a `@kind`/`@param`/etc. mentioned inline in prose is left in the description, not parsed.
+ * - Multi-line `@param` / `@returns` / `@throws` descriptions and `{Type}` expressions come through whole; `*` margins are already stripped.
+ * - `@example` bodies are taken verbatim. Note the compiler treats any whitespace-led `@word` line as a new tag even inside a ``` fence, so an example must not contain a bare at-rule / decorator / pragma line on its own.
+ * - `@see` is recognised only to discard it: it's a VS Code hover affordance (a link back to the docs site), never rendered into the page body.
+ */
 function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefined {
-	const ranges = ts.getLeadingCommentRanges(source.text, node.pos);
-	if (!ranges?.length) return;
+	// The compiler attaches every leading `/** */` block here; the last one is the doc comment.
+	const jsDoc = (node as ts.Node & NodeWithJSDoc).jsDoc?.at(-1);
+	if (!jsDoc) return;
 
-	// Find the last JSDoc-style comment (/** ... */).
-	for (let i = ranges.length - 1; i >= 0; i--) {
-		const range = ranges[i];
-		if (!range || range.kind !== ts.SyntaxKind.MultiLineCommentTrivia) continue;
-		const text = source.text.slice(range.pos, range.end);
-		if (!text.startsWith("/**")) continue;
+	const description = ts.getTextOfJSDocComment(jsDoc.comment)?.trim();
 
-		const description = _parseJSDocComment(text);
-		const kind = _parseJSDocKind(text);
-		const params = _parseJSDocParams(text);
-		const returns = _parseJSDocReturns(text);
-		const throws = _parseJSDocThrows(text);
-		const examples = _parseJSDocExamples(text);
-		const unhandled = _parseJSDocUnhandled(text);
+	let kind: string | undefined;
+	const params: DocumentationParam[] = [];
+	const returns: DocumentationReturn[] = [];
+	const throws: DocumentationThrow[] = [];
+	const examples: DocumentationExample[] = [];
+	const unhandled: string[] = [];
 
-		return {
-			description: description || undefined,
-			kind,
-			params: params.length ? params : undefined,
-			returns: returns.length ? returns : undefined,
-			throws: throws.length ? throws : undefined,
-			examples: examples.length ? examples : undefined,
-			unhandled,
-		};
-	}
-}
-
-/**
- * Walk the JSDoc body for `@rule` blocks not handled by dedicated parsers (param/returns/throws/example).
- * - Each rule block extends from its `@name` line up to the next `@rule` or the end of the docblock.
- * - Returns the unhandled blocks joined by blank lines as `@name body`, preserved verbatim for downstream markup rendering.
- * - Returns `undefined` if every rule is handled or there are none.
- */
-function _parseJSDocUnhandled(text: string): string | undefined {
-	const body = text
-		.replace(/^\/\*\*\s*/, "")
-		.replace(/\s*\*\/$/, "")
-		.split("\n")
-		.map(l => l.replace(/^\s*\*\s?/, ""))
-		.join("\n");
-
-	const sections: string[] = [];
-	let currentName: string | undefined;
-	let currentLines: string[] = [];
-	const flush = () => {
-		if (currentName && !_HANDLED_RULES.has(currentName)) {
-			sections.push(`@${currentName} ${currentLines.join("\n")}`.trimEnd());
+	for (const tag of jsDoc.tags ?? []) {
+		const comment = ts.getTextOfJSDocComment(tag.comment)?.trim();
+		if (ts.isJSDocParameterTag(tag)) {
+			const name = tag.name.getText(source);
+			const type = tag.typeExpression?.type.getText(source);
+			if (name) params.push({ name, type: type || undefined, description: comment || undefined });
+		} else if (ts.isJSDocReturnTag(tag)) {
+			const type = tag.typeExpression?.type.getText(source);
+			if (type || comment) returns.push({ type: type || undefined, description: comment || undefined });
+		} else if (ts.isJSDocThrowsTag(tag)) {
+			const type = tag.typeExpression?.type.getText(source);
+			if (type || comment) throws.push({ type: type || undefined, description: comment || undefined });
+		} else if (ts.isJSDocSeeTag(tag)) {
+			// `@see` is a hover affordance only — strip it, never render it.
+		} else {
+			const name = tag.tagName.text;
+			// `@kind <name>` overrides the AST-inferred kind (e.g. `@kind component` for a React component declared as a function).
+			if (name === "kind") kind = comment?.match(/^[\w-]+/)?.[0];
+			else if (name === "example") {
+				if (comment) examples.push({ description: comment });
+			} else unhandled.push(comment ? `@${name} ${comment}` : `@${name}`);
 		}
-		currentName = undefined;
-		currentLines = [];
+	}
+
+	return {
+		description: description || undefined,
+		kind,
+		params: params.length ? params : undefined,
+		returns: returns.length ? returns : undefined,
+		throws: throws.length ? throws : undefined,
+		examples: examples.length ? examples : undefined,
+		unhandled: unhandled.length ? unhandled.join("\n\n") : undefined,
 	};
-	for (const line of body.split("\n")) {
-		const match = line.match(/^@(\w+)\s*(.*)$/);
-		if (match) {
-			flush();
-			currentName = match[1];
-			currentLines = match[2] ? [match[2]] : [];
-		} else if (currentName) {
-			currentLines.push(line);
-		}
-	}
-	flush();
-	return sections.length ? sections.join("\n\n") : undefined;
-}
-
-/** Parse a JSDoc comment block into its description text. */
-function _parseJSDocComment(text: string): string | undefined {
-	const lines = text
-		.replace(/^\/\*\*\s*/, "")
-		.replace(/\s*\*\/$/, "")
-		.split("\n")
-		.map(l => l.replace(/^\s*\*\s?/, ""));
-
-	// Collect lines until we hit a @tag.
-	const description: string[] = [];
-	for (const line of lines) {
-		if (line.startsWith("@")) break;
-		description.push(line);
-	}
-
-	const result = description.join("\n").trim();
-	return result || undefined;
-}
-
-/** Parse a single `@kind` override from a JSDoc comment (e.g. `@kind component`), or `undefined` when absent. */
-function _parseJSDocKind(text: string): string | undefined {
-	// `@kind name` — a single identifier-ish token (letters, digits, hyphens).
-	// Anchored to the start of a line (after the `*` prefix) so a `@kind` mentioned inline in prose doesn't get picked up as a tag.
-	return text.match(/^\s*\*?\s*@kind\s+([\w-]+)/m)?.[1];
-}
-
-/** Parse `@param` tags from a JSDoc comment. Duplicates are kept (overloads). */
-function _parseJSDocParams(text: string): DocumentationParam[] {
-	const results: DocumentationParam[] = [];
-	// `@param {Type} name description` — type is optional.
-	const regexp = /@param\s+(?:\{([^}]*)\}\s+)?(\w+)\s+(.*)/g;
-	let match: RegExpExecArray | null;
-	while ((match = regexp.exec(text))) {
-		const type = match[1]?.trim();
-		const name = match[2];
-		const description = match[3]?.trim();
-		if (name) results.push({ name, type: type || undefined, description: description || undefined });
-	}
-	return results;
-}
-
-/** Parse `@returns` / `@return` tags from a JSDoc comment. */
-function _parseJSDocReturns(text: string): DocumentationReturn[] {
-	const results: DocumentationReturn[] = [];
-	// `@returns {Type} description` or `@return {Type} description`.
-	const regexp = /@returns?\s+(?:\{([^}]*)\}\s*)?(.*)/g;
-	let match: RegExpExecArray | null;
-	while ((match = regexp.exec(text))) {
-		const type = match[1]?.trim();
-		const description = match[2]?.trim();
-		if (type || description) results.push({ type: type || undefined, description: description || undefined });
-	}
-	return results;
-}
-
-/** Parse `@throws` / `@throw` tags from a JSDoc comment. */
-function _parseJSDocThrows(text: string): DocumentationThrow[] {
-	const results: DocumentationThrow[] = [];
-	// `@throws {Type} description` or `@throw {Type} description`.
-	const regexp = /@throws?\s+(?:\{([^}]*)\}\s*)?(.*)/g;
-	let match: RegExpExecArray | null;
-	while ((match = regexp.exec(text))) {
-		const type = match[1]?.trim();
-		const description = match[2]?.trim();
-		if (type || description) results.push({ type: type || undefined, description: description || undefined });
-	}
-	return results;
-}
-
-/** Parse `@example` tags from a JSDoc comment. */
-function _parseJSDocExamples(text: string): DocumentationExample[] {
-	const results: DocumentationExample[] = [];
-	// `@example` followed by the rest of the line.
-	const regexp = /@examples?\s+(.+)/g;
-	let match: RegExpExecArray | null;
-	while ((match = regexp.exec(text))) {
-		const description = match[1]?.trim();
-		if (description) results.push({ description });
-	}
-	return results;
 }

@@ -578,6 +578,41 @@ export function add(a: number, b: number): number { return a + b; }
 		expect(children[0]?.props.examples).toEqual([{ description: "add(1, 2)" }, { description: "add(3, 4)" }]);
 	});
 
+	test("preserves a multi-line fenced @example verbatim (no leading * margin, full body)", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Add numbers.
+ * @example
+ * \`\`\`ts
+ * const total = add(1, 2);
+ * doThing(total);
+ * \`\`\`
+ */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		const children = element.props.children as { props: { examples?: unknown } }[];
+		expect(children[0]?.props.examples).toEqual([{ description: "```ts\nconst total = add(1, 2);\ndoThing(total);\n```" }]);
+	});
+
+	test("preserves a multi-line @returns description", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Get the value.
+ * @returns {T} The first element of the array,
+ *   or throws when the array is empty.
+ */
+export function first<T>(arr: T[]): T { return arr[0]!; }
+`),
+		);
+		const children = element.props.children as { props: { returns?: unknown } }[];
+		expect(children[0]?.props.returns).toEqual([
+			{ type: "T", description: "The first element of the array,\nor throws when the array is empty." },
+		]);
+	});
+
 	test("appends unhandled @rule blocks to content", async () => {
 		const element = await extractor.extract(
 			file(`
