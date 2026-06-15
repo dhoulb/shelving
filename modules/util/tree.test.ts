@@ -177,4 +177,45 @@ describe("searchTree()", () => {
 		const classes = searchTree(SEARCH_TREE, "", { filter: { kind: "class" } }).map(el => el.props.name);
 		expect(classes).toEqual(["Store", "StoreGetter", "BigStorehouse"]);
 	});
+
+	test("duplicate names across the tree still get unique canonical paths (safe React keys for a flat listing)", () => {
+		// Two `get` members under different classes share a flat `key`/`name` but must render at distinct URLs.
+		const tree: TreeElement = {
+			key: "root",
+			type: "tree-element",
+			props: {
+				name: "root",
+				children: [
+					{
+						key: "Store",
+						type: "tree-documentation",
+						props: {
+							name: "Store",
+							kind: "class",
+							children: [
+								{ key: "get", type: "tree-documentation", props: { name: "get", kind: "method", class: "Store" } } as DocumentationElement,
+							],
+						},
+					} as DocumentationElement,
+					{
+						key: "Cache",
+						type: "tree-documentation",
+						props: {
+							name: "Cache",
+							kind: "class",
+							children: [
+								{ key: "get", type: "tree-documentation", props: { name: "get", kind: "method", class: "Cache" } } as DocumentationElement,
+							],
+						},
+					} as DocumentationElement,
+				],
+			},
+		};
+		const map = flattenTree(tree);
+		const root = map.get("/")!;
+		const paths = searchTree(root, "get").map(el => el.props.path);
+		expect(paths).toContain("/Store/get");
+		expect(paths).toContain("/Cache/get");
+		expect(new Set(paths).size).toBe(paths.length); // All paths unique.
+	});
 });

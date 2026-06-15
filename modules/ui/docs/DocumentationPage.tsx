@@ -12,7 +12,6 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { CheckboxInput } from "../form/CheckboxInput.js";
 import { TextInput } from "../form/TextInput.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
@@ -20,7 +19,6 @@ import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
-import { useTreeMap } from "../tree/TreeContext.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, DocumentationKindChips, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
@@ -53,21 +51,19 @@ function _renderSections(elements: readonly TreeElement[]): ReactNode {
 }
 
 /**
- * Interactive children listing for a documentation page — search input, scope toggle, kind chips, and grouped cards.
+ * Interactive children listing for a documentation page — a filter input, kind chips, and grouped cards.
  *
- * - **Checked (default):** searches this page's own `children`. **Unchecked:** searches the whole tree (cards can come from anywhere). Both cap at 20.
- * - The kind chips narrow results to a single `kind` via `searchTree`'s `filter`.
- * - With an empty query and no chip selected, shows the normal grouped listing of `children` — no filtering.
+ * - Filters this page's own children as you type (ranked via `searchTree`, capped at 20); the kind chips narrow to a single `kind`.
+ * - With an empty filter and no chip selected, shows the normal grouped listing of `children`.
+ * - Renders nothing when the page has no children (e.g. a leaf symbol) — no point showing an empty filter.
  *
- * @param props The page element's own `kind` (for the "This {kind} only" toggle) and its `children`.
- * @returns The controls plus the grouped card sections.
+ * @param props The page's child elements.
+ * @returns The filter controls plus the grouped card sections, or `null` when there are no children.
  */
-function DocumentationChildren({ kind, elements }: { readonly kind: string; readonly elements?: TreeElements }): ReactNode {
+function DocumentationChildren({ elements }: { readonly elements?: TreeElements }): ReactNode {
 	const [query, setQuery] = useState("");
-	const [selfOnly, setSelfOnly] = useState(true);
 	const [chip, setChip] = useState<string | undefined>(undefined);
 
-	const root = useTreeMap().get("/");
 	const childElements = useMemo(() => Array.from(walkElements<TreeElement>(elements)), [elements]);
 
 	// Kinds present in this page's children, in section order, for the chip row.
@@ -76,15 +72,18 @@ function DocumentationChildren({ kind, elements }: { readonly kind: string; read
 		[childElements],
 	);
 
+	// No children → nothing to list or filter.
+	if (!childElements.length) return null;
+
 	const trimmed = query.trim();
 	const active = !!trimmed || !!chip;
 
-	// Inactive → normal grouped listing of this page's children. Active → search the chosen scope, grouped the same way.
+	// Inactive → normal grouped listing. Active → filter this page's children, grouped the same way.
 	let listing: ReactNode;
 	if (!active) {
 		listing = _renderSections(childElements);
 	} else {
-		const scope: TreeElement = selfOnly || !root ? { type: "tree-element", key: "", props: { name: "", children: elements } } : root;
+		const scope: TreeElement = { type: "tree-element", key: "", props: { name: "", children: elements } };
 		const filter = chip ? ({ kind: chip } as Query) : undefined;
 		listing = _renderSections(searchTree(scope, trimmed, { limit: 20, filter }));
 	}
@@ -92,10 +91,7 @@ function DocumentationChildren({ kind, elements }: { readonly kind: string; read
 	return (
 		<>
 			<Section wide>
-				<Row left wrap>
-					<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
-					<CheckboxInput name="scope" value={selfOnly} onValue={v => setSelfOnly(!!v)}>{`This ${kind} only`}</CheckboxInput>
-				</Row>
+				<TextInput name="filter" title="Filter" placeholder="Filter…" value={query} onValue={v => setQuery(v ?? "")} />
 				<DocumentationKindChips kinds={kinds} value={chip} onValue={setChip} />
 			</Section>
 			{listing}
@@ -212,7 +208,7 @@ export function DocumentationPage({
 						))}
 					</Section>
 				)}
-				<DocumentationChildren kind={kind} elements={children} />
+				<DocumentationChildren elements={children} />
 			</Block>
 		</Page>
 	);
