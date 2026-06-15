@@ -1,7 +1,9 @@
 import type { ReactElement } from "react";
+import { DocumentationHomePage } from "../modules/ui/docs/DocumentationHomePage.js";
 import { MetaContext } from "../modules/ui/misc/MetaContext.js";
 import { Navigation } from "../modules/ui/router/Navigation.js";
 import { TreeApp } from "../modules/ui/tree/TreeApp.js";
+import { TreeRouterMapping } from "../modules/ui/tree/TreeRouter.js";
 import { createMeta, type PossibleMeta } from "../modules/ui/util/meta.js";
 import type { TreeElement } from "../modules/util/tree.js";
 
@@ -25,7 +27,10 @@ export function App({ tree, meta }: AppProps): ReactElement {
 	return (
 		<MetaContext value={createMeta(meta)}>
 			<Navigation>
-				<TreeApp tree={tree} />
+				{/* Render the root (`/`) with the custom home page; deeper paths keep their default renderers. */}
+				<TreeRouterMapping mapping={{ "tree-element": DocumentationHomePage }}>
+					<TreeApp tree={tree} />
+				</TreeRouterMapping>
 			</Navigation>
 		</MetaContext>
 	);
