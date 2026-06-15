@@ -86,7 +86,7 @@ export class CurrencyAmountSchema extends NumberSchema {
 /**
  * Create a `CurrencyAmountSchema` for a non-negative monetary amount in a currency.
  *
- * *Factory for `CurrencyAmountSchema`.*
+ * *Sugar factory for [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema).*
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @returns A `CurrencyAmountSchema` validating amounts in `currency`.
@@ -99,7 +99,7 @@ export function CURRENCY_AMOUNT(currency: CurrencyCode): CurrencyAmountSchema {
 }
 
 /**
- * Valid US dollar amount, e.g. `12.35`.
+ * Sugar instance of [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema) for a US dollar amount. Equivalent to `new CurrencyAmountSchema({ currency: "USD" })`.
  *
  * @example USD_AMOUNT.validate("12.345") // 12.35
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/USD_AMOUNT
@@ -107,7 +107,7 @@ export function CURRENCY_AMOUNT(currency: CurrencyCode): CurrencyAmountSchema {
 export const USD_AMOUNT = new CurrencyAmountSchema({ currency: "USD" });
 
 /**
- * Valid pound sterling amount, e.g. `12.35`.
+ * Sugar instance of [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema) for a pound sterling amount. Equivalent to `new CurrencyAmountSchema({ currency: "GBP" })`.
  *
  * @example GBP_AMOUNT.validate("12.345") // 12.35
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/GBP_AMOUNT
@@ -115,7 +115,7 @@ export const USD_AMOUNT = new CurrencyAmountSchema({ currency: "USD" });
 export const GBP_AMOUNT = new CurrencyAmountSchema({ currency: "GBP" });
 
 /**
- * Valid euro amount, e.g. `12.35`.
+ * Sugar instance of [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema) for a euro amount. Equivalent to `new CurrencyAmountSchema({ currency: "EUR" })`.
  *
  * @example EUR_AMOUNT.validate("12.345") // 12.35
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/EUR_AMOUNT
@@ -125,7 +125,7 @@ export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
 /**
  * Create a `NullableSchema` for an optional monetary amount in a currency, or `null`.
  *
- * *Factory for `NullableSchema`.*
+ * *Sugar factory for [`NullableSchema`](/schema/NullableSchema).*
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @returns A `NullableSchema` validating amounts in `currency`, or `null`.
@@ -138,7 +138,7 @@ export function NULLABLE_CURRENCY_AMOUNT(currency: CurrencyCode): NullableSchema
 }
 
 /**
- * Valid US dollar amount, e.g. `12.35`, or `null`.
+ * Sugar instance allowing a [`USD_AMOUNT`](/schema/USD_AMOUNT) or `null`. Equivalent to `NULLABLE(USD_AMOUNT)`.
  *
  * @example NULLABLE_USD_AMOUNT.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_USD_AMOUNT
@@ -146,7 +146,7 @@ export function NULLABLE_CURRENCY_AMOUNT(currency: CurrencyCode): NullableSchema
 export const NULLABLE_USD_AMOUNT = NULLABLE(USD_AMOUNT);
 
 /**
- * Valid pound sterling amount, e.g. `12.35`, or `null`.
+ * Sugar instance allowing a [`GBP_AMOUNT`](/schema/GBP_AMOUNT) or `null`. Equivalent to `NULLABLE(GBP_AMOUNT)`.
  *
  * @example NULLABLE_GBP_AMOUNT.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_GBP_AMOUNT
@@ -154,7 +154,7 @@ export const NULLABLE_USD_AMOUNT = NULLABLE(USD_AMOUNT);
 export const NULLABLE_GBP_AMOUNT = NULLABLE(GBP_AMOUNT);
 
 /**
- * Valid euro amount, e.g. `12.35`, or `null`.
+ * Sugar instance allowing an [`EUR_AMOUNT`](/schema/EUR_AMOUNT) or `null`. Equivalent to `NULLABLE(EUR_AMOUNT)`.
  *
  * @example NULLABLE_EUR_AMOUNT.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_EUR_AMOUNT

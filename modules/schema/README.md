@@ -36,11 +36,11 @@ Every schema carries optional display metadata set at construction time:
 | `value`       | schema-specific | Default used when `validate(undefined)` is called |
 | `format`      | schema-specific | Display formatter for downstream form and UI use  |
 
-### Factory constants
+### Sugar instances and factories
 
-Pre-built constants and factory functions cover the most common cases:
+For convenience the `schema` module offers sugar constants and factories to improve the readability of code that creates complex schemas. Sugar instances are pre-instantiated copies of `Schema` classes — by convention an instantiated schema is named in `ALL_CAPS`, a convention you will find it convenient to use in your own codebase too. Sugar factories are functions like `OPTIONAL()` and `DATA()` that build a configured schema for you.
 
-| Constant / factory      | Validated type       |
+| Sugar instance / factory | Validated type       |
 | ----------------------- | -------------------- |
 | `STRING`                | `string`             |
 | `NUMBER`                | `number`             |

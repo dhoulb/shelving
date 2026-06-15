@@ -59,7 +59,7 @@ export class AddressSchema extends DataSchema<AddressData> {
 }
 
 /**
- * Valid postal address data.
+ * Sugar instance of [`AddressSchema`](/schema/AddressSchema) for postal address data. Equivalent to `new AddressSchema({})`.
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/ADDRESS
@@ -67,7 +67,7 @@ export class AddressSchema extends DataSchema<AddressData> {
 export const ADDRESS = new AddressSchema({});
 
 /**
- * Valid postal address data, or `null`
+ * Sugar instance allowing an [`ADDRESS`](/schema/ADDRESS) or `null`. Equivalent to `NULLABLE(ADDRESS)`.
  *
  * @example NULLABLE_ADDRESS.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/NULLABLE_ADDRESS

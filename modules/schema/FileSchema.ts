@@ -59,7 +59,7 @@ export class FileSchema extends StringSchema {
 }
 
 /**
- * Valid file, e.g. `file.txt`
+ * Sugar instance of [`FileSchema`](/schema/FileSchema) for a file name, e.g. `file.txt`. Equivalent to `new FileSchema({})`.
  *
  * @example FILE.validate("file.txt"); // Returns "file.txt"
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/FILE
@@ -67,7 +67,7 @@ export class FileSchema extends StringSchema {
 export const FILE = new FileSchema({});
 
 /**
- * Valid optional file, e.g. `file.txt`, or `null`
+ * Sugar instance allowing a [`FILE`](/schema/FILE) or `null`. Equivalent to `NULLABLE(FILE)`.
  *
  * @example NULLABLE_FILE.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/NULLABLE_FILE
