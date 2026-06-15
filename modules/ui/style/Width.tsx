@@ -9,6 +9,8 @@ import WIDTH_CSS from "./Width.module.css";
 export interface WidthVariants {
 	/** Constrain to narrow max-width (`--width-narrow`). */
 	narrow?: boolean | undefined;
+	/** Constrain to normal max-width (`--width-normal`). */
+	normal?: boolean | undefined;
 	/** Constrain to wide max-width (`--width-wide`). */
 	wide?: boolean | undefined;
 	/** Take the full available width — removes any default max-width constraint. */
