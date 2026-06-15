@@ -81,6 +81,32 @@ export class Store {
 		]);
 	});
 
+	test("labels static members as `static method` / `static property`", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A colour. */
+export class Color {
+	/** Parse a colour. */
+	static from(possible: unknown): Color | undefined { return undefined; }
+	/** Default colour. */
+	static DEFAULT: string = "#000";
+	/** Format the colour. */
+	toString(): string { return ""; }
+	/** Red channel. */
+	red: number;
+}
+`),
+		);
+		const children = element.props.children as unknown[];
+		const cls = children[0] as { props: { children: unknown[] } };
+		expect(cls.props.children).toMatchObject([
+			{ type: "tree-documentation", props: { kind: "static method", name: "from", title: "from()", class: "Color" } },
+			{ type: "tree-documentation", props: { kind: "static property", name: "DEFAULT", title: "DEFAULT", class: "Color" } },
+			{ type: "tree-documentation", props: { kind: "method", name: "toString", title: "toString()", class: "Color" } },
+			{ type: "tree-documentation", props: { kind: "property", name: "red", title: "red", class: "Color" } },
+		]);
+	});
+
 	test("extracts exported interface", async () => {
 		const element = await extractor.extract(
 			file(`

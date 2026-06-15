@@ -41,4 +41,20 @@ describe("DocumentationPage", () => {
 		expect(html).not.toContain("Functions");
 		expect(html).not.toContain("Interfaces");
 	});
+
+	test("groups static members into their own sections, before instance sections", () => {
+		const html = render(
+			<DocumentationPage path="/Color" name="Color" kind="class">
+				{[doc("from", "static method"), doc("DEFAULT", "static property"), doc("toString", "method"), doc("red", "property")]}
+			</DocumentationPage>,
+			"./Color",
+		);
+		expect(html).toContain("Static methods");
+		expect(html).toContain("Static properties");
+		expect(html).toContain("Methods");
+		expect(html).toContain("Properties");
+		// Static sections render before their instance counterparts (the `Methods` / `Properties` headings use a capital, so they don't match inside `Static methods`).
+		expect(html.indexOf("Static methods")).toBeLessThan(html.indexOf("Methods"));
+		expect(html.indexOf("Static properties")).toBeLessThan(html.indexOf("Properties"));
+	});
 });

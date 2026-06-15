@@ -361,6 +361,7 @@ function _getReturns(
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
  * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
  * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
+ * - `static` members are labelled `static method` / `static property` so the docs site groups them in their own sections, separate from instance `method` / `property`.
  */
 function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, className: string): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
@@ -376,6 +377,9 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.OverrideKeyword)) continue;
 		// Skip `declare` members — ambient type-only re-declarations (e.g. a subclass narrowing an inherited property's type), not new API.
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
+
+		// `static` members are grouped and labelled separately from instance members (`static method` / `static property`).
+		const isStatic = modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword);
 
 		const memberJSDoc = _getJSDoc(member, source);
 		const content = _buildJSDocContent(memberJSDoc?.description, memberJSDoc?.unhandled);
@@ -402,7 +406,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 						title: `${name}()`,
 						description,
 						content,
-						kind: "method",
+						kind: isStatic ? "static method" : "method",
 						class: className,
 						signatures: [signature],
 					},
@@ -419,7 +423,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					title: name,
 					description,
 					content,
-					kind: "property",
+					kind: isStatic ? "static property" : "property",
 					class: className,
 					readonly,
 					signatures: type ? [`${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
@@ -450,7 +454,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 						title: name,
 						description,
 						content,
-						kind: "property",
+						kind: isStatic ? "static property" : "property",
 						class: className,
 						readonly: ts.isGetAccessor(member) || undefined,
 						signatures: type ? [`${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
