@@ -3,14 +3,14 @@ import { notNullish } from "../../util/index.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
-import { INPUT_CLASS, type InputProps, PLACEHOLDER_CLASS } from "./Input.js";
+import { getInputClass, type InputProps, type InputVariants, PLACEHOLDER_CLASS } from "./Input.js";
 
 /**
  * Props for `OutputInput`, a read-only `<output>` styled to match form inputs.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/OutputInput/OutputInputProps
  */
-export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVariants {}
+export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVariants, InputVariants {}
 
 /**
  * Show static read-only content styled as an input, falling back to `placeholder` when empty.
@@ -23,7 +23,7 @@ export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVa
 export function OutputInput({ title, placeholder, children = title, ...props }: OutputInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<output {...props} className={getClass(INPUT_CLASS, getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
+		<output {...props} className={getClass(getInputClass(props), getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
 			{hasChildren ? children : placeholder}
 		</output>
 	);

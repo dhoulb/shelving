@@ -13,6 +13,8 @@ export interface WidthVariants {
 	wide?: boolean | undefined;
 	/** Take the full available width — removes any default max-width constraint. */
 	full?: boolean | undefined;
+	/** Shrink to fit the content's intrinsic width (`fit-content`). */
+	fit?: boolean | undefined;
 }
 
 /**

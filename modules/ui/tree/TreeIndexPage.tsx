@@ -1,13 +1,16 @@
 import { type ReactNode, useMemo, useState } from "react";
+import { type ImmutableArray, toggleArrayItem } from "../../util/array.js";
 import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps } from "../../util/tree.js";
 import { searchTree } from "../../util/tree.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { DocumentationKindChips } from "../docs/DocumentationKind.js";
+import { DocumentationKind } from "../docs/DocumentationKind.js";
+import { CheckboxInput } from "../form/CheckboxInput.js";
 import { TextInput } from "../form/TextInput.js";
 import { Page } from "../page/Page.js";
+import { Row } from "../style/Flex.js";
 import { TreeCards } from "./TreeCards.js";
 import { useTreeMap } from "./TreeContext.js";
 
@@ -29,23 +32,24 @@ const INDEX_LIMIT = 100;
 /**
  * Page listing every element in the system in one flat, searchable view.
  *
- * - A `<TextInput>` filters as you type; a row of kind chips narrows by `kind` via `searchTree`'s `filter`.
+ * - A `<TextInput>` filters as you type; a row of kind checkboxes narrows by `kind` via `searchTree`'s `filter`.
+ * - The kind checkboxes are multi-select — ticking several narrows to a `kind IN […]` filter; ticking none shows every kind.
  * - An empty query lists everything (capped at 100); a non-empty query ranks with `searchTree` and caps at 20.
  * - Reads the whole tree from the surrounding `<TreeProvider>` (the flattened map's root), so it works on every page.
  * - Wired as a `<TreeApp>` fallback route at `TREE_INDEX_PATH` (`/all`) — it's not a node in the tree.
  *
  * @kind component
- * @returns A `<Page>` with a search input, kind chips, and a flat card listing of results.
+ * @returns A `<Page>` with a search input, kind checkboxes, and a flat card listing of results.
  * @example <Router routes={{ [TREE_INDEX_PATH]: TreeIndexPage }} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeIndexPage/TreeIndexPage
  */
 export function TreeIndexPage(): ReactNode {
 	const [query, setQuery] = useState("");
-	const [chip, setChip] = useState<string | undefined>(undefined);
+	const [selected, setSelected] = useState<ImmutableArray<string>>([]);
 
 	const root = useTreeMap().get("/");
 
-	// Kinds actually present anywhere in the tree, in display order, for the chip row.
+	// Kinds actually present anywhere in the tree, in display order, for the checkbox row.
 	const kinds = useMemo(() => {
 		if (!root) return [];
 		const all = searchTree(root, "", { limit: Number.POSITIVE_INFINITY });
@@ -53,7 +57,8 @@ export function TreeIndexPage(): ReactNode {
 	}, [root]);
 
 	const trimmed = query.trim();
-	const filter = chip ? ({ kind: chip } as Query) : undefined;
+	// Multiple kinds can be ticked at once — an array value decodes to a `kind IN […]` filter.
+	const filter = selected.length ? ({ kind: selected } as Query) : undefined;
 	// Each element's `key` is its unique canonical path (stamped by `flattenTree()`), so this flat cross-tree listing reconciles correctly.
 	const cards = root ? searchTree(root, trimmed, { limit: trimmed ? 20 : INDEX_LIMIT, filter }) : [];
 
@@ -64,7 +69,21 @@ export function TreeIndexPage(): ReactNode {
 			</Header>
 			<Section wide>
 				<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
-				<DocumentationKindChips kinds={kinds} value={chip} onValue={setChip} />
+				{!!kinds.length && (
+					<Row left wrap>
+						{kinds.map(kind => (
+							<CheckboxInput
+								key={kind}
+								name={kind}
+								fit
+								value={selected.includes(kind)}
+								onValue={() => setSelected(s => toggleArrayItem(s, kind))}
+							>
+								<DocumentationKind kind={kind} />
+							</CheckboxInput>
+						))}
+					</Row>
+				)}
 			</Section>
 			<Section wide>
 				<TreeCards>{cards}</TreeCards>

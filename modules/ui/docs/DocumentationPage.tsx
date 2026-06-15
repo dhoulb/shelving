@@ -1,8 +1,6 @@
-import { Fragment, type ReactNode, useMemo, useState } from "react";
+import { Fragment, type ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
-import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
-import { searchTree } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
 import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
@@ -12,7 +10,6 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { TextInput } from "../form/TextInput.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
@@ -20,7 +17,7 @@ import { Row } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
-import { DocumentationKind, DocumentationKindChips, getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
@@ -53,52 +50,21 @@ function _renderSections(elements: readonly TreeElement[]): ReactNode {
 }
 
 /**
- * Interactive children listing for a documentation page — a filter input, kind chips, and grouped cards.
+ * Children listing for a documentation page — this page's child symbols grouped into kind-based card sections.
  *
- * - Filters this page's own children as you type (ranked via `searchTree`, capped at 20); the kind chips narrow to a single `kind`.
- * - With an empty filter and no chip selected, shows the normal grouped listing of `children`.
- * - Renders nothing when the page has no children (e.g. a leaf symbol) — no point showing an empty filter.
+ * - Renders nothing when the page has no children (e.g. a leaf symbol).
+ * - Cross-tree search and kind filtering live on the index page (`TreeIndexPage`), not here.
  *
  * @param props The page's child elements.
- * @returns The filter controls plus the grouped card sections, or `null` when there are no children.
+ * @returns The grouped card sections, or `null` when there are no children.
  */
 function DocumentationChildren({ elements }: { readonly elements?: TreeElements }): ReactNode {
-	const [query, setQuery] = useState("");
-	const [chip, setChip] = useState<string | undefined>(undefined);
+	const childElements = Array.from(walkElements<TreeElement>(elements));
 
-	const childElements = useMemo(() => Array.from(walkElements<TreeElement>(elements)), [elements]);
-
-	// Kinds present in this page's children, in section order, for the chip row.
-	const kinds = useMemo(
-		() => Object.keys(KIND_SECTIONS).filter(k => childElements.some(el => (el.props as DocumentationElementProps).kind === k)),
-		[childElements],
-	);
-
-	// No children → nothing to list or filter.
+	// No children → nothing to list.
 	if (!childElements.length) return null;
 
-	const trimmed = query.trim();
-	const active = !!trimmed || !!chip;
-
-	// Inactive → normal grouped listing. Active → filter this page's children, grouped the same way.
-	let listing: ReactNode;
-	if (!active) {
-		listing = _renderSections(childElements);
-	} else {
-		const scope: TreeElement = { type: "tree-element", key: "", props: { name: "", children: elements } };
-		const filter = chip ? ({ kind: chip } as Query) : undefined;
-		listing = _renderSections(searchTree(scope, trimmed, { limit: 20, filter }));
-	}
-
-	return (
-		<>
-			<Section wide>
-				<TextInput name="filter" title="Filter" placeholder="Filter…" value={query} onValue={v => setQuery(v ?? "")} />
-				<DocumentationKindChips kinds={kinds} value={chip} onValue={setChip} />
-			</Section>
-			{listing}
-		</>
-	);
+	return _renderSections(childElements);
 }
 
 /**
