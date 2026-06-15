@@ -26,10 +26,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
  *
- * @example
- * ```ts
- * const element = new TypescriptExtractor().extractProps("string.ts", sourceText);
- * ```
+ * @example const element = new TypescriptExtractor().extractProps("string.ts", sourceText);
  *
  * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor
  */
@@ -41,10 +38,7 @@ export class TypescriptExtractor extends FileExtractor {
 	 * @param text Full TypeScript source text to parse.
 	 * @returns Partial `tree-element` props with `name`, `description`, `content`, and `children`.
 	 *
-	 * @example
-	 * ```ts
-	 * const props = new TypescriptExtractor().extractProps("string.ts", sourceText);
-	 * ```
+	 * @example const props = new TypescriptExtractor().extractProps("string.ts", sourceText);
 	 *
 	 * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor/extractProps
 	 */
