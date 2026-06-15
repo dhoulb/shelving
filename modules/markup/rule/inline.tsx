@@ -2,14 +2,14 @@ import { createMarkupRule } from "../MarkupRule.js";
 import { createWordRegExp } from "../util/regexp.js";
 
 /** Map characters, e.g. `*`, to their coresponding HTML tag, e.g. `strong` */
-const INLINE_CHARS = { "-": "del", "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" } as const; // Hyphen must be first so it works when we use the keys as a character class.
+const INLINE_CHARS = { "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mark" } as const;
 
 /**
  * Inline strong, emphasis, insert, delete, highlight.
  * - Inline strong text wrapped in one or more `*` asterisks.
  * - Inline emphasis text wrapped in one or more `_` underscores.
  * - Inline inserted text wrapped in one or more `+` pluses.
- * - Inline deleted text wrapped in one or more `-` minuses or `~` tildes.
+ * - Inline deleted text wrapped in one or more `~` tildes.
  * - Inline highlighted text wrapped in one or more `=` equals or `:` colons.
  * - Whitespace cannot be the first or last character of the element (e.g. `* abc *` will not work).
  * - Closing chars must match opening characters.
