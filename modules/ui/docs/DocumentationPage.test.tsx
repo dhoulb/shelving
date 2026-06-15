@@ -42,6 +42,31 @@ describe("DocumentationPage", () => {
 		expect(html).not.toContain("Interfaces");
 	});
 
+	test("renders parameters as a table with a default column, hyphenating params without a default", () => {
+		const html = render(
+			<DocumentationPage
+				path="/makeThing"
+				name="makeThing"
+				kind="function"
+				params={[
+					{ name: "name", type: "string", description: "The name." },
+					{ name: "required", type: "boolean", description: "Whether required.", optional: true, default: "false" },
+				]}
+				returns={[{ type: "Thing", description: "The new thing." }]}
+			/>,
+			"./makeThing",
+		);
+		// Parameters table headers.
+		expect(html).toContain("<th>Parameter</th>");
+		expect(html).toContain("<th>Default</th>");
+		// A param with a default renders it; one without gets a hyphen.
+		expect(html).toContain("false");
+		expect(html).toContain("<td>-</td>");
+		// Returns table headers.
+		expect(html).toContain("<th>Return</th>");
+		expect(html).toContain("The new thing.");
+	});
+
 	test("groups static members into their own sections, before instance sections", () => {
 		const html = render(
 			<DocumentationPage path="/Color" name="Color" kind="class">

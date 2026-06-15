@@ -551,6 +551,23 @@ export class Point {
 		]);
 	});
 
+	test("captures parameter default values from initializers, marking them optional", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Make a thing. */
+export function makeThing(name: string, required = false, options: ThingOptions = {}): Thing {
+	return new Thing();
+}
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+		expect(props?.params).toEqual([
+			{ name: "name", type: "string", description: undefined, optional: false, default: undefined },
+			{ name: "required", type: undefined, description: undefined, optional: true, default: "false" },
+			{ name: "options", type: "ThingOptions", description: undefined, optional: true, default: "{}" },
+		]);
+	});
+
 	test("sources the returns description from the class's @returns when present", async () => {
 		const element = await extractor.extract(
 			file(`

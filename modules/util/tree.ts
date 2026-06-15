@@ -85,6 +85,8 @@ export interface DocumentationParam {
 	readonly type?: string | undefined;
 	readonly description?: string | undefined;
 	readonly optional?: boolean | undefined;
+	/** Default-value expression from the parameter's initializer (e.g. `"false"`, `"{}"`), or `undefined` when the parameter has none. */
+	readonly default?: string | undefined;
 }
 
 /**

@@ -69,9 +69,9 @@ function _mergeOverloads(existing: DocumentationElement, next: DocumentationElem
 		// Keep first content encountered; fill in if `existing` had none.
 		content: a.content ?? b.content,
 		// Append incoming entries, skipping any already present (by field identity), preserving insertion order.
-		// Identity: signatures/examples/throws by rendered string; params by (name, type, description, optional); returns by (type, description).
+		// Identity: signatures/examples/throws by rendered string; params by (name, type, description, optional, default); returns by (type, description).
 		signatures: _concatUnique(a.signatures, b.signatures, s => s),
-		params: _concatUnique(a.params, b.params, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}`),
+		params: _concatUnique(a.params, b.params, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}\0${p.default}`),
 		returns: _concatUnique(a.returns, b.returns, r => `${r.type}\0${r.description}`),
 		throws: _concatUnique(a.throws, b.throws, t => `${t.type}\0${t.description}`),
 		examples: _concatUnique(a.examples, b.examples, e => e.description ?? ""),
@@ -278,7 +278,8 @@ function _getParams(
 		const type = p.type?.getText(source);
 		const optional = !!p.questionToken || !!p.initializer;
 		const description = jsDocParams?.find(d => d.name === name)?.description;
-		return { name, type, description, optional };
+		const def = p.initializer?.getText(source);
+		return { name, type, description, optional, default: def };
 	});
 	return params.length ? params : undefined;
 }
@@ -303,9 +304,10 @@ function _getConstructorParams(
 			// Constructor-level `@param` wins over the class-level `@param` on collision.
 			const description =
 				ctorJsDocParams?.find(d => d.name === name)?.description ?? classJsDocParams?.find(d => d.name === name)?.description;
-			return { name, type, description, optional };
+			const def = p.initializer?.getText(source);
+			return { name, type, description, optional, default: def };
 		});
-		params = _concatUnique(params, next, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}`);
+		params = _concatUnique(params, next, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}\0${p.default}`);
 	}
 	return params?.length ? params : undefined;
 }
