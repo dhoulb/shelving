@@ -1,8 +1,8 @@
 # getWidthClass
 
-The width variant props (`narrow`, `normal`, `wide`, `full`, `fit`) constrain a block-level component's max-inline-size — `<Section narrow>`, `<Card wide>`. They're **overrides** for one-off layout; for an app-wide change, retune the width variables below in a theme file.
+The `width` variant prop (`"narrow"`, `"normal"`, `"wide"`, `"full"`, `"fit"`) constrains a block-level component's max-inline-size — `<Card width="narrow">`, `<Block width="wide">`. It's an **override** for one-off layout; for an app-wide change, retune the width variables below in a theme file. `Section` already defaults to the `--width-normal` constraint, so most pages never set `width` at all.
 
-`getWidthClass({ narrow, normal, wide, full })` maps the boolean props to a width class. The `narrow`, `normal`, and `wide` constraints read the variables below.
+`getWidthClass({ width })` maps the prop to a width class. The `narrow`, `normal`, and `wide` constraints read the variables below; `full` takes the full available width and `fit` shrinks to the content.
 
 ## Theme variables
 

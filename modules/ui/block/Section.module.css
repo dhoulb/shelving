@@ -1,5 +1,6 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
+@import "../style/Width.module.css";
 
 @layer components {
 	.prose :where(section, article, aside, nav, header, footer, figure),
@@ -9,7 +10,7 @@
 		display: block;
 		box-sizing: border-box;
 		max-inline-size: calc(100% - (var(--section-indent, var(--space-normal)) * 2)); /* Stop text touching the sides. */
-		inline-size: var(--section-width, 100%);
+		inline-size: var(--section-width, var(--width-normal)); /* Default to the normal content width; override with the `width` variant. */
 		margin-inline: auto;
 		margin-block: var(--section-space, var(--space-section));
 

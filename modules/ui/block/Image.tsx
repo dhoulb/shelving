@@ -33,7 +33,7 @@ export interface ImageProps extends SpaceVariants, WidthVariants {
  *
  * @param props The image `src`, optional `alt` text, plus space and width variants.
  * @returns Rendered `<img>` element.
- * @example <Image src="/logo.png" alt="Logo" width="medium" />
+ * @example <Image src="/logo.png" alt="Logo" width="narrow" />
  * @see https://dhoulb.github.io/shelving/ui/block/Image/Image
  */
 export function Image({ src, alt, ...variants }: ImageProps): ReactElement {

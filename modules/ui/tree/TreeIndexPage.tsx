@@ -64,10 +64,10 @@ export function TreeIndexPage(): ReactNode {
 
 	return (
 		<Page title={INDEX_TITLE} description={INDEX_DESCRIPTION}>
-			<Header wide>
+			<Header>
 				<Title>{INDEX_TITLE}</Title>
 			</Header>
-			<Section wide>
+			<Section>
 				<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
 				{!!kinds.length && (
 					<Row left wrap>
@@ -75,7 +75,7 @@ export function TreeIndexPage(): ReactNode {
 							<CheckboxInput
 								key={kind}
 								name={kind}
-								fit
+								width="fit"
 								value={selected.includes(kind)}
 								onValue={() => setSelected(s => toggleArrayItem(s, kind))}
 							>
@@ -85,7 +85,7 @@ export function TreeIndexPage(): ReactNode {
 					</Row>
 				)}
 			</Section>
-			<Section wide>
+			<Section>
 				<TreeCards>{cards}</TreeCards>
 			</Section>
 		</Page>

@@ -2,38 +2,33 @@ import { getModuleClass } from "../util/css.js";
 import WIDTH_CSS from "./Width.module.css";
 
 /**
- * Variant props that constrain (or unconstrain) a block-level component's max-width, e.g. `narrow`.
+ * Enumerated max-inline-size constraints selectable via the `width` variant prop.
+ * - `narrow` / `normal` / `wide` — fixed max-widths from the `--width-*` tokens.
+ * - `full` — take the full available width, removing any default max-width constraint.
+ * - `fit` — shrink to fit the content's intrinsic width (`fit-content`).
+ *
+ * @see https://dhoulb.github.io/shelving/ui/style/Width/UIWidth
+ */
+export type UIWidth = "narrow" | "normal" | "wide" | "full" | "fit";
+
+/**
+ * Variant props that constrain (or unconstrain) a block-level component's max-width, e.g. `width="narrow"`.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Width/WidthVariants
  */
 export interface WidthVariants {
-	/** Constrain to narrow max-width (`--width-narrow`). */
-	narrow?: boolean | undefined;
-	/** Constrain to normal max-width (`--width-normal`). */
-	normal?: boolean | undefined;
-	/** Constrain to wide max-width (`--width-wide`). */
-	wide?: boolean | undefined;
-	/** Take the full available width — removes any default max-width constraint. */
-	full?: boolean | undefined;
-	/** Shrink to fit the content's intrinsic width (`fit-content`). */
-	fit?: boolean | undefined;
+	/** Max-inline-size constraint of the element. */
+	width?: UIWidth | undefined;
 }
 
 /**
- * Enumerated width modifier names — the boolean keys of `WidthVariants`.
+ * Get the max-width class for a component from its `width` variant prop.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Width/UIWidth
- */
-export type UIWidth = keyof WidthVariants;
-
-/**
- * Get the max-width class for a component from its width variant props.
- *
- * @param width Width variant props selecting the max-width constraint.
- * @returns The width class string, or `undefined` when no width variant is set.
- * @example getWidthClass({ narrow: true }) // "narrow"
+ * @param variants Variant props containing the optional `width` constraint.
+ * @returns The width class string, or `undefined` when no `width` is set.
+ * @example getWidthClass({ width: "narrow" }) // "narrow"
  * @see https://dhoulb.github.io/shelving/ui/style/Width/getWidthClass
  */
-export function getWidthClass(width: WidthVariants): string | undefined {
-	return getModuleClass(WIDTH_CSS, width);
+export function getWidthClass({ width }: WidthVariants): string | undefined {
+	return width && getModuleClass(WIDTH_CSS, width);
 }

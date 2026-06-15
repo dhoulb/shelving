@@ -41,7 +41,7 @@ function _renderSections(elements: readonly TreeElement[]): ReactNode {
 	return Object.entries(KIND_SECTIONS).map(([kind, label]) => {
 		const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
 		return group.length ? (
-			<Section wide key={kind}>
+			<Section key={kind}>
 				<Heading>{label}</Heading>
 				<TreeCards>{group}</TreeCards>
 			</Section>
@@ -97,7 +97,7 @@ export function DocumentationPage({
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
 				<Panel>
-					<Header wide>
+					<Header>
 						<TreeBreadcrumbs />
 						<Title>
 							<Row left wrap>
@@ -109,10 +109,10 @@ export function DocumentationPage({
 					</Header>
 				</Panel>
 				{signatures?.length || params?.length || returns?.length || throws?.length ? (
-					<Section wide>
+					<Section>
 						<DocumentationSignatures signatures={signatures} />
 						{params?.length && (
-							<Section wide>
+							<Section>
 								<Label>Parameters</Label>
 								<Definitions>
 									{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
@@ -130,7 +130,7 @@ export function DocumentationPage({
 							</Section>
 						)}
 						{returns?.length && (
-							<Section wide>
+							<Section>
 								<Label>Returns</Label>
 								<Definitions>
 									{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
@@ -145,7 +145,7 @@ export function DocumentationPage({
 							</Section>
 						)}
 						{throws?.length && (
-							<Section wide>
+							<Section>
 								<Label>Throws</Label>
 								<Definitions>
 									{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
@@ -162,14 +162,14 @@ export function DocumentationPage({
 					</Section>
 				) : null}
 				{content && (
-					<Section wide>
+					<Section>
 						<Prose>
 							<Markup>{content}</Markup>
 						</Prose>
 					</Section>
 				)}
 				{examples?.length && (
-					<Section wide>
+					<Section>
 						<Heading>Examples</Heading>
 						{examples.map(({ description }) => (
 							<Preformatted key={description}>{description}</Preformatted>
