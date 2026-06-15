@@ -1,16 +1,11 @@
-import { PARAGRAPH_CLASS, type ParagraphProps } from "../block/Paragraph.js";
+import { getParagraphClass, type ParagraphProps } from "../block/Paragraph.js";
 import { LOADING } from "../misc/Loading.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import type { ColorVariants } from "../style/Color.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass } from "../util/css.js";
 import MESSAGE_CSS from "./Message.module.css";
 
-/**
- * Base `className` applied to every `<Message>` paragraph.
- *
- * @see https://dhoulb.github.io/shelving/ui/notice/Message/MESSAGE_CLASS
- */
-export const MESSAGE_CLASS = getClass(MESSAGE_CSS.message);
+const MESSAGE_CLASS = getClass(MESSAGE_CSS.message);
 
 /**
  * Props for `<Message>` — paragraph props plus colour and status styling variants.
@@ -36,10 +31,9 @@ export function Message({ children, ...props }: MessageProps) {
 		<p
 			role={status === "error" || status === "danger" ? "alert" : "status"}
 			className={getClass(
-				PARAGRAPH_CLASS, //
+				getParagraphClass(props), //
 				MESSAGE_CLASS,
 				getStatusClass(props),
-				getColorClass(props),
 			)}
 		>
 			{children}

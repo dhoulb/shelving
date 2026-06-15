@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import STRONG_CSS from "./Strong.module.css";
 
-/**
- * CSS class applied to the root element of every `Strong`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Strong/STRONG_CLASS
- */
-export const STRONG_CLASS = getModuleClass(STRONG_CSS, "strong");
-
-/**
- * CSS class that styles `Strong` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Strong/STRONG_PROSE_CLASS
- */
-export const STRONG_PROSE_CLASS = getModuleClass(STRONG_CSS, "prose");
+const STRONG_CLASS = getModuleClass(STRONG_CSS, "strong");
 
 /**
  * Props for `Strong` — optional `children`.

@@ -6,19 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
 import SUBHEADING_CSS from "./Subheading.module.css";
 
-/**
- * CSS class applied to the root element of every `Subheading`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Subheading/SUBHEADING_CLASS
- */
-export const SUBHEADING_CLASS = getModuleClass(SUBHEADING_CSS, "subheading");
-
-/**
- * CSS class that styles a `Subheading` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Subheading/SUBHEADING_PROSE_CLASS
- */
-export const SUBHEADING_PROSE_CLASS = getModuleClass(SUBHEADING_CSS, "prose");
+const SUBHEADING_CLASS = getModuleClass(SUBHEADING_CSS, "subheading");
 
 /**
  * Props for `Subheading` — identical to `HeadingProps`.

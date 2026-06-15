@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import INSERTED_CSS from "./Inserted.module.css";
 
-/**
- * CSS class applied to the root element of every `Inserted`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Inserted/INSERTED_CLASS
- */
-export const INSERTED_CLASS = getModuleClass(INSERTED_CSS, "inserted");
-
-/**
- * CSS class that styles `Inserted` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Inserted/INSERTED_PROSE_CLASS
- */
-export const INSERTED_PROSE_CLASS = getModuleClass(INSERTED_CSS, "prose");
+const INSERTED_CLASS = getModuleClass(INSERTED_CSS, "inserted");
 
 /**
  * Props for `Inserted` — optional `children`.

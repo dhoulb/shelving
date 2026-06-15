@@ -1,6 +1,6 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { FileTypes } from "../../util/file.js";
-import { INPUT_CLASS, type ValueInputProps } from "./Input.js";
+import { getInputClass, type ValueInputProps } from "./Input.js";
 
 /**
  * Props for `FileInput`, an `<input type="file">` that emits the selected `File`.
@@ -44,7 +44,7 @@ export function FileInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder}
-			className={INPUT_CLASS}
+			className={getInputClass()}
 			onChange={onChange}
 			onInput={onChange}
 			multiple={false}

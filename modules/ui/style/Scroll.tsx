@@ -4,19 +4,9 @@ import type { ChildProps } from "../util/index.js";
 import SCROLLABLE_CSS from "./Scroll.module.css";
 import type { WidthVariants } from "./Width.js";
 
-/**
- * CSS class that enables horizontal scrolling on an element.
- *
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/SCROLL_HORIZONTAL_CLASS
- */
-export const SCROLL_HORIZONTAL_CLASS = getModuleClass(SCROLLABLE_CSS, "horizontal");
+const SCROLL_HORIZONTAL_CLASS = getModuleClass(SCROLLABLE_CSS, "horizontal");
 
-/**
- * CSS class that enables vertical scrolling on an element.
- *
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/SCROLL_VERTICAL_CLASS
- */
-export const SCROLL_VERTICAL_CLASS = getModuleClass(SCROLLABLE_CSS, "vertical");
+const SCROLL_VERTICAL_CLASS = getModuleClass(SCROLLABLE_CSS, "vertical");
 
 /**
  * Variant props selecting which scroll axes are enabled on an element.

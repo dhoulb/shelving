@@ -8,12 +8,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import BLOCK_CSS from "./Block.module.css";
 
-/**
- * CSS class applied to the root element of every `Block`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Block/BLOCK_CLASS
- */
-export const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
+const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
 
 /**
  * Semantic element names a `Block` may render as via its `as` prop.
@@ -32,6 +27,27 @@ export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVari
 }
 
 /**
+ * Get the combined `className` string for a block from its styling variants.
+ *
+ * Composes the base block class and tint ladder with the colour, space, typography, and width variant helpers, so anything that wants block-level styling can apply it.
+ *
+ * @param variants Colour, space, typography, and width variants.
+ * @returns A space-separated `className` string combining the block class and resolved variant classes.
+ * @example getBlockClass({ space: "large" }) // "block tint …"
+ * @see https://dhoulb.github.io/shelving/ui/block/Block/getBlockClass
+ */
+export function getBlockClass(variants: BlockProps): string {
+	return getClass(
+		BLOCK_CLASS,
+		TINT_CLASS,
+		getColorClass(variants),
+		getSpaceClass(variants),
+		getTypographyClass(variants),
+		getWidthClass(variants),
+	);
+}
+
+/**
  * Plain `<div>` block with block-level spacing.
  * - Pass `as` to render a different semantic element (`section`, `header`, `footer`, `nav`, `aside`, `figure`).
  *
@@ -40,18 +56,5 @@ export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVari
  * @see https://dhoulb.github.io/shelving/ui/block/Block/Block
  */
 export function Block({ as: Component = "div", children, ...props }: BlockProps): ReactElement {
-	return (
-		<Component
-			className={getClass(
-				BLOCK_CLASS,
-				TINT_CLASS,
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
-				getWidthClass(props),
-			)}
-		>
-			{children}
-		</Component>
-	);
+	return <Component className={getBlockClass(props)}>{children}</Component>;
 }

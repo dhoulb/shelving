@@ -3,19 +3,7 @@ import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import DELETED_CSS from "./Deleted.module.css";
 
-/**
- * CSS class applied to the root element of every `Deleted`.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Deleted/DELETED_CLASS
- */
-export const DELETED_CLASS = getModuleClass(DELETED_CSS, "definitions");
-
-/**
- * CSS class that styles `Deleted` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/inline/Deleted/DELETED_PROSE_CLASS
- */
-export const DELETED_PROSE_CLASS = getModuleClass(DELETED_CSS, "prose");
+const DELETED_CLASS = getModuleClass(DELETED_CSS, "definitions");
 
 /**
  * Props for `Deleted` — optional `children`.

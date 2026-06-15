@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
-import { BLOCK_CLASS } from "../block/Block.js";
+import { getBlockClass } from "../block/Block.js";
 import { StatusIcon } from "../misc/StatusIcon.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import type { ColorVariants } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -41,13 +41,7 @@ export function Notice({
 	return (
 		<aside
 			role={status === "danger" || status === "error" ? "alert" : "status"}
-			className={getClass(
-				BLOCK_CLASS,
-				getModuleClass(NOTICE_CSS, "notice", props),
-				getFlexClass(props),
-				getStatusClass(props),
-				getColorClass(props),
-			)}
+			className={getClass(getBlockClass(props), getModuleClass(NOTICE_CSS, "notice", props), getFlexClass(props), getStatusClass(props))}
 		>
 			{icon !== undefined ? icon : status && <StatusIcon status={status} />}
 			{children}

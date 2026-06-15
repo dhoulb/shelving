@@ -6,7 +6,7 @@ A section heading — renders an `<h2>`. It sits in the middle of the three-leve
 
 - Pick the component that matches the level rather than overriding `level`. Choosing `Title` / `Heading` / `Subheading` keeps the visual size and the document outline in step, which matters for accessibility and the docs-site table of contents.
 - The `level` prop (`1`–`6`) is an escape hatch for the rare case where the outline level must differ from the visual size — avoid it in normal use.
-- Inside `Prose`, an `<h2>` is styled by the same rules (`HEADING_PROSE_CLASS`), so Markdown-rendered headings match component ones.
+- Inside `Prose`, an `<h2>` is styled by the same rules (the shared `.prose` styling), so Markdown-rendered headings match component ones.
 - Accepts `color=` and the typography variants; like all block components it collapses its outer margin when it's the first/last child of its container.
 
 ## Usage

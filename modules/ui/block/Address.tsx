@@ -11,19 +11,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
 
-/**
- * CSS class applied to the root `<address>` element of every `Address`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Address/ADDRESS_CLASS
- */
-export const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
-
-/**
- * CSS class that styles `<address>` elements when they appear inside `Prose`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Address/ADDRESS_PROSE_CLASS
- */
-export const ADDRESS_PROSE_CLASS = getModuleClass(ADDRESS_CSS, "prose");
+const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
 
 /**
  * Props for `Address` — colour, space, and typography variants plus required children.

@@ -1,56 +1,57 @@
 import type { ReactElement } from "react";
-import { CODE_PROSE_CLASS } from "../inline/Code.js";
-import { DELETED_PROSE_CLASS } from "../inline/Deleted.js";
-import { EMPHASIS_PROSE_CLASS } from "../inline/Emphasis.js";
-import { INSERTED_PROSE_CLASS } from "../inline/Inserted.js";
-import { LINK_PROSE_CLASS } from "../inline/Link.js";
-import { MARK_PROSE_CLASS } from "../inline/Mark.js";
-import { SMALL_PROSE_CLASS } from "../inline/Small.js";
-import { STRONG_PROSE_CLASS } from "../inline/Strong.js";
-import { SUBSCRIPT_PROSE_CLASS } from "../inline/Subscript.js";
-import { SUPERSCRIPT_PROSE_CLASS } from "../inline/Superscript.js";
+import CODE_CSS from "../inline/Code.module.css";
+import DELETED_CSS from "../inline/Deleted.module.css";
+import EMPHASIS_CSS from "../inline/Emphasis.module.css";
+import INSERTED_CSS from "../inline/Inserted.module.css";
+import LINK_CSS from "../inline/Link.module.css";
+import MARK_CSS from "../inline/Mark.module.css";
+import SMALL_CSS from "../inline/Small.module.css";
+import STRONG_CSS from "../inline/Strong.module.css";
+import SUBSCRIPT_CSS from "../inline/Subscript.module.css";
+import SUPERSCRIPT_CSS from "../inline/Superscript.module.css";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { ADDRESS_PROSE_CLASS } from "./Address.js";
-import { BLOCKQUOTE_PROSE_CLASS } from "./Blockquote.js";
-import { CAPTION_PROSE_CLASS } from "./Caption.js";
-import { DEFINITIONS_PROSE_CLASS } from "./Definitions.js";
-import { DIVIDER_PROSE_CLASS } from "./Divider.js";
-import { HEADING_PROSE_CLASS } from "./Heading.js";
-import { IMAGE_PROSE_CLASS } from "./Image.js";
-import { LIST_PROSE_CLASS } from "./List.js";
-import { PARAGRAPH_PROSE_CLASS } from "./Paragraph.js";
-import { PREFORMATTED_PROSE_CLASS } from "./Preformatted.js";
-import { SECTION_PROSE_CLASS } from "./Section.js";
-import { SUBHEADING_PROSE_CLASS } from "./Subheading.js";
-import { TABLE_PROSE_CLASS } from "./Table.js";
-import { TITLE_PROSE_CLASS } from "./Title.js";
+import ADDRESS_CSS from "./Address.module.css";
+import BLOCKQUOTE_CSS from "./Blockquote.module.css";
+import CAPTION_CSS from "./Caption.module.css";
+import DEFINITIONS_CSS from "./Definitions.module.css";
+import DIVIDER_CSS from "./Divider.module.css";
+import HEADING_CSS from "./Heading.module.css";
+import IMAGE_CSS from "./Image.module.css";
+import LIST_CSS from "./List.module.css";
+import PARAGRAPH_CSS from "./Paragraph.module.css";
+import PREFORMATTED_CSS from "./Preformatted.module.css";
+import SECTION_CSS from "./Section.module.css";
+import SUBHEADING_CSS from "./Subheading.module.css";
+import TABLE_CSS from "./Table.module.css";
+import TITLE_CSS from "./Title.module.css";
 
+// Combine the `.prose` class from every block and inline component's CSS module into a single string.
 const PROSE_STYLES = getClass(
-	PARAGRAPH_PROSE_CLASS,
-	HEADING_PROSE_CLASS,
-	SUBHEADING_PROSE_CLASS,
-	ADDRESS_PROSE_CLASS,
-	BLOCKQUOTE_PROSE_CLASS,
-	SECTION_PROSE_CLASS,
-	CODE_PROSE_CLASS,
-	DEFINITIONS_PROSE_CLASS,
-	DELETED_PROSE_CLASS,
-	EMPHASIS_PROSE_CLASS,
-	IMAGE_PROSE_CLASS,
-	INSERTED_PROSE_CLASS,
-	CAPTION_PROSE_CLASS,
-	LIST_PROSE_CLASS,
-	TITLE_PROSE_CLASS,
-	LINK_PROSE_CLASS,
-	MARK_PROSE_CLASS,
-	PREFORMATTED_PROSE_CLASS,
-	SMALL_PROSE_CLASS,
-	STRONG_PROSE_CLASS,
-	SUBSCRIPT_PROSE_CLASS,
-	SUPERSCRIPT_PROSE_CLASS,
-	TABLE_PROSE_CLASS,
-	DIVIDER_PROSE_CLASS,
+	PARAGRAPH_CSS.prose,
+	HEADING_CSS.prose,
+	SUBHEADING_CSS.prose,
+	ADDRESS_CSS.prose,
+	BLOCKQUOTE_CSS.prose,
+	SECTION_CSS.prose,
+	CODE_CSS.prose,
+	DEFINITIONS_CSS.prose,
+	DELETED_CSS.prose,
+	EMPHASIS_CSS.prose,
+	IMAGE_CSS.prose,
+	INSERTED_CSS.prose,
+	CAPTION_CSS.prose,
+	LIST_CSS.prose,
+	TITLE_CSS.prose,
+	LINK_CSS.prose,
+	MARK_CSS.prose,
+	PREFORMATTED_CSS.prose,
+	SMALL_CSS.prose,
+	STRONG_CSS.prose,
+	SUBSCRIPT_CSS.prose,
+	SUPERSCRIPT_CSS.prose,
+	TABLE_CSS.prose,
+	DIVIDER_CSS.prose,
 );
 
 /**

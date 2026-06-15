@@ -6,26 +6,9 @@ import { getTypographyClass, type TypographyVariants } from "../style/Typography
 import { getClass, getModuleClass } from "../util/css.js";
 import LIST_CSS from "./List.module.css";
 
-/**
- * CSS class applied to an ordered `List` (`<ol>`).
- *
- * @see https://dhoulb.github.io/shelving/ui/block/List/LIST_ORDERED_CLASS
- */
-export const LIST_ORDERED_CLASS = getModuleClass(LIST_CSS, "ordered");
+const LIST_ORDERED_CLASS = getModuleClass(LIST_CSS, "ordered");
 
-/**
- * CSS class applied to an unordered `List` (`<ul>`).
- *
- * @see https://dhoulb.github.io/shelving/ui/block/List/LIST_UNORDERED_CLASS
- */
-export const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
-
-/**
- * CSS class that styles a `List` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/List/LIST_PROSE_CLASS
- */
-export const LIST_PROSE_CLASS = getModuleClass(LIST_CSS, "prose");
+const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
 
 /**
  * Props for `List` — colour, gap, space, and typography variants plus its list items and an `ordered` toggle.

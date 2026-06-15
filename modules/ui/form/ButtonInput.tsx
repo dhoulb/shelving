@@ -3,7 +3,8 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import { Clickable, type ClickableProps } from "./Clickable.js";
-import { BUTTON_INPUT_CLASS, type InputProps, PLACEHOLDER_CLASS } from "./Input.js";
+import { getInputClass, type InputProps } from "./Input.js";
+import INPUT_CSS from "./Input.module.css";
 
 /**
  * Props for `ButtonInput`, a clickable element styled to match form inputs.
@@ -24,7 +25,10 @@ export interface ButtonInputProps extends InputProps, ClickableProps, FlexVarian
 export function ButtonInput({ title, placeholder, children = title, ...props }: ButtonInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<Clickable {...props} className={getClass(BUTTON_INPUT_CLASS, getFlexClass(props), hasChildren && PLACEHOLDER_CLASS)}>
+		<Clickable
+			{...props}
+			className={getClass(getInputClass(), INPUT_CSS.button, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}
+		>
 			{hasChildren ? children : placeholder}
 		</Clickable>
 	);

@@ -6,12 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import LABEL_CSS from "./Label.module.css";
 import type { SubheadingProps } from "./Subheading.js";
 
-/**
- * CSS class applied to the root element of every `Label`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Label/LABEL_CLASS
- */
-export const LABEL_CLASS = getModuleClass(LABEL_CSS, "label");
+const LABEL_CLASS = getModuleClass(LABEL_CSS, "label");
 
 /**
  * Props for `Label` — identical to `SubheadingProps`.

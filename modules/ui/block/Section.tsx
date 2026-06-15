@@ -7,19 +7,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import SECTION_CSS from "./Section.module.css";
 
-/**
- * CSS class applied to the root element of every `Section` and its semantic siblings.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Section/SECTION_CLASS
- */
-export const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
-
-/**
- * CSS class that styles a `Section` when it appears inside `Prose` longform content.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Section/SECTION_PROSE_CLASS
- */
-export const SECTION_PROSE_CLASS = getModuleClass(SECTION_CSS, "prose");
+const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
 
 /**
  * Semantic element names a `Section` may render as via its `as` prop.
@@ -37,23 +25,25 @@ export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVa
 	as?: SectionElement | undefined;
 }
 
+/**
+ * Get the combined `className` string for a section from its styling variants.
+ *
+ * Composes the base section class with the colour, space, typography, and width variant helpers, so anything that wants section-level styling can apply it.
+ *
+ * @param variants Colour, space, typography, and width variants.
+ * @returns A space-separated `className` string combining the section class and resolved variant classes.
+ * @example getSectionClass({ space: "large" }) // "section …"
+ * @see https://dhoulb.github.io/shelving/ui/block/Section/getSectionClass
+ */
+export function getSectionClass(variants: SectionProps): string {
+	return getClass(SECTION_CLASS, getColorClass(variants), getSpaceClass(variants), getTypographyClass(variants), getWidthClass(variants));
+}
+
 function renderSection(
 	defaultComponent: SectionElement,
 	{ as: Component = defaultComponent, children, ...variants }: SectionProps,
 ): ReactElement {
-	return (
-		<Component
-			className={getClass(
-				SECTION_CLASS,
-				getColorClass(variants),
-				getSpaceClass(variants),
-				getTypographyClass(variants),
-				getWidthClass(variants),
-			)}
-		>
-			{children}
-		</Component>
-	);
+	return <Component className={getSectionClass(variants)}>{children}</Component>;
 }
 
 /**
