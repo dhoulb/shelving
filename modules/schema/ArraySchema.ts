@@ -124,7 +124,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 /**
  * Create a schema for a valid array with specified items.
  *
- * _Sugar factory for [`ArraySchema`](/schema/ArraySchema)._
+ * Sugar factory for [`ArraySchema`](/schema/ArraySchema).
  *
  * @param items Schema every item in the array must conform to.
  * @returns An `ArraySchema` validating arrays of the given item type.

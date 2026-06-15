@@ -36,7 +36,7 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
 /**
  * Create a `RequiredSchema` that wraps a source schema and rejects a falsy result.
  *
- * _Sugar factory for [`RequiredSchema`](/schema/RequiredSchema)._
+ * Sugar factory for [`RequiredSchema`](/schema/RequiredSchema).
  *
  * @param source Source schema to wrap.
  * @returns A `RequiredSchema` wrapping `source`.

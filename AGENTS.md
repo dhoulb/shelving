@@ -462,20 +462,20 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
 
   When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and link the wrapped sugar instance (`` [`TITLE`](/schema/TITLE) ``).
 
-**Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section). Mark a factory in its docblock with a short italic line naming the class it builds, on its own paragraph after the summary:
+**Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
 
   ```ts
   /**
    * Create a `DataSchema` for a set of properties.
    *
-   * _Sugar factory for [`DataSchema`](/schema/DataSchema)._
+   * Sugar factory for [`DataSchema`](/schema/DataSchema).
    */
   export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
   	return new DataSchema({ props });
   }
   ```
 
-- The canonical wording is exactly `_Sugar factory for [\`ClassName\`](/schema/ClassName)._` — italic (the `markup` renderer makes `_underscores_` italic and `*asterisks*` bold, so use underscores here, not asterisks), with a backtick-quoted class name linked to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+- The canonical wording is exactly `Sugar factory for [\`ClassName\`](/schema/ClassName).` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with a backtick-quoted class name linked to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
 
 ### Docblock standards
 
