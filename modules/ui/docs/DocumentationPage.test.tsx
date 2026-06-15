@@ -56,8 +56,9 @@ describe("DocumentationPage", () => {
 			/>,
 			"./makeThing",
 		);
-		// Parameters table headers.
+		// Parameters table headers — name, type, default, description in separate columns.
 		expect(html).toContain("<th>Parameter</th>");
+		expect(html).toContain("<th>Type</th>");
 		expect(html).toContain("<th>Default</th>");
 		// A param with a default renders it; one without gets a hyphen.
 		expect(html).toContain("false");

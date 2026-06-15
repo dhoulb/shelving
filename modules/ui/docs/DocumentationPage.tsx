@@ -118,18 +118,19 @@ export function DocumentationPage({
 										<thead>
 											<tr>
 												<th>Parameter</th>
+												<th>Type</th>
 												<th>Default</th>
 												<th>Description</th>
 											</tr>
 										</thead>
 										<tbody>
-											{params.map(({ name, type = DEFAULT_TYPE, description = "", optional, default: def }) => (
+											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => (
 												<tr key={`${name}-${type}-${description}`}>
 													<td>
-														<Code size="normal">
-															{name}
-															{optional ? "?" : ""}: {type}
-														</Code>
+														<Code size="normal">{name}</Code>
+													</td>
+													<td>
+														<Code size="normal">{type}</Code>
 													</td>
 													<td>{def ? <Code size="normal">{def}</Code> : "-"}</td>
 													<td>{description}</td>
