@@ -51,6 +51,7 @@ export interface PackageExtractorOptions {
  * - Static export keys (e.g. `"./api"`, `"./firestore/client"`) become one module each.
  * - Wildcard export keys (e.g. `"./util/*"`) expand against the source tree — one module per matching child file or subdirectory.
  * - Each export's *target* extension (e.g. the `.js` in `"./util/*.js"`) is mapped to source extensions via `extensions`, so built `.js` paths resolve to their `.ts` sources.
+ * - Each module's `title` is prefixed with the package `name` (e.g. `ui` → `shelving/ui`) so listings read as package subpaths.
  * - The `"."` root export is skipped — its content is the root tree element itself.
  * - Throws if a static export key has no matching source element in the tree.
  *
@@ -93,7 +94,9 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	override async extract(packageJson: Path): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);
 		const pkg = (await Bun.file(pkgPath).json()) as PackageJson;
-		const exports = pkg.exports ?? {};
+		const tree = this._tree;
+		// Read the package name alongside its exports — the name prefixes each module title (e.g. `ui` → `shelving/ui`).
+		const { name, exports = {} } = pkg;
 
 		const modules: DocumentationElement[] = [];
 		for (const [key, value] of Object.entries(exports)) {
@@ -111,18 +114,22 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 			}
 		}
 
-		const tree = this._tree;
+		// Prefix the package name onto each module's title so listings read `shelving/ui` rather than a bare `ui`, making modules glanceable as package subpaths.
+		const children = name
+			? modules.map(module => ({ ...module, props: { ...module.props, title: `${name}/${module.props.title ?? module.props.name}` } }))
+			: modules;
+
 		// Canonical URL `path`s aren't stamped here — they're derived from tree structure when the tree is flattened (`flattenTree()`) in the UI layer.
 		return {
 			type: "tree-element",
-			key: pkg.name ?? tree.key,
+			key: name ?? tree.key,
 			props: {
 				source: tree.props.source,
-				name: pkg.name ?? tree.props.name,
-				title: pkg.name ?? tree.props.title,
+				name: name ?? tree.props.name,
+				title: name ?? tree.props.title,
 				description: pkg.description ?? tree.props.description,
 				content: tree.props.content,
-				children: modules,
+				children,
 			},
 		};
 	}
