@@ -47,7 +47,7 @@ export class TimeSchema extends DateSchema {
 }
 
 /**
- * Valid time, e.g. `23:59` (required because falsy values are invalid).
+ * Sugar instance of [`TimeSchema`](/schema/TimeSchema) for a required abstract time. Equivalent to `new TimeSchema({})`.
  *
  * @example TIME.validate("23:59") // "23:59:00.000"
  * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TIME
@@ -55,7 +55,7 @@ export class TimeSchema extends DateSchema {
 export const TIME = new TimeSchema({});
 
 /**
- * Valid time, e.g. `23:59`, or `null`.
+ * Sugar instance allowing a [`TIME`](/schema/TIME) or `null`. Equivalent to `NULLABLE(TIME)`.
  *
  * @example NULLABLE_TIME.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/TimeSchema/NULLABLE_TIME

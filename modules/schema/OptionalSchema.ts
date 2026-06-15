@@ -73,7 +73,7 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 /**
  * Create an `OptionalSchema` that wraps a source schema and also allows `undefined`.
  *
- * *Factory for `OptionalSchema`.*
+ * Sugar factory for [`OptionalSchema`](/schema/OptionalSchema).
  *
  * @param source Source schema to wrap.
  * @returns An `OptionalSchema` wrapping `source`.

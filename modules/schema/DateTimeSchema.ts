@@ -48,7 +48,7 @@ export class DateTimeSchema extends DateSchema {
 }
 
 /**
- * Valid datetime, e.g. `2005-09-12T08:00:00Z` (required because falsy values are invalid).
+ * Sugar instance of [`DateTimeSchema`](/schema/DateTimeSchema) for a required UTC datetime. Equivalent to `new DateTimeSchema({})`.
  *
  * @example DATETIME.validate("2005-09-12T08:00:00Z") // "2005-09-12T08:00:00.000Z"
  * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/DATETIME
@@ -56,7 +56,7 @@ export class DateTimeSchema extends DateSchema {
 export const DATETIME = new DateTimeSchema({});
 
 /**
- * Valid datetime, e.g. `2005-09-12T21:30:00Z`, or `null`.
+ * Sugar instance allowing a [`DATETIME`](/schema/DATETIME) or `null`. Equivalent to `NULLABLE(DATETIME)`.
  *
  * @example NULLABLE_DATETIME.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/NULLABLE_DATETIME

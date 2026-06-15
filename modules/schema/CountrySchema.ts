@@ -53,7 +53,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 }
 
 /**
- * Valid country code, e.g. `GB` (required because falsy values are invalid).
+ * Sugar instance of [`CountrySchema`](/schema/CountrySchema) for a required ISO 3166 country code, e.g. `GB`. Equivalent to `new CountrySchema({})`.
  *
  * @example COUNTRY.validate("GB") // "GB"
  * @see https://dhoulb.github.io/shelving/schema/CountrySchema/COUNTRY
@@ -61,7 +61,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 export const COUNTRY = new CountrySchema({});
 
 /**
- * Valid country code, e.g. `GB`, or `null`.
+ * Sugar instance allowing a [`COUNTRY`](/schema/COUNTRY) or `null`. Equivalent to `NULLABLE(COUNTRY)`.
  *
  * @example NULLABLE_COUNTRY.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CountrySchema/NULLABLE_COUNTRY

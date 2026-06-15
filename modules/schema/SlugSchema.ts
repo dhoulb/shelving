@@ -43,9 +43,7 @@ export class SlugSchema extends StringSchema {
 }
 
 /**
- * Valid slug, e.g. `this-is-a-slug`.
- *
- * *Factory for `SlugSchema`.*
+ * Sugar instance of [`SlugSchema`](/schema/SlugSchema) for a valid slug. Equivalent to `new SlugSchema({})`.
  *
  * @example SLUG.validate("This is a Slug!") // "this-is-a-slug"
  * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SLUG
@@ -53,9 +51,7 @@ export class SlugSchema extends StringSchema {
 export const SLUG = new SlugSchema({});
 
 /**
- * Valid slug, e.g. `this-is-a-slug`, or `null`.
- *
- * *Factory for `NullableSchema`.*
+ * Sugar instance allowing a [`SLUG`](/schema/SLUG) or `null`. Equivalent to `NULLABLE(SLUG)`.
  *
  * @example NULLABLE_SLUG.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/SlugSchema/NULLABLE_SLUG

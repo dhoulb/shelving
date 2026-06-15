@@ -148,7 +148,7 @@ export class StringSchema extends Schema<string> {
 }
 
 /**
- * Valid string, e.g. `Hello there!`
+ * Sugar instance of [`StringSchema`](/schema/StringSchema) for an unconstrained string. Equivalent to `new StringSchema({})`.
  *
  * @example
  *  STRING.validate(123); // Returns "123"
@@ -158,7 +158,7 @@ export class StringSchema extends Schema<string> {
 export const STRING = new StringSchema({});
 
 /**
- * Valid string, `Hello there!`, with more than one character.
+ * Sugar instance of [`StringSchema`](/schema/StringSchema) requiring at least one character. Equivalent to `new StringSchema({ min: 1 })`.
  *
  * @example
  *  REQUIRED_STRING.validate(""); // Throws "Required"
@@ -168,7 +168,7 @@ export const STRING = new StringSchema({});
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
 
 /**
- * Title string, e.g. `Title of something` (1–100 characters).
+ * Sugar instance of [`StringSchema`](/schema/StringSchema) for a title of 1–100 characters. Equivalent to `new StringSchema({ one: "title", title: "Title", min: 1, max: 100 })`.
  *
  * @example
  *  TITLE.validate("My Title"); // Returns "My Title"
@@ -178,7 +178,7 @@ export const REQUIRED_STRING = new StringSchema({ min: 1 });
 export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, max: 100 });
 
 /**
- * Optional title string, e.g. `Title of something` or `null`.
+ * Sugar instance allowing a [`TITLE`](/schema/TITLE) or `null`. Equivalent to `NULLABLE(TITLE)`.
  *
  * @example
  *  NULLABLE_TITLE.validate(null); // Returns null
@@ -188,7 +188,7 @@ export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, ma
 export const NULLABLE_TITLE = NULLABLE(TITLE);
 
 /**
- * Name string, e.g. `Name of Something` (1–100 characters).
+ * Sugar instance of [`StringSchema`](/schema/StringSchema) for a name of 1–100 characters. Equivalent to `new StringSchema({ one: "name", title: "Name", min: 1, max: 100 })`.
  *
  * @example
  *  NAME.validate("Dave"); // Returns "Dave"
@@ -198,7 +198,7 @@ export const NULLABLE_TITLE = NULLABLE(TITLE);
 export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 100 });
 
 /**
- * Optional name string, e.g. `Name of Something` or `null`.
+ * Sugar instance allowing a [`NAME`](/schema/NAME) or `null`. Equivalent to `NULLABLE(NAME)`.
  *
  * @example
  *  NULLABLE_NAME.validate(null); // Returns null

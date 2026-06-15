@@ -102,9 +102,7 @@ export class URLSchema extends StringSchema {
 }
 
 /**
- * Valid URL string, e.g. `https://www.google.com`.
- *
- * *Factory for `URLSchema`.*
+ * Sugar instance of [`URLSchema`](/schema/URLSchema) for an absolute or relative URL string. Equivalent to `new URLSchema({})`.
  *
  * @example URL_SCHEMA.validate("https://www.google.com") // "https://www.google.com/"
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/URL_SCHEMA
@@ -112,9 +110,7 @@ export class URLSchema extends StringSchema {
 export const URL_SCHEMA = new URLSchema({});
 
 /**
- * Valid URL string, e.g. `https://www.google.com`, or `null`.
- *
- * *Factory for `NullableSchema`.*
+ * Sugar instance allowing a [`URL_SCHEMA`](/schema/URL_SCHEMA) or `null`. Equivalent to `NULLABLE(URL_SCHEMA)`.
  *
  * @example NULLABLE_URL_SCHEMA.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/NULLABLE_URL_SCHEMA

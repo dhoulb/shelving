@@ -84,7 +84,7 @@ export class CurrencyCodeSchema extends StringSchema {
 }
 
 /**
- * Valid currency code, e.g. `GBP` (required because falsy values are invalid).
+ * Sugar instance of [`CurrencyCodeSchema`](/schema/CurrencyCodeSchema) for a required ISO 4217 currency code, e.g. `GBP`. Equivalent to `new CurrencyCodeSchema({})`.
  *
  * @example CURRENCY_CODE.validate("gbp") // "GBP"
  * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CURRENCY_CODE
@@ -92,7 +92,7 @@ export class CurrencyCodeSchema extends StringSchema {
 export const CURRENCY_CODE = new CurrencyCodeSchema({});
 
 /**
- * Valid currency code, e.g. `GBP`, or `null`.
+ * Sugar instance allowing a [`CURRENCY_CODE`](/schema/CURRENCY_CODE) or `null`. Equivalent to `NULLABLE(CURRENCY_CODE)`.
  *
  * @example NULLABLE_CURRENCY_CODE.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/NULLABLE_CURRENCY_CODE
