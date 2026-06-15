@@ -3,6 +3,13 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
+ * Options for a `UUIDSchema`.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/UUIDSchema/UUIDSchemaOptions
+ */
+export interface UUIDSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {}
+
+/**
  * Schema that defines a valid UUID string (versions 1-5). Defaults to any-version validation.
  *
  * - Input is trimmed and lowercased.
@@ -19,7 +26,7 @@ export class UUIDSchema extends StringSchema {
 	 *
 	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
 	 */
-	constructor({ one = "UUID", title = "UUID", ...rest }: Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> = {}) {
+	constructor({ one = "UUID", title = "UUID", ...rest }: UUIDSchemaOptions = {}) {
 		super({
 			one,
 			title,

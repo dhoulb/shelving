@@ -3,6 +3,13 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
+ * Options for a `SlugSchema`.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchemaOptions
+ */
+export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "min" | "max" | "rows"> {}
+
+/**
  * Schema that defines a valid slug, e.g. `this-is-a-slug`.
  *
  * - Useful for URL components, usernames, etc.
@@ -20,7 +27,7 @@ export class SlugSchema extends StringSchema {
 	 *
 	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
 	 */
-	constructor(options: Omit<StringSchemaOptions, "min" | "max" | "rows">) {
+	constructor(options: SlugSchemaOptions) {
 		super({
 			...options,
 			min: 1,
