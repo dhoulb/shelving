@@ -45,7 +45,7 @@ import { Card, Subheading } from "shelving/ui";
 
 ## Styling
 
-`Card` paints from the [tint ladder](/ui#the-tint-scale); override these hooks at `:root` (or any ancestor scope) to retheme. Move `--card-tint` to recolour everything at once; reach for a per-property hook for a single surgical change.
+`Card` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Move `--card-tint` to recolour everything at once; reach for a per-property hook for a single surgical change.
 
 | Variable | Styles | Default |
 |---|---|---|

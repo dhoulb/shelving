@@ -46,7 +46,7 @@ import { getButtonClass } from "shelving/ui";
 
 ## Styling
 
-`Button` paints from the [tint ladder](/ui#the-tint-scale). Override these hooks at `:root` or any ancestor scope; move `--button-tint` to recolour the whole button, or use a per-property hook for one change.
+`Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; move `--button-tint` to recolour the whole button, or use a per-property hook for one change.
 
 | Variable | Styles | Default |
 |---|---|---|

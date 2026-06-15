@@ -331,7 +331,76 @@ Conventions for the upcoming reusable component layer.
 - `:where()` is used to keep specificity low for default child styles
 - CSS modules are imported as default: `import styles from "./Foo.module.css"`, or with a `_CSS` suffix for named-export style: `import BUTTON_CSS from "./Button.module.css"`. CSS modules are the one exception to the named-exports-only rule
 - **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Card.module.css` owns `--card-tint`, `--card-background`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`.
-- **One tint anchor, then per-property hooks.** A painted component rebinds the ladder anchor once at the top of its rule (`--tint-50: var(--card-tint, inherit);`) and paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`). Do **not** reintroduce a per-component five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). That scheme was tried and removed in favour of the single-anchor model; older issue comments describing it are stale. The tint ladder and the rebind pattern are documented in `modules/ui/README.md` — keep that the source of truth.
+- **One tint anchor, then per-property hooks.** A painted component rebinds the ladder anchor once at the top of its rule (`--tint-50: var(--card-tint, inherit);`) and paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`). Do **not** reintroduce a per-component five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). That scheme was tried and removed in favour of the single-anchor model; older issue comments describing it are stale. The tint ladder and the rebind pattern are documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
+
+### Writing a new component
+
+A typical new block-level component looks like:
+
+```tsx
+// Address.tsx
+import { type ColorProps, getColorClass } from "../style/Color.js";
+import { getSpacingClass, type SpacingProps } from "../style/Spacing.js";
+import { getTypographyClass, type TypographyProps } from "../style/Typography.js";
+
+export interface AddressProps extends ColorProps, SpacingProps, TypographyProps, ChildProps {}
+
+export function Address({ children, ...props }: AddressProps) {
+  return (
+    <address
+      className={getClass(
+        getModuleClass(styles, "address"),
+        getColorClass(props),
+        getSpacingClass(props),
+        getTypographyClass(props),
+      )}
+    >
+      {children}
+    </address>
+  );
+}
+```
+
+```css
+/* Address.module.css */
+@import "../style/base.css";
+
+@layer components {
+  .address {
+    /* Theme — rebind the tint anchor so `--address-tint` (and parent scopes) flow through. */
+    --tint-50: var(--address-tint, inherit);
+
+    /* Box */
+    display: block;
+    margin-inline: 0;
+    margin-block: var(--address-space, var(--space-paragraph));
+
+    /* Text — paint from the ladder, with a per-property hook in front. */
+    color: var(--address-color, var(--tint-00));
+    font-family: var(--address-font, inherit);
+    font-size: var(--address-size, inherit);
+  }
+}
+
+@layer overrides {
+  .address {
+    &:first-child { margin-block-start: 0; }
+    &:last-child { margin-block-end: 0; }
+  }
+}
+```
+
+The `:first-child` / `:last-child` margin overrides live in a separate `@layer overrides` block because they must beat variant-set margins: every paragraph-level component zeros its outer margins at the top or bottom of its container, so a `Heading` at the top of a `Card` doesn't leave a strip of unwanted space. `@layer overrides` beats every other layer, so a `<Paragraph space="large">` still collapses its abutting edges correctly.
+
+Checklist:
+
+- [ ] `@import "../style/base.css";` at the top of the `.module.css`.
+- [ ] All component rules inside `@layer components { … }`.
+- [ ] All custom properties owned by this file start with the file name (`--address-*`, etc.) — see the CSS custom property naming rule above.
+- [ ] If the component paints colour, rebind the tint anchor at the top of the rule (`--tint-50: var(--address-tint, inherit);`) and paint from ladder steps with per-property hooks in front.
+- [ ] `:first-child` / `:last-child` overrides in a separate `@layer overrides { … }` block.
+- [ ] TSX extends the styling-prop interfaces (`ColorProps`, `SpacingProps`, `TypographyProps`, etc.) you want to expose and composes the matching `getXxxClass(props)` calls.
+- [ ] `@kind component` in the docblock, and a sibling `Address.md` with usage examples and a Styling section (see the Documentation section).
 
 ### Copy
 
