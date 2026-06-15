@@ -4,6 +4,8 @@ The `space` variant prop sets a block-level element's `margin-block` (top + bott
 
 `getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs [`getPaddingClass`](/ui/getPaddingClass) and [`getGapClass`](/ui/getGapClass), so all three move together when you change `--space`.
 
+Alongside the named scale, `space` and `padding` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
+
 ## Theme variables
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.

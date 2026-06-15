@@ -27,4 +27,36 @@
 	.xxlarge {
 		padding-block: var(--space-xxlarge);
 	}
+
+	/* Numeric block-padding multiples of `--space-normal` (`1x` … `10x`). */
+	.\31 x {
+		padding-block: calc(var(--space-normal) * 1);
+	}
+	.\32 x {
+		padding-block: calc(var(--space-normal) * 2);
+	}
+	.\33 x {
+		padding-block: calc(var(--space-normal) * 3);
+	}
+	.\34 x {
+		padding-block: calc(var(--space-normal) * 4);
+	}
+	.\35 x {
+		padding-block: calc(var(--space-normal) * 5);
+	}
+	.\36 x {
+		padding-block: calc(var(--space-normal) * 6);
+	}
+	.\37 x {
+		padding-block: calc(var(--space-normal) * 7);
+	}
+	.\38 x {
+		padding-block: calc(var(--space-normal) * 8);
+	}
+	.\39 x {
+		padding-block: calc(var(--space-normal) * 9);
+	}
+	.\31 0x {
+		padding-block: calc(var(--space-normal) * 10);
+	}
 }

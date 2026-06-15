@@ -12,7 +12,7 @@ import { TreeCards } from "../tree/TreeCards.js";
 /**
  * Page renderer for the documentation site's home page — a bold coloured hero panel over the module listing.
  * - The whole page sits in a single `color="red"` `<Block>`, so the hero panel, prose, and child cards all pick up the red tint.
- * - The hero is a `<Panel>` with the package name centred as a `<Title>`.
+ * - The hero is a `padding="5x"` `<Panel>` with the package name centred as a `<Title>`.
  * - Below the hero it renders any absorbed prose content, then the root's children (the modules) as a stack of cards.
  *
  * @kind component
@@ -25,7 +25,7 @@ export function DocumentationHomePage({ title, name, description, content, child
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color="red">
-				<Panel>
+				<Panel padding="5x">
 					<Title center>{title ?? name}</Title>
 				</Panel>
 				{content && (

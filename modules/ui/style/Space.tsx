@@ -6,7 +6,25 @@ import SPACE_CSS from "./Space.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Space/UISpace
  */
-export type UISpace = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type UISpace =
+	| "none"
+	| "xxsmall"
+	| "xsmall"
+	| "small"
+	| "normal"
+	| "large"
+	| "xlarge"
+	| "xxlarge"
+	| "1x"
+	| "2x"
+	| "3x"
+	| "4x"
+	| "5x"
+	| "6x"
+	| "7x"
+	| "8x"
+	| "9x"
+	| "10x";
 
 /**
  * Variant props for the block-space (top + bottom margin) of a block-level component, e.g. `space="large"`.
