@@ -35,7 +35,7 @@ function navigate(direction: "forward" | "back", url: string) {
 | `--horizontal-transition-size` | Slide distance for the enter/leave keyframes | `25vw` |
 | `--horizontal-transition-duration` | Duration of the slide keyframes | `var(--duration-normal)` |
 
-**Global tokens it reads** — `--duration-normal`.
+**Global tokens it reads** — [`--duration-normal`](/ui/getDurationClass).
 
 ## See also
 

@@ -24,7 +24,7 @@ import { Paragraph, Strong } from "shelving/ui";
 
 `Strong` has no own theming hooks — it sets `font-weight: var(--weight-strong)` and inherits everything else from its surroundings.
 
-**Global tokens it reads:** `--weight-strong`.
+**Global tokens it reads:** [`--weight-strong`](/ui/getWeightClass).
 
 ## See also
 

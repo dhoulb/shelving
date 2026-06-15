@@ -1,0 +1,69 @@
+@import "layers.css";
+
+@layer defaults {
+	:root {
+		/* Sizings */
+		--size: 1rem;
+		--size-scale: 1.25;
+		--size-xxsmall: calc(var(--size) * pow(var(--size-scale), -3));
+		--size-xsmall: calc(var(--size) * pow(var(--size-scale), -2));
+		--size-small: calc(var(--size) * pow(var(--size-scale), -1));
+		--size-normal: calc(var(--size) * pow(var(--size-scale), 0));
+		--size-large: calc(var(--size) * pow(var(--size-scale), 1));
+		--size-xlarge: calc(var(--size) * pow(var(--size-scale), 2));
+		--size-xxlarge: calc(var(--size) * pow(var(--size-scale), 3));
+		--size-xxxlarge: calc(var(--size) * pow(var(--size-scale), 4));
+
+		/* Semantic sizes */
+		--size-icon: var(--size-large);
+		--size-label: var(--size-small);
+
+		/* Relative sizes */
+		--size-smaller: 0.875em;
+		--size-larger: 1.5em;
+		--size-xlarger: 2.5em;
+		--size-xxlarger: 5em;
+
+		/* Line heights */
+		--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
+		--leading-normal: 1.5;
+	}
+
+	/* Baseline body size so a page with no `<Layout>` still reads correctly. */
+	body {
+		font-size: var(--size-normal);
+		line-height: var(--leading);
+	}
+}
+
+@layer variants {
+	/* Font-size variants. */
+	.xxsmall {
+		font-size: var(--size-xxsmall);
+		line-height: var(--leading);
+	}
+	.xsmall {
+		font-size: var(--size-xsmall);
+		line-height: var(--leading);
+	}
+	.small {
+		font-size: var(--size-small);
+		line-height: var(--leading);
+	}
+	.normal {
+		font-size: var(--size-normal);
+		line-height: var(--leading);
+	}
+	.large {
+		font-size: var(--size-large);
+		line-height: var(--leading);
+	}
+	.xlarge {
+		font-size: var(--size-xlarge);
+		line-height: var(--leading);
+	}
+	.xxlarge {
+		font-size: var(--size-xxlarge);
+		line-height: var(--leading);
+	}
+}

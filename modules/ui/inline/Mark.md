@@ -30,7 +30,7 @@ import { Mark } from "shelving/ui";
 | `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--mark-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads:** `--light-yellow`, `--dark-yellow`, `--radius-xxsmall`, and `--weight-strong`.
+**Global tokens it reads:** `--light-yellow`, `--dark-yellow`, [`--radius-xxsmall`](/ui/getRadiusClass), and [`--weight-strong`](/ui/getWeightClass).
 
 ## See also
 

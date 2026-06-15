@@ -27,7 +27,7 @@ function Panel({ visible }: { visible: boolean }) {
 |---|---|---|
 | `--fade-transition-duration` | Duration of the fade-in and fade-out keyframes | `var(--duration-fast)` |
 
-**Global tokens it reads** — `--duration-fast`.
+**Global tokens it reads** — [`--duration-fast`](/ui/getDurationClass).
 
 ## See also
 

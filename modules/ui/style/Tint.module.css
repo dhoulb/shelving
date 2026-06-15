@@ -1,6 +1,9 @@
+@import "layers.css";
+
 @layer defaults {
 	:root {
-		/* Main tint color — the `50` tint is used to calculate all the other shades. */
+		/* Main tint color — the `50` tint is used to calculate all the other shades.
+		 * Defaults to `--color-gray` (defined in Color.module.css), resolved at use-time. */
 		--tint-50: var(--color-gray);
 	}
 

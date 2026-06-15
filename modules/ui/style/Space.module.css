@@ -1,4 +1,22 @@
-@import "base.css";
+@import "layers.css";
+
+@layer defaults {
+	:root {
+		/* Spacings */
+		--space: 1rem;
+		--space-xxsmall: calc(var(--space) * 0.25); /* 4px */
+		--space-xsmall: calc(var(--space) * 0.5); /* 8px */
+		--space-small: calc(var(--space) * 0.75); /* 12px */
+		--space-normal: calc(var(--space) * 1); /* 16px */
+		--space-large: calc(var(--space) * 1.5); /* 24px */
+		--space-xlarge: calc(var(--space) * 2); /* 32px */
+		--space-xxlarge: calc(var(--space) * 3); /* 48px */
+
+		/* Semantic spacings */
+		--space-section: 2rem; /* Default top margin for titles/headings/section blocks. */
+		--space-paragraph: var(--space-normal); /* Default block-space for most prose-level elements. */
+	}
+}
 
 @layer variants {
 	/* Block-space variants — opt-in margin-block modifiers for any block-level component. */

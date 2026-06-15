@@ -47,7 +47,7 @@ import { Panel, Block, Title } from "shelving/ui";
 | `--title-size` | Font size | `var(--size-xxxlarge)` |
 | `--title-leading` | Line height | `var(--leading)` |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading`.
+**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
 
 ## See also
 

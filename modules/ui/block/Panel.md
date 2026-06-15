@@ -40,7 +40,7 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 | `--panel-border` | Top/bottom border shorthand | `var(--panel-stroke) solid var(--tint-80)` |
 | `--panel-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal`. Vertical padding comes from the shared `padding` variant.
+**Global tokens it reads:** the tint-ladder steps [`--tint-00`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS), plus [`--stroke-normal`](/ui/getStrokeClass). Vertical padding comes from the shared `padding` variant.
 
 ## See also
 

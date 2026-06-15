@@ -55,7 +55,7 @@ useEffect(useSafeKeyboardArea, []);
 
 The content column composes the shared `.layout` behaviour, so it also reads the layout hooks `--layout-space`, `--layout-padding`, `--layout-inset-top` / `-bottom` / `-left` / `-right`, and `--layout-body-bg`.
 
-**Global tokens it reads** — the tint ladder `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.
+**Global tokens it reads** — the tint ladder [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-normal`](/ui/getSpaceClass), [`--stroke-normal`](/ui/getStrokeClass), [`--duration-normal`](/ui/getDurationClass), and [`--color-shadow`](/ui/getColorClass).
 
 ## See also
 

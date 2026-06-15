@@ -62,7 +62,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--card-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-95`](/ui/TINT_CLASS), plus [`--space-normal`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--radius-normal`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--duration-fast`](/ui/getDurationClass).
 
 ```css
 /* Theme: borderless cards with a soft shadow and tighter corners. */

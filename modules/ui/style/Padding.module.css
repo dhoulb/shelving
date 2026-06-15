@@ -1,4 +1,5 @@
-@import "base.css";
+@import "layers.css";
+@import "Space.module.css";
 
 @layer variants {
 	/* Block-padding variants. */

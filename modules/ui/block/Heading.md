@@ -53,7 +53,7 @@ import { Heading } from "shelving/ui";
 | `--heading-size` | Font size | `var(--size-xxlarge)` |
 | `--heading-leading` | Line height | `var(--leading)` |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxlarge`, and `--leading`. (`Title` and `Subheading` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
+**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass). (`Title` and `Subheading` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
 
 ```css
 /* Theme: serif headings, a touch larger. */
