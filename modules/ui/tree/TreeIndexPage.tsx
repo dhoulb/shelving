@@ -45,7 +45,7 @@ export function TreeIndexPage({ title, name, description }: TreeElementProps): R
 	const trimmed = query.trim();
 	const filter = chip ? ({ kind: chip } as Query) : undefined;
 	const results = root ? searchTree(root, trimmed, { limit: trimmed ? 20 : INDEX_LIMIT, filter }) : [];
-	// Drop the index page itself from its own listing. (Cards are keyed by their unique canonical `path` in the `Mapper`.)
+	// Drop the index page itself from its own listing. (Each element's `key` is its unique canonical path — stamped by `flattenTree()` — so this flat cross-tree listing reconciles correctly.)
 	const cards = results.filter(el => el.type !== "tree-index");
 
 	return (

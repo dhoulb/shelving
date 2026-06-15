@@ -175,6 +175,7 @@ declare module "react" {
  *   - its **flat key** — bare `name` (e.g. `"BooleanSchema"`), or qualified `"Class.member"` for members (e.g. `"BooleanSchema.validate"`). This is what cross-refs (`extends` / `implements`) and README links resolve through.
  *   - its **canonical path** (`element.props.path`, e.g. `"/schema/BooleanSchema"`) — what the router resolves a URL to.
  * - The map values keep their (stamped) children, so the map doubles as the navigable tree: `map.get("/")` is the stamped root and flattening never throws away the hierarchy. The router resolves a URL with `map.get(path)`; the static builder enumerates pages from the path-shaped keys.
+ * - Each stamped element's own `key` is also set to its canonical `path` — so a flat (cross-tree) listing of stamped elements has globally-unique React keys, where the bare `name` would collide (many `get` / `value` / `url`).
  * - Exported names are unique across the package (barrel re-exports enforce it at compile time), so flat-key collisions are vanishingly rare; on a collision the last writer simply wins.
  * - Missing keys (e.g. builtins like `Serializable`) resolve to `undefined` → callers fall back to plain text.
  *
@@ -192,7 +193,13 @@ export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeEl
 function _flattenElement(element: TreeElement, path: AbsolutePath, map: Map<string, TreeElement>): TreeElement {
 	// Rebuild children first (bottom-up) so the stamped element carries stamped children — the map doubles as the nested tree.
 	const children = Array.from(walkElements(element.props.children), child => _flattenElement(child, joinPath(path, child.props.name), map));
-	const stamped: TreeElement = { ...element, props: { ...element.props, path, children: children.length ? children : undefined } };
+	// Stamp the canonical `path` onto both `props.path` and the element's own `key` — the latter gives a flat listing of tree
+	// elements globally-unique React keys (bare names like `get` / `value` / `url` collide across the tree).
+	const stamped: TreeElement = {
+		...element,
+		key: path,
+		props: { ...element.props, path, children: children.length ? children : undefined },
+	};
 	map.set(_flatKey(stamped), stamped);
 	map.set(path, stamped);
 	return stamped;

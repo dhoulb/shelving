@@ -87,10 +87,7 @@ export function createMapper<E = unknown>(
 			}
 			const Component = mapping[element.type];
 			if (Component) {
-				// Prefer a stamped canonical `path` as the React key — it's unique across the whole tree, whereas `element.key`
-				// (a bare name) collides in flat cross-tree listings (many `get`, `value`, `url`, …), breaking list reconciliation.
-				const key = (element.props as { readonly path?: string }).path ?? element.key;
-				items.push(<Component key={key} {...extras} {...element.props} />);
+				items.push(<Component key={element.key} {...extras} {...element.props} />);
 			} else {
 				items.push(element);
 			}

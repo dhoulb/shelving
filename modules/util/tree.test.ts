@@ -60,24 +60,31 @@ describe("flattenTree()", () => {
 
 	test("registers every element under its flat key", () => {
 		const map = flattenTree(PATH_TREE);
-		expect(map.get("schema")?.key).toBe("schema");
-		expect(map.get("BooleanSchema")?.key).toBe("BooleanSchema");
-		// Class members are keyed `Class.member`, never the bare member name.
-		expect(map.get("BooleanSchema.validate")?.key).toBe("validate");
+		expect(map.get("schema")?.props.name).toBe("schema");
+		expect(map.get("BooleanSchema")?.props.name).toBe("BooleanSchema");
+		// Class members are keyed `Class.member` in the map, never the bare member name.
+		expect(map.get("BooleanSchema.validate")?.props.name).toBe("validate");
 		expect(map.get("validate")).toBeUndefined();
 	});
 
 	test("registers every element under its canonical path too", () => {
 		const map = flattenTree(PATH_TREE);
-		expect(map.get("/")?.key).toBe("shelving");
-		expect(map.get("/schema/BooleanSchema")?.key).toBe("BooleanSchema");
-		expect(map.get("/schema/BooleanSchema/validate")?.key).toBe("validate");
+		expect(map.get("/")?.props.name).toBe("shelving");
+		expect(map.get("/schema/BooleanSchema")?.props.name).toBe("BooleanSchema");
+		expect(map.get("/schema/BooleanSchema/validate")?.props.name).toBe("validate");
+	});
+
+	test("stamps the canonical path onto each element's own key too (globally-unique React keys)", () => {
+		const map = flattenTree(PATH_TREE);
+		expect(map.get("/")?.key).toBe("/");
+		expect(map.get("/schema/BooleanSchema")?.key).toBe("/schema/BooleanSchema");
+		expect(map.get("/schema/BooleanSchema/validate")?.key).toBe("/schema/BooleanSchema/validate");
 	});
 
 	test("the stamped value keeps its (stamped) children, so the map doubles as the nested tree", () => {
 		const map = flattenTree(PATH_TREE);
 		const schema = firstChild(map.get("/"));
-		expect(schema?.key).toBe("schema");
+		expect(schema?.props.name).toBe("schema");
 		expect(schema?.props.path).toBe("/schema");
 		// The same stamped element is reachable both ways.
 		expect(schema).toBe(map.get("/schema"));
@@ -213,9 +220,11 @@ describe("searchTree()", () => {
 		};
 		const map = flattenTree(tree);
 		const root = map.get("/")!;
-		const paths = searchTree(root, "get").map(el => el.props.path);
-		expect(paths).toContain("/Store/get");
-		expect(paths).toContain("/Cache/get");
-		expect(new Set(paths).size).toBe(paths.length); // All paths unique.
+		const results = searchTree(root, "get");
+		// The React `key` is the canonical path, so the two `get` members don't collide in a flat listing.
+		const keys = results.map(el => el.key);
+		expect(keys).toContain("/Store/get");
+		expect(keys).toContain("/Cache/get");
+		expect(new Set(keys).size).toBe(keys.length); // All keys unique.
 	});
 });
