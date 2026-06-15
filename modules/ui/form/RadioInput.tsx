@@ -3,7 +3,7 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { getInputClass, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
@@ -11,7 +11,7 @@ import INPUT_CSS from "./Input.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/form/RadioInput/RadioInputProps
  */
-export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants {}
+export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants, InputVariants {}
 
 /**
  * Single `<input type="radio">` wrapped in a `<label>` styled as an `<Input>`.
@@ -36,7 +36,7 @@ export function RadioInput({
 }: RadioInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<label className={getClass(getInputClass(), INPUT_CSS.label, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}>
+		<label className={getClass(getInputClass(props), INPUT_CSS.label, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}>
 			<input
 				className={INPUT_CSS.radio}
 				type="radio"

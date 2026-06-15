@@ -2,7 +2,7 @@ import type { ReactElement, SyntheticEvent } from "react";
 import { formatNumber } from "../../util/format.js";
 import { getNumber } from "../../util/number.js";
 import { getClass } from "../util/css.js";
-import { getInputClass, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 type NumberFormatter = (num: number) => string;
@@ -12,7 +12,7 @@ type NumberFormatter = (num: number) => string;
  *
  * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInputProps
  */
-export interface NumberInputProps extends ValueInputProps<number> {
+export interface NumberInputProps extends ValueInputProps<number>, InputVariants {
 	min?: number | undefined;
 	max?: number | undefined;
 	/** Optional formatter — when provided the input switches to `type="text"` and reformats the value on blur. */
@@ -40,6 +40,7 @@ export function NumberInput({
 	// min = Number.NEGATIVE_INFINITY,
 	// max = Number.POSITIVE_INFINITY,
 	formatter = formatNumber,
+	...variants
 }: NumberInputProps): ReactElement {
 	const onChange = ({ currentTarget }: SyntheticEvent<HTMLInputElement>) => {
 		onValue?.(getNumber(currentTarget.value) ?? undefined);
@@ -59,7 +60,7 @@ export function NumberInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(), INPUT_CSS.text)}
+			className={getClass(getInputClass(variants), INPUT_CSS.text)}
 			onChange={onChange}
 			onInput={onChange}
 			onBlur={onBlur}

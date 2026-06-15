@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
 import { getClass } from "../util/css.js";
-import { getInputClass, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
@@ -10,7 +10,7 @@ import INPUT_CSS from "./Input.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectProps
  */
-export interface SelectProps<T extends string> extends ValueInputProps<T> {
+export interface SelectProps<T extends string> extends ValueInputProps<T>, InputVariants {
 	/** The options for the select. */
 	options: ChoiceOptions<T>;
 }
@@ -34,13 +34,14 @@ export function SelectInput({
 	value = "",
 	onValue,
 	options,
+	...variants
 }: SelectProps<string>): ReactElement {
 	return (
 		<select
 			name={name}
 			defaultValue={value}
 			onChange={e => onValue(e.currentTarget.value || undefined)}
-			className={getClass(getInputClass(), INPUT_CSS.select)}
+			className={getClass(getInputClass(variants), INPUT_CSS.select)}
 			title={message}
 			aria-invalid={!!message}
 			disabled={disabled}

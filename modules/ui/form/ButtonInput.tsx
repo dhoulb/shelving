@@ -3,7 +3,7 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import { Clickable, type ClickableProps } from "./Clickable.js";
-import { getInputClass, type InputProps } from "./Input.js";
+import { getInputClass, type InputProps, type InputVariants } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
@@ -11,7 +11,7 @@ import INPUT_CSS from "./Input.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/form/ButtonInput/ButtonInputProps
  */
-export interface ButtonInputProps extends InputProps, ClickableProps, FlexVariants {}
+export interface ButtonInputProps extends InputProps, ClickableProps, FlexVariants, InputVariants {}
 
 /**
  * Return either a `<button>` or an `<a href="">` styled as an input, based on whether an `onClick` or `href` prop is provided.
@@ -27,7 +27,7 @@ export function ButtonInput({ title, placeholder, children = title, ...props }: 
 	return (
 		<Clickable
 			{...props}
-			className={getClass(getInputClass(), INPUT_CSS.button, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}
+			className={getClass(getInputClass(props), INPUT_CSS.button, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}
 		>
 			{hasChildren ? children : placeholder}
 		</Clickable>

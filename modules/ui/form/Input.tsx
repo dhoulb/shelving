@@ -1,21 +1,31 @@
 import type { ReactElement } from "react";
 import { LOADING } from "../misc/Loading.js";
 import { getFlexClass } from "../style/Flex.js";
+import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
- * Get the base `className` shared by every input element.
+ * Styling variants shared by every form input — currently the width variants (`narrow`, `wide`, `full`, `fit`).
+ * - Extends `WidthVariants` so any input can be sized (e.g. `<CheckboxInput fit>` to shrink to its content).
+ * - Designed to grow: new cross-cutting input styling props (e.g. spacing) should be added here so every input picks them up consistently.
  *
- * Compose the result with the modifier classes from `Input.module.css` (e.g. `INPUT_CSS.text`, `INPUT_CSS.select`, `INPUT_CSS.button`, `INPUT_CSS.label`) for a specific input type.
+ * @see https://dhoulb.github.io/shelving/ui/form/Input/InputVariants
+ */
+export interface InputVariants extends WidthVariants {}
+
+/**
+ * Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
+ * - Compose the result with the type-modifier classes from `Input.module.css` (`INPUT_CSS.text`, `INPUT_CSS.select`, `INPUT_CSS.button`, `INPUT_CSS.label`, …) for a specific input type; `getInputClass()` never applies them itself.
  *
- * @returns The base input `className` string.
- * @example getClass(getInputClass(), INPUT_CSS.button) // "input button"
+ * @param props The input's styling variants (width, …).
+ * @returns The merged base input `className` string.
+ * @example getClass(getInputClass(props), INPUT_CSS.text) // a text input that also honours width variants
  * @see https://dhoulb.github.io/shelving/ui/form/Input/getInputClass
  */
-export function getInputClass(): string {
-	return getClass(INPUT_CSS.input);
+export function getInputClass(props: InputVariants): string {
+	return getClass(INPUT_CSS.input, getWidthClass(props));
 }
 
 /**
@@ -47,12 +57,12 @@ export interface ValueInputProps<O, I = never> extends InputProps {
 }
 
 /** Input that is loading. */
-export const LOADING_INPUT = <div className={getClass(getInputClass(), getFlexClass({}))}>{LOADING}</div>;
+export const LOADING_INPUT = <div className={getClass(getInputClass({}), getFlexClass({}))}>{LOADING}</div>;
 
 /**
  * Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
  * - This is so you can put an icon before or after an input.
  */
 export function InputWrapper({ children }: ChildProps): ReactElement {
-	return <div className={getClass(getInputClass(), INPUT_CSS.wrapper)}>{children}</div>;
+	return <div className={getClass(getInputClass({}), INPUT_CSS.wrapper)}>{children}</div>;
 }

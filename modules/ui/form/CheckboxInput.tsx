@@ -3,7 +3,7 @@ import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { getInputClass, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
@@ -11,7 +11,7 @@ import INPUT_CSS from "./Input.module.css";
  *
  * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxProps
  */
-export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants {}
+export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants, InputVariants {}
 
 /**
  * Checkbox input bound to a `boolean` value, rendered as a labelled `<input type="checkbox">`.
@@ -37,7 +37,7 @@ export function CheckboxInput({
 	const hasChildren = notNullish(children);
 	return (
 		<label
-			className={getClass(getInputClass(), INPUT_CSS.label, getFlexClass(variants), hasChildren && INPUT_CSS.placeholder)}
+			className={getClass(getInputClass(variants), INPUT_CSS.label, getFlexClass(variants), hasChildren && INPUT_CSS.placeholder)}
 			aria-invalid={!!message}
 		>
 			<input

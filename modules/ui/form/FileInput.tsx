@@ -1,13 +1,13 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { FileTypes } from "../../util/file.js";
-import { getInputClass, type ValueInputProps } from "./Input.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 
 /**
  * Props for `FileInput`, an `<input type="file">` that emits the selected `File`.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/FileInput/FileInputProps
  */
-export interface FileInputProps extends ValueInputProps<string | File> {
+export interface FileInputProps extends ValueInputProps<string | File>, InputVariants {
 	types?: FileTypes | undefined;
 }
 
@@ -30,6 +30,7 @@ export function FileInput({
 	// value,
 	onValue,
 	types = {},
+	...variants
 }: FileInputProps): ReactElement {
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
 		const files = e.currentTarget.files;
@@ -44,7 +45,7 @@ export function FileInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder}
-			className={getInputClass()}
+			className={getInputClass(variants)}
 			onChange={onChange}
 			onInput={onChange}
 			multiple={false}
