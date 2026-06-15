@@ -21,7 +21,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Top-of-file JSDoc comment becomes the file's `content`.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on the file and every `tree-documentation` child.
- * - Sets `title` on every `tree-documentation` child — `name()` for functions and methods, bare `name` for other kinds. Parent class context comes from the `class` prop ("member of …" affordance), never the title.
+ * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
@@ -357,7 +357,7 @@ function _getReturns(
 
 /**
  * Extract class or interface members as child elements.
- * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance); the title stays the bare member `name` / `name()`.
+ * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance) and is prebaked into the member `title` (`Class.name` / `Class.name()`).
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
  * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
  * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
@@ -399,7 +399,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					key,
 					props: {
 						name,
-						title: `${name}()`,
+						title: `${className}.${name}()`,
 						description,
 						content,
 						kind: "method",
@@ -416,7 +416,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 				key: name,
 				props: {
 					name,
-					title: name,
+					title: `${className}.${name}`,
 					description,
 					content,
 					kind: "property",
@@ -447,7 +447,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					key,
 					props: {
 						name,
-						title: name,
+						title: `${className}.${name}`,
 						description,
 						content,
 						kind: "property",
