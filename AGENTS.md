@@ -468,14 +468,14 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
   /**
    * Create a `DataSchema` for a set of properties.
    *
-   * *Sugar factory for [`DataSchema`](/schema/DataSchema).*
+   * _Sugar factory for [`DataSchema`](/schema/DataSchema)._
    */
   export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
   	return new DataSchema({ props });
   }
   ```
 
-- The canonical wording is exactly `*Sugar factory for [\`ClassName\`](/schema/ClassName).*` (italicised, backtick-quoted class name linked to its docs page). When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+- The canonical wording is exactly `_Sugar factory for [\`ClassName\`](/schema/ClassName)._` — italic (the `markup` renderer makes `_underscores_` italic and `*asterisks*` bold, so use underscores here, not asterisks), with a backtick-quoted class name linked to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
 
 ### Docblock standards
 

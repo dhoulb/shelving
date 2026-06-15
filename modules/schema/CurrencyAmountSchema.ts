@@ -86,7 +86,7 @@ export class CurrencyAmountSchema extends NumberSchema {
 /**
  * Create a `CurrencyAmountSchema` for a non-negative monetary amount in a currency.
  *
- * *Sugar factory for [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema).*
+ * _Sugar factory for [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema)._
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @returns A `CurrencyAmountSchema` validating amounts in `currency`.
@@ -125,7 +125,7 @@ export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
 /**
  * Create a `NullableSchema` for an optional monetary amount in a currency, or `null`.
  *
- * *Sugar factory for [`NullableSchema`](/schema/NullableSchema).*
+ * _Sugar factory for [`NullableSchema`](/schema/NullableSchema)._
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @returns A `NullableSchema` validating amounts in `currency`, or `null`.
