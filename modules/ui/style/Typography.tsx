@@ -1,26 +1,8 @@
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import { type FontVariants, getFontClass } from "./Font.js";
+import { getSizeClass, type SizeVariants } from "./Size.js";
 import TYPOGRAPHY_CSS from "./Typography.module.css";
-
-/**
- * Enumerated font-size scale selectable via the `size` variant prop.
- *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/UISize
- */
-export type UISize = "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
-
-/**
- * Enumerated font-family names selectable via the `font` variant prop.
- *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/UIFont
- */
-export type UIFont = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
-
-/**
- * Enumerated font-weight names selectable via the `weight` variant prop.
- *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/UIWeight
- */
-export type UIWeight = "title" | "body" | "label" | "code" | "normal" | "strong";
+import { getWeightClass, type WeightVariants } from "./Weight.js";
 
 /**
  * Enumerated tint shades selectable via the `tint` variant prop — shades of the current tint colour from `"00"` (black) through `"50"` (the hue itself) to `"100"` (white).
@@ -67,15 +49,12 @@ export type AlignVariants = {
 /**
  * Typographic variant props — font-family, weight, alignment, size, and tint.
  *
+ * Combines the focused {@link SizeVariants}, {@link WeightVariants}, and {@link FontVariants} interfaces (each backed
+ * by its own CSS module) with text alignment and tint colour.
+ *
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/TypographyVariants
  */
-export interface TypographyVariants extends AlignVariants {
-	/** Font family. */
-	font?: UIFont | undefined;
-	/** Font weight */
-	weight?: UIWeight | undefined;
-	/** Font size of the element. */
-	size?: UISize | undefined;
+export interface TypographyVariants extends AlignVariants, SizeVariants, WeightVariants, FontVariants {
 	/** Set CSS text `color:` to one of the shades of the current tint colour (defaults to gray). */
 	tint?: UITint | undefined;
 }
@@ -83,11 +62,18 @@ export interface TypographyVariants extends AlignVariants {
 /**
  * Get the typography class for a component from its typographic variant props.
  *
+ * Composes the focused size, weight, and font helpers with text alignment and tint colour.
+ *
  * @param props Typographic variant props (font, weight, size, tint, alignment).
  * @returns The combined typography class string, or `undefined` when no variants apply.
  * @example getTypographyClass({ font: "title", size: "large", center: true })
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/getTypographyClass
  */
-export function getTypographyClass({ tint, size, font, weight, ...props }: TypographyVariants): string | undefined {
-	return getModuleClass(TYPOGRAPHY_CSS, tint && `tint-${tint}`, weight && `weight-${weight}`, size, font, props);
+export function getTypographyClass({ tint, ...props }: TypographyVariants): string | undefined {
+	return getClass(
+		getSizeClass(props),
+		getWeightClass(props),
+		getFontClass(props),
+		getModuleClass(TYPOGRAPHY_CSS, tint && `tint-${tint}`, props),
+	);
 }

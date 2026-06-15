@@ -1,4 +1,6 @@
-@import "base.css";
+@import "layers.css";
+@import "Size.module.css";
+@import "Space.module.css";
 
 @layer defaults {
 	.flex {

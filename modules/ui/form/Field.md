@@ -50,7 +50,7 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-message-weight` | Message font weight | `var(--weight-strong)` |
 | `--field-color-message` | Message colour | `var(--color-red)` |
 
-**Global tokens it reads:** the tint ladder `--tint-00`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`, `--shade-dark`, and `--color-red`.
+**Global tokens it reads:** the tint ladder [`--tint-00`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--size-normal`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--weight-normal`](/ui/getWeightClass), `--shade-dark`, and [`--color-red`](/ui/getColorClass).
 
 ## See also
 

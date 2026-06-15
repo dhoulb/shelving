@@ -1,4 +1,8 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Space.module.css";
+@import "../style/Stroke.module.css";
+@import "../style/Tint.module.css";
+@import "../style/Weight.module.css";
 
 @layer components {
 	.blockquote,

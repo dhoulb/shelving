@@ -1,6 +1,12 @@
-@import "base.css";
+@import "layers.css";
 
 @layer defaults {
+	:root {
+		/* Semantic widths */
+		--width-narrow: 22.5rem;
+		--width-wide: 33.75rem;
+	}
+
 	.narrow,
 	.wide,
 	.full,

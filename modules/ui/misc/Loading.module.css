@@ -1,4 +1,6 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Size.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.spinner {

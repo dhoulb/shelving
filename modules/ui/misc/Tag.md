@@ -38,7 +38,7 @@ import { Tag } from "shelving/ui";
 | `--tag-case` | Text transform | `var(--case-label)` |
 | `--tag-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
+**Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-55`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--font-body`](/ui/getFontClass), [`--size-small`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--leading`](/ui/getSizeClass), [`--case-label`](/ui/getFontClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), and [`--color-focus`](/ui/getColorClass).
 
 ## See also
 

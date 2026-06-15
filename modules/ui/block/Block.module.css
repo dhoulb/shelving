@@ -1,4 +1,4 @@
-@import "../style/base.css";
+@import "../style/layers.css";
 
 @layer components {
 	.block {

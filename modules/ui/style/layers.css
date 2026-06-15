@@ -1,0 +1,26 @@
+/*
+ * Cascade-layer anchor for the shelving UI library. See `modules/ui/README.md` for the styling system overview.
+ *
+ * This file does exactly one thing: declare the cascade-layer order (lowest → highest priority). Every other
+ * `*.module.css` `@import`s it (alongside the specific token modules it references), so the layer order reaches
+ * every component regardless of bundle order. Re-declaring the same order elsewhere is a harmless no-op.
+ *
+ *   • `defaults`   — `:root` design tokens (spread across the themed token modules), the tint ladder, and the
+ *                    body baseline. Low-priority opt-in defaults.
+ *   • `components` — component-defining CSS. The bulk of the codebase.
+ *   • `variants`   — cross-cutting opt-in modifiers (Color, Status, Space, Padding, Gap, Width, Size, Weight,
+ *                    Font, Flex, Scroll). Always beat components.
+ *   • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin collapses,
+ *                    which must beat variant-set margins.
+ *
+ * Unlayered rules beat all layered rules — themes should override design tokens at `:root` (via inheritance),
+ * not via class selectors. Each themed token module documents the `:root` variables it defines and which ones
+ * a theme file is expected to override.
+ */
+@layer defaults, components, variants, overrides;
+
+@layer defaults {
+	:root {
+		color-scheme: light;
+	}
+}

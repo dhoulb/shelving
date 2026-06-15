@@ -10,24 +10,47 @@ The `ui` module exists so an app never hand-rolls the same form field, card, or 
 
 A few conventions run through every component:
 
-- **Styling props, not CSS.** Visual options are props on the component — enumerated props for the scales (`color="red"`, `size="large"`, `space="none"`) and boolean props for on/off variants (`<Button strong>`, `<Section narrow>`, `<Flex wrap>`). Each maps to a class in a CSS Module. You never pass `style` or raw `className`.
+- **Styling props are for one-off overrides.** Visual options are props on the component — enumerated props for the scales (`color="red"`, `size="large"`, `space="none"`) and boolean props for on/off variants (`<Button strong>`, `<Section narrow>`, `<Flex wrap>`). Each maps to a class in a CSS Module. Reach for them when a component needs to look different in *one place* — the way the docs site tints its accents purple — not as the way to dress a whole app. You never pass `style` or raw `className`.
 - **Composition.** Higher-level components — a `*Page`, a `*Card` — take their identity from library components like [`Card`](/ui/Card), [`Section`](/ui/Section), [`Button`](/ui/Button), and [`Tag`](/ui/Tag) rather than shipping their own styling.
 - **Sentence case.** Titles, headings, and button labels capitalise only the first word.
-- **Theming via CSS variables.** Colour and spacing come from CSS custom properties with fallback chains, so a theme is a small set of variable overrides.
+- **Theme with CSS.** An app-wide custom look is a CSS file, not a wall of props. Write a `theme.css` that overrides the base design-token variables (and, where needed, per-component hooks) at `:root`, and import it after the library styles. The recommended workflow is to spend time tuning those variables to match your design — see [Theming](#theming) below.
 
 ## The styling system
 
 The styling system lives in `style/` and has four moving parts: design tokens, the tint scale, cascade layers, and the styling props. Components compose them in a predictable shape; consumers theme by overriding CSS custom properties at `:root`.
 
-**Design tokens.** `style/base.css` defines every design-token constant at `:root` — colours (`--color-*`), font sizes (`--size-*`), spacing (`--space-*`), radii (`--radius-*`), strokes (`--stroke-*`), shadows (`--shadow-*`), durations (`--duration-*`), font weights (`--weight-*`), and font faces (`--font-*`) — plus semantic aliases themes usually target instead (`--color-primary`, `--color-link`, `--color-success`, `--space-paragraph`, …). Components read these via `var(--token)`; `base.css` is `@import`ed at the top of every `*.module.css`, so the tokens and the cascade-layer order reach every component regardless of bundle order.
+**Design tokens.** Every design-token constant is defined at `:root`, split across the themed token modules in `style/` — each module owns one domain, documents the variables it defines, and is the page a theme author overrides. `style/layers.css` is the cascade-layer anchor; every `*.module.css` `@import`s it plus the specific token modules it references, so the tokens and the layer order reach every component regardless of bundle order. The domains are: colours ([`getColorClass`](/ui/getColorClass)), font sizes ([`getSizeClass`](/ui/getSizeClass)), font weights ([`getWeightClass`](/ui/getWeightClass)), font faces ([`getFontClass`](/ui/getFontClass)), spacing ([`getSpaceClass`](/ui/getSpaceClass)), widths ([`getWidthClass`](/ui/getWidthClass)), radii ([`getRadiusClass`](/ui/getRadiusClass)), strokes ([`getStrokeClass`](/ui/getStrokeClass)), shadows ([`getShadowClass`](/ui/getShadowClass)), and durations ([`getDurationClass`](/ui/getDurationClass)). Each also defines the semantic aliases a theme usually targets (`--color-primary`, `--color-link`, `--space-paragraph`, …). Components read tokens via `var(--token)`.
 
 **The tint scale.** All colour flows from one anchor variable, `--tint-50`, from which a 21-step ladder is computed and *recomputed* under [`TINT_CLASS`](/ui/TINT_CLASS) — the heart of how `color=` and `status=` retint a whole subtree. The ladder, the recompute trick, the painting conventions, and the theming guide all live on the [`TINT_CLASS`](/ui/TINT_CLASS) page.
 
 **Cascade layers.** Styles are ordered by `@layer`, lowest to highest priority: `defaults` (`:root` tokens, the tint ladder, body baseline) → `components` (the bulk of the CSS: `.card`, `.button`, …) → `variants` (cross-cutting opt-in modifiers, which always beat components) → `overrides` (top-priority structural fixes like `:first-child` / `:last-child` margin collapses). Unlayered rules beat all layered rules, so a theme should set tokens at `:root` or wrap its rules in `@layer`.
 
-**Styling props.** The cross-cutting visual options are props, each backed by a helper in `style/` that maps the prop to a class. Colour and status move the tint anchor — [`getColorClass`](/ui/getColorClass) and [`getStatusClass`](/ui/getStatusClass); size, alignment, and font family come from [`getTypographyClass`](/ui/getTypographyClass); spacing, padding, and gap from [`getSpaceClass`](/ui/getSpaceClass), [`getPaddingClass`](/ui/getPaddingClass), and [`getGapClass`](/ui/getGapClass); width constraints from [`getWidthClass`](/ui/getWidthClass); flex layout from [`getFlexClass`](/ui/getFlexClass); and opt-in scrolling from [`getScrollClass`](/ui/getScrollClass). Each helper's page lists its exact prop values and what they set. A component opts into the props it wants by extending the matching `*Props` interfaces and composing the `getXxxClass(props)` calls.
+**Styling props.** The cross-cutting visual options are props, each backed by a helper in `style/` that maps the prop to a class. Colour and status move the tint anchor — [`getColorClass`](/ui/getColorClass) and [`getStatusClass`](/ui/getStatusClass); font size, weight, and family come from [`getSizeClass`](/ui/getSizeClass), [`getWeightClass`](/ui/getWeightClass), and [`getFontClass`](/ui/getFontClass), which [`getTypographyClass`](/ui/getTypographyClass) combines with text alignment and tint; spacing, padding, and gap from [`getSpaceClass`](/ui/getSpaceClass), [`getPaddingClass`](/ui/getPaddingClass), and [`getGapClass`](/ui/getGapClass); width constraints from [`getWidthClass`](/ui/getWidthClass); flex layout from [`getFlexClass`](/ui/getFlexClass); and opt-in scrolling from [`getScrollClass`](/ui/getScrollClass). Each helper's page lists its exact prop values and what they set. A component opts into the props it wants by extending the matching `*Props` interfaces and composing the `getXxxClass(props)` calls.
 
 Each painting component also exposes its own theme hooks — a single tint hook (`--card-tint`) to recolour the whole component, plus per-property hooks (`--card-background`, `--card-radius`, …) for surgical overrides. Those are documented in each component's own **Styling** section (see [`Card`](/ui/Card) for the precedent).
+
+## Theming
+
+The recommended way to give an app its own look is a **theme stylesheet**, not styling props. Create a `theme.css`, override the base design-token variables at `:root`, and import it after the library styles:
+
+```css
+/* theme.css — imported after shelving/ui styles */
+:root {
+	--color-primary: oklch(58% 0.25 300); /* purple brand */
+	--font-body: "Inter", system-ui;
+	--radius: 0.5rem; /* tighter corners everywhere */
+	--space: 1.125rem; /* roomier spacing scale */
+}
+```
+
+Each base token lives in a themed module that documents the variables it defines and which ones a theme usually overrides. Work from broadest (a palette colour or scale root) to narrowest (a single semantic alias):
+
+- [weight](/ui/getWeightClass) · [size](/ui/getSizeClass) · [font](/ui/getFontClass) — typography (`--weight-*`, `--size-*`, `--font-*`, `--case-label`).
+- [color](/ui/getColorClass) — palette, semantic, and brand colours (`--color-*`).
+- [space](/ui/getSpaceClass) · [width](/ui/getWidthClass) — layout spacing and widths (`--space-*`, `--width-*`).
+- [radius](/ui/getRadiusClass) · [stroke](/ui/getStrokeClass) · [shadow](/ui/getShadowClass) · [duration](/ui/getDurationClass) — surface tokens (`--radius-*`, `--stroke-*`, `--shadow-*`, `--duration-*`).
+
+The **tint ladder** is the one exception that doesn't follow the override-a-variable pattern: its 21 steps are *recomputed* from a single anchor inside every tinted scope, so you move the anchor rather than overriding individual steps. See [`TINT_CLASS`](/ui/TINT_CLASS) for the full theming guide, and each component's **Styling** section for its per-component hooks.
 
 ## Finding your way around
 

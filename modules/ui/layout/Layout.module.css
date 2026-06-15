@@ -1,4 +1,6 @@
-@import "../style/base.css";
+@import "../style/layers.css";
+@import "../style/Space.module.css";
+@import "../style/Tint.module.css";
 
 /* Low-priority padding/flex defaults live in `@layer defaults` so consumers can override them */
 /* with normal-specificity selectors without needing `:where()` tricks. */
@@ -53,7 +55,7 @@
 		position: fixed;
 		inset: 0;
 
-		/* Layout-specific bg hook. Typography and page bg come from the body baseline in style/base.css. */
+		/* Layout-specific bg hook. Typography and page bg come from the body baseline in the style/ token modules. */
 		background: var(--layout-body-bg, var(--tint-100));
 	}
 

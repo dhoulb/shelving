@@ -38,7 +38,7 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 | `--paragraph-tint` | Tint anchor for the paragraph scope | `inherit` (flows from `color=` / parent) |
 | `--paragraph-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
-**Global tokens it reads:** `--space-paragraph`.
+**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass).
 
 ## See also
 

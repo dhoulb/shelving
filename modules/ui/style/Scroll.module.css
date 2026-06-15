@@ -1,3 +1,7 @@
+@import "layers.css";
+@import "Color.module.css";
+@import "Stroke.module.css";
+
 @layer defaults {
 	.horizontal {
 		margin: 0;

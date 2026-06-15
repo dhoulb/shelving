@@ -1,5 +1,32 @@
-@import "base.css";
+@import "layers.css";
 @import "Tint.module.css";
+
+@layer defaults {
+	:root {
+		/* Basic colors */
+		--color-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
+		--color-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
+		--color-orange: oklch(74% 0.157 60);
+		--color-yellow: oklch(86% 0.16 92);
+		--color-green: oklch(72% 0.185 130);
+		--color-aqua: oklch(72% 0.121 185);
+		--color-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
+		--color-purple: oklch(58% 0.25 300);
+		--color-pink: oklch(68% 0.239 350);
+
+		/* Semantic colors */
+		--color-link: var(--color-blue);
+		--color-focus: var(--color-blue);
+		--color-success: var(--color-green);
+		--color-warning: var(--color-orange);
+		--color-failure: var(--color-red);
+
+		/* Brand colors */
+		--color-primary: var(--color-blue); /* Primary brand color */
+		--color-secondary: var(--color-purple); /* Secondary brand color */
+		--color-tertiary: var(--color-pink); /* Tertiary brand color */
+	}
+}
 
 @layer variants {
 	/* Basic colors */
