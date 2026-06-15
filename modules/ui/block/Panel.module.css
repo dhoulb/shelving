@@ -4,10 +4,10 @@
 
 /*
  * Full-width vertical region that paints the current surface. Panels always have zero block-space
- * (they butt up against each other vertically to create stacked page sections) but they do have
- * vertical `padding-block` — `xxlarge` by default, overridable via PaddingVariants (`.padding-large`,
- * `.padding-none`, etc.). Inline padding is fixed at `--space-normal`; if you want narrower content
- * inside a wide panel, compose a `<Block narrow>` (or `<Block wide>`) inside it.
+ * (they butt up against each other vertically to create stacked page sections). Vertical breathing
+ * room comes from the shared `padding` variant (`.large`, `.xxlarge`, etc. from `style/Padding`);
+ * with no `padding` the block padding is zero and the inner `<Section>` margins provide the spacing.
+ * For narrower content inside a wide panel, compose a `<Block narrow>` (or `<Block wide>`) inside it.
  */
 @layer components {
 	.panel {
