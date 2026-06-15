@@ -1,19 +1,19 @@
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
-import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
-import { Label } from "../block/Label.js";
 import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
+import { Table } from "../block/Table.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
+import { Scroll } from "../style/Scroll.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
@@ -113,50 +113,80 @@ export function DocumentationPage({
 						<DocumentationSignatures signatures={signatures} />
 						{params?.length && (
 							<Section>
-								<Label>Parameters</Label>
-								<Definitions>
-									{params.map(({ name, type = DEFAULT_TYPE, description = "", optional }) => (
-										<Fragment key={`${name}-${type}-${description}`}>
-											<dt>
-												<Code size="normal">
-													{name}
-													{optional ? "?" : ""}: {type}
-												</Code>
-											</dt>
-											<dd>{description}</dd>
-										</Fragment>
-									))}
-								</Definitions>
+								<Scroll horizontal>
+									<Table>
+										<thead>
+											<tr>
+												<th>Parameter</th>
+												<th>Type</th>
+												<th>Default</th>
+												<th>Description</th>
+											</tr>
+										</thead>
+										<tbody>
+											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => (
+												<tr key={`${name}-${type}-${description}`}>
+													<td>
+														<Code size="normal">{name}</Code>
+													</td>
+													<td>
+														<Code size="normal">{type}</Code>
+													</td>
+													<td>{def ? <Code size="normal">{def}</Code> : "-"}</td>
+													<td>{description}</td>
+												</tr>
+											))}
+										</tbody>
+									</Table>
+								</Scroll>
 							</Section>
 						)}
 						{returns?.length && (
 							<Section>
-								<Label>Returns</Label>
-								<Definitions>
-									{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
-										<Fragment key={`${type}-${description}`}>
-											<dt>
-												<Code size="normal">{type}</Code>
-											</dt>
-											<dd>{description}</dd>
-										</Fragment>
-									))}
-								</Definitions>
+								<Scroll horizontal>
+									<Table>
+										<thead>
+											<tr>
+												<th>Return</th>
+												<th>Description</th>
+											</tr>
+										</thead>
+										<tbody>
+											{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
+												<tr key={`${type}-${description}`}>
+													<td>
+														<Code size="normal">{type}</Code>
+													</td>
+													<td>{description}</td>
+												</tr>
+											))}
+										</tbody>
+									</Table>
+								</Scroll>
 							</Section>
 						)}
 						{throws?.length && (
 							<Section>
-								<Label>Throws</Label>
-								<Definitions>
-									{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
-										<Fragment key={`${type}-${description}`}>
-											<dt>
-												<Code size="normal">{type}</Code>
-											</dt>
-											<dd>{description}</dd>
-										</Fragment>
-									))}
-								</Definitions>
+								<Scroll horizontal>
+									<Table>
+										<thead>
+											<tr>
+												<th>Throws</th>
+												<th>Description</th>
+											</tr>
+										</thead>
+										<tbody>
+											{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
+												<tr key={`${type}-${description}`}>
+													<td>
+														<Code size="normal">{type}</Code>
+													</td>
+													<td>{description}</td>
+												</tr>
+											))}
+										</tbody>
+									</Table>
+								</Scroll>
 							</Section>
 						)}
 					</Section>

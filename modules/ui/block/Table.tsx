@@ -6,7 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import TABLE_CSS from "./Table.module.css";
 
-const TABLE_CLASS = getModuleClass(TABLE_CSS, "divider");
+const TABLE_CLASS = getModuleClass(TABLE_CSS, "table");
 
 /**
  * Props for `Table` — colour, space, and typography variants plus `children`.
