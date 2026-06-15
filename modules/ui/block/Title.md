@@ -26,7 +26,7 @@ import { Title, Paragraph } from "shelving/ui";
 import { Panel, Block, Title } from "shelving/ui";
 
 <Panel as="header" color="primary">
-  <Block narrow>
+  <Block width="narrow">
     <Title>Welcome</Title>
   </Block>
 </Panel>

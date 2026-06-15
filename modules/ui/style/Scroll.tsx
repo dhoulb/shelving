@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/index.js";
 import SCROLLABLE_CSS from "./Scroll.module.css";
-import type { WidthVariants } from "./Width.js";
 
 const SCROLL_HORIZONTAL_CLASS = getModuleClass(SCROLLABLE_CSS, "horizontal");
 
@@ -36,16 +35,16 @@ export function getScrollClass({ horizontal, vertical }: ScrollProps): string {
 }
 
 /**
- * Props for the `Scroll` component — children plus scroll-axis and width variants.
+ * Props for the `Scroll` component — children plus scroll-axis variants.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/ScrollComponentProps
  */
-export interface ScrollComponentProps extends ChildProps, ScrollProps, WidthVariants {}
+export interface ScrollComponentProps extends ChildProps, ScrollProps {}
 
 /**
  * Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
  *
- * @param props Children plus scroll-axis and width variant props.
+ * @param props Children plus scroll-axis variant props.
  * @returns A `<div>` element with the computed scroll class.
  * @example <Scroll horizontal>{wideContent}</Scroll>
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/Scroll

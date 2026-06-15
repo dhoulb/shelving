@@ -29,13 +29,13 @@ export function DocumentationHomePage({ title, name, description, content, child
 					<Title center>{title ?? name}</Title>
 				</Panel>
 				{content && (
-					<Section wide>
+					<Section>
 						<Prose>
 							<Markup>{content}</Markup>
 						</Prose>
 					</Section>
 				)}
-				<Section wide>
+				<Section>
 					<TreeCards>{children}</TreeCards>
 				</Section>
 			</Block>

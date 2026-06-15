@@ -52,7 +52,7 @@ export function getBlockClass(variants: BlockProps): string {
  * - Pass `as` to render a different semantic element (`section`, `header`, `footer`, `nav`, `aside`, `figure`).
  *
  * @example <Block><Paragraph>Hello</Paragraph></Block>
- * @example <Block as="aside" narrow><Paragraph>Sidebar</Paragraph></Block>
+ * @example <Block as="aside" width="narrow"><Paragraph>Sidebar</Paragraph></Block>
  * @see https://dhoulb.github.io/shelving/ui/block/Block/Block
  */
 export function Block({ as: Component = "div", children, ...props }: BlockProps): ReactElement {

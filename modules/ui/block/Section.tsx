@@ -105,7 +105,7 @@ export function Nav(props: SectionProps): ReactElement {
  * @kind component
  * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<aside>` element.
- * @example <Aside narrow><Paragraph>Sidebar</Paragraph></Aside>
+ * @example <Aside width="narrow"><Paragraph>Sidebar</Paragraph></Aside>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Aside
  */
 export function Aside(props: SectionProps): ReactElement {

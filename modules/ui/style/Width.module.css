@@ -3,11 +3,13 @@
 @layer defaults {
 	:root {
 		/* Semantic widths */
-		--width-narrow: 22.5rem;
-		--width-wide: 33.75rem;
+		--width-narrow: 35rem;
+		--width-normal: 55rem;
+		--width-wide: 75rem;
 	}
 
 	.narrow,
+	.normal,
 	.wide,
 	.full,
 	.fit {
@@ -21,6 +23,9 @@
 	/* Width variants — constrain a block-level component's max-inline-size. */
 	.narrow {
 		inline-size: var(--width-narrow);
+	}
+	.normal {
+		inline-size: var(--width-normal);
 	}
 	.wide {
 		inline-size: var(--width-wide);

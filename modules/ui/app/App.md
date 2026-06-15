@@ -15,7 +15,7 @@ function HelloApp() {
   return (
     <App app="My app">
       <CenteredLayout>
-        <Section narrow>
+        <Section width="narrow">
           <Title>Hello</Title>
           <Paragraph>Welcome to the app.</Paragraph>
         </Section>

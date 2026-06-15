@@ -21,17 +21,17 @@ import { TreeCards } from "./TreeCards.js";
 export function TreePage({ title, name, description, content, children }: TreeElementProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<Header wide>
+			<Header>
 				<Title>{title ?? name}</Title>
 			</Header>
-			<Section wide>
+			<Section>
 				{content && (
 					<Prose>
 						<Markup>{content}</Markup>
 					</Prose>
 				)}
 			</Section>
-			<Section wide>
+			<Section>
 				<TreeCards>{children}</TreeCards>
 			</Section>
 		</Page>

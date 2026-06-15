@@ -15,7 +15,7 @@ import { CenteredLayout, Section } from "shelving/ui";
 function LoginPage() {
   return (
     <CenteredLayout>
-      <Section narrow>
+      <Section width="narrow">
         <LoginForm/>
       </Section>
     </CenteredLayout>
