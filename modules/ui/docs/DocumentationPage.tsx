@@ -1,7 +1,8 @@
-import { Fragment, type ReactNode } from "react";
-import { type Element, queryElements } from "../../util/element.js";
+import { Fragment, type ReactNode, useMemo, useState } from "react";
+import { walkElements } from "../../util/element.js";
 import type { Query } from "../../util/query.js";
-import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
+import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
+import { searchTree } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
 import { Definitions } from "../block/Definitions.js";
 import { Heading } from "../block/Heading.js";
@@ -11,6 +12,7 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
+import { TextInput } from "../form/TextInput.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
@@ -18,7 +20,7 @@ import { Row } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
-import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationKind, DocumentationKindChips, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
@@ -34,6 +36,68 @@ const KIND_SECTIONS = {
 	method: "Methods",
 	property: "Properties",
 };
+
+/** Render a list of tree elements grouped into kind-based card sections, in `KIND_SECTIONS` order. */
+function _renderSections(elements: readonly TreeElement[]): ReactNode {
+	return Object.entries(KIND_SECTIONS).map(([kind, label]) => {
+		const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
+		return group.length ? (
+			<Section wide key={kind}>
+				<Heading>{label}</Heading>
+				<TreeCards>{group}</TreeCards>
+			</Section>
+		) : null;
+	});
+}
+
+/**
+ * Interactive children listing for a documentation page — a filter input, kind chips, and grouped cards.
+ *
+ * - Filters this page's own children as you type (ranked via `searchTree`, capped at 20); the kind chips narrow to a single `kind`.
+ * - With an empty filter and no chip selected, shows the normal grouped listing of `children`.
+ * - Renders nothing when the page has no children (e.g. a leaf symbol) — no point showing an empty filter.
+ *
+ * @param props The page's child elements.
+ * @returns The filter controls plus the grouped card sections, or `null` when there are no children.
+ */
+function DocumentationChildren({ elements }: { readonly elements?: TreeElements }): ReactNode {
+	const [query, setQuery] = useState("");
+	const [chip, setChip] = useState<string | undefined>(undefined);
+
+	const childElements = useMemo(() => Array.from(walkElements<TreeElement>(elements)), [elements]);
+
+	// Kinds present in this page's children, in section order, for the chip row.
+	const kinds = useMemo(
+		() => Object.keys(KIND_SECTIONS).filter(k => childElements.some(el => (el.props as DocumentationElementProps).kind === k)),
+		[childElements],
+	);
+
+	// No children → nothing to list or filter.
+	if (!childElements.length) return null;
+
+	const trimmed = query.trim();
+	const active = !!trimmed || !!chip;
+
+	// Inactive → normal grouped listing. Active → filter this page's children, grouped the same way.
+	let listing: ReactNode;
+	if (!active) {
+		listing = _renderSections(childElements);
+	} else {
+		const scope: TreeElement = { type: "tree-element", key: "", props: { name: "", children: elements } };
+		const filter = chip ? ({ kind: chip } as Query) : undefined;
+		listing = _renderSections(searchTree(scope, trimmed, { limit: 20, filter }));
+	}
+
+	return (
+		<>
+			<Section wide>
+				<TextInput name="filter" title="Filter" placeholder="Filter…" value={query} onValue={v => setQuery(v ?? "")} />
+				<DocumentationKindChips kinds={kinds} value={chip} onValue={setChip} />
+			</Section>
+			{listing}
+		</>
+	);
+}
 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
@@ -144,16 +208,7 @@ export function DocumentationPage({
 						))}
 					</Section>
 				)}
-				{Object.entries(KIND_SECTIONS).map(([kind, label]) => {
-					// Pre-filter the children for this kind; only render the section when it has cards.
-					const group = Array.from(queryElements(children, { "props.kind": kind } as Query<Element>)) as TreeElement[];
-					return group.length ? (
-						<Section wide key={kind}>
-							<Heading>{label}</Heading>
-							<TreeCards>{group}</TreeCards>
-						</Section>
-					) : null;
-				})}
+				<DocumentationChildren elements={children} />
 			</Block>
 		</Page>
 	);

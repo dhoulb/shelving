@@ -3,8 +3,10 @@ import type { TreeElement } from "../../util/index.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
+import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
 import type { PossibleMeta } from "../util/index.js";
+import { TREE_INDEX_PATH, TreeIndexPage } from "./TreeIndexPage.js";
 import { TreeRouter } from "./TreeRouter.js";
 import { TreeSidebar } from "./TreeSidebar.js";
 
@@ -28,6 +30,7 @@ export interface TreeAppProps extends PossibleMeta {
  * - Wraps `<App>` with error catching and a sidebar layout.
  * - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
  * - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.
+ * - URLs that don't match a tree element fall through to a `<Router>` carrying the built-in `<TreeIndexPage>` (`/all`) plus any extra `routes`.
  * - Element rendering uses the default mappings on `<TreePage>`, `<TreeMenu>`, `<TreeCards>`.
  *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
  *
@@ -38,11 +41,13 @@ export interface TreeAppProps extends PossibleMeta {
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeApp/TreeApp
  */
 export function TreeApp({ tree, routes: extraRoutes, ...meta }: TreeAppProps): ReactElement {
+	// URLs that don't resolve to a tree element fall through to this router: the built-in index page plus any extra routes.
+	const fallback = <Router routes={{ [TREE_INDEX_PATH]: TreeIndexPage, ...extraRoutes }} />;
 	return (
 		<App {...meta}>
 			<PageCatcher>
 				<SidebarLayout sidebar={<TreeSidebar tree={tree} />}>
-					<TreeRouter tree={tree} />
+					<TreeRouter tree={tree} fallback={fallback} />
 				</SidebarLayout>
 			</PageCatcher>
 		</App>
