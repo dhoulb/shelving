@@ -45,9 +45,8 @@ export function TreeIndexPage({ title, name, description }: TreeElementProps): R
 	const trimmed = query.trim();
 	const filter = chip ? ({ kind: chip } as Query) : undefined;
 	const results = root ? searchTree(root, trimmed, { limit: trimmed ? 20 : INDEX_LIMIT, filter }) : [];
-	// Drop the index page itself, and re-key each card by its unique canonical `path` — bare `name` keys collide across the
-	// whole tree (many `get`, `value`, `url`, …), and duplicate React keys break list reconciliation as the filter changes.
-	const cards = results.filter(el => el.type !== "tree-index").map(el => ({ ...el, key: el.props.path ?? el.key }));
+	// Drop the index page itself from its own listing. (Cards are keyed by their unique canonical `path` in the `Mapper`.)
+	const cards = results.filter(el => el.type !== "tree-index");
 
 	return (
 		<Page title={title ?? name} description={description}>
