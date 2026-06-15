@@ -6,6 +6,7 @@ import { isAsync } from "../../util/async.js";
 import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
+import { getModuleClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Form.module.css";
@@ -91,10 +92,10 @@ export function Form({
 				// Close the parent dialog on successful submit.
 				if (result) dialog?.close();
 			}}
-			className={styles.form}
+			className={getModuleClass(styles, "form")}
 			noValidate={true}
 		>
-			<fieldset className={styles.fieldset} disabled={busy}>
+			<fieldset className={getModuleClass(styles, "fieldset")} disabled={busy}>
 				<FormContext value={store}>{children}</FormContext>
 			</fieldset>
 		</form>

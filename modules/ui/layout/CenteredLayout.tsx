@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { requireMetaURL } from "../misc/MetaContext.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
 import { LAYOUT_CLASS } from "./Layout.js";
@@ -28,8 +28,8 @@ export interface CenteredLayoutProps extends OptionalChildProps {
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {
 	const { path } = requireMetaURL();
 	return (
-		<main key={path} className={getClass(CENTERED_LAYOUT_CSS.main, LAYOUT_CLASS)}>
-			<div className={CENTERED_LAYOUT_CSS.mainInner} style={fullWidth ? { maxWidth: "none" } : undefined}>
+		<main key={path} className={getClass(getModuleClass(CENTERED_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
+			<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner")} style={fullWidth ? { maxWidth: "none" } : undefined}>
 				{children}
 			</div>
 		</main>

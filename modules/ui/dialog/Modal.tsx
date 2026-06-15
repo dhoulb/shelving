@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Modal.module.css";
 
@@ -19,5 +20,5 @@ export interface ModalProps extends OptionalChildProps {}
  * @see https://dhoulb.github.io/shelving/ui/dialog/Modal/Modal
  */
 export function Modal({ children }: ModalProps): ReactElement {
-	return <aside className={styles.modal}>{children}</aside>;
+	return <aside className={getModuleClass(styles, "modal")}>{children}</aside>;
 }

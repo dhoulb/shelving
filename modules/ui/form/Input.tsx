@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { LOADING } from "../misc/Loading.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import INPUT_CSS from "./Input.module.css";
 
@@ -20,11 +20,11 @@ export interface InputVariants extends WidthVariants {}
  *
  * @param props The input's styling variants (width, …).
  * @returns The merged base input `className` string.
- * @example getClass(getInputClass(props), INPUT_CSS.text) // a text input that also honours width variants
+ * @example getClass(getInputClass(props), getModuleClass(INPUT_CSS, "text")) // a text input that also honours width variants
  * @see https://dhoulb.github.io/shelving/ui/form/Input/getInputClass
  */
 export function getInputClass(props: InputVariants): string {
-	return getClass(INPUT_CSS.input, getWidthClass(props));
+	return getClass(getModuleClass(INPUT_CSS, "input"), getWidthClass(props));
 }
 
 /**
@@ -63,5 +63,5 @@ export const LOADING_INPUT = <div className={getClass(getInputClass({}), getFlex
  * - This is so you can put an icon before or after an input.
  */
 export function InputWrapper({ children }: ChildProps): ReactElement {
-	return <div className={getClass(getInputClass({}), INPUT_CSS.wrapper)}>{children}</div>;
+	return <div className={getClass(getInputClass({}), getModuleClass(INPUT_CSS, "wrapper"))}>{children}</div>;
 }

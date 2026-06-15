@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactElement } from "react";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import styles from "./Progress.module.css";
 
 /**
@@ -28,10 +28,15 @@ export function Progress({ value, success, warning, danger }: ProgressProps): Re
 
 	return (
 		<div
-			className={getClass(styles.track, success && styles.success, warning && styles.warning, danger && styles.danger)}
+			className={getClass(
+				getModuleClass(styles, "track"),
+				success && getModuleClass(styles, "success"),
+				warning && getModuleClass(styles, "warning"),
+				danger && getModuleClass(styles, "danger"),
+			)}
 			style={progressStyle}
 		>
-			<span className={styles.fill} />
+			<span className={getModuleClass(styles, "fill")} />
 		</div>
 	);
 }
@@ -63,11 +68,16 @@ export function SegmentedProgress({ total, current, success, warning, danger }: 
 
 	return (
 		<div
-			className={getClass(styles.segmented, success && styles.success, warning && styles.warning, danger && styles.danger)}
+			className={getClass(
+				getModuleClass(styles, "segmented"),
+				success && getModuleClass(styles, "success"),
+				warning && getModuleClass(styles, "warning"),
+				danger && getModuleClass(styles, "danger"),
+			)}
 			style={progressStyle}
 		>
 			{Array.from({ length: total }, (_, i) => (
-				<span key={i.toString()} className={getClass(styles.item, i <= current && styles.active)} />
+				<span key={i.toString()} className={getClass(getModuleClass(styles, "item"), i <= current && getModuleClass(styles, "active"))} />
 			))}
 		</div>
 	);

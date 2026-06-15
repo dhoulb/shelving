@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
@@ -36,9 +36,16 @@ export function RadioInput({
 }: RadioInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<label className={getClass(getInputClass(props), INPUT_CSS.label, getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}>
+		<label
+			className={getClass(
+				getInputClass(props),
+				getModuleClass(INPUT_CSS, "label"),
+				getFlexClass(props),
+				hasChildren && getModuleClass(INPUT_CSS, "placeholder"),
+			)}
+		>
 			<input
-				className={INPUT_CSS.radio}
+				className={getModuleClass(INPUT_CSS, "radio")}
 				type="radio"
 				name={name}
 				defaultChecked={value}

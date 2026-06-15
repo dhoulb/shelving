@@ -9,7 +9,7 @@ import SMALL_CSS from "../inline/Small.module.css";
 import STRONG_CSS from "../inline/Strong.module.css";
 import SUBSCRIPT_CSS from "../inline/Subscript.module.css";
 import SUPERSCRIPT_CSS from "../inline/Superscript.module.css";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
 import BLOCKQUOTE_CSS from "./Blockquote.module.css";
@@ -28,30 +28,30 @@ import TITLE_CSS from "./Title.module.css";
 
 // Combine the `.prose` class from every block and inline component's CSS module into a single string.
 const PROSE_STYLES = getClass(
-	PARAGRAPH_CSS.prose,
-	HEADING_CSS.prose,
-	SUBHEADING_CSS.prose,
-	ADDRESS_CSS.prose,
-	BLOCKQUOTE_CSS.prose,
-	SECTION_CSS.prose,
-	CODE_CSS.prose,
-	DEFINITIONS_CSS.prose,
-	DELETED_CSS.prose,
-	EMPHASIS_CSS.prose,
-	IMAGE_CSS.prose,
-	INSERTED_CSS.prose,
-	CAPTION_CSS.prose,
-	LIST_CSS.prose,
-	TITLE_CSS.prose,
-	LINK_CSS.prose,
-	MARK_CSS.prose,
-	PREFORMATTED_CSS.prose,
-	SMALL_CSS.prose,
-	STRONG_CSS.prose,
-	SUBSCRIPT_CSS.prose,
-	SUPERSCRIPT_CSS.prose,
-	TABLE_CSS.prose,
-	DIVIDER_CSS.prose,
+	getModuleClass(PARAGRAPH_CSS, "prose"),
+	getModuleClass(HEADING_CSS, "prose"),
+	getModuleClass(SUBHEADING_CSS, "prose"),
+	getModuleClass(ADDRESS_CSS, "prose"),
+	getModuleClass(BLOCKQUOTE_CSS, "prose"),
+	getModuleClass(SECTION_CSS, "prose"),
+	getModuleClass(CODE_CSS, "prose"),
+	getModuleClass(DEFINITIONS_CSS, "prose"),
+	getModuleClass(DELETED_CSS, "prose"),
+	getModuleClass(EMPHASIS_CSS, "prose"),
+	getModuleClass(IMAGE_CSS, "prose"),
+	getModuleClass(INSERTED_CSS, "prose"),
+	getModuleClass(CAPTION_CSS, "prose"),
+	getModuleClass(LIST_CSS, "prose"),
+	getModuleClass(TITLE_CSS, "prose"),
+	getModuleClass(LINK_CSS, "prose"),
+	getModuleClass(MARK_CSS, "prose"),
+	getModuleClass(PREFORMATTED_CSS, "prose"),
+	getModuleClass(SMALL_CSS, "prose"),
+	getModuleClass(STRONG_CSS, "prose"),
+	getModuleClass(SUBSCRIPT_CSS, "prose"),
+	getModuleClass(SUPERSCRIPT_CSS, "prose"),
+	getModuleClass(TABLE_CSS, "prose"),
+	getModuleClass(DIVIDER_CSS, "prose"),
 );
 
 /**

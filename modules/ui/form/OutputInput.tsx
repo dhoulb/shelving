@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { notNullish } from "../../util/index.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
 import { getInputClass, type InputProps, type InputVariants } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
@@ -24,7 +24,10 @@ export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVa
 export function OutputInput({ title, placeholder, children = title, ...props }: OutputInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
-		<output {...props} className={getClass(getInputClass(props), getFlexClass(props), hasChildren && INPUT_CSS.placeholder)}>
+		<output
+			{...props}
+			className={getClass(getInputClass(props), getFlexClass(props), hasChildren && getModuleClass(INPUT_CSS, "placeholder"))}
+		>
 			{hasChildren ? children : placeholder}
 		</output>
 	);

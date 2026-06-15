@@ -2,10 +2,10 @@ import { getParagraphClass, type ParagraphProps } from "../block/Paragraph.js";
 import { LOADING } from "../misc/Loading.js";
 import type { ColorVariants } from "../style/Color.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import MESSAGE_CSS from "./Message.module.css";
 
-const MESSAGE_CLASS = getClass(MESSAGE_CSS.message);
+const MESSAGE_CLASS = getModuleClass(MESSAGE_CSS, "message");
 
 /**
  * Props for `<Message>` — paragraph props plus colour and status styling variants.
