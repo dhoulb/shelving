@@ -33,6 +33,8 @@ const KIND_SECTIONS = {
 	interface: "Interfaces",
 	type: "Types",
 	constant: "Constants",
+	"static method": "Static methods",
+	"static property": "Static properties",
 	method: "Methods",
 	property: "Properties",
 };
