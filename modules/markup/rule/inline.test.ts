@@ -147,7 +147,7 @@ test("INLINE_RULE <ins>", () => {
 	expect(PARSER.parse("++ AAA ++", "inline")).toBe("++ AAA ++");
 });
 
-test("INLINE_RULE <del> (with tilde)", () => {
+test("INLINE_RULE <del>", () => {
 	expect(PARSER.parse("~A~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
 	expect(PARSER.parse("~~A~~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
 	expect(PARSER.parse("~~~~~~A~~~~~~", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
@@ -192,49 +192,14 @@ test("INLINE_RULE <del> (with tilde)", () => {
 	expect(PARSER.parse("~~ AAA ~~", "inline")).toBe("~~ AAA ~~");
 });
 
-test("INLINE_RULE <del> (with hyphen)", () => {
-	expect(PARSER.parse("-A-", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
-	expect(PARSER.parse("--A--", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
-	expect(PARSER.parse("------A------", "inline")).toMatchObject({ type: "del", props: { children: "A" } });
-	expect(PARSER.parse("-AAA BBB-", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
-	expect(PARSER.parse("--AAA BBB--", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
-	expect(PARSER.parse("------AAA BBB------", "inline")).toMatchObject({ type: "del", props: { children: "AAA BBB" } });
-	expect(PARSER.parse("BEFORE --AAA--", "inline")).toMatchObject(["BEFORE ", { type: "del", props: { children: "AAA" } }]);
-	expect(PARSER.parse("--AAA-- AFTER", "inline")).toMatchObject([{ type: "del", props: { children: "AAA" } }, " AFTER"]);
-
-	// Matching is non--greedy.
-	expect(PARSER.parse("--AAA-- --AAA--", "inline")).toMatchObject([
-		{ type: "del", props: { children: "AAA" } },
-		" ",
-		{ type: "del", props: { children: "AAA" } },
-	]);
-
-	// Can contain other inline elements.
-	expect(PARSER.parse("--BEFORE *STRONG* AFTER--", "inline")).toMatchObject({
-		type: "del",
-		props: { children: ["BEFORE ", { type: "strong", props: { children: "STRONG" } }, " AFTER"] },
-	});
-	expect(PARSER.parse("--*STRONG*--", "inline")).toMatchObject({
-		type: "del",
-		props: { children: { type: "strong", props: { children: "STRONG" } } },
-	});
-
-	// Match even if the opening and closing punctuation is in the middle of the word.
-	// expect(PARSER.parse("TEXT--DEL--", "inline")).toMatchObject(["TEXT", {  type: "del", props: { children: "DEL" } }]);
-	// expect(PARSER.parse("--DEL--TEXT", "inline")).toMatchObject([{  type: "del", props: { children: "DEL" } }, "TEXT"]);
-	// expect(PARSER.parse("TEXT--DEL--TEXT", "inline")).toMatchObject([
-	// 	"TEXT",
-	// 	{  type: "del", props: { children: "DEL" } },
-	// 	"TEXT",
-	// ]);
-
-	// Only match if it doesn't contain whitespace at the start/end of the element.
-	expect(PARSER.parse("-AAA -", "inline")).toBe("-AAA -");
-	expect(PARSER.parse("- AAA-", "inline")).toBe("- AAA-");
-	expect(PARSER.parse("- AAA -", "inline")).toBe("- AAA -");
-	expect(PARSER.parse("--AAA --", "inline")).toBe("--AAA --");
-	expect(PARSER.parse("-- AAA--", "inline")).toBe("-- AAA--");
-	expect(PARSER.parse("-- AAA --", "inline")).toBe("-- AAA --");
+test("INLINE_RULE hyphens are not <del>", () => {
+	// Hyphens are no longer a delete delimiter — only `~` tildes are. Hyphen-flanked text stays
+	// literal so ordinary hyphenated prose (e.g. `00`-on-`90`) doesn't false-fire as strikethrough.
+	expect(PARSER.parse("-A-", "inline")).toBe("-A-");
+	expect(PARSER.parse("--A--", "inline")).toBe("--A--");
+	expect(PARSER.parse("-AAA BBB-", "inline")).toBe("-AAA BBB-");
+	expect(PARSER.parse("BEFORE -on- AFTER", "inline")).toBe("BEFORE -on- AFTER");
+	expect(PARSER.parse("--*STRONG*--", "inline")).toMatchObject(["--", { type: "strong", props: { children: "STRONG" } }, "--"]);
 });
 
 test("INLINE_RULE <mark>", () => {

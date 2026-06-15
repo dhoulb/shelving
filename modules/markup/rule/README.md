@@ -38,7 +38,7 @@ Rules declare which contexts they apply in. Block rules fire in a `"block"` cont
 | `CODE_RULE` | `<code>` | `` `backtick-wrapped` `` text (priority `10`) |
 | `LINK_RULE` | `<a>` | `[title](url)` |
 | `AUTOLINK_RULE` | `<a>` | Bare URL starting with any scheme, e.g. `https://example.com` |
-| `INLINE_RULE` | `<strong>`, `<em>`, `<del>`, `<ins>`, `<mark>` | `*bold*`, `_italic_`, `-del-` or `~del~`, `+ins+`, `=mark=` |
+| `INLINE_RULE` | `<strong>`, `<em>`, `<del>`, `<ins>`, `<mark>` | `*bold*`, `_italic_`, `~del~`, `+ins+`, `=mark=` |
 | `LINEBREAK_RULE` | `<br>` | Any single `\n` newline inside inline content |
 
 ## Adding a custom rule
