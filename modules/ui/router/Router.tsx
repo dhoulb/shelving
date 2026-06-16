@@ -1,11 +1,11 @@
-import { Activity, type ReactElement, type ReactNode, useRef } from "react";
+import type { ReactElement } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { getProps } from "../../util/index.js";
-import type { AbsolutePath } from "../../util/path.js";
 import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/meta.js";
+import { RouteCache } from "./RouteCache.js";
 import type { Routes } from "./Routes.js";
 
 /**
@@ -61,57 +61,6 @@ export function Router({ routes, fallback, cache = 10, ...meta }: RouterProps): 
 			<MetaContext value={combined}>{route}</MetaContext>
 		</RouteCache>
 	);
-}
-
-/** A cached page: the rendered node plus a monotonic `used` tick for least-recently-used eviction. */
-interface CacheEntry {
-	node: ReactNode;
-	used: number;
-}
-
-/**
- * Keep-alive cache for `<Router>`: render the current `path` and keep up to `cache` recently-visited
- * pages mounted but hidden (via `<Activity mode="hidden">`), so returning to a page restores its DOM
- * and component state untouched. When `cache <= 0` the page is rendered directly with no caching.
- */
-function RouteCache({ path, cache, children }: { path: AbsolutePath; cache: number; children: ReactNode }): ReactNode {
-	const mapRef = useRef<Map<AbsolutePath, CacheEntry>>(undefined);
-	const usedRef = useRef(0);
-
-	// Caching disabled — render the page directly so it unmounts as soon as you leave it.
-	if (cache <= 0) return children;
-
-	// Insert or refresh the current page, then evict the least-recently-used pages beyond the limit.
-	const map = (mapRef.current ??= new Map());
-	const used = ++usedRef.current;
-	const entry = map.get(path);
-	if (entry) {
-		entry.node = children;
-		entry.used = used;
-	} else {
-		map.set(path, { node: children, used });
-	}
-	while (map.size > cache) map.delete(_findLeastRecentlyUsed(map));
-
-	// Render every cached page; only the current `path` is visible, the rest are kept alive but hidden.
-	return Array.from(map, ([key, cached]) => (
-		<Activity key={key} mode={key === path ? "visible" : "hidden"}>
-			{cached.node}
-		</Activity>
-	));
-}
-
-/** Find the key of the least-recently-used (lowest `used` tick) entry in the cache map. */
-function _findLeastRecentlyUsed(map: Map<AbsolutePath, CacheEntry>): AbsolutePath {
-	let lruKey!: AbsolutePath;
-	let lruUsed = Number.POSITIVE_INFINITY;
-	for (const [key, entry] of map) {
-		if (entry.used < lruUsed) {
-			lruUsed = entry.used;
-			lruKey = key;
-		}
-	}
-	return lruKey;
 }
 
 function _matchRoute(
