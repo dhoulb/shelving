@@ -42,10 +42,10 @@ export interface RouterProps extends PossibleMeta {
  */
 export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement | null {
 	const combined = requireMetaURL(meta);
+	const path = combined;
 	const route = _matchRoute(routes, fallback, combined);
-	if (!route) throw new NotFoundError("Tree route not found", { received: combined });
-	// Publish the matched URL into context so the route's descendants resolve against it.
-	return <MetaContext value={combined}>{route}</MetaContext>;
+	if (route) return <MetaContext value={combined}>{route}</MetaContext>;
+	throw new NotFoundError("Tree route not found", { received: path });
 }
 
 function _matchRoute(
