@@ -14,7 +14,7 @@ import { StringSchema } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchemaOptions
  */
-export interface URLSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "rows"> {
+export interface URLSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
 	readonly base?: URL | URLString | undefined;
 	readonly schemes?: URISchemes | undefined;
 }
@@ -39,16 +39,18 @@ export class URLSchema extends StringSchema {
 	/**
 	 * Create a new `URLSchema`.
 	 *
-	 * @param options Options for the schema (`base`, `schemes`, plus inherited string options like `one`, `title`, `value`).
+	 * @param options Options for the schema (`base`, `schemes`, plus inherited string options like `one`, `title`, `value`, `input`, `max`).
+	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"url"`).
+	 * @param options.max Maximum allowed character length (defaults to `512`).
 	 */
-	constructor({ one = "URL", title = "URL", base, schemes = HTTP_SCHEMES, ...options }: URLSchemaOptions) {
+	constructor({ one = "URL", title = "URL", base, schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URLSchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
-			input: "url",
+			input,
+			max,
 			min: 1,
-			max: 512,
 			rows: 1,
 		});
 		this.base = getURL(base)?.href;

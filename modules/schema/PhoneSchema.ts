@@ -7,7 +7,7 @@ import { StringSchema } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/PhoneSchema/PhoneSchemaOptions
  */
-export interface PhoneSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {}
+export interface PhoneSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {}
 
 /**
  * Schema that defines a valid phone number.
@@ -22,19 +22,21 @@ export class PhoneSchema extends StringSchema {
 	/**
 	 * Create a new `PhoneSchema`.
 	 *
-	 * @param options Options for the schema (inherits `StringSchema` options except `input`, `min`, `max`, `match`, and `rows`, which are fixed for phone numbers).
+	 * @param options Options for the schema (inherits `StringSchema` options except `min`, `match`, and `rows`, which are fixed for phone numbers).
 	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"phone number"`).
 	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Phone"`).
+	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"tel"`).
+	 * @param options.max Maximum allowed character length (defaults to `16`).
 	 */
-	constructor({ one = "phone number", title = "Phone", ...options }: PhoneSchemaOptions) {
+	constructor({ one = "phone number", title = "Phone", input = "tel", max = 16, ...options }: PhoneSchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
-			input: "tel",
-			min: 1,
+			input,
 			// Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
-			max: 16,
+			max,
+			min: 1,
 			rows: 1,
 			// Valid phone number is max 16 digits made up of:
 			// - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).

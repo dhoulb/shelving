@@ -7,7 +7,7 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchemaOptions
  */
-export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "min" | "max" | "rows"> {}
+export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {}
 
 /**
  * Schema that defines a valid slug, e.g. `this-is-a-slug`.
@@ -27,11 +27,11 @@ export class SlugSchema extends StringSchema {
 	 *
 	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
 	 */
-	constructor(options: SlugSchemaOptions) {
+	constructor({ max = 32, ...options }: SlugSchemaOptions) {
 		super({
 			...options,
+			max,
 			min: 1,
-			max: 32,
 			rows: 1,
 		});
 	}

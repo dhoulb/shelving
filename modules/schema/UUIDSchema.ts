@@ -7,7 +7,7 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/UUIDSchema/UUIDSchemaOptions
  */
-export interface UUIDSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {}
+export interface UUIDSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {}
 
 /**
  * Schema that defines a valid UUID string (versions 1-5). Defaults to any-version validation.
@@ -24,15 +24,16 @@ export class UUIDSchema extends StringSchema {
 	/**
 	 * Create a new `UUIDSchema`.
 	 *
-	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
+	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`, `input`, `max`).
+	 * @param options.max Maximum allowed character length (defaults to `36`).
 	 */
-	constructor({ one = "UUID", title = "UUID", ...rest }: UUIDSchemaOptions = {}) {
+	constructor({ one = "UUID", title = "UUID", max = 36, ...rest }: UUIDSchemaOptions = {}) {
 		super({
 			one,
 			title,
 			...rest,
+			max, // 36 chars including hyphens (which get stripped by sanitize for appearances).
 			min: 32,
-			max: 36, // 36 chars including hyphens (which get stripped by sanitize for appearances).
 			rows: 1,
 		});
 	}
