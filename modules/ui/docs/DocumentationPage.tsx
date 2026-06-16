@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
@@ -16,6 +16,8 @@ import { Row } from "../style/Flex.js";
 import { Scroll } from "../style/Scroll.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { useTreeMap } from "../tree/TreeContext.js";
+import { TreeLink } from "../tree/TreeLink.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
@@ -69,7 +71,10 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
- * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, and examples.
+ * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, referenced types, and examples.
+ * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text).
+ * - An options-bag parameter whose type resolves to a documented interface/object type is flattened into indented child rows (one per property), so readers see the individual fields inline.
+ * - A `type` alias's referenced type names render as a linked `Type` table.
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
  * - All sections are conditional — only render when they have entries.
  *
@@ -89,10 +94,12 @@ export function DocumentationPage({
 	params,
 	returns,
 	throws,
+	types,
 	examples,
 	children,
 	...props
 }: DocumentationElementProps): ReactNode {
+	const map = useTreeMap();
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
@@ -108,7 +115,7 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				{signatures?.length || params?.length || returns?.length || throws?.length ? (
+				{signatures?.length || params?.length || returns?.length || throws?.length || types?.length ? (
 					<Section>
 						<DocumentationSignatures signatures={signatures} />
 						{params?.length && (
@@ -124,18 +131,36 @@ export function DocumentationPage({
 											</tr>
 										</thead>
 										<tbody>
-											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => (
-												<tr key={`${name}-${type}-${description}`}>
-													<td>
-														<Code>{name}</Code>
-													</td>
-													<td>
-														<Code>{type}</Code>
-													</td>
-													<td>{def ? <Code>{def}</Code> : "-"}</td>
-													<td>{description}</td>
-												</tr>
-											))}
+											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => {
+												// An options-bag param whose type resolves to a documented interface/object type is flattened into its individual fields as indented child rows.
+												const properties = (map.get(type)?.props as DocumentationElementProps | undefined)?.properties;
+												return (
+													<Fragment key={`${name}-${type}`}>
+														<tr>
+															<td>
+																<Code>{name}</Code>
+															</td>
+															<td>
+																<TreeLink name={type} />
+															</td>
+															<td>{def ? <Code>{def}</Code> : "-"}</td>
+															<td>{description}</td>
+														</tr>
+														{properties?.map(prop => (
+															<tr key={`${name}.${prop.name}`}>
+																<td>
+																	<Code>{`.${prop.name}`}</Code>
+																</td>
+																<td>
+																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
+																</td>
+																<td>{prop.default ? <Code>{prop.default}</Code> : "-"}</td>
+																<td>{prop.description ?? ""}</td>
+															</tr>
+														))}
+													</Fragment>
+												);
+											})}
 										</tbody>
 									</Table>
 								</Scroll>
@@ -155,7 +180,7 @@ export function DocumentationPage({
 											{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
-														<Code>{type}</Code>
+														<TreeLink name={type} />
 													</td>
 													<td>{description}</td>
 												</tr>
@@ -179,9 +204,33 @@ export function DocumentationPage({
 											{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
-														<Code>{type}</Code>
+														<TreeLink name={type} />
 													</td>
 													<td>{description}</td>
+												</tr>
+											))}
+										</tbody>
+									</Table>
+								</Scroll>
+							</Section>
+						)}
+						{types?.length && (
+							<Section>
+								<Scroll horizontal>
+									<Table>
+										<thead>
+											<tr>
+												<th>Type</th>
+												<th>Description</th>
+											</tr>
+										</thead>
+										<tbody>
+											{types.map(type => (
+												<tr key={type}>
+													<td>
+														<TreeLink name={type} />
+													</td>
+													<td />
 												</tr>
 											))}
 										</tbody>

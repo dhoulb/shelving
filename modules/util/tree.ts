@@ -145,6 +145,16 @@ export interface DocumentationElementProps extends TreeElementProps {
 	readonly extends?: string | undefined;
 	/** Names of the interfaces this class/interface implements (e.g. `["Serializable"]`). Raw strings — resolved to links at render time; builtins simply stay as text. */
 	readonly implements?: ImmutableArray<string> | undefined;
+	/**
+	 * Type names referenced by a `type` alias's body (e.g. `["OtherType"]` for `type X = string | OtherType`).
+	 * - Raw identifier strings — resolved to links at render time; the alias's own generic parameters and primitive keywords are excluded, and unresolved names stay as plain text.
+	 */
+	readonly types?: ImmutableArray<string> | undefined;
+	/**
+	 * Structured member list for an `interface` or object-literal `type` — each property's `name`, `type`, optionality, `default`, and `description`.
+	 * - Reuses the `DocumentationParam` shape so an options-bag parameter can be flattened into its individual fields at render time.
+	 */
+	readonly properties?: ImmutableArray<DocumentationParam> | undefined;
 }
 
 /**

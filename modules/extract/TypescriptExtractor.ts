@@ -21,7 +21,9 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
- * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`.
+ * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`, and `types` (the type names a `type` alias's body references, e.g. `OtherType` in `string | OtherType`).
+ * - Records a structured `properties` list for interfaces and object-literal `type` aliases — each member's name, type, optionality, `@default`, and description — so an options-bag parameter can be flattened into its fields at render time.
+ * - Pretty-prints object-literal signatures (interfaces and object-literal `type` aliases) as multi-line `{ … }` blocks, one member per line; other type bodies (`string | null`, mapped types, …) are emitted verbatim.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
  * - The file element itself has no `title` — a TS source file has no confident title source; renderers fall back to `name`.
@@ -129,6 +131,9 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	const examples = jsDoc?.examples;
 	// Heritage (`extends` / `implements`) is only meaningful for classes and interfaces.
 	const heritage = _getHeritage(statement, source);
+	// Referenced type names (type aliases) and structured property lists (interfaces / object-literal types) — both resolved to links at render time.
+	const types = _getReferencedTypes(statement, source);
+	const properties = _getProperties(statement, source);
 	const children = _getClassMembers(statement, source, name);
 
 	return {
@@ -148,6 +153,8 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 			examples,
 			extends: heritage?.extends,
 			implements: heritage?.implements,
+			types,
+			properties,
 			children,
 		},
 	};
@@ -169,6 +176,60 @@ function _getHeritage(
 	}
 	if (!extendsName && !implementsNames.length) return;
 	return { extends: extendsName, implements: implementsNames.length ? implementsNames : undefined };
+}
+
+/**
+ * Collect the type names a `type` alias's body references (e.g. `OtherType` in `type X = string | OtherType`), for render-time linking.
+ * - Walks the whole type expression so names nested inside generics, unions, arrays, etc. are all caught.
+ * - Primitive keyword types (`string`, `number`, …) aren't type references so they're naturally excluded; the alias's own generic parameters are filtered out explicitly.
+ * - Order-preserving and de-duplicated. Unresolved names (builtins like `Record`, externals) simply stay as plain text at render time.
+ */
+function _getReferencedTypes(statement: ts.Statement, source: ts.SourceFile): ImmutableArray<string> | undefined {
+	if (!ts.isTypeAliasDeclaration(statement)) return;
+	const generics = new Set(statement.typeParameters?.map(t => t.name.text) ?? []);
+	const names: string[] = [];
+	const seen = new Set<string>();
+	const visit = (node: ts.Node): void => {
+		if (ts.isTypeReferenceNode(node)) {
+			const name = node.typeName.getText(source);
+			if (!generics.has(name) && !seen.has(name)) {
+				seen.add(name);
+				names.push(name);
+			}
+		}
+		node.forEachChild(visit);
+	};
+	visit(statement.type);
+	return names.length ? names : undefined;
+}
+
+/**
+ * Extract structured property entries from an interface or object-literal `type` alias, mirroring the `DocumentationParam` shape.
+ * - Lets a consumer flatten an options-bag parameter into its individual fields at render time (resolve the param's type in the tree map, then list these).
+ * - Skips private `_`-prefixed members. Descriptions and `@default` values come from each member's own JSDoc.
+ */
+function _getProperties(statement: ts.Statement, source: ts.SourceFile): ImmutableArray<DocumentationParam> | undefined {
+	const members = ts.isInterfaceDeclaration(statement)
+		? statement.members
+		: ts.isTypeAliasDeclaration(statement) && ts.isTypeLiteralNode(statement.type)
+			? statement.type.members
+			: undefined;
+	if (!members) return;
+	const properties: DocumentationParam[] = [];
+	for (const member of members) {
+		if (!ts.isPropertySignature(member)) continue;
+		const name = member.name && ts.isIdentifier(member.name) ? member.name.text : undefined;
+		if (!name || name.startsWith("_")) continue;
+		const jsDoc = _getJSDoc(member, source);
+		properties.push({
+			name,
+			type: member.type?.getText(source),
+			description: jsDoc?.description,
+			optional: !!member.questionToken,
+			default: jsDoc?.default,
+		});
+	}
+	return properties.length ? properties : undefined;
 }
 
 /**
@@ -226,18 +287,25 @@ function _getSignatures(statement: ts.Statement, source: ts.SourceFile, name: st
 		return _getConstructorSignatures(statement, source, name);
 	}
 	if (ts.isInterfaceDeclaration(statement)) {
-		// Emit `{ member; member }` — the same shape a `type` object body produces, distinguished only by the `kind` badge.
-		const members = statement.members.map(m => m.getText(source).replace(/;\s*$/, "").trim()).join("; ");
-		return [members ? `{ ${members} }` : "{}"];
+		// Emit a pretty-printed `{ member; member }` block — the same shape a `type` object body produces, distinguished only by the `kind` badge.
+		return [_formatObjectSignature(statement.members, source)];
 	}
 	if (ts.isTypeAliasDeclaration(statement)) {
-		// Emit only the type body (e.g. `{ a: string }` or `string | null`) — the alias name is already the page title.
+		// Pretty-print object-literal aliases multi-line like an interface; emit other bodies (`string | null`, mapped types, …) verbatim. The alias name is already the page title.
+		if (ts.isTypeLiteralNode(statement.type)) return [_formatObjectSignature(statement.type.members, source)];
 		return [statement.type.getText(source)];
 	}
 	if (ts.isVariableStatement(statement)) {
 		const declaration = statement.declarationList.declarations[0];
 		if (declaration?.type) return [`${name}: ${declaration.type.getText(source)}`];
 	}
+}
+
+/** Pretty-print object-type members as a multi-line `{ … }` block — one member per tab-indented line ending in `;` — or `{}` when empty. */
+function _formatObjectSignature(members: readonly ts.TypeElement[], source: ts.SourceFile): string {
+	if (!members.length) return "{}";
+	const lines = members.map(m => `\t${m.getText(source).replace(/;\s*$/, "").trim()};`);
+	return `{\n${lines.join("\n")}\n}`;
 }
 
 /** Render a class's generic parameter names as `<P, R>` (names only, no constraints), or `""` when non-generic. */
@@ -453,6 +521,8 @@ interface JSDocResult {
 	description?: string | undefined;
 	/** Explicit kind override from an `@kind` tag (e.g. `"component"`), or `undefined` to use the AST-inferred kind. */
 	kind?: string | undefined;
+	/** Default-value text from a `@default` tag (e.g. on a property), or `undefined`. */
+	default?: string | undefined;
 	params?: DocumentationParam[] | undefined;
 	returns?: DocumentationReturn[] | undefined;
 	throws?: DocumentationThrow[] | undefined;
@@ -481,6 +551,7 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 	const description = ts.getTextOfJSDocComment(jsDoc.comment)?.trim();
 
 	let kind: string | undefined;
+	let def: string | undefined;
 	const params: DocumentationParam[] = [];
 	const returns: DocumentationReturn[] = [];
 	const throws: DocumentationThrow[] = [];
@@ -505,6 +576,8 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 			const name = tag.tagName.text;
 			// `@kind <name>` overrides the AST-inferred kind (e.g. `@kind component` for a React component declared as a function).
 			if (name === "kind") kind = comment?.match(/^[\w-]+/)?.[0];
+			// `@default <value>` documents a property's default — surfaced structurally (e.g. on `properties`) rather than rendered into the body.
+			else if (name === "default") def = comment || undefined;
 			else if (name === "example") {
 				if (comment) examples.push({ description: comment });
 			} else unhandled.push(comment ? `@${name} ${comment}` : `@${name}`);
@@ -514,6 +587,7 @@ function _getJSDoc(node: ts.Node, source: ts.SourceFile): JSDocResult | undefine
 	return {
 		description: description || undefined,
 		kind,
+		default: def,
 		params: params.length ? params : undefined,
 		returns: returns.length ? returns : undefined,
 		throws: throws.length ? throws : undefined,
