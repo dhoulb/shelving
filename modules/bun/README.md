@@ -39,4 +39,4 @@ await migrator.migrate(USERS);
 
 `new SQL(...)` accepts the same connection options as the Bun PostgreSQL client — see the [Bun SQL docs](https://bun.sh/docs/api/sql) for the full list of options including TLS and connection pooling. You can also pass a connection string as the first argument.
 
-Tables must exist before the provider can read or write. [`PostgreSQLMigrator`](/db/PostgreSQLMigrator)`.migrate()` inspects the live schema and issues the minimum `CREATE TABLE` or `ALTER TABLE` statements needed to match your collection definitions.
+Tables must exist before the provider can read or write. [`PostgreSQLMigrator.migrate()`](/db/PostgreSQLMigrator) inspects the live schema and issues the minimum `CREATE TABLE` or `ALTER TABLE` statements needed to match your collection definitions.

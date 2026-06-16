@@ -459,6 +459,8 @@ So a linked reference reads ``[`<Section>`](/ui/Section)``, ``[`formatDate()`](/
 
 **Generics belong in the link text.** When a token is referenced with its generic parameters, keep the whole thing inside one backtick-quoted link — ``[`Schema<T>`](/schema/Schema)``, ``[`ItemStore<I, T>`](/db/ItemStore)`` — not the bare name linked with the generics trailing in a second code span (``[`Schema`](/schema/Schema)`<T>``), which renders as two separate, awkwardly-split chips. The path still targets the bare token; only the displayed name carries the generics.
 
+**Member access belongs in the link text too.** A qualified reference like `PostgreSQLMigrator.migrate()` is a single link whose text holds the whole chain — ``[`PostgreSQLMigrator.migrate()`](/db/PostgreSQLMigrator)`` — not a class link with the `.method()` trailing in a second span. Target the **class** page in most cases (the member often has no page of its own); only link the member page directly when the reference is to the bare member (``[`.validate()`](/schema/BooleanSchema/validate)``). Never split one styled reference across two adjacent code spans.
+
 ### UI component pages and CSS-variable documentation
 
 Each reusable UI component's sibling `.md` (e.g. `modules/ui/block/Card.md`) follows the same shape as other per-symbol pages — a `# Name` heading, a short purpose paragraph, a "Things to know" bullet list, runnable `tsx` usage examples — plus a **Styling** section that documents the component's themeable surface. The CSS custom properties are written inline in the `.module.css` (`var(--card-background, …)`), so there's no declaration site for an extractor to read; the Styling table is the documented source of truth and must be kept in sync by hand.
