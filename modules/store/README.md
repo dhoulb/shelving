@@ -1,6 +1,6 @@
 # store
 
-Observable value containers for reactive state. A [`Store`](/store/Store)`<T>` holds a single current value, broadcasts changes to all active consumers, and integrates with React Suspense out of the box. Stores suppress duplicate emissions using deep equality, so consumers only see genuine changes.
+Observable value containers for reactive state. A [`Store<T>`](/store/Store) holds a single current value, broadcasts changes to all active consumers, and integrates with React Suspense out of the box. Stores suppress duplicate emissions using deep equality, so consumers only see genuine changes.
 
 ## Concepts
 
@@ -18,16 +18,16 @@ Observable value containers for reactive state. A [`Store`](/store/Store)`<T>` h
 
 | Class | Description |
 |---|---|
-| [`DataStore`](/store/DataStore)`<T>` | Adds [`.data`](/store/DataStore/data), [`.update()`](/store/DataStore/update), [`.get()`](/store/DataStore/get), [`.set()`](/store/DataStore/set) helpers for object values. |
-| [`OptionalDataStore`](/store/OptionalDataStore)`<T>` | Like `DataStore` but the value may be `undefined`; [`.exists`](/store/OptionalDataStore/exists) and [`.require()`](/store/OptionalDataStore/require) handle the absent case. |
-| [`ArrayStore`](/store/ArrayStore)`<T>` | Stores an array; adds [`.first`](/store/ArrayStore/first), [`.last`](/store/ArrayStore/last), [`.count`](/store/ArrayStore/count), [`.add()`](/store/ArrayStore/add), [`.delete()`](/store/ArrayStore/delete), [`.toggle()`](/store/ArrayStore/toggle). |
-| [`DictionaryStore`](/store/DictionaryStore)`<T>` | Stores a string-keyed object; adds [`.get()`](/store/DictionaryStore/get), [`.set()`](/store/DictionaryStore/set), [`.delete()`](/store/DictionaryStore/delete), [`.update()`](/store/DictionaryStore/update). |
+| [`DataStore<T>`](/store/DataStore) | Adds [`.data`](/store/DataStore/data), [`.update()`](/store/DataStore/update), [`.get()`](/store/DataStore/get), [`.set()`](/store/DataStore/set) helpers for object values. |
+| [`OptionalDataStore<T>`](/store/OptionalDataStore) | Like `DataStore` but the value may be `undefined`; [`.exists`](/store/OptionalDataStore/exists) and [`.require()`](/store/OptionalDataStore/require) handle the absent case. |
+| [`ArrayStore<T>`](/store/ArrayStore) | Stores an array; adds [`.first`](/store/ArrayStore/first), [`.last`](/store/ArrayStore/last), [`.count`](/store/ArrayStore/count), [`.add()`](/store/ArrayStore/add), [`.delete()`](/store/ArrayStore/delete), [`.toggle()`](/store/ArrayStore/toggle). |
+| [`DictionaryStore<T>`](/store/DictionaryStore) | Stores a string-keyed object; adds [`.get()`](/store/DictionaryStore/get), [`.set()`](/store/DictionaryStore/set), [`.delete()`](/store/DictionaryStore/delete), [`.update()`](/store/DictionaryStore/update). |
 | [`BooleanStore`](/store/BooleanStore) | Stores a boolean; adds [`.toggle()`](/store/BooleanStore/toggle). |
 | [`PathStore`](/store/PathStore) | Stores an absolute path; adds [`.isActive()`](/store/PathStore/isActive) / [`.isProud()`](/store/PathStore/isProud) route helpers. |
 | [`URLStore`](/store/URLStore) | Stores a URL; adds query-param helpers and [`.isActive()`](/store/URLStore/isActive) / [`.isProud()`](/store/URLStore/isProud). |
-| [`BusyStore`](/store/BusyStore)`<T>` | Adds a [`.busy`](/store/BusyStore/busy) boolean store that is `true` while awaiting a value. |
-| [`FetchStore`](/store/FetchStore)`<T>` | Fetches its value from a callback; adds [`.refresh()`](/store/FetchStore/refresh) / [`.invalidate()`](/store/FetchStore/invalidate). |
-| [`PayloadFetchStore`](/store/PayloadFetchStore)`<P, R>` | A `FetchStore` driven by a [`.payload`](/store/PayloadFetchStore/payload) store — changing the payload re-fetches. |
+| [`BusyStore<T>`](/store/BusyStore) | Adds a [`.busy`](/store/BusyStore/busy) boolean store that is `true` while awaiting a value. |
+| [`FetchStore<T>`](/store/FetchStore) | Fetches its value from a callback; adds [`.refresh()`](/store/FetchStore/refresh) / [`.invalidate()`](/store/FetchStore/invalidate). |
+| [`PayloadFetchStore<P, R>`](/store/PayloadFetchStore) | A `FetchStore` driven by a [`.payload`](/store/PayloadFetchStore/payload) store — changing the payload re-fetches. |
 
 [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) in the [`db`](/db) module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
 

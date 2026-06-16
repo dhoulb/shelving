@@ -8,7 +8,7 @@ Both extend [`FetchStore`](/store/FetchStore) from the [`store`](/store) module,
 
 ### ItemStore
 
-`ItemStore<I, T>` holds [`OptionalItem`](/util/item/OptionalItem)`<I, T>` — the current item, or `undefined` if it does not exist. It calls [`.getItem()`](/db/DBProvider/getItem) on the first fetch and whenever `refresh()` is called.
+`ItemStore<I, T>` holds [`OptionalItem<I, T>`](/util/item/OptionalItem) — the current item, or `undefined` if it does not exist. It calls [`.getItem()`](/db/DBProvider/getItem) on the first fetch and whenever `refresh()` is called.
 
 - [`.item`](/db/ItemStore/item) — returns the item or throws [`RequiredError`](/error/RequiredError) if absent. Safe to use once the store is loaded and you know the item exists.
 - `.item = data` — write helper that sets `.value` to [`getItem()`](/util/item/getItem) directly (bypasses the provider; useful for optimistic updates).
@@ -17,7 +17,7 @@ When a [`MemoryDBProvider`](/db/MemoryDBProvider) is supplied (via [`DBCache`](/
 
 ### QueryStore
 
-`QueryStore<I, T>` holds [`Items`](/util/item/Items)`<I, T>` — a readonly array of matching items. It calls [`.getQuery()`](/db/DBProvider/getQuery) on the first fetch. Like `ItemStore`, it seeds from memory when available.
+`QueryStore<I, T>` holds [`Items<I, T>`](/util/item/Items) — a readonly array of matching items. It calls [`.getQuery()`](/db/DBProvider/getQuery) on the first fetch. Like `ItemStore`, it seeds from memory when available.
 
 Additional accessors beyond the base `FetchStore`:
 

@@ -457,6 +457,8 @@ i.e. ``[`nameOfToken`](/canonical/path)``. This is mandatory for **"See also" li
 
 So a linked reference reads ``[`<Section>`](/ui/Section)``, ``[`formatDate()`](/util/format/formatDate)``, ``[`.validate()`](/schema/BooleanSchema/validate)``, or ``[`.value`](/store/Store/value)``. Apply the same styling to unlinked mentions (e.g. a builtin or external symbol with no page) so the kind is still obvious.
 
+**Generics belong in the link text.** When a token is referenced with its generic parameters, keep the whole thing inside one backtick-quoted link — ``[`Schema<T>`](/schema/Schema)``, ``[`ItemStore<I, T>`](/db/ItemStore)`` — not the bare name linked with the generics trailing in a second code span (``[`Schema`](/schema/Schema)`<T>``), which renders as two separate, awkwardly-split chips. The path still targets the bare token; only the displayed name carries the generics.
+
 ### UI component pages and CSS-variable documentation
 
 Each reusable UI component's sibling `.md` (e.g. `modules/ui/block/Card.md`) follows the same shape as other per-symbol pages — a `# Name` heading, a short purpose paragraph, a "Things to know" bullet list, runnable `tsx` usage examples — plus a **Styling** section that documents the component's themeable surface. The CSS custom properties are written inline in the `.module.css` (`var(--card-background, …)`), so there's no declaration site for an extractor to read; the Styling table is the documented source of truth and must be kept in sync by hand.

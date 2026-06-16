@@ -11,7 +11,7 @@ By convention, instantiated collections are constants and use `UPPERCASE`.
 A `Collection<N, I, T>` carries three things:
 
 - `name` — the string key used as the table or collection name in the database.
-- `id` — a [`Schema`](/schema/Schema)`<I>` that validates the identifier type. Use [`INTEGER`](/schema/INTEGER) for auto-increment integer IDs, [`STRING`](/schema/STRING) for UUIDs, or any other schema.
+- `id` — a [`Schema<I>`](/schema/Schema) that validates the identifier type. Use [`INTEGER`](/schema/INTEGER) for auto-increment integer IDs, [`STRING`](/schema/STRING) for UUIDs, or any other schema.
 - The data schema — the shape of each record, defined as a plain object of named schemas. `Collection` extends [`DataSchema`](/schema/DataSchema), so it validates data directly via [`.validate()`](/schema/Schema/validate).
 
 It also exposes `collection.item`, a combined `DataSchema<{ id: I } & T>` used by providers to validate complete items returned from the backend.
@@ -26,12 +26,12 @@ The module exports helper types to extract typed parts from a `Collection` varia
 
 | Type | Extracts |
 |---|---|
-| [`CollectionName`](/db/CollectionName)`<C>` | The string literal name |
-| [`CollectionIdentifier`](/db/CollectionIdentifier)`<C>` | The identifier type `I` |
-| [`CollectionData`](/db/CollectionData)`<C>` | The data type `T` |
-| [`CollectionItem`](/db/CollectionItem)`<C>` | [`Item`](/util/item/Item)`<I, T>` |
-| [`OptionalCollectionItem`](/db/OptionalCollectionItem)`<C>` | `Item<I, T> \| undefined` |
-| [`CollectionItems`](/db/CollectionItems)`<C>` | `readonly Item<I, T>[]` |
+| [`CollectionName<C>`](/db/CollectionName) | The string literal name |
+| [`CollectionIdentifier<C>`](/db/CollectionIdentifier) | The identifier type `I` |
+| [`CollectionData<C>`](/db/CollectionData) | The data type `T` |
+| [`CollectionItem<C>`](/db/CollectionItem) | [`Item<I, T>`](/util/item/Item) |
+| [`OptionalCollectionItem<C>`](/db/OptionalCollectionItem) | `Item<I, T> \| undefined` |
+| [`CollectionItems<C>`](/db/CollectionItems) | `readonly Item<I, T>[]` |
 
 ## Usage
 

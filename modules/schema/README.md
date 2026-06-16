@@ -1,6 +1,6 @@
 # schema
 
-Schema validation for TypeScript. A [`Schema`](/schema/Schema)`<T>` describes how to coerce and validate an unknown value into a typed `T`. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.
+Schema validation for TypeScript. A [`Schema<T>`](/schema/Schema) describes how to coerce and validate an unknown value into a typed `T`. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.
 
 By convention, instantiated schemas are constants and use `UPPERCASE`.
 
