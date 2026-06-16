@@ -1,20 +1,20 @@
 # cloudflare
 
-[DBProvider](/db) implementations for Cloudflare Workers. Two backends are available: Workers KV for simple key-value storage and D1 for relational SQL.
+[`DBProvider`](/db/DBProvider) implementations for Cloudflare Workers. Two backends are available: Workers KV for simple key-value storage and D1 for relational SQL.
 
 Both providers accept a binding object injected by the Cloudflare Workers runtime. Declare the binding in `wrangler.toml` and access it through the `env` parameter of your Worker's `fetch` handler.
 
-## KV (`CloudflareKVProvider`)
+## KV ([`CloudflareKVProvider`](/cloudflare/CloudflareKVProvider))
 
 Workers KV is a globally distributed key-value store. It is the right choice when you need fast single-item reads and writes by ID across Cloudflare's edge network, and do not need to query or filter across items.
 
-Items are stored as JSON under keys formatted as `collection:id`. `addItem()` generates a UUID v4 identifier automatically.
+Items are stored as JSON under keys formatted as `collection:id`. [`.addItem()`](/db/DBProvider/addItem) generates a UUID v4 identifier automatically.
 
 **Limitations:**
 
-- No queries — `getQuery()`, `setQuery()`, `deleteQuery()`, and `countQuery()` throw `UnimplementedError`.
-- No partial updates — `updateItem()` and `updateQuery()` throw `UnimplementedError`.
-- No realtime — `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+- No queries — [`.getQuery()`](/db/DBProvider/getQuery), [`.setQuery()`](/db/DBProvider/setQuery), [`.deleteQuery()`](/db/DBProvider/deleteQuery), and [`.countQuery()`](/db/DBProvider/countQuery) throw [`UnimplementedError`](/error/UnimplementedError).
+- No partial updates — [`.updateItem()`](/db/DBProvider/updateItem) and [`.updateQuery()`](/db/DBProvider/updateQuery) throw `UnimplementedError`.
+- No realtime — [`.getItemSequence()`](/db/DBProvider/getItemSequence) and [`.getQuerySequence()`](/db/DBProvider/getQuerySequence) throw `UnimplementedError`.
 - Eventual consistency — reads may briefly return stale data after a write.
 
 **Install:**
@@ -40,13 +40,13 @@ export default {
 };
 ```
 
-## D1 (`CloudflareD1Provider`)
+## D1 ([`CloudflareD1Provider`](/cloudflare/CloudflareD1Provider))
 
 D1 is Cloudflare's edge SQLite database. It supports collection queries with filtering, sorting, and pagination. Use it when you need structured data and the ability to query across items.
 
-`CloudflareD1Provider` extends the shared `SQLiteProvider`, so it inherits standard SQL-based CRUD and query behaviour. There is no realtime support — `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+`CloudflareD1Provider` extends the shared [`SQLiteProvider`](/db/SQLiteProvider), so it inherits standard SQL-based CRUD and query behaviour. There is no realtime support — [`.getItemSequence()`](/db/DBProvider/getItemSequence) and [`.getQuerySequence()`](/db/DBProvider/getQuerySequence) throw [`UnimplementedError`](/error/UnimplementedError).
 
-Tables must exist before the provider can read or write. Use `SQLiteMigrator` from `shelving/db` to create and migrate tables from your collection definitions.
+Tables must exist before the provider can read or write. Use [`SQLiteMigrator`](/db/SQLiteMigrator) from `shelving/db` to create and migrate tables from your collection definitions.
 
 ```wrangler.toml
 [[d1_databases]]

@@ -6,20 +6,20 @@ The transport layer for API calls. A provider builds requests, sends them, and p
 
 ### Provider hierarchy
 
-`APIProvider` is the abstract base class. `ClientAPIProvider` is the concrete network implementation. All wrapper providers extend `ThroughAPIProvider`, which delegates every method to a `source` provider.
+[`APIProvider`](/api/APIProvider) is the abstract base class. [`ClientAPIProvider`](/api/ClientAPIProvider) is the concrete network implementation. All wrapper providers extend [`ThroughAPIProvider`](/api/ThroughAPIProvider), which delegates every method to a `source` provider.
 
 | Provider | Role |
 |---|---|
-| `ClientAPIProvider` | Sends requests over the network with `fetch()`. Accepts `{ url, options, timeout }`. |
-| `ThroughAPIProvider` | Pass-through base — extend this to intercept only the methods you need. |
-| `ValidationAPIProvider` | Validates payload before request creation and result after response parsing. |
-| `LoggingAPIProvider` | Logs requests, responses, and errors using configurable callbacks (production-safe). |
-| `DebugAPIProvider` | Verbose console output including full request/response bodies — development only. |
-| `JSONAPIProvider` | A `ClientAPIProvider` that forces JSON request bodies and always parses responses as JSON. |
-| `XMLAPIProvider` | A `ClientAPIProvider` that sends XML request bodies and returns raw text responses. |
-| `MockAPIProvider` | Intercepts fetches through a `RequestHandler`; records all calls. No network requests. |
-| `MockEndpointAPIProvider` | Routes mock fetches through a real `EndpointHandler` array — test client and server together. |
-| `CachedAPIProvider` | Serves calls through an `APICache` and exposes `invalidate` / `refresh` helpers. |
+| [`ClientAPIProvider`](/api/ClientAPIProvider) | Sends requests over the network with `fetch()`. Accepts `{ url, options, timeout }`. |
+| [`ThroughAPIProvider`](/api/ThroughAPIProvider) | Pass-through base — extend this to intercept only the methods you need. |
+| [`ValidationAPIProvider`](/api/ValidationAPIProvider) | Validates payload before request creation and result after response parsing. |
+| [`LoggingAPIProvider`](/api/LoggingAPIProvider) | Logs requests, responses, and errors using configurable callbacks (production-safe). |
+| [`DebugAPIProvider`](/api/DebugAPIProvider) | Verbose console output including full request/response bodies — development only. |
+| [`JSONAPIProvider`](/api/JSONAPIProvider) | A `ClientAPIProvider` that forces JSON request bodies and always parses responses as JSON. |
+| [`XMLAPIProvider`](/api/XMLAPIProvider) | A `ClientAPIProvider` that sends XML request bodies and returns raw text responses. |
+| [`MockAPIProvider`](/api/MockAPIProvider) | Intercepts fetches through a `RequestHandler`; records all calls. No network requests. |
+| [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider) | Routes mock fetches through a real [`EndpointHandler`](/api/EndpointHandler) array — test client and server together. |
+| [`CachedAPIProvider`](/api/CachedAPIProvider) | Serves calls through an [`APICache`](/api/APICache) and exposes `invalidate` / `refresh` helpers. |
 
 Each provider has its own page with focused usage examples.
 
@@ -43,8 +43,8 @@ const user = await provider.call(getUser, { id: "u_123" })
 
 ## See also
 
-- [api](/api) — parent module overview
-- [api/endpoint](/api/endpoint) — endpoint definitions and handler wiring
-- [api/cache](/api/cache) — `APICache` and `EndpointCache` used internally
-- [schema](/schema) — `Schema<T>` used by `ValidationAPIProvider`
-- [react](/react) — `createAPIContext()` for React integration
+- [`api`](/api) — parent module overview
+- [`api`](/api) — endpoint definitions and handler wiring
+- [`api`](/api) — [`APICache`](/api/APICache) and [`EndpointCache`](/api/EndpointCache) used internally
+- [`schema`](/schema) — `Schema<T>` used by [`ValidationAPIProvider`](/api/ValidationAPIProvider)
+- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) for React integration

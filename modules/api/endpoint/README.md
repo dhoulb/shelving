@@ -1,6 +1,6 @@
 # Endpoints
 
-Declarative, typed descriptions of API routes. An `Endpoint` captures an HTTP method, a path (with optional `{placeholder}` segments), a payload schema, and a result schema. Define endpoints once; use them on both client and server.
+Declarative, typed descriptions of API routes. An [`Endpoint`](/api/Endpoint) captures an HTTP method, a path (with optional `{placeholder}` segments), a payload schema, and a result schema. Define endpoints once; use them on both client and server.
 
 ## Concepts
 
@@ -10,12 +10,12 @@ Declarative, typed descriptions of API routes. An `Endpoint` captures an HTTP me
 
 | Factory | HTTP method |
 |---|---|
-| `GET(path, payload, result)` | GET |
-| `POST(path, payload, result)` | POST |
-| `PUT(path, payload, result)` | PUT |
-| `PATCH(path, payload, result)` | PATCH |
-| `DELETE(path, payload, result)` | DELETE |
-| `HEAD(path, payload, result)` | HEAD |
+| [`GET(path, payload, result)`](/api/GET) | GET |
+| [`POST(path, payload, result)`](/api/POST) | POST |
+| [`PUT(path, payload, result)`](/api/PUT) | PUT |
+| [`PATCH(path, payload, result)`](/api/PATCH) | PATCH |
+| [`DELETE(path, payload, result)`](/api/DELETE) | DELETE |
+| [`HEAD(path, payload, result)`](/api/HEAD) | HEAD |
 
 All three arguments are optional. Omit `payload` or `result` to get `undefined` typed fields.
 
@@ -39,7 +39,7 @@ const deleteUser = DELETE("/users/{id}", DATA({ id: STRING }))
 
 ### Server-side handler wiring
 
-`endpoint.handler(callback)` pairs an endpoint with an implementation. Pass the resulting `EndpointHandler` objects to `handleEndpoints()`, which matches an incoming `Request` against the list, validates the payload, invokes the callback, and returns a `Response`.
+[`.handler(callback)`](/api/Endpoint/handler) pairs an endpoint with an implementation. Pass the resulting [`EndpointHandler`](/api/EndpointHandler) objects to [`handleEndpoints()`](/api/handleEndpoints), which matches an incoming `Request` against the list, validates the payload, invokes the callback, and returns a `Response`.
 
 ```ts
 import { handleEndpoints } from "shelving/api"
@@ -57,7 +57,7 @@ export default {
 }
 ```
 
-`handleEndpoints` strips the base URL path prefix before matching, so it works behind a sub-path mount. It throws `NotFoundError` if no handler matches and `MethodNotAllowedError` for unsupported methods.
+`handleEndpoints` strips the base URL path prefix before matching, so it works behind a sub-path mount. It throws [`NotFoundError`](/error/NotFoundError) if no handler matches and [`MethodNotAllowedError`](/error/MethodNotAllowedError) for unsupported methods.
 
 ### Callback signature
 
@@ -70,6 +70,6 @@ Return `R` to let `handleEndpoints` validate and serialise the result, or return
 
 ## See also
 
-- [api](/api) — parent module overview
-- [api/provider](/api/provider) — provider stack that calls endpoints client-side
-- [schema](/schema) — `Schema<T>` used for payload and result
+- [`api`](/api) — parent module overview
+- [`api`](/api) — provider stack that calls endpoints client-side
+- [`schema`](/schema) — `Schema<T>` used for payload and result

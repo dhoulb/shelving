@@ -1,6 +1,6 @@
 # Cache
 
-Reactive caching layer for API calls. `APICache` manages one `EndpointCache` per endpoint; each `EndpointCache` manages one `EndpointStore` per unique rendered URL. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
+Reactive caching layer for API calls. [`APICache`](/api/APICache) manages one [`EndpointCache`](/api/EndpointCache) per endpoint; each `EndpointCache` manages one [`EndpointStore`](/api/EndpointStore) per unique rendered URL. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
 
 ## Concepts
 
@@ -16,16 +16,16 @@ APICache
 
 ### Cache keys
 
-`EndpointCache.get(payload)` renders the full URL (including `?query` params for `GET`/`HEAD`) and uses that as the map key. Two payloads that produce the same URL share a store.
+[`.get(payload)`](/api/EndpointCache/get) renders the full URL (including `?query` params for `GET`/`HEAD`) and uses that as the map key. Two payloads that produce the same URL share a store.
 
 ### `call()` vs `refresh()`
 
-- `call(payload, maxAge)` — returns a cached value if it is younger than `maxAge`. Awaits any in-flight fetch. Good for on-demand reads.
-- `refresh(payload, maxAge?)` — triggers a re-fetch unless the value is already younger than `maxAge`. Does not await.
+- [`.call(payload, maxAge)`](/api/EndpointCache/call) — returns a cached value if it is younger than `maxAge`. Awaits any in-flight fetch. Good for on-demand reads.
+- [`.refresh(payload, maxAge?)`](/api/EndpointCache/refresh) — triggers a re-fetch unless the value is already younger than `maxAge`. Does not await.
 
 ## Usage
 
-Direct use of `APICache` or `EndpointCache` is rarely necessary outside of `CachedAPIProvider`. They power the [React integration](#see-also) via `createAPIContext()`.
+Direct use of [`APICache`](/api/APICache) or [`EndpointCache`](/api/EndpointCache) is rarely necessary outside of [`CachedAPIProvider`](/api/CachedAPIProvider). They power the [React integration](#see-also) via [`createAPIContext()`](/react/createAPIContext).
 
 ```ts
 import { APICache } from "shelving/api"
@@ -57,7 +57,7 @@ Cache instances implement `AsyncDisposable` — `await using cache = new APICach
 
 ## See also
 
-- [api/store](/api/store) — `EndpointStore`, the reactive leaf node
-- [api/provider](/api/provider) — `CachedAPIProvider` wraps a provider with an `APICache`
-- [store](/store) — `FetchStore` base class
-- [react](/react) — `createAPIContext()` uses `APICache` under the hood
+- [`api/store`](/api) — [`EndpointStore`](/api/EndpointStore), the reactive leaf node
+- [`api/provider`](/api) — [`CachedAPIProvider`](/api/CachedAPIProvider) wraps a provider with an `APICache`
+- [`store`](/store) — [`FetchStore`](/store/FetchStore) base class
+- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) uses `APICache` under the hood
