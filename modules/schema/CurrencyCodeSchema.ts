@@ -11,7 +11,7 @@ import { StringSchema } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchemaOptions
  */
-export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "match" | "rows"> {
+export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {
 	currencies?: ImmutableArray<CurrencyCode>;
 }
 
@@ -36,17 +36,17 @@ export class CurrencyCodeSchema extends StringSchema {
 	/**
 	 * Create a new `CurrencyCodeSchema`.
 	 *
-	 * @param options Options for the schema (`currencies`, plus base `StringSchemaOptions` except `input`/`min`/`max`/`match`/`rows`).
+	 * @param options Options for the schema (`currencies`, plus base `StringSchemaOptions` except `min`/`match`/`rows`).
 	 * @example new CurrencyCodeSchema({ currencies: ["GBP", "USD"] })
 	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema
 	 */
-	constructor({ one = "currency", title = "Currency", currencies = CURRENCY_CODES, ...options }: CurrencyCodeSchemaOptions) {
+	constructor({ one = "currency", title = "Currency", currencies = CURRENCY_CODES, max = 3, ...options }: CurrencyCodeSchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
+			max, // Valid currency code is 3 uppercase letters.
 			min: 3,
-			max: 3, // Valid currency code is 3 uppercase letters.
 			rows: 1,
 			case: "upper",
 			match: /^[A-Z]{3}$/, // Valid currency code is 3 uppercase letters.
