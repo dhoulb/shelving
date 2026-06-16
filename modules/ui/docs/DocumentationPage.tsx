@@ -74,7 +74,7 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
  * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, referenced types, and examples.
  * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text).
  * - An options-bag parameter whose type resolves to a documented interface/object type is flattened into indented child rows (one per property), so readers see the individual fields inline.
- * - A `type` alias's referenced type names render as a linked `Type` table.
+ * - A `type` alias's referenced type names render as a linked `Type` table, each row carrying the resolved element's `description` (exact-match only).
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
  * - All sections are conditional — only render when they have entries.
  *
@@ -127,7 +127,6 @@ export function DocumentationPage({
 												<th>Parameter</th>
 												<th>Type</th>
 												<th>Default</th>
-												<th>Description</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -173,7 +172,6 @@ export function DocumentationPage({
 										<thead>
 											<tr>
 												<th>Return</th>
-												<th>Description</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -197,7 +195,6 @@ export function DocumentationPage({
 										<thead>
 											<tr>
 												<th>Throws</th>
-												<th>Description</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -221,7 +218,6 @@ export function DocumentationPage({
 										<thead>
 											<tr>
 												<th>Type</th>
-												<th>Description</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -230,7 +226,7 @@ export function DocumentationPage({
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td />
+													<td>{map.get(type)?.props.description ?? ""}</td>
 												</tr>
 											))}
 										</tbody>
