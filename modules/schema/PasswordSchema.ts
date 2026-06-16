@@ -38,9 +38,9 @@ export class PasswordSchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`StringSchema`](/schema/StringSchema) for a password string. Equivalent to `new StringSchema({})`.
+ * Sugar instance of [`PasswordSchema`](/schema/PasswordSchema) for a password string. Equivalent to `new PasswordSchema({})`.
  *
  * @example PASSWORD.validate("hunter2"); // Returns "hunter2"
  * @see https://dhoulb.github.io/shelving/schema/PasswordSchema/PASSWORD
  */
-export const PASSWORD = new StringSchema({});
+export const PASSWORD = new PasswordSchema({});
