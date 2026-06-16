@@ -24,6 +24,11 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
 
+/** Resolve a table row's description — the manually-written one, falling back to the referenced type's own `description` from the tree map (exact-match only). */
+function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string, description?: string | undefined): string {
+	return description || map.get(type)?.props.description || "";
+}
+
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
 const KIND_SECTIONS = {
 	component: "Components",
@@ -72,7 +77,7 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
  * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, referenced types, and examples.
- * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text).
+ * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text), and a row with no hand-written description falls back to the referenced type's own `description`.
  * - An options-bag parameter whose type resolves to a documented interface/object type is flattened into indented child rows (one per property), so readers see the individual fields inline.
  * - A `type` alias's referenced type names render as a linked `Type` table, each row carrying the resolved element's `description` (exact-match only).
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
@@ -130,9 +135,9 @@ export function DocumentationPage({
 											</tr>
 										</thead>
 										<tbody>
-											{params.map(({ name, type = DEFAULT_TYPE, description = "", default: def }) => {
+											{params.map(({ name, type = DEFAULT_TYPE, description, default: def }) => {
 												// An options-bag param whose type resolves to a documented interface/object type is flattened into its individual fields as indented child rows.
-												const properties = (map.get(type)?.props as DocumentationElementProps | undefined)?.properties;
+												const resolved = map.get(type)?.props as DocumentationElementProps | undefined;
 												return (
 													<Fragment key={`${name}-${type}`}>
 														<tr>
@@ -143,9 +148,9 @@ export function DocumentationPage({
 																<TreeLink name={type} />
 															</td>
 															<td>{def ? <Code>{def}</Code> : "-"}</td>
-															<td>{description}</td>
+															<td>{description || resolved?.description || ""}</td>
 														</tr>
-														{properties?.map(prop => (
+														{resolved?.properties?.map(prop => (
 															<tr key={`${name}.${prop.name}`}>
 																<td>
 																	<Code>{`.${prop.name}`}</Code>
@@ -154,7 +159,7 @@ export function DocumentationPage({
 																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
 																</td>
 																<td>{prop.default ? <Code>{prop.default}</Code> : "-"}</td>
-																<td>{prop.description ?? ""}</td>
+																<td>{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}</td>
 															</tr>
 														))}
 													</Fragment>
@@ -175,12 +180,12 @@ export function DocumentationPage({
 											</tr>
 										</thead>
 										<tbody>
-											{returns.map(({ type = DEFAULT_TYPE, description = "" }) => (
+											{returns.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{description}</td>
+													<td>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -198,12 +203,12 @@ export function DocumentationPage({
 											</tr>
 										</thead>
 										<tbody>
-											{throws.map(({ type = DEFAULT_TYPE, description = "" }) => (
+											{throws.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{description}</td>
+													<td>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -226,7 +231,7 @@ export function DocumentationPage({
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{map.get(type)?.props.description ?? ""}</td>
+													<td>{_getRowDescription(map, type)}</td>
 												</tr>
 											))}
 										</tbody>
