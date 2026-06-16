@@ -5,7 +5,6 @@ import type { TreeElement } from "../../util/tree.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
 import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
-import { RouteCache } from "../router/RouteCache.js";
 import type { PossibleMeta } from "../util/index.js";
 import { TreeProvider, useTreeMap } from "./TreeContext.js";
 import { TreePage } from "./TreePage.js";
@@ -34,13 +33,6 @@ export interface TreeRouterProps extends PossibleMeta {
 	 * - Explicit `null` means fallback to nothing (router will not throw `NotFoundError`).
 	 */
 	readonly fallback?: ReactElement | undefined | null;
-
-	/**
-	 * Number of recently-visited pages to keep mounted (but hidden) so back/forward navigation
-	 * restores their scroll position, toggles, searches, inputs, and focus (see `<RouteCache>`).
-	 * - Defaults to `10`. Set to `0` to disable caching and unmount each page as you leave it.
-	 */
-	readonly cache?: number | undefined;
 }
 
 /**
@@ -57,20 +49,15 @@ export interface TreeRouterProps extends PossibleMeta {
  * @example <TreeRouter tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouter
  */
-export function TreeRouter({ tree, fallback, cache = 10, ...meta }: TreeRouterProps): ReactNode {
+export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactNode {
 	const { path, ...combined } = requireMetaURL(meta);
-	// `<TreeProvider>` sits above the cache: it flattens the tree (memoised, so its map is stable across
-	// navigation) and exposes it as a lookup map shared by every cached page — the route resolver below,
-	// plus `<TreeButton>` / breadcrumbs — without disturbing hidden pages. Each cached page carries its
-	// own frozen `<Meta>` so a hidden page never re-renders for the current URL.
+	// `<TreeProvider>` flattens the tree (memoised) and exposes it as a lookup map so descendants — the route resolver below, plus `<TreeButton>` / breadcrumbs — all resolve against the one map.
 	return (
-		<TreeProvider tree={tree}>
-			<RouteCache path={path} cache={cache}>
-				<MetaContext value={combined}>
-					<TreeRoute path={path} fallback={fallback} />
-				</MetaContext>
-			</RouteCache>
-		</TreeProvider>
+		<MetaContext value={combined}>
+			<TreeProvider tree={tree}>
+				<TreeRoute path={path} fallback={fallback} />
+			</TreeProvider>
+		</MetaContext>
 	);
 }
 

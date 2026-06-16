@@ -9,21 +9,17 @@ const ROUTES = {
 	"/about": () => <main>About</main>,
 } as const;
 
-function render(url: string, cache?: number) {
+function render(url: string) {
 	return renderToStaticMarkup(
 		<MetaContext value={createMeta({ root: "http://x.com/", url })}>
-			<Router routes={ROUTES} cache={cache} />
+			<Router routes={ROUTES} />
 		</MetaContext>,
 	);
 }
 
 describe("Router", () => {
-	test("renders the matched route (default cache)", () => {
+	test("renders the matched route", () => {
 		expect(render("./about")).toContain("About");
-	});
-
-	test("renders the matched route with caching disabled", () => {
-		expect(render("./about", 0)).toContain("About");
 	});
 
 	test("throws when no route matches and no fallback is given", () => {

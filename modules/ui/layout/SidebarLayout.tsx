@@ -2,6 +2,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, type ReactNode, useEffect, useState } from "react";
 import { Button } from "../form/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
+import { NavigationCache } from "../router/NavigationCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { LAYOUT_CLASS } from "./Layout.js";
@@ -25,6 +26,7 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * - On narrow viewports the sidebar becomes an off-canvas drawer toggled by a single menu button that switches between a burger and a close icon.
  * - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
  * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
+ * - The scrollable content column is kept alive across navigation via `<NavigationCache>`, so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
  * - Use the `--sidebar-layout-width`, `--sidebar-layout-bg`, `--sidebar-layout-border`, and `--sidebar-layout-color-border` custom properties to override defaults.
  *
  * @kind component
@@ -52,15 +54,21 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 			{sidebar}
 		</nav>
 	);
+	// Wrap the scrolling content column in `<NavigationCache>` so recently-visited pages stay mounted but
+	// hidden — keeping the scroll position of this `.content` container (and all page state) intact across
+	// back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither
+	// duplicated nor remounted as the URL changes.
 	const contentEl = (
-		<div key={path} className={getClass(LAYOUT_CLASS, getModuleClass(SIDEBAR_LAYOUT_CSS, "content"))}>
-			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "toggle")}>
-				<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
-					{open ? <XMarkIcon /> : <Bars3Icon />}
-				</Button>
+		<NavigationCache key="content">
+			<div className={getClass(LAYOUT_CLASS, getModuleClass(SIDEBAR_LAYOUT_CSS, "content"))}>
+				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "toggle")}>
+					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
+						{open ? <XMarkIcon /> : <Bars3Icon />}
+					</Button>
+				</div>
+				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "contentInner")}>{children}</div>
 			</div>
-			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "contentInner")}>{children}</div>
-		</div>
+		</NavigationCache>
 	);
 	const overlayEl = open && (
 		<button

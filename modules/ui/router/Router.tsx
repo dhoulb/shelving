@@ -5,7 +5,6 @@ import { getProps } from "../../util/index.js";
 import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/meta.js";
-import { RouteCache } from "./RouteCache.js";
 import type { Routes } from "./Routes.js";
 
 /**
@@ -22,15 +21,6 @@ export interface RouterProps extends PossibleMeta {
 	 * - Explicit `null` means fallback to nothing (router will not throw `NotFoundError`).
 	 */
 	readonly fallback?: ReactElement | undefined | null;
-
-	/**
-	 * Number of recently-visited pages to keep mounted (but hidden) so their entire state — scroll
-	 * position of every scroll container, open/closed toggles, in-progress searches, form inputs,
-	 * focus — is restored intact when navigating back or forward to them.
-	 * - Defaults to `10`. Once the limit is reached the least-recently-visited page is unmounted.
-	 * - Set to `0` to disable caching and unmount each page as you leave it (the original behaviour).
-	 */
-	readonly cache?: number | undefined;
 }
 
 /**
@@ -50,17 +40,12 @@ export interface RouterProps extends PossibleMeta {
  * @example <Router routes={{ "/": HomePage, "/about": AboutPage }} />
  * @see https://dhoulb.github.io/shelving/ui/router/Router/Router
  */
-export function Router({ routes, fallback, cache = 10, ...meta }: RouterProps): ReactElement | null {
+export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement | null {
 	const combined = requireMetaURL(meta);
 	const route = _matchRoute(routes, fallback, combined);
 	if (!route) throw new NotFoundError("Tree route not found", { received: combined });
-	// Each cached page carries its own `<MetaContext>` (frozen at the URL it was rendered for), so a
-	// hidden page is insulated from the live URL context and never re-renders for someone else's URL.
-	return (
-		<RouteCache path={combined.path} cache={cache}>
-			<MetaContext value={combined}>{route}</MetaContext>
-		</RouteCache>
-	);
+	// Publish the matched URL into context so the route's descendants resolve against it.
+	return <MetaContext value={combined}>{route}</MetaContext>;
 }
 
 function _matchRoute(
