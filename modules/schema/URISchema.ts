@@ -12,7 +12,7 @@ import { StringSchema } from "./StringSchema.js";
  *
  * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchemaOptions
  */
-export interface URISchemaOptions extends Omit<StringSchemaOptions, "input" | "min" | "max" | "rows"> {
+export interface URISchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
 	readonly schemes?: URISchemes | undefined;
 }
 
@@ -34,16 +34,18 @@ export class URISchema extends StringSchema {
 	/**
 	 * Create a new `URISchema`.
 	 *
-	 * @param options Options for the schema (`schemes`, plus inherited string options like `one`, `title`, `value`).
+	 * @param options Options for the schema (`schemes`, plus inherited string options like `one`, `title`, `value`, `input`, `max`).
+	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"url"`).
+	 * @param options.max Maximum allowed character length (defaults to `512`).
 	 */
-	constructor({ one = "URI", title = "URI", schemes = HTTP_SCHEMES, ...options }: URISchemaOptions) {
+	constructor({ one = "URI", title = "URI", schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URISchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
-			input: "url",
+			input,
+			max,
 			min: 1,
-			max: 512,
 			rows: 1,
 		});
 		this.schemes = schemes;

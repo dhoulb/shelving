@@ -7,6 +7,13 @@ const R_MATCH =
 	/^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 
 /**
+ * Options for an `EmailSchema`.
+ *
+ * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EmailSchemaOptions
+ */
+export interface EmailSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {}
+
+/**
  * Schema that defines a valid email address.
  *
  * - Falsy values are converted to `""` empty string.
@@ -30,22 +37,20 @@ export class EmailSchema extends StringSchema {
 	/**
 	 * Create a new `EmailSchema`.
 	 *
-	 * @param options Options for the schema (inherits `StringSchema` options except `type`, `min`, `max`, `match`, and `rows`, which are fixed for emails).
+	 * @param options Options for the schema (inherits `StringSchema` options except `min`, `match`, and `rows`, which are fixed for emails).
 	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"email address"`).
 	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Email"`).
+	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"email"`).
+	 * @param options.max Maximum allowed character length (defaults to `254`).
 	 */
-	constructor({
-		one = "email address",
-		title = "Email",
-		...options
-	}: Omit<StringSchemaOptions, "type" | "min" | "max" | "match" | "rows">) {
+	constructor({ one = "email address", title = "Email", input = "email", max = 254, ...options }: EmailSchemaOptions) {
 		super({
 			one,
 			title,
 			...options,
-			input: "email",
+			input,
+			max,
 			min: 1,
-			max: 254,
 			rows: 1,
 			match: R_MATCH,
 		});

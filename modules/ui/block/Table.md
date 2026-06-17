@@ -8,6 +8,7 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 - First and last cells in a row drop their outer inline padding so the table aligns flush with the surrounding text column.
 - Wrap a wide table in a horizontally scrollable container if it may exceed the content width on small screens.
 - Like the other block components it collapses its outer block margin when it is the first or last child.
+- Spans the full width of its container by default; set the `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) to constrain it.
 - Inside [`Prose`](/ui/Prose) a raw `<table>` picks up the same styling, so Markdown-rendered tables match component ones.
 
 ## Usage

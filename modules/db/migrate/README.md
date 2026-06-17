@@ -1,16 +1,16 @@
 # Migrations
 
-Schema migration for SQL-backed database providers. `DBMigrator` and its subclasses compare a provider's live table schema against your `Collection` definitions and emit the SQL statements needed to bring them in sync — creating missing tables and adding or dropping generated columns.
+Schema migration for SQL-backed database providers. [`DBMigrator`](/db/DBMigrator) and its subclasses compare a provider's live table schema against your [`Collection`](/db/Collection) definitions and emit the SQL statements needed to bring them in sync — creating missing tables and adding or dropping generated columns.
 
 ## Concepts
 
 ### DBMigrator
 
-`DBMigrator` is the abstract base class. It holds a reference to the provider and declares one method: `migrate(...collections)`. Concrete subclasses implement `migrate` to inspect the live schema and run the required SQL.
+`DBMigrator` is the abstract base class. It holds a reference to the provider and declares one method: [`.migrate()`](/db/DBMigrator/migrate). Concrete subclasses implement `migrate` to inspect the live schema and run the required SQL.
 
 ### SQLMigrator
 
-`SQLMigrator` extends `DBMigrator` with the shared SQL diffing logic. It:
+[`SQLMigrator`](/db/SQLMigrator) extends `DBMigrator` with the shared SQL diffing logic. It:
 
 - Calls `getTables()` to list existing tables.
 - For each collection, calls `getTable(name)` to read the current column definitions.
@@ -44,7 +44,7 @@ await migrator.migrate(POSTS, COMMENTS);
 
 ### Inspect migrations without running them
 
-`getMigrations(...collections)` returns the SQL strings without executing them. Useful for previewing or logging:
+[`.getMigrations()`](/db/SQLMigrator/getMigrations) returns the SQL strings without executing them. Useful for previewing or logging:
 
 ```ts
 const sql = await migrator.getMigrations(POSTS, COMMENTS);
@@ -71,7 +71,7 @@ const PRODUCTS = COLLECTION("products", STRING, {
 
 ## See also
 
-- [db/collection](/db/collection) — `Collection` / `COLLECTION` definitions that migrators consume
-- [db/provider](/db/provider) — `SQLiteProvider` and `PostgreSQLProvider` that migrators run against
-- [cloudflare](/cloudflare) — D1 provider and migrator usage in Cloudflare Workers
-- [bun](/bun) — Bun PostgreSQL provider for use with `PostgreSQLMigrator`
+- [`db`](/db) — [`Collection`](/db/Collection) / [`COLLECTION()`](/db/COLLECTION) definitions that migrators consume
+- [`db`](/db) — [`SQLiteProvider`](/db/SQLiteProvider) and [`PostgreSQLProvider`](/db/PostgreSQLProvider) that migrators run against
+- [`cloudflare`](/cloudflare) — D1 provider and migrator usage in Cloudflare Workers
+- [`bun`](/bun) — Bun PostgreSQL provider for use with [`PostgreSQLMigrator`](/db/PostgreSQLMigrator)
