@@ -16,11 +16,17 @@ const R_MATCH =
 export interface EmailSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 254
+	 */
 	readonly max?: number | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
-	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "email"
+	 */
 	readonly input?: StringInputType | undefined;
 }
 
@@ -47,12 +53,6 @@ export interface EmailSchemaOptions extends SchemaOptions {
 export class EmailSchema extends StringSchema {
 	/**
 	 * Create a new `EmailSchema`.
-	 *
-	 * @param options Options for the schema (presentation string options like `value`, `max`, `case`, `input`; length and format are fixed for emails).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"email address"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Email"`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"email"`).
-	 * @param options.max Maximum allowed character length (defaults to `254`).
 	 */
 	constructor({ one = "email address", title = "Email", input = "email", max = 254, ...options }: EmailSchemaOptions) {
 		super({

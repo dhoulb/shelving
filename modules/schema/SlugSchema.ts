@@ -13,7 +13,10 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface SlugSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 32
+	 */
 	readonly max?: number | undefined;
 	/** Regular expression the sanitized string must match. */
 	readonly match?: RegExp | undefined;
@@ -38,8 +41,6 @@ export interface SlugSchemaOptions extends SchemaOptions {
 export class SlugSchema extends StringSchema {
 	/**
 	 * Create a new `SlugSchema`.
-	 *
-	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
 	 */
 	constructor({ max = 32, ...options }: SlugSchemaOptions) {
 		super({

@@ -7,19 +7,27 @@ import { Schema } from "./Schema.js";
 /**
  * Allowed options for `NumberSchema`.
  *
- * - `value` — default number value used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum allowed value.
- * - `step` — rounding step the value is snapped to (e.g. `1` for integers).
- * - `format` — function used to render the number for display in downstream UIs.
- *
  * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchemaOptions
  */
 export interface NumberSchemaOptions extends SchemaOptions {
+	/** Default number value used when the input is `undefined`. */
 	readonly value?: number | undefined;
+	/**
+	 * Minimum allowed value.
+	 * @default Number.NEGATIVE_INFINITY
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum allowed value.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
+	/** Rounding step the value is snapped to (e.g. `1` for integers). */
 	readonly step?: number | undefined;
-	/** Format the number for display in downstream UIs. */
+	/**
+	 * Format the number for display in downstream UIs.
+	 * @default formatNumber
+	 */
 	readonly format?: typeof formatNumber | undefined;
 }
 
@@ -42,15 +50,6 @@ export class NumberSchema extends Schema<number> {
 	readonly step: number | undefined;
 	/**
 	 * Create a new `NumberSchema`.
-	 *
-	 * @param options Options for the schema.
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"number"`).
-	 * @param options.title Human-readable title for the schema (defaults to `"Number"`).
-	 * @param options.min Minimum allowed value (defaults to `Number.NEGATIVE_INFINITY`).
-	 * @param options.max Maximum allowed value (defaults to `Number.POSITIVE_INFINITY`).
-	 * @param options.step Rounding step the value is snapped to.
-	 * @param options.format Function used to render the number for display (defaults to `formatNumber`).
-	 * @param options.value Default number value used when the input is `undefined`.
 	 */
 	constructor({
 		one = "number",

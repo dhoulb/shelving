@@ -61,8 +61,6 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 
 	/**
 	 * Create a new `ChoiceSchema`.
-	 *
-	 * @param options Options for the schema, including the allowed `options` and an optional default `value`.
 	 */
 	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
@@ -102,7 +100,6 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
  * Sugar factory for [`ChoiceSchema`](/schema/ChoiceSchema).
  *
  * @param options The allowed choices, as a `{ key: title }` dictionary or an array of keys.
- * @returns A `ChoiceSchema` validating the given choices.
  * @example CHOICE({ yes: "Yes", no: "No" }) // ChoiceSchema<"yes" | "no">
  * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/CHOICE
  */

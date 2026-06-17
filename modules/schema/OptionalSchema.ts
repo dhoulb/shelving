@@ -4,12 +4,10 @@ import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 /**
  * Allowed options for `OptionalSchema`.
  *
- * - `value` — default value is always `undefined` (the default is only used when a value is `undefined`, so otherwise `undefined` could never be returned).
- *
  * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchemaOptions
  */
 export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undefined> {
-	/** Default value for an `OptionalSchema` can always `undefined` */
+	/** Default value is always `undefined` (the default is only used when the input is `undefined`, so otherwise `undefined` could never be returned). */
 	readonly value?: undefined;
 }
 
@@ -32,8 +30,6 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	declare readonly value: undefined;
 	/**
 	 * Create a new `OptionalSchema`.
-	 *
-	 * @param options Options for the schema, including the `source` schema to wrap.
 	 */
 	constructor(options: OptionalSchemaOptions<T>) {
 		super({ ...options, value: undefined });
@@ -76,7 +72,6 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
  * Sugar factory for [`OptionalSchema`](/schema/OptionalSchema).
  *
  * @param source Source schema to wrap.
- * @returns An `OptionalSchema` wrapping `source`.
  *
  * @example
  *  const schema = OPTIONAL(STRING);

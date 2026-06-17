@@ -28,7 +28,6 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 	/**
 	 * Create a new `CountrySchema`.
 	 *
-	 * @param options Options for the schema (`value`, plus base `SchemaOptions`).
 	 * @example new CountrySchema({ value: "GB" })
 	 * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchema
 	 */

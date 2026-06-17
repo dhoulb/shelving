@@ -88,7 +88,6 @@ export class Collection<N extends string = string, I extends Identifier = Identi
  * @param name Collection name used as the table/collection key.
  * @param id Schema for the identifier type.
  * @param data Data schema, or the `Schemas` props used to construct one.
- * @returns A new `Collection` instance.
  * @example COLLECTION("users", ID, { name: STRING, age: NUMBER }) // Collection<"users", number, { name: string; age: number }>
  * @see https://dhoulb.github.io/shelving/db/collection/Collection/COLLECTION
  */

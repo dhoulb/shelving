@@ -13,13 +13,22 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchemaOptions
  */
 export interface ColorSchemaOptions extends SchemaOptions {
-	/** Default string value used when the input is `undefined`. */
+	/**
+	 * Default hex value used when the input is `undefined`.
+	 * @default "#000000"
+	 */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 7
+	 */
 	readonly max?: number | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
-	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "color"
+	 */
 	readonly input?: StringInputType | undefined;
 }
 
@@ -35,13 +44,6 @@ export interface ColorSchemaOptions extends SchemaOptions {
 export class ColorSchema extends StringSchema {
 	/**
 	 * Create a new `ColorSchema`.
-	 *
-	 * @param options Options for the schema (presentation string options like `value`, `max`, `case`, `input`; length and format are fixed for hex colors).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"color"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Color"`).
-	 * @param options.value Default hex value used when the input is `undefined` (defaults to `"#000000"`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"color"`).
-	 * @param options.max Maximum allowed character length (defaults to `7`).
 	 */
 	constructor({ one = "color", title = "Color", value = "#000000", input = "color", max = 7, ...options }: ColorSchemaOptions) {
 		super({

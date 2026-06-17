@@ -12,11 +12,17 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface PhoneSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 16
+	 */
 	readonly max?: number | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
-	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "tel"
+	 */
 	readonly input?: StringInputType | undefined;
 }
 
@@ -32,12 +38,6 @@ export interface PhoneSchemaOptions extends SchemaOptions {
 export class PhoneSchema extends StringSchema {
 	/**
 	 * Create a new `PhoneSchema`.
-	 *
-	 * @param options Options for the schema (presentation string options like `value`, `max`, `case`, `input`; length and format are fixed for phone numbers).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"phone number"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Phone"`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"tel"`).
-	 * @param options.max Maximum allowed character length (defaults to `16`).
 	 */
 	constructor({ one = "phone number", title = "Phone", input = "tel", max = 16, ...options }: PhoneSchemaOptions) {
 		super({

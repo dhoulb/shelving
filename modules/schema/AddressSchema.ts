@@ -41,10 +41,6 @@ export interface AddressSchemaOptions extends SchemaOptions {
 export class AddressSchema extends DataSchema<AddressData> {
 	/**
 	 * Create a new `AddressSchema`.
-	 *
-	 * @param options Options for the schema (the default `value` plus base schema options; `props` is fixed to the postal-address fields).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"address"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Address"`).
 	 */
 	constructor({ one = "address", title = "Address", ...options }: AddressSchemaOptions = {}) {
 		super({ one, title, props: ADDRESS_PROPS, ...options });

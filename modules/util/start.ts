@@ -103,7 +103,6 @@ export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>
  * - Returns the input unchanged when it is already a `Starter`; otherwise wraps the callback in a new `Starter`.
  *
  * @param start A `StartCallback` or an existing `Starter`.
- * @returns A `Starter` instance.
  * @example getStarter(() => () => {}) // Starter instance
  * @see https://dhoulb.github.io/shelving/util/start/getStarter
  */

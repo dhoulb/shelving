@@ -4,12 +4,13 @@ import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 /**
  * Allowed options for `NullableSchema`.
  *
- * - `value` — default value used when the input is `undefined` (defaults to `null`).
- *
  * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchemaOptions
  */
 export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null> {
-	/** Default value (defaults to `null`). */
+	/**
+	 * Default value used when the input is `undefined`.
+	 * @default null
+	 */
 	readonly value?: T | null;
 }
 
@@ -30,9 +31,6 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 	declare readonly value: T | null;
 	/**
 	 * Create a new `NullableSchema`.
-	 *
-	 * @param options Options for the schema, including the `source` schema to wrap.
-	 * @param options.value Default value used when the input is `undefined` (defaults to `null`).
 	 */
 	constructor({ value = null, ...options }: NullableSchemaOptions<T>) {
 		super({ value, ...options });
@@ -75,7 +73,6 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
  * Sugar factory for [`NullableSchema`](/schema/NullableSchema).
  *
  * @param source Source schema to wrap.
- * @returns A `NullableSchema` wrapping `source`.
  *
  * @example
  *  const schema = NULLABLE(STRING);

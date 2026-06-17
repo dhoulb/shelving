@@ -16,17 +16,26 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface URLSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 512
+	 */
 	readonly max?: number | undefined;
 	/** Regular expression the sanitized string must match. */
 	readonly match?: RegExp | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
-	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "url"
+	 */
 	readonly input?: StringInputType | undefined;
 	/** Base URL that relative URLs are resolved against. */
 	readonly base?: URL | URLString | undefined;
-	/** Whitelist of allowed URL schemes (defaults to HTTP/HTTPS). */
+	/**
+	 * Whitelist of allowed URL schemes.
+	 * @default HTTP_SCHEMES
+	 */
 	readonly schemes?: URISchemes | undefined;
 }
 
@@ -49,10 +58,6 @@ export class URLSchema extends StringSchema {
 
 	/**
 	 * Create a new `URLSchema`.
-	 *
-	 * @param options Options for the schema (`base`, `schemes`, plus inherited string options like `one`, `title`, `value`, `input`, `max`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"url"`).
-	 * @param options.max Maximum allowed character length (defaults to `512`).
 	 */
 	constructor({ one = "URL", title = "URL", base, schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URLSchemaOptions) {
 		super({

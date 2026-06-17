@@ -191,7 +191,6 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * Require a unit from this list.
 	 *
 	 * @param key Key of the unit to retrieve.
-	 * @returns The matching `Unit` instance.
 	 * @throws `RequiredError` if the unit key is not found.
 	 * @example LENGTH_UNITS.require("kilometer") // Unit instance
 	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/require

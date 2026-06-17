@@ -218,7 +218,6 @@ export function getColor(value: unknown): Color | undefined {
  *
  * @param value The possible color to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireColor` itself).
- * @returns The converted `Color`.
  * @throws {RequiredError} If `value` cannot be converted to a `Color`.
  * @example requireColor("#F00") // Color(255, 0, 0)
  * @see https://dhoulb.github.io/shelving/util/color/requireColor

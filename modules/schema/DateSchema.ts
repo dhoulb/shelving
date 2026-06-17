@@ -17,17 +17,19 @@ export type DateInputType = "time" | "date" | "datetime-local";
 /**
  * Options for `DateSchema`.
  *
- * - `value` — default date used when the input is `undefined`.
- * - `min`/`max` — earliest and latest allowed dates (`null` for no bound).
- * - `input` — HTML `<input />` `type=""` hint for downstream UIs.
- * - `step` — rounding step in milliseconds.
- *
  * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchemaOptions
  */
 export interface DateSchemaOptions extends SchemaOptions {
+	/** Default date used when the input is `undefined`. */
 	readonly value?: PossibleDate | undefined;
+	/** Earliest allowed date (`null` for no bound). */
 	readonly min?: Nullish<PossibleDate>;
+	/** Latest allowed date (`null` for no bound). */
 	readonly max?: Nullish<PossibleDate>;
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "date"
+	 */
 	readonly input?: DateInputType | undefined;
 	/**
 	 * Rounding step (in milliseconds, because that's the base unit for time).
@@ -62,8 +64,6 @@ export class DateSchema extends Schema<string> {
 
 	/**
 	 * Create a new `DateSchema`.
-	 *
-	 * @param options Options for the schema (`min`, `max`, `value`, `input`, `step`, plus base `SchemaOptions`).
 	 */
 	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });

@@ -13,7 +13,10 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface UUIDSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 36
+	 */
 	readonly max?: number | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
@@ -35,9 +38,6 @@ export interface UUIDSchemaOptions extends SchemaOptions {
 export class UUIDSchema extends StringSchema {
 	/**
 	 * Create a new `UUIDSchema`.
-	 *
-	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`, `input`, `max`).
-	 * @param options.max Maximum allowed character length (defaults to `36`).
 	 */
 	constructor({ one = "UUID", title = "UUID", max = 36, ...rest }: UUIDSchemaOptions = {}) {
 		super({

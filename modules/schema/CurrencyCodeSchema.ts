@@ -14,13 +14,19 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface CurrencyCodeSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 3
+	 */
 	readonly max?: number | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
 	/** HTML `<input />` `type=""` hint for downstream UIs. */
 	readonly input?: StringInputType | undefined;
-	/** Set of allowed ISO 4217 currency codes (defaults to all known codes). */
+	/**
+	 * Set of allowed ISO 4217 currency codes.
+	 * @default CURRENCY_CODES
+	 */
 	readonly currencies?: ImmutableArray<CurrencyCode> | undefined;
 }
 
@@ -45,7 +51,6 @@ export class CurrencyCodeSchema extends StringSchema {
 	/**
 	 * Create a new `CurrencyCodeSchema`.
 	 *
-	 * @param options Options for the schema (`currencies`, plus presentation string options like `value`, `max`, `case`, `input`).
 	 * @example new CurrencyCodeSchema({ currencies: ["GBP", "USD"] })
 	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema
 	 */

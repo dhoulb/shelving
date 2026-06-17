@@ -15,15 +15,24 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
 export interface URISchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
 	readonly value?: string | undefined;
-	/** Maximum allowed character length. */
+	/**
+	 * Maximum allowed character length.
+	 * @default 512
+	 */
 	readonly max?: number | undefined;
 	/** Regular expression the sanitized string must match. */
 	readonly match?: RegExp | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
-	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "url"
+	 */
 	readonly input?: StringInputType | undefined;
-	/** Whitelist of allowed URI schemes (defaults to HTTP/HTTPS). */
+	/**
+	 * Whitelist of allowed URI schemes.
+	 * @default HTTP_SCHEMES
+	 */
 	readonly schemes?: URISchemes | undefined;
 }
 
@@ -44,10 +53,6 @@ export class URISchema extends StringSchema {
 
 	/**
 	 * Create a new `URISchema`.
-	 *
-	 * @param options Options for the schema (`schemes`, plus inherited string options like `one`, `title`, `value`, `input`, `max`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"url"`).
-	 * @param options.max Maximum allowed character length (defaults to `512`).
 	 */
 	constructor({ one = "URI", title = "URI", schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URISchemaOptions) {
 		super({

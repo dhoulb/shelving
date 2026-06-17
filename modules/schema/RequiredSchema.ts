@@ -39,7 +39,6 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
  * Sugar factory for [`RequiredSchema`](/schema/RequiredSchema).
  *
  * @param source Source schema to wrap.
- * @returns A `RequiredSchema` wrapping `source`.
  *
  * @example
  *  const schema = REQUIRED(STRING);

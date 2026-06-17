@@ -17,7 +17,6 @@ export class Errors extends AggregateError implements BaseError {
 	 *
 	 * @param errors Iterable of the individual errors being aggregated.
 	 * @param message Optional human-readable message describing the aggregate failure.
-	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(errors: Iterable<unknown>, message?: string, options: BaseErrorOptions = {}) {
 		super(errors, message, options);

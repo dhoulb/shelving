@@ -16,7 +16,6 @@ export class ValueError extends Error implements BaseError {
 	 * Create a new `ValueError`.
 	 *
 	 * @param message Optional human-readable description of why the value is wrong.
-	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);
