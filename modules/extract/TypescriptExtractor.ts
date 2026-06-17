@@ -16,7 +16,8 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * File extractor that parses a TypeScript source file into a tree element.
  * - Uses the TypeScript compiler API to parse the AST.
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
- * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`.
+ * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`. When a function (or constructor) is overloaded, the implementation declaration (the "base definition") is dropped entirely — only the overload signatures are documented.
+ * - A `@param name {Type}` (or `@returns {Type}`) whose `{Type}` is given is canonical: it supersedes the inferred type from the base definition and any overloads. Multiple `@param name` tags for one parameter each emit a row, letting a single parameter be documented as several typed variants.
  * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
@@ -47,9 +48,17 @@ export class TypescriptExtractor extends FileExtractor {
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 
+		// Names with one or more overload signatures (bodyless function declarations). When a function is overloaded, the
+		// implementation declaration (the one with a body — the "base definition") is dropped entirely; only the overloads are documented.
+		const overloaded = new Set<string>();
+		for (const statement of source.statements)
+			if (ts.isFunctionDeclaration(statement) && !statement.body && statement.name) overloaded.add(statement.name.text);
+
 		// Collect elements by key, merging overloads (same name) by appending signatures.
 		const byKey = new Map<string, DocumentationElement>();
 		for (const statement of source.statements) {
+			// Skip the implementation of an overloaded function — overloads supersede the base definition.
+			if (ts.isFunctionDeclaration(statement) && statement.body && statement.name && overloaded.has(statement.name.text)) continue;
 			const element = _extractStatement(statement, source);
 			if (!element) continue;
 			const existing = byKey.get(element.key);
@@ -316,9 +325,11 @@ function _getTypeParamNames(statement: ts.ClassDeclaration, source: ts.SourceFil
 	return `<${typeParameters.map(t => t.name.getText(source)).join(", ")}>`;
 }
 
-/** Get a class's constructor declarations (overload signatures + implementation), in source order. */
+/** Get a class's constructor declarations in source order — when overloaded, only the overload signatures (the implementation, i.e. the base definition, is dropped). */
 function _getConstructors(statement: ts.ClassDeclaration): readonly ts.ConstructorDeclaration[] {
-	return statement.members.filter(ts.isConstructorDeclaration);
+	const constructors = statement.members.filter(ts.isConstructorDeclaration);
+	// When overload signatures exist, drop the implementation constructor (the one with a body) — overloads supersede the base definition.
+	return constructors.some(c => !c.body) ? constructors.filter(c => !c.body) : constructors;
 }
 
 /**
@@ -342,15 +353,41 @@ function _getParams(
 ): readonly DocumentationParam[] | undefined {
 	if (ts.isClassDeclaration(statement)) return _getConstructorParams(statement, source, jsDocParams);
 	if (!ts.isFunctionDeclaration(statement)) return;
-	const params: DocumentationParam[] = statement.parameters.map(p => {
+	const params = _buildParams(statement.parameters, source, jsDocParams);
+	return params.length ? params : undefined;
+}
+
+/**
+ * Build documentation params from a declaration's AST parameters, applying JSDoc `@param` overrides.
+ * - A `@param name {Type}` whose `{Type}` is given is canonical: it supersedes the parameter's inferred type from the base definition and any overloads.
+ * - Multiple `@param name` tags for the same parameter each emit a row, so a single parameter can be documented as several typed variants.
+ * - A `@param name` with no `{Type}` only supplies the description; the inferred type stands.
+ * - `primaryJsDocParams` win over `fallbackJsDocParams` per name (used by constructors: the constructor's own `@param` beats the class-level `@param`).
+ */
+function _buildParams(
+	parameters: readonly ts.ParameterDeclaration[],
+	source: ts.SourceFile,
+	primaryJsDocParams: readonly DocumentationParam[] | undefined,
+	fallbackJsDocParams?: readonly DocumentationParam[] | undefined,
+): DocumentationParam[] {
+	const params: DocumentationParam[] = [];
+	for (const p of parameters) {
 		const name = p.name.getText(source);
 		const type = p.type?.getText(source);
 		const optional = !!p.questionToken || !!p.initializer;
-		const description = jsDocParams?.find(d => d.name === name)?.description;
 		const def = p.initializer?.getText(source);
-		return { name, type, description, optional, default: def };
-	});
-	return params.length ? params : undefined;
+		// JSDoc `@param` entries for this name — the declaration's own take priority over the fallback (class-level) ones.
+		const primary = primaryJsDocParams?.filter(d => d.name === name) ?? [];
+		const matched = primary.length ? primary : (fallbackJsDocParams?.filter(d => d.name === name) ?? []);
+		// A `@param` carrying a `{Type}` is canonical — emit one row per typed entry, its type overriding the inferred type.
+		const typed = matched.filter(d => d.type);
+		if (typed.length) {
+			for (const d of typed) params.push({ name, type: d.type, description: d.description, optional, default: def });
+		} else {
+			params.push({ name, type, description: matched[0]?.description, optional, default: def });
+		}
+	}
+	return params;
 }
 
 /**
@@ -366,16 +403,8 @@ function _getConstructorParams(
 	let params: readonly DocumentationParam[] | undefined;
 	for (const ctor of _getConstructors(statement)) {
 		const ctorJsDocParams = _getJSDoc(ctor, source)?.params;
-		const next: DocumentationParam[] = ctor.parameters.map(p => {
-			const name = p.name.getText(source);
-			const type = p.type?.getText(source);
-			const optional = !!p.questionToken || !!p.initializer;
-			// Constructor-level `@param` wins over the class-level `@param` on collision.
-			const description =
-				ctorJsDocParams?.find(d => d.name === name)?.description ?? classJsDocParams?.find(d => d.name === name)?.description;
-			const def = p.initializer?.getText(source);
-			return { name, type, description, optional, default: def };
-		});
+		// Constructor-level `@param` wins over the class-level `@param` on collision; a `@param {Type}` is canonical (see `_buildParams`).
+		const next = _buildParams(ctor.parameters, source, ctorJsDocParams, classJsDocParams);
 		params = _concatUnique(params, next, p => `${p.name}\0${p.type}\0${p.description}\0${p.optional}\0${p.default}`);
 	}
 	return params?.length ? params : undefined;
