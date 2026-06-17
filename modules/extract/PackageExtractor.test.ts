@@ -67,6 +67,20 @@ describe("PackageExtractor", () => {
 		}
 	});
 
+	test("prefixes each module title with the package name", async () => {
+		const { root, tree, cleanup } = await _setup(_basicLayout);
+		try {
+			const pkg = await _writePackageJson(root, { "./api": "./api/index.js", "./util/*": "./util/*.js" }, "shelving");
+			const out = await new PackageExtractor({ tree }).extract(pkg);
+			const kids = Array.from(out.props.children as Iterable<TreeElement>);
+			// `name` stays the bare subpath; `title` is prefixed with the package name.
+			expect(kids.map(k => k.props.name).sort()).toEqual(["api", "util/array", "util/string"]);
+			expect(kids.map(k => k.props.title).sort()).toEqual(["shelving/api", "shelving/util/array", "shelving/util/string"]);
+		} finally {
+			await cleanup();
+		}
+	});
+
 	test("expands a wildcard export into one module per matching child", async () => {
 		const { root, tree, cleanup } = await _setup(_basicLayout);
 		try {
