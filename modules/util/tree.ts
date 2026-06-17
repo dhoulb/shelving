@@ -230,8 +230,9 @@ export interface SearchTreeOptions {
  * Search the descendants of a tree element and return the best-ranked matches.
  *
  * - Walks every descendant of `scope` (depth-first; `scope` itself is not a candidate), optionally narrowed by `options.filter`.
- * - Tokenises `query` with `getWords()` so quoted phrases match literally: `searchTree(root, '"hello world" foo')` scores the phrase `hello world` *and* the word `foo` independently, stacking their scores.
- * - Ranks each candidate (case-insensitive) per token, summing: `name` exact > `name` starts-with > `name` includes > `title` includes > `description` includes > `content` includes. A `name` match always outranks a content-only match.
+ * - Tokenises `query` with `getWords()` so quoted phrases match literally: `searchTree(root, '"hello world" foo')` matches the phrase `hello world` *and* the word `foo`.
+ * - Requires *every* token to match (AND, not OR): a candidate is only returned when each token matches at least one of its props. So `date util` returns only elements matching both `date` and `util`, not either alone.
+ * - Ranks each candidate (case-insensitive) per token, summing each token's best tier: `name` exact > `name` starts-with > `name` includes > `title` includes > `description` includes > `content` includes. A `name` match always outranks a content-only match.
  * - An empty `query` returns the (filtered) candidates in tree order — useful for a filter-only or "show everything" listing.
  *
  * @param scope The element whose descendants are searched.
@@ -280,7 +281,7 @@ const _SCORE_TITLE = 10;
 const _SCORE_DESCRIPTION = 4;
 const _SCORE_CONTENT = 1;
 
-/** Score one element's props against the (already lower-cased) query tokens — each token contributes its best-matching tier, summed. */
+/** Score one element's props against the (already lower-cased) query tokens — every token must match (AND), each contributing its best-matching tier, summed. */
 function _scoreElement(props: TreeElementProps, tokens: ImmutableArray<string>): number {
 	const name = props.name.toLowerCase();
 	const title = props.title?.toLowerCase() ?? "";
@@ -288,12 +289,14 @@ function _scoreElement(props: TreeElementProps, tokens: ImmutableArray<string>):
 	const content = props.content?.toLowerCase() ?? "";
 	let score = 0;
 	for (const token of tokens) {
+		// Every token must match somewhere — a single token that matches nothing drops the candidate entirely (AND, not OR).
 		if (name === token) score += _SCORE_NAME_EXACT;
 		else if (name.startsWith(token)) score += _SCORE_NAME_STARTS;
 		else if (name.includes(token)) score += _SCORE_NAME_INCLUDES;
 		else if (title.includes(token)) score += _SCORE_TITLE;
 		else if (description.includes(token)) score += _SCORE_DESCRIPTION;
 		else if (content.includes(token)) score += _SCORE_CONTENT;
+		else return 0;
 	}
 	return score;
 }
