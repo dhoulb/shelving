@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { requireMetaURL } from "../misc/MetaContext.js";
+import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
@@ -26,12 +26,15 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  * @see https://dhoulb.github.io/shelving/ui/layout/CenteredLayout/CenteredLayout
  */
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {
-	const { path } = requireMetaURL();
+	// Wrap the scrolling `<main>` in `<RouteCache>` so recently-visited pages stay mounted but hidden,
+	// keeping their scroll position and state intact across back/forward navigation.
 	return (
-		<main key={path} className={getClass(getModuleClass(CENTERED_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
-			<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner")} style={fullWidth ? { maxWidth: "none" } : undefined}>
-				{children}
-			</div>
-		</main>
+		<RouteCache>
+			<main className={getClass(getModuleClass(CENTERED_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
+				<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner")} style={fullWidth ? { maxWidth: "none" } : undefined}>
+					{children}
+				</div>
+			</main>
+		</RouteCache>
 	);
 }

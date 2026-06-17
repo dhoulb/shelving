@@ -8,6 +8,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
+- `cache` (default `10`) keeps recently-visited pages mounted but hidden so back/forward navigation restores their state — see [Keeping page state](#keeping-page-state).
 
 ## Usage
 
@@ -118,6 +119,30 @@ const SIDEBARRED_ROUTES = {
   ),
 }}/>
 ```
+
+### Keeping page state
+
+By default `<Router>` unmounts a page when you navigate away and mounts a fresh one when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top.
+
+The `cache` prop keeps recently-visited pages mounted but hidden (using React's [`<Activity>`](https://react.dev/reference/react/Activity)), so navigating back or forward to a page restores its entire DOM and component state untouched — no per-feature scroll-capturing or state serialisation required.
+
+```tsx
+// Keep the last 10 visited pages alive (the default).
+<Router routes={ROUTES}/>
+
+// Keep more pages, at the cost of more retained DOM/memory.
+<Router routes={ROUTES} cache={25}/>
+
+// Opt out — unmount each page as you leave it (original behaviour).
+<Router routes={ROUTES} cache={0}/>
+```
+
+**Things to know:**
+
+- Pages are keyed by their matched `path`; once `cache` pages are retained the least-recently-visited one is unmounted (and so loses its state). Visiting a never-seen or evicted page mounts it fresh at the top.
+- Each cached page is wrapped in its own frozen `<Meta>` context, so hidden pages never re-render for the current URL.
+- `<Activity mode="hidden">` unmounts a hidden page's _effects_ while preserving its state, so subscriptions, observers (e.g. infinite-scroll), and timers pause politely and resume when the page is shown again.
+- For per-page scroll to be preserved, each page must own its scroll container (the scrollable element must live _inside_ the route, not in a shared layout wrapper that all routes render into).
 
 ### SSR / static rendering
 
