@@ -5,9 +5,9 @@ A table column — renders a `<col>`. Drop a `<colgroup>` of `TableColumn`s at t
 **Things to know:**
 
 - `TableColumn` carries no content; it only sizes the column it maps to. The order of `TableColumn`s in the `<colgroup>` matches the order of the columns.
-- `width="fit"` shrinks a column to its content. An exact numeric `width` (e.g. `width="12x"` = 192px) acts as a floor the column can grow past in the default auto table-layout, which makes it ideal for a description column that wants a sensible minimum but should fill the remaining space.
-- Add `grow` for an explicit "floor, then expand" — it turns the `width` into a `min-inline-size` and adds `flex-grow: 1`. See [`getWidthClass()`](/ui/getWidthClass).
-- All sizing comes from the shared `width` variant, so `TableColumn` reads exactly like every other component's `width` prop.
+- `width="fit"` shrinks a column to its content. An exact numeric `width` (e.g. `width="12x"` = 192px) sets the column's preferred width.
+- A `<col>` width is only a **preference** — browsers ignore `min-width` on columns and will shrink one below its width when the table is squeezed (e.g. on a narrow phone). For a *hard* minimum that survives a narrow viewport and lets the table scroll instead of collapsing, put [`grow`](/ui/getWidthClass) on the column's **cells** — `<td className={getWidthClass({ width: "12x", grow: true })}>` — not on `TableColumn`.
+- All sizing comes from the shared `width` variant, so `TableColumn` reads exactly like every other component's `width` prop (minus `grow`, which is a no-op on a `<col>`).
 
 ## Usage
 
@@ -15,19 +15,23 @@ A table column — renders a `<col>`. Drop a `<colgroup>` of `TableColumn`s at t
 
 ```tsx
 import { Table, TableColumn } from "shelving/ui";
+import { getWidthClass } from "shelving/ui";
+
+// `min-width` is ignored on a `<col>`, so the description's floor goes on its cells.
+const description = getWidthClass({ width: "12x", grow: true });
 
 <Table>
   <colgroup>
     <TableColumn width="fit" />
     <TableColumn width="fit" />
     <TableColumn width="fit" />
-    <TableColumn width="12x" grow />
+    <TableColumn width="12x" />
   </colgroup>
   <thead>
     <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
   </thead>
   <tbody>
-    <tr><td>name</td><td>string</td><td>-</td><td>The name of the thing.</td></tr>
+    <tr><td>name</td><td>string</td><td>-</td><td className={description}>The name of the thing.</td></tr>
   </tbody>
 </Table>
 ```

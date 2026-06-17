@@ -15,6 +15,7 @@ import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import { Scroll } from "../style/Scroll.js";
+import { getWidthClass } from "../style/Width.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
@@ -24,6 +25,9 @@ import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKin
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
+
+// Hard minimum width for the description cells. `min-width` is ignored on a `<col>`, so the floor lives on the cells — the table then scrolls (inside `<Scroll horizontal>`) instead of collapsing the column on a narrow viewport.
+const DESCRIPTION_CLASS = getWidthClass({ width: "12x", grow: true });
 
 /** Resolve a table row's description — the manually-written one, falling back to the referenced type's own `description` from the tree map (exact-match only). */
 function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string, description?: string | undefined): string {
@@ -132,7 +136,7 @@ export function DocumentationPage({
 											<TableColumn width="fit" />
 											<TableColumn width="fit" />
 											<TableColumn width="fit" />
-											<TableColumn width="12x" grow />
+											<TableColumn width="12x" />
 										</colgroup>
 										<thead>
 											<tr>
@@ -155,7 +159,7 @@ export function DocumentationPage({
 																<TreeLink name={type} />
 															</td>
 															<td>{def ? <Code>{def}</Code> : "-"}</td>
-															<td>{description || resolved?.description || ""}</td>
+															<td className={DESCRIPTION_CLASS}>{description || resolved?.description || ""}</td>
 														</tr>
 														{resolved?.properties?.map(prop => (
 															<tr key={`${name}.${prop.name}`}>
@@ -166,7 +170,9 @@ export function DocumentationPage({
 																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
 																</td>
 																<td>{prop.default ? <Code>{prop.default}</Code> : "-"}</td>
-																<td>{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}</td>
+																<td className={DESCRIPTION_CLASS}>
+																	{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}
+																</td>
 															</tr>
 														))}
 													</Fragment>
@@ -183,7 +189,7 @@ export function DocumentationPage({
 									<Table>
 										<colgroup>
 											<TableColumn width="fit" />
-											<TableColumn width="12x" grow />
+											<TableColumn width="12x" />
 										</colgroup>
 										<thead>
 											<tr>
@@ -196,7 +202,7 @@ export function DocumentationPage({
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{_getRowDescription(map, type, description)}</td>
+													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -210,7 +216,7 @@ export function DocumentationPage({
 									<Table>
 										<colgroup>
 											<TableColumn width="fit" />
-											<TableColumn width="12x" grow />
+											<TableColumn width="12x" />
 										</colgroup>
 										<thead>
 											<tr>
@@ -223,7 +229,7 @@ export function DocumentationPage({
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{_getRowDescription(map, type, description)}</td>
+													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -237,7 +243,7 @@ export function DocumentationPage({
 									<Table>
 										<colgroup>
 											<TableColumn width="fit" />
-											<TableColumn width="12x" grow />
+											<TableColumn width="12x" />
 										</colgroup>
 										<thead>
 											<tr>
@@ -250,7 +256,7 @@ export function DocumentationPage({
 													<td>
 														<TreeLink name={type} />
 													</td>
-													<td>{_getRowDescription(map, type)}</td>
+													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type)}</td>
 												</tr>
 											))}
 										</tbody>

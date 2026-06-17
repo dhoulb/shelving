@@ -11,7 +11,7 @@ The `width` variant prop sets a component's inline-size — `<Card width="narrow
 - `fit` — shrink to the content's intrinsic width (`fit-content`).
 - `1x` … `128x` — exact widths that are multiples of [`--space-normal`](/ui/getSpaceClass) (16px), following the spacing scale: `1x`–`8x` in single steps, then `10x`/`12x`/`14x`/`16x`, `20x`/`24x`/`28x`/`32x`, then `40x` … `128x` in eights. So `12x` is 192px.
 
-**The `grow` flag** turns the chosen `width` into a floor rather than an exact size: it applies the value as `min-inline-size` and adds `flex-grow: 1`, so the element expands to fill the available space when it's a flex item or table column. `<TableColumn width="12x" grow />` gives a column a 192px minimum that absorbs the remaining table width.
+**The `grow` flag** turns the chosen `width` into a floor rather than an exact size: it applies the value as `min-inline-size` and adds `flex-grow: 1`, so the element expands to fill the available space when it's a flex item. Apply it to a **table cell** (`<td className={getWidthClass({ width: "12x", grow: true })}>`) to give that column a 192px minimum that absorbs the remaining width and keeps the table from collapsing the column on a narrow viewport — note that `min-width` is ignored on a `<col>`, so `grow` belongs on the cells, not on [`TableColumn`](/ui/TableColumn).
 
 ## Theme variables
 

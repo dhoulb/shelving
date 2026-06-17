@@ -9,7 +9,7 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 - Wrap a wide table in a horizontally scrollable container if it may exceed the content width on small screens.
 - Like the other block components it collapses its outer block margin when it is the first or last child.
 - Spans the full width of its container by default; set the `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) to constrain it.
-- Size individual columns with a `<colgroup>` of [`<TableColumn>`](/ui/TableColumn) at the top of the table — `<TableColumn width="fit" />` for content-width columns and an exact `<TableColumn width="12x" grow />` for a description column that wants a sensible minimum.
+- Size individual columns with a `<colgroup>` of [`<TableColumn>`](/ui/TableColumn) at the top of the table — `<TableColumn width="fit" />` for content-width columns and `<TableColumn width="12x" />` for a wider description column. A `<col>` width is only a preference, so for a column that must keep a minimum on narrow screens put [`grow`](/ui/getWidthClass) on its cells instead.
 - Inside [`Prose`](/ui/Prose) a raw `<table>` picks up the same styling, so Markdown-rendered tables match component ones.
 
 ## Usage
