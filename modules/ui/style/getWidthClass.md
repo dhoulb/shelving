@@ -1,8 +1,17 @@
 # getWidthClass
 
-The `width` variant prop (`"narrow"`, `"normal"`, `"wide"`, `"full"`, `"fit"`) constrains a block-level component's max-inline-size — `<Card width="narrow">`, `<Block width="wide">`. It's an **override** for one-off layout; for an app-wide change, retune the width variables below in a theme file. `Section` already defaults to the `--width-normal` constraint, so most pages never set `width` at all.
+The `width` variant prop sets a component's inline-size — `<Card width="narrow">`, `<Block width="wide">`, `<TableCell width="12x">`. It's an **override** for one-off layout; for an app-wide change, retune the width variables below in a theme file. `Section` already defaults to the `--width-normal` width, so most pages never set `width` at all.
 
-`getWidthClass({ width })` maps the prop to a width class. The `narrow`, `normal`, and `wide` constraints read the variables below; `full` takes the full available width and `fit` shrinks to the content.
+`getWidthClass({ width, grow })` maps the props to a width class. Every value is capped at 100% of the container.
+
+**Values:**
+
+- `narrow` / `normal` / `wide` — fixed widths from the variables below.
+- `full` — the full available width.
+- `fit` — shrink to the content's intrinsic width (`fit-content`).
+- `1x` … `128x` — exact widths that are multiples of [`--space-normal`](/ui/getSpaceClass) (16px), following the spacing scale: `1x`–`8x` in single steps, then `10x`/`12x`/`14x`/`16x`, `20x`/`24x`/`28x`/`32x`, then `40x` … `128x` in eights. So `12x` is 192px.
+
+**The `grow` flag** turns the chosen `width` into a floor rather than an exact size: it applies the value as `min-inline-size` and adds `flex-grow: 1`, so the element expands to fill the available space when it's a flex item. Set it on a [`TableHeader`](/ui/TableHeader) or [`TableCell`](/ui/TableCell) (`width="12x" grow`) to give that column a 192px minimum that absorbs the remaining width and keeps the table from collapsing the column on a narrow viewport — cells honour `min-width`, so the table scrolls instead.
 
 ## Theme variables
 
