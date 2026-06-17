@@ -161,11 +161,19 @@ describe("searchTree()", () => {
 		expect(names.indexOf("Store")).toBeLessThan(names.indexOf("Doohickey"));
 	});
 
-	test("quoted phrases match literally and stack with bare words", () => {
-		const names = searchTree(SEARCH_TREE, '"a store widget" gadget').map(el => el.props.name);
-		// "Widget" matches the quoted phrase via its title; "Gadget" matches the bare word via its description.
+	test("requires every token to match (AND, not OR)", () => {
+		// "StoreGetter" matches both "store" and "getter"; "Store" matches only "store" so it's dropped.
+		const names = searchTree(SEARCH_TREE, "store getter").map(el => el.props.name);
+		expect(names).toContain("StoreGetter");
+		expect(names).not.toContain("Store");
+	});
+
+	test("quoted phrases match literally as a single token", () => {
+		// The quoted phrase matches Widget's title and the bare word "widget" matches its name — both tokens match, so it's returned.
+		const names = searchTree(SEARCH_TREE, '"a store widget" widget').map(el => el.props.name);
 		expect(names).toContain("Widget");
-		expect(names).toContain("Gadget");
+		// "Gadget" matches neither the phrase nor "widget", so it's excluded under AND semantics.
+		expect(names).not.toContain("Gadget");
 	});
 
 	test("applies the `filter` query over props before ranking", () => {
