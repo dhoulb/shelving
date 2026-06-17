@@ -307,6 +307,21 @@ export class MemoryStore extends AbstractStore implements Serializable, Disposab
 		]);
 	});
 
+	test("keeps generic arguments in heritage text", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A typed store. */
+export class StringStore extends AbstractStore<string> implements Serializable<string> {}
+/** Slug options. */
+export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "value"> {}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{ props: { name: "StringStore", extends: "AbstractStore<string>", implements: ["Serializable<string>"] } },
+			{ props: { name: "SlugSchemaOptions", extends: 'Omit<StringSchemaOptions, "value">' } },
+		]);
+	});
+
 	test("stamps the owning class onto members and skips `override` members", async () => {
 		const element = await extractor.extract(
 			file(`
@@ -766,7 +781,7 @@ export type Pair = { a: string; b: number };
 `),
 		);
 		expect(element.props.children).toMatchObject([
-			{ type: "tree-documentation", props: { kind: "type", name: "Pair", signatures: ["{ a: string; b: number }"] } },
+			{ type: "tree-documentation", props: { kind: "type", name: "Pair", signatures: ["{\n\ta: string;\n\tb: number;\n}"] } },
 		]);
 	});
 
@@ -783,8 +798,70 @@ export interface ThingOptions {
 		expect(element.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
-				props: { kind: "interface", name: "ThingOptions", signatures: ["{ verbose?: boolean; retries: number }"] },
+				props: { kind: "interface", name: "ThingOptions", signatures: ["{\n\tverbose?: boolean;\n\tretries: number;\n}"] },
 			},
+		]);
+	});
+
+	test("collects referenced type names from a type alias body into `types`", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A nullable other. */
+export type Wrapped<T> = string | OtherType | ReadonlyArray<DeepType> | T;
+`),
+		);
+		const props = (element.props.children as { props: { types?: string[] } }[])[0]?.props;
+		// Primitives (\`string\`) and the alias's own generic param (\`T\`) are excluded; nested references (\`DeepType\`) are caught; order preserved and de-duplicated.
+		expect(props?.types).toEqual(["OtherType", "ReadonlyArray", "DeepType"]);
+	});
+
+	test("leaves `types` undefined for a non-alias and an alias with no references", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Just primitives. */
+export type Plain = string | number | null;
+/** A class. */
+export class Thing {}
+`),
+		);
+		const children = element.props.children as { props: { name: string; types?: string[] } }[];
+		expect(children.find(c => c.props.name === "Plain")?.props.types).toBeUndefined();
+		expect(children.find(c => c.props.name === "Thing")?.props.types).toBeUndefined();
+	});
+
+	test("extracts a structured `properties` list from an interface, with `@default` and descriptions", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Options for the thing. */
+export interface ThingOptions {
+	/**
+	 * The minimum length.
+	 * @default 6
+	 */
+	min?: number;
+	/** Whether to be loud. */
+	verbose: boolean;
+}
+`),
+		);
+		const props = (element.props.children as { props: { properties?: unknown[] } }[])[0]?.props;
+		expect(props?.properties).toEqual([
+			{ name: "min", type: "number", description: "The minimum length.", optional: true, default: "6" },
+			{ name: "verbose", type: "boolean", description: "Whether to be loud.", optional: false, default: undefined },
+		]);
+	});
+
+	test("extracts `properties` from an object-literal type alias too", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A pair. */
+export type Pair = { a: string; b?: number };
+`),
+		);
+		const props = (element.props.children as { props: { properties?: unknown[] } }[])[0]?.props;
+		expect(props?.properties).toEqual([
+			{ name: "a", type: "string", description: undefined, optional: false, default: undefined },
+			{ name: "b", type: "number", description: undefined, optional: true, default: undefined },
 		]);
 	});
 

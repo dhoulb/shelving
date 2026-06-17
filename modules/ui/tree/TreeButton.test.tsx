@@ -60,4 +60,15 @@ describe("TreeButton", () => {
 		expect(html).toContain("Serializable"); // still reads as text
 		expect(html).not.toContain("Serializable</a>"); // but is not a link
 	});
+
+	test("links a generic reference by its bare type name", () => {
+		// `Store<T>` isn't a key, but stripping the generics resolves `Store`.
+		const html = render(<TreeButton name="Store<T>" />);
+		expect(html).toContain('href="http://x.com/Store"');
+	});
+
+	test("leaves a compound generic reference unresolved", () => {
+		const html = render(<TreeButton name="Store<T> | null" />);
+		expect(html).not.toContain("</a>"); // not `Identifier<…>`-shaped, so no link
+	});
 });
