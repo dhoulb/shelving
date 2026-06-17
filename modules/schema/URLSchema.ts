@@ -3,19 +3,30 @@ import { sanitizeWord } from "../util/string.js";
 import { HTTP_SCHEMES, type URISchemes } from "../util/uri.js";
 import { getURL, type URLString } from "../util/url.js";
 import { NULLABLE } from "./NullableSchema.js";
-import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for `URLSchema`.
  *
- * - `base` — base URL that relative URLs are resolved against.
- * - `schemes` — whitelist of allowed URL schemes (defaults to HTTP/HTTPS).
+ * - The length and single-line constraints are fixed internally, so only the presentation-level string options plus `base` and `schemes` are exposed.
  *
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchemaOptions
  */
-export interface URLSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
+export interface URLSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/** Maximum allowed character length. */
+	readonly max?: number | undefined;
+	/** Regular expression the sanitized string must match. */
+	readonly match?: RegExp | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+	/** Base URL that relative URLs are resolved against. */
 	readonly base?: URL | URLString | undefined;
+	/** Whitelist of allowed URL schemes (defaults to HTTP/HTTPS). */
 	readonly schemes?: URISchemes | undefined;
 }
 

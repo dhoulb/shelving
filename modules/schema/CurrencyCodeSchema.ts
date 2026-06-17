@@ -1,18 +1,27 @@
 import type { ImmutableArray } from "../util/array.js";
 import { CURRENCY_CODES, type CurrencyCode } from "../util/currency.js";
 import { NULLABLE } from "./NullableSchema.js";
-import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for `CurrencyCodeSchema`.
  *
- * - `currencies` — set of allowed ISO 4217 currency codes (defaults to all known codes).
+ * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options plus `currencies` are exposed.
  *
  * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchemaOptions
  */
-export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {
-	currencies?: ImmutableArray<CurrencyCode>;
+export interface CurrencyCodeSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/** Maximum allowed character length. */
+	readonly max?: number | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+	/** Set of allowed ISO 4217 currency codes (defaults to all known codes). */
+	readonly currencies?: ImmutableArray<CurrencyCode> | undefined;
 }
 
 /**
@@ -36,7 +45,7 @@ export class CurrencyCodeSchema extends StringSchema {
 	/**
 	 * Create a new `CurrencyCodeSchema`.
 	 *
-	 * @param options Options for the schema (`currencies`, plus base `StringSchemaOptions` except `min`/`match`/`rows`).
+	 * @param options Options for the schema (`currencies`, plus presentation string options like `value`, `max`, `case`, `input`).
 	 * @example new CurrencyCodeSchema({ currencies: ["GBP", "USD"] })
 	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema
 	 */

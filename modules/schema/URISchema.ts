@@ -2,17 +2,28 @@ import { formatURI } from "../util/format.js";
 import { sanitizeWord } from "../util/string.js";
 import { getURI, HTTP_SCHEMES, type URISchemes, type URIString } from "../util/uri.js";
 import { NULLABLE } from "./NullableSchema.js";
-import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for `URISchema`.
  *
- * - `schemes` — whitelist of allowed URI schemes (defaults to HTTP/HTTPS).
+ * - The length and single-line constraints are fixed internally, so only the presentation-level string options plus `schemes` are exposed.
  *
  * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchemaOptions
  */
-export interface URISchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
+export interface URISchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/** Maximum allowed character length. */
+	readonly max?: number | undefined;
+	/** Regular expression the sanitized string must match. */
+	readonly match?: RegExp | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+	/** Whitelist of allowed URI schemes (defaults to HTTP/HTTPS). */
 	readonly schemes?: URISchemes | undefined;
 }
 

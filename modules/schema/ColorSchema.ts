@@ -1,5 +1,6 @@
 import { NULLABLE } from "./NullableSchema.js";
-import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
 const NOT_HEX_REGEXP = /[^0-9A-F]/g;
@@ -7,9 +8,20 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
 /**
  * Options for a `ColorSchema`.
  *
+ * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
+ *
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchemaOptions
  */
-export interface ColorSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {}
+export interface ColorSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/** Maximum allowed character length. */
+	readonly max?: number | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+}
 
 /**
  * Schema that defines a valid color hex string, e.g. `#00CCFF`
@@ -24,7 +36,7 @@ export class ColorSchema extends StringSchema {
 	/**
 	 * Create a new `ColorSchema`.
 	 *
-	 * @param options Options for the schema (inherits `StringSchema` options except `min`, `match`, and `rows`, which are fixed for hex colors).
+	 * @param options Options for the schema (presentation string options like `value`, `max`, `case`, `input`; length and format are fixed for hex colors).
 	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"color"`).
 	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Color"`).
 	 * @param options.value Default hex value used when the input is `undefined` (defaults to `"#000000"`).

@@ -36,7 +36,7 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
  *
  * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchemaOptions
  */
-export interface ChoiceSchemaOptions<O extends string, I = never> extends Omit<SchemaOptions, "value"> {
+export interface ChoiceSchemaOptions<O extends string, I = never> extends SchemaOptions {
 	/** Specify correct options using a dictionary of entries. */
 	readonly options: PossibleChoiceOptions<O>;
 	/** Default option for the value. */
