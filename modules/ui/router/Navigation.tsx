@@ -16,7 +16,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 
 /**
  * Top-level navigation provider.
- * - Owns a single `NavigationStore` initialised from the surrounding `<Meta>` url/base, falling back to `window.location` in the browser when no url is set.
+ * - Owns a single `NavigationStore` initialised from the surrounding `<Meta>` url/base.
  * - Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls.
  * - Listens for `popstate` to sync the store with browser back/forward.
  * - Publishes the live URL via `<Meta url={…} params={…}>` so descendant `<Router>`s re-render on navigation.
@@ -34,10 +34,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  */
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {
 	const { url, root, ...merged } = requireMeta(meta);
-	// Fall back to the browser's current location when no `url` is supplied by the surrounding `<Meta>`.
-	// Guarded with `typeof window` so server rendering (where there is no `window`) keeps the `NavigationStore` default of `"/"`.
-	const initial = url ?? (typeof window === "undefined" ? undefined : window.location.href);
-	const nav = useInstance(NavigationStore, initial, root);
+	const nav = useInstance(NavigationStore, url, root);
 	useStore(nav);
 
 	useEffect(() => {

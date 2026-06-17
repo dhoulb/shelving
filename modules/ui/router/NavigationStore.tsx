@@ -15,10 +15,10 @@ export class NavigationStore extends URLStore {
 	/**
 	 * Create a new `NavigationStore`.
 	 *
-	 * @param url The initial URL (defaults to `"/"`).
+	 * @param url The initial URL (defaults to the browser's `window.location.href`, or `"/"` when there is no `window`, e.g. during server rendering).
 	 * @param base Optional base URL that relative navigations resolve against.
 	 */
-	constructor(url: PossibleURL = "/", base?: PossibleURL) {
+	constructor(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL) {
 		super(url, base);
 	}
 
