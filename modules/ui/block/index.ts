@@ -14,6 +14,7 @@ export * from "./Preformatted.js";
 export * from "./Prose.js";
 export * from "./Subheading.js";
 export * from "./Table.js";
-export * from "./TableColumn.js";
+export * from "./TableCell.js";
+export * from "./TableHeader.js";
 export * from "./Title.js";
 export * from "./Video.js";

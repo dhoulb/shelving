@@ -8,14 +8,14 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Table } from "../block/Table.js";
-import { TableColumn } from "../block/TableColumn.js";
+import { TableCell } from "../block/TableCell.js";
+import { TableHeader } from "../block/TableHeader.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import { Scroll } from "../style/Scroll.js";
-import { getWidthClass } from "../style/Width.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
@@ -25,9 +25,6 @@ import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKin
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 
 const DEFAULT_TYPE = "unknown";
-
-// Hard minimum width for the description cells. `min-width` is ignored on a `<col>`, so the floor lives on the cells — the table then scrolls (inside `<Scroll horizontal>`) instead of collapsing the column on a narrow viewport.
-const DESCRIPTION_CLASS = getWidthClass({ width: "12x", grow: true });
 
 /** Resolve a table row's description — the manually-written one, falling back to the referenced type's own `description` from the tree map (exact-match only). */
 function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string, description?: string | undefined): string {
@@ -132,17 +129,11 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
-										<colgroup>
-											<TableColumn width="fit" />
-											<TableColumn width="fit" />
-											<TableColumn width="fit" />
-											<TableColumn width="12x" />
-										</colgroup>
 										<thead>
 											<tr>
-												<th>Parameter</th>
-												<th>Type</th>
-												<th>Default</th>
+												<TableHeader width="fit">Parameter</TableHeader>
+												<TableHeader width="fit">Type</TableHeader>
+												<TableHeader width="fit">Default</TableHeader>
 											</tr>
 										</thead>
 										<tbody>
@@ -152,27 +143,29 @@ export function DocumentationPage({
 												return (
 													<Fragment key={`${name}-${type}`}>
 														<tr>
-															<td>
+															<TableCell>
 																<Code>{name}</Code>
-															</td>
-															<td>
+															</TableCell>
+															<TableCell>
 																<TreeLink name={type} />
-															</td>
-															<td>{def ? <Code>{def}</Code> : "-"}</td>
-															<td className={DESCRIPTION_CLASS}>{description || resolved?.description || ""}</td>
+															</TableCell>
+															<TableCell>{def ? <Code>{def}</Code> : "-"}</TableCell>
+															<TableCell width="12x" grow>
+																{description || resolved?.description || ""}
+															</TableCell>
 														</tr>
 														{resolved?.properties?.map(prop => (
 															<tr key={`${name}.${prop.name}`}>
-																<td>
+																<TableCell>
 																	<Code>{`.${prop.name}`}</Code>
-																</td>
-																<td>
+																</TableCell>
+																<TableCell>
 																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
-																</td>
-																<td>{prop.default ? <Code>{prop.default}</Code> : "-"}</td>
-																<td className={DESCRIPTION_CLASS}>
+																</TableCell>
+																<TableCell>{prop.default ? <Code>{prop.default}</Code> : "-"}</TableCell>
+																<TableCell width="12x" grow>
 																	{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}
-																</td>
+																</TableCell>
 															</tr>
 														))}
 													</Fragment>
@@ -187,22 +180,20 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
-										<colgroup>
-											<TableColumn width="fit" />
-											<TableColumn width="12x" />
-										</colgroup>
 										<thead>
 											<tr>
-												<th>Return</th>
+												<TableHeader width="fit">Return</TableHeader>
 											</tr>
 										</thead>
 										<tbody>
 											{returns.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
-													<td>
+													<TableCell>
 														<TreeLink name={type} />
-													</td>
-													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type, description)}</td>
+													</TableCell>
+													<TableCell width="12x" grow>
+														{_getRowDescription(map, type, description)}
+													</TableCell>
 												</tr>
 											))}
 										</tbody>
@@ -214,22 +205,20 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
-										<colgroup>
-											<TableColumn width="fit" />
-											<TableColumn width="12x" />
-										</colgroup>
 										<thead>
 											<tr>
-												<th>Throws</th>
+												<TableHeader width="fit">Throws</TableHeader>
 											</tr>
 										</thead>
 										<tbody>
 											{throws.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
-													<td>
+													<TableCell>
 														<TreeLink name={type} />
-													</td>
-													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type, description)}</td>
+													</TableCell>
+													<TableCell width="12x" grow>
+														{_getRowDescription(map, type, description)}
+													</TableCell>
 												</tr>
 											))}
 										</tbody>
@@ -241,22 +230,20 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
-										<colgroup>
-											<TableColumn width="fit" />
-											<TableColumn width="12x" />
-										</colgroup>
 										<thead>
 											<tr>
-												<th>Type</th>
+												<TableHeader width="fit">Type</TableHeader>
 											</tr>
 										</thead>
 										<tbody>
 											{types.map(type => (
 												<tr key={type}>
-													<td>
+													<TableCell>
 														<TreeLink name={type} />
-													</td>
-													<td className={DESCRIPTION_CLASS}>{_getRowDescription(map, type)}</td>
+													</TableCell>
+													<TableCell width="12x" grow>
+														{_getRowDescription(map, type)}
+													</TableCell>
 												</tr>
 											))}
 										</tbody>
