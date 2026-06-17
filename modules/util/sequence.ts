@@ -18,7 +18,7 @@ export interface IteratorAbortResult<R> {
 
 /**
  * Result of stepping an iterator that may either yield, finish itself, or be aborted externally.
- * - Union of a normal `IteratorResult<T, R>` and an `IteratorAbortResult<R>`.
+ * - Union of a normal `IteratorResult<T, R>` and an [`IteratorAbortResult<R>`](/util/sequence/IteratorAbortResult).
  *
  * @see https://dhoulb.github.io/shelving/util/sequence/IteratorAbortableResult
  */

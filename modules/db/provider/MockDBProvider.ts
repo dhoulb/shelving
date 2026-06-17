@@ -6,7 +6,7 @@ import type { Collection } from "../collection/Collection.js";
 import { MemoryDBProvider } from "./MemoryDBProvider.js";
 
 /**
- * Structured log entry recording one operation performed through a `MockDBProvider`.
+ * Structured log entry recording one operation performed through a [`MockDBProvider`](/db/MockDBProvider).
  *
  * - `type` is the operation name; `collection` is the collection name; `id`, `query`, `data`, `updates`, and `result` carry whichever fields apply to that operation.
  *
@@ -35,7 +35,7 @@ export type MockDBCall = {
 /**
  * In-memory database provider that records every operation to its `calls` log, for testing.
  *
- * - Extends `MemoryDBProvider`, so it stores data normally, then appends a `MockDBCall` entry (including the result) for each call.
+ * - Extends [`MemoryDBProvider`](/db/MemoryDBProvider), so it stores data normally, then appends a [`MockDBCall`](/db/MockDBCall) entry (including the result) for each call.
  * - Assert against `calls` in tests to check which operations ran and with what arguments.
  *
  * @example

@@ -21,6 +21,6 @@ In practice you wrap it — e.g. `new ValidationAPIProvider(new ClientAPIProvide
 
 ## See also
 
-- [APIProvider](/api/provider/APIProvider) — the abstract base.
-- [JSONAPIProvider](/api/provider/JSONAPIProvider) / [XMLAPIProvider](/api/provider/XMLAPIProvider) — client variants for specific content types.
+- [`APIProvider`](/api/APIProvider) — the abstract base.
+- [`JSONAPIProvider`](/api/JSONAPIProvider) / [`XMLAPIProvider`](/api/XMLAPIProvider) — client variants for specific content types.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

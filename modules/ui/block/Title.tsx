@@ -9,7 +9,7 @@ import TITLE_CSS from "./Title.module.css";
 const TITLE_CLASS = getModuleClass(TITLE_CSS, "title");
 
 /**
- * Props for `Title` — identical to `HeadingProps`.
+ * Props for `Title` — identical to [`HeadingProps`](/ui/HeadingProps).
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Title/TitleProps
  */

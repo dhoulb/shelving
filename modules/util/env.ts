@@ -14,7 +14,7 @@ export function getEnv(name: string): string | undefined {
 }
 
 /**
- * Get a `process.env` variable safely in all environments, or throw `RequiredError` if it doesn't exist or this environment does not support `process.env` (i.e. web environments).
+ * Get a `process.env` variable safely in all environments, or throw [`RequiredError`](/error/RequiredError) if it doesn't exist or this environment does not support `process.env` (i.e. web environments).
  *
  * @param name Name of the environment variable to read.
  * @param caller Function to attribute a thrown error to (defaults to `requireEnv`).
@@ -48,7 +48,7 @@ const _TRUES = [`1`, `on`, `yes`, `true`];
 const _FALSES = [`0`, `off`, `no`, `false`];
 
 /**
- * Get a `process.env` variable and resolve it to `true` or `false`, or throw `RequiredError` if it isn't a true/false value.
+ * Get a `process.env` variable and resolve it to `true` or `false`, or throw [`RequiredError`](/error/RequiredError) if it isn't a true/false value.
  *
  * @param name Name of the environment variable to read.
  * @param caller Function to attribute a thrown error to (defaults to `requireEnvBoolean`).

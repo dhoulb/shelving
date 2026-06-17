@@ -1,6 +1,6 @@
 # CacheDBProvider
 
-A wrapping provider that keeps an in-memory mirror in sync with a remote source. `CacheDBProvider` holds a `MemoryDBProvider` and populates it as data is read, so subsequent reads are synchronous — the basis of synchronous first renders in the React integration.
+A wrapping provider that keeps an in-memory mirror in sync with a remote source. `CacheDBProvider` holds a [`MemoryDBProvider`](/db/MemoryDBProvider) and populates it as data is read, so subsequent reads are synchronous — the basis of synchronous first renders in the React integration.
 
 The constructor takes the `source` provider and an optional `MemoryDBProvider` to use as the mirror (one is created by default).
 
@@ -21,6 +21,6 @@ await provider.getItem(POSTS, "abc"); // served synchronously from the mirror
 
 ## See also
 
-- [MemoryDBProvider](/db/provider/MemoryDBProvider) — the mirror layer.
+- [`MemoryDBProvider`](/db/MemoryDBProvider) — the mirror layer.
 - [db/cache](/db/cache) — `DBCache` reuses this provider's mirror.
 - [db/provider](/db/provider) — overview of the provider hierarchy.

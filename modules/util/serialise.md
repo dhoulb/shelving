@@ -1,6 +1,6 @@
 # Serialise
 
-A single `serialise()` function that converts any JavaScript value to a stable, deterministic string. Designed for fingerprinting and cache-key generation, not for data transport.
+A single [`serialise()`](/util/serialise/serialise) function that converts any JavaScript value to a stable, deterministic string. Designed for fingerprinting and cache-key generation, not for data transport.
 
 **Things to know:**
 

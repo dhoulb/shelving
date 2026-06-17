@@ -1,13 +1,13 @@
 # Button
 
-A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared `Clickable` primitive picks the element, so a button is always the right semantics for what it does.
+A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared [`Clickable`](/ui/Clickable) primitive picks the element, so a button is always the right semantics for what it does.
 
 **Things to know:**
 
 - Content-width by default: it sizes to its label and never grows. Pass `full` to fill the available width (it then shrinks to share a row, down to the content floor).
 - `strong` marks the default action in a form — a filled background instead of an outline. `plain` and `outline` drop the background until hover/focus.
 - `color=` / `status=` move the tint anchor, so the background, border and label re-derive from the same ladder; `small` tightens the padding.
-- `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
+- [`getButtonClass(variants)`](/ui/getButtonClass) returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 
 ## Usage
 

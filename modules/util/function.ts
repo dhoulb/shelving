@@ -55,7 +55,7 @@ export type ErrorCallback = (reason: unknown) => void;
  * Is a value a function?
  *
  * @param value The value to test.
- * @returns `true` if `value` is a function, narrowing its type to `AnyFunction`.
+ * @returns `true` if `value` is a function, narrowing its type to [`AnyFunction`](/util/function/AnyFunction).
  * @example isFunction(() => {}) // true
  * @see https://dhoulb.github.io/shelving/util/function/isFunction
  */

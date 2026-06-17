@@ -1,11 +1,11 @@
 # MenuItem
 
-A single `<li>` link entry inside a [`Menu`](/ui/Menu). It reads the current page URL from the `Meta` context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
+A single `<li>` link entry inside a [`Menu`](/ui/Menu). It reads the current page URL from the [`Meta`](/ui/Meta) context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
 
 **Things to know:**
 
 - The first child is the link label (rendered inside the `<a>`). Any additional children form the submenu and are rendered only when the item is proud (the current URL starts with the item's `href`). Wrap that submenu in a nested [`Menu`](/ui/Menu) to get the `.menu .menu` indentation.
-- It forwards all `ClickableProps` — `href`, `onClick`, `disabled`, and so on — to the underlying [`Clickable`](/ui/Clickable).
+- It forwards all [`ClickableProps`](/ui/ClickableProps) — `href`, `onClick`, `disabled`, and so on — to the underlying [`Clickable`](/ui/Clickable).
 - `active` and `proud` are computed against the URL from [`Router`](/ui/Router) / [`Navigation`](/ui/Navigation) context.
 
 ## Usage

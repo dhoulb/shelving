@@ -19,7 +19,7 @@ import type { KVNamespace } from "./types.js";
  * - ID generation: `addItem()` generates a UUID v4 identifier automatically.
  *
  * ### Not supported
- * - **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+ * - **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw [`UnimplementedError`](/error/UnimplementedError).
  *   KV has no change feed or push notification mechanism.
  * - **Updates:** `updateItem()` and `updateQuery()` throw `UnimplementedError`.
  * - **Collection queries:** `getQuery()`, `setQuery()`, `deleteQuery()`, and `countQuery()` are not supported.

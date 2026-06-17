@@ -2,7 +2,7 @@
 
 A wrapping provider for development. `DebugAPIProvider` writes verbose console output for every call — including full request and response bodies — so you can see exactly what is going over the wire.
 
-It is the noisy counterpart to [`LoggingAPIProvider`](/api/provider/LoggingAPIProvider): use `DebugAPIProvider` while developing, and `LoggingAPIProvider` (or nothing) in production.
+It is the noisy counterpart to [`LoggingAPIProvider`](/api/LoggingAPIProvider): use `DebugAPIProvider` while developing, and `LoggingAPIProvider` (or nothing) in production.
 
 ## Usage
 
@@ -19,6 +19,6 @@ await provider.call(getUser, { id: "u_123" })
 
 ## See also
 
-- [LoggingAPIProvider](/api/provider/LoggingAPIProvider) — concise, production-safe logging.
-- [ThroughAPIProvider](/api/provider/ThroughAPIProvider) — the pass-through base.
+- [`LoggingAPIProvider`](/api/LoggingAPIProvider) — concise, production-safe logging.
+- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

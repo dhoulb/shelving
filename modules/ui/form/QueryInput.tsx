@@ -44,7 +44,7 @@ export interface QueryInputProps<I, O> extends ValueInputProps<O> {
 /**
  * Combo box that queries a list of items and lets the user pick one from a popover.
  * - Shows an input based on a `schema` of type `I`; its values are piped to the `onQuery()` callback.
- * - Shows a `<Popover>` with a radio list of returned items to pick a final value of type `O`.
+ * - Shows a [`<Popover>`](/ui/Popover) with a radio list of returned items to pick a final value of type `O`.
  * - Errors, loading, and empty states are handled automatically.
  *
  * @returns A combo box element wrapping the input and results popover.

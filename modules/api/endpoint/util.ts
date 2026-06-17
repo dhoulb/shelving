@@ -24,7 +24,7 @@ export type EndpointCallback<P, R, C = void> = (payload: P, request: Request, co
 
 /**
  * A typed endpoint definition paired with its implementation callback.
- * - Created with `Endpoint.handler()`; matched and invoked by `handleEndpoints()`.
+ * - Created with [`.handler()`](/api/Endpoint/handler); matched and invoked by [`handleEndpoints()`](/api/handleEndpoints).
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandler
  */
@@ -34,7 +34,7 @@ export interface EndpointHandler<P, R, C = void> {
 }
 
 /**
- * An `EndpointHandler` with any payload and result type, for use where the specific types don't matter.
+ * An [`EndpointHandler`](/api/EndpointHandler) with any payload and result type, for use where the specific types don't matter.
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/util/AnyEndpointHandler
  */
@@ -42,7 +42,7 @@ export interface EndpointHandler<P, R, C = void> {
 export type AnyEndpointHandler<C = any> = EndpointHandler<any, any, C>;
 
 /**
- * A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`.
+ * A collection of endpoint handlers that can be matched and invoked by [`handleEndpoints()`](/api/handleEndpoints).
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandlers
  */
@@ -55,7 +55,7 @@ export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
  *
  * @param base The base URL for the API, e.g. `https://myapi.com/a/b`
  * - `pathname` of this URL gets trimmed from `request.path` to form the target path when matching against endpoints, e.g. `/a/b/c/d` will produce `/c/d` for matching.
- * @param handlers The iterable of `EndpointHandler` objects to match the request against, in order.
+ * @param handlers The iterable of [`EndpointHandler`](/api/EndpointHandler) objects to match the request against, in order.
  * @param request The input request to handle.
  * @param context The additional context value passed through to the matched handler's callback.
  * @param caller The function to attribute thrown errors to (defaults to this function).

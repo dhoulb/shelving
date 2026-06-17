@@ -1,15 +1,15 @@
 # Equality checks
 
-Strict and structural equality predicates used throughout the library. The three tiers — exact, shallow, and deep — map to the same `left is T` type-guard pattern so they can be used interchangeably anywhere a `Match` function is expected.
+Strict and structural equality predicates used throughout the library. The three tiers — exact, shallow, and deep — map to the same `left is T` type-guard pattern so they can be used interchangeably anywhere a [`Match`](/util/filter/Match) function is expected.
 
 **Things to know:**
 
-- `isEqual` is a typed wrapper around `===` — it serves as a type guard, narrowing `left` to `T` on `true`.
-- `isShallowEqual` compares one level deep: array items and object props are compared with `isEqual` (strict `===`).
-- `isDeepEqual` recurses into nested arrays, objects, and `Map`s.
+- [`isEqual()`](/util/equal/isEqual) is a typed wrapper around `===` — it serves as a type guard, narrowing `left` to `T` on `true`.
+- [`isShallowEqual()`](/util/equal/isShallowEqual) compares one level deep: array items and object props are compared with `isEqual` (strict `===`).
+- [`isDeepEqual()`](/util/equal/isDeepEqual) recurses into nested arrays, objects, and `Map`s.
 - All structural checks short-circuit on referential equality first (`left === right`), so passing the same reference always returns `true` instantly.
-- `isObjectEqual` requires the same set of keys — no extra props allowed. Use `isObjectMatch` for a subset check.
-- `isMapEqual` requires entries in the same **insertion order**.
+- [`isObjectEqual()`](/util/equal/isObjectEqual) requires the same set of keys — no extra props allowed. Use [`isObjectMatch()`](/util/equal/isObjectMatch) for a subset check.
+- [`isMapEqual()`](/util/equal/isMapEqual) requires entries in the same **insertion order**.
 
 ## Usage
 

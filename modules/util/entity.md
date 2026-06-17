@@ -33,4 +33,4 @@ function handleEntity(e: ChallengeEntity) {
 ## See also
 
 - [util](/util) — full util module overview.
-- [error](/error) — `RequiredError` thrown by `requireEntity`.
+- [error](/error) — [`RequiredError`](/error/RequiredError) thrown by [`requireEntity()`](/util/entity/requireEntity).

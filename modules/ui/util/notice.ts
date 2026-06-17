@@ -13,8 +13,8 @@ class NoticeEvent extends CustomEvent<{ message: ReactNode; status: Status | und
 /**
  * Notify the user with a message by dispatching a `notice` event.
  *
- * - This is how e.g. `<Button>` and `<FormNotify>` components send notices to the `<Notices>` list of global notices.
- * - The event bubbles, so any ancestor subscribed with `subscribeNotices()` will receive it.
+ * - This is how e.g. [`<Button>`](/ui/Button) and [`<FormNotify>`](/ui/FormNotify) components send notices to the [`<Notices>`](/ui/Notices) list of global notices.
+ * - The event bubbles, so any ancestor subscribed with [`subscribeNotices()`](/ui/subscribeNotices) will receive it.
  *
  * @param message The message to show, as a React node.
  * @param status Optional status (`"success"`, `"error"`, etc.) controlling how the notice is styled.
@@ -58,7 +58,7 @@ export function notifyError(message: ReactNode, el?: EventTarget) {
 /**
  * Look at a thrown value, extract a viable message from it, and dispatch an error notice.
  *
- * - Uses `getMessage()` to pull a human-readable string from the thrown value.
+ * - Uses [`getMessage()`](/util/error/getMessage) to pull a human-readable string from the thrown value.
  * - Falls back to a generic `"Unknown error"` notice and `console.error()` when no message can be extracted.
  *
  * @param thrown The thrown value to report.
@@ -109,7 +109,7 @@ export type NoticeCallback<A extends Arguments> = (...args: A) => PromiseLike<Re
 /**
  * Run a callback and dispatch a success or error notice to the window based on its return or throw.
  *
- * - A returned truthy value becomes a `"success"` notice; a thrown value becomes an `"error"` notice via `notifyThrown()`.
+ * - A returned truthy value becomes a `"success"` notice; a thrown value becomes an `"error"` notice via [`notifyThrown()`](/ui/notifyThrown).
  * - Resolves asynchronously when the callback returns a promise.
  *
  * @param callback The callback to run, whose return/throw drives the notice.
@@ -125,7 +125,7 @@ export function callNotified<A extends Arguments>(callback: NoticeCallback<A>, .
 /**
  * Await a pending value and dispatch a success or error notice to the window based on its resolution.
  *
- * - A resolved truthy value becomes a `"success"` notice; a rejection becomes an `"error"` notice via `notifyThrown()`.
+ * - A resolved truthy value becomes a `"success"` notice; a rejection becomes an `"error"` notice via [`notifyThrown()`](/ui/notifyThrown).
  *
  * @param pending The promise-like value to await.
  * @returns `true` if the value resolved, `false` if it rejected.
@@ -139,7 +139,7 @@ export function awaitNotified(pending: PromiseLike<ReactNode | undefined | void>
 /**
  * Run a callback and dispatch a success or error notice to a specific element based on its return or throw.
  *
- * - A returned truthy value becomes a `"success"` notice; a thrown value becomes an `"error"` notice via `notifyThrown()`.
+ * - A returned truthy value becomes a `"success"` notice; a thrown value becomes an `"error"` notice via [`notifyThrown()`](/ui/notifyThrown).
  * - Resolves asynchronously when the callback returns a promise.
  *
  * @param el Element to dispatch the notice event on (defaults to `window` when `undefined`).
@@ -168,7 +168,7 @@ export function callNotifiedElement<A extends Arguments>(
 /**
  * Await a pending value and dispatch a success or error notice to a specific element based on its resolution.
  *
- * - A resolved truthy value becomes a `"success"` notice; a rejection becomes an `"error"` notice via `notifyThrown()`.
+ * - A resolved truthy value becomes a `"success"` notice; a rejection becomes an `"error"` notice via [`notifyThrown()`](/ui/notifyThrown).
  *
  * @param el Element to dispatch the notice event on (defaults to `window` when `undefined`).
  * @param pending The promise-like value to await.

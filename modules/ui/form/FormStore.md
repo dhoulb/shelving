@@ -1,6 +1,6 @@
 # FormStore
 
-The reactive brain behind every form. `FormStore` extends `DataStore` from [store](/store) and owns the current (partial) field values, a `messages` dictionary of per-field errors, and the validate/submit helpers that drive a [`Form`](/ui/Form).
+The reactive brain behind every form. `FormStore` extends [`DataStore`](/store/DataStore) from [store](/store) and owns the current (partial) field values, a `messages` dictionary of per-field errors, and the validate/submit helpers that drive a [`Form`](/ui/Form).
 
 **Things to know:**
 
@@ -9,7 +9,7 @@ The reactive brain behind every form. `FormStore` extends `DataStore` from [stor
 - `publish(name, value)` validates a single field, writes the result, and stores any per-field error (it persists the raw value even when invalid, so nothing is lost on the way to submit).
 - `submit(callback)` validates the whole form and, if valid, runs the callback.
 - Assigning a string to `reason` splits it into per-field messages (using the `"fieldName: message"` line format from [schema](/schema)) instead of recording a global failure; any non-string reason is surfaced as-is.
-- You rarely construct `FormStore` directly — [`Form`](/ui/Form) does it for you — but you can grab it from context with `requireForm()` when you need it.
+- You rarely construct `FormStore` directly — [`Form`](/ui/Form) does it for you — but you can grab it from context with [`requireForm()`](/ui/requireForm) when you need it.
 
 ## Usage
 
@@ -42,6 +42,6 @@ function ResetButton() {
 
 - [`Form`](/ui/Form) — the component that creates and provides a `FormStore`.
 - [`Field`](/ui/Field) — renders a single field's value and message from the store.
-- [store](/store) — `DataStore` and the reactive store family `FormStore` builds on.
+- [store](/store) — [`DataStore`](/store/DataStore) and the reactive store family `FormStore` builds on.
 - [schema](/schema) — schema validation and the `"fieldName: message"` split format.
-- [react](/react) — `useStore`, `useInstance`, and other hooks used to subscribe to the store.
+- [react](/react) — [`useStore`](/react/useStore), [`useInstance`](/react/useInstance), and other hooks used to subscribe to the store.

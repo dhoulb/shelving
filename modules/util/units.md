@@ -4,10 +4,10 @@ These helpers model physical units of measure — mass, length, speed, area, vol
 
 **Things to know:**
 
-- Each `UnitList` is an `ImmutableMap` of `Unit` instances. The first entry in the list is always the **base unit** (e.g. `milligram` for `MASS_UNITS`).
-- `Unit.to()` and `Unit.from()` both default to the base unit when no target/source key is given.
+- Each [`UnitList`](/util/units/UnitList) is an [`ImmutableMap`](/util/map/ImmutableMap) of [`Unit`](/util/units/Unit) instances. The first entry in the list is always the **base unit** (e.g. `milligram` for [`MASS_UNITS`](/util/units/MASS_UNITS)).
+- [`Unit.to()`](/util/units/Unit) and [`Unit.from()`](/util/units/Unit) both default to the base unit when no target/source key is given.
 - Conversion can use a multiplier or a function; temperature conversions (°C ↔ °F) use functions.
-- `Unit.format()` delegates to `Intl.NumberFormat` for natively supported units (so `kilogram` is localised automatically) and falls back to a polyfill for custom units like `basis-point`.
+- [`Unit.format()`](/util/units/Unit) delegates to `Intl.NumberFormat` for natively supported units (so `kilogram` is localised automatically) and falls back to a polyfill for custom units like `basis-point`.
 
 ## Usage
 
@@ -54,4 +54,4 @@ VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
 ## See also
 
 - [util](/util) — naming conventions and the full helper overview.
-- [duration](/util/duration) — `getBestDurationUnit` uses `UnitList` from this module.
+- [duration](/util/duration) — [`getBestDurationUnit()`](/util/duration/getBestDurationUnit) uses [`UnitList`](/util/units/UnitList) from this module.

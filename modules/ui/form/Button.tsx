@@ -48,7 +48,7 @@ interface ButtonProps extends ButtonVariants, ClickableProps {}
 /**
  * Render either a `<button>` or an `<a href="">` styled as a button, based on whether an `onClick` or `href` prop is provided.
  * - Content-width by default (never grows); it won't shrink below its label. Pass `full` to fill the available width.
- * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
+ * - Accepts all `ButtonVariants` styling props plus the [`ClickableProps`](/ui/ClickableProps) (`onClick`, `href`, `disabled`, etc.).
  *
  * @kind component
  * @example <Button onClick={save} color="primary">Save</Button>

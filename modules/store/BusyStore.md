@@ -2,7 +2,7 @@
 
 A [`Store`](/store/Store) that tracks whether it is currently awaiting a new value. `BusyStore<T>` exposes a `.busy` boolean store that becomes `true` when the store starts awaiting an async value and `false` once that value (or an error) arrives.
 
-`BusyStore` is the base class for `DataStore`, `ArrayStore`, `DictionaryStore`, and `FetchStore` — anything that may resolve a value asynchronously.
+`BusyStore` is the base class for [`DataStore`](/store/DataStore), [`ArrayStore`](/store/ArrayStore), [`DictionaryStore`](/store/DictionaryStore), and [`FetchStore`](/store/FetchStore) — anything that may resolve a value asynchronously.
 
 ## Usage
 
@@ -22,6 +22,6 @@ for await (const busy of store.busy) {
 
 ## See also
 
-- [Store](/store/Store) — the base class.
-- [FetchStore](/store/FetchStore) — extends `BusyStore` with callback-driven fetching.
+- [`Store`](/store/Store) — the base class.
+- [`FetchStore`](/store/FetchStore) — extends `BusyStore` with callback-driven fetching.
 - [store](/store) — overview of all store classes.

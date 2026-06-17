@@ -20,5 +20,5 @@ Arguments are compared by deep equality, so passing equal-but-not-identical valu
 
 ## See also
 
-- [useLazy](/react/useLazy) — the same memoisation for an arbitrary factory call rather than a constructor.
+- [`useLazy()`](/react/useLazy) — the same memoisation for an arbitrary factory call rather than a constructor.
 - [react](/react) — overview of all React hooks and context helpers.

@@ -1,6 +1,6 @@
 # SQLiteProvider
 
-The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends [`SQLProvider`](/db/provider/SQLProvider) with SQLite-specific behaviour: tables are created in `STRICT` mode, the `data` column is `TEXT NOT NULL CHECK (json_valid(data))`, and generated columns use `json_extract`.
+The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends [`SQLProvider`](/db/SQLProvider) with SQLite-specific behaviour: tables are created in `STRICT` mode, the `data` column is `TEXT NOT NULL CHECK (json_valid(data))`, and generated columns use `json_extract`.
 
 It is abstract — a concrete subclass implements `exec()` against a specific SQLite driver.
 
@@ -21,7 +21,7 @@ Pair it with [`SQLiteMigrator`](/db/migrate) to create and alter tables to match
 
 ## See also
 
-- [SQLProvider](/db/provider/SQLProvider) — the abstract SQL base.
-- [PostgreSQLProvider](/db/provider/PostgreSQLProvider) — the PostgreSQL equivalent.
+- [`SQLProvider`](/db/SQLProvider) — the abstract SQL base.
+- [`PostgreSQLProvider`](/db/PostgreSQLProvider) — the PostgreSQL equivalent.
 - [db/migrate](/db/migrate) — `SQLiteMigrator` for schema migration.
 - [db/provider](/db/provider) — overview of the provider hierarchy.

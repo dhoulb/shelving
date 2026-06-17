@@ -8,7 +8,7 @@ import { APIProvider } from "./APIProvider.js";
 /**
  * Provider wrapper that delegates every API operation to a wrapped `source` provider.
  * - Extend this when you want to intercept only selected API operations, such as injecting auth headers or logging.
- * - Implements `Sourceable` so wrapped providers are discoverable via `getSource()` / `requireSource()`.
+ * - Implements [`Sourceable`](/util/source/Sourceable) so wrapped providers are discoverable via [`getSource()`](/util/source/getSource) / [`requireSource()`](/util/source/requireSource).
  *
  * @example
  * class AuthAPIProvider extends ThroughAPIProvider {
@@ -67,7 +67,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 *
 	 * @param endpoint The endpoint the request targets.
 	 * @param payload The payload to embed into the `Request`.
-	 * @param options The `RequestOptions` to use, merged over the provider's own options.
+	 * @param options The [`RequestOptions`](/util/http/RequestOptions) to use, merged over the provider's own options.
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The created `Request`.
 	 * @example provider.createRequest(getUser, { id: "abc" })

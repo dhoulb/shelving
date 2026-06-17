@@ -5,9 +5,9 @@ General-purpose utilities for working with any `Iterable<T>` — arrays, sets, g
 **Things to know:**
 
 - Most helpers are generators and return `Iterable<T>`, not arrays. Wrap with `Array.from()` when you need an array.
-- `flattenItems` recurses into any depth of nested iterables, not just one level.
-- `getRange` yields in descending order automatically when `end < start`.
-- `reduceItems` returns `undefined` if the iterable is empty and no `initial` value is supplied.
+- [`flattenItems()`](/util/iterate/flattenItems) recurses into any depth of nested iterables, not just one level.
+- [`getRange()`](/util/iterate/getRange) yields in descending order automatically when `end < start`.
+- [`reduceItems()`](/util/iterate/reduceItems) returns `undefined` if the iterable is empty and no `initial` value is supplied.
 
 ## Usage
 
@@ -62,4 +62,4 @@ reduceItems([1, 2, 3, 4], (acc, n) => acc + n, 0); // 10
 
 ## See also
 
-- [util](/util) — array-specific helpers such as `withArrayItem`, `omitArrayItems`, and `getUniqueArray`.
+- [util](/util) — array-specific helpers such as [`withArrayItem()`](/util/array/withArrayItem), [`omitArrayItems()`](/util/array/omitArrayItems), and [`getUniqueArray()`](/util/array/getUniqueArray).

@@ -5,7 +5,7 @@ import { requireForm } from "./FormContext.js";
 
 /**
  * Publish the current form's "main" (unnamed) message as a global success notice whenever it changes.
- * - Renders nothing; mount it inside a `Form` to surface the message globally.
+ * - Renders nothing; mount it inside a [`Form`](/ui/Form) to surface the message globally.
  *
  * @returns Nothing — this component only triggers a side effect.
  * @example <FormNotify />

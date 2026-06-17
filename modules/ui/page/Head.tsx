@@ -10,7 +10,7 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 /**
  * Emit the current page's head metadata and sync browser history to its URL.
  * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
- * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
+ * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the [`<HTML>`](/ui/HTML) shell component).
  * - Updates `window.history` to match the page URL.
  *
  * @kind component

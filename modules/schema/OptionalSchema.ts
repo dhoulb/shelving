@@ -15,7 +15,7 @@ export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undef
  * Schema that wraps a source schema and additionally allows `undefined`.
  *
  * - `undefined` input validates to `undefined` instead of being passed to the source schema.
- * - When used with `validateData()` this means the prop can be silently skipped.
+ * - When used with [`validateData()`](/util/validate/validateData) this means the prop can be silently skipped.
  * - Any other value is delegated to the source schema for validation.
  *
  * @example

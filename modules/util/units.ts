@@ -25,7 +25,7 @@ interface UnitProps<T extends string> extends UnitFormatOptions {
 }
 
 /**
- * Represent a single unit of measure within a `UnitList`, e.g. `kilometer`.
+ * Represent a single unit of measure within a [`UnitList`](/util/units/UnitList), e.g. `kilometer`.
  *
  * - Knows how to convert amounts to/from other units in its list and to format them for display.
  *
@@ -77,8 +77,8 @@ export class Unit<K extends string> {
 	 * @param amount The amount in this unit.
 	 * @param targetKey Key of the unit to convert to (defaults to the list's base unit).
 	 * @returns The amount expressed in the target unit.
-	 * @throws `RequiredError` if `targetKey` is not a unit in this list.
-	 * @throws `ValueError` if no conversion path exists to the target unit.
+	 * @throws [`RequiredError`](/error/RequiredError) if `targetKey` is not a unit in this list.
+	 * @throws [`ValueError`](/error/ValueError) if no conversion path exists to the target unit.
 	 * @example LENGTH_UNITS.require("kilometer").to(1, "meter") // 1000
 	 * @see https://dhoulb.github.io/shelving/util/units/Unit/to
 	 */
@@ -93,8 +93,8 @@ export class Unit<K extends string> {
 	 * @param amount The amount in the source unit.
 	 * @param sourceKey Key of the unit to convert from (defaults to the list's base unit).
 	 * @returns The amount expressed in this unit.
-	 * @throws `RequiredError` if `sourceKey` is not a unit in this list.
-	 * @throws `ValueError` if no conversion path exists from the source unit.
+	 * @throws [`RequiredError`](/error/RequiredError) if `sourceKey` is not a unit in this list.
+	 * @throws [`ValueError`](/error/ValueError) if no conversion path exists from the source unit.
 	 * @example LENGTH_UNITS.require("kilometer").from(1000, "meter") // 1
 	 * @see https://dhoulb.github.io/shelving/util/units/Unit/from
 	 */
@@ -178,8 +178,8 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * @param sourceKey Key of the unit to convert from.
 	 * @param targetKey Key of the unit to convert to.
 	 * @returns The amount expressed in the target unit.
-	 * @throws `RequiredError` if `sourceKey` or `targetKey` is not a unit in this list.
-	 * @throws `ValueError` if no conversion path exists between the units.
+	 * @throws [`RequiredError`](/error/RequiredError) if `sourceKey` or `targetKey` is not a unit in this list.
+	 * @throws [`ValueError`](/error/ValueError) if no conversion path exists between the units.
 	 * @example LENGTH_UNITS.convert(1, "kilometer", "meter") // 1000
 	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/convert
 	 */
@@ -191,7 +191,7 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * Require a unit from this list.
 	 *
 	 * @param key Key of the unit to retrieve.
-	 * @throws `RequiredError` if the unit key is not found.
+	 * @throws [`RequiredError`](/error/RequiredError) if the unit key is not found.
 	 * @example LENGTH_UNITS.require("kilometer") // Unit instance
 	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/require
 	 */

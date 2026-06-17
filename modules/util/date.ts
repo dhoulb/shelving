@@ -171,7 +171,7 @@ export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMont
 }
 
 /**
- * Convert a possible date to a `Date` instance, or throw `RequiredError` if it couldn't be converted.
+ * Convert a possible date to a `Date` instance, or throw [`RequiredError`](/error/RequiredError) if it couldn't be converted.
  *
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
  * @param caller The function to attribute a thrown error to (defaults to `requireDate`).
@@ -199,7 +199,7 @@ export function getTimestamp(value?: unknown): number | undefined {
 }
 
 /**
- * Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw `RequiredError` if it couldn't be converted.
+ * Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw [`RequiredError`](/error/RequiredError) if it couldn't be converted.
  *
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
  * @returns The timestamp in milliseconds.
@@ -239,7 +239,7 @@ export function getDateTimeString(value?: unknown): string | undefined {
 }
 
 /**
- * Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw `RequiredError` if it couldn't be converted.
+ * Convert a possible `Date` instance to a local YMD string like "2015-09-12T18:30:00", or throw [`RequiredError`](/error/RequiredError) if it couldn't be converted.
  *
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
  * @param caller Function to attribute a thrown error to (defaults to `requireDateTimeString` itself).
@@ -265,7 +265,7 @@ export function getDateString(value?: unknown): string | undefined {
 	if (date) return _date(date);
 }
 
-/** Convert a possible `Date` instance to a local date string like "2015-09-12", or throw `RequiredError` if it couldn't be converted.  */
+/** Convert a possible `Date` instance to a local date string like "2015-09-12", or throw [`RequiredError`](/error/RequiredError) if it couldn't be converted.  */
 export function requireDateString(value?: PossibleDate, caller: AnyCaller = requireDateString): string {
 	return _date(requireDate(value, caller));
 }
@@ -276,7 +276,7 @@ export function getTimeString(value?: unknown): string | undefined {
 	if (date) return _time(date);
 }
 
-/** Convert a possible `Date` instance to local time string like "18:32:00", or throw `RequiredError` if it couldn't be converted. */
+/** Convert a possible `Date` instance to local time string like "18:32:00", or throw [`RequiredError`](/error/RequiredError) if it couldn't be converted. */
 export function requireTimeString(value?: PossibleDate, caller: AnyCaller = requireTimeString): string {
 	return _time(requireDate(value, caller));
 }

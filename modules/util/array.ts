@@ -4,7 +4,7 @@ import { interleaveItems, isIterable, omitItems, pickItems } from "./iterate.js"
 
 /**
  * Mutable array: an array that can be changed.
- * - Consistency with `MutableObject<T>` and `ImmutableArray<T>`
+ * - Consistency with [`MutableObject<T>`](/util/object/MutableObject) and [`ImmutableArray<T>`](/util/array/ImmutableArray)
  *
  * @see https://dhoulb.github.io/shelving/util/array/MutableArray
  */
@@ -12,7 +12,7 @@ export type MutableArray<T = unknown> = T[];
 
 /**
  * Immutable array: an array that cannot be changed.
- * - Consistency with `ImmutableObject<T>` and `MutableArray<T>`
+ * - Consistency with [`ImmutableObject<T>`](/util/object/ImmutableObject) and [`MutableArray<T>`](/util/array/MutableArray)
  *
  * @see https://dhoulb.github.io/shelving/util/array/ImmutableArray
  */
@@ -115,7 +115,7 @@ export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
 }
 
 /**
- * Convert a possible array to an array (optionally with specified min/max length), or throw `RequiredError` if conversion fails.
+ * Convert a possible array to an array (optionally with specified min/max length), or throw [`RequiredError`](/error/RequiredError) if conversion fails.
  *
  * @param list The value to convert (an array or iterable of items).
  * @param min Minimum number of items the array must contain (defaults to `0`).

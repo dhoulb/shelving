@@ -77,7 +77,7 @@ const MATCHERS: {
 };
 
 /**
- * Get the `QueryFilter` objects decoded from a query.
+ * Get the [`QueryFilter`](/util/query/QueryFilter) objects decoded from a query.
  *
  * @param query The query to extract filters from.
  * @returns Array of decoded `QueryFilter` objects (excludes `$order` and `$limit` and any `undefined` values).
@@ -104,7 +104,7 @@ function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilt
 }
 
 /**
- * Get the `QueryOrder` objects decoded from a query.
+ * Get the [`QueryOrder`](/util/query/QueryOrder) objects decoded from a query.
  *
  * @param query The query to extract sort orders from (reads its `$order` prop).
  * @returns Array of decoded `QueryOrder` objects (`!`-prefixed keys are descending, others ascending).

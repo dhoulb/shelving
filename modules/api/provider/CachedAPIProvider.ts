@@ -8,7 +8,7 @@ import type { APIProvider } from "./APIProvider.js";
 import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /**
- * API provider wrapper that serves requests through an `APICache` so repeated calls reuse cached results.
+ * API provider wrapper that serves requests through an [`APICache`](/api/APICache) so repeated calls reuse cached results.
  * - On `call(...)`, triggers `cache.refresh(maxAge)` for the endpoint+payload before awaiting `cache.call(...)`.
  * - `invalidate`, `invalidateAll`, `refresh`, and `refreshAll` pass through to the underlying cache and use `this.maxAge` as the default refresh timing.
  *
@@ -19,7 +19,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  */
 export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements AsyncDisposable {
 	/**
-	 * The maximum age used when calling `call()`, defaulting to `AVOID_REFRESH` (only refresh if invalidated or still loading).
+	 * The maximum age used when calling `call()`, defaulting to [`AVOID_REFRESH`](/store/AVOID_REFRESH) (only refresh if invalidated or still loading).
 	 * - Not used for `refresh()` calls, which always refetch immediately.
 	 * @see https://dhoulb.github.io/shelving/api/provider/CachedAPIProvider/CachedAPIProvider/maxAge
 	 */
@@ -30,7 +30,7 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 * Create a cached provider wrapping a source provider.
 	 *
 	 * @param source The source provider whose results are cached.
-	 * @param maxAge Default maximum age in milliseconds for `call()` (defaults to `AVOID_REFRESH`).
+	 * @param maxAge Default maximum age in milliseconds for `call()` (defaults to [`AVOID_REFRESH`](/store/AVOID_REFRESH)).
 	 * @example new CachedAPIProvider(source)
 	 */
 	constructor(source: APIProvider<P, R>, maxAge: number = AVOID_REFRESH) {

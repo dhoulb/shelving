@@ -1,14 +1,14 @@
 # Validation helpers
 
-These helpers define the `Validator<T>` interface and utility functions for applying validators to single values, arrays, dictionaries, and full data objects. They exist to give all Shelving validators a common contract and to collect field-level errors before throwing — rather than stopping at the first failure.
+These helpers define the [`Validator<T>`](/util/validate/Validator) interface and utility functions for applying validators to single values, arrays, dictionaries, and full data objects. They exist to give all Shelving validators a common contract and to collect field-level errors before throwing — rather than stopping at the first failure.
 
 **Things to know:**
 
-- A `Validator<T>` is any object with a `validate(unsafeValue: unknown): T` method. `validate()` should throw a **string** (not an `Error`) to report a user-facing message; throwing an actual `Error` is reserved for programmer mistakes.
-- `getValid()` returns `undefined` on a string-throw but re-throws real `Error` instances — useful when you want a fallback rather than a crash.
-- `validateArray`, `validateDictionary`, and `validateData` all **collect all errors** across every item/entry/prop before throwing, so you get a full list of problems at once.
+- A [`Validator<T>`](/util/validate/Validator) is any object with a `validate(unsafeValue: unknown): T` method. `validate()` should throw a **string** (not an `Error`) to report a user-facing message; throwing an actual `Error` is reserved for programmer mistakes.
+- [`getValid()`](/util/validate/getValid) returns `undefined` on a string-throw but re-throws real `Error` instances — useful when you want a fallback rather than a crash.
+- [`validateArray()`](/util/validate/validateArray), [`validateDictionary()`](/util/validate/validateDictionary), and [`validateData()`](/util/validate/validateData) all **collect all errors** across every item/entry/prop before throwing, so you get a full list of problems at once.
 - `validateData()` strips excess keys not covered by the `validators` map and omits `undefined` values from the output. It returns the same reference when nothing changed.
-- `ValidatorType<X>` and `ValidatorsType<T>` are type utilities for extracting the validated type from a `Validator` or a `Validators` map.
+- [`ValidatorType<X>`](/util/validate/ValidatorType) and [`ValidatorsType<T>`](/util/validate/ValidatorsType) are type utilities for extracting the validated type from a `Validator` or a [`Validators`](/util/validate/Validators) map.
 
 ## Usage
 
@@ -66,5 +66,5 @@ type MyShape = ValidatorsType<typeof validators>;     // { name: string; age: nu
 
 ## See also
 
-- [schema](/schema) — Higher-level schema system built on top of `Validator<T>`.
+- [schema](/schema) — Higher-level schema system built on top of [`Validator<T>`](/util/validate/Validator).
 - [util](/util) — naming conventions and the full helper overview.

@@ -1,12 +1,12 @@
 # Heading
 
-A section heading — renders an `<h2>`. It sits in the middle of the three-level heading family: `Title` (`<h1>`), `Heading` (`<h2>`), `Subheading` (`<h3>`).
+A section heading — renders an `<h2>`. It sits in the middle of the three-level heading family: [`<Title>`](/ui/Title) (`<h1>`), `Heading` (`<h2>`), [`<Subheading>`](/ui/Subheading) (`<h3>`).
 
 **Things to know:**
 
-- Pick the component that matches the level rather than overriding `level`. Choosing `Title` / `Heading` / `Subheading` keeps the visual size and the document outline in step, which matters for accessibility and the docs-site table of contents.
+- Pick the component that matches the level rather than overriding `level`. Choosing [`<Title>`](/ui/Title) / `Heading` / [`<Subheading>`](/ui/Subheading) keeps the visual size and the document outline in step, which matters for accessibility and the docs-site table of contents.
 - The `level` prop (`1`–`6`) is an escape hatch for the rare case where the outline level must differ from the visual size — avoid it in normal use.
-- Inside `Prose`, an `<h2>` is styled by the same rules (the shared `.prose` styling), so Markdown-rendered headings match component ones.
+- Inside [`<Prose>`](/ui/Prose), an `<h2>` is styled by the same rules (the shared `.prose` styling), so Markdown-rendered headings match component ones.
 - Accepts `color=` and the typography variants; like all block components it collapses its outer margin when it's the first/last child of its container.
 
 ## Usage
@@ -53,7 +53,7 @@ import { Heading } from "shelving/ui";
 | `--heading-size` | Font size | `var(--size-xxlarge)` |
 | `--heading-leading` | Line height | `var(--leading)` |
 
-**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass). (`Title` and `Subheading` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
+**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass). ([`<Title>`](/ui/Title) and [`<Subheading>`](/ui/Subheading) share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
 
 ```css
 /* Theme: serif headings, a touch larger. */

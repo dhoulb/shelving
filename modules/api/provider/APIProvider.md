@@ -2,7 +2,7 @@
 
 The abstract base class every API provider implements. `APIProvider<P, R>` defines the surface that endpoint calls go through: `call(endpoint, payload)` to execute a typed endpoint, and `fetch(request)` as the lower-level transport step that wrapper providers intercept.
 
-You never instantiate `APIProvider` directly — use the concrete `ClientAPIProvider` (or a mock), optionally wrapped in `ThroughAPIProvider` subclasses. `APIProvider` implements `AsyncDisposable`.
+You never instantiate `APIProvider` directly — use the concrete [`ClientAPIProvider`](/api/ClientAPIProvider) (or a mock), optionally wrapped in [`ThroughAPIProvider`](/api/ThroughAPIProvider) subclasses. `APIProvider` implements `AsyncDisposable`.
 
 ## Usage
 
@@ -18,6 +18,6 @@ async function loadUser(provider: APIProvider, id: string) {
 
 ## See also
 
-- [ClientAPIProvider](/api/provider/ClientAPIProvider) — the concrete network implementation.
-- [ThroughAPIProvider](/api/provider/ThroughAPIProvider) — base for wrapping providers.
+- [`ClientAPIProvider`](/api/ClientAPIProvider) — the concrete network implementation.
+- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — base for wrapping providers.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

@@ -33,7 +33,7 @@ export function getTagClass(variants: TagVariants) {
 }
 
 /**
- * Props for `<Tag>` — `TagVariants` styling options plus `<Clickable>` props (`href`, `onClick`, `children`, etc.).
+ * Props for `<Tag>` — `TagVariants` styling options plus [`<Clickable>`](/ui/Clickable) props (`href`, `onClick`, `children`, etc.).
  *
  * @see https://dhoulb.github.io/shelving/ui/misc/Tag/TagProps
  */

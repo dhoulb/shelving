@@ -1,6 +1,6 @@
 # ChangesDBProvider
 
-A wrapping provider that records every write. `ChangesDBProvider` extends [`ThroughDBProvider`](/db/provider/ThroughDBProvider) and accumulates a `.changes` log of each set, update, and delete that passes through it — useful for audit trails, change feeds, and assertions in tests.
+A wrapping provider that records every write. `ChangesDBProvider` extends [`ThroughDBProvider`](/db/ThroughDBProvider) and accumulates a `.changes` log of each set, update, and delete that passes through it — useful for audit trails, change feeds, and assertions in tests.
 
 ## Usage
 
@@ -17,6 +17,6 @@ console.log(db.changes);
 
 ## See also
 
-- [ThroughDBProvider](/db/provider/ThroughDBProvider) — the pass-through base.
-- [MockDBProvider](/db/provider/MockDBProvider) — records all calls, not just writes.
+- [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
+- [`MockDBProvider`](/db/MockDBProvider) — records all calls, not just writes.
 - [db/provider](/db/provider) — overview of the provider hierarchy.

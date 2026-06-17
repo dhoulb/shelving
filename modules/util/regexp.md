@@ -4,10 +4,10 @@ Typed wrappers and combinators for working with regular expressions. They let yo
 
 **Things to know:**
 
-- `Matchable` is `string | RegExp`. When a `string` is used as a `Matchable`, matching uses `===` equality rather than `RegExp.test()`.
-- `createRegExpAny([])` returns `NEVER_REGEXP` (matches nothing); `createRegExpAll([])` returns `ALWAYS_REGEXP` (matches everything) — consistent with "any of nothing" vs "all of nothing" semantics.
-- `NamedRegExp<T>` and `TypedRegExp<T>` are typed interfaces that carry capture group shapes through to `exec()` return values, avoiding manual casting.
-- `getMatch()` returns `undefined` instead of `null` on no-match, fitting the rest of the util `get*` convention.
+- [`Matchable`](/util/regexp/Matchable) is `string | RegExp`. When a `string` is used as a `Matchable`, matching uses `===` equality rather than `RegExp.test()`.
+- `createRegExpAny([])` returns [`NEVER_REGEXP`](/util/regexp/NEVER_REGEXP) (matches nothing); `createRegExpAll([])` returns [`ALWAYS_REGEXP`](/util/regexp/ALWAYS_REGEXP) (matches everything) — consistent with "any of nothing" vs "all of nothing" semantics.
+- [`NamedRegExp<T>`](/util/regexp/NamedRegExp) and [`TypedRegExp<T>`](/util/regexp/TypedRegExp) are typed interfaces that carry capture group shapes through to `exec()` return values, avoiding manual casting.
+- [`getMatch()`](/util/regexp/getMatch) returns `undefined` instead of `null` on no-match, fitting the rest of the util `get*` convention.
 
 ## Usage
 

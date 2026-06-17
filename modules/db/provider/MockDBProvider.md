@@ -1,6 +1,6 @@
 # MockDBProvider
 
-A test provider that records every call. `MockDBProvider` extends [`MemoryDBProvider`](/db/provider/MemoryDBProvider) — so it behaves like a real in-memory database — and additionally captures every operation in a `.calls` array so tests can assert exactly what happened.
+A test provider that records every call. `MockDBProvider` extends [`MemoryDBProvider`](/db/MemoryDBProvider) — so it behaves like a real in-memory database — and additionally captures every operation in a `.calls` array so tests can assert exactly what happened.
 
 ## Usage
 
@@ -16,6 +16,6 @@ console.log(mock.calls[0]);
 
 ## See also
 
-- [MemoryDBProvider](/db/provider/MemoryDBProvider) — the in-memory base.
-- [ChangesDBProvider](/db/provider/ChangesDBProvider) — records writes only, as a change log.
+- [`MemoryDBProvider`](/db/MemoryDBProvider) — the in-memory base.
+- [`ChangesDBProvider`](/db/ChangesDBProvider) — records writes only, as a change log.
 - [db/provider](/db/provider) — overview of the provider hierarchy.

@@ -10,7 +10,7 @@ import { Dialog } from "./Dialog.js";
 const REMOVE_DELAY = 500;
 
 /**
- * Store holding the live list of open `<Dialog>` elements.
+ * Store holding the live list of open [`<Dialog>`](/ui/Dialog) elements.
  *
  * - `show()` opens a new dialog; closed dialogs are removed after an animation delay.
  *

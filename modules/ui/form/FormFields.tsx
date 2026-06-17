@@ -6,9 +6,9 @@ import type { InputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
 /**
- * Show a `<Field>` (label, input, and message) for a single named property of the current form.
+ * Show a [`<Field>`](/ui/Field) (label, input, and message) for a single named property of the current form.
  *
- * @returns A `<Field>` wrapping a `SchemaInput` bound to the named field.
+ * @returns A `<Field>` wrapping a [`SchemaInput`](/ui/SchemaInput) bound to the named field.
  * @example <FormField name="email" />
  * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormField
  */
@@ -24,7 +24,7 @@ export function FormField({ name, ...props }: InputProps): ReactElement {
 }
 
 /**
- * Show a `<Field>` for every property in the current form's schema.
+ * Show a [`<Field>`](/ui/Field) for every property in the current form's schema.
  *
  * @returns A fragment of `FormField` elements, one per schema property.
  * @example <FormFields />

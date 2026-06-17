@@ -5,7 +5,7 @@ import FLEX_CSS from "./Flex.module.css";
 import { type GapVariants, getGapClass } from "./Gap.js";
 
 /**
- * Variant props for flex layout — opt-in modifiers any component can mix in via `getFlexClass()`.
+ * Variant props for flex layout — opt-in modifiers any component can mix in via [`getFlexClass()`](/ui/getFlexClass).
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/FlexVariants
  */

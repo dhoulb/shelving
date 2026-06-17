@@ -35,7 +35,7 @@ Layouts compose naturally as [`Router`](/ui/Router) route values — wrap a grou
 
 ### Keyboard-aware safe area
 
-`useSafeKeyboardArea()` (exported alongside the layouts) tracks the dynamic viewport and writes a `--layout-inset-bottom` custom property reflecting the space hidden behind the on-screen keyboard. This is an iOS Safari workaround until `interactive-widget` viewport support lands.
+[`useSafeKeyboardArea()`](/ui/useSafeKeyboardArea) (exported alongside the layouts) tracks the dynamic viewport and writes a `--layout-inset-bottom` custom property reflecting the space hidden behind the on-screen keyboard. This is an iOS Safari workaround until `interactive-widget` viewport support lands.
 
 ```tsx
 import { useSafeKeyboardArea } from "shelving/ui";

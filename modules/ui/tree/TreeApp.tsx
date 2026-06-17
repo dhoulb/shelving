@@ -27,12 +27,12 @@ export interface TreeAppProps extends PossibleMeta {
 /**
  * Top-level app component for a tree-based documentation site.
  *
- * - Wraps `<App>` with error catching and a sidebar layout.
- * - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
- * - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.
- * - URLs that don't match a tree element fall through to a `<Router>` carrying the built-in `<TreeIndexPage>` (`/all`) plus any extra `routes`.
- * - Element rendering uses the default mappings on `<TreePage>`, `<TreeMenu>`, `<TreeCards>`.
- *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
+ * - Wraps [`<App>`](/ui/App) with error catching and a sidebar layout.
+ * - The sidebar shows a [`<TreeSidebar>`](/ui/TreeSidebar) (root as a home link + a menu of its children).
+ * - `/` renders the root via [`<TreePage>`](/ui/TreePage); `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.
+ * - URLs that don't match a tree element fall through to a [`<Router>`](/ui/Router) carrying the built-in [`<TreeIndexPage>`](/ui/TreeIndexPage) (`/all`) plus any extra `routes`.
+ * - Element rendering uses the default mappings on `<TreePage>`, [`<TreeMenu>`](/ui/TreeMenu), [`<TreeCards>`](/ui/TreeCards).
+ *   Override by wrapping with `<TreePageMapping>`, [`<TreeMenuMapping>`](/ui/TreeMenuMapping), or [`<TreeCardMapping>`](/ui/TreeCardMapping).
  *
  * @kind component
  * @returns The configured `<App>` element with sidebar layout and tree routing.

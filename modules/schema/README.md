@@ -77,5 +77,5 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 
 ## See also
 
-- [`util`](/util/data) — `Data`, `Item`, query, and update types consumed by schemas.
+- [`util`](/util/data) — [`Data`](/util/data/Data), [`Item`](/util/item/Item), query, and update types consumed by schemas.
 - [`db`](/db) — [`Collection`](/db/Collection) extends [`DataSchema`](/schema/DataSchema) and uses schemas to validate stored documents.

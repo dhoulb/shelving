@@ -6,7 +6,7 @@ Reactive per-request state for a single API call. [`EndpointStore`](/api/Endpoin
 
 ### EndpointStore
 
-`EndpointStore<P, R>` extends [`PayloadFetchStore`](/store/PayloadFetchStore) from the [`store`](/store) module. It binds an [`Endpoint`](/api/Endpoint), a payload value, and an [`APIProvider`](/api/APIProvider) together. When [`.value`](/store/Store/value) or [`.loading`](/store/Store/loading) is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
+[`EndpointStore<P, R>`](/api/EndpointStore) extends [`PayloadFetchStore`](/store/PayloadFetchStore) from the [`store`](/store) module. It binds an [`Endpoint`](/api/Endpoint), a payload value, and an [`APIProvider`](/api/APIProvider) together. When [`.value`](/store/Store/value) or [`.loading`](/store/Store/loading) is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
 
 The store's reactive contract follows the rest of the shelving store layer:
 
@@ -20,7 +20,7 @@ Payload changes are tracked via the inner [`.payload`](/store/PayloadFetchStore/
 
 ### Where EndpointStore lives in the stack
 
-`EndpointStore` is the leaf node in a three-level cache hierarchy:
+[`EndpointStore`](/api/EndpointStore) is the leaf node in a three-level cache hierarchy:
 
 ```
 APICache

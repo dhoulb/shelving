@@ -1,11 +1,11 @@
 # Disposable helpers
 
-Safe, aggregate disposal of resources using the TC39 `Symbol.dispose` / `Symbol.asyncDispose` protocol. When multiple disposables are cleaned up together, all of them run even if some throw — errors are collected and re-thrown as a single `Errors` aggregate.
+Safe, aggregate disposal of resources using the TC39 `Symbol.dispose` / `Symbol.asyncDispose` protocol. When multiple disposables are cleaned up together, all of them run even if some throw — errors are collected and re-thrown as a single [`Errors`](/error/Errors) aggregate.
 
-- `dispose` and `awaitDispose` both accept plain callbacks as well as `Disposable` / `AsyncDisposable` objects, so you can mix cleanup styles.
+- [`dispose()`](/util/dispose/dispose) and [`awaitDispose()`](/util/dispose/awaitDispose) both accept plain callbacks as well as `Disposable` / `AsyncDisposable` objects, so you can mix cleanup styles.
 - `null` and `undefined` values are silently skipped — no need to filter before passing.
 - `awaitDispose` runs all disposals in parallel; `dispose` runs them sequentially.
-- `DisposableMap` and `DisposableSet` automatically dispose values on `set`, `delete`, and `clear`, and dispose everything when the container itself is disposed.
+- [`DisposableMap`](/util/dispose/DisposableMap) and [`DisposableSet`](/util/dispose/DisposableSet) automatically dispose values on `set`, `delete`, and `clear`, and dispose everything when the container itself is disposed.
 - A polyfill for `Symbol.dispose` and `Symbol.asyncDispose` is applied at module load time for runtimes that don't yet support them natively.
 
 ## Usage

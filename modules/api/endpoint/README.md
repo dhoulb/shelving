@@ -6,7 +6,7 @@ Declarative, typed descriptions of API routes. An [`Endpoint`](/api/Endpoint) ca
 
 ### Endpoint definitions
 
-`Endpoint<P, R>` holds everything needed to build a request and validate its response. Factory functions create endpoints concisely:
+[`Endpoint<P, R>`](/api/Endpoint) holds everything needed to build a request and validate its response. Factory functions create endpoints concisely:
 
 | Factory | HTTP method |
 |---|---|
@@ -66,10 +66,10 @@ type EndpointCallback<P, R, C = void> =
   (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>
 ```
 
-Return `R` to let `handleEndpoints` validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.
+Return `R` to let [`handleEndpoints`](/api/handleEndpoints) validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.
 
 ## See also
 
 - [`api`](/api) — parent module overview
 - [`api`](/api) — provider stack that calls endpoints client-side
-- [`schema`](/schema) — `Schema<T>` used for payload and result
+- [`schema`](/schema) — [`Schema<T>`](/schema/Schema) used for payload and result

@@ -41,7 +41,7 @@ export function Message({ children, ...props }: MessageProps) {
 }
 
 /**
- * Shared loading `<Message>` element containing the `<Loading>` spinner.
+ * Shared loading `<Message>` element containing the [`<Loading>`](/ui/Loading) spinner.
  *
  * @example return isLoading ? LOADING_MESSAGE : <Message>{text}</Message>;
  * @see https://dhoulb.github.io/shelving/ui/notice/Message/LOADING_MESSAGE

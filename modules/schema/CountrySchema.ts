@@ -16,7 +16,7 @@ export interface CountrySchemaOptions extends SchemaOptions {
 /**
  * Schema that defines a valid ISO 3166 country code, e.g. `GB`.
  *
- * - The input is coerced with `getCountry`, then checked against the known set of `COUNTRIES`.
+ * - The input is coerced with [`getCountry()`](/util/geo/getCountry), then checked against the known set of [`COUNTRIES`](/util/geo/COUNTRIES).
  * - A `value` of `"detect"` resolves the default country from the browser language.
  *
  * @example

@@ -21,5 +21,5 @@ function Gallery({ ids }: { ids: string[] }) {
 
 ## See also
 
-- [useInstance](/react/useInstance) — a stable instance of any class, rebuilt when its arguments change.
+- [`useInstance()`](/react/useInstance) — a stable instance of any class, rebuilt when its arguments change.
 - [react](/react) — overview of all React hooks and context helpers.

@@ -21,7 +21,7 @@ When a [`MemoryDBProvider`](/db/MemoryDBProvider) is supplied (via [`DBCache`](/
 
 Additional accessors beyond the base `FetchStore`:
 
-- [`.first`](/db/QueryStore/first) / [`.last`](/db/QueryStore/last) — the first or last item; throw `RequiredError` if the result is empty.
+- [`.first`](/db/QueryStore/first) / [`.last`](/db/QueryStore/last) — the first or last item; throw [`RequiredError`](/error/RequiredError) if the result is empty.
 - [`.optionalFirst`](/db/QueryStore/optionalFirst) / [`.optionalLast`](/db/QueryStore/optionalLast) — same, returning `undefined` instead of throwing.
 - [`.limit`](/db/QueryStore/limit) — the `$limit` from the query, or `Infinity` if not set.
 - [`.hasMore`](/db/QueryStore/hasMore) — whether a subsequent page fetch might return more results (not yet implemented, reserved).

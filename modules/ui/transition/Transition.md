@@ -30,7 +30,7 @@ import { Transition } from "shelving/ui";
 </Transition>
 ```
 
-### Setting the direction with `setTransitionType`
+### Setting the direction with [`setTransitionType()`](/ui/setTransitionType)
 
 ```tsx
 import { HorizontalTransition, setTransitionType, requireNavigation } from "shelving/ui";

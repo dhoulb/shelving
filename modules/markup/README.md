@@ -44,7 +44,7 @@ const node = MARKUP_PARSER.parse(content);
 
 ### Options
 
-`MarkupParser` is constructed with [`MarkupOptions`](/markup/MarkupOptions):
+[`MarkupParser`](/markup/MarkupParser) is constructed with [`MarkupOptions`](/markup/MarkupOptions):
 
 | Option | Type | Description |
 |---|---|---|
@@ -68,7 +68,7 @@ Link href resolution goes through [`getLink()`](/util/link/getLink) — site-abs
 
 ### Block-only or inline-only rendering
 
-`parse()` takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
+[`.parse()`](/markup/MarkupParser/parse) takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
 
 ```ts
 // Inline only — no block wrappers like <p> or <h1>.
@@ -120,5 +120,5 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 ## See also
 
 - [`markup/rule`](/markup) — the built-in rule set and per-rule syntax reference
-- [`util`](/util/string) — shared utilities, including `sanitizeMultilineText` and the regexp helpers used by rules
-- [`schema`](/schema) — `StringSchema`, which normalises multi-line text on validation
+- [`util`](/util/string) — shared utilities, including [`sanitizeMultilineText()`](/util/string/sanitizeMultilineText) and the regexp helpers used by rules
+- [`schema`](/schema) — [`StringSchema`](/schema/StringSchema), which normalises multi-line text on validation

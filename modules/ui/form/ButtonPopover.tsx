@@ -20,7 +20,7 @@ export interface ButtonPopoverProps extends ButtonVariants {
  *
  * DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  *
- * @returns A `Popover` wrapping a `Button` that toggles it open and closed.
+ * @returns A [`Popover`](/ui/Popover) wrapping a [`Button`](/ui/Button) that toggles it open and closed.
  * @example <ButtonPopover>{label}{panel}</ButtonPopover>
  * @see https://dhoulb.github.io/shelving/ui/form/ButtonPopover/ButtonPopover
  */

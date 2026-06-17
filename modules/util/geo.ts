@@ -258,14 +258,14 @@ export const COUNTRIES = {
 } as const;
 
 /**
- * Two-letter ISO 3166-1 alpha-2 country code string (a key of `COUNTRIES`).
+ * Two-letter ISO 3166-1 alpha-2 country code string (a key of [`COUNTRIES`](/util/geo/COUNTRIES)).
  *
  * @see https://dhoulb.github.io/shelving/util/geo/Country
  */
 export type Country = keyof typeof COUNTRIES;
 
 /**
- * A value that can possibly be resolved to a `Country` — either a country code or the literal `"detect"`.
+ * A value that can possibly be resolved to a [`Country`](/util/geo/Country) — either a country code or the literal `"detect"`.
  *
  * @see https://dhoulb.github.io/shelving/util/geo/PossibleCountry
  */
@@ -277,7 +277,7 @@ export type PossibleCountry = Country | "detect";
  * - Matching is case-insensitive; the value is uppercased before lookup.
  *
  * @param value The country code to parse, or `"detect"` to read it from the browser. Defaults to `"detect"`.
- * @returns The matching `Country` code, or `undefined` if it could not be resolved.
+ * @returns The matching [`Country`](/util/geo/Country) code, or `undefined` if it could not be resolved.
  * @example getCountry("gb") // "GB"
  * @see https://dhoulb.github.io/shelving/util/geo/getCountry
  */
@@ -294,11 +294,11 @@ export function getCountry(value: unknown = "detect"): Country | undefined {
 }
 
 /**
- * Parse a country string, or detect a browser country from `navigator.language`, or throw `RequiredError`.
+ * Parse a country string, or detect a browser country from `navigator.language`, or throw [`RequiredError`](/error/RequiredError).
  *
  * @param value The country code to parse, or `"detect"` to read it from the browser.
  * @param caller Identity of the calling function for error attribution.
- * @returns The matching `Country` code.
+ * @returns The matching [`Country`](/util/geo/Country) code.
  * @throws RequiredError If a country could not be resolved.
  * @example requireCountry("gb") // "GB"
  * @see https://dhoulb.github.io/shelving/util/geo/requireCountry
@@ -340,7 +340,7 @@ export type AddressData = {
 /**
  * Format address data into a single multiline string.
  * - Each field is placed on its own line; an empty `address2` is omitted.
- * - The country code is expanded to its full name via `formatCountry`.
+ * - The country code is expanded to its full name via [`formatCountry()`](/util/geo/formatCountry).
  *
  * @param address The address data to format.
  * @returns A newline-separated address string.

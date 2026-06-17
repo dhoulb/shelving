@@ -18,5 +18,5 @@ NULLABLE_NUMBER.validate(42);         // 42
 
 ## See also
 
-- [OptionalSchema](/schema/OptionalSchema) — the `undefined`-allowing equivalent.
+- [`OptionalSchema`](/schema/OptionalSchema) — the `undefined`-allowing equivalent.
 - [schema](/schema) — overview of schema concepts and composition.

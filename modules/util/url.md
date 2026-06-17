@@ -4,10 +4,10 @@ These helpers work specifically with hierarchical `scheme://host` URLs (a strict
 
 **Things to know:**
 
-- A URL is distinguished from a generic URI by the `://` in its href. `isURL()` checks this at runtime. `mailto:`, `urn:`, etc. are URIs but not URLs and will not pass `isURL()`.
-- `getBaseURL()` ensures a trailing slash on the pathname, which makes relative resolution behave naturally (paths resolve relative to the directory, not the file).
-- `getBasedURI()` accepts any input — including relative paths — and resolves them against the base. It can return a non-URL URI (e.g. `mailto:`). Use `getURL()` when you specifically need a `scheme://` URL.
-- `isURLActive` and `isURLProud` are designed for navigation menus: "active" means exact match, "proud" means the link's URL is an ancestor of the current location.
+- A URL is distinguished from a generic URI by the `://` in its href. [`isURL()`](/util/url/isURL) checks this at runtime. `mailto:`, `urn:`, etc. are URIs but not URLs and will not pass `isURL()`.
+- [`getBaseURL()`](/util/url/getBaseURL) ensures a trailing slash on the pathname, which makes relative resolution behave naturally (paths resolve relative to the directory, not the file).
+- [`getBasedURI()`](/util/url/getBasedURI) accepts any input — including relative paths — and resolves them against the base. It can return a non-URL URI (e.g. `mailto:`). Use [`getURL()`](/util/url/getURL) when you specifically need a `scheme://` URL.
+- [`isURLActive()`](/util/url/isURLActive) and [`isURLProud()`](/util/url/isURLProud) are designed for navigation menus: "active" means exact match, "proud" means the link's URL is an ancestor of the current location.
 
 ## Usage
 

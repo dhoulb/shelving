@@ -2,7 +2,7 @@
 
 Thrown when an incoming request is malformed or unacceptable — the HTTP 4xx range. Its `.code` property defaults to `400`.
 
-`RequestError` has named subclasses for common HTTP status codes, each setting its own `.code`: `UnauthorizedError` (401), `ForbiddenError` (403), `NotFoundError` (404), `MethodNotAllowedError` (405), and `UnprocessableError` (422). Throw the most specific class that fits.
+`RequestError` has named subclasses for common HTTP status codes, each setting its own `.code`: [`UnauthorizedError`](/error/UnauthorizedError) (401), [`ForbiddenError`](/error/ForbiddenError) (403), [`NotFoundError`](/error/NotFoundError) (404), [`MethodNotAllowedError`](/error/MethodNotAllowedError) (405), and [`UnprocessableError`](/error/UnprocessableError) (422). Throw the most specific class that fits.
 
 ## Usage
 
@@ -21,5 +21,5 @@ See [error](/error) for shared behaviour — attaching context fields, `caller` 
 
 ## See also
 
-- [ResponseError](/error/ResponseError) — for an error indicated by a received response.
+- [`ResponseError`](/error/ResponseError) — for an error indicated by a received response.
 - [error](/error) — module overview and shared error behaviour.

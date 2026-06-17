@@ -34,5 +34,5 @@ USERNAME.validate("ALICE");      // throws "Invalid format"
 
 ## See also
 
-- [NumberSchema](/schema/NumberSchema) — the numeric equivalent.
+- [`NumberSchema`](/schema/NumberSchema) — the numeric equivalent.
 - [schema](/schema) — overview of schema concepts and composition.

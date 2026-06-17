@@ -23,7 +23,7 @@ An [`Extractor`](/extract/Extractor) converts an input into a [`TreeElement`](/u
 
 ### The tree
 
-Every extractor produces a `TreeElement` (see [`tree`](/util/tree)). There are two element types:
+Every extractor produces a [`TreeElement`](/util/tree/TreeElement) (see [`tree`](/util/tree)). There are two element types:
 
 - `tree-element` — a directory or a file. A directory's content is absorbed from an index file; a file's children are its exported symbols (for TypeScript). Its `source` records the absolute path it came from.
 - `tree-documentation` — one documented symbol (function, class, type, constant), carrying the `signatures`, `params`, `returns`, `throws`, and `examples` parsed from its JSDoc.

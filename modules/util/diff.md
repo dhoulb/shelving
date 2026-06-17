@@ -1,6 +1,6 @@
 # Deep diff helpers
 
-Compute the minimal transformation needed to turn one value into another. Used internally by the update and sync layers to avoid sending unchanged data. Returns the special `SAME` symbol when the two values are deeply equal.
+Compute the minimal transformation needed to turn one value into another. Used internally by the update and sync layers to avoid sending unchanged data. Returns the special [`SAME`](/util/diff/SAME) symbol when the two values are deeply equal.
 
 - Arrays are compared as a unit — if they differ at all, the full new array is returned (no item-level patching).
 - Objects are compared recursively. Keys present in `left` but absent from `right` appear in the diff as `undefined` (indicating deletion).
@@ -55,4 +55,4 @@ if (diff !== SAME) applyUpdate(diff);
 ## See also
 
 - [util](/util) — full util module overview
-- [data](/util/data) — `Data` type used with object diffs
+- [data](/util/data) — [`Data`](/util/data/Data) type used with object diffs

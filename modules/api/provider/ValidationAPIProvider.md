@@ -20,6 +20,6 @@ const user = await provider.call(getUser, { id: "u_123" })
 
 ## See also
 
-- [ThroughAPIProvider](/api/provider/ThroughAPIProvider) — the pass-through base.
-- [schema](/schema) — the `Schema<T>` validators used here.
+- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
+- [schema](/schema) — the [`Schema<T>`](/schema/Schema) validators used here.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

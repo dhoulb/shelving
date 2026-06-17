@@ -75,7 +75,7 @@ export function* getIdentifiers<I extends Identifier, T extends Data>(entities: 
 }
 
 /**
- * Does a data object have a given identifier (and is therefore an `Item`).
+ * Does a data object have a given identifier (and is therefore an [`Item`](/util/item/Item)).
  *
  * @param item The data or item object to test.
  * @param id The identifier to match against the object's `id` property.
@@ -88,7 +88,7 @@ export function hasIdentifier<I extends Identifier, T extends Data>(item: T | It
 }
 
 /**
- * Merge an ID into a set of data to make an `Item`.
+ * Merge an ID into a set of data to make an [`Item`](/util/item/Item).
  * - Returns the data unchanged if it already has the given `id`.
  *
  * @param id The identifier to set on the data.

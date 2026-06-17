@@ -1,6 +1,6 @@
 # LazySequence
 
-A [`ThroughSequence`](/sequence/ThroughSequence) paired with a start/stop callback. The `StartCallback` runs when the first iterator begins iterating; the `StopCallback` it returns runs when the last iterator finishes. This is the sequence equivalent of an observable subscription — work happens only while something is listening.
+A [`ThroughSequence`](/sequence/ThroughSequence) paired with a start/stop callback. The [`StartCallback`](/util/start/StartCallback) runs when the first iterator begins iterating; the [`StopCallback`](/util/start/StopCallback) it returns runs when the last iterator finishes. This is the sequence equivalent of an observable subscription — work happens only while something is listening.
 
 ## Usage
 
@@ -23,6 +23,6 @@ for await (const ts of seq) {
 
 ## See also
 
-- [ThroughSequence](/sequence/ThroughSequence) — the base class.
-- [DeferredSequence](/sequence/DeferredSequence) — the source commonly wrapped by a `LazySequence`.
+- [`ThroughSequence`](/sequence/ThroughSequence) — the base class.
+- [`DeferredSequence`](/sequence/DeferredSequence) — the source commonly wrapped by a `LazySequence`.
 - [sequence](/sequence) — overview of all sequence primitives.

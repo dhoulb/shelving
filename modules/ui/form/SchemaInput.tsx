@@ -33,7 +33,7 @@ import { SelectInput } from "./SelectInput.js";
 import { TextInput } from "./TextInput.js";
 
 /**
- * Whether a schema is required, i.e. not wrapped in an `OptionalSchema` or `NullableSchema`.
+ * Whether a schema is required, i.e. not wrapped in an [`OptionalSchema`](/schema/OptionalSchema) or [`NullableSchema`](/schema/NullableSchema).
  *
  * @param schema The schema to test.
  * @returns `true` if the schema is required, `false` if it is optional or nullable.
@@ -55,11 +55,11 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
 
 /**
  * Show the appropriate input control for a schema, dispatching on the schema's concrete type.
- * - Picks `DateInput`, `NumberInput`, choice radios/select, `CheckboxInput`, `TextInput`, `ArrayInput`, `DictionaryInput`, or `DataInput`.
+ * - Picks [`DateInput`](/ui/DateInput), [`NumberInput`](/ui/NumberInput), choice radios/select, [`CheckboxInput`](/ui/CheckboxInput), [`TextInput`](/ui/TextInput), [`ArrayInput`](/ui/ArrayInput), [`DictionaryInput`](/ui/DictionaryInput), or [`DataInput`](/ui/DataInput).
  * - `required` defaults to whether the schema is required.
  *
  * @returns The matching input element for the schema.
- * @throws `UnexpectedError` if no input matches the schema type.
+ * @throws [`UnexpectedError`](/error/UnexpectedError) if no input matches the schema type.
  * @kind component
  * @example <SchemaInput name="email" schema={EMAIL} /> // Outputs a `<TextInput>` for the "email" property.
  * @example <SchemaInput name="age" schema={AGE} /> // Outputs a `<NumberInput>` for the "age" property.
@@ -71,7 +71,7 @@ export function SchemaInput({
 	schema,
 	/**
 	 * Required defaults to whether the schema is required
-	 * - A schema is required if it's not wrapped in an `OptionalSchema` or `NullableSchema`
+	 * - A schema is required if it's not wrapped in an [`OptionalSchema`](/schema/OptionalSchema) or [`NullableSchema`](/schema/NullableSchema)
 	 * - Can be overridden by explicitly settings `<SchemaInput required>`
 	 */
 	required = isSchemaRequired(schema),
@@ -105,14 +105,14 @@ export function SchemaInput({
 }
 
 /**
- * Props for `DateSchemaInput`, the `DateSchema` input variant.
+ * Props for `DateSchemaInput`, the [`DateSchema`](/schema/DateSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DateSchemaInputProps
  */
 export interface DateSchemaInputProps extends SchemaInputProps<DateSchema, unknown> {}
 
 /**
- * Show a `DateInput` for a `DateSchema`.
+ * Show a [`DateInput`](/ui/DateInput) for a [`DateSchema`](/schema/DateSchema).
  *
  * @returns A `DateInput` element bound to the schema.
  * @example <DateSchemaInput name="dob" schema={DATE} />
@@ -123,14 +123,14 @@ export function DateSchemaInput({ schema, value, ...props }: DateSchemaInputProp
 }
 
 /**
- * Props for `NumberSchemaInput`, the `NumberSchema` input variant.
+ * Props for `NumberSchemaInput`, the [`NumberSchema`](/schema/NumberSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/NumberSchemaInputProps
  */
 export interface NumberSchemaInputProps extends SchemaInputProps<NumberSchema, unknown> {}
 
 /**
- * Show a `NumberInput` for a `NumberSchema`, formatting values with the schema's `format()`.
+ * Show a [`NumberInput`](/ui/NumberInput) for a [`NumberSchema`](/schema/NumberSchema), formatting values with the schema's `format()`.
  *
  * @returns A `NumberInput` element bound to the schema.
  * @example <NumberSchemaInput name="age" schema={NUMBER} />
@@ -141,16 +141,16 @@ export function NumberSchemaInput({ schema, value, ...props }: NumberSchemaInput
 }
 
 /**
- * Props for `ChoiceSchemaInput`, the `ChoiceSchema` input variant.
+ * Props for `ChoiceSchemaInput`, the [`ChoiceSchema`](/schema/ChoiceSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInputProps
  */
 export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<string>, unknown> {}
 
 /**
- * Show a choice input for a `ChoiceSchema` — radio inputs for up to 8 options, otherwise a select.
+ * Show a choice input for a [`ChoiceSchema`](/schema/ChoiceSchema) — radio inputs for up to 8 options, otherwise a select.
  *
- * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
+ * @returns A [`ChoiceRadioInputs`](/ui/ChoiceRadioInputs) or [`SelectInput`](/ui/SelectInput) element bound to the schema.
  * @example <ChoiceSchemaInput name="role" schema={ROLE} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInput
  */
@@ -161,14 +161,14 @@ export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInput
 }
 
 /**
- * Props for `BooleanSchemaInput`, the `BooleanSchema` input variant.
+ * Props for `BooleanSchemaInput`, the [`BooleanSchema`](/schema/BooleanSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/BooleanSchemaInputProps
  */
 export interface BooleanSchemaInputProps extends SchemaInputProps<BooleanSchema, unknown> {}
 
 /**
- * Show a `CheckboxInput` for a `BooleanSchema`.
+ * Show a [`CheckboxInput`](/ui/CheckboxInput) for a [`BooleanSchema`](/schema/BooleanSchema).
  *
  * @returns A `CheckboxInput` element bound to the schema.
  * @example <BooleanSchemaInput name="agree" schema={BOOLEAN} />
@@ -179,14 +179,14 @@ export function BooleanSchemaInput({ schema, value, ...props }: BooleanSchemaInp
 }
 
 /**
- * Props for `StringSchemaInput`, the `StringSchema` input variant.
+ * Props for `StringSchemaInput`, the [`StringSchema`](/schema/StringSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/StringSchemaInputProps
  */
 export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, unknown> {}
 
 /**
- * Show a `TextInput` for a `StringSchema`, sanitising and formatting values with the schema.
+ * Show a [`TextInput`](/ui/TextInput) for a [`StringSchema`](/schema/StringSchema), sanitising and formatting values with the schema.
  *
  * @returns A `TextInput` element bound to the schema.
  * @example <StringSchemaInput name="email" schema={EMAIL} />
@@ -197,14 +197,14 @@ export function StringSchemaInput({ schema, value, ...props }: StringSchemaInput
 }
 
 /**
- * Props for `ArraySchemaInput`, the `ArraySchema` input variant.
+ * Props for `ArraySchemaInput`, the [`ArraySchema`](/schema/ArraySchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ArraySchemaInputProps
  */
 export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unknown>, unknown> {}
 
 /**
- * Show an `ArrayInput` for an `ArraySchema`.
+ * Show an [`ArrayInput`](/ui/ArrayInput) for an [`ArraySchema`](/schema/ArraySchema).
  *
  * @returns An `ArrayInput` element bound to the schema.
  * @example <ArraySchemaInput name="tags" schema={TAGS} />
@@ -215,14 +215,14 @@ export function ArraySchemaInput({ schema, value, ...props }: ArraySchemaInputPr
 }
 
 /**
- * Props for `DictionarySchemaInput`, the `DictionarySchema` input variant.
+ * Props for `DictionarySchemaInput`, the [`DictionarySchema`](/schema/DictionarySchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DictionarySchemaInputProps
  */
 export interface DictionarySchemaInputProps extends SchemaInputProps<DictionarySchema<unknown>, unknown> {}
 
 /**
- * Show a `DictionaryInput` for a `DictionarySchema`.
+ * Show a [`DictionaryInput`](/ui/DictionaryInput) for a [`DictionarySchema`](/schema/DictionarySchema).
  *
  * @returns A `DictionaryInput` element bound to the schema.
  * @example <DictionarySchemaInput name="meta" schema={META} />
@@ -233,14 +233,14 @@ export function DictionarySchemaInput({ schema, value, ...props }: DictionarySch
 }
 
 /**
- * Props for `DataSchemaInput`, the `DataSchema` input variant.
+ * Props for `DataSchemaInput`, the [`DataSchema`](/schema/DataSchema) input variant.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DataSchemaInputProps
  */
 export interface DataSchemaInputProps extends SchemaInputProps<DataSchema<Data>, unknown> {}
 
 /**
- * Show a `DataInput` for a nested `DataSchema`.
+ * Show a [`DataInput`](/ui/DataInput) for a nested [`DataSchema`](/schema/DataSchema).
  *
  * @returns A `DataInput` element bound to the schema.
  * @example <DataSchemaInput name="address" schema={ADDRESS} />
@@ -258,7 +258,7 @@ export function DataSchemaInput({ schema, value, ...props }: DataSchemaInputProp
 export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, OptionalChildProps {}
 
 /**
- * Show the appropriate input for a schema, wrapped in a `<Field>` with its label and message.
+ * Show the appropriate input for a schema, wrapped in a [`<Field>`](/ui/Field) with its label and message.
  * - Renders custom `children` inside the field, or a `SchemaInput` when none are provided.
  *
  * @returns A `<Field>` wrapping the schema's input.

@@ -4,7 +4,7 @@ A small inline label used to annotate other content. Accepts a status variant or
 
 **Things to know:**
 
-- Delegates to `<Clickable>` — renders as `<a>` when `href` is set, otherwise `<button>`.
+- Delegates to [`<Clickable>`](/ui/Clickable) — renders as `<a>` when `href` is set, otherwise `<button>`.
 - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.). Use `status` for semantic meaning and `color` for purely decorative differentiation.
 - Composes status, colour, and typography styling variants.
 

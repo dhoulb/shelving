@@ -4,9 +4,9 @@ A block-level status callout with an icon and message, used to highlight feedbac
 
 **Things to know:**
 
-- Shows a `<StatusIcon>` for the current `status` by default; pass `icon` to override, or `false` / `null` to hide it.
+- Shows a [`<StatusIcon>`](/ui/StatusIcon) for the current `status` by default; pass `icon` to override, or `false` / `null` to hide it.
 - Sets an ARIA `role` of `"alert"` for `error` / `danger` statuses, otherwise `"status"`.
-- `LOADING_NOTICE` is a shared `<Notice status="loading" />` element ready to drop into `Suspense` fallbacks.
+- [`LOADING_NOTICE`](/ui/LOADING_NOTICE) is a shared `<Notice status="loading" />` element ready to drop into `Suspense` fallbacks.
 
 ## Usage
 

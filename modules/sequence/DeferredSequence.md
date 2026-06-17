@@ -34,6 +34,6 @@ const next = await seq; // resolves when resolve() is next called
 
 ## See also
 
-- [Sequence](/sequence/Sequence) — the abstract base class.
-- [store](/store) — `Store` broadcasts changes through a `DeferredSequence`.
+- [`Sequence`](/sequence/Sequence) — the abstract base class.
+- [store](/store) — [`Store`](/store/Store) broadcasts changes through a `DeferredSequence`.
 - [sequence](/sequence) — overview of all sequence primitives.

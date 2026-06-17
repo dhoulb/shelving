@@ -1,10 +1,10 @@
 # Color helpers
 
-A `Color` class and accompanying helpers for parsing, representing, and converting CSS hex colours. Useful for theming, accessibility checks, and anywhere a component or tool needs to inspect or manipulate a colour value.
+A [`Color`](/util/color/Color) class and accompanying helpers for parsing, representing, and converting CSS hex colours. Useful for theming, accessibility checks, and anywhere a component or tool needs to inspect or manipulate a colour value.
 
 - Parses 3-digit (`#RGB`) and 6/8-digit (`#RRGGBB` / `#RRGGBBAA`) hex strings, with or without the `#` prefix.
-- Channel values (`r`, `g`, `b`, `a`) are clamped to 0–255.
-- `isLight` / `isDark` use the sRGB luminance formula (threshold: luminance > 140 = light).
+- Channel values ([`.r`](/util/color/Color/r), [`.g`](/util/color/Color/g), [`.b`](/util/color/Color/b), [`.a`](/util/color/Color/a)) are clamped to 0–255.
+- [`.isLight`](/util/color/Color/isLight) / [`.isDark`](/util/color/Color/isDark) use the sRGB luminance formula (threshold: luminance > 140 = light).
 
 ## Usage
 

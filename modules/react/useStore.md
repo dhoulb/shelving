@@ -33,5 +33,5 @@ The argument is optional — passing `undefined` is allowed (the hook is still c
 
 ## See also
 
-- [store](/store) — the `Store` class this hook subscribes to.
+- [store](/store) — the [`Store`](/store/Store) class this hook subscribes to.
 - [react](/react) — overview of all React hooks and context helpers.

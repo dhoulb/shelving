@@ -29,7 +29,7 @@ export class XMLAPIProvider<P extends Data = Data, R extends string = string> ex
 
 	/**
 	 * Parse a text `Response` for an endpoint.
-	 * - Non-2xx responses become `ResponseError`.
+	 * - Non-2xx responses become [`ResponseError`](/error/ResponseError).
 	 * - The response body is always returned as raw text.
 	 *
 	 * @param _endpoint The endpoint the response was produced for.

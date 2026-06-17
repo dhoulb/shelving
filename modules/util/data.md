@@ -1,10 +1,10 @@
 # Data objects
 
-The `Data` type and its helpers are the foundation of Shelving's data layer. A `Data` object is a plain `Record<string, unknown>` — a JSON-safe object with no class prototype. Every database document, query result, and schema-validated value is a `Data`.
+The [`Data`](/util/data/Data) type and its helpers are the foundation of Shelving's data layer. A `Data` object is a plain `Record<string, unknown>` — a JSON-safe object with no class prototype. Every database document, query result, and schema-validated value is a `Data`.
 
 - Deep paths use dot notation: `"user.address.city"` or the equivalent tuple `["user", "address", "city"]`.
-- `getDataProp` never throws — it returns `undefined` for missing or non-object intermediate nodes.
-- `splitDataPath` / `joinDataPath` are inverses of each other; both accept either form so you can freely convert.
+- [`getDataProp()`](/util/data/getDataProp) never throws — it returns `undefined` for missing or non-object intermediate nodes.
+- [`splitDataPath()`](/util/data/splitDataPath) / [`joinDataPath()`](/util/data/joinDataPath) are inverses of each other; both accept either form so you can freely convert.
 
 ## Usage
 
@@ -55,15 +55,15 @@ joinDataPath(["user", "address", "city"]); // "user.address.city"
 
 | Type | Purpose |
 | ---- | ------- |
-| `Data` | Base plain-object type |
-| `PartialData<T>` | All keys optional |
-| `DataKey<T>` | Union of string keys |
-| `DataValue<T>` | Union of value types |
-| `LeafData<T>` | Flat object with only leaf paths |
-| `LeafDataPath<T>` | Union of dotted leaf paths |
-| `BranchData<T>` | Flat object including intermediate object paths |
-| `NestedData` | One level of nesting: `{ Group: { key: value } }` |
-| `FlatData<T>` | Flattened union of nested data |
+| [`Data`](/util/data/Data) | Base plain-object type |
+| [`PartialData<T>`](/util/data/PartialData) | All keys optional |
+| [`DataKey<T>`](/util/data/DataKey) | Union of string keys |
+| [`DataValue<T>`](/util/data/DataValue) | Union of value types |
+| [`LeafData<T>`](/util/data/LeafData) | Flat object with only leaf paths |
+| [`LeafDataPath<T>`](/util/data/LeafDataPath) | Union of dotted leaf paths |
+| [`BranchData<T>`](/util/data/BranchData) | Flat object including intermediate object paths |
+| [`NestedData`](/util/data/NestedData) | One level of nesting: `{ Group: { key: value } }` |
+| [`FlatData<T>`](/util/data/FlatData) | Flattened union of nested data |
 
 ```ts
 import type { Data, LeafDataPath } from "shelving/util";
@@ -74,6 +74,6 @@ type ProfileLeafPaths = LeafDataPath<Profile>; // "name" | "address.city"
 
 ## See also
 
-- [util](/util) — full util module overview including Items, Queries, and Updates that build on `Data`
+- [util](/util) — full util module overview including Items, Queries, and Updates that build on [`Data`](/util/data/Data)
 - [schema](/schema) — schema validation that produces typed `Data` objects
 - [db](/db) — database layer that stores and queries `Data` items

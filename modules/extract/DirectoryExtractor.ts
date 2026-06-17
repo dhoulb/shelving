@@ -50,10 +50,10 @@ export interface DirectoryExtractorOptions {
 /**
  * Extractor that walks a directory on disk and produces a tree of `tree-element` nodes.
  * - Recursively descends into subdirectories.
- * - Dispatches non-ignored files to a matching `FileExtractor` based on extension; files with no matching extractor are silently skipped.
+ * - Dispatches non-ignored files to a matching [`FileExtractor`](/extract/FileExtractor) based on extension; files with no matching extractor are silently skipped.
  * - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
- * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
- *   and/or `IndexExtractor` to opt in to those behaviours.
+ * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with [`MergingExtractor`](/extract/MergingExtractor)
+ *   and/or [`IndexExtractor`](/extract/IndexExtractor) to opt in to those behaviours.
  *
  * @example const tree = await new DirectoryExtractor().extract("modules/util");
  *

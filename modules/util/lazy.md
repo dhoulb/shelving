@@ -1,6 +1,6 @@
 # Lazy value helpers
 
-A tiny utility for values that may be supplied either as a plain value or as a factory function. Use `Lazy<T>` as a parameter type wherever you want callers to be able to defer construction, then call `getLazy()` to materialise the value.
+A tiny utility for values that may be supplied either as a plain value or as a factory function. Use [`Lazy<T>`](/util/lazy/Lazy) as a parameter type wherever you want callers to be able to defer construction, then call [`getLazy()`](/util/lazy/getLazy) to materialise the value.
 
 ## Usage
 

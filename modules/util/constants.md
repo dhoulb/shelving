@@ -2,9 +2,9 @@
 
 Named constants for common numeric magnitudes, time durations, whitespace characters, and control symbols. Import these instead of magic numbers to keep code readable and consistent.
 
-- Time constants (`SECOND`, `MINUTE`, `HOUR`, `DAY`, `WEEK`, `MONTH`, `YEAR`) are in **milliseconds**, matching the `Date` API.
+- Time constants ([`SECOND`](/util/constants/SECOND), [`MINUTE`](/util/constants/MINUTE), [`HOUR`](/util/constants/HOUR), [`DAY`](/util/constants/DAY), [`WEEK`](/util/constants/WEEK), [`MONTH`](/util/constants/MONTH), [`YEAR`](/util/constants/YEAR)) are in **milliseconds**, matching the `Date` API.
 - `MONTH` is 30 days and `YEAR` is 365 days — fixed approximations, not calendar-aware.
-- The three special symbols (`ABORT`, `NONE`, `SKIP`) are unique symbols, safe to use as sentinel values in union types.
+- The three special symbols ([`ABORT`](/util/constants/ABORT), [`NONE`](/util/constants/NONE), [`SKIP`](/util/constants/SKIP)) are unique symbols, safe to use as sentinel values in union types.
 
 ## Usage
 
@@ -62,4 +62,4 @@ console.log(`${FAILURE} Failed`);
 ## See also
 
 - [util](/util) — full util module overview
-- [date](/util/date) — date helpers that use `DAY`, `WEEK`, etc. conceptually
+- [date](/util/date) — date helpers that use [`DAY`](/util/constants/DAY), [`WEEK`](/util/constants/WEEK), etc. conceptually

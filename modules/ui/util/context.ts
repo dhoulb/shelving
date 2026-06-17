@@ -4,7 +4,7 @@ import type { AnyCaller } from "../../util/function.js";
 import { type Nullish, notNullish } from "../../util/null.js";
 
 /**
- * Use the value of a React `Context`, or throw `RequiredError` if the context was unset.
+ * Use the value of a React `Context`, or throw [`RequiredError`](/error/RequiredError) if the context was unset.
  *
  * - Reads the context with React's `use()`, so it must be called inside a component or hook.
  * - Treats both `null` and `undefined` as "unset" and throws, naming the context's `displayName` in the message.

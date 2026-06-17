@@ -14,8 +14,8 @@ import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 /**
  * Store that runs a query against a collection from a database provider and tracks its matching items.
  *
- * - Holds an `Items` value (the array of matching items) and is iterable over those items.
- * - Seeds from a `MemoryDBProvider` snapshot when available, and subscribes to realtime updates.
+ * - Holds an [`Items`](/util/item/Items) value (the array of matching items) and is iterable over those items.
+ * - Seeds from a [`MemoryDBProvider`](/db/MemoryDBProvider) snapshot when available, and subscribes to realtime updates.
  *
  * @example
  *  const store = new QueryStore(collection, query, provider);

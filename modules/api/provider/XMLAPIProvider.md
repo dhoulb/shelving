@@ -1,6 +1,6 @@
 # XMLAPIProvider
 
-A [`ClientAPIProvider`](/api/provider/ClientAPIProvider) for XML APIs. It sends request bodies as XML and returns the raw text of the response rather than parsing it as JSON.
+A [`ClientAPIProvider`](/api/ClientAPIProvider) for XML APIs. It sends request bodies as XML and returns the raw text of the response rather than parsing it as JSON.
 
 Because it extends `ClientAPIProvider`, it is a concrete network provider: construct it with the same `{ url, options?, timeout? }` options.
 
@@ -17,6 +17,6 @@ const xml = await provider.call(getFeed, { channel: "news" })
 
 ## See also
 
-- [ClientAPIProvider](/api/provider/ClientAPIProvider) — the base network provider.
-- [JSONAPIProvider](/api/provider/JSONAPIProvider) — the JSON equivalent.
+- [`ClientAPIProvider`](/api/ClientAPIProvider) — the base network provider.
+- [`JSONAPIProvider`](/api/JSONAPIProvider) — the JSON equivalent.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

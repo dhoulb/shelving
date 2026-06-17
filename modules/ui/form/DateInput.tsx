@@ -5,7 +5,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
-/** Convert a `PossibleDate` to a string for a specific date `<input type="etc">` type. */
+/** Convert a [`PossibleDate`](/util/date/PossibleDate) to a string for a specific date `<input type="etc">` type. */
 const _DATE_TO_STRING: { [K in DateInputType]: (d: PossibleDate | undefined) => string | undefined } = {
 	"datetime-local": getDateTimeString, // ISO 8601 without timezone, e.g. "2024-01-01T12:00:00"
 	date: getDateString, // YYYY-MM-DD
@@ -25,7 +25,7 @@ export interface DateInputProps extends ValueInputProps<string, PossibleDate>, I
 }
 
 /**
- * Date, time, or datetime input that accepts a `PossibleDate` and emits an ISO string value.
+ * Date, time, or datetime input that accepts a [`PossibleDate`](/util/date/PossibleDate) and emits an ISO string value.
  * - The `input` prop selects the underlying `<input type="date|time|datetime-local">` and matching string format.
  *
  * @returns A native date/time `<input>` element.

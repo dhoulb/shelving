@@ -2,7 +2,7 @@
 
 A wrapping provider that serves calls through an [`APICache`](/api/cache). Repeated calls for the same endpoint and payload skip the network and return the cached value, and it exposes `invalidate` / `refresh` helpers for cache control.
 
-The constructor takes the `source` provider and an optional default `maxAge` (defaults to `AVOID_REFRESH` — only refetch when a value is missing or invalidated).
+The constructor takes the `source` provider and an optional default `maxAge` (defaults to [`AVOID_REFRESH`](/store/AVOID_REFRESH) — only refetch when a value is missing or invalidated).
 
 ## Usage
 
@@ -25,5 +25,5 @@ provider.refresh(getUser, { id: "u_1" })    // re-fetch eagerly
 ## See also
 
 - [api/cache](/api/cache) — the `APICache` this provider wraps.
-- [ThroughAPIProvider](/api/provider/ThroughAPIProvider) — the pass-through base.
+- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
 - [api/provider](/api/provider) — overview of the provider hierarchy.

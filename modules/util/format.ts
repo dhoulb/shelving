@@ -174,7 +174,7 @@ export interface PercentFormatOptions
 		Omit<Intl.NumberFormatOptions, "style" | "unit" | "unitDisplay" | "currency" | "currencyDisplay" | "currencySign"> {}
 
 /**
- * Format a percentage (combines `getPercent()` and `formatUnit()` for convenience).
+ * Format a percentage (combines [`getPercent()`](/util/number/getPercent) and [`formatUnit()`](/util/format/formatUnit) for convenience).
  * - Defaults to showing no decimal places.
  * - Defaults to rounding closer to zero (so that 99.99% is shown as 99%).
  * - Javascript's built-in percent formatting works on the `0` zero to `1` range. This uses `getPercent()` which works on `0` to `100` for convenience.
@@ -218,7 +218,7 @@ export function formatObject(obj: ImmutableObject): string {
 }
 
 /**
- * Options for formatting an array as a string with `formatArray()`.
+ * Options for formatting an array as a string with [`formatArray()`](/util/format/formatArray).
  *
  * @see https://dhoulb.github.io/shelving/util/format/ArrayFormatOptions
  */
@@ -230,7 +230,7 @@ export interface ArrayFormatOptions extends FormatOptions, Intl.ListFormatOption
  * @param arr Array of values to format.
  * @param options Formatting options passed through to `Intl.ListFormat`.
  * @param caller Function to attribute a thrown error to (defaults to `formatArray` itself).
- * @returns Locale-formatted list string with each item converted via `formatValue()`.
+ * @returns Locale-formatted list string with each item converted via [`formatValue()`](/util/format/formatValue).
  * @example formatArray(["a", "b", "c"]) // "a, b, and c"
  * @see https://dhoulb.github.io/shelving/util/format/formatArray
  */
@@ -349,8 +349,8 @@ export function formatURL(url: PossibleURL, base?: PossibleURL, caller: AnyCalle
  * Convert any unknown value into a friendly string for user-facing use.
  * - Strings return the string.
  * - Booleans return `"Yes"` or `"No"`
- * - Numbers return formatted number with commas etc (e.g. `formatNumber()`).
- * - Dates return formatted datetime (e.g. `formatDateTime()`).
+ * - Numbers return formatted number with commas etc (e.g. [`formatNumber()`](/util/format/formatNumber)).
+ * - Dates return formatted datetime (e.g. [`formatDateTime()`](/util/format/formatDateTime)).
  * - Arrays return the array items converted to string (with `toTitle()`), and joined with a comma.
  * - Objects return...
  *   1. `object.name` if it exists, or
@@ -383,7 +383,7 @@ export function formatValue(value: unknown, options?: FormatOptions, caller: Any
  * Format a sequence of values.
  *
  * @param values Iterable of unknown values to format.
- * @param options Formatting options passed through to `formatValue()` for each item.
+ * @param options Formatting options passed through to [`formatValue()`](/util/format/formatValue) for each item.
  * @param caller Function to attribute a thrown error to (defaults to `formatValues` itself).
  * @returns Iterable yielding the user-facing string for each value.
  * @example [...formatValues([1234, true])] // ["1,234", "Yes"]

@@ -71,7 +71,7 @@ export function getBytes(value: unknown): Uint8Array<ArrayBuffer> | undefined {
 }
 
 /**
- * Convert a possible set of bytes to a `Uint8Array` byte sequence, or throw `RequiredError` if the value cannot be converted.
+ * Convert a possible set of bytes to a `Uint8Array` byte sequence, or throw [`RequiredError`](/error/RequiredError) if the value cannot be converted.
  *
  * @param value The possible bytes to convert.
  * @param min Minimum allowed length (defaults to `0`).

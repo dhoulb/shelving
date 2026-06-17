@@ -25,8 +25,8 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * - The sidebar is rendered as `<nav>` — it almost always contains the page's primary navigation.
  * - On narrow viewports the sidebar becomes an off-canvas drawer toggled by a single menu button that switches between a burger and a close icon.
  * - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
- * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
- * - The scrollable content column is kept alive across navigation via `<RouteCache>`, so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
+ * - Inside a [`<Navigation>`](/ui/Navigation) the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
+ * - The scrollable content column is kept alive across navigation via [`<RouteCache>`](/ui/RouteCache), so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
  * - Use the `--sidebar-layout-width`, `--sidebar-layout-bg`, `--sidebar-layout-border`, and `--sidebar-layout-color-border` custom properties to override defaults.
  *
  * @kind component

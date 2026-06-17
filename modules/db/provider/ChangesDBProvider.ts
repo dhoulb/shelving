@@ -7,7 +7,7 @@ import type { Collection } from "../collection/Collection.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /**
- * Structured log entry recording a single database write performed through a `ChangesDBProvider`.
+ * Structured log entry recording a single database write performed through a [`ChangesDBProvider`](/db/ChangesDBProvider).
  *
  * - `action` is the kind of write; `collection` is the collection name; `id`, `query`, `data`, and `updates` carry whichever fields apply to that write.
  *
@@ -25,7 +25,7 @@ export type DBChange<I extends Identifier> = {
 /**
  * Database provider that records every write it performs to its `changes` log.
  *
- * - Wraps a `source` provider, delegates each write, then appends a `DBChange` entry describing what happened.
+ * - Wraps a `source` provider, delegates each write, then appends a [`DBChange`](/db/DBChange) entry describing what happened.
  * - Useful for building audit logging, change feeds, or assertions in tests; reads are passed straight through and not logged.
  *
  * @example

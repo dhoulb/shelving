@@ -30,5 +30,5 @@ import { VerticalTransition } from "shelving/ui";
 ## See also
 
 - [`HorizontalTransition`](/ui/HorizontalTransition) — the horizontal counterpart
-- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and `setTransitionType`
+- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and [`setTransitionType()`](/ui/setTransitionType)
 - [`Navigation`](/ui/Navigation) — triggers the route changes this animates

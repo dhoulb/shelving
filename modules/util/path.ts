@@ -97,9 +97,9 @@ export function cleanPath(path: string): string {
 }
 
 /**
- * Resolve a relative or absolute path and return the path, or throw `RequiredError` if not a valid path.
+ * Resolve a relative or absolute path and return the path, or throw [`RequiredError`](/error/RequiredError) if not a valid path.
  * - Internally uses `new URL` to do path processing but shouldn't ever reveal that fact.
- * - Returned paths are cleaned with `cleanPath()` so runs of slashes and trailing slashes are removed.
+ * - Returned paths are cleaned with [`cleanPath()`](/util/path/cleanPath) so runs of slashes and trailing slashes are removed.
  *
  * @param path Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param base Absolute path used for resolving relative paths in `path`.
@@ -189,7 +189,7 @@ export type PathPart = string | readonly string[];
 /**
  * Join one or more path parts into a single path string.
  * - Each part can be a string (e.g. `"/foo/bar"`, `"foo"`) or an array of segments (e.g. `["foo", "bar"]`). String parts may themselves contain `/` separators — they're flattened and normalised.
- * - Runs of `//` are collapsed and trailing slashes stripped (via `cleanPath()`); `\` Windows slashes are converted too.
+ * - Runs of `//` are collapsed and trailing slashes stripped (via [`cleanPath()`](/util/path/cleanPath)); `\` Windows slashes are converted too.
  * - If the first argument is an `AbsolutePath` string (starts with `/`), the result is also an `AbsolutePath`; otherwise the return type is `string`.
  *
  * @example joinPath("/foo", "bar") // → "/foo/bar"

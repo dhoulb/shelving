@@ -20,6 +20,6 @@ The method surface covers single items (`getItem`, `requireItem`, `addItem`, `se
 
 ## See also
 
-- [MemoryDBProvider](/db/provider/MemoryDBProvider) — the concrete in-memory implementation.
-- [ThroughDBProvider](/db/provider/ThroughDBProvider) — base for wrapping providers.
+- [`MemoryDBProvider`](/db/MemoryDBProvider) — the concrete in-memory implementation.
+- [`ThroughDBProvider`](/db/ThroughDBProvider) — base for wrapping providers.
 - [db/provider](/db/provider) — overview of the provider hierarchy.

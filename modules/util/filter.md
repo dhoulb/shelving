@@ -4,9 +4,9 @@ Lightweight generic filter utilities for synchronous iterables, arrays, and asyn
 
 **Things to know:**
 
-- `filterArray` returns the **same reference** when every item passes the predicate — no allocation if nothing is removed. This keeps it safe to use in memoised contexts.
-- `filterItems` is a generator — it yields lazily and works with any `Iterable<T>`, not just arrays.
-- `filterSequence` is the async counterpart for `AsyncIterable<T>` streams.
+- [`filterArray()`](/util/filter/filterArray) returns the **same reference** when every item passes the predicate — no allocation if nothing is removed. This keeps it safe to use in memoised contexts.
+- [`filterItems()`](/util/filter/filterItems) is a generator — it yields lazily and works with any `Iterable<T>`, not just arrays.
+- [`filterSequence()`](/util/filter/filterSequence) is the async counterpart for `AsyncIterable<T>` streams.
 - Extra arguments (`...args`) are forwarded to the `match` function after the item, avoiding closure allocation in tight loops.
 
 ## Usage
@@ -44,4 +44,4 @@ const result = Array.from(filterItems(["a", "b", "c", "d"], isInArray, allowed))
 
 ## See also
 
-- [util](/util) — full util module overview, including the `Match` type.
+- [util](/util) — full util module overview, including the [`Match`](/util/filter/Match) type.

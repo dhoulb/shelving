@@ -4,11 +4,11 @@ These helpers work with any valid URI — including non-hierarchical ones like `
 
 **Things to know:**
 
-- `ImmutableURI` is a re-export of the native `URL` constructor with a tighter TypeScript interface. At runtime it _is_ `URL`; the type just restricts properties to narrower literal types.
-- `getURI()` only accepts **complete** URIs (with protocol). Relative inputs always return `undefined`. Use `getBasedURI()` from `url.ts` to resolve a path against a base.
-- `withURIParam` / `withURIParams` return the **same URI instance** when the params would not change.
-- `getURIParams()` converts `URLSearchParams`, a URI string, a URL object, or a plain dictionary — all to the same `{ key: string }` shape.
-- `omitURIParam` is an alias for `omitURIParams` with a single key.
+- [`ImmutableURI`](/util/uri/ImmutableURI) is a re-export of the native `URL` constructor with a tighter TypeScript interface. At runtime it _is_ `URL`; the type just restricts properties to narrower literal types.
+- [`getURI()`](/util/uri/getURI) only accepts **complete** URIs (with protocol). Relative inputs always return `undefined`. Use [`getBasedURI()`](/util/url/getBasedURI) from `url.ts` to resolve a path against a base.
+- [`withURIParam()`](/util/uri/withURIParam) / [`withURIParams()`](/util/uri/withURIParams) return the **same URI instance** when the params would not change.
+- [`getURIParams()`](/util/uri/getURIParams) converts `URLSearchParams`, a URI string, a URL object, or a plain dictionary — all to the same `{ key: string }` shape.
+- [`omitURIParam`](/util/uri/omitURIParam) is an alias for [`omitURIParams()`](/util/uri/omitURIParams) with a single key.
 
 ## Usage
 
@@ -62,5 +62,5 @@ HTTP_SCHEMES; // ["http:", "https:"]
 
 ## See also
 
-- [url](/util/url) — `getURL()`, `getBasedURI()`, and base-URL utilities for hierarchical URLs.
+- [url](/util/url) — [`getURL()`](/util/url/getURL), [`getBasedURI()`](/util/url/getBasedURI), and base-URL utilities for hierarchical URLs.
 - [util](/util) — naming conventions and the full helper overview.

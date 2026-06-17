@@ -32,8 +32,8 @@ export interface AddressSchemaOptions extends SchemaOptions {
 /**
  * Schema that validates a postal address.
  *
- * - Validates the `address1`, `address2`, `city`, `state`, `postcode`, and `country` fields as a single `AddressData` object.
- * - Formats validated values into a human-readable address string via `formatAddress()`.
+ * - Validates the `address1`, `address2`, `city`, `state`, `postcode`, and `country` fields as a single [`AddressData`](/util/geo/AddressData) object.
+ * - Formats validated values into a human-readable address string via [`formatAddress()`](/util/geo/formatAddress).
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchema

@@ -4,10 +4,10 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 
 **Things to know:**
 
-- Route keys are `AbsolutePath` strings starting with `/`. Placeholders (`{id}`, `:id`, `[id]`, `${id}`, `{{id}}`) are passed to function/component route values as props, merged with URL `?query` params (placeholders win on conflict).
-- `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
-- With a `base` set, the path used for matching is the URL after `matchURLPrefix` strips the base prefix; URLs outside the base render as `null`.
-- Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
+- Route keys are [`AbsolutePath`](/util/path/AbsolutePath) strings starting with `/`. Placeholders (`{id}`, `:id`, `[id]`, `${id}`, `{{id}}`) are passed to function/component route values as props, merged with URL `?query` params (placeholders win on conflict).
+- `<Router>` accepts [`PossibleMeta`](/ui/PossibleMeta) props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
+- With a `base` set, the path used for matching is the URL after [`matchURLPrefix()`](/util/url/matchURLPrefix) strips the base prefix; URLs outside the base render as `null`.
+- Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a [`NotFoundError`](/error/NotFoundError).
 - `cache` (default `10`) keeps recently-visited pages mounted but hidden so back/forward navigation restores their state — see [Keeping page state](#keeping-page-state).
 
 ## Usage

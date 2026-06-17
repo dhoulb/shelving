@@ -40,5 +40,5 @@ function navigate(direction: "forward" | "back", url: string) {
 ## See also
 
 - [`VerticalTransition`](/ui/VerticalTransition) — the vertical counterpart
-- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and `setTransitionType`
+- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and [`setTransitionType()`](/ui/setTransitionType)
 - [`Navigation`](/ui/Navigation) — triggers the route changes this animates

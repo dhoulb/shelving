@@ -13,7 +13,7 @@ import { isObject } from "./object.js";
 export const SAME: unique symbol = Symbol("shelving/SAME");
 
 /**
- * Deeply diff two unknown values to produce the transformation needed to transform `left` into `right`, or the `SAME` constant if they are deeply equal.
+ * Deeply diff two unknown values to produce the transformation needed to transform `left` into `right`, or the [`SAME`](/util/diff/SAME) constant if they are deeply equal.
  *
  * @param left The old value.
  * @param right The new/target value.
@@ -21,8 +21,8 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  * @returns The transformation needed to transform `left` into `right`
  * - If the two values are deeply equal the `SAME` constant is returned.
  * - Unequal scalar values can't be diffed, so `right` is always returned.
- * - If `right` is an array, returns whatever `deepDiffArray()` returns.
- * - If `right` is an object, returns whatever `deepDiffObject()` returns.
+ * - If `right` is an array, returns whatever [`deepDiffArray()`](/util/diff/deepDiffArray) returns.
+ * - If `right` is an object, returns whatever [`deepDiffObject()`](/util/diff/deepDiffObject) returns.
  *
  * @example deepDiff({ a: 1 }, { a: 1 }) // SAME
  * @example deepDiff({ a: 1 }, { a: 2 }) // { a: 2 }
@@ -43,7 +43,7 @@ export function deepDiff(left: unknown, right: unknown): unknown {
  *
  * @param left The old array.
  * @param right The new/target array.
- * @returns The `right` array if it is different to `left`, or the exact `SAME` constant otherwise.
+ * @returns The `right` array if it is different to `left`, or the exact [`SAME`](/util/diff/SAME) constant otherwise.
  * - If the two values are deeply equal the `SAME` constant is returned.
  * @example deepDiffArray([1, 2], [1, 2]) // SAME
  * @example deepDiffArray([1, 2], [1, 3]) // [1, 3]
@@ -64,7 +64,7 @@ export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, ri
  * @param left The old object.
  * @param right The new/target object.
  * @returns Object containing the missing/updated properties that `left` needs to become `right`.
- * - If the two values are deeply equal the `SAME` constant is returned.
+ * - If the two values are deeply equal the [`SAME`](/util/diff/SAME) constant is returned.
  * - If `left` isn't an object then the result can't be diffed so entire `right` is returned.
  * @example deepDiffObject({ a: 1 }, { a: 1 }) // SAME
  * @example deepDiffObject({ a: 1, b: 2 }, { a: 1 }) // { b: undefined }

@@ -42,7 +42,7 @@ export interface DateSchemaOptions extends SchemaOptions {
 /**
  * Schema that defines a valid date stored as a `YYYY-MM-DD` string, e.g. `2005-09-12`.
  *
- * - Validates an abstract date without a timezone; use `DateTimeSchema` for UTC datetimes and `TimeSchema` for times.
+ * - Validates an abstract date without a timezone; use [`DateTimeSchema`](/schema/DateTimeSchema) for UTC datetimes and [`TimeSchema`](/schema/TimeSchema) for times.
  * - The input is coerced to a `Date`, optionally rounded to `step`, range-checked against `min`/`max`, then stringified.
  *
  * @example

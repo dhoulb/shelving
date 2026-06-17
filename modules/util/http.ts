@@ -73,13 +73,13 @@ function _parseMessageBody(
 }
 
 /**
- * Parse the body content of an HTTP `Request` based on its content type, or throw `RequestError` if the content could not be parsed.
+ * Parse the body content of an HTTP `Request` based on its content type, or throw [`RequestError`](/error/RequestError) if the content could not be parsed.
  *
  * @param request The `Request` whose body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns undefined If the request method is `GET` or `HEAD` (these request methods have no body).
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
- * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
+ * @returns unknown If content type is `multipart/form-data` then convert it to a simple [`Data`](/util/data/Data) object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws {RequestError} If the content is not `text/plain`, or `application/json` with valid JSON.
@@ -119,12 +119,12 @@ export function parseRequestFormData(request: Request, caller: AnyCaller = parse
 }
 
 /**
- * Parse the body content of an HTTP `Response` based on its content type, or throw `ResponseError` if the content could not be parsed.
+ * Parse the body content of an HTTP `Response` based on its content type, or throw [`ResponseError`](/error/ResponseError) if the content could not be parsed.
  *
  * @param response The `Response` whose body to parse.
  * @param caller Identity of the calling function for error attribution.
  * @returns unknown If content type is `application/json` and has valid JSON (including `undefined` if the content is empty).
- * @returns unknown If content type is `multipart/form-data` then convert it to a simple `Data` object.
+ * @returns unknown If content type is `multipart/form-data` then convert it to a simple [`Data`](/util/data/Data) object.
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws {ResponseError} If the content is not `text/plain` or `application/json` with valid JSON.
@@ -191,7 +191,7 @@ export function getResponse(value: unknown): Response {
  * Returns the correct `Response` based on the type of error thrown:
  * - If `reason` is a `Response` instance, return it directly.
  * - If `reason` is a string, return a 422 response with the string message, e.g. `"Invalid input"`
- * - If `reason` is an `RequestError` instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
+ * - If `reason` is an [`RequestError`](/error/RequestError) instance, return a response with the error's message and code (but only if `debug` is true so we don't leak error details to the client).
  * - If `reason` is an `Error` instance, return a 500 response with the error's message (but only if `debug` is true so we don't leak error details to the client).
  * - Anything else returns a 500 response.
  *
@@ -252,7 +252,7 @@ const _REQUEST_METHODS = [..._REQUEST_HEAD_METHODS, ..._REQUEST_BODY_METHODS];
  * Is a string a supported HTTP request method?
  *
  * @param method The method string to test.
- * @returns `true` if `method` is a supported `RequestMethod`, narrowing its type.
+ * @returns `true` if `method` is a supported [`RequestMethod`](/util/http/RequestMethod), narrowing its type.
  * @example isRequestMethod("GET") // true
  * @see https://dhoulb.github.io/shelving/util/http/isRequestMethod
  */
@@ -264,7 +264,7 @@ export function isRequestMethod(method: string): method is RequestMethod {
  * Is a string a supported HTTP request method that never sends a body?
  *
  * @param method The method string to test.
- * @returns `true` if `method` is a supported `RequestHeadMethod`, narrowing its type.
+ * @returns `true` if `method` is a supported [`RequestHeadMethod`](/util/http/RequestHeadMethod), narrowing its type.
  * @example isRequestHeadMethod("GET") // true
  * @see https://dhoulb.github.io/shelving/util/http/isRequestHeadMethod
  */
@@ -297,7 +297,7 @@ export type RequestOptions = Pick<
  *
  * @param a The provider-level (default) request options.
  * @param b The call-level request options whose values override `a`.
- * @returns A merged `RequestOptions` with combined headers and abort signals.
+ * @returns A merged [`RequestOptions`](/util/http/RequestOptions) with combined headers and abort signals.
  * @example mergeRequestOptions({ cache: "no-store" }, { mode: "cors" }) // { cache: "no-store", mode: "cors", ... }
  * @see https://dhoulb.github.io/shelving/util/http/mergeRequestOptions
  */

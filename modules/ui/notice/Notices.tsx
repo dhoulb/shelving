@@ -19,7 +19,7 @@ export interface NoticesProps extends FlexVariants {}
 /**
  * Render the global list of notices and subscribe to incoming `"notice"` events.
  * - Listens for `"notice"` events on `window` (or that bubble up to `window`) and shows them in the global notice list.
- * - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
+ * - This is how e.g. [`<Button>`](/ui/Button) and [`<FormNotify>`](/ui/FormNotify) components send notices into the global list.
  *
  * @returns The notices container element.
  * @kind component

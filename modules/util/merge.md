@@ -5,8 +5,8 @@ Immutably merge two values — objects, arrays, or primitives. All merge functio
 **Things to know:**
 
 - Arrays are always merged shallowly (unique items only). Deep array merge is intentionally unsupported because array indices are not stable identifiers.
-- `mergeObject()` treats an explicit `undefined` value in `right` as a deletion of that key from the merged result.
-- `exactMerge` simply returns `right` — the building block for shallow merges of object properties.
+- [`mergeObject()`](/util/merge/mergeObject) treats an explicit `undefined` value in `right` as a deletion of that key from the merged result.
+- [`exactMerge()`](/util/merge/exactMerge) simply returns `right` — the building block for shallow merges of object properties.
 - Same-reference shortcut: if `left === right`, the function returns immediately without allocating.
 
 ## Usage
@@ -55,5 +55,5 @@ mergeArray([1, 2, 3], [3, 4, 5]); // [1, 2, 3, 4, 5]
 
 ## See also
 
-- [object](/util) — immutable `withProp`/`omitProp` helpers for single-property changes.
+- [object](/util) — immutable [`withProp()`](/util/object/withProp)/[`omitProp()`](/util/object/omitProp) helpers for single-property changes.
 - [util](/util) — full util module overview.

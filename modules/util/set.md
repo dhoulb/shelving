@@ -4,9 +4,9 @@ Typed helpers for working with JavaScript `Set` objects. Covers type guards, con
 
 **Things to know:**
 
-- `ImmutableSet<T>` is an alias for `ReadonlySet<T>`; `MutableSet<T>` is `Set<T>`. Use immutable types in function signatures where you don't need to mutate.
-- `addSetItem()` mutates the set in place and returns the item — handy for chaining or registering items by reference.
-- `limitSet()` returns the original set reference unchanged when the limit is greater than or equal to the set size.
+- [`ImmutableSet<T>`](/util/set/ImmutableSet) is an alias for `ReadonlySet<T>`; [`MutableSet<T>`](/util/set/MutableSet) is `Set<T>`. Use immutable types in function signatures where you don't need to mutate.
+- [`addSetItem()`](/util/set/addSetItem) mutates the set in place and returns the item — handy for chaining or registering items by reference.
+- [`limitSet()`](/util/set/limitSet) returns the original set reference unchanged when the limit is greater than or equal to the set size.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Hydration and dehydration
 
-Serialise and deserialise class instances across a network boundary. `dehydrate` converts a value containing class instances into a plain JSON-safe structure; `hydrate` reconstructs the original instances on the other side using a shared `Hydrations` map.
+Serialise and deserialise class instances across a network boundary. [`dehydrate()`](/util/hydrate/dehydrate) converts a value containing class instances into a plain JSON-safe structure; [`hydrate()`](/util/hydrate/hydrate) reconstructs the original instances on the other side using a shared [`Hydrations`](/util/hydrate/Hydrations) map.
 
 **Things to know:**
 

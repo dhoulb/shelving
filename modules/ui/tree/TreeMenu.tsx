@@ -23,7 +23,7 @@ export function matchMenuElement(element: Element): boolean {
 	return false;
 }
 
-/** Extras threaded through `TreeMenuMapper` to every menu item — the parent's URL path. */
+/** Extras threaded through [`TreeMenuMapper`](/ui/TreeMenuMapper) to every menu item — the parent's URL path. */
 interface TreeMenuExtras {
 	/** URL path of the parent element. Each item appends its own `name` to compute its own path. Defaults to `/`. */
 	readonly path: AbsolutePath;
@@ -33,10 +33,10 @@ interface TreeMenuExtras {
  * Default menu item renderer for any `tree-*` element.
  *
  * - Computes its own URL path by appending its `name` to the parent's `path`.
- * - Passes both the label and the nested `<TreeMenuMapper>` to `<MenuItem>`; `<MenuItem>` itself decides whether to reveal the nested submenu based on the current URL.
+ * - Passes both the label and the nested [`<TreeMenuMapper>`](/ui/TreeMenuMapper) to [`<MenuItem>`](/ui/MenuItem); `<MenuItem>` itself decides whether to reveal the nested submenu based on the current URL.
  *
  * @param props The tree element props plus the parent's `path`.
- * @returns A `<MenuItem>` for the element, with a nested `<Menu>` when it has menu-eligible children.
+ * @returns A `<MenuItem>` for the element, with a nested [`<Menu>`](/ui/Menu) when it has menu-eligible children.
  * @example <TreeMenuItem {...element.props} path="/" />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenuItem
  */
@@ -80,12 +80,12 @@ export interface TreeMenuProps {
 /**
  * Sidebar navigation menu built from the children of a root tree element.
  *
- * - Renders each child via `<TreeMenuItem>` (the default mapping for `tree-element`).
+ * - Renders each child via [`<TreeMenuItem>`](/ui/TreeMenuItem) (the default mapping for `tree-element`).
  * - To customise renderers for specific types, wrap in `<TreeMenuMapping mapping={…}>`.
  * - Only directories and files appear — code symbols are kept off the navigation.
  *
  * @kind component
- * @returns A `<Menu>` of navigation links to the root's children.
+ * @returns A [`<Menu>`](/ui/Menu) of navigation links to the root's children.
  * @example <TreeMenu tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenu
  */

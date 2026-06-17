@@ -4,10 +4,10 @@ A quicksort implementation and type-aware comparators that handle mixed-type val
 
 **Things to know:**
 
-- `compareAscending()` defines a stable cross-type ranking: numbers → strings → `true` → `false` → `null` → other objects → `undefined`. Strings are compared locale-aware.
-- `sortArray()` returns the **same reference** when the array is already in order (no copy made). This makes it safe in memoised or reactive contexts.
+- [`compareAscending()`](/util/sort/compareAscending) defines a stable cross-type ranking: numbers → strings → `true` → `false` → `null` → other objects → `undefined`. Strings are compared locale-aware.
+- [`sortArray()`](/util/sort/sortArray) returns the **same reference** when the array is already in order (no copy made). This makes it safe in memoised or reactive contexts.
 - When given a non-array `Iterable`, `sortArray()` always materialises a new array.
-- The `Compare<T, A>` type accepts extra trailing arguments (forwarded by `sortArray`), enabling comparators that carry additional context without closures.
+- The [`Compare<T, A>`](/util/sort/Compare) type accepts extra trailing arguments (forwarded by `sortArray`), enabling comparators that carry additional context without closures.
 
 ## Usage
 
@@ -60,4 +60,4 @@ compareDescending(1, 2);     // positive  (reversed)
 
 ## See also
 
-- [util](/util) — query helpers use `sortArray` via `sortQueryItems`
+- [util](/util) — query helpers use [`sortArray()`](/util/sort/sortArray) via [`sortQueryItems()`](/util/query/sortQueryItems)

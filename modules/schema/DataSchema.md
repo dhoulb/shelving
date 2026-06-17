@@ -1,6 +1,6 @@
 # DataSchema
 
-Validates a plain object whose properties each have their own schema. The term `Data` in Shelving refers to a plain object with known named properties; a `DataSchema` is the validator for one.
+Validates a plain object whose properties each have their own schema. The term [`Data`](/util/data/Data) in Shelving refers to a plain object with known named properties; a `DataSchema` is the validator for one.
 
 When several properties fail, the errors are joined by `\n` with each field name prepended — e.g. `"name: Required\nprice: Minimum 0"`. This file also exports the [`DATA`](/schema/DATA), [`ITEM`](/schema/ITEM), and [`PARTIAL`](/schema/PARTIAL) sugar factories that build `DataSchema` instances.
 
@@ -33,7 +33,7 @@ const NameOnly = PRODUCT.pick("name");
 
 ### `ITEM` — add a typed `id` field
 
-`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the `Item` type in [util](/util).
+`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the [`Item`](/util/item/Item) type in [util](/util).
 
 ```ts
 import { ITEM, STRING, INTEGER, NUMBER } from "shelving/schema";
@@ -57,6 +57,6 @@ PARTIAL_PRODUCT.validate({ price: 4.99 }); // { price: 4.99 }
 
 ## See also
 
-- [util](/util) — the `Data` and `Item` types this schema validates.
-- [db](/db) — `Collection` extends `DataSchema` to validate stored documents.
+- [util](/util) — the [`Data`](/util/data/Data) and [`Item`](/util/item/Item) types this schema validates.
+- [db](/db) — [`Collection`](/db/Collection) extends `DataSchema` to validate stored documents.
 - [schema](/schema) — overview of schema concepts and composition.

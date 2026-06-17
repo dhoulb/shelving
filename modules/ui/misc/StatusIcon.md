@@ -1,6 +1,6 @@
 # StatusIcon
 
-Renders the icon for a given status, coloured to match. Picks a heroicon per status (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
+Renders the icon for a given status, coloured to match. Picks a heroicon per status (`success`, `error`, `warning`, etc.) and uses the animated [`<Loading>`](/ui/Loading) spinner for `"loading"`.
 
 **Things to know:**
 

@@ -12,7 +12,7 @@ APICache
         └── EndpointStore  (one per unique rendered URL / payload)
 ```
 
-`EndpointStore` does the actual fetching and holds the reactive value. `EndpointCache` keys stores by rendered URL so `GET /users/1` and `GET /users/2` are independent. `APICache` groups endpoint caches so you can address all payloads for a given endpoint at once.
+[`EndpointStore`](/api/EndpointStore) does the actual fetching and holds the reactive value. [`EndpointCache`](/api/EndpointCache) keys stores by rendered URL so `GET /users/1` and `GET /users/2` are independent. [`APICache`](/api/APICache) groups endpoint caches so you can address all payloads for a given endpoint at once.
 
 ### Cache keys
 
@@ -58,6 +58,6 @@ Cache instances implement `AsyncDisposable` — `await using cache = new APICach
 ## See also
 
 - [`api/store`](/api) — [`EndpointStore`](/api/EndpointStore), the reactive leaf node
-- [`api/provider`](/api) — [`CachedAPIProvider`](/api/CachedAPIProvider) wraps a provider with an `APICache`
+- [`api/provider`](/api) — [`CachedAPIProvider`](/api/CachedAPIProvider) wraps a provider with an [`APICache`](/api/APICache)
 - [`store`](/store) — [`FetchStore`](/store/FetchStore) base class
 - [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) uses `APICache` under the hood

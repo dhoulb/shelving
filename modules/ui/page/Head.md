@@ -1,6 +1,6 @@
 # Head
 
-Low-level emitter of hoistable head metadata from the current `Meta` context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
+Low-level emitter of hoistable head metadata from the current [`Meta`](/ui/Meta) context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
 
 **Things to know:**
 
