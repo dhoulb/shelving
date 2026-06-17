@@ -2,13 +2,13 @@ import { Fragment, type ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
-import { Col } from "../block/Col.js";
 import { Heading } from "../block/Heading.js";
 import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Table } from "../block/Table.js";
+import { TableColumn } from "../block/TableColumn.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
@@ -129,10 +129,10 @@ export function DocumentationPage({
 								<Scroll horizontal>
 									<Table>
 										<colgroup>
-											<Col width="fit" />
-											<Col width="fit" />
-											<Col width="fit" />
-											<Col width="12x" grow />
+											<TableColumn width="fit" />
+											<TableColumn width="fit" />
+											<TableColumn width="fit" />
+											<TableColumn width="12x" grow />
 										</colgroup>
 										<thead>
 											<tr>
@@ -182,8 +182,8 @@ export function DocumentationPage({
 								<Scroll horizontal>
 									<Table>
 										<colgroup>
-											<Col width="fit" />
-											<Col width="12x" grow />
+											<TableColumn width="fit" />
+											<TableColumn width="12x" grow />
 										</colgroup>
 										<thead>
 											<tr>
@@ -209,8 +209,8 @@ export function DocumentationPage({
 								<Scroll horizontal>
 									<Table>
 										<colgroup>
-											<Col width="fit" />
-											<Col width="12x" grow />
+											<TableColumn width="fit" />
+											<TableColumn width="12x" grow />
 										</colgroup>
 										<thead>
 											<tr>
@@ -236,8 +236,8 @@ export function DocumentationPage({
 								<Scroll horizontal>
 									<Table>
 										<colgroup>
-											<Col width="fit" />
-											<Col width="12x" grow />
+											<TableColumn width="fit" />
+											<TableColumn width="12x" grow />
 										</colgroup>
 										<thead>
 											<tr>
