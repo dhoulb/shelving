@@ -16,6 +16,7 @@ export interface FormatOptions {
 	/**
 	 * Override the locale for formatting (defaults to detected locale).
 	 *
+	 * @default undefined
 	 * @see https://dhoulb.github.io/shelving/util/format/FormatOptions/locale
 	 */
 	readonly locale?: Intl.Locale | undefined;
@@ -80,24 +81,24 @@ export interface UnitFormatOptions
 	/**
 	 * String for one of this thing, e.g. `product` or `item` or `sheep`
 	 * - Used for `unitDisplay: "long"` formatting.
-	 * - Defaults to unit reference, e.g. "minute"
 	 *
+	 * @default The `unit` reference, e.g. `"minute"`.
 	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/one
 	 */
 	readonly one?: string | undefined;
 	/**
 	 * String for several of this thing, e.g. `products` or `items` or `sheep`
 	 * - Used for `unitDisplay: "long"` formatting.
-	 * - Defaults to `one + "s"`
 	 *
+	 * @default `${one}s`
 	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/many
 	 */
 	readonly many?: string | undefined;
 	/**
-	 * Abbreviation for this thing, e.g. `products` or `items` or `sheep` (defaults to `one` + "s").
+	 * Abbreviation for this thing, e.g. `products` or `items` or `sheep`.
 	 * - Used for `unitDisplay: "narrow"` formatting.
-	 * - Defaults to unit reference, e.g. "minute"
 	 *
+	 * @default The `unit` reference, e.g. `"minute"`.
 	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/abbr
 	 */
 	readonly abbr?: string | undefined;
@@ -247,6 +248,7 @@ export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
 	/**
 	 * Override the locale for formatting (defaults to detected locale).
 	 *
+	 * @default undefined
 	 * @see https://dhoulb.github.io/shelving/util/format/DateFormatOptions/locale
 	 */
 	readonly locale?: Intl.Locale | undefined;

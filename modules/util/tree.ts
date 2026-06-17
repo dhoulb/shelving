@@ -227,11 +227,15 @@ function _flatKey(element: TreeElement): string {
  * @see https://dhoulb.github.io/shelving/util/tree/SearchTreeOptions
  */
 export interface SearchTreeOptions {
-	/** Maximum number of results to return (defaults to `20`). */
+	/**
+	 * Maximum number of results to return.
+	 * @default 20
+	 */
 	readonly limit?: number | undefined;
 	/**
 	 * Optional `Query` narrowing the candidates by *any* prop before ranking — the same shape `queryItems()` takes.
 	 * - e.g. `{ kind: "method" }` to only rank methods, or `{ source: "…" }` to constrain by source.
+	 * @default undefined
 	 */
 	readonly filter?: Query | undefined;
 }
