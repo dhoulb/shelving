@@ -16,7 +16,7 @@ import { Row } from "../style/Flex.js";
 import { Scroll } from "../style/Scroll.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
-import { useTreeMap } from "../tree/TreeContext.js";
+import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
 import { TreeLink } from "../tree/TreeLink.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
@@ -26,7 +26,7 @@ const DEFAULT_TYPE = "unknown";
 
 /** Resolve a table row's description — the manually-written one, falling back to the referenced type's own `description` from the tree map (exact-match only). */
 function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string, description?: string | undefined): string {
-	return description || map.get(type)?.props.description || "";
+	return description || getTreeElement(map, type)?.props.description || "";
 }
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
@@ -137,7 +137,7 @@ export function DocumentationPage({
 										<tbody>
 											{params.map(({ name, type = DEFAULT_TYPE, description, default: def }) => {
 												// An options-bag param whose type resolves to a documented interface/object type is flattened into its individual fields as indented child rows.
-												const resolved = map.get(type)?.props as DocumentationElementProps | undefined;
+												const resolved = getTreeElement(map, type)?.props as DocumentationElementProps | undefined;
 												return (
 													<Fragment key={`${name}-${type}`}>
 														<tr>

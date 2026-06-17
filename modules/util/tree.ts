@@ -141,9 +141,9 @@ export interface DocumentationElementProps extends TreeElementProps {
 	readonly class?: string | undefined;
 	/** Whether the property is read-only — a `readonly` field, or a getter with no matching setter. */
 	readonly readonly?: boolean | undefined;
-	/** Name of the class/interface this class/interface extends (e.g. `"AbstractStore"`). Raw string — resolved to a link at render time. */
+	/** Full type text of the class/interface this extends, including any generic arguments (e.g. `"AbstractStore<string>"`, `"Omit<StringSchemaOptions, 'value'>"`). Resolved to a link at render time, trimming generics to the bare name; builtins/wrappers that don't resolve stay as text. */
 	readonly extends?: string | undefined;
-	/** Names of the interfaces this class/interface implements (e.g. `["Serializable"]`). Raw strings — resolved to links at render time; builtins simply stay as text. */
+	/** Full type text of the interfaces this implements, including generic arguments (e.g. `["Serializable<string>"]`). Resolved to links at render time (generics trimmed for lookup); builtins simply stay as text. */
 	readonly implements?: ImmutableArray<string> | undefined;
 	/**
 	 * Type names referenced by a `type` alias's body (e.g. `["OtherType"]` for `type X = string | OtherType`).

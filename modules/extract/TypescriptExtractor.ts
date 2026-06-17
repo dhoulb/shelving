@@ -21,7 +21,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
  * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
- * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends`, `implements`, and `types` (the type names a `type` alias's body references, e.g. `OtherType` in `string | OtherType`).
+ * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends` / `implements` (full heritage type text including generic arguments, e.g. `AbstractStore<string>` or `Omit<StringSchemaOptions, "value">`), and `types` (the type names a `type` alias's body references, e.g. `OtherType` in `string | OtherType`).
  * - Records a structured `properties` list for interfaces and object-literal `type` aliases — each member's name, type, optionality, `@default`, and description — so an options-bag parameter can be flattened into its fields at render time.
  * - Pretty-prints object-literal signatures (interfaces and object-literal `type` aliases) as multi-line `{ … }` blocks, one member per line; other type bodies (`string | null`, mapped types, …) are emitted verbatim.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
@@ -160,7 +160,7 @@ function _extractStatement(statement: ts.Statement, source: ts.SourceFile): Docu
 	};
 }
 
-/** Extract the `extends` (single base type) and `implements` (interface list) names from a class or interface declaration. */
+/** Extract the `extends` (single base type) and `implements` (interface list) heritage from a class or interface declaration, as full type text including any generic arguments (e.g. `AbstractStore<string>`, `Omit<StringSchemaOptions, "value">`). */
 function _getHeritage(
 	statement: ts.Statement,
 	source: ts.SourceFile,
@@ -169,7 +169,8 @@ function _getHeritage(
 	let extendsName: string | undefined;
 	const implementsNames: string[] = [];
 	for (const clause of statement.heritageClauses ?? []) {
-		const names = clause.types.map(t => t.expression.getText(source));
+		// Full text — keep generic arguments (`Foo<T>`) and wrappers (`Omit<…>`) intact; render-time lookup trims them to the bare name to resolve a link.
+		const names = clause.types.map(t => t.getText(source));
 		// `extends` keeps the first base type; an interface extending several still surfaces its primary base.
 		if (clause.token === ts.SyntaxKind.ExtendsKeyword) extendsName ??= names[0];
 		else if (clause.token === ts.SyntaxKind.ImplementsKeyword) implementsNames.push(...names);

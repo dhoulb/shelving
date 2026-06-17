@@ -307,6 +307,21 @@ export class MemoryStore extends AbstractStore implements Serializable, Disposab
 		]);
 	});
 
+	test("keeps generic arguments in heritage text", async () => {
+		const element = await extractor.extract(
+			file(`
+/** A typed store. */
+export class StringStore extends AbstractStore<string> implements Serializable<string> {}
+/** Slug options. */
+export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "value"> {}
+`),
+		);
+		expect(element.props.children).toMatchObject([
+			{ props: { name: "StringStore", extends: "AbstractStore<string>", implements: ["Serializable<string>"] } },
+			{ props: { name: "SlugSchemaOptions", extends: 'Omit<StringSchemaOptions, "value">' } },
+		]);
+	});
+
 	test("stamps the owning class onto members and skips `override` members", async () => {
 		const element = await extractor.extract(
 			file(`

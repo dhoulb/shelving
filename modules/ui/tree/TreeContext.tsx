@@ -40,3 +40,23 @@ export function TreeProvider({ tree, children }: { readonly tree: TreeElement; r
 export function useTreeMap(): ReadonlyMap<string, TreeElement> {
 	return use(TreeContext);
 }
+
+/**
+ * Resolve a reference string to its tree element — by exact key first, then by the bare type name when the whole reference is a single generic type.
+ *
+ * - Exact lookup handles flat keys (`"BooleanSchema"`, `"Store.get"`) and canonical paths (`"/schema/BooleanSchema"`).
+ * - On a miss, a `Foo<…>`-shaped reference retries with the generics stripped (`"Schema<T>"` → `"Schema"`), so a generic type name still links without the extractor storing a separate un-generic'd key — the generics stay in the displayed label.
+ * - A compound reference (`"Schema<T> | null"`, `"Omit<X, 'k'>"`) only retries on the leading identifier when the whole string is `Identifier<…>`; otherwise it stays a miss and the caller falls back to plain text.
+ *
+ * @param map The flattened tree lookup map (from `useTreeMap()`).
+ * @param ref The reference string — a flat key, canonical path, or raw type expression.
+ * @returns The resolved element, or `undefined` on a miss.
+ * @example getTreeElement(useTreeMap(), "Schema<T>") // the `Schema` element
+ * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/getTreeElement
+ */
+export function getTreeElement(map: ReadonlyMap<string, TreeElement>, ref: string): TreeElement | undefined {
+	const exact = map.get(ref);
+	if (exact || !ref.includes("<")) return exact;
+	// Strip a whole-string generic wrapper (`Foo<…>` → `Foo`) and retry; leave compound expressions (unions, etc.) unresolved.
+	return map.get(ref.replace(/^([\w$.]+)<.*>$/s, "$1"));
+}
