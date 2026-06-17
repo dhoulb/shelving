@@ -11,24 +11,45 @@ import { Schema } from "./Schema.js";
 export type StringInputType = "text" | "password" | "color" | "email" | "number" | "tel" | "search" | "url";
 
 /**
- * Options for `StringSchema`.
- *
- * - `value` — default string value used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum allowed character length.
- * - `rows` — number of rows (more than one enables multiline sanitization).
- * - `match` — regular expression the sanitized string must match.
- * - `case` — force the result to `"upper"` or `"lower"` case.
- * - `input` — HTML `<input />` `type=""` hint for downstream UIs.
+ * Options for a [`StringSchema`](/schema/StringSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchemaOptions
  */
 export interface StringSchemaOptions extends SchemaOptions {
+	/**
+	 * Default string value used when the input is `undefined`.
+	 * @default ""
+	 */
 	readonly value?: string | undefined;
+	/**
+	 * Minimum allowed character length.
+	 * @default 0
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum allowed character length.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
+	/**
+	 * Number of rows; more than one enables multiline sanitization.
+	 * @default 1
+	 */
 	readonly rows?: number | undefined;
+	/**
+	 * Regular expression the sanitized string must match.
+	 * @default undefined
+	 */
 	readonly match?: RegExp | undefined;
+	/**
+	 * Force the result to `"upper"` or `"lower"` case.
+	 * @default undefined
+	 */
 	readonly case?: "upper" | "lower" | undefined;
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "text"
+	 */
 	readonly input?: StringInputType | undefined;
 }
 

@@ -12,15 +12,17 @@ import type { SchemaOptions, Schemas } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Options for `DataSchema`.
- *
- * - `props` — a named schema for each property the data object must have.
- * - `value` — partial default value merged over the per-prop defaults.
+ * Options for a [`DataSchema`](/schema/DataSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchemaOptions
  */
 export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
+	/** Named schema for each property the data object must have. */
 	readonly props: Schemas<T>;
+	/**
+	 * Partial default value merged over the per-prop defaults.
+	 * @default undefined
+	 */
 	readonly value?: Partial<T> | undefined;
 }
 

@@ -2,14 +2,15 @@ import type { Schema } from "./Schema.js";
 import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 
 /**
- * Allowed options for `OptionalSchema`.
- *
- * - `value` — default value is always `undefined` (the default is only used when a value is `undefined`, so otherwise `undefined` could never be returned).
+ * Options for an [`OptionalSchema`](/schema/OptionalSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchemaOptions
  */
 export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undefined> {
-	/** Default value for an `OptionalSchema` can always `undefined` */
+	/**
+	 * Default value is always `undefined` — the default is only used when the input is `undefined`, so otherwise `undefined` could never be returned.
+	 * @default undefined
+	 */
 	readonly value?: undefined;
 }
 

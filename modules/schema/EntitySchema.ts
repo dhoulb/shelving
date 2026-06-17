@@ -4,13 +4,17 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
- * Options for `EntitySchema`.
+ * Options for an [`EntitySchema`](/schema/EntitySchema).
  *
- * - `types` — restrict the allowed entity types; any other type is rejected.
+ * Inherits all [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions), plus a `types` allow-list.
  *
  * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchemaOptions
  */
 export interface EntitySchemaOptions<T extends string> extends StringSchemaOptions {
+	/**
+	 * Restrict the allowed entity types; any other type is rejected.
+	 * @default undefined
+	 */
 	readonly types?: ImmutableArray<T> | undefined;
 }
 

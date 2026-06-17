@@ -4,12 +4,15 @@ import { NULLABLE } from "./NullableSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 
 /**
- * Options for `CountrySchema`.
+ * Options for a [`CountrySchema`](/schema/CountrySchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchemaOptions
  */
 export interface CountrySchemaOptions extends SchemaOptions {
-	/** Country value, or `"detect"` to resolve from browser language. */
+	/**
+	 * Default country value, or `"detect"` to resolve from the browser language.
+	 * @default "detect"
+	 */
 	readonly value?: PossibleCountry;
 }
 

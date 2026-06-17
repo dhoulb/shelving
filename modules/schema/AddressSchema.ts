@@ -18,7 +18,9 @@ const ADDRESS_PROPS: Schemas<AddressData> = {
 };
 
 /**
- * Allowed options for `AddressSchema`.
+ * Options for an [`AddressSchema`](/schema/AddressSchema).
+ *
+ * Inherits [`DataSchemaOptions`](/schema/DataSchema/DataSchemaOptions) except `props`, which is fixed to the postal-address fields.
  *
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchemaOptions
  */

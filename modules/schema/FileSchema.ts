@@ -5,12 +5,17 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
- * Allowed options for `FileSchema`.
+ * Options for a [`FileSchema`](/schema/FileSchema).
+ *
+ * Inherits all [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions), plus a `types` allow-list.
  *
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchemaOptions
  */
 export interface FileSchemaOptions extends StringSchemaOptions {
-	/** Set of allowed file extensions; when set, the file name's extension must be one of these. */
+	/**
+	 * Set of allowed file extensions; when set, the file name's extension must be one of these.
+	 * @default undefined
+	 */
 	readonly types?: FileTypes | undefined;
 }
 

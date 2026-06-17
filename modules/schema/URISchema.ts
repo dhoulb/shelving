@@ -6,13 +6,17 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /**
- * Options for `URISchema`.
+ * Options for a [`URISchema`](/schema/URISchema).
  *
- * - `schemes` — whitelist of allowed URI schemes (defaults to HTTP/HTTPS).
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min` and `rows`, which are fixed because the URI format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchemaOptions
  */
 export interface URISchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
+	/**
+	 * Whitelist of allowed URI schemes.
+	 * @default HTTP_SCHEMES `["https:", "http:"]`
+	 */
 	readonly schemes?: URISchemes | undefined;
 }
 

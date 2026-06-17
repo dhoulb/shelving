@@ -29,17 +29,17 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
 }
 
 /**
- * Options for `ChoiceSchema`.
- *
- * - `options` — the allowed choices, as a `{ key: title }` dictionary or an array of keys.
- * - `value` — default option used when the input is `undefined`.
+ * Options for a [`ChoiceSchema`](/schema/ChoiceSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchemaOptions
  */
 export interface ChoiceSchemaOptions<O extends string, I = never> extends Omit<SchemaOptions, "value"> {
-	/** Specify correct options using a dictionary of entries. */
+	/** Allowed choices, as a `{ key: title }` dictionary or an array of keys. */
 	readonly options: PossibleChoiceOptions<O>;
-	/** Default option for the value. */
+	/**
+	 * Default option used when the input is `undefined`.
+	 * @default undefined
+	 */
 	readonly value?: O | I;
 }
 

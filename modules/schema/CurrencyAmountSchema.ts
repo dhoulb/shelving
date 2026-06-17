@@ -5,15 +5,19 @@ import { NULLABLE } from "./NullableSchema.js";
 import { NumberSchema, type NumberSchemaOptions } from "./NumberSchema.js";
 
 /**
- * Options for `CurrencyAmountSchema`.
+ * Options for a [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema).
  *
- * - `currency` — ISO 4217 currency code that determines the step and symbol.
- * - `symbol` — override the currency symbol used when formatting.
+ * Inherits [`NumberSchemaOptions`](/schema/NumberSchema/NumberSchemaOptions), but `step` defaults to the currency's minor units rather than being unset.
  *
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchemaOptions
  */
 export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
+	/**
+	 * Override the currency symbol used when formatting.
+	 * @default The symbol inferred from `currency`.
+	 */
 	readonly symbol?: string | undefined;
+	/** ISO 4217 currency code that determines the step and symbol. */
 	readonly currency: CurrencyCode;
 }
 

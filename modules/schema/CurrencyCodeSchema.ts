@@ -5,13 +5,17 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /**
- * Options for `CurrencyCodeSchema`.
+ * Options for a [`CurrencyCodeSchema`](/schema/CurrencyCodeSchema).
  *
- * - `currencies` — set of allowed ISO 4217 currency codes (defaults to all known codes).
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min`, `match`, and `rows`, which are fixed because the ISO 4217 code format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchemaOptions
  */
 export interface CurrencyCodeSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {
+	/**
+	 * Set of allowed ISO 4217 currency codes.
+	 * @default CURRENCY_CODES All known ISO 4217 codes.
+	 */
 	currencies?: ImmutableArray<CurrencyCode>;
 }
 

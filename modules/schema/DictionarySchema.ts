@@ -6,18 +6,27 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Options for `DictionarySchema`.
- *
- * - `items` — schema every entry value in the dictionary must conform to.
- * - `value` — default dictionary used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum number of entries.
+ * Options for a [`DictionarySchema`](/schema/DictionarySchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchemaOptions
  */
 export interface DictionarySchemaOptions<T> extends SchemaOptions {
+	/** Schema every entry value in the dictionary must conform to. */
 	readonly items: Schema<T>;
+	/**
+	 * Default dictionary used when the input is `undefined`.
+	 * @default {}
+	 */
 	readonly value?: ImmutableDictionary | undefined;
+	/**
+	 * Minimum number of entries.
+	 * @default 0
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum number of entries.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
 }
 

@@ -7,7 +7,9 @@ const R_MATCH =
 	/^[a-z0-9](?:[a-zA-Z0-9._+-]{0,62}[a-zA-Z0-9])?@(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.){1,3}(?:[a-z]{2,63}|xn--[a-z0-9-]{0,58}[a-z0-9])$/;
 
 /**
- * Options for an `EmailSchema`.
+ * Options for an [`EmailSchema`](/schema/EmailSchema).
+ *
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min`, `match`, and `rows`, which are fixed because the email format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EmailSchemaOptions
  */

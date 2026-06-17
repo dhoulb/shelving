@@ -5,7 +5,9 @@ const COLOR_REGEXP = /^#[0-9A-F]{6}$/;
 const NOT_HEX_REGEXP = /[^0-9A-F]/g;
 
 /**
- * Options for a `ColorSchema`.
+ * Options for a [`ColorSchema`](/schema/ColorSchema).
+ *
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min`, `match`, and `rows`, which are fixed because the `#RRGGBB` hex format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchemaOptions
  */

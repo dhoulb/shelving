@@ -3,7 +3,9 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
- * Options for a `UUIDSchema`.
+ * Options for a [`UUIDSchema`](/schema/UUIDSchema).
+ *
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min`, `match`, and `rows`, which are fixed because the UUID format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/UUIDSchema/UUIDSchemaOptions
  */

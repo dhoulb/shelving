@@ -2,14 +2,15 @@ import type { Schema } from "./Schema.js";
 import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 
 /**
- * Allowed options for `NullableSchema`.
- *
- * - `value` — default value used when the input is `undefined` (defaults to `null`).
+ * Options for a [`NullableSchema`](/schema/NullableSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchemaOptions
  */
 export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null> {
-	/** Default value (defaults to `null`). */
+	/**
+	 * Default value used when the input is `undefined`.
+	 * @default null
+	 */
 	readonly value?: T | null;
 }
 

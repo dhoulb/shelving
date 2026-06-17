@@ -3,7 +3,9 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /**
- * Options for a `PhoneSchema`.
+ * Options for a [`PhoneSchema`](/schema/PhoneSchema).
+ *
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min`, `match`, and `rows`, which are fixed because the E.164 phone format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/PhoneSchema/PhoneSchemaOptions
  */

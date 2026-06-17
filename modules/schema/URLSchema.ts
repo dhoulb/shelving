@@ -7,15 +7,22 @@ import type { StringSchemaOptions } from "./StringSchema.js";
 import { StringSchema } from "./StringSchema.js";
 
 /**
- * Options for `URLSchema`.
+ * Options for a [`URLSchema`](/schema/URLSchema).
  *
- * - `base` — base URL that relative URLs are resolved against.
- * - `schemes` — whitelist of allowed URL schemes (defaults to HTTP/HTTPS).
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min` and `rows`, which are fixed because the URL format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchemaOptions
  */
 export interface URLSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
+	/**
+	 * Base URL that relative URLs are resolved against.
+	 * @default undefined
+	 */
 	readonly base?: URL | URLString | undefined;
+	/**
+	 * Whitelist of allowed URL schemes.
+	 * @default HTTP_SCHEMES `["https:", "http:"]`
+	 */
 	readonly schemes?: URISchemes | undefined;
 }
 

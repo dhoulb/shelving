@@ -5,21 +5,35 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Allowed options for `NumberSchema`.
- *
- * - `value` — default number value used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum allowed value.
- * - `step` — rounding step the value is snapped to (e.g. `1` for integers).
- * - `format` — function used to render the number for display in downstream UIs.
+ * Options for a [`NumberSchema`](/schema/NumberSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchemaOptions
  */
 export interface NumberSchemaOptions extends SchemaOptions {
+	/**
+	 * Default number value used when the input is `undefined`.
+	 * @default undefined
+	 */
 	readonly value?: number | undefined;
+	/**
+	 * Minimum allowed value.
+	 * @default Number.NEGATIVE_INFINITY
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum allowed value.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
+	/**
+	 * Rounding step the value is snapped to (e.g. `1` for integers).
+	 * @default undefined
+	 */
 	readonly step?: number | undefined;
-	/** Format the number for display in downstream UIs. */
+	/**
+	 * Function used to render the number for display in downstream UIs.
+	 * @default formatNumber
+	 */
 	readonly format?: typeof formatNumber | undefined;
 }
 

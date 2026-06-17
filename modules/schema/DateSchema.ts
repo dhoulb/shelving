@@ -15,24 +15,36 @@ import { Schema } from "./Schema.js";
 export type DateInputType = "time" | "date" | "datetime-local";
 
 /**
- * Options for `DateSchema`.
- *
- * - `value` — default date used when the input is `undefined`.
- * - `min`/`max` — earliest and latest allowed dates (`null` for no bound).
- * - `input` — HTML `<input />` `type=""` hint for downstream UIs.
- * - `step` — rounding step in milliseconds.
+ * Options for a [`DateSchema`](/schema/DateSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/DateSchema/DateSchemaOptions
  */
 export interface DateSchemaOptions extends SchemaOptions {
+	/**
+	 * Default date used when the input is `undefined`.
+	 * @default undefined
+	 */
 	readonly value?: PossibleDate | undefined;
+	/**
+	 * Earliest allowed date (`null` for no bound).
+	 * @default undefined
+	 */
 	readonly min?: Nullish<PossibleDate>;
+	/**
+	 * Latest allowed date (`null` for no bound).
+	 * @default undefined
+	 */
 	readonly max?: Nullish<PossibleDate>;
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "date"
+	 */
 	readonly input?: DateInputType | undefined;
 	/**
 	 * Rounding step (in milliseconds, because that's the base unit for time).
 	 * - E.g. `1000 * 60` will round to the nearest minute.
 	 * - Note: HTML `<input>` `step` attributes are in _seconds_, so you may need to convert units.
+	 * @default undefined
 	 */
 	readonly step?: number | undefined;
 }

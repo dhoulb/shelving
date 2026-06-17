@@ -3,11 +3,12 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Allowed options for `ThroughSchema`.
+ * Options for a [`ThroughSchema`](/schema/ThroughSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchemaOptions
  */
 export interface ThroughSchemaOptions<T> extends SchemaOptions {
+	/** Source schema this schema wraps and passes through to. */
 	source: Schema<T>;
 }
 

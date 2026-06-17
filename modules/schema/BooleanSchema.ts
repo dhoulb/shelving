@@ -3,15 +3,20 @@ import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Allowed options for `BooleanSchema`.
- *
- * - `value` — default boolean value used when the input is `undefined`.
- * - `required` — when `true`, a falsy result is rejected as invalid.
+ * Options for a [`BooleanSchema`](/schema/BooleanSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchemaOptions
  */
 export interface BooleanSchemaOptions extends SchemaOptions {
+	/**
+	 * Default boolean value used when the input is `undefined`.
+	 * @default false
+	 */
 	readonly value?: boolean | undefined;
+	/**
+	 * When `true`, a falsy result is rejected as invalid.
+	 * @default false
+	 */
 	readonly required?: boolean | undefined;
 }
 

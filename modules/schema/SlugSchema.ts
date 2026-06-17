@@ -3,7 +3,9 @@ import { NULLABLE } from "./NullableSchema.js";
 import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 
 /**
- * Options for a `SlugSchema`.
+ * Options for a [`SlugSchema`](/schema/SlugSchema).
+ *
+ * Inherits [`StringSchemaOptions`](/schema/StringSchema/StringSchemaOptions) except `min` and `rows`, which are fixed because the slug format is enforced internally.
  *
  * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchemaOptions
  */

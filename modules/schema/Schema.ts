@@ -6,22 +6,40 @@ import { getUndefined } from "../util/undefined.js";
 import type { Validator } from "../util/validate.js";
 
 /**
- * Options allowed by a `Schema` instance.
+ * Base options shared by every [`Schema`](/schema/Schema) subclass.
  *
  * @see https://dhoulb.github.io/shelving/schema/Schema/SchemaOptions
  */
 export type SchemaOptions = {
-	/** String for one of this thing, e.g. `product` or `item` or `sheep` */
+	/**
+	 * Singular noun for one of this thing, e.g. `product` or `item` or `sheep`.
+	 * @default "value"
+	 */
 	readonly one?: string;
-	/** String for several of this thing, e.g. `products` or `items` or `sheep` (defaults to `one` + "s") */
+	/**
+	 * Plural noun for several of this thing, e.g. `products` or `items` or `sheep`.
+	 * @default `${one}s`
+	 */
 	readonly many?: string;
-	/** Title of the schema, e.g. for using as the title of a corresponding field. */
+	/**
+	 * Title of the schema, e.g. for use as the title of a corresponding field.
+	 * @default undefined
+	 */
 	readonly title?: string | undefined;
-	/** Description of the schema, e.g. for using as a description in a corresponding field. */
+	/**
+	 * Description of the schema, e.g. for use as a description in a corresponding field.
+	 * @default undefined
+	 */
 	readonly description?: string | undefined;
-	/** Placeholder of the schema, e.g. for using as a placeholder in a corresponding field. */
+	/**
+	 * Placeholder of the schema, e.g. for use as a placeholder in a corresponding field.
+	 * @default undefined
+	 */
 	readonly placeholder?: string | undefined;
-	/** Default value for the schema if `validate()` is called with an `undefined` value. */
+	/**
+	 * Default value used when `validate()` is called with an `undefined` value.
+	 * @default undefined
+	 */
 	readonly value?: unknown;
 };
 
