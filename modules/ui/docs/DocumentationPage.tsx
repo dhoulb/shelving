@@ -131,7 +131,7 @@ export function DocumentationPage({
 									<Table>
 										<thead>
 											<tr>
-												<TableHeader width="fit">Parameter</TableHeader>
+												<TableHeader width="fit">Param</TableHeader>
 												<TableHeader width="fit">Type</TableHeader>
 												<TableHeader width="fit">Default</TableHeader>
 											</tr>
@@ -150,7 +150,7 @@ export function DocumentationPage({
 																<TreeLink name={type} />
 															</TableCell>
 															<TableCell>{def ? <Code>{def}</Code> : "-"}</TableCell>
-															<TableCell width="12x" grow>
+															<TableCell width="20x" grow>
 																{description || resolved?.description || ""}
 															</TableCell>
 														</tr>
@@ -163,7 +163,7 @@ export function DocumentationPage({
 																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
 																</TableCell>
 																<TableCell>{prop.default ? <Code>{prop.default}</Code> : "-"}</TableCell>
-																<TableCell width="12x" grow>
+																<TableCell width="20x" grow>
 																	{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}
 																</TableCell>
 															</tr>
@@ -191,7 +191,7 @@ export function DocumentationPage({
 													<TableCell>
 														<TreeLink name={type} />
 													</TableCell>
-													<TableCell width="12x" grow>
+													<TableCell width="20x" grow>
 														{_getRowDescription(map, type, description)}
 													</TableCell>
 												</tr>
@@ -216,7 +216,7 @@ export function DocumentationPage({
 													<TableCell>
 														<TreeLink name={type} />
 													</TableCell>
-													<TableCell width="12x" grow>
+													<TableCell width="20x" grow>
 														{_getRowDescription(map, type, description)}
 													</TableCell>
 												</tr>
@@ -241,7 +241,7 @@ export function DocumentationPage({
 													<TableCell>
 														<TreeLink name={type} />
 													</TableCell>
-													<TableCell width="12x" grow>
+													<TableCell width="20x" grow>
 														{_getRowDescription(map, type)}
 													</TableCell>
 												</tr>
