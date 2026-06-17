@@ -375,7 +375,7 @@ export class Store {
 		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
 	});
 
-	test("merges overloaded function declarations into one element with multiple signatures", async () => {
+	test("merges overloaded function declarations into one element with multiple signatures, dropping the implementation", async () => {
 		const element = await extractor.extract(
 			file(`
 /** Add two values. */
@@ -386,15 +386,89 @@ export function add(a: any, b: any): any { return a + b; }
 		);
 		const children = element.props.children as unknown[];
 		expect(children).toHaveLength(1);
+		// The implementation (base definition) `add(a: any, b: any): any` is dropped — only the overload signatures survive.
 		expect(children[0]).toMatchObject({
 			type: "tree-documentation",
 			props: {
 				name: "add",
 				title: "add()",
 				kind: "function",
-				signatures: ["add(a: number, b: number): number", "add(a: string, b: string): string", "add(a: any, b: any): any"],
+				signatures: ["add(a: number, b: number): number", "add(a: string, b: string): string"],
 			},
 		});
+	});
+
+	test("documents a lone implementation when there are no overload signatures", async () => {
+		const element = await extractor.extract(
+			file(`
+/** Add two numbers. */
+export function add(a: number, b: number): number { return a + b; }
+`),
+		);
+		// With no overload signatures, the implementation is the only declaration — it stands as the definition.
+		expect(element.props.children).toMatchObject([
+			{ type: "tree-documentation", props: { name: "add", kind: "function", signatures: ["add(a: number, b: number): number"] } },
+		]);
+	});
+
+	test("drops the implementation signature, params, and returns when a single overload is present", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Make partial.
+ * @returns A partial schema.
+ */
+export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>>;
+export function PARTIAL(source: Schemas<Data> | DataSchema<Data>): DataSchema<PartialData<Data>> { return source as any; }
+`),
+		);
+		// Only the overload's narrow signature/params/returns survive; the wider implementation (base definition) is ignored.
+		expect(element.props.children).toMatchObject([
+			{
+				props: {
+					name: "PARTIAL",
+					kind: "function",
+					signatures: ["PARTIAL(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>>"],
+					params: [{ name: "source", type: "Schemas<T> | DataSchema<T>" }],
+					returns: [{ type: "DataSchema<PartialData<T>>", description: "A partial schema." }],
+				},
+			},
+		]);
+	});
+
+	test("treats a typed `@param {Type}` as canonical, overriding the inferred parameter type", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Make a thing.
+ * @param props {Schemas<T>} A named schema for each property.
+ */
+export function DATA<T extends Data>(props: Schemas<Data>): DataSchema<T> { return props as any; }
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+		// The inferred \`Schemas<Data>\` is superseded by the canonical \`{Schemas<T>}\` from the \`@param\`.
+		expect(props?.params).toEqual([
+			{ name: "props", type: "Schemas<T>", description: "A named schema for each property.", optional: false, default: undefined },
+		]);
+	});
+
+	test("emits one row per `@param` when the same parameter is documented as several typed variants", async () => {
+		const element = await extractor.extract(
+			file(`
+/**
+ * Make partial.
+ * @param source {Schemas<T>} The props schemas to make partial.
+ * @param source {DataSchema<T>} An existing schema to make partial.
+ */
+export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>> { return source as any; }
+`),
+		);
+		const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+		expect(props?.params).toEqual([
+			{ name: "source", type: "Schemas<T>", description: "The props schemas to make partial.", optional: false, default: undefined },
+			{ name: "source", type: "DataSchema<T>", description: "An existing schema to make partial.", optional: false, default: undefined },
+		]);
 	});
 
 	test("skips `declare` members (ambient type-only re-declarations)", async () => {
@@ -482,7 +556,7 @@ export class MockAPIProvider<P, R> {
 		]);
 	});
 
-	test("emits multiple signatures for multiple constructor overloads", async () => {
+	test("emits multiple signatures for multiple constructor overloads, dropping the implementation", async () => {
 		const element = await extractor.extract(
 			file(`
 /** A range. */
@@ -494,11 +568,8 @@ export class Range {
 `),
 		);
 		const props = (element.props.children as { props: { signatures: string[] } }[])[0]?.props;
-		expect(props?.signatures).toEqual([
-			"new Range(max: number)",
-			"new Range(min: number, max: number)",
-			"new Range(min: number, max?: number)",
-		]);
+		// The implementation constructor (base definition) `new Range(min: number, max?: number)` is dropped — only the overloads survive.
+		expect(props?.signatures).toEqual(["new Range(max: number)", "new Range(min: number, max: number)"]);
 	});
 
 	test("emits `new ClassName()` with no params for a class with no explicit constructor", async () => {
@@ -878,11 +949,8 @@ export function add(a: any, b: any): any { return a + b; }
 `),
 		);
 		const props = (element.props.children as { props: { signatures: string[] } }[])[0]?.props;
-		expect(props?.signatures).toEqual([
-			"add(a: number, b: number): number",
-			"add(a: string, b: string): string",
-			"add(a: any, b: any): any",
-		]);
+		// The implementation (base definition) is dropped; the two identical overloads collapse to one.
+		expect(props?.signatures).toEqual(["add(a: number, b: number): number", "add(a: string, b: string): string"]);
 	});
 
 	test("de-duplicates identical params and returns across overloads, keeping distinct ones", async () => {
@@ -895,22 +963,22 @@ export function add(a: any, b: any): any { return a + b; }
 export function combine(a: number, b: number): number;
 /**
  * Combine values.
- * @returns {number} The combined value.
+ * @returns {string} The combined string.
  */
-export function combine(a: number, b: number): number;
-export function combine(a: number, b: number): number { return a + b; }
+export function combine(a: number, b: number): string;
+export function combine(a: number, b: number): number | string { return a + b; }
 `),
 		);
 		const props = (element.props.children as { props: { params: unknown; returns: unknown } }[])[0]?.props;
-		// All three declarations share the same params — deduped to a single (a, b) pair.
+		// Both overloads share the same params — deduped to a single (a, b) pair (the implementation is dropped).
 		expect(props?.params).toEqual([
 			{ name: "a", type: "number", description: undefined, optional: false },
 			{ name: "b", type: "number", description: undefined, optional: false },
 		]);
-		// The two documented overloads share a return; the implementation's bare `number` return differs by description and is kept.
+		// The two overloads document distinct returns — both kept; the implementation's `number | string` return is dropped.
 		expect(props?.returns).toEqual([
 			{ type: "number", description: "The combined value." },
-			{ type: "number", description: undefined },
+			{ type: "string", description: "The combined string." },
 		]);
 	});
 
@@ -930,10 +998,12 @@ export function doThing(a: number): number;
  * @example doThing(1)
  * @example doThing(2)
  */
+export function doThing(a: string): string;
 export function doThing(a: any): any { return a; }
 `),
 		);
 		const props = (element.props.children as { props: { throws: unknown; examples: unknown } }[])[0]?.props;
+		// The implementation is dropped; throws/examples are merged and deduped across the two overloads.
 		expect(props?.throws).toEqual([
 			{ type: "RangeError", description: "Bad range." },
 			{ type: "TypeError", description: "Bad type." },
