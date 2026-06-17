@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
+import { Col } from "../block/Col.js";
 import { Heading } from "../block/Heading.js";
 import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
@@ -127,6 +128,12 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
+										<colgroup>
+											<Col width="fit" />
+											<Col width="fit" />
+											<Col width="fit" />
+											<Col width="12x" grow />
+										</colgroup>
 										<thead>
 											<tr>
 												<th>Parameter</th>
@@ -174,6 +181,10 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
+										<colgroup>
+											<Col width="fit" />
+											<Col width="12x" grow />
+										</colgroup>
 										<thead>
 											<tr>
 												<th>Return</th>
@@ -197,6 +208,10 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
+										<colgroup>
+											<Col width="fit" />
+											<Col width="12x" grow />
+										</colgroup>
 										<thead>
 											<tr>
 												<th>Throws</th>
@@ -220,6 +235,10 @@ export function DocumentationPage({
 							<Section>
 								<Scroll horizontal>
 									<Table>
+										<colgroup>
+											<Col width="fit" />
+											<Col width="12x" grow />
+										</colgroup>
 										<thead>
 											<tr>
 												<th>Type</th>
