@@ -8,6 +8,7 @@ import { Schema } from "./Schema.js";
  * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchemaOptions
  */
 export interface ThroughSchemaOptions<T> extends SchemaOptions {
+	/** The source schema this schema passes through to. */
 	source: Schema<T>;
 }
 
@@ -23,8 +24,6 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 	readonly source: Schema<T>;
 	/**
 	 * Create a new `ThroughSchema`.
-	 *
-	 * @param options Options for the schema, including the `source` schema to wrap.
 	 */
 	constructor({ source, ...options }: ThroughSchemaOptions<T>) {
 		super(source instanceof Schema ? { ...source, ...options } : options);

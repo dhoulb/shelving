@@ -35,7 +35,6 @@ const RETRY_CHILDREN = (
  * - Reads the retry callback from `<Catcher>`'s private context, so it renders `null` when there is no boundary above it to retry.
  * - Defaults to an "Retry" label with a refresh icon; pass `children` to override.
  *
- * @param props `<Button>` variants and optional `children` for the label.
  * @returns The retry button, or `null` when not inside a `<Catcher>`.
  * @example <RetryButton small />
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButton

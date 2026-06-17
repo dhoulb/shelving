@@ -1,8 +1,8 @@
 import { type AddressData, formatAddress } from "../util/geo.js";
 import { COUNTRY } from "./CountrySchema.js";
-import { DataSchema, type DataSchemaOptions } from "./DataSchema.js";
+import { DataSchema } from "./DataSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
-import type { Schemas } from "./Schema.js";
+import type { SchemaOptions, Schemas } from "./Schema.js";
 import { StringSchema } from "./StringSchema.js";
 
 export type { AddressData };
@@ -20,9 +20,14 @@ const ADDRESS_PROPS: Schemas<AddressData> = {
 /**
  * Allowed options for `AddressSchema`.
  *
+ * - The `props` are fixed to the postal-address fields internally, so only the default `value` and base schema options are exposed.
+ *
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchemaOptions
  */
-export interface AddressSchemaOptions extends Omit<DataSchemaOptions<AddressData>, "props"> {}
+export interface AddressSchemaOptions extends SchemaOptions {
+	/** Partial default value merged over the per-field defaults. */
+	readonly value?: Partial<AddressData> | undefined;
+}
 
 /**
  * Schema that validates a postal address.
@@ -36,10 +41,6 @@ export interface AddressSchemaOptions extends Omit<DataSchemaOptions<AddressData
 export class AddressSchema extends DataSchema<AddressData> {
 	/**
 	 * Create a new `AddressSchema`.
-	 *
-	 * @param options Options for the schema (inherits `DataSchema` options except `props`, which is fixed to the postal-address fields).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"address"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Address"`).
 	 */
 	constructor({ one = "address", title = "Address", ...options }: AddressSchemaOptions = {}) {
 		super({ one, title, props: ADDRESS_PROPS, ...options });

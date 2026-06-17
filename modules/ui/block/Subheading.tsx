@@ -20,7 +20,6 @@ export type SubheadingProps = HeadingProps;
  * - Only marginally larger than body text; its bold weight is the main differentiator.
  *
  * @kind component
- * @param props Colour, space, and typography variants plus an optional `level` override and `children`.
  * @returns Rendered `<h3>` heading element.
  * @example <Subheading>Details</Subheading>
  * @see https://dhoulb.github.io/shelving/ui/block/Subheading/Subheading

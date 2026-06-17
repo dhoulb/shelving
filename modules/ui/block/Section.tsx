@@ -51,7 +51,6 @@ function renderSection(
  * - Pass `as` to render a different semantic element.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<section>` element.
  * @example <Section><Heading>About</Heading></Section>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Section
@@ -64,7 +63,6 @@ export function Section(props: SectionProps): ReactElement {
  * `<header>` block with block-level spacing.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<header>` element.
  * @example <Header><Title>Welcome</Title></Header>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Header
@@ -77,7 +75,6 @@ export function Header(props: SectionProps): ReactElement {
  * `<footer>` block with block-level spacing.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<footer>` element.
  * @example <Footer><Small>© 2026</Small></Footer>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Footer
@@ -90,7 +87,6 @@ export function Footer(props: SectionProps): ReactElement {
  * `<nav>` block with block-level spacing.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<nav>` element.
  * @example <Nav><Link href="/">Home</Link></Nav>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Nav
@@ -103,7 +99,6 @@ export function Nav(props: SectionProps): ReactElement {
  * `<aside>` block with block-level spacing.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<aside>` element.
  * @example <Aside width="narrow"><Paragraph>Sidebar</Paragraph></Aside>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Aside
@@ -116,7 +111,6 @@ export function Aside(props: SectionProps): ReactElement {
  * `<figure>` block with block-level spacing. Pair with `<Caption>` for `<figcaption>` content.
  *
  * @kind component
- * @param props Colour, space, typography, and width variants plus optional `as` override and `children`.
  * @returns Rendered `<figure>` element.
  * @example <Figure><Image src="/cat.jpg" /><Caption>A cat</Caption></Figure>
  * @see https://dhoulb.github.io/shelving/ui/block/Section/Figure

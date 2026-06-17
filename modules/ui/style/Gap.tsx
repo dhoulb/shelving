@@ -21,7 +21,6 @@ export interface GapVariants {
 /**
  * Get the gap class for a component from its `gap` variant prop.
  *
- * @param variants Variant props containing the optional `gap` scale.
  * @returns The gap class string, or `undefined` when no `gap` is set.
  * @example getGapClass({ gap: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Gap/getGapClass

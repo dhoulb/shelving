@@ -13,22 +13,37 @@ export type StringInputType = "text" | "password" | "color" | "email" | "number"
 /**
  * Options for `StringSchema`.
  *
- * - `value` — default string value used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum allowed character length.
- * - `rows` — number of rows (more than one enables multiline sanitization).
- * - `match` — regular expression the sanitized string must match.
- * - `case` — force the result to `"upper"` or `"lower"` case.
- * - `input` — HTML `<input />` `type=""` hint for downstream UIs.
- *
  * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchemaOptions
  */
 export interface StringSchemaOptions extends SchemaOptions {
+	/**
+	 * Default string value used when the input is `undefined`.
+	 * @default ""
+	 */
 	readonly value?: string | undefined;
+	/**
+	 * Minimum allowed character length.
+	 * @default 0
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum allowed character length.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
+	/**
+	 * Number of rows; more than one enables multiline sanitization.
+	 * @default 1
+	 */
 	readonly rows?: number | undefined;
+	/** Regular expression the sanitized string must match. */
 	readonly match?: RegExp | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
 	readonly case?: "upper" | "lower" | undefined;
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "text"
+	 */
 	readonly input?: StringInputType | undefined;
 }
 
@@ -57,16 +72,6 @@ export class StringSchema extends Schema<string> {
 
 	/**
 	 * Create a new `StringSchema`.
-	 *
-	 * @param options Options for the schema.
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"string"`).
-	 * @param options.min Minimum allowed character length (defaults to `0`).
-	 * @param options.max Maximum allowed character length (defaults to `Number.POSITIVE_INFINITY`).
-	 * @param options.value Default string value used when the input is `undefined` (defaults to `""`).
-	 * @param options.rows Number of rows; more than one enables multiline sanitization (defaults to `1`).
-	 * @param options.match Regular expression the sanitized string must match.
-	 * @param options.case Force the result to `"upper"` or `"lower"` case.
-	 * @param options.input HTML `<input />` `type=""` hint for downstream UIs (defaults to `"text"`).
 	 */
 	constructor({
 		one = "string",

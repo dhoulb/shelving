@@ -22,7 +22,6 @@ export interface ArrayRadioInputsProps<T> extends ValueInputProps<T> {
  * - The items can be any type, and can be formatted for output through an optional `formatter()` function.
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *
- * @param props Props including the `items` array, current `value`, `onValue`, and an optional `formatter`.
  * @returns Element rendering one radio per item plus an optional empty placeholder radio.
  * @example <ArrayRadioInputs name="size" items={["s", "m", "l"]} value={size} onValue={setSize} />
  * @see https://dhoulb.github.io/shelving/ui/form/ArrayRadioInputs/ArrayRadioInputs

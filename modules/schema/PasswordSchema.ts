@@ -12,12 +12,6 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 export class PasswordSchema extends StringSchema {
 	/**
 	 * Create a new `PasswordSchema`.
-	 *
-	 * @param options Options for the schema (inherits all `StringSchema` options).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"password"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"Password"`).
-	 * @param options.min Minimum allowed character length (defaults to `6`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"password"`).
 	 */
 	constructor({ one = "password", title = "Password", min = 6, input = "password", ...options }: StringSchemaOptions = {}) {
 		super({ one, title, min, input, ...options });

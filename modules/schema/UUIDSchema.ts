@@ -1,13 +1,28 @@
 import { getUUID } from "../util/uuid.js";
 import { NULLABLE } from "./NullableSchema.js";
-import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for a `UUIDSchema`.
  *
+ * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
+ *
  * @see https://dhoulb.github.io/shelving/schema/UUIDSchema/UUIDSchemaOptions
  */
-export interface UUIDSchemaOptions extends Omit<StringSchemaOptions, "min" | "match" | "rows"> {}
+export interface UUIDSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/**
+	 * Maximum allowed character length.
+	 * @default 36
+	 */
+	readonly max?: number | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+}
 
 /**
  * Schema that defines a valid UUID string (versions 1-5). Defaults to any-version validation.
@@ -23,9 +38,6 @@ export interface UUIDSchemaOptions extends Omit<StringSchemaOptions, "min" | "ma
 export class UUIDSchema extends StringSchema {
 	/**
 	 * Create a new `UUIDSchema`.
-	 *
-	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`, `input`, `max`).
-	 * @param options.max Maximum allowed character length (defaults to `36`).
 	 */
 	constructor({ one = "UUID", title = "UUID", max = 36, ...rest }: UUIDSchemaOptions = {}) {
 		super({

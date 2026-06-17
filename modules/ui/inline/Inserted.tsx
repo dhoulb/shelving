@@ -15,7 +15,6 @@ export interface InsertedProps extends OptionalChildProps {}
 /**
  * Inserted text — renders an `<ins>` element to mark content added to a document.
  *
- * @param props The `children` to render as inserted text.
  * @returns Rendered `<ins>` element.
  * @example <Inserted>new price</Inserted>
  * @see https://dhoulb.github.io/shelving/ui/inline/Inserted/Inserted

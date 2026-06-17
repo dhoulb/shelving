@@ -8,16 +8,22 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `DictionarySchema`.
  *
- * - `items` — schema every entry value in the dictionary must conform to.
- * - `value` — default dictionary used when the input is `undefined`.
- * - `min`/`max` — minimum and maximum number of entries.
- *
  * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchemaOptions
  */
 export interface DictionarySchemaOptions<T> extends SchemaOptions {
+	/** Schema every entry value in the dictionary must conform to. */
 	readonly items: Schema<T>;
+	/** Default dictionary used when the input is `undefined`. */
 	readonly value?: ImmutableDictionary | undefined;
+	/**
+	 * Minimum number of entries.
+	 * @default 0
+	 */
 	readonly min?: number | undefined;
+	/**
+	 * Maximum number of entries.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number | undefined;
 }
 
@@ -41,8 +47,6 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 
 	/**
 	 * Create a new `DictionarySchema`.
-	 *
-	 * @param options Options for the schema, including the `items` schema and `min`/`max` entry counts.
 	 */
 	constructor({
 		items,
@@ -102,7 +106,6 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
  * Sugar factory for [`DictionarySchema`](/schema/DictionarySchema).
  *
  * @param items Schema every entry value in the dictionary must conform to.
- * @returns A `DictionarySchema` validating dictionaries of the given item type.
  * @example DICTIONARY(NUMBER) // DictionarySchema<number>
  * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DICTIONARY
  */

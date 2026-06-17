@@ -7,13 +7,12 @@ import { NumberSchema, type NumberSchemaOptions } from "./NumberSchema.js";
 /**
  * Options for `CurrencyAmountSchema`.
  *
- * - `currency` — ISO 4217 currency code that determines the step and symbol.
- * - `symbol` — override the currency symbol used when formatting.
- *
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchemaOptions
  */
 export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
+	/** Override the currency symbol used when formatting. */
 	readonly symbol?: string | undefined;
+	/** ISO 4217 currency code that determines the step and symbol. */
 	readonly currency: CurrencyCode;
 }
 
@@ -52,7 +51,6 @@ export class CurrencyAmountSchema extends NumberSchema {
 	/**
 	 * Create a new `CurrencyAmountSchema`.
 	 *
-	 * @param options Options for the schema (`currency` required, optional `symbol`, `step`, plus base `NumberSchemaOptions`).
 	 * @throws `string` if `currency` is not a valid ISO 4217 currency code.
 	 */
 	constructor({ currency, one = "amount", title = "Amount", symbol, step, ...options }: CurrencyAmountSchemaOptions) {
@@ -89,7 +87,6 @@ export class CurrencyAmountSchema extends NumberSchema {
  * Sugar factory for [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema).
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
- * @returns A `CurrencyAmountSchema` validating amounts in `currency`.
  * @throws `string` if `currency` is not a valid ISO 4217 currency code.
  * @example CURRENCY_AMOUNT("GBP").validate("12.345") // 12.35
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CURRENCY_AMOUNT
@@ -128,7 +125,6 @@ export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
  * Sugar factory for [`NullableSchema`](/schema/NullableSchema).
  *
  * @param currency ISO 4217 currency code that determines the step and symbol.
- * @returns A `NullableSchema` validating amounts in `currency`, or `null`.
  * @throws `string` if `currency` is not a valid ISO 4217 currency code.
  * @example NULLABLE_CURRENCY_AMOUNT("GBP").validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_CURRENCY_AMOUNT

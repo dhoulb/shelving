@@ -6,11 +6,10 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 /**
  * Options for `EntitySchema`.
  *
- * - `types` — restrict the allowed entity types; any other type is rejected.
- *
  * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchemaOptions
  */
 export interface EntitySchemaOptions<T extends string> extends StringSchemaOptions {
+	/** Restrict the allowed entity types; any other type is rejected. */
 	readonly types?: ImmutableArray<T> | undefined;
 }
 
@@ -31,8 +30,6 @@ export class EntitySchema<T extends string> extends StringSchema {
 
 	/**
 	 * Create a new `EntitySchema`.
-	 *
-	 * @param options Options for the schema, including an optional `types` allow-list.
 	 */
 	constructor({ one = "entity", title = "Entity", types, ...options }: EntitySchemaOptions<T>) {
 		super({ one, title, ...options });

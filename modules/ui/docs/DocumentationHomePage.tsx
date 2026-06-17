@@ -16,7 +16,6 @@ import { TreeCards } from "../tree/TreeCards.js";
  * - Below the hero it renders any absorbed prose content, then the root's children (the modules) as a stack of cards.
  *
  * @kind component
- * @param props The root tree element props (`title`, `name`, `description`, `content`, `children`).
  * @returns A `<Page>` with a coloured hero panel followed by the module listing.
  * @example <DocumentationHomePage {...root.props} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationHomePage/DocumentationHomePage

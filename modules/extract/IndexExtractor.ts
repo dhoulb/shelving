@@ -43,7 +43,6 @@ export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * Wrap a source extractor so each element's index child is absorbed into the element itself.
 	 *
 	 * @param source Upstream extractor that produces the `tree-element` tree to process.
-	 * @param options Options including the `index` filename patterns.
 	 *
 	 * @example const extractor = new IndexExtractor(new DirectoryExtractor());
 	 */

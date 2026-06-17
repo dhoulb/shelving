@@ -16,7 +16,6 @@ export class RequiredError extends Error implements BaseError {
 	 * Create a new `RequiredError`.
 	 *
 	 * @param message Optional human-readable description of what was required but missing.
-	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);

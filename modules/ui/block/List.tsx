@@ -25,7 +25,6 @@ export interface ListProps extends ColorVariants, GapVariants, SpaceVariants, Ty
  * - Pass `ordered` to render an ordered `<ol>` instead of the default unordered `<ul>`.
  *
  * @kind component
- * @param props Colour, gap, space, and typography variants plus the `children` items and `ordered` toggle.
  * @returns Rendered `<ul>` or `<ol>` list element.
  * @example <List>{["One", "Two", "Three"]}</List>
  * @example <List ordered>{["First", "Second"]}</List>

@@ -47,7 +47,6 @@ export interface QueryInputProps<I, O> extends ValueInputProps<O> {
  * - Shows a `<Popover>` with a radio list of returned items to pick a final value of type `O`.
  * - Errors, loading, and empty states are handled automatically.
  *
- * @param props Props including `schema`, `onQuery`, `value`, `onValue`, `formatter`, and `empty` message.
  * @returns A combo box element wrapping the input and results popover.
  * @example <QueryInput schema={SEARCH} onQuery={search} value={user} onValue={setUser} />
  * @see https://dhoulb.github.io/shelving/ui/form/QueryInput/QueryInput

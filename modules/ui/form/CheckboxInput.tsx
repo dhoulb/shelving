@@ -17,7 +17,6 @@ export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildPr
  * Checkbox input bound to a `boolean` value, rendered as a labelled `<input type="checkbox">`.
  * - The label content comes from `children`, falling back to `placeholder`/`title`.
  *
- * @param props Props including `value`, `onValue`, label `children`, and `Flex` variants.
  * @returns A `<label>` wrapping the checkbox and its label content.
  * @example <CheckboxInput name="agree" value={agree} onValue={setAgree}>I agree</CheckboxInput>
  * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxInput

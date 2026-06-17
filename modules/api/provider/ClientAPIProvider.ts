@@ -89,7 +89,6 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	/**
 	 * Create a `ClientAPIProvider` from a base URL and request options.
 	 *
-	 * @param options The `ClientAPIProviderOptions` configuring the base `url`, default request `options`, and `timeout`.
 	 * @throws {RequiredError} if `url` cannot be resolved to a valid base URL.
 	 * @example new ClientAPIProvider({ url: "https://api.example.com" })
 	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider

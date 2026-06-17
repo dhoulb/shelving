@@ -17,8 +17,6 @@ import { NULLABLE } from "./NullableSchema.js";
 export class DateTimeSchema extends DateSchema {
 	/**
 	 * Create a new `DateTimeSchema`.
-	 *
-	 * @param options Options for the schema (same as `DateSchemaOptions`).
 	 */
 	constructor({ one = "time", title = "Time", input = "datetime-local", ...options }: DateSchemaOptions) {
 		super({ one, title, input, ...options });

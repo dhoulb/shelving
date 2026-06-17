@@ -3,19 +3,39 @@ import { sanitizeWord } from "../util/string.js";
 import { HTTP_SCHEMES, type URISchemes } from "../util/uri.js";
 import { getURL, type URLString } from "../util/url.js";
 import { NULLABLE } from "./NullableSchema.js";
-import type { StringSchemaOptions } from "./StringSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for `URLSchema`.
  *
- * - `base` — base URL that relative URLs are resolved against.
- * - `schemes` — whitelist of allowed URL schemes (defaults to HTTP/HTTPS).
+ * - The length and single-line constraints are fixed internally, so only the presentation-level string options plus `base` and `schemes` are exposed.
  *
  * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchemaOptions
  */
-export interface URLSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {
+export interface URLSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/**
+	 * Maximum allowed character length.
+	 * @default 512
+	 */
+	readonly max?: number | undefined;
+	/** Regular expression the sanitized string must match. */
+	readonly match?: RegExp | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/**
+	 * HTML `<input />` `type=""` hint for downstream UIs.
+	 * @default "url"
+	 */
+	readonly input?: StringInputType | undefined;
+	/** Base URL that relative URLs are resolved against. */
 	readonly base?: URL | URLString | undefined;
+	/**
+	 * Whitelist of allowed URL schemes.
+	 * @default HTTP_SCHEMES
+	 */
 	readonly schemes?: URISchemes | undefined;
 }
 
@@ -38,10 +58,6 @@ export class URLSchema extends StringSchema {
 
 	/**
 	 * Create a new `URLSchema`.
-	 *
-	 * @param options Options for the schema (`base`, `schemes`, plus inherited string options like `one`, `title`, `value`, `input`, `max`).
-	 * @param options.input HTML `<input />` `type=""` hint (defaults to `"url"`).
-	 * @param options.max Maximum allowed character length (defaults to `512`).
 	 */
 	constructor({ one = "URL", title = "URL", base, schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URLSchemaOptions) {
 		super({

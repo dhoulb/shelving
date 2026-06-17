@@ -15,7 +15,6 @@ export interface EmphasisProps extends OptionalChildProps {}
 /**
  * Emphasised text — renders an `<em>` element for stress emphasis (typically italic).
  *
- * @param props The `children` to emphasise.
  * @returns Rendered `<em>` element.
  * @example <Emphasis>really</Emphasis>
  * @see https://dhoulb.github.io/shelving/ui/inline/Emphasis/Emphasis

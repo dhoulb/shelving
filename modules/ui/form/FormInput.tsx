@@ -14,7 +14,6 @@ export interface FormInputProps extends InputProps {}
  * Show a `SchemaInput` for a single named property of the current form.
  * - Reads the field's value, schema, and message from the form context via `useField()`.
  *
- * @param props Input props including the field `name`.
  * @returns A `SchemaInput` bound to the named field.
  * @example <FormInput name="email" />
  * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInput

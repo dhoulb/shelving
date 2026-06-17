@@ -17,7 +17,6 @@ export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChild
  * Single `<input type="radio">` wrapped in a `<label>` styled as an `<Input>`.
  * - Calls `onValue(true)` when selected; label content comes from `children`, falling back to `placeholder`/`title`.
  *
- * @param props Props including `value`, `onValue`, label `children`, and `Flex` variants.
  * @returns A `<label>` wrapping the radio button and its label content.
  * @example <RadioInput name="plan" value={isPro} onValue={selectPro}>Pro</RadioInput>
  * @see https://dhoulb.github.io/shelving/ui/form/RadioInput/RadioInput

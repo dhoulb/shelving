@@ -18,7 +18,6 @@ export interface InputVariants extends WidthVariants {}
 /**
  * Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
  *
- * @param props The input's styling variants (width, …).
  * @returns The merged base input `className` string.
  * @example getClass(getInputClass(props), getModuleClass(INPUT_CSS, "text")) // a text input that also honours width variants
  * @see https://dhoulb.github.io/shelving/ui/form/Input/getInputClass

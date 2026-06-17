@@ -8,25 +8,35 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `ArraySchema`.
  *
- * - `items` — schema every item in the array must conform to.
- * - `min`/`max` — minimum and maximum number of items.
- * - `unique` — deduplicate the items when set.
- * - `separator` — string or `RegExp` used to split a string input into items.
- *
  * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchemaOptions
  */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
-	/** The default value */
+	/**
+	 * Default value used when the input is `undefined`.
+	 * @default []
+	 */
 	readonly value?: ImmutableArray;
-	/** A schema all the array items in the value must conform to */
+	/** Schema every item in the array must conform to. */
 	readonly items: Schema<T>;
-	/** Minimum number of items. */
+	/**
+	 * Minimum number of items.
+	 * @default 0
+	 */
 	readonly min?: number;
-	/** Maximum number of items. */
+	/**
+	 * Maximum number of items.
+	 * @default Number.POSITIVE_INFINITY
+	 */
 	readonly max?: number;
-	/** Whether to deduplicate the items. */
+	/**
+	 * Whether to deduplicate the items.
+	 * @default false
+	 */
 	readonly unique?: boolean;
-	/** Separator is used */
+	/**
+	 * String or `RegExp` used to split a string input into items.
+	 * @default ","
+	 */
 	readonly separator?: string | RegExp;
 }
 
@@ -62,8 +72,6 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 
 	/**
 	 * Create a new `ArraySchema`.
-	 *
-	 * @param options Options for the schema, including the `items` schema, `min`/`max` counts, `unique`, and `separator`.
 	 */
 	constructor({
 		items,
@@ -127,7 +135,6 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
  * Sugar factory for [`ArraySchema`](/schema/ArraySchema).
  *
  * @param items Schema every item in the array must conform to.
- * @returns An `ArraySchema` validating arrays of the given item type.
  * @example ARRAY(NUMBER) // ArraySchema<number>
  * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ARRAY
  */

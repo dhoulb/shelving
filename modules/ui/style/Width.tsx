@@ -63,7 +63,6 @@ export interface WidthVariants {
 /**
  * Get the inline-size class for a component from its `width` / `grow` variant props.
  *
- * @param variants Variant props containing the optional `width` value and `grow` flag.
  * @returns The width class string, or `undefined` when neither `width` nor `grow` is set.
  * @example getWidthClass({ width: "narrow" }) // "width narrow"
  * @example getWidthClass({ width: "12x", grow: true }) // "width 12x grow"

@@ -39,7 +39,6 @@ export interface VideoButtonProps extends ChildProps {
  * - Has a black background and a 16:9 aspect ratio.
  * - Shows its contents (i.e. a `<video>` element or a `<TwilioRoom>`.
  *
- * @param props Space and width variants plus `children` (e.g. a `<video>` element).
  * @returns Rendered `<figure>` video container.
  * @example <Video><video src="/clip.mp4" /></Video>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/Video
@@ -57,7 +56,6 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
 /**
  * Set of video buttons floating over a video.
  *
- * @param props `children` (the buttons) plus an optional `left` alignment flag.
  * @returns Rendered overlay container for video buttons.
  * @example <VideoButtons><FullscreenVideoButton /></VideoButtons>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButtons
@@ -69,7 +67,6 @@ export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
 /**
  * Individual video button over a video — renders a `<button>`.
  *
- * @param props `children` (the button content) plus optional `title`, `onClick`, `danger`, and `disabled`.
  * @returns Rendered `<button>` element overlaid on the video.
  * @example <VideoButton title="Play" onClick={play}><PlayIcon /></VideoButton>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButton

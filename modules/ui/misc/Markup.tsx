@@ -19,7 +19,6 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * - Renders inside whatever ancestor element the caller provides — wrap in `<Prose>` to get the standard prose typography for the produced `<p>` / `<ul>` / `<pre>` / etc.
  *
  * @param children The source markup string to parse and render (renders `null` when empty).
- * @param options Optional `MarkupOptions` overrides (`rules`, `rel`, `url`, `root`, `schemes`).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @kind component
  * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>

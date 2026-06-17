@@ -15,7 +15,6 @@ export class UnimplementedError extends Error implements BaseError {
 	 * Create a new `UnimplementedError`.
 	 *
 	 * @param message Optional human-readable description of the missing implementation.
-	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);

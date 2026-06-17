@@ -23,7 +23,6 @@ export interface TreeLinkProps {
  * - Designed for the `Type` column of the documentation Parameters / Returns / Throws / Types tables, where only exact-match type names should link.
  *
  * @kind component
- * @param props The element reference `name` and optional `children` label.
  * @returns A `<Code>` token, wrapped in a `<Link>` when the reference resolves.
  * @example <TreeLink name="BooleanSchema" />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeLink/TreeLink

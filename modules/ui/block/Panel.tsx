@@ -31,7 +31,6 @@ export interface PanelProps extends ColorVariants, PaddingVariants, StatusVarian
  * Renders as a `<section>` by default; pass `as="header"` etc. for other semantic elements.
  *
  * @kind component
- * @param props Colour, padding, status, and typography variants plus `children`.
  * @returns Rendered full-width panel region.
  * @example <Panel><Block width="narrow"><Title>Welcome</Title></Block></Panel>
  * @example <Panel padding="xlarge" color="primary"><Title>Welcome</Title></Panel>

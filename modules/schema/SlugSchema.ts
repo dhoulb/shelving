@@ -1,13 +1,30 @@
 import { getSlug } from "../util/string.js";
 import { NULLABLE } from "./NullableSchema.js";
-import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
+import type { SchemaOptions } from "./Schema.js";
+import { type StringInputType, StringSchema } from "./StringSchema.js";
 
 /**
  * Options for a `SlugSchema`.
  *
+ * - The length and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
+ *
  * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchemaOptions
  */
-export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "min" | "rows"> {}
+export interface SlugSchemaOptions extends SchemaOptions {
+	/** Default string value used when the input is `undefined`. */
+	readonly value?: string | undefined;
+	/**
+	 * Maximum allowed character length.
+	 * @default 32
+	 */
+	readonly max?: number | undefined;
+	/** Regular expression the sanitized string must match. */
+	readonly match?: RegExp | undefined;
+	/** Force the result to `"upper"` or `"lower"` case. */
+	readonly case?: "upper" | "lower" | undefined;
+	/** HTML `<input />` `type=""` hint for downstream UIs. */
+	readonly input?: StringInputType | undefined;
+}
 
 /**
  * Schema that defines a valid slug, e.g. `this-is-a-slug`.
@@ -24,8 +41,6 @@ export interface SlugSchemaOptions extends Omit<StringSchemaOptions, "min" | "ro
 export class SlugSchema extends StringSchema {
 	/**
 	 * Create a new `SlugSchema`.
-	 *
-	 * @param options Options for the schema (inherited string options like `one`, `title`, `value`).
 	 */
 	constructor({ max = 32, ...options }: SlugSchemaOptions) {
 		super({

@@ -5,13 +5,18 @@ import { Schema } from "./Schema.js";
 /**
  * Allowed options for `BooleanSchema`.
  *
- * - `value` — default boolean value used when the input is `undefined`.
- * - `required` — when `true`, a falsy result is rejected as invalid.
- *
  * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchemaOptions
  */
 export interface BooleanSchemaOptions extends SchemaOptions {
+	/**
+	 * Default boolean value used when the input is `undefined`.
+	 * @default false
+	 */
 	readonly value?: boolean | undefined;
+	/**
+	 * When `true`, a falsy result is rejected as invalid.
+	 * @default false
+	 */
 	readonly required?: boolean | undefined;
 }
 
@@ -35,10 +40,6 @@ export class BooleanSchema extends Schema<boolean> {
 	declare readonly required: boolean;
 	/**
 	 * Create a new `BooleanSchema`.
-	 *
-	 * @param options Options for the schema.
-	 * @param options.value Default boolean value used when the input is `undefined` (defaults to `false`).
-	 * @param options.required When `true`, a falsy result is rejected as invalid (defaults to `false`).
 	 */
 	constructor({ value = false, required = false, ...options }: BooleanSchemaOptions) {
 		super({ value, ...options });

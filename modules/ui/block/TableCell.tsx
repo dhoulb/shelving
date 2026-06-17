@@ -17,7 +17,6 @@ export interface TableCellProps extends WidthVariants, TypographyVariants, Child
  * - A column's width is the widest of its cells, so use this to size a column that has no header to set the width on.
  *
  * @kind component
- * @param props Width and typography variant props plus `children`.
  * @returns Rendered `<td>` element.
  * @example <TableCell width="12x" grow>A longer description that wants a sensible minimum width.</TableCell>
  * @see https://dhoulb.github.io/shelving/ui/block/TableCell/TableCell

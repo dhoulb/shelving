@@ -19,7 +19,6 @@ export interface SelectProps<T extends string> extends ValueInputProps<T>, Input
  * Dropdown input bound to a string value, rendered as a `<select>` of the provided `options`.
  * - Shows a placeholder empty option unless the field is required and already has a value.
  *
- * @param props Props including `options`, `value`, `onValue`, and `placeholder`.
  * @returns A `<select>` element.
  * @example <SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
  * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectInput

@@ -247,7 +247,6 @@ export interface SearchTreeOptions {
  *
  * @param scope The element whose descendants are searched.
  * @param query The search string — bare words plus `"quoted phrases"`.
- * @param options `limit` (default `20`) and an optional `filter` `Query` over each candidate's props.
  * @returns The matching descendants, best first, capped at `limit`.
  * @example searchTree(root, "store", { limit: 10, filter: { kind: "class" } }) // up to 10 classes ranked for "store"
  * @see https://dhoulb.github.io/shelving/util/tree/searchTree

@@ -53,7 +53,6 @@ export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 * Wrap a source extractor so its produced tree has same-template sibling elements merged.
 	 *
 	 * @param source Upstream extractor that produces the `tree-element` tree to merge.
-	 * @param options Options including the `merges` template map.
 	 *
 	 * @example const extractor = new MergingExtractor(new DirectoryExtractor());
 	 */

@@ -21,7 +21,6 @@ export interface WeightVariants {
 /**
  * Get the font-weight class for a component from its `weight` variant prop.
  *
- * @param variants Variant props containing the optional `weight` name.
  * @returns The weight class string, or `undefined` when no `weight` is set.
  * @example getWeightClass({ weight: "strong" }) // "weight-strong"
  * @see https://dhoulb.github.io/shelving/ui/style/Weight/getWeightClass

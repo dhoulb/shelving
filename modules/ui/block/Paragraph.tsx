@@ -38,7 +38,6 @@ export function getParagraphClass(variants: ParagraphProps): string {
  * Paragraph block of body text — rendered as `<p>`.
  *
  * @kind component
- * @param props Colour, space, and typography variants plus `children`.
  * @returns Rendered `<p>` paragraph element.
  * @example <Paragraph>Hello world.</Paragraph>
  * @see https://dhoulb.github.io/shelving/ui/block/Paragraph/Paragraph

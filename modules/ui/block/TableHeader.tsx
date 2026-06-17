@@ -17,7 +17,6 @@ export interface TableHeaderProps extends WidthVariants, TypographyVariants, Chi
  * - A column's width is the widest of its cells, so sizing the `<th>` sizes the whole column.
  *
  * @kind component
- * @param props Width and typography variant props plus `children`.
  * @returns Rendered `<th>` element.
  * @example <TableHeader width="fit">Parameter</TableHeader>
  * @see https://dhoulb.github.io/shelving/ui/block/TableHeader/TableHeader

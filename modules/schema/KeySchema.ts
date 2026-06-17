@@ -20,8 +20,6 @@ const R_NOT_CHAR = /[^a-zA-Z0-9]/g;
 export class KeySchema extends StringSchema {
 	/**
 	 * Create a new `KeySchema`.
-	 *
-	 * @param options Options for the schema (defaults `min` to `1` and `max` to `32`).
 	 */
 	constructor({ one = "key", title = "Key", min = 1, max = 32, ...options }: StringSchemaOptions) {
 		super({ one, title, min, max, ...options });

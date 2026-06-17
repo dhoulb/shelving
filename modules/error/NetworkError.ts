@@ -15,7 +15,6 @@ export class NetworkError extends Error implements BaseError {
 	 * Create a new `NetworkError`.
 	 *
 	 * @param message Optional human-readable description of the network problem.
-	 * @param options Optional `BaseErrorOptions` — `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(message?: string, options: BaseErrorOptions = {}) {
 		super(message, options);

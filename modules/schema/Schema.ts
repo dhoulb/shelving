@@ -55,8 +55,6 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 
 	/**
 	 * Create a new `Schema`.
-	 *
-	 * @param options Options for the schema (`one`, `many`, `title`, `description`, `placeholder`, `value`).
 	 */
 	constructor({ one = "value", many = `${one}s`, title, description, placeholder, value }: SchemaOptions) {
 		this.one = one;

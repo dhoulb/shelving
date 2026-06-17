@@ -29,11 +29,6 @@ export class FileSchema extends StringSchema {
 
 	/**
 	 * Create a new `FileSchema`.
-	 *
-	 * @param options Options for the schema (inherits all `StringSchema` options plus `types`).
-	 * @param options.one Singular noun describing one value, used in error messages (defaults to `"file"`).
-	 * @param options.title Title of the schema, e.g. for a corresponding field (defaults to `"File"`).
-	 * @param options.types Set of allowed file extensions; when set, the extension must be one of these.
 	 */
 	constructor({ one = "file", title = "File", types, ...options }: FileSchemaOptions) {
 		super({ one, title, ...options });

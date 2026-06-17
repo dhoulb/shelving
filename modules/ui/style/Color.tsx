@@ -38,7 +38,6 @@ export interface ColorVariants {
  * - Full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected color.
  * - Element can now compose these shades to style itself using the selected color.
  *
- * @param variants Variant props containing the optional `color` selection.
  * @returns The combined tint + colour class string, or `undefined` when no `color` is set.
  * @example getColorClass({ color: "purple" }) // "tint color-purple"
  * @see https://dhoulb.github.io/shelving/ui/style/Color/getColorClass

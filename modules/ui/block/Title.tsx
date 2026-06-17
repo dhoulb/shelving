@@ -20,7 +20,6 @@ export type TitleProps = HeadingProps;
  * - The most prominent heading on a page; there should normally be exactly one.
  *
  * @kind component
- * @param props Colour, space, and typography variants plus an optional `level` override and `children`.
  * @returns Rendered `<h1>` heading element.
  * @example <Title>Welcome</Title>
  * @see https://dhoulb.github.io/shelving/ui/block/Title/Title

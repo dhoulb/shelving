@@ -30,6 +30,8 @@ function _getWhen(
  */
 export interface WhenProps extends OptionalChildProps {
 	target: PossibleDate | undefined;
+	/** Reference date the relative time is measured against.
+	 * @default "now" */
 	current?: PossibleDate | undefined;
 	full?: boolean | undefined;
 }
@@ -37,7 +39,6 @@ export interface WhenProps extends OptionalChildProps {
 /**
  * Relative time — shows a signed string like `in 6d` or `3w ago` wrapped in a `<time>` element carrying the machine-readable date.
  *
- * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
  * @returns Rendered `<time>` element showing the relative time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @example <When target="2030-01-01" />
@@ -57,7 +58,6 @@ export interface AgoProps extends WhenProps {}
 /**
  * Elapsed time — shows an unsigned string like `6d` or `3w` for a past date wrapped in a `<time>` element carrying the machine-readable date.
  *
- * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
  * @returns Rendered `<time>` element showing the elapsed time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @example <Ago target="2020-01-01" />
@@ -77,7 +77,6 @@ export interface UntilProps extends WhenProps {}
 /**
  * Remaining time — shows an unsigned string like `6d` or `3w` for a future date wrapped in a `<time>` element carrying the machine-readable date.
  *
- * @param props The `target` date, optional `current` reference (defaults to now), `full` toggle, and `children` override.
  * @returns Rendered `<time>` element showing the remaining time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @example <Until target="2030-01-01" />

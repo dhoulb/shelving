@@ -29,7 +29,6 @@ export interface PreformattedProps
  * - Lines are not wrapped by default — overflowing content scrolls horizontally within the block.
  * - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
  *
- * @param props Space, colour, typography, width, and padding variants plus the `wrap` toggle and `children`.
  * @returns Rendered `<pre>` element.
  * @example <Preformatted>{"line one\nline two"}</Preformatted>
  * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/Preformatted

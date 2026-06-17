@@ -21,7 +21,6 @@ export interface SizeVariants {
 /**
  * Get the font-size class for a component from its `size` variant prop.
  *
- * @param variants Variant props containing the optional `size` scale.
  * @returns The size class string, or `undefined` when no `size` is set.
  * @example getSizeClass({ size: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Size/getSizeClass

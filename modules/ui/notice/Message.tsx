@@ -20,7 +20,6 @@ export interface MessageProps extends ParagraphProps, ColorVariants, StatusVaria
  * - Sets an ARIA `role` of `"alert"` for error/danger statuses, otherwise `"status"`.
  *
  * @param children The message content.
- * @param props Paragraph, colour, and status styling variants.
  * @returns The message paragraph element.
  * @example <Message status="error">Something went wrong</Message>
  * @see https://dhoulb.github.io/shelving/ui/notice/Message/Message

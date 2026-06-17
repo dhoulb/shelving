@@ -113,8 +113,6 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	/**
 	 * Create a new `MarkupParser` from a set of options.
 	 *
-	 * @param options Options configuring the rules, link resolution, and default context (all optional).
-	 * @returns A `MarkupParser` instance.
 	 * @example new MarkupParser({ rel: "nofollow ugc" })
 	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser
 	 */

@@ -19,7 +19,6 @@ export interface ImageProps extends SpaceVariants, WidthVariants {
 /**
  * Image block — renders an `<img>` with space and width variants applied.
  *
- * @param props The image `src`, optional `alt` text, plus space and width variants.
  * @returns Rendered `<img>` element.
  * @example <Image src="/logo.png" alt="Logo" width="narrow" />
  * @see https://dhoulb.github.io/shelving/ui/block/Image/Image

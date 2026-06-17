@@ -66,7 +66,6 @@ export interface ProseProps extends OptionalChildProps {}
  * - Applies the prose variant of every block and inline component so nested content picks up the right longform spacing and typography.
  *
  * @kind component
- * @param props The longform `children` to render inside the prose container.
  * @returns Rendered `<div>` wrapping the prose content.
  * @example <Prose><Paragraph>First.</Paragraph><Paragraph>Second.</Paragraph></Prose>
  * @see https://dhoulb.github.io/shelving/ui/block/Prose/Prose

@@ -68,8 +68,6 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	/**
 	 * Create a package extractor bound to a pre-extracted source tree.
 	 *
-	 * @param options Options including the source `tree`, `extensions` mapping, `module` extractor, and `base` path.
-	 *
 	 * @example const extractor = new PackageExtractor({ tree: sourceTree });
 	 */
 	constructor({ tree, extensions = DEFAULT_EXTENSIONS, module = new ModuleExtractor(), base }: PackageExtractorOptions) {

@@ -26,7 +26,6 @@ export interface HeadingProps extends ColorVariants, SpaceVariants, TypographyVa
  * - Sits between `Title` (`<h1>`) and `Subheading` (`<h3>`) in the heading hierarchy.
  *
  * @kind component
- * @param props Colour, space, and typography variants plus an optional `level` override and `children`.
  * @returns Rendered `<h2>` heading element.
  * @example <Heading>Section title</Heading>
  * @see https://dhoulb.github.io/shelving/ui/block/Heading/Heading

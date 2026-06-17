@@ -14,13 +14,12 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `DataSchema`.
  *
- * - `props` — a named schema for each property the data object must have.
- * - `value` — partial default value merged over the per-prop defaults.
- *
  * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchemaOptions
  */
 export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
+	/** A named schema for each property the data object must have. */
 	readonly props: Schemas<T>;
+	/** Partial default value merged over the per-prop defaults. */
 	readonly value?: Partial<T> | undefined;
 }
 
@@ -42,8 +41,6 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 
 	/**
 	 * Create a new `DataSchema`.
-	 *
-	 * @param options Options for the schema, including the `props` schemas and an optional partial `value`.
 	 */
 	constructor({ one = "item", title = "Item", props, value: partialValue, ...options }: DataSchemaOptions<T>) {
 		// Build default value from props and partial value.
@@ -70,7 +67,6 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 * Make a new `DataSchema` that only uses a defined subset of the current props.
 	 *
 	 * @param keys The property keys to keep.
-	 * @returns A new `DataSchema` containing only the picked props.
 	 * @example schema.pick("name", "age") // DataSchema<Pick<T, "name" | "age">>
 	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/pick
 	 */
@@ -82,7 +78,6 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 * Make a new `DataSchema` that omits one or more of the current props.
 	 *
 	 * @param keys The property keys to remove.
-	 * @returns A new `DataSchema` without the omitted props.
 	 * @example schema.omit("age") // DataSchema<Omit<T, "age">>
 	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/omit
 	 */
@@ -113,7 +108,6 @@ function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value
  * Sugar factory for [`DataSchema`](/schema/DataSchema).
  *
  * @param props A named schema for each property of the data object.
- * @returns A `DataSchema` validating data with the given props.
  * @example DATA({ name: STRING, age: NUMBER }) // DataSchema<{ name: string; age: number }>
  * @see https://dhoulb.github.io/shelving/schema/DataSchema/DATA
  */
@@ -127,7 +121,6 @@ export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
  * Sugar factory for [`NullableSchema`](/schema/NullableSchema).
  *
  * @param props A named schema for each property of the data object.
- * @returns A `NullableSchema` wrapping a `DataSchema` with the given props.
  * @example NULLABLE_DATA({ name: STRING }) // NullableSchema<{ name: string }>
  * @see https://dhoulb.github.io/shelving/schema/DataSchema/NULLABLE_DATA
  */

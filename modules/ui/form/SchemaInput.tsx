@@ -58,7 +58,6 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
  * - Picks `DateInput`, `NumberInput`, choice radios/select, `CheckboxInput`, `TextInput`, `ArrayInput`, `DictionaryInput`, or `DataInput`.
  * - `required` defaults to whether the schema is required.
  *
- * @param props Props including the `schema` plus value input props.
  * @returns The matching input element for the schema.
  * @throws `UnexpectedError` if no input matches the schema type.
  * @kind component
@@ -115,7 +114,6 @@ export interface DateSchemaInputProps extends SchemaInputProps<DateSchema, unkno
 /**
  * Show a `DateInput` for a `DateSchema`.
  *
- * @param props Props including the `DateSchema` and value input props.
  * @returns A `DateInput` element bound to the schema.
  * @example <DateSchemaInput name="dob" schema={DATE} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DateSchemaInput
@@ -134,7 +132,6 @@ export interface NumberSchemaInputProps extends SchemaInputProps<NumberSchema, u
 /**
  * Show a `NumberInput` for a `NumberSchema`, formatting values with the schema's `format()`.
  *
- * @param props Props including the `NumberSchema` and value input props.
  * @returns A `NumberInput` element bound to the schema.
  * @example <NumberSchemaInput name="age" schema={NUMBER} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/NumberSchemaInput
@@ -153,7 +150,6 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
 /**
  * Show a choice input for a `ChoiceSchema` — radio inputs for up to 8 options, otherwise a select.
  *
- * @param props Props including the `ChoiceSchema` and value input props.
  * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
  * @example <ChoiceSchemaInput name="role" schema={ROLE} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInput
@@ -174,7 +170,6 @@ export interface BooleanSchemaInputProps extends SchemaInputProps<BooleanSchema,
 /**
  * Show a `CheckboxInput` for a `BooleanSchema`.
  *
- * @param props Props including the `BooleanSchema` and value input props.
  * @returns A `CheckboxInput` element bound to the schema.
  * @example <BooleanSchemaInput name="agree" schema={BOOLEAN} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/BooleanSchemaInput
@@ -193,7 +188,6 @@ export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, u
 /**
  * Show a `TextInput` for a `StringSchema`, sanitising and formatting values with the schema.
  *
- * @param props Props including the `StringSchema` and value input props.
  * @returns A `TextInput` element bound to the schema.
  * @example <StringSchemaInput name="email" schema={EMAIL} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/StringSchemaInput
@@ -212,7 +206,6 @@ export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unkn
 /**
  * Show an `ArrayInput` for an `ArraySchema`.
  *
- * @param props Props including the `ArraySchema` and value input props.
  * @returns An `ArrayInput` element bound to the schema.
  * @example <ArraySchemaInput name="tags" schema={TAGS} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ArraySchemaInput
@@ -231,7 +224,6 @@ export interface DictionarySchemaInputProps extends SchemaInputProps<DictionaryS
 /**
  * Show a `DictionaryInput` for a `DictionarySchema`.
  *
- * @param props Props including the `DictionarySchema` and value input props.
  * @returns A `DictionaryInput` element bound to the schema.
  * @example <DictionarySchemaInput name="meta" schema={META} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DictionarySchemaInput
@@ -250,7 +242,6 @@ export interface DataSchemaInputProps extends SchemaInputProps<DataSchema<Data>,
 /**
  * Show a `DataInput` for a nested `DataSchema`.
  *
- * @param props Props including the `DataSchema` and value input props.
  * @returns A `DataInput` element bound to the schema.
  * @example <DataSchemaInput name="address" schema={ADDRESS} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DataSchemaInput
@@ -270,7 +261,6 @@ export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, Opt
  * Show the appropriate input for a schema, wrapped in a `<Field>` with its label and message.
  * - Renders custom `children` inside the field, or a `SchemaInput` when none are provided.
  *
- * @param props Props including the `schema`, optional `children`, and value input props.
  * @returns A `<Field>` wrapping the schema's input.
  * @example <SchemaField name="email" schema={EMAIL} /> // Outputs a `<Field>` wrapping a `<TextInput>`.
  * @example <SchemaField name="age" schema={AGE} /> // Outputs a `<Field>` wrapping a `<NumberInput>`.

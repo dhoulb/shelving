@@ -46,7 +46,6 @@ export interface PopoverProps {
  * - The first `children` node is the trigger; the rest become the popover contents.
  * - Closes on blur away or `Escape`, calling `onClose`.
  *
- * @param props Props including the `children` tuple, optional `onClose`, and `open` override.
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
  * @example <Popover>{trigger}{panelContent}</Popover>
  * @see https://dhoulb.github.io/shelving/ui/form/Popover/Popover

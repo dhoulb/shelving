@@ -27,7 +27,6 @@ export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProp
  * - This is the same type a `ChoiceSchema` uses for its `.options` field.
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *
- * @param props Props including the `options` set, current `value`, `onValue`, and `wrap`/`column` layout flags.
  * @returns Element rendering one radio per option plus an optional empty placeholder radio.
  * @example <ChoiceRadioInputs name="role" options={{ admin: "Admin", user: "User" }} value={role} onValue={setRole} />
  * @see https://dhoulb.github.io/shelving/ui/form/ChoiceRadioInputs/ChoiceRadioInputs

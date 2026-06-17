@@ -26,7 +26,6 @@ export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants
  *
  * @param children The notice content.
  * @param icon Optional icon override (`false`/`null` hides it; defaults to the matching `<StatusIcon>`).
- * @param props Flex, colour, and status styling variants.
  * @returns The notice callout element.
  * @kind component
  * @example <Notice status="success">Saved your changes</Notice>

@@ -67,8 +67,6 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	/**
 	 * Create a directory extractor with optional extractor dispatch, base path, and ignore patterns.
 	 *
-	 * @param options Options including the `extractors` dispatch table, `base` path, and `ignore` patterns.
-	 *
 	 * @example const extractor = new DirectoryExtractor({ base: "/repo/modules" });
 	 */
 	constructor({ extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {

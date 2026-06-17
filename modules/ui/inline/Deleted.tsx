@@ -15,7 +15,6 @@ export interface DeletedProps extends OptionalChildProps {}
 /**
  * Deleted text — renders a `<del>` element to mark content removed from a document.
  *
- * @param props The `children` to render as deleted text.
  * @returns Rendered `<del>` element.
  * @example <Deleted>old price</Deleted>
  * @see https://dhoulb.github.io/shelving/ui/inline/Deleted/Deleted

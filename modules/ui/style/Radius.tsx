@@ -21,7 +21,6 @@ export interface RadiusVariants {
 /**
  * Get the corner-radius class for a component from its `radius` variant prop.
  *
- * @param variants Variant props containing the optional `radius` scale.
  * @returns The radius class string, or `undefined` when no `radius` is set.
  * @example getRadiusClass({ radius: "large" }) // "radius-large"
  * @see https://dhoulb.github.io/shelving/ui/style/Radius/getRadiusClass
