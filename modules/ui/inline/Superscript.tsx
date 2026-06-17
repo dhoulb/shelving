@@ -15,7 +15,6 @@ export interface SuperscriptProps extends OptionalChildProps {}
 /**
  * Superscript text — renders a `<sup>` element for typographically raised text (e.g. exponents, footnote markers).
  *
- * @param props The `children` to render as superscript.
  * @returns Rendered `<sup>` element.
  * @example <>E = mc<Superscript>2</Superscript></>
  * @see https://dhoulb.github.io/shelving/ui/inline/Superscript/Superscript

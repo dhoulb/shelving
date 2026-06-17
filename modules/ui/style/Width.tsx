@@ -24,7 +24,6 @@ export interface WidthVariants {
 /**
  * Get the max-width class for a component from its `width` variant prop.
  *
- * @param variants Variant props containing the optional `width` constraint.
  * @returns The width class string, or `undefined` when no `width` is set.
  * @example getWidthClass({ width: "narrow" }) // "narrow"
  * @see https://dhoulb.github.io/shelving/ui/style/Width/getWidthClass

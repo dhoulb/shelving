@@ -85,7 +85,6 @@ export interface TreeMenuProps {
  * - Only directories and files appear — code symbols are kept off the navigation.
  *
  * @kind component
- * @param props The root `tree` element and optional root `path`.
  * @returns A `<Menu>` of navigation links to the root's children.
  * @example <TreeMenu tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenu

@@ -21,7 +21,6 @@ export interface StrokeVariants {
 /**
  * Get the border-thickness class for a component from its `stroke` variant prop.
  *
- * @param variants Variant props containing the optional `stroke` name.
  * @returns The stroke class string, or `undefined` when no `stroke` is set.
  * @example getStrokeClass({ stroke: "thick" }) // "stroke-thick"
  * @see https://dhoulb.github.io/shelving/ui/style/Stroke/getStrokeClass

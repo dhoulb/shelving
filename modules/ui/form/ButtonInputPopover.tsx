@@ -21,7 +21,6 @@ export interface ButtonInputPopoverProps extends InputProps {
  *
  * DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  *
- * @param props Props including the input `name` and `children` whose first node is the button and the rest the popover.
  * @returns A `Popover` wrapping a `ButtonInput` that toggles it open and closed.
  * @example <ButtonInputPopover name="filter">{label}{panel}</ButtonInputPopover>
  * @see https://dhoulb.github.io/shelving/ui/form/ButtonInputPopover/ButtonInputPopover

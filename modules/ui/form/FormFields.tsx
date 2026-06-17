@@ -8,7 +8,6 @@ import { SchemaInput } from "./SchemaInput.js";
 /**
  * Show a `<Field>` (label, input, and message) for a single named property of the current form.
  *
- * @param props Input props including the field `name`.
  * @returns A `<Field>` wrapping a `SchemaInput` bound to the named field.
  * @example <FormField name="email" />
  * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormField

@@ -56,7 +56,6 @@ export interface MenuItemProps extends ClickableProps {
  * @kind component
  * @param href The link target, used to compute `active`/`proud` against the current URL.
  * @param children The label (first node) and optional submenu (remaining nodes).
- * @param props Additional `<Clickable>` props.
  * @returns The menu item element.
  * @example <MenuItem href="/settings">Settings</MenuItem>
  * @see https://dhoulb.github.io/shelving/ui/menu/Menu/MenuItem

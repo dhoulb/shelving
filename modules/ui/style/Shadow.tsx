@@ -21,7 +21,6 @@ export interface ShadowVariants {
 /**
  * Get the drop-shadow class for a component from its `shadow` variant prop.
  *
- * @param variants Variant props containing the optional `shadow` scale.
  * @returns The shadow class string, or `undefined` when no `shadow` is set.
  * @example getShadowClass({ shadow: "large" }) // "shadow-large"
  * @see https://dhoulb.github.io/shelving/ui/style/Shadow/getShadowClass

@@ -48,7 +48,6 @@ export function getDocumentationKindColor(kind: string): UIColor | undefined {
  * Colour-coded tag for a documented symbol's kind.
  * - Thin wrapper over `<Tag>` that maps the kind string to a raw colour variant.
  *
- * @param props The kind to label plus any `TagProps` to forward to the underlying `<Tag>`.
  * @returns A `<Tag>` showing the kind, tinted by its colour.
  * @example <DocumentationKind kind="function" />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKind

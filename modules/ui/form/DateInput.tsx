@@ -28,7 +28,6 @@ export interface DateInputProps extends ValueInputProps<string, PossibleDate>, I
  * Date, time, or datetime input that accepts a `PossibleDate` and emits an ISO string value.
  * - The `input` prop selects the underlying `<input type="date|time|datetime-local">` and matching string format.
  *
- * @param props Props including `value`, `onValue`, optional `min`/`max` bounds, `input` type, and `step`.
  * @returns A native date/time `<input>` element.
  * @example <DateInput name="dob" input="date" value={dob} onValue={setDob} />
  * @see https://dhoulb.github.io/shelving/ui/form/DateInput/DateInput

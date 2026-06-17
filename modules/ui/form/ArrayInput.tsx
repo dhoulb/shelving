@@ -29,7 +29,6 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
  * - Each item is validated and rendered using the supplied `items` schema.
  * - Enforces `min`/`max` length and offers add, remove, and clear controls.
  *
- * @param props Props including `value`, `onValue`, the `items` schema, and `min`/`max` length bounds.
  * @returns Element rendering one input row per array item plus add/clear controls.
  * @example <ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
  * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInput

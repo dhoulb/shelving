@@ -30,7 +30,6 @@ export interface TreeSidebarProps {
  * Child and result hrefs use each element's canonical `path` (or `joinPath(parent, name)` as a fallback). To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
  *
  * @kind component
- * @param props The root `tree` element and optional root `path`.
  * @returns The sectioned sidebar — home/index links, a search input, and either the tree menu or search results.
  * @example <TreeSidebar tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeSidebar/TreeSidebar

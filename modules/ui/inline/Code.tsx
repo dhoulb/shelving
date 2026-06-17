@@ -23,7 +23,6 @@ export interface CodeProps extends ColorVariants, TypographyVariants, OptionalCh
  * - Pass `plain` to drop the default background and padding.
  *
  * @kind component
- * @param props Colour and typography variants, `children`, plus an optional `plain` toggle.
  * @returns Rendered `<code>` element.
  * @example <Code>npm install</Code>
  * @see https://dhoulb.github.io/shelving/ui/inline/Code/Code

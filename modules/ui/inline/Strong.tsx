@@ -16,7 +16,6 @@ export interface StrongProps extends OptionalChildProps {}
  * Strong importance — renders a `<strong>` element for text of strong importance (typically bold).
  *
  * @kind component
- * @param props The `children` to render with strong importance.
  * @returns Rendered `<strong>` element.
  * @example <Strong>Warning</Strong>
  * @see https://dhoulb.github.io/shelving/ui/inline/Strong/Strong

@@ -20,7 +20,6 @@ export interface LabelProps extends SubheadingProps {}
  * - This is the default style used by things like a `<th>` from a `<table>`.
  * - Default text properties for all of these can be controlled with global variables: `--size-label`, `--font-label`, `--case-label`.
  *
- * @param props Colour, space, and typography variants plus an optional `level` override and `children`.
  * @returns Rendered `<h3>` label heading element.
  * @example <Label>Email address</Label>
  * @see https://dhoulb.github.io/shelving/ui/block/Label/Label

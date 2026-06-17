@@ -23,7 +23,6 @@ export interface NumberInputProps extends ValueInputProps<number>, InputVariants
  * Numeric input bound to a `number` value, parsing typed text and reformatting it on blur.
  * - Uses `type="text"` with `inputMode="decimal"` so a custom `formatter` can control display.
  *
- * @param props Props including `value`, `onValue`, optional `min`/`max`, and a `formatter`.
  * @returns A numeric `<input>` element.
  * @example <NumberInput name="age" value={age} onValue={setAge} />
  * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInput

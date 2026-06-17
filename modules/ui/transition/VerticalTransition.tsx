@@ -13,7 +13,6 @@ export interface VerticalTransitionProps extends TransitionProps {}
  * Transition that slides its children vertically — down when moving forward, up when moving back.
  *
  * @kind component
- * @param props Shared transition variant props plus `children`.
  * @returns A `<Transition>` element configured with the vertical slide classes.
  * @example <VerticalTransition>{currentStep}</VerticalTransition>
  * @see https://dhoulb.github.io/shelving/ui/transition/VerticalTransition/VerticalTransition

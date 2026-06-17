@@ -14,7 +14,6 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
  * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
  *
  * @kind component
- * @param props The documentation element's flattened props (`path`, `title`, `name`, `kind`, `description`, `signatures`, plus relational metadata); the `class` relation is dropped so member cards omit the redundant "member of" link.
  * @returns A `<Card>` linking to the symbol's own page.
  * @example <DocumentationCard {...element.props} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationCard/DocumentationCard

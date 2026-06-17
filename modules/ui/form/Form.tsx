@@ -50,7 +50,6 @@ export interface FormProps<T extends Data> extends OptionalChildProps {
  * - Renders its fields and footer by default, or custom `children` that read the form via hooks.
  * - Closes a parent `<dialog>` automatically on successful submit.
  *
- * @param props Props including `schema`, initial `data`, `onSubmit`, `submit` content, and initial `messages`.
  * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
  * @kind component
  * @example <Form schema={USER_SCHEMA} onSubmit={save} />

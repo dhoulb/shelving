@@ -21,7 +21,6 @@ export interface FontVariants {
 /**
  * Get the font-family class for a component from its `font` variant prop.
  *
- * @param variants Variant props containing the optional `font` name.
  * @returns The font class string, or `undefined` when no `font` is set.
  * @example getFontClass({ font: "title" }) // "title"
  * @see https://dhoulb.github.io/shelving/ui/style/Font/getFontClass

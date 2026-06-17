@@ -22,7 +22,6 @@ export interface ScrollProps {
 /**
  * Get the scroll class for a component from its `horizontal` / `vertical` variant props.
  *
- * @param props Scroll variant props selecting the enabled axes.
  * @returns The combined scroll class string (empty when neither axis is enabled).
  * @example getScrollClass({ horizontal: true }) // "horizontal"
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/getScrollClass
@@ -44,7 +43,6 @@ export interface ScrollComponentProps extends ChildProps, ScrollProps {}
 /**
  * Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
  *
- * @param props Children plus scroll-axis variant props.
  * @returns A `<div>` element with the computed scroll class.
  * @example <Scroll horizontal>{wideContent}</Scroll>
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/Scroll

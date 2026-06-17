@@ -21,7 +21,6 @@ export interface DataInputProps<T extends Data> extends ValueInputProps<T> {
  * Composite input that edits a data object by rendering a `SchemaInput` for each property schema.
  * - Each sub-field is keyed by its property name and validated using the matching schema in `props`.
  *
- * @param props Props including the per-property `props` schemas, current `value`, and `onValue`.
  * @returns Element rendering one input per property, laid out in a row or column.
  * @example <DataInput name="address" props={addressSchemas} value={address} onValue={setAddress} />
  * @see https://dhoulb.github.io/shelving/ui/form/DataInput/DataInput

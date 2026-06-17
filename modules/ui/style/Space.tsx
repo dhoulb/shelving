@@ -39,7 +39,6 @@ export interface SpaceVariants {
 /**
  * Get the block-space class for a component from its `space` variant prop.
  *
- * @param variants Variant props containing the optional `space` scale.
  * @returns The space class string, or `undefined` when no `space` is set.
  * @example getSpaceClass({ space: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Space/getSpaceClass

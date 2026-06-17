@@ -10,7 +10,6 @@ import { requireForm } from "./FormContext.js";
  * Submit button for a form that disables itself and shows a spinner while the form is busy.
  * - Defaults to strong, full-width, primary styling and a "Save" label.
  *
- * @param props Button variants and optional `children` label content.
  * @returns A `<button type="submit">` element bound to the current form.
  * @example <SubmitButton>Save changes</SubmitButton>
  * @see https://dhoulb.github.io/shelving/ui/form/SubmitButton/SubmitButton

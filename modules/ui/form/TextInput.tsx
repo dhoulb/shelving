@@ -27,7 +27,6 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
  * - Applies an optional `formatter` on initial display and on blur.
  * - Multiline mode auto-grows the textarea to fit its content.
  *
- * @param props Props including `value`, `onValue`, `rows`, `input` type, `min`/`max` length, and `formatter`.
  * @returns A text `<input>` or `<textarea>` element.
  * @example <TextInput name="name" value={name} onValue={setName} />
  * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInput

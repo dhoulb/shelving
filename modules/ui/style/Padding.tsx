@@ -39,7 +39,6 @@ export interface PaddingVariants {
 /**
  * Get the block-padding class for a component from its `padding` variant prop.
  *
- * @param variants Variant props containing the optional `padding` scale.
  * @returns The padding class string, or `undefined` when no `padding` is set.
  * @example getPaddingClass({ padding: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Padding/getPaddingClass

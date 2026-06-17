@@ -17,7 +17,6 @@ export interface ProgressProps {
 /**
  * Show progress as a single continuous horizontal bar, filled to `value` clamped between `0` and `1`.
  *
- * @param props Props including `value` (0–1) and optional `success`/`warning`/`danger` status flags.
  * @returns A progress bar element.
  * @example <Progress value={0.5} />
  * @see https://dhoulb.github.io/shelving/ui/form/Progress/Progress
@@ -57,7 +56,6 @@ export interface SegmentedProgressProps {
 /**
  * Show step progress as a horizontal bar of `total` segments, of which `current + 1` are filled.
  *
- * @param props Props including `total` segment count, `current` index, and optional status flags.
  * @returns A segmented progress bar element, or `null` when `total` is not positive.
  * @example <SegmentedProgress total={4} current={1} />
  * @see https://dhoulb.github.io/shelving/ui/form/Progress/SegmentedProgress

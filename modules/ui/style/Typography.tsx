@@ -64,7 +64,6 @@ export interface TypographyVariants extends AlignVariants, SizeVariants, WeightV
  *
  * Composes the focused size, weight, and font helpers with text alignment and tint colour.
  *
- * @param props Typographic variant props (font, weight, size, tint, alignment).
  * @returns The combined typography class string, or `undefined` when no variants apply.
  * @example getTypographyClass({ font: "title", size: "large", center: true })
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/getTypographyClass

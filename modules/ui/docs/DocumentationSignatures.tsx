@@ -18,7 +18,6 @@ export interface DocumentationSignaturesProps {
  *   blocks, not a shouty heading).
  * - Renders nothing when there are no signatures.
  *
- * @param props The signatures to render — one block per overload.
  * @returns One `<Preformatted>` block per signature, or `null` when there are none.
  * @example <DocumentationSignatures signatures={["getArray<T>(arr: T[]): T"]} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignatures

@@ -21,7 +21,6 @@ export interface TreeButtonProps extends ButtonVariants {
  * - A hit becomes an `<a>` link; a miss (e.g. a builtin like `Serializable`, or a compound type like `Foo | null`) stays a plain non-link label so it still reads as text.
  * - Defaults to `small plain` styling; pass other `ButtonVariants` to override.
  *
- * @param props The element reference `name`, optional `children` label, and button variants.
  * @returns A `<Button>` element linking to the resolved element, or a plain label on a miss.
  * @example <TreeButton name="Store.get">Store.get()</TreeButton>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeButton/TreeButton

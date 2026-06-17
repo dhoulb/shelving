@@ -32,7 +32,6 @@ export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictio
  * - Each value is validated and rendered using the supplied `items` schema.
  * - Enforces `min`/`max` entry count and offers add, remove, and clear controls.
  *
- * @param props Props including `value`, `onValue`, the `items` schema, and `min`/`max` entry bounds.
  * @returns Element rendering one key/value row per entry plus add/clear controls.
  * @example <DictionaryInput name="meta" items={STRING} value={meta} onValue={setMeta} />
  * @see https://dhoulb.github.io/shelving/ui/form/DictionaryInput/DictionaryInput
