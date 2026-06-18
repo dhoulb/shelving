@@ -98,6 +98,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      deployments: write
     steps:
       - name: checkout docs branch
         uses: actions/checkout@v6
@@ -116,6 +117,32 @@ jobs:
             git commit -m "chore: remove docs preview for PR #${PR_NUMBER}"
             git push
           fi
+      # GitHub never deletes deployment records on its own, so the `docs-preview` deployments this
+      # PR created would linger forever pointing at a now-removed preview. Mark them inactive (you
+      # can't delete an active deployment) then delete them.
+      - name: remove PR deployments
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { data: deployments } = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              environment: 'docs-preview',
+              ref: `refs/pull/${context.issue.number}/merge`,
+            });
+            for (const deployment of deployments) {
+              await github.rest.repos.createDeploymentStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+                state: 'inactive',
+              });
+              await github.rest.repos.deleteDeployment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+              });
+            }
       - name: update PR comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
