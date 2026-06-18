@@ -31,6 +31,18 @@ function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string,
 	return description || getTreeElement(map, type)?.props.description || "";
 }
 
+/** Render a parameter/property row's description, appending a `Defaults to …` line (linking the value if it's a documented token) when a default exists. */
+function _renderRowDescription(description: string, def?: string | undefined): ReactNode {
+	if (!def) return description;
+	return (
+		<>
+			{description}
+			{description && <br />}
+			Defaults to <TreeLink name={def} />
+		</>
+	);
+}
+
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
 const KIND_SECTIONS = {
 	component: "Components",
@@ -79,7 +91,7 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
  * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, referenced types, and examples.
- * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text), and a row with no hand-written description falls back to the referenced type's own `description`.
+ * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text), and a row with no hand-written description falls back to the referenced type's own `description`. A parameter/property default renders as a `Defaults to …` line at the foot of its description cell (linking the value when it's a documented token) rather than in a dedicated column.
  * - An options-bag parameter whose type resolves to a documented interface/object type is flattened into indented child rows (one per property), so readers see the individual fields inline.
  * - A `type` alias's referenced type names render as a linked `Type` table, each row carrying the resolved element's `description` (exact-match only).
  * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
@@ -132,7 +144,6 @@ export function DocumentationPage({
 											<tr>
 												<TableHeader width="fit">Param</TableHeader>
 												<TableHeader width="fit">Type</TableHeader>
-												<TableHeader width="fit">Default</TableHeader>
 											</tr>
 										</thead>
 										<tbody>
@@ -148,9 +159,8 @@ export function DocumentationPage({
 															<TableCell>
 																<TreeLink name={type} />
 															</TableCell>
-															<TableCell>{def ? <Code>{def}</Code> : "-"}</TableCell>
 															<TableCell width="20x" grow>
-																{description || resolved?.description || ""}
+																{_renderRowDescription(description || resolved?.description || "", def)}
 															</TableCell>
 														</tr>
 														{resolved?.properties?.map(prop => (
@@ -161,9 +171,11 @@ export function DocumentationPage({
 																<TableCell>
 																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
 																</TableCell>
-																<TableCell>{prop.default ? <Code>{prop.default}</Code> : "-"}</TableCell>
 																<TableCell width="20x" grow>
-																	{_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description)}
+																	{_renderRowDescription(
+																		_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description),
+																		prop.default,
+																	)}
 																</TableCell>
 															</tr>
 														))}
