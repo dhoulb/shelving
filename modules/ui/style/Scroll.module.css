@@ -9,7 +9,6 @@
 	.horizontal,
 	.vertical {
 		overflow: hidden;
-		overscroll-behavior: none;
 	}
 }
 

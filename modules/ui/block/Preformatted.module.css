@@ -46,7 +46,6 @@
 		/* Scrolling */
 		overflow-y: hidden;
 		overflow-x: auto;
-		overscroll-behavior-y: auto;
 		overscroll-behavior-x: none;
 		scroll-behavior: smooth;
 
