@@ -30,11 +30,27 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      deployments: write
+    # Records a GitHub Deployment so the commit / PR / branch shows a "View deployment" link
+    # pointing at the published site. PRs deploy to the shared `docs-preview` environment (URL
+    # per-PR); pushes to `main` deploy to `docs`. The job's success/failure sets the status.
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'docs-preview' || 'docs' }}
+      url: ${{ steps.url.outputs.url }}
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
       - name: install
         run: bun install
+      # Resolve the URL the build will be served from — reused as the deployment environment URL.
+      - name: url
+        id: url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
+          fi
       # APP_URL must match where the build is actually served so links and assets resolve correctly.
       - name: build (main)
         if: github.event_name != 'pull_request'
