@@ -19,7 +19,7 @@ import { MARKUP_RULES } from "./rule/index.js";
 export type MarkupOptions = {
 	/**
 	 * The active list of parsing rules.
-	 * @default MARKUP_RULES The default list of markup rules.
+	 * @default MARKUP_RULES
 	 */
 	readonly rules?: MarkupRules | undefined;
 

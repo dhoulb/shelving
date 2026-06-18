@@ -24,6 +24,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends` / `implements` (full heritage type text including generic arguments, e.g. `AbstractStore<string>` or `Omit<StringSchemaOptions, "value">`), and `types` (the type names a `type` alias's body references, e.g. `OtherType` in `string | OtherType`).
  * - Records a structured `properties` list for interfaces and object-literal `type` aliases — each member's name, type, optionality, `@default`, and description — so an options-bag parameter can be flattened into its fields at render time.
+ * - Names a destructured (binding-pattern) parameter for the Param column — which has no name of its own — from an explicit `@param`, else its rest element (`...options`), else a type-derived fallback (`props` / `options`). The signature still shows the full `{ … }`.
  * - Pretty-prints object-literal signatures (interfaces and object-literal `type` aliases) as multi-line `{ … }` blocks, one member per line; other type bodies (`string | null`, mapped types, …) are emitted verbatim.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
  * - Keys are the raw declared `name` (case-preserving) so case-distinct exports like `Collection` and `COLLECTION` stay separate.
@@ -363,6 +364,7 @@ function _getParams(
  * - Multiple `@param name` tags for the same parameter each emit a row, so a single parameter can be documented as several typed variants.
  * - A `@param name` with no `{Type}` only supplies the description; the inferred type stands.
  * - `primaryJsDocParams` win over `fallbackJsDocParams` per name (used by constructors: the constructor's own `@param` beats the class-level `@param`).
+ * - A destructured (binding-pattern) param has no name of its own — its display name resolves as an "orphan" `@param` (one not matching any identifier param, in source order), else the rest element (`...options`), else a type-derived fallback (see `_getBindingName`). This keeps the Param column readable (`options`) while the signature still shows the full `{ … }`.
  */
 function _buildParams(
 	parameters: readonly ts.ParameterDeclaration[],
@@ -371,8 +373,16 @@ function _buildParams(
 	fallbackJsDocParams?: readonly DocumentationParam[] | undefined,
 ): DocumentationParam[] {
 	const params: DocumentationParam[] = [];
+	// Identifier (non-destructured) parameter names — used to spot "orphan" `@param` tags that name a destructured bag.
+	const named = new Set<string>();
+	for (const p of parameters) if (ts.isIdentifier(p.name)) named.add(p.name.getText(source));
+	// Top-level `@param` names not matching any identifier parameter, in declared order (constructor's own first, then class-level), de-duplicated — these let an author name a destructured param (`@param options`). Sub-tags (`options.min`) are excluded.
+	const orphans: string[] = [];
+	for (const d of [...(primaryJsDocParams ?? []), ...(fallbackJsDocParams ?? [])])
+		if (!d.name.includes(".") && !named.has(d.name) && !orphans.includes(d.name)) orphans.push(d.name);
+	let orphan = 0;
 	for (const p of parameters) {
-		const name = p.name.getText(source);
+		const name = ts.isIdentifier(p.name) ? p.name.getText(source) : (orphans[orphan++] ?? _getBindingName(p, source));
 		const type = p.type?.getText(source);
 		const optional = !!p.questionToken || !!p.initializer;
 		const def = p.initializer?.getText(source);
@@ -388,6 +398,19 @@ function _buildParams(
 		}
 	}
 	return params;
+}
+
+/**
+ * Derive a display name for a destructured (binding-pattern) parameter, which has no name of its own.
+ * - Prefers the rest element's name when present (`{ min, ...options }` → `options`), since that's already author-supplied and accurate.
+ * - Otherwise falls back to a generic name read from the type — `props` for a `*Props` type (component props), else `options`.
+ * - Callers resolve an explicit `@param` first (see `_buildParams`); this is only the fallback when none is given.
+ */
+function _getBindingName(p: ts.ParameterDeclaration, source: ts.SourceFile): string {
+	const { name } = p;
+	if (ts.isObjectBindingPattern(name) || ts.isArrayBindingPattern(name))
+		for (const el of name.elements) if (ts.isBindingElement(el) && el.dotDotDotToken && ts.isIdentifier(el.name)) return el.name.text;
+	return p.type?.getText(source).replace(/<.*/s, "").endsWith("Props") ? "props" : "options";
 }
 
 /**

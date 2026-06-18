@@ -654,6 +654,83 @@ export function makeThing(name: string, required = false, options: ThingOptions 
 		]);
 	});
 
+	describe("destructured parameter naming", () => {
+		const params = async (source: string) => {
+			const element = await extractor.extract(file(source));
+			return (element.props.children as { props: { params: unknown } }[])[0]?.props.params;
+		};
+
+		test("names a destructured param after its rest element (`...options`)", async () => {
+			expect(
+				await params(`
+/** Make a thing. */
+export function makeThing({ min = 0, max = 10, ...options }: ThingOptions): Thing {}
+`),
+			).toEqual([{ name: "options", type: "ThingOptions", description: undefined, optional: false, default: undefined }]);
+		});
+
+		test("falls back to `options` for a destructured param with no rest element", async () => {
+			expect(
+				await params(`
+/** Make a thing. */
+export function makeThing({ min = 0, max = 10 }: ThingOptions): Thing {}
+`),
+			).toEqual([{ name: "options", type: "ThingOptions", description: undefined, optional: false, default: undefined }]);
+		});
+
+		test("falls back to `props` for a destructured `*Props` param (incl. generics)", async () => {
+			expect(
+				await params(`
+/** A component. */
+export function Thing({ children }: ThingProps<Data>): ReactElement {}
+`),
+			).toEqual([{ name: "props", type: "ThingProps<Data>", description: undefined, optional: false, default: undefined }]);
+		});
+
+		test("lets an `@param` name a destructured param, supplying its description", async () => {
+			expect(
+				await params(`
+/**
+ * Make a thing.
+ * @param config The configuration bag.
+ */
+export function makeThing({ min = 0, max = 10 }: ThingOptions): Thing {}
+`),
+			).toEqual([{ name: "config", type: "ThingOptions", description: "The configuration bag.", optional: false, default: undefined }]);
+		});
+
+		test("assigns orphan `@param` names positionally, leaving identifier params matched by name", async () => {
+			expect(
+				await params(`
+/**
+ * Make a thing.
+ * @param id The thing's id.
+ * @param opts The options bag.
+ */
+export function makeThing(id: string, { min = 0 }: ThingOptions): Thing {}
+`),
+			).toEqual([
+				{ name: "id", type: "string", description: "The thing's id.", optional: false, default: undefined },
+				{ name: "opts", type: "ThingOptions", description: "The options bag.", optional: false, default: undefined },
+			]);
+		});
+
+		test("names a destructured constructor param the same way", async () => {
+			const element = await extractor.extract(
+				file(`
+/** A schema. */
+export class Schema {
+	constructor({ one = "value", title, value }: SchemaOptions) {}
+}
+`),
+			);
+			const props = (element.props.children as { props: { params: unknown } }[])[0]?.props;
+			expect(props?.params).toEqual([
+				{ name: "options", type: "SchemaOptions", description: undefined, optional: false, default: undefined },
+			]);
+		});
+	});
+
 	test("sources the returns description from the class's @returns when present", async () => {
 		const element = await extractor.extract(
 			file(`
