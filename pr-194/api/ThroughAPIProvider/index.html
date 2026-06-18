@@ -10,7 +10,7 @@ class AuthAPIProvider&lt;P, R&gt; extends ThroughAPIProvider&lt;P, R&gt; {
     })
     return super.fetch(authed)
   }
-}</code></pre></figure><h2>See also</h2><ul><li><a href="https://dhoulb.github.io/shelving/pr-194/api/APIProvider"><code>APIProvider</code></a> — the abstract base.</li><li><a href="https://dhoulb.github.io/shelving/pr-194/api"><code>shelving/api</code></a> — overview of the provider hierarchy.</li></ul></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">class AuthAPIProvider extends ThroughAPIProvider {
+}</code></pre></figure></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">class AuthAPIProvider extends ThroughAPIProvider {
 	override createRequest(endpoint, payload, options, caller) {
 		return super.createRequest(endpoint, payload, { ...options, headers: { authorization: TOKEN } }, caller);
 	}

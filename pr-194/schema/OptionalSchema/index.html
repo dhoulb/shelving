@@ -2,6 +2,6 @@
 
 const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
 OPTIONAL_NUMBER.validate(undefined); // undefined
-OPTIONAL_NUMBER.validate(42);        // 42</code></pre></figure><h2>See also</h2><ul><li><a href="https://dhoulb.github.io/shelving/pr-194/schema/NullableSchema"><code>NullableSchema</code></a> — the <code>null</code>-allowing equivalent.</li><li><a href="https://dhoulb.github.io/shelving/pr-194/schema"><code>shelving/schema</code></a> — overview of schema concepts and composition.</li></ul></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">const schema = new OptionalSchema({ source: STRING });
+OPTIONAL_NUMBER.validate(42);        // 42</code></pre></figure></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">const schema = new OptionalSchema({ source: STRING });
  schema.validate(undefined); // Returns undefined
  schema.validate(&quot;abc&quot;); // Returns &quot;abc&quot;</pre></section></div></div></div><!--/&--></main><script type="application/json" id="docs-data">{"url":"https://dhoulb.github.io/shelving/pr-194/schema/OptionalSchema","root":"https://dhoulb.github.io/shelving/pr-194/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["/client-da5ndv9d.css"],"modules":["/client-1xcdg3v4.js"],"tags":{"viewport":"width=device-width, initial-scale=1"}}</script></body></html>

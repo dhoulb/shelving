@@ -9,7 +9,7 @@ const api = new MockEndpointAPIProvider(handlers, undefined)
 const user = await api.call(getUser, { id: &quot;u_1&quot; })
 // user == { id: &quot;u_1&quot;, name: &quot;Alice&quot;, email: &quot;alice@example.com&quot; }
 
-console.log(api.requestCalls) // inspect recorded calls</code></pre></figure><h2>See also</h2><ul><li><a href="https://dhoulb.github.io/shelving/pr-194/api/MockAPIProvider"><code>MockAPIProvider</code></a> — the base mock provider.</li><li><a href="https://dhoulb.github.io/shelving/pr-194/api"><code>shelving/api</code></a> — <code>endpoint.handler()</code> and <code>handleEndpoints()</code>.</li><li><a href="https://dhoulb.github.io/shelving/pr-194/api"><code>shelving/api</code></a> — overview of the provider hierarchy.</li></ul></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">const endpoint = POST(&quot;/squared&quot;, INTEGER, INTEGER); // Create an endpoint designed to square its input number.
+console.log(api.requestCalls) // inspect recorded calls</code></pre></figure></div></section><section class="section_IIDW3Q"><h2 class="heading_Wx8_nw">Examples</h2><pre class="preformatted_o5lldw">const endpoint = POST(&quot;/squared&quot;, INTEGER, INTEGER); // Create an endpoint designed to square its input number.
  const handlers = [endpoint.handler(num =&gt; num * num)]; // Implement handlers for the endpoints.
 	const api = new MockEnpdointAPIProvider(handlers); // Create a new mock provider.
  const result = await api.fetch(endpoint, 4); // Mock a call to the endpoint through the provider.
