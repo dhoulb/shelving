@@ -25,4 +25,4 @@ Param helpers come in mutating (`setParam`, `updateParams`, `deleteParam`, `clea
 
 - [`Store`](/store/Store) — the base class.
 - [`PathStore`](/store/PathStore) — the equivalent for absolute paths.
-- [store](/store) — overview of all store classes.
+- [`shelving/store`](/store) — overview of all store classes.

@@ -4,7 +4,7 @@
 
 ## When to use this
 
-Choose [`firestore/client`](/firestore/client) when your code runs in the browser and you want to receive live updates as documents change. If you do not need realtime and want a smaller bundle, use [`firestore/lite`](/firestore/lite) instead. For server-side Node.js code, use [`firestore/server`](/firestore/server).
+Choose [`shelving/firestore/client`](/firestore/client) when your code runs in the browser and you want to receive live updates as documents change. If you do not need realtime and want a smaller bundle, use [`shelving/firestore/lite`](/firestore/lite) instead. For server-side Node.js code, use [`shelving/firestore/server`](/firestore/server).
 
 ## Install
 
@@ -47,11 +47,4 @@ The subscription opens lazily on first `for await` iteration and closes when the
 
 ## Bulk query mutations
 
-[`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), and [`.deleteQuery()`](/db/DBProvider/deleteQuery) fetch matching documents with `getDocs` and then issue parallel `Promise.all` writes. For large result sets, prefer [`firestore/server`](/firestore/server) which uses `BulkWriter`.
-
-## See also
-
-- [`firestore`](/firestore/client) — provider comparison and parent module overview
-- [`firestore/lite`](/firestore/lite) — smaller bundle, no realtime
-- [`firestore/server`](/firestore/server) — server-side provider with `BulkWriter`
-- [`db`](/db) — [`DBProvider`](/db/DBProvider) base class, [`Collection`](/db/Collection), and query syntax
+[`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), and [`.deleteQuery()`](/db/DBProvider/deleteQuery) fetch matching documents with `getDocs` and then issue parallel `Promise.all` writes. For large result sets, prefer [`shelving/firestore/server`](/firestore/server) which uses `BulkWriter`.

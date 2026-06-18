@@ -1,6 +1,6 @@
 # Element trees
 
-These types and helpers describe a **tree of elements** — a hierarchical structure built on top of [`Element`](/util/element), used to represent a documentation site's content hierarchy. The [extract](/extract) module builds trees of [`TreeElement`](/util/tree/TreeElement) nodes from source files; the [ui/tree](/ui/tree) component renders them.
+These types and helpers describe a **tree of elements** — a hierarchical structure built on top of [`shelving/util/element`](/util/element), used to represent a documentation site's content hierarchy. The [`shelving/extract`](/extract) module builds trees of [`TreeElement`](/util/tree/TreeElement) nodes from source files; the [`shelving/ui`](/ui) component renders them.
 
 **Things to know:**
 
@@ -53,7 +53,7 @@ const el: DocumentationElement = {
 
 ## See also
 
-- [element](/util/element) — the generic `Element` type and walk/filter helpers this builds on.
-- [extract](/extract) — builds [`TreeElement`](/util/tree/TreeElement) trees from TypeScript and Markdown source files.
-- [ui/tree](/ui/tree) — renders `TreeElement` trees in the documentation UI.
+- [`shelving/util/element`](/util/element) — the generic `Element` type and walk/filter helpers this builds on.
+- [`shelving/extract`](/extract) — builds [`TreeElement`](/util/tree/TreeElement) trees from TypeScript and Markdown source files.
+- [`shelving/ui`](/ui) — renders `TreeElement` trees in the documentation UI.
 - [util](/util) — full util module overview.

@@ -63,12 +63,3 @@ The components below are listed in the index following this page; this is the sh
 **Interaction.** Forms start at [`<Form>`](/ui/Form), which wires [`<Field>`](/ui/Field) and the typed inputs to a [`FormStore`](/ui/FormStore); [`<Button>`](/ui/Button) is the standalone action. Overlays are [`<Dialog>`](/ui/Dialog) and [`<Modal>`](/ui/Modal); navigation menus are [`<Menu>`](/ui/Menu) and [`<MenuItem>`](/ui/MenuItem); transient feedback is [`<Notice>`](/ui/Notice) (and the global [`<Notices>`](/ui/Notices) list); animate enter/leave with [`<Transition>`](/ui/Transition).
 
 **Documentation site.** Hand an extracted tree to [`<TreeApp>`](/ui/TreeApp) and you get a complete site — sidebar, routing, and a rendered page per element — using the renderers in `docs/`.
-
-## See also
-
-- [`extract`](/extract) — builds the tree that the documentation components render
-- [`markup`](/markup) — Markdown rendering used by [`<Markup>`](/ui/Markup) and [`<Prose>`](/ui/Prose)
-- [`store`](/store) — reactive state behind [`FormStore`](/ui/FormStore), [`NavigationStore`](/ui/NavigationStore), and notices
-- [`react`](/react) — store and provider hooks used alongside these components
-
-> Building or extending a component? The contributor walkthrough (file layout, the tint-anchor + per-property-hook pattern, `:first-child` / `:last-child` overrides, and the checklist) lives in the **React Components** section of `AGENTS.md`.

@@ -38,7 +38,7 @@ Every schema carries optional display metadata set at construction time:
 
 ### Sugar instances and factories
 
-For convenience the [`schema`](/schema) module offers sugar constants and factories to improve the readability of code that creates complex schemas. Sugar instances are pre-instantiated copies of [`Schema`](/schema/Schema) classes — by convention an instantiated schema is named in `ALL_CAPS`, a convention you will find it convenient to use in your own codebase too. Sugar factories are functions like [`OPTIONAL()`](/schema/OPTIONAL) and [`DATA()`](/schema/DATA) that build a configured schema for you.
+For convenience the [`shelving/schema`](/schema) module offers sugar constants and factories to improve the readability of code that creates complex schemas. Sugar instances are pre-instantiated copies of [`Schema`](/schema/Schema) classes — by convention an instantiated schema is named in `ALL_CAPS`, a convention you will find it convenient to use in your own codebase too. Sugar factories are functions like [`OPTIONAL()`](/schema/OPTIONAL) and [`DATA()`](/schema/DATA) that build a configured schema for you.
 
 | Sugar instance / factory | Validated type       |
 | ----------------------- | -------------------- |
@@ -74,8 +74,3 @@ PRODUCT.validate({ id: 1, name: "Widget", price: 9.99, tags: "a,b" });
 PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 // throws "name: Required"
 ```
-
-## See also
-
-- [`util`](/util/data) — [`Data`](/util/data/Data), [`Item`](/util/item/Item), query, and update types consumed by schemas.
-- [`db`](/db) — [`Collection`](/db/Collection) extends [`DataSchema`](/schema/DataSchema) and uses schemas to validate stored documents.

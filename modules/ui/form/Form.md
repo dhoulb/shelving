@@ -91,7 +91,7 @@ import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from "shelv
 
 ## Notices and error surfacing
 
-When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches it as a success notice. When it throws a **string**, the string is parsed into field messages — any line matching `"fieldName: message"` maps to that field's error display; an unmatched remainder appears as the form-wide message shown by [`<FormMessage>`](/ui/FormMessage). Non-string throws become global error notices. The string-splitting rule comes from [schema](/schema).
+When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches it as a success notice. When it throws a **string**, the string is parsed into field messages — any line matching `"fieldName: message"` maps to that field's error display; an unmatched remainder appears as the form-wide message shown by [`<FormMessage>`](/ui/FormMessage). Non-string throws become global error notices. The string-splitting rule comes from [`shelving/schema`](/schema).
 
 - `<FormMessage>` renders the top-level `""` message inline as a [`<Message>`](/ui/Message).
 - [`<FormNotice>`](/ui/FormNotice) renders it as a larger [`<Notice>`](/ui/Notice) block.
@@ -113,6 +113,6 @@ When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches i
 - [`Field`](/ui/Field) — the label + input + error wrapper for a single control.
 - [`SchemaInput`](/ui/SchemaInput) — the schema-to-input dispatch component.
 - [`SubmitButton`](/ui/SubmitButton) — submit button that reads the surrounding form's busy state.
-- [schema](/schema) — [`DataSchema`](/schema/DataSchema), [`StringSchema`](/schema/StringSchema), [`NumberSchema`](/schema/NumberSchema), and the other schema types that drive automatic input selection.
-- [react](/react) — [`useStore`](/react/useStore), [`useInstance`](/react/useInstance), and other hooks used internally.
-- [ui](/ui) — top-level UI module index.
+- [`shelving/schema`](/schema) — [`DataSchema`](/schema/DataSchema), [`StringSchema`](/schema/StringSchema), [`NumberSchema`](/schema/NumberSchema), and the other schema types that drive automatic input selection.
+- [`shelving/react`](/react) — [`useStore`](/react/useStore), [`useInstance`](/react/useInstance), and other hooks used internally.
+- [`shelving/ui`](/ui) — top-level UI module index.

@@ -37,4 +37,4 @@ import { Mark } from "shelving/ui";
 - [`Strong`](/ui/Strong) — strong importance rather than relevance highlighting.
 - [`Emphasis`](/ui/Emphasis) — stress emphasis (italic) for a run of text.
 - [`Code`](/ui/Code) — inline code rather than a highlight.
-- [`ui`](/ui) — the styling system and theming tokens.
+- [`shelving/ui`](/ui) — the styling system and theming tokens.

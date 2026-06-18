@@ -70,8 +70,3 @@ try {
   throw err;
 }
 ```
-
-## See also
-
-- [`schema`](/schema) — schema validation (throws plain strings, not Error instances)
-- [`util`](/util/null) — `require*()` functions that throw [`RequiredError`](/error/RequiredError)

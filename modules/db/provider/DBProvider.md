@@ -1,6 +1,6 @@
 # DBProvider
 
-The abstract base class every database backend implements. `DBProvider<I, T>` defines the typed surface that all call sites use — item reads and writes, queries, and realtime sequences — generic over a [`Collection`](/db/collection) so the compiler tracks `id` and `data` types automatically.
+The abstract base class every database backend implements. `DBProvider<I, T>` defines the typed surface that all call sites use — item reads and writes, queries, and realtime sequences — generic over a [`Collection`](/db/Collection) so the compiler tracks `id` and `data` types automatically.
 
 Concrete backends implement the abstract methods; the base class derives `requireItem`, `countQuery`, `getFirst`, and `requireFirst` from them. `DBProvider` implements `AsyncDisposable`.
 
@@ -22,4 +22,4 @@ The method surface covers single items (`getItem`, `requireItem`, `addItem`, `se
 
 - [`MemoryDBProvider`](/db/MemoryDBProvider) — the concrete in-memory implementation.
 - [`ThroughDBProvider`](/db/ThroughDBProvider) — base for wrapping providers.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

@@ -22,4 +22,4 @@ NUMBERS.validate(undefined);   // []
 
 ## See also
 
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

@@ -13,8 +13,8 @@ function parseConfig(raw: unknown): Config {
 }
 ```
 
-See [error](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
+See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
 
 ## See also
 
-- [error](/error) — module overview and shared error behaviour.
+- [`shelving/error`](/error) — module overview and shared error behaviour.

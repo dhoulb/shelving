@@ -1,6 +1,6 @@
 # Query helpers
 
-A [`Query<T>`](/util/query/Query) is a plain object that describes filters, ordering, and a result limit for a set of data items. These helpers parse, apply, and paginate queries — the same `Query` type that [db](/db) uses for all collection reads.
+A [`Query<T>`](/util/query/Query) is a plain object that describes filters, ordering, and a result limit for a set of data items. These helpers parse, apply, and paginate queries — the same `Query` type that [`shelving/db`](/db) uses for all collection reads.
 
 **Things to know:**
 
@@ -99,5 +99,5 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 
 ## See also
 
-- [db](/db) — collection reads accept [`Query<T>`](/util/query/Query) directly
+- [`shelving/db`](/db) — collection reads accept [`Query<T>`](/util/query/Query) directly
 - [util](/util) — full util module overview, including [`Updates`](/util/update/Updates)

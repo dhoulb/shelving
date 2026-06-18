@@ -75,5 +75,5 @@ getPlaceholders("*-*");                        // ["0", "1"]
 
 ## See also
 
-- [string](/util/string) — String sanitisation, slugs, and word splitting.
+- [`shelving/util/string`](/util/string) — String sanitisation, slugs, and word splitting.
 - [util](/util) — Overview of all util helpers.

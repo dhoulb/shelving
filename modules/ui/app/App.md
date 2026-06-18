@@ -48,7 +48,7 @@ export function MyApp() {
 
 `<App>` accepts all [`PossibleMeta`](/ui/PossibleMeta) props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
 
-For a documentation site, hand an extracted tree to [`TreeApp`](/ui/TreeApp) instead — see the [extract](/extract) guide.
+For a documentation site, hand an extracted tree to [`TreeApp`](/ui/TreeApp) instead — see the [`shelving/extract`](/extract) guide.
 
 ## See also
 

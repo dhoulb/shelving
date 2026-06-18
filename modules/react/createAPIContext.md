@@ -1,6 +1,6 @@
 # createAPIContext
 
-Create a React context for a Shelving [API](/api) provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory [`APICache`](/api/APICache), so independent subtrees can use independent providers.
+Create a React context for a Shelving [`shelving/api`](/api) provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory [`APICache`](/api/APICache), so independent subtrees can use independent providers.
 
 ## Usage
 
@@ -42,5 +42,5 @@ function App() {
 ## See also
 
 - [`createDBContext()`](/react/createDBContext) — the same pattern for a database provider.
-- [api](/api) — [`APIProvider`](/api/APIProvider), [`APICache`](/api/APICache), [`Endpoint`](/api/Endpoint), and [`EndpointStore`](/api/EndpointStore).
-- [react](/react) — overview of all React hooks and context helpers.
+- [`shelving/api`](/api) — [`APIProvider`](/api/APIProvider), [`APICache`](/api/APICache), [`Endpoint`](/api/Endpoint), and [`EndpointStore`](/api/EndpointStore).
+- [`shelving/react`](/react) — overview of all React hooks and context helpers.

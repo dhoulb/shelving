@@ -29,7 +29,7 @@ Observable value containers for reactive state. A [`Store<T>`](/store/Store) hol
 | [`FetchStore<T>`](/store/FetchStore) | Fetches its value from a callback; adds [`.refresh()`](/store/FetchStore/refresh) / [`.invalidate()`](/store/FetchStore/invalidate). |
 | [`PayloadFetchStore<P, R>`](/store/PayloadFetchStore) | A `FetchStore` driven by a [`.payload`](/store/PayloadFetchStore/payload) store — changing the payload re-fetches. |
 
-[`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) in the [`db`](/db) module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
+[`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) in the [`shelving/db`](/db) module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
 
 ## Usage
 
@@ -48,9 +48,3 @@ async function connect(stream: AsyncIterable<number>) {
   }
 }
 ```
-
-## See also
-
-- [`sequence`](/sequence) — [`DeferredSequence`](/sequence/DeferredSequence) that powers the store's async iteration
-- [`db`](/db) — [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) extend `Store` for database-backed reactive state
-- [`react`](/react) — [`useStore()`](/react/useStore) subscribes a React component to a store

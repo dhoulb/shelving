@@ -47,4 +47,4 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 - [`Card`](/ui/Card) — a boxed surface for standalone content rather than a full-width band.
 - [`Block`](/ui/Block) — the inner width-constraining wrapper for panel content.
 - [`Section`](/ui/Section) — a landmark region that sits inside a panel's inner block.
-- [`ui`](/ui) — the styling system: tint ladder, padding variants, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, padding variants, and theming.

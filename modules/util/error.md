@@ -2,7 +2,7 @@
 
 Low-level helpers for working with error messages as plain strings. They exist to give call-site code a uniform way to extract, split, join, and annotate messages without caring whether the source is an `Error` object, a plain string, or any other value.
 
-These are **not** the typed error classes — see [error](/error) for [`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), and friends.
+These are **not** the typed error classes — see [`shelving/error`](/error) for [`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), and friends.
 
 **Things to know:**
 
@@ -50,5 +50,5 @@ getNamedMessage("address", "Street is required\nCity is required");
 
 ## See also
 
-- [error](/error) — typed error classes ([`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), etc.).
+- [`shelving/error`](/error) — typed error classes ([`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), etc.).
 - [util](/util) — full util module overview.

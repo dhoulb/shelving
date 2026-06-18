@@ -57,7 +57,7 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 - **[`ThroughDBProvider`](/db/ThroughDBProvider)** — identity wrapper; extend this to intercept only specific methods (e.g. [`DebugDBProvider`](/db/DebugDBProvider)).
 - **[`SQLiteProvider`](/db/SQLiteProvider)** / **[`PostgreSQLProvider`](/db/PostgreSQLProvider)** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
-Cloud providers live in the [`cloudflare`](/cloudflare) and [`firestore`](/firestore/client) sibling modules.
+Cloud providers live in the [`shelving/cloudflare`](/cloudflare) and [`shelving/firestore/client`](/firestore/client) sibling modules.
 
 ### Migrations
 
@@ -117,7 +117,7 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 
 ## React integration
 
-The [`react`](/react) module's [`createDBContext()`](/react/createDBContext) is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — [`.useItem()`](/react/DBContext/useItem) and [`.useQuery()`](/react/DBContext/useQuery) — that return reactive [`Store`](/store/Store) instances and suspend automatically while loading.
+The [`shelving/react`](/react) module's [`createDBContext()`](/react/createDBContext) is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — [`.useItem()`](/react/DBContext/useItem) and [`.useQuery()`](/react/DBContext/useQuery) — that return reactive [`Store`](/store/Store) instances and suspend automatically while loading.
 
 ```ts
 import { createDBContext } from "shelving/react"
@@ -127,12 +127,4 @@ const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvid
 export const { DBContext, useItem, useQuery } = createDBContext(provider)
 ```
 
-See the [`react`](/react) module for full usage.
-
-## See also
-
-- [`schema`](/schema) — [`DataSchema`](/schema/DataSchema) that [`Collection`](/db/Collection) extends
-- [`store`](/store) — [`Store`](/store/Store) base class used by [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore)
-- [`react`](/react) — [`createDBContext()`](/react/createDBContext) for React integration
-- [`cloudflare`](/cloudflare) — Cloudflare KV and D1 providers
-- [`firestore`](/firestore/client) — Firestore providers
+See the [`shelving/react`](/react) module for full usage.

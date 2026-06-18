@@ -34,4 +34,4 @@ The following `:root` variables are defined by this module and can be overridden
 
 - [`getPaddingClass`](/ui/getPaddingClass) — the `padding-block` sibling on the same scale.
 - [`getGapClass`](/ui/getGapClass) — the flex/grid `gap` sibling on the same scale.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.
+- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

@@ -29,4 +29,4 @@ console.log(watch.done);   // true
 ## See also
 
 - [`ThroughSequence`](/sequence/ThroughSequence) — the base class.
-- [sequence](/sequence) — overview of all sequence primitives.
+- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

@@ -1,12 +1,12 @@
 # api
 
-Typed, provider-based framework for HTTP API access. Define your routes as [`Endpoint`](/api/Endpoint) definitions, then call them through a composable provider stack — the same pattern the [`db`](/db) module uses for databases.
+Typed, provider-based framework for HTTP API access. Define your routes as [`Endpoint`](/api/Endpoint) definitions, then call them through a composable provider stack — the same pattern the [`shelving/db`](/db) module uses for databases.
 
 ## Concepts
 
 ### Endpoint
 
-An [`Endpoint`](/api/Endpoint) is a declarative, typed description of a single API route. It captures the HTTP method, the URL path (with optional `{placeholder}` segments), a [`schema`](/schema) for the request payload, and a schema for the response. Think of it the way [`Collection`](/db/Collection) describes a database table — a shared definition both client and server reference.
+An [`Endpoint`](/api/Endpoint) is a declarative, typed description of a single API route. It captures the HTTP method, the URL path (with optional `{placeholder}` segments), a [`shelving/schema`](/schema) for the request payload, and a schema for the response. Think of it the way [`Collection`](/db/Collection) describes a database table — a shared definition both client and server reference.
 
 Factory functions ([`GET()`](/api/GET), [`POST()`](/api/POST), [`PUT()`](/api/PUT), [`PATCH()`](/api/PATCH), [`DELETE()`](/api/DELETE), [`HEAD()`](/api/HEAD)) create endpoints concisely:
 
@@ -105,7 +105,7 @@ const user = await api.call(getUser, { id: "u_123" })
 
 ## React integration
 
-The [`react`](/react) module's [`createAPIContext()`](/react/createAPIContext) is the primary way to use a provider in a React app. It creates a context backed by an [`APICache`](/api/APICache) and exposes a typed [`.useAPI()`](/react/APIContext/useAPI) hook that returns reactive [`EndpointStore`](/api/EndpointStore) instances and suspends automatically while loading.
+The [`shelving/react`](/react) module's [`createAPIContext()`](/react/createAPIContext) is the primary way to use a provider in a React app. It creates a context backed by an [`APICache`](/api/APICache) and exposes a typed [`.useAPI()`](/react/APIContext/useAPI) hook that returns reactive [`EndpointStore`](/api/EndpointStore) instances and suspends automatically while loading.
 
 ```ts
 import { createAPIContext } from "shelving/react"
@@ -115,11 +115,4 @@ const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https:/
 export const { APIContext, useAPI } = createAPIContext(provider)
 ```
 
-See the [`react`](/react) module for full usage.
-
-## See also
-
-- [`schema`](/schema) — schemas for endpoint payload and result validation
-- [`db`](/db) — the parallel database provider module
-- [`store`](/store) — [`Store`](/store/Store) base class that [`EndpointStore`](/api/EndpointStore) extends
-- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) for React integration
+See the [`shelving/react`](/react) module for full usage.

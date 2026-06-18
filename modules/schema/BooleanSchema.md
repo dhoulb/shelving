@@ -22,4 +22,4 @@ BOOLEAN.validate(undefined);     // false  (default)
 
 ## See also
 
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

@@ -17,4 +17,4 @@ OPTIONAL_NUMBER.validate(42);        // 42
 ## See also
 
 - [`NullableSchema`](/schema/NullableSchema) — the `null`-allowing equivalent.
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

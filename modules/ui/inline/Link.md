@@ -44,4 +44,4 @@ import { Link } from "shelving/ui";
 - [`Clickable`](/ui/Clickable) — the underlying primitive that renders `<a>` vs `<button>`.
 - [`Strong`](/ui/Strong) — emphasis for runs of text that are not links.
 - [`Prose`](/ui/Prose) — styles raw `<a>` inside longform content.
-- [`ui`](/ui) — the styling system and theming tokens.
+- [`shelving/ui`](/ui) — the styling system and theming tokens.

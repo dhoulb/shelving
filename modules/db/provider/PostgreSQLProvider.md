@@ -17,11 +17,11 @@ class BunPostgreSQLProvider extends PostgreSQLProvider {
 }
 ```
 
-Pair it with [`PostgreSQLMigrator`](/db/migrate) to create and alter tables to match your collection schemas. A ready-made provider is available in the [`bun`](/bun) module.
+Pair it with [`PostgreSQLMigrator`](/db/PostgreSQLMigrator) to create and alter tables to match your collection schemas. A ready-made provider is available in the [`shelving/bun`](/bun) module.
 
 ## See also
 
 - [`SQLProvider`](/db/SQLProvider) — the abstract SQL base.
 - [`SQLiteProvider`](/db/SQLiteProvider) — the SQLite / D1 equivalent.
-- [db/migrate](/db/migrate) — `PostgreSQLMigrator` for schema migration.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — `PostgreSQLMigrator` for schema migration.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

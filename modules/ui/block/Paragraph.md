@@ -45,4 +45,4 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 - [`Prose`](/ui/Prose) — wrap mixed content to style raw `<p>` and friends in one step.
 - [`Heading`](/ui/Heading) — the section heading that usually precedes a paragraph.
 - [`List`](/ui/List) — bulleted or numbered content alongside paragraphs.
-- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

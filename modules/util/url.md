@@ -67,5 +67,5 @@ isURLProud(current, "https://example.com/other");                  // false
 
 ## See also
 
-- [uri](/util/uri) — lower-level URI helpers including query-param manipulation.
+- [`shelving/util/uri`](/util/uri) — lower-level URI helpers including query-param manipulation.
 - [util](/util) — naming conventions and the full helper overview.

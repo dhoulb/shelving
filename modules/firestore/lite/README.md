@@ -4,7 +4,7 @@
 
 ## When to use this
 
-Choose [`firestore/lite`](/firestore/lite) when realtime updates are not required. The Lite SDK omits the persistent connection, offline cache, and `onSnapshot` infrastructure, resulting in a meaningfully smaller bundle than the full client SDK. If you need realtime, use [`firestore/client`](/firestore/client). For server-side Node.js, use [`firestore/server`](/firestore/server).
+Choose [`shelving/firestore/lite`](/firestore/lite) when realtime updates are not required. The Lite SDK omits the persistent connection, offline cache, and `onSnapshot` infrastructure, resulting in a meaningfully smaller bundle than the full client SDK. If you need realtime, use [`shelving/firestore/client`](/firestore/client). For server-side Node.js, use [`shelving/firestore/server`](/firestore/server).
 
 ## Install
 
@@ -37,10 +37,3 @@ Note the import path: `firebase/firestore/lite`, not `firebase/firestore`.
 - **No offline persistence.** The Lite SDK does not cache documents locally.
 
 All other operations — [`.getItem()`](/db/DBProvider/getItem), [`.addItem()`](/db/DBProvider/addItem), [`.setItem()`](/db/DBProvider/setItem), [`.updateItem()`](/db/DBProvider/updateItem), [`.deleteItem()`](/db/DBProvider/deleteItem), [`.getQuery()`](/db/DBProvider/getQuery), [`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), [`.deleteQuery()`](/db/DBProvider/deleteQuery), and [`.countQuery()`](/db/DBProvider/countQuery) — work the same as the full client provider.
-
-## See also
-
-- [`firestore`](/firestore/client) — provider comparison and parent module overview
-- [`firestore/client`](/firestore/client) — full SDK with realtime and offline support
-- [`firestore/server`](/firestore/server) — server-side provider with `BulkWriter`
-- [`db`](/db) — [`DBProvider`](/db/DBProvider) base class, [`Collection`](/db/Collection), and query syntax

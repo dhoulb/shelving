@@ -52,4 +52,4 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 - [`getColorClass`](/ui/getColorClass) — moves the anchor to a named palette colour and composes `TINT_CLASS`.
 - [`getStatusClass`](/ui/getStatusClass) — moves the anchor via a semantic status name.
 - [`Card`](/ui/Card) — a painting component whose Styling section shows the per-component tint hook in practice.
-- [`ui`](/ui) — the styling system overview: design tokens, cascade layers, and styling props.
+- [`shelving/ui`](/ui) — the styling system overview: design tokens, cascade layers, and styling props.

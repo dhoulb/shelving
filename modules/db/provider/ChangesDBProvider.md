@@ -19,4 +19,4 @@ console.log(db.changes);
 
 - [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
 - [`MockDBProvider`](/db/MockDBProvider) — records all calls, not just writes.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

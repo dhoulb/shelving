@@ -1,6 +1,6 @@
 # TreeApp
 
-The entry point for a tree-based documentation site. Given a [`TreeElement`](/util/tree/TreeElement) from [extract](/extract), `TreeApp` produces a complete site in one line: a sidebar menu, client-side routing, and a rendered page for every element in the tree.
+The entry point for a tree-based documentation site. Given a [`TreeElement`](/util/tree/TreeElement) from [`shelving/extract`](/extract), `TreeApp` produces a complete site in one line: a sidebar menu, client-side routing, and a rendered page for every element in the tree.
 
 **Things to know:**
 
@@ -52,7 +52,7 @@ The same pattern works for [`TreeMenuMapping`](/ui/TreeMenu) (sidebar items) and
 
 ## See also
 
-- [extract](/extract) — builds the `TreeElement` tree that `TreeApp` consumes.
+- [`shelving/extract`](/extract) — builds the `TreeElement` tree that `TreeApp` consumes.
 - [`TreeRouter`](/ui/TreeRouter) — resolves the URL to an element and dispatches it to a page renderer.
 - [`TreeSidebar`](/ui/TreeSidebar) / [`TreeMenu`](/ui/TreeMenu) — the navigation built into the sidebar.
 - [`TreePage`](/ui/TreePage) / [`TreeCards`](/ui/TreeCards) — the default directory/file page and card listing.

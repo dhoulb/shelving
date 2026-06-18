@@ -46,12 +46,3 @@ const provider = new CacheDBProvider(
 ```
 
 `ValidationDBProvider` sits between the cache and the backend so bad data from the database surfaces as a `ValueError` before it reaches the cache.
-
-## See also
-
-- [`db`](/db) — overview and full usage examples
-- [`db`](/db) — [`Collection`](/db/Collection) / [`COLLECTION()`](/db/COLLECTION) definition
-- [`db`](/db) — [`DBCache`](/db/DBCache) and [`CollectionCache`](/db/CollectionCache) for reactive store management
-- [`db`](/db) — [`SQLiteMigrator`](/db/SQLiteMigrator) / [`PostgreSQLMigrator`](/db/PostgreSQLMigrator) for schema migration
-- [`cloudflare`](/cloudflare) — Cloudflare KV and D1 provider implementations
-- [`firestore`](/firestore/client) — Firestore provider implementation

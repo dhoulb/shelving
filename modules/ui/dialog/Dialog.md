@@ -68,6 +68,6 @@ function DeleteButton({ id }: { id: string }) {
 - [`Modal`](/ui/Modal) — a non-blocking `<aside>` overlay for persistent panels.
 - [`DialogsStore`](/ui/DialogsStore) — push dialogs imperatively; `.show()` and `.hideAll()`.
 - [`DialogsContext`](/ui/DialogsContext) / [`Dialogs`](/ui/Dialogs) — provide a store and render its open dialogs.
-- [`notice`](/ui) — inline and global notices (toasts, banners).
-- [`form`](/ui) — form components to put inside dialogs.
-- [`transition`](/ui) — animate dialog enter / leave.
+- [`shelving/ui`](/ui) — inline and global notices (toasts, banners).
+- [`shelving/ui`](/ui) — form components to put inside dialogs.
+- [`shelving/ui`](/ui) — animate dialog enter / leave.

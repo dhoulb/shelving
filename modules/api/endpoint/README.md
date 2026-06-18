@@ -67,9 +67,3 @@ type EndpointCallback<P, R, C = void> =
 ```
 
 Return `R` to let [`handleEndpoints`](/api/handleEndpoints) validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.
-
-## See also
-
-- [`api`](/api) — parent module overview
-- [`api`](/api) — provider stack that calls endpoints client-side
-- [`schema`](/schema) — [`Schema<T>`](/schema/Schema) used for payload and result

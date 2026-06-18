@@ -1,6 +1,6 @@
 # Elements
 
-These types and helpers describe a **React-compatible element** structure (`type`, `props`, `key`) and the generic tools for walking, filtering, and flattening collections of them. The tree-shaped layer built on top of [`Element`](/util/element/Element) — [`TreeElement`](/util/tree/TreeElement), path resolution, and tree flattening — lives in a sibling file; see [tree](/util/tree).
+These types and helpers describe a **React-compatible element** structure (`type`, `props`, `key`) and the generic tools for walking, filtering, and flattening collections of them. The tree-shaped layer built on top of [`Element`](/util/element/Element) — [`TreeElement`](/util/tree/TreeElement), path resolution, and tree flattening — lives in a sibling file; see [`shelving/util/tree`](/util/tree).
 
 **Things to know:**
 
@@ -40,5 +40,5 @@ const combined = mergeElements(headerElements, bodyElements);
 
 ## See also
 
-- [tree](/util/tree) — [`TreeElement`](/util/tree/TreeElement) and the path/flatten helpers built on [`Element`](/util/element/Element).
+- [`shelving/util/tree`](/util/tree) — [`TreeElement`](/util/tree/TreeElement) and the path/flatten helpers built on [`Element`](/util/element/Element).
 - [util](/util) — full util module overview.

@@ -27,7 +27,7 @@ renderToString(
 );
 ```
 
-For client-side-only roots that don't need an `<html>` shell, use `<App>` from [`ui`](/ui) instead.
+For client-side-only roots that don't need an `<html>` shell, use `<App>` from [`shelving/ui`](/ui) instead.
 
 ## See also
 

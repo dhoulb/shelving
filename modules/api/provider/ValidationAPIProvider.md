@@ -1,6 +1,6 @@
 # ValidationAPIProvider
 
-A wrapping provider that validates data against the endpoint's [schemas](/schema). `ValidationAPIProvider` validates the payload before the request is built and validates the result after the response is parsed — so a malformed payload is caught before it leaves, and a bad response surfaces as a clear error.
+A wrapping provider that validates data against the endpoint's [`shelving/schema`](/schema). `ValidationAPIProvider` validates the payload before the request is built and validates the result after the response is parsed — so a malformed payload is caught before it leaves, and a bad response surfaces as a clear error.
 
 Place it just inside the network provider so everything above it works with validated, typed data.
 
@@ -21,5 +21,5 @@ const user = await provider.call(getUser, { id: "u_123" })
 ## See also
 
 - [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [schema](/schema) — the [`Schema<T>`](/schema/Schema) validators used here.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/schema`](/schema) — the [`Schema<T>`](/schema/Schema) validators used here.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

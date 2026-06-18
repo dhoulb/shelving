@@ -92,5 +92,5 @@ type Z = OmitProps<User, string>;             // exclude string-valued props
 
 ## See also
 
-- [merge](/util) — [`shallowMerge()`](/util/merge/shallowMerge) / [`deepMerge()`](/util/merge/deepMerge) for combining two objects.
+- [`shelving/util/merge`](/util/merge) — [`shallowMerge()`](/util/merge/shallowMerge) / [`deepMerge()`](/util/merge/deepMerge) for combining two objects.
 - [util](/util) — full util module overview, including naming conventions for `with*` / `omit*`.

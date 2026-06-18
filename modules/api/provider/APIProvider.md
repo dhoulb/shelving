@@ -20,4 +20,4 @@ async function loadUser(provider: APIProvider, id: string) {
 
 - [`ClientAPIProvider`](/api/ClientAPIProvider) — the concrete network implementation.
 - [`ThroughAPIProvider`](/api/ThroughAPIProvider) — base for wrapping providers.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

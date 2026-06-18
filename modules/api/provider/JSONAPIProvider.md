@@ -20,4 +20,4 @@ const user = await provider.call(getUser, { id: "u_123" })
 
 - [`ClientAPIProvider`](/api/ClientAPIProvider) — the base network provider.
 - [`XMLAPIProvider`](/api/XMLAPIProvider) — the XML equivalent.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

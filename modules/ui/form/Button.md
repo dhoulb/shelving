@@ -85,4 +85,4 @@ import { getButtonClass } from "shelving/ui";
 
 - [`Clickable`](/ui/Clickable) — the unstyled click/press primitive `Button` delegates to.
 - [`Link`](/ui/Link) — an inline text link (vs. a button-styled `<a>`).
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

@@ -32,4 +32,4 @@ To replace this renderer across the whole site, wrap the app in [`TreeCardMappin
 - [`DocumentationKind`](/ui/DocumentationKind) — supplies the colour that tints the card by kind.
 - [`TreeCards`](/ui/TreeCards) — the listing that dispatches cards, and the `*Mapping` override mechanism.
 - [`Card`](/ui/Card) — the surface this card is painted on.
-- [extract](/extract) — produces the `TreeElement` tree whose props this renderer consumes.
+- [`shelving/extract`](/extract) — produces the `TreeElement` tree whose props this renderer consumes.

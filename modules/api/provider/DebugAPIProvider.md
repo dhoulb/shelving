@@ -21,4 +21,4 @@ await provider.call(getUser, { id: "u_123" })
 
 - [`LoggingAPIProvider`](/api/LoggingAPIProvider) — concise, production-safe logging.
 - [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

@@ -59,4 +59,4 @@ isPathProud("/app", "/app/sub");        // false
 ## See also
 
 - [util](/util) — full util module overview
-- [db](/db) — uses [`AbsolutePath`](/util/path/AbsolutePath) for collection paths
+- [`shelving/db`](/db) — uses [`AbsolutePath`](/util/path/AbsolutePath) for collection paths

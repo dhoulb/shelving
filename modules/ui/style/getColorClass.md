@@ -44,4 +44,4 @@ The following `:root` variables are defined by this module and can be overridden
 
 - [`TINT_CLASS`](/ui/TINT_CLASS) — the tint ladder these colours feed, and the full theming guide.
 - [`getStatusClass`](/ui/getStatusClass) — the semantic-status sibling of `color`.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.
+- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

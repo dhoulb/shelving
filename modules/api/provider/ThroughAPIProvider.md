@@ -27,4 +27,4 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 ## See also
 
 - [`APIProvider`](/api/APIProvider) — the abstract base.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

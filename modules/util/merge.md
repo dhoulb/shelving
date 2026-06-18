@@ -55,5 +55,5 @@ mergeArray([1, 2, 3], [3, 4, 5]); // [1, 2, 3, 4, 5]
 
 ## See also
 
-- [object](/util) — immutable [`withProp()`](/util/object/withProp)/[`omitProp()`](/util/object/omitProp) helpers for single-property changes.
+- [`shelving/util/object`](/util/object) — immutable [`withProp()`](/util/object/withProp)/[`omitProp()`](/util/object/omitProp) helpers for single-property changes.
 - [util](/util) — full util module overview.

@@ -22,4 +22,4 @@ For tests that exercise client and server logic together, use [`MockEndpointAPIP
 
 - [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider) — mock transport wired to real endpoint handlers.
 - [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

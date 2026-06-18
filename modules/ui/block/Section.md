@@ -46,11 +46,11 @@ import { Header, Nav, Footer } from "shelving/ui";
 | `--section-indent` | Inline gutter kept on each side so text doesn't touch the edges | `var(--space-normal)` (16px) |
 | `--section-space` | Outer block margin (top + bottom) | `var(--space-section)` (2rem) |
 
-**Global tokens it reads:** [`--space-normal`](/ui/getSpaceClass), [`--space-section`](/ui/getSpaceClass), and [`--width-normal`](/ui/getWidthClass) (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) comes from the shared [`ui`](/ui) styling system.
+**Global tokens it reads:** [`--space-normal`](/ui/getSpaceClass), [`--space-section`](/ui/getSpaceClass), and [`--width-normal`](/ui/getWidthClass) (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) comes from the shared [`shelving/ui`](/ui) styling system.
 
 ## See also
 
 - [`Block`](/ui/Block) — the unstyled `<div>` equivalent when no landmark semantics are needed.
 - [`Panel`](/ui/Panel) — a full-width band that paints the surface; sections sit inside the inner block.
 - [`Caption`](/ui/Caption) — the `<figcaption>` that pairs with `Figure`.
-- [`ui`](/ui) — the styling system: width variants, tint ladder, and theming.
+- [`shelving/ui`](/ui) — the styling system: width variants, tint ladder, and theming.

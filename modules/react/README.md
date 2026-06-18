@@ -1,6 +1,6 @@
 # react
 
-React hooks and context helpers for integrating Shelving [`stores`](/store), async sequences, and API/DB providers into React components. The module is built on `useSyncExternalStore` and standard React patterns — no magic, no global state.
+React hooks and context helpers for integrating Shelving [`shelving/store`](/store), async sequences, and API/DB providers into React components. The module is built on `useSyncExternalStore` and standard React patterns — no magic, no global state.
 
 ## Concepts
 
@@ -67,9 +67,3 @@ function Toggle() {
   return <button onClick={() => open.toggle()}>{open.value ? "Open" : "Closed"}</button>;
 }
 ```
-
-## See also
-
-- [`store`](/store) — the [`Store`](/store/Store) class that `useStore()` subscribes to
-- [`api`](/api) — [`APIProvider`](/api/APIProvider), [`APICache`](/api/APICache), and [`EndpointStore`](/api/EndpointStore)
-- [`db`](/db) — [`DBProvider`](/db/DBProvider), [`DBCache`](/db/DBCache), [`ItemStore`](/db/ItemStore), and [`QueryStore`](/db/QueryStore)

@@ -44,4 +44,4 @@ import { Tag } from "shelving/ui";
 
 - [`StatusIcon`](/ui/StatusIcon) — pairs a status with its matching icon.
 - [`Notice`](/ui/Notice) — block-level status callout sharing the same status vocabulary.
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

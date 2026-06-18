@@ -42,5 +42,5 @@ import { TreeApp, TreePageMapping } from "shelving/ui";
 - [`DocumentationSignatures`](/ui/DocumentationSignatures) — renders the symbol's signature blocks.
 - [`TreeApp`](/ui/TreeApp) — wires this renderer into a complete site via the page mappers.
 - [`TreeBreadcrumbs`](/ui/TreeBreadcrumbs) — the ancestor trail rendered above the title.
-- [extract](/extract) — produces the `TreeElement` tree whose props this renderer consumes.
-- [markup](/markup) — renders the Markdown `content` field carried by each element.
+- [`shelving/extract`](/extract) — produces the `TreeElement` tree whose props this renderer consumes.
+- [`shelving/markup`](/markup) — renders the Markdown `content` field carried by each element.

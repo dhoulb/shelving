@@ -33,4 +33,4 @@ RATING.validate(0);              // throws "Minimum 1"
 
 - [`CurrencyAmountSchema`](/schema/CurrencyAmountSchema) — a `NumberSchema` subclass for currency amounts.
 - [`StringSchema`](/schema/StringSchema) — the string equivalent.
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

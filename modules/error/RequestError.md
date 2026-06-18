@@ -17,9 +17,9 @@ function loadDocument(id: string): Document {
 }
 ```
 
-See [error](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
+See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
 
 ## See also
 
 - [`ResponseError`](/error/ResponseError) — for an error indicated by a received response.
-- [error](/error) — module overview and shared error behaviour.
+- [`shelving/error`](/error) — module overview and shared error behaviour.

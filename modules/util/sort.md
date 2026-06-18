@@ -1,6 +1,6 @@
 # Sorting
 
-A quicksort implementation and type-aware comparators that handle mixed-type values gracefully. Used internally by [query helpers](/util/query) when applying `$order` to items.
+A quicksort implementation and type-aware comparators that handle mixed-type values gracefully. Used internally by [`shelving/util/query`](/util/query) when applying `$order` to items.
 
 **Things to know:**
 

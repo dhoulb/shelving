@@ -25,4 +25,4 @@ for await (const ts of seq) {
 
 - [`ThroughSequence`](/sequence/ThroughSequence) — the base class.
 - [`DeferredSequence`](/sequence/DeferredSequence) — the source commonly wrapped by a `LazySequence`.
-- [sequence](/sequence) — overview of all sequence primitives.
+- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

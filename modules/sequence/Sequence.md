@@ -24,4 +24,4 @@ class CountdownSequence extends Sequence<number, void, void> {
 ## See also
 
 - [`DeferredSequence`](/sequence/DeferredSequence) — a sequence you publish values into.
-- [sequence](/sequence) — overview of all sequence primitives.
+- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

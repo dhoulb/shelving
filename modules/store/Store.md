@@ -64,5 +64,5 @@ for await (const _ of store.through(someStream)) {
 
 ## See also
 
-- [sequence](/sequence) — [`DeferredSequence`](/sequence/DeferredSequence) that powers the store's iteration.
-- [store](/store) — overview of all store classes.
+- [`shelving/sequence`](/sequence) — [`DeferredSequence`](/sequence/DeferredSequence) that powers the store's iteration.
+- [`shelving/store`](/store) — overview of all store classes.

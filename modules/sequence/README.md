@@ -35,8 +35,3 @@ for await (const ts of clock) {
   console.log(ts); // a timestamp every second, only while iterating
 }
 ```
-
-## See also
-
-- [`Store`](/store) — observable value container built on [`DeferredSequence`](/sequence/DeferredSequence)
-- [`db`](/db) — database providers that expose `AsyncIterable` via [`.getItemSequence()`](/db/DBProvider/getItemSequence) / [`.getQuerySequence()`](/db/DBProvider/getQuerySequence)

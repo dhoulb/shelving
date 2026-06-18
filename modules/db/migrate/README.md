@@ -68,10 +68,3 @@ const PRODUCTS = COLLECTION("products", STRING, {
 });
 // Generated columns: name TEXT, price REAL, active INTEGER (all extracted from data JSON).
 ```
-
-## See also
-
-- [`db`](/db) — [`Collection`](/db/Collection) / [`COLLECTION()`](/db/COLLECTION) definitions that migrators consume
-- [`db`](/db) — [`SQLiteProvider`](/db/SQLiteProvider) and [`PostgreSQLProvider`](/db/PostgreSQLProvider) that migrators run against
-- [`cloudflare`](/cloudflare) — D1 provider and migrator usage in Cloudflare Workers
-- [`bun`](/bun) — Bun PostgreSQL provider for use with [`PostgreSQLMigrator`](/db/PostgreSQLMigrator)

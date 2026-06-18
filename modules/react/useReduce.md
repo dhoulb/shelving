@@ -23,4 +23,4 @@ Here `stable` keeps the same reference for as long as the incoming value is deep
 ## See also
 
 - [`useLazy()`](/react/useLazy) — memoise a factory call by deep-equality of its arguments.
-- [react](/react) — overview of all React hooks and context helpers.
+- [`shelving/react`](/react) — overview of all React hooks and context helpers.

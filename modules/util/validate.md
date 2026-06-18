@@ -66,5 +66,5 @@ type MyShape = ValidatorsType<typeof validators>;     // { name: string; age: nu
 
 ## See also
 
-- [schema](/schema) — Higher-level schema system built on top of [`Validator<T>`](/util/validate/Validator).
+- [`shelving/schema`](/schema) — Higher-level schema system built on top of [`Validator<T>`](/util/validate/Validator).
 - [util](/util) — naming conventions and the full helper overview.

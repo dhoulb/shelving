@@ -22,4 +22,4 @@ const Priority = CHOICE({ low: "Low priority", high: "High priority" });
 
 ## See also
 
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

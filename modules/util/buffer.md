@@ -22,5 +22,5 @@ The [`TypedArray`](/util/buffer/TypedArray) type exported from this file covers 
 
 ## See also
 
-- [bytes](/util/bytes) — `Uint8Array`-specific helpers with conversion and assertion support
+- [`shelving/util/bytes`](/util/bytes) — `Uint8Array`-specific helpers with conversion and assertion support
 - [util](/util)

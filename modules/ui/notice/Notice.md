@@ -50,4 +50,4 @@ import { LOADING_NOTICE } from "shelving/ui";
 - [`Notices`](/ui/Notices) — the global list that renders incoming notices as `<Notice>` elements.
 - [`StatusIcon`](/ui/StatusIcon) — the default icon shown for the notice's status.
 - [`notify`](/ui/notify) — dispatch notices into the global `<Notices>` list.
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

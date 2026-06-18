@@ -55,4 +55,4 @@ import { Title, Heading, Subheading } from "shelving/ui";
 - [`Heading`](/ui/Heading) — the `<h2>` section heading one level up.
 - [`Title`](/ui/Title) — the top-level page `<h1>`.
 - [`Card`](/ui/Card) — a boxed surface whose title is usually a `Subheading`.
-- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

@@ -24,4 +24,4 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
 
 - [`DBProvider`](/db/DBProvider) — the abstract base.
 - [`CacheDBProvider`](/db/CacheDBProvider) — uses a `MemoryDBProvider` as its mirror.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

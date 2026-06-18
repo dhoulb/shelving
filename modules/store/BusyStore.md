@@ -24,4 +24,4 @@ for await (const busy of store.busy) {
 
 - [`Store`](/store/Store) — the base class.
 - [`FetchStore`](/store/FetchStore) — extends `BusyStore` with callback-driven fetching.
-- [store](/store) — overview of all store classes.
+- [`shelving/store`](/store) — overview of all store classes.

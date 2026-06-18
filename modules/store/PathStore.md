@@ -22,4 +22,4 @@ The constructor takes an optional second `base` argument (default `/`) used to r
 
 - [`Store`](/store/Store) — the base class.
 - [`URLStore`](/store/URLStore) — the equivalent for full URLs.
-- [store](/store) — overview of all store classes.
+- [`shelving/store`](/store) — overview of all store classes.

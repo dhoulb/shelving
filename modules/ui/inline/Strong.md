@@ -31,4 +31,4 @@ import { Paragraph, Strong } from "shelving/ui";
 - [`Emphasis`](/ui/Emphasis) — stress emphasis (italic `<em>`) rather than importance.
 - [`Mark`](/ui/Mark) — highlight a run of text by relevance.
 - [`Small`](/ui/Small) — de-emphasised fine print.
-- [`ui`](/ui) — the styling system and theming tokens.
+- [`shelving/ui`](/ui) — the styling system and theming tokens.

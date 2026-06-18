@@ -16,4 +16,4 @@ await provider.addItem(POSTS, { title: "Hello", body: "…", published: false })
 ## See also
 
 - [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

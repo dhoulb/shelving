@@ -19,4 +19,4 @@ const xml = await provider.call(getFeed, { channel: "news" })
 
 - [`ClientAPIProvider`](/api/ClientAPIProvider) — the base network provider.
 - [`JSONAPIProvider`](/api/JSONAPIProvider) — the JSON equivalent.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

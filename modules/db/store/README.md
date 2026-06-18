@@ -2,7 +2,7 @@
 
 [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) are reactive, database-backed stores. Each one holds the current value of a single item or query result and re-fetches from the provider when asked. They integrate with React Suspense — reading `.value` while loading throws a `Promise` that Suspense catches.
 
-Both extend [`FetchStore`](/store/FetchStore) from the [`store`](/store) module, which manages the loading / error / ready lifecycle and the `refresh(maxAge?)` method.
+Both extend [`FetchStore`](/store/FetchStore) from the [`shelving/store`](/store) module, which manages the loading / error / ready lifecycle and the `refresh(maxAge?)` method.
 
 ## Concepts
 
@@ -65,9 +65,3 @@ console.log(store.loading); // false if already in cache
 ### React Suspense integration
 
 In a React app, use [`createDBContext()`](/react/createDBContext) instead of managing stores manually. The context wraps a `DBCache` and the [`.useItem()`](/react/DBContext/useItem) / [`.useQuery()`](/react/DBContext/useQuery) hooks handle Suspense automatically.
-
-## See also
-
-- [`store`](/store) — [`FetchStore`](/store/FetchStore), [`OptionalDataStore`](/store/OptionalDataStore), [`ArrayStore`](/store/ArrayStore) base classes
-- [`db`](/db) — [`DBCache`](/db/DBCache) / [`CollectionCache`](/db/CollectionCache) that manage store instances
-- [`react`](/react) — [`createDBContext()`](/react/createDBContext) for React hook integration

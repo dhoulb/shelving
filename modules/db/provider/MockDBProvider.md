@@ -18,4 +18,4 @@ console.log(mock.calls[0]);
 
 - [`MemoryDBProvider`](/db/MemoryDBProvider) — the in-memory base.
 - [`ChangesDBProvider`](/db/ChangesDBProvider) — records writes only, as a change log.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

@@ -6,7 +6,7 @@ Each scalar field in a collection schema maps to a **generated column** extracte
 
 ## Usage
 
-`SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in [`SQLiteProvider`](/db/SQLiteProvider) and [`PostgreSQLProvider`](/db/PostgreSQLProvider) extend it with dialect-specific JSON path syntax; concrete drivers live in the [`cloudflare`](/cloudflare) and [`bun`](/bun) modules.
+`SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in [`SQLiteProvider`](/db/SQLiteProvider) and [`PostgreSQLProvider`](/db/PostgreSQLProvider) extend it with dialect-specific JSON path syntax; concrete drivers live in the [`shelving/cloudflare`](/cloudflare) and [`shelving/bun`](/bun) modules.
 
 ```ts
 import { SQLiteProvider } from "shelving/db";
@@ -23,5 +23,5 @@ class D1Provider extends SQLiteProvider {
 
 - [`SQLiteProvider`](/db/SQLiteProvider) — SQLite / D1 dialect.
 - [`PostgreSQLProvider`](/db/PostgreSQLProvider) — PostgreSQL dialect.
-- [db/migrate](/db/migrate) — migrators that create the generated-column tables.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — migrators that create the generated-column tables.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

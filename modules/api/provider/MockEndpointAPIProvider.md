@@ -24,5 +24,5 @@ console.log(api.requestCalls) // inspect recorded calls
 ## See also
 
 - [`MockAPIProvider`](/api/MockAPIProvider) — the base mock provider.
-- [api/endpoint](/api/endpoint) — `endpoint.handler()` and `handleEndpoints()`.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — `endpoint.handler()` and `handleEndpoints()`.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

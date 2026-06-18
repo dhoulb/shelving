@@ -1,6 +1,6 @@
 # Markup rules
 
-The built-in rule set that drives the [`markup`](/markup) renderer. This directory exports every individual rule constant, two context-specific rule arrays, and the combined default ruleset.
+The built-in rule set that drives the [`shelving/markup`](/markup) renderer. This directory exports every individual rule constant, two context-specific rule arrays, and the combined default ruleset.
 
 ## Concepts
 
@@ -66,8 +66,3 @@ const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });
 4. An optional `priority` number (default `0`). Higher priorities form earlier-resolved tiers.
 
 To replace the built-in rule for a specific element, omit that constant from the base array and add your own.
-
-## See also
-
-- [`markup`](/markup) — [`MarkupParser`](/markup/MarkupParser), [`MarkupRule`](/markup/MarkupRule), [`createMarkupRule()`](/markup/createMarkupRule), and the full renderer
-- [`markup/util`](/markup) — regexp helpers and internal types used by the rules

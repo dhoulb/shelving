@@ -56,4 +56,4 @@ notice.close(); // Or close it immediately.
 
 - [`Notice`](/ui/Notice) — the callout each entry in the list is rendered as.
 - [`notify`](/ui/notify) — `notify`, `notifySuccess`, `notifyError`, `callNotified`, and `subscribeNotices`.
-- [`store`](/store) — [`ArrayStore`](/store/ArrayStore) and [`DataStore`](/store/DataStore) that the notices store layer extends.
+- [`shelving/store`](/store) — [`ArrayStore`](/store/ArrayStore) and [`DataStore`](/store/DataStore) that the notices store layer extends.

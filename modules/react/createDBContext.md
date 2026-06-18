@@ -1,6 +1,6 @@
 # createDBContext
 
-Create a React context for a Shelving [database](/db) provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory [`DBCache`](/db/DBCache); if the provider chain includes a [`CacheDBProvider`](/db/CacheDBProvider), the returned stores reuse that cached data.
+Create a React context for a Shelving [`shelving/db`](/db) provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory [`DBCache`](/db/DBCache); if the provider chain includes a [`CacheDBProvider`](/db/CacheDBProvider), the returned stores reuse that cached data.
 
 ## Usage
 
@@ -42,5 +42,5 @@ Both hooks accept nullish arguments — passing `undefined` for the collection, 
 ## See also
 
 - [`createAPIContext()`](/react/createAPIContext) — the same pattern for an API provider.
-- [db](/db) — [`DBProvider`](/db/DBProvider), [`DBCache`](/db/DBCache), [`Collection`](/db/Collection), [`ItemStore`](/db/ItemStore), and [`QueryStore`](/db/QueryStore).
-- [react](/react) — overview of all React hooks and context helpers.
+- [`shelving/db`](/db) — [`DBProvider`](/db/DBProvider), [`DBCache`](/db/DBCache), [`Collection`](/db/Collection), [`ItemStore`](/db/ItemStore), and [`QueryStore`](/db/QueryStore).
+- [`shelving/react`](/react) — overview of all React hooks and context helpers.

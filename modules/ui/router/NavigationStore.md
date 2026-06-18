@@ -5,7 +5,7 @@ The store holding the current navigation URL and driving browser history. It ext
 **Things to know:**
 
 - `forward()` pushes a new browser history entry; `redirect()` replaces the current one. Both resolve the destination against the store's `base`.
-- It is a [`store`](/store) `URLStore`, so components can subscribe to it for re-renders.
+- It is a [`shelving/store`](/store) `URLStore`, so components can subscribe to it for re-renders.
 
 ## Usage
 
@@ -31,4 +31,4 @@ nav.forward("/home");
 
 - [`Navigation`](/ui/Navigation) — owns the store and exposes it via `requireNavigation()`
 - [`Router`](/ui/Router) — renders the page for whatever URL the store holds
-- [`store`](/store) — the `URLStore` base and subscription model
+- [`shelving/store`](/store) — the `URLStore` base and subscription model

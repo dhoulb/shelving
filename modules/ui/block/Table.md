@@ -54,4 +54,4 @@ import { Table } from "shelving/ui";
 - [`TableHeader`](/ui/TableHeader) / [`TableCell`](/ui/TableCell) — `<th>` / `<td>` cells that set column widths and typography via variants.
 - [`Definitions`](/ui/Definitions) — term/value pairs when a two-column key/value layout fits better than a grid.
 - [`Prose`](/ui/Prose) — styles raw `<table>` inside longform content.
-- [`ui`](/ui) — the styling system: tint ladder, label tokens, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, label tokens, and theming.

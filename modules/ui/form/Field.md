@@ -56,4 +56,4 @@ import { Field, TextInput } from "shelving/ui";
 
 - [`Form`](/ui/Form) — renders fields automatically from a schema.
 - [`SchemaInput`](/ui/SchemaInput) — the control [`SchemaField`](/ui/SchemaField) drops inside a `Field`.
-- [ui](/ui) — top-level UI module index.
+- [`shelving/ui`](/ui) — top-level UI module index.

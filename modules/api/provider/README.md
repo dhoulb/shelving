@@ -40,11 +40,3 @@ const user = await provider.call(getUser, { id: "u_123" })
 ```
 
 [`LoggingAPIProvider`](/api/LoggingAPIProvider) sees every call first, [`ValidationAPIProvider`](/api/ValidationAPIProvider) validates next, [`ClientAPIProvider`](/api/ClientAPIProvider) sends last.
-
-## See also
-
-- [`api`](/api) — parent module overview
-- [`api`](/api) — endpoint definitions and handler wiring
-- [`api`](/api) — [`APICache`](/api/APICache) and [`EndpointCache`](/api/EndpointCache) used internally
-- [`schema`](/schema) — [`Schema<T>`](/schema/Schema) used by [`ValidationAPIProvider`](/api/ValidationAPIProvider)
-- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) for React integration

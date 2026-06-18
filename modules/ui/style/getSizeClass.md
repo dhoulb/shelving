@@ -39,4 +39,4 @@ The following `:root` variables are defined by this module and can be overridden
 - [`getWeightClass`](/ui/getWeightClass) — font weight.
 - [`getFontClass`](/ui/getFontClass) — font family.
 - [`getTypographyClass`](/ui/getTypographyClass) — combines size, weight, font, alignment, and tint.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.
+- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

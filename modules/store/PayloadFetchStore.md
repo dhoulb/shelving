@@ -2,7 +2,7 @@
 
 A [`FetchStore`](/store/FetchStore) whose fetch is driven by a payload. `PayloadFetchStore<P, R>` holds an inner `.payload` store; whenever the payload changes, any in-flight fetch is cancelled and a fresh one starts with the new payload.
 
-This is the base class for [`EndpointStore`](/api/EndpointStore) in the [`api`](/api) module — the payload is the endpoint's request payload.
+This is the base class for [`EndpointStore`](/api/EndpointStore) in the [`shelving/api`](/api) module — the payload is the endpoint's request payload.
 
 ## Usage
 
@@ -28,5 +28,5 @@ Pass a fourth `debounce` argument (milliseconds) to delay the fetch after a payl
 ## See also
 
 - [`FetchStore`](/store/FetchStore) — the base class.
-- [store](/store) — overview of all store classes.
-- [api](/api) — [`EndpointStore`](/api/EndpointStore) extends `PayloadFetchStore`.
+- [`shelving/store`](/store) — overview of all store classes.
+- [`shelving/api`](/api) — [`EndpointStore`](/api/EndpointStore) extends `PayloadFetchStore`.

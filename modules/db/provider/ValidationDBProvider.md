@@ -21,5 +21,5 @@ const post = await provider.getItem(POSTS, "abc");
 ## See also
 
 - [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
-- [db/collection](/db/collection) — the `Collection` schema validated against.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — the `Collection` schema validated against.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

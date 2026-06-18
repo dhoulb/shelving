@@ -54,10 +54,3 @@ cache.refreshAll(getUser)                 // trigger re-fetch for all stores
 ```
 
 Cache instances implement `AsyncDisposable` — `await using cache = new APICache(...)` disposes all stores cleanly.
-
-## See also
-
-- [`api/store`](/api) — [`EndpointStore`](/api/EndpointStore), the reactive leaf node
-- [`api/provider`](/api) — [`CachedAPIProvider`](/api/CachedAPIProvider) wraps a provider with an [`APICache`](/api/APICache)
-- [`store`](/store) — [`FetchStore`](/store/FetchStore) base class
-- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) uses `APICache` under the hood

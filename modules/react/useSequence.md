@@ -20,4 +20,4 @@ Because the subscription resets when the iterable reference changes, pass a stab
 ## See also
 
 - [`useStore()`](/react/useStore) — subscribe to a Shelving [`Store`](/store/Store) with Suspense support.
-- [react](/react) — overview of all React hooks and context helpers.
+- [`shelving/react`](/react) — overview of all React hooks and context helpers.

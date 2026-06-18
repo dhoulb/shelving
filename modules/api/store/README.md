@@ -6,7 +6,7 @@ Reactive per-request state for a single API call. [`EndpointStore`](/api/Endpoin
 
 ### EndpointStore
 
-[`EndpointStore<P, R>`](/api/EndpointStore) extends [`PayloadFetchStore`](/store/PayloadFetchStore) from the [`store`](/store) module. It binds an [`Endpoint`](/api/Endpoint), a payload value, and an [`APIProvider`](/api/APIProvider) together. When [`.value`](/store/Store/value) or [`.loading`](/store/Store/loading) is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
+[`EndpointStore<P, R>`](/api/EndpointStore) extends [`PayloadFetchStore`](/store/PayloadFetchStore) from the [`shelving/store`](/store) module. It binds an [`Endpoint`](/api/Endpoint), a payload value, and an [`APIProvider`](/api/APIProvider) together. When [`.value`](/store/Store/value) or [`.loading`](/store/Store/loading) is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
 
 The store's reactive contract follows the rest of the shelving store layer:
 
@@ -28,7 +28,7 @@ APICache
         └── EndpointStore  (one per unique rendered URL / payload)
 ```
 
-In normal use you don't create `EndpointStore` directly. [`EndpointCache`](/api/EndpointCache) creates and keys them by rendered URL. The [`react`](/react) module's [`createAPIContext()`](/react/createAPIContext) exposes them through hooks.
+In normal use you don't create `EndpointStore` directly. [`EndpointCache`](/api/EndpointCache) creates and keys them by rendered URL. The [`shelving/react`](/react) module's [`createAPIContext()`](/react/createAPIContext) exposes them through hooks.
 
 ## Usage
 
@@ -56,10 +56,3 @@ store.payload.value = { id: "u_2" }
 store.invalidate()
 await store.refresh()
 ```
-
-## See also
-
-- [`api`](/api) — [`EndpointCache`](/api/EndpointCache) and [`APICache`](/api/APICache) manage stores keyed by payload
-- [`api`](/api) — providers that [`EndpointStore`](/api/EndpointStore) delegates fetching to
-- [`store`](/store) — [`FetchStore`](/store/FetchStore) and [`PayloadFetchStore`](/store/PayloadFetchStore) base classes
-- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) exposes stores as React hooks

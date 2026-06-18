@@ -55,4 +55,4 @@ import { Code } from "shelving/ui";
 - [`Preformatted`](/ui/Preformatted) — block-level `<pre>` for multi-line code.
 - [`Mark`](/ui/Mark) — highlight a run of text rather than mark it as code.
 - [`Prose`](/ui/Prose) — styles raw `<code>` and friends inside longform content.
-- [`ui`](/ui) — the styling system: tint ladder and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder and theming.

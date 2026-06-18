@@ -29,4 +29,4 @@ await store.refresh();         // re-fetch now
 
 - [`Store`](/store/Store) — the base class.
 - [`PayloadFetchStore`](/store/PayloadFetchStore) — a `FetchStore` driven by a payload store.
-- [store](/store) — overview of all store classes.
+- [`shelving/store`](/store) — overview of all store classes.

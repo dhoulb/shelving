@@ -27,4 +27,4 @@ const custom = new LoggingAPIProvider(
 
 - [`DebugAPIProvider`](/api/DebugAPIProvider) — verbose console output for development.
 - [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [api/provider](/api/provider) — overview of the provider hierarchy.
+- [`shelving/api`](/api) — overview of the provider hierarchy.

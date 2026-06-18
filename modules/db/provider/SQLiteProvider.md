@@ -17,11 +17,11 @@ class D1Provider extends SQLiteProvider {
 }
 ```
 
-Pair it with [`SQLiteMigrator`](/db/migrate) to create and alter tables to match your collection schemas. A ready-made D1 provider is available in the [`cloudflare`](/cloudflare) module.
+Pair it with [`SQLiteMigrator`](/db/SQLiteMigrator) to create and alter tables to match your collection schemas. A ready-made D1 provider is available in the [`shelving/cloudflare`](/cloudflare) module.
 
 ## See also
 
 - [`SQLProvider`](/db/SQLProvider) — the abstract SQL base.
 - [`PostgreSQLProvider`](/db/PostgreSQLProvider) — the PostgreSQL equivalent.
-- [db/migrate](/db/migrate) — `SQLiteMigrator` for schema migration.
-- [db/provider](/db/provider) — overview of the provider hierarchy.
+- [`shelving/db`](/db) — `SQLiteMigrator` for schema migration.
+- [`shelving/db`](/db) — overview of the provider hierarchy.

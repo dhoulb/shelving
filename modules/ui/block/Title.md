@@ -54,4 +54,4 @@ import { Panel, Block, Title } from "shelving/ui";
 - [`Heading`](/ui/Heading) — the `<h2>` section heading that pairs with `Title`.
 - [`Subheading`](/ui/Subheading) — the `<h3>` subsection heading.
 - [`Section`](/ui/Section) — wraps a title and its content as a landmark region.
-- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.
+- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

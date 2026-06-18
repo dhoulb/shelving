@@ -75,5 +75,5 @@ type ProfileLeafPaths = LeafDataPath<Profile>; // "name" | "address.city"
 ## See also
 
 - [util](/util) — full util module overview including Items, Queries, and Updates that build on [`Data`](/util/data/Data)
-- [schema](/schema) — schema validation that produces typed `Data` objects
-- [db](/db) — database layer that stores and queries `Data` items
+- [`shelving/schema`](/schema) — schema validation that produces typed `Data` objects
+- [`shelving/db`](/db) — database layer that stores and queries `Data` items

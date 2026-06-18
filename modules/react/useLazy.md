@@ -18,4 +18,4 @@ The result is recomputed only when `items` changes. Because arguments are compar
 
 - [`useInstance()`](/react/useInstance) — the same memoisation for a class constructor call.
 - [`useReduce()`](/react/useReduce) — fold render state with custom equality logic.
-- [react](/react) — overview of all React hooks and context helpers.
+- [`shelving/react`](/react) — overview of all React hooks and context helpers.

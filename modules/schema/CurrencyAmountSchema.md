@@ -17,4 +17,4 @@ PRICE.format(12.3);              // "£12.30"
 ## See also
 
 - [`NumberSchema`](/schema/NumberSchema) — the base class.
-- [schema](/schema) — overview of schema concepts and composition.
+- [`shelving/schema`](/schema) — overview of schema concepts and composition.

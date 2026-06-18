@@ -32,4 +32,4 @@ if (!NO_COLOR) process.stdout.write("\x1b[32mgreen\x1b[0m");
 ## See also
 
 - [util](/util) — full util module overview.
-- [error](/error) — [`RequiredError`](/error/RequiredError) thrown by [`requireEnv()`](/util/env/requireEnv) and [`requireEnvBoolean()`](/util/env/requireEnvBoolean).
+- [`shelving/error`](/error) — [`RequiredError`](/error/RequiredError) thrown by [`requireEnv()`](/util/env/requireEnv) and [`requireEnvBoolean()`](/util/env/requireEnvBoolean).

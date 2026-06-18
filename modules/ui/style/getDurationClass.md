@@ -15,4 +15,4 @@ The following `:root` variables are defined by this module and can be overridden
 ## See also
 
 - [`Transition`](/ui/Transition) — the enter/leave animation component that reads these.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.
+- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

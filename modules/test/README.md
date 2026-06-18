@@ -55,8 +55,3 @@ import { expectOrderedItems } from "shelving/test";
 const results = await provider.getQuery(BASICS_COLLECTION, { $order: "num" });
 expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 ```
-
-## See also
-
-- [`schema`](/schema) — the schemas these fixtures are built on
-- [`db`](/db) — [`Collection`](/db/Collection) and the providers the fixtures are designed to exercise

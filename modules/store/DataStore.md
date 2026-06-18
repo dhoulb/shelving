@@ -35,4 +35,4 @@ profile.delete();                    // value is now undefined
 ## See also
 
 - [`Store`](/store/Store) — the base class.
-- [store](/store) — overview of all store classes.
+- [`shelving/store`](/store) — overview of all store classes.

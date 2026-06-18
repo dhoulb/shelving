@@ -23,4 +23,4 @@ for await (const n of seq) {
 
 - [`LazySequence`](/sequence/LazySequence) — a `ThroughSequence` with start/stop callbacks.
 - [`InspectSequence`](/sequence/InspectSequence) — a `ThroughSequence` that records what passed through.
-- [sequence](/sequence) — overview of all sequence primitives.
+- [`shelving/sequence`](/sequence) — overview of all sequence primitives.
