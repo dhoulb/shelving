@@ -35,7 +35,3 @@ import { ANSI_CYAN, ANSI_UNDERLINE, ANSI_RESET } from "shelving/util";
 
 const styled = `${ANSI_CYAN}${ANSI_UNDERLINE}link text${ANSI_RESET}`;
 ```
-
-## See also
-
-- [util](/util)

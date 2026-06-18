@@ -66,7 +66,3 @@ const overrides = { headers: { "X-Request-ID": "abc" }, signal: controller.signa
 const merged = mergeRequestOptions(defaults, overrides);
 // headers: { Authorization: "Bearer token", "X-Request-ID": "abc" }
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

@@ -46,10 +46,3 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 3. **Override one property.** Per-property hooks are the scalpel: `--button-radius: 999px`, `--card-border: none`, `--tag-case: none`.
 
 **Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is *recomputed* from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.
-
-## See also
-
-- [`getColorClass`](/ui/getColorClass) — moves the anchor to a named palette colour and composes `TINT_CLASS`.
-- [`getStatusClass`](/ui/getStatusClass) — moves the anchor via a semantic status name.
-- [`Card`](/ui/Card) — a painting component whose Styling section shows the per-component tint hook in practice.
-- [`shelving/ui`](/ui) — the styling system overview: design tokens, cascade layers, and styling props.

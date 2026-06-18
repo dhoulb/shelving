@@ -17,9 +17,3 @@ const provider = new ValidationAPIProvider(
 // result validated against its result schema before returning.
 const user = await provider.call(getUser, { id: "u_123" })
 ```
-
-## See also
-
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [`shelving/schema`](/schema) — the [`Schema<T>`](/schema/Schema) validators used here.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

@@ -17,9 +17,3 @@ console.log(api.requestCalls) // inspect every recorded request
 ```
 
 For tests that exercise client and server logic together, use [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider), which routes the mock transport through a real handler array.
-
-## See also
-
-- [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider) — mock transport wired to real endpoint handlers.
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

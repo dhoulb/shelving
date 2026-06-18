@@ -50,8 +50,3 @@ VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
 | `AREA_UNITS` | `AreaUnitKey` |
 | `VOLUME_UNITS` | `VolumeUnitKey` |
 | `TEMPERATURE_UNITS` | `TemperatureUnitKey` |
-
-## See also
-
-- [util](/util) — naming conventions and the full helper overview.
-- [`shelving/util/duration`](/util/duration) — [`getBestDurationUnit()`](/util/duration/getBestDurationUnit) uses [`UnitList`](/util/units/UnitList) from this module.

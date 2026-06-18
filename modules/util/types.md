@@ -26,7 +26,3 @@ import type { Resolve } from "shelving/util";
 type Merged = Resolve<{ a: string } & { b: number }>;
 // { a: string; b: number }
 ```
-
-## See also
-
-- [util](/util) — Overview of all util helpers.

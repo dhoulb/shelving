@@ -17,9 +17,3 @@ import { StatusIcon } from "shelving/ui";
 <StatusIcon status="error" />
 <StatusIcon status="loading" size="small" />
 ```
-
-## See also
-
-- [`Loading`](/ui/Loading) — the spinner used for the `"loading"` status.
-- [`Notice`](/ui/Notice) — uses `<StatusIcon>` as its default icon.
-- [`Tag`](/ui/Tag) — inline label sharing the same status vocabulary.

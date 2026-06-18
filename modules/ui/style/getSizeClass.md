@@ -33,10 +33,3 @@ The following `:root` variables are defined by this module and can be overridden
 |---|---|---|
 | `--leading` | `clamp(1.05em, calc(1em + 0.5rem), 1.5em)` | Default line height; paired with every font-size variant and the body baseline. |
 | `--leading-normal` | `1.5` | Plain unitless line height for dense blocks. |
-
-## See also
-
-- [`getWeightClass`](/ui/getWeightClass) — font weight.
-- [`getFontClass`](/ui/getFontClass) — font family.
-- [`getTypographyClass`](/ui/getTypographyClass) — combines size, weight, font, alignment, and tint.
-- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

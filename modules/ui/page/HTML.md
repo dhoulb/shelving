@@ -28,9 +28,3 @@ renderToString(
 ```
 
 For client-side-only roots that don't need an `<html>` shell, use `<App>` from [`shelving/ui`](/ui) instead.
-
-## See also
-
-- [`Page`](/ui/Page) — wraps a single page and emits its hoistable head tags
-- [`Head`](/ui/Head) — the low-level emitter `Page` renders for you
-- [`Navigation`](/ui/Navigation) / [`Router`](/ui/Router) — URL-driven rendering inside the shell

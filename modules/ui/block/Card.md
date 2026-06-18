@@ -77,9 +77,3 @@ import { Card, Subheading } from "shelving/ui";
   --card-tint: var(--color-purple);
 }
 ```
-
-## See also
-
-- [`Panel`](/ui/Panel) — a card-like grouping for stacked sections rather than standalone content.
-- [`Section`](/ui/Section) — a titled block; cards often hold one or more sections.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

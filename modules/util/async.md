@@ -60,7 +60,3 @@ import { runMicrotasks } from "shelving/util";
 
 await runMicrotasks(); // drain all queued microtasks
 ```
-
-## See also
-
-- [util](/util)

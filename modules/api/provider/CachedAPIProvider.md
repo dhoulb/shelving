@@ -21,9 +21,3 @@ provider.refresh(getUser, { id: "u_1" })    // re-fetch eagerly
 ```
 
 `invalidateAll(endpoint)` and `refreshAll(endpoint)` act on every cached payload for an endpoint at once.
-
-## See also
-
-- [`shelving/api`](/api) — the `APICache` this provider wraps.
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

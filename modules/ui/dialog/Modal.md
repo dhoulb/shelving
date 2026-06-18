@@ -33,8 +33,3 @@ import { Modal } from "shelving/ui";
 | `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
 
 **Global tokens it reads** — move these to retheme broadly: the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-50`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--width-narrow`](/ui/getWidthClass), [`--space-normal`](/ui/getSpaceClass), [`--radius-normal`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--shadow-normal`](/ui/getShadowClass), and [`--duration-fast`](/ui/getDurationClass).
-
-## See also
-
-- [`Dialog`](/ui/Dialog) — a blocking modal `<dialog>` with backdrop and close button.
-- [`Dialogs`](/ui/Dialogs) — render imperatively-pushed dialogs near the app root.

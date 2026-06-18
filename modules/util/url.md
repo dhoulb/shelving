@@ -64,8 +64,3 @@ isURLActive(current, "https://example.com/app/settings");         // false
 isURLProud(current, "https://example.com/app/settings");          // true (ancestor)
 isURLProud(current, "https://example.com/other");                  // false
 ```
-
-## See also
-
-- [`shelving/util/uri`](/util/uri) — lower-level URI helpers including query-param manipulation.
-- [util](/util) — naming conventions and the full helper overview.

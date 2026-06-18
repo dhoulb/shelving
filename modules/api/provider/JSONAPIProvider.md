@@ -15,9 +15,3 @@ const provider = new ValidationAPIProvider(
 
 const user = await provider.call(getUser, { id: "u_123" })
 ```
-
-## See also
-
-- [`ClientAPIProvider`](/api/ClientAPIProvider) — the base network provider.
-- [`XMLAPIProvider`](/api/XMLAPIProvider) — the XML equivalent.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

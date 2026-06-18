@@ -17,9 +17,3 @@ async function publishPost(provider: DBProvider, id: string) {
 ```
 
 The method surface covers single items (`getItem`, `requireItem`, `addItem`, `setItem`, `updateItem`, `deleteItem`), queries (`getQuery`, `countQuery`, `setQuery`, `updateQuery`, `deleteQuery`, `getFirst`, `requireFirst`), and realtime (`getItemSequence`, `getQuerySequence` — iterate with `for await...of`).
-
-## See also
-
-- [`MemoryDBProvider`](/db/MemoryDBProvider) — the concrete in-memory implementation.
-- [`ThroughDBProvider`](/db/ThroughDBProvider) — base for wrapping providers.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

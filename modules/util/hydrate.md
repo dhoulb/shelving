@@ -51,7 +51,3 @@ const value = hydrate(plain, HYDRATIONS);
 // value.tags instanceof Set     → true
 // value.createdAt instanceof Date → true
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

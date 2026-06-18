@@ -89,8 +89,3 @@ type X = DeepPartial<{ a: { b: number } }>;   // recursively optional
 type Y = PickProps<User, string>;              // only string-valued props
 type Z = OmitProps<User, string>;             // exclude string-valued props
 ```
-
-## See also
-
-- [`shelving/util/merge`](/util/merge) — [`shallowMerge()`](/util/merge/shallowMerge) / [`deepMerge()`](/util/merge/deepMerge) for combining two objects.
-- [util](/util) — full util module overview, including naming conventions for `with*` / `omit*`.

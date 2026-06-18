@@ -72,8 +72,3 @@ getPlaceholders("{username}@{domain}");        // ["username", "domain"]
 getPlaceholders(":country/:city");             // ["country", "city"]
 getPlaceholders("*-*");                        // ["0", "1"]
 ```
-
-## See also
-
-- [`shelving/util/string`](/util/string) — String sanitisation, slugs, and word splitting.
-- [util](/util) — Overview of all util helpers.

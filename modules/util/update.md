@@ -62,8 +62,3 @@ getUpdates({ "+=count": 1, "-[]tags": "old" });
 //   { action: "omit", key: ["tags"],  value: ["old"] },
 // ]
 ```
-
-## See also
-
-- [`shelving/db`](/db) — Database writes accept `Updates<T>` directly.
-- [util](/util) — Immutability conventions shared across the module.

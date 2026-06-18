@@ -57,7 +57,3 @@ compareAscending("b", "a");  // positive  ("b" comes after "a")
 compareAscending(1, 1);      // 0
 compareDescending(1, 2);     // positive  (reversed)
 ```
-
-## See also
-
-- [util](/util) — query helpers use [`sortArray()`](/util/sort/sortArray) via [`sortQueryItems()`](/util/query/sortQueryItems)

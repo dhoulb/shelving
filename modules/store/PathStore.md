@@ -17,9 +17,3 @@ route.getPath("./reviews");         // "/products/43/reviews" — resolve a rela
 ```
 
 The constructor takes an optional second `base` argument (default `/`) used to resolve relative paths assigned to the store.
-
-## See also
-
-- [`Store`](/store/Store) — the base class.
-- [`URLStore`](/store/URLStore) — the equivalent for full URLs.
-- [`shelving/store`](/store) — overview of all store classes.

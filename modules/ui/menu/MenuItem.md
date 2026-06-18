@@ -46,9 +46,3 @@ The item link's hooks (defined in `Menu.module.css`):
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on [`Menu`](/ui/Menu).
 
 **Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--stroke-focus`](/ui/getStrokeClass), [`--stroke-normal`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--weight-strong`](/ui/getWeightClass).
-
-## See also
-
-- [`Menu`](/ui/Menu) — the `<menu>` container these go inside
-- [`Clickable`](/ui/Clickable) — the link primitive `MenuItem` forwards its props to
-- [`Router`](/ui/Router) — provides the URL context used to compute `active`/`proud`

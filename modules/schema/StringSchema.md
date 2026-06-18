@@ -31,8 +31,3 @@ USERNAME.validate("alice_99");   // "alice_99"
 USERNAME.validate("al");         // throws "Minimum 3 characters"
 USERNAME.validate("ALICE");      // throws "Invalid format"
 ```
-
-## See also
-
-- [`NumberSchema`](/schema/NumberSchema) — the numeric equivalent.
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

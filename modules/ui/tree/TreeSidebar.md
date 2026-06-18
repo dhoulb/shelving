@@ -17,8 +17,3 @@ import { TreeSidebar } from "shelving/ui";
 // A home link + children menu combined — the default sidebar.
 <TreeSidebar tree={root} />
 ```
-
-## See also
-
-- [`TreeMenu`](/ui/TreeMenu) — the children menu, usable on its own; shares the override mapper.
-- [`TreeApp`](/ui/TreeApp) — wires this sidebar into the page layout.

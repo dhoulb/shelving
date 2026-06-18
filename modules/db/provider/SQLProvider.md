@@ -18,10 +18,3 @@ class D1Provider extends SQLiteProvider {
   }
 }
 ```
-
-## See also
-
-- [`SQLiteProvider`](/db/SQLiteProvider) — SQLite / D1 dialect.
-- [`PostgreSQLProvider`](/db/PostgreSQLProvider) — PostgreSQL dialect.
-- [`shelving/db`](/db) — migrators that create the generated-column tables.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

@@ -42,7 +42,3 @@ const onDone: Callback = () => console.log("done");
 const onValue: ValueCallback<string> = (v) => console.log(v);
 const onError: ErrorCallback = (err) => console.error(err);
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

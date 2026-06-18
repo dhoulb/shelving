@@ -32,7 +32,3 @@ getLink(null);                          // undefined
 // requireLink throws RequiredError instead of returning undefined.
 requireLink("/schema", pageURL, siteRoot); // "https://x.com/app/schema"
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

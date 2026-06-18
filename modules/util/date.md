@@ -80,8 +80,3 @@ addMonths(1, "2024-01-31");  // 2024-02-29 (leap year) or 2024-02-28
 addYears(-1, "2024-02-29");  // 2023-02-28 (clamped, not a leap year)
 addHours(2, "now");          // 2 hours from now
 ```
-
-## See also
-
-- [util](/util) — full util module overview
-- [`shelving/util/constants`](/util/constants) — [`DAY`](/util/constants/DAY), [`WEEK`](/util/constants/WEEK), [`MONTH`](/util/constants/MONTH), [`YEAR`](/util/constants/YEAR) in milliseconds

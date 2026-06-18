@@ -35,9 +35,3 @@ import { Table, TableCell, TableHeader } from "shelving/ui";
 ## Styling
 
 `TableHeader` paints nothing of its own — it composes the [`width`](/ui/getWidthClass) and [`typography`](/ui/getTypographyClass) variants onto a `<th>`, and inherits the header styling (label font, borders, padding) from the surrounding [`Table`](/ui/Table). It exposes no hooks of its own.
-
-## See also
-
-- [`TableCell`](/ui/TableCell) — the `<td>` equivalent for body cells.
-- [`Table`](/ui/Table) — the table the cells belong to.
-- [`getWidthClass`](/ui/getWidthClass) — the full `width` / `grow` variant reference.

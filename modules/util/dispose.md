@@ -64,7 +64,3 @@ listeners.add(new EventListener());
 listeners.delete(listener); // listener disposed
 listeners[Symbol.dispose](); // all listeners disposed
 ```
-
-## See also
-
-- [util](/util) — full util module overview

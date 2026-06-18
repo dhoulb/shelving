@@ -59,8 +59,3 @@ import { HTTP_SCHEMES } from "shelving/util";
 
 HTTP_SCHEMES; // ["http:", "https:"]
 ```
-
-## See also
-
-- [`shelving/util/url`](/util/url) — [`getURL()`](/util/url/getURL), [`getBasedURI()`](/util/url/getBasedURI), and base-URL utilities for hierarchical URLs.
-- [util](/util) — naming conventions and the full helper overview.

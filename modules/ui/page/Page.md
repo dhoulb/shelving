@@ -33,10 +33,3 @@ import { Page, CenteredLayout } from "shelving/ui";
   </CenteredLayout>
 </Page>
 ```
-
-## See also
-
-- [`HTML`](/ui/HTML) — the document shell that sits above pages
-- [`Head`](/ui/Head) — the hoistable-tag emitter that `Page` renders
-- [`SidebarLayout`](/ui/SidebarLayout) / [`CenteredLayout`](/ui/CenteredLayout) — layouts that live inside a page
-- [`Router`](/ui/Router) — matches URLs to the pages it renders

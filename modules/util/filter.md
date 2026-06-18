@@ -41,7 +41,3 @@ const allowed = ["a", "c"];
 const result = Array.from(filterItems(["a", "b", "c", "d"], isInArray, allowed));
 // ["a", "c"]
 ```
-
-## See also
-
-- [util](/util) — full util module overview, including the [`Match`](/util/filter/Match) type.

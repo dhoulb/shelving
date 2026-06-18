@@ -31,9 +31,3 @@ Because `DeferredSequence` implements `Promise`, you can `await` it for a single
 ```ts
 const next = await seq; // resolves when resolve() is next called
 ```
-
-## See also
-
-- [`Sequence`](/sequence/Sequence) — the abstract base class.
-- [`shelving/store`](/store) — [`Store`](/store/Store) broadcasts changes through a `DeferredSequence`.
-- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

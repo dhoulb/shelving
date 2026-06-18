@@ -60,7 +60,3 @@ import { getBestDurationUnit, DURATION_UNITS } from "shelving/util";
 const unit = getBestDurationUnit(3 * 24 * 60 * 60 * 1000); // → "day" Unit
 unit.format(unit.from(3 * 24 * 60 * 60 * 1000));           // "3d"
 ```
-
-## See also
-
-- [util](/util) — naming conventions and the full helper overview.

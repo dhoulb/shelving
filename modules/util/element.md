@@ -37,8 +37,3 @@ getElementText(<span>Hello <strong>world</strong></span>); // "Hello world"
 const combined = mergeElements(headerElements, bodyElements);
 // Returns [headerElements, bodyElements] when both are set; returns whichever is non-nullish when one is absent.
 ```
-
-## See also
-
-- [`shelving/util/tree`](/util/tree) — [`TreeElement`](/util/tree/TreeElement) and the path/flatten helpers built on [`Element`](/util/element/Element).
-- [util](/util) — full util module overview.

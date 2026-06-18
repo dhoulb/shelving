@@ -13,8 +13,3 @@ const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
 OPTIONAL_NUMBER.validate(undefined); // undefined
 OPTIONAL_NUMBER.validate(42);        // 42
 ```
-
-## See also
-
-- [`NullableSchema`](/schema/NullableSchema) — the `null`-allowing equivalent.
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

@@ -25,8 +25,3 @@ console.log(watch.done);   // true
 ```
 
 `first`, `last`, and `returned` throw an [`UnexpectedError`](/error/UnexpectedError) if read before the relevant values exist — e.g. `first` before iteration has yielded anything, or `returned` before iteration is `done`.
-
-## See also
-
-- [`ThroughSequence`](/sequence/ThroughSequence) — the base class.
-- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

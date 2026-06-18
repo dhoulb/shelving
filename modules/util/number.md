@@ -61,7 +61,3 @@ getPercent(25, 200);              // 12.5  (25 is 12.5% of 200)
 sumNumbers([1, 2, 3, 4]);         // 10
 getClosestNumber([1, 5, 10], 4);  // 5
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

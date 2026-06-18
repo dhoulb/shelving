@@ -21,7 +21,3 @@ type LazyGreeting = Lazy<string, [name: string]>;
 const greet: LazyGreeting = name => `Hello, ${name}!`;
 getLazy(greet, "Alice"); // "Hello, Alice!"
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

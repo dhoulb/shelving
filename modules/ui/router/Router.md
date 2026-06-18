@@ -159,10 +159,3 @@ renderToString(
 ### Base paths
 
 `root="https://example.com/app/"` is supported — the base path prefix is stripped from the URL before matching, and URLs that fall outside the base render as `null`.
-
-## See also
-
-- [`Navigation`](/ui/Navigation) — publishes a live URL into `<Meta>` for client-side routing
-- [`HTML`](/ui/HTML) / [`Page`](/ui/Page) — supply the `<Meta>` URL the router reads
-- [`SidebarLayout`](/ui/SidebarLayout) / [`CenteredLayout`](/ui/CenteredLayout) — wrap route groups in a shared layout
-- [`HorizontalTransition`](/ui/HorizontalTransition) — animate route changes

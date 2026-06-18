@@ -56,10 +56,3 @@ useEffect(useSafeKeyboardArea, []);
 The content column composes the shared `.layout` behaviour, so it also reads the layout hooks `--layout-space`, `--layout-padding`, `--layout-inset-top` / `-bottom` / `-left` / `-right`, and `--layout-body-bg`.
 
 **Global tokens it reads** — the tint ladder [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-normal`](/ui/getSpaceClass), [`--stroke-normal`](/ui/getStrokeClass), [`--duration-normal`](/ui/getDurationClass), and [`--color-shadow`](/ui/getColorClass).
-
-## See also
-
-- [`CenteredLayout`](/ui/CenteredLayout) — the other full-viewport layout, for focused single-column pages
-- [`Menu`](/ui/Menu) / [`MenuItem`](/ui/MenuItem) — navigation links for the sidebar
-- [`Router`](/ui/Router) — wrap route groups in a shared layout
-- [`Page`](/ui/Page) — sits above layouts in the tree

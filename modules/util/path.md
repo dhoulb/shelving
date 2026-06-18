@@ -55,8 +55,3 @@ isPathActive("/app", "/app");           // true  (exact match)
 isPathProud("/app/sub", "/app");        // true  (current is ancestor)
 isPathProud("/app", "/app/sub");        // false
 ```
-
-## See also
-
-- [util](/util) — full util module overview
-- [`shelving/db`](/db) — uses [`AbsolutePath`](/util/path/AbsolutePath) for collection paths

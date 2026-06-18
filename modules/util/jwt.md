@@ -54,7 +54,3 @@ const raw = getRequestToken(request);
 // Read and verify in one step — throws UnauthorizedError if missing or invalid.
 const claims = await verifyRequestToken(request, secret);
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

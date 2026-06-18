@@ -39,9 +39,3 @@ import { Tag } from "shelving/ui";
 | `--tag-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
 **Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-55`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--font-body`](/ui/getFontClass), [`--size-small`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--leading`](/ui/getSizeClass), [`--case-label`](/ui/getFontClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), and [`--color-focus`](/ui/getColorClass).
-
-## See also
-
-- [`StatusIcon`](/ui/StatusIcon) — pairs a status with its matching icon.
-- [`Notice`](/ui/Notice) — block-level status callout sharing the same status vocabulary.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

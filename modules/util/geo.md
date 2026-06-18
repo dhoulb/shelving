@@ -51,7 +51,3 @@ import { COUNTRIES } from "shelving/util";
 const name = COUNTRIES["FR"]; // "France"
 const codes = Object.keys(COUNTRIES); // ["AF", "AX", ...]
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

@@ -32,11 +32,3 @@ import { DocumentationHomePage } from "shelving/ui";
 ## Styling
 
 `DocumentationHomePage` has no own CSS hooks — it composes [`Page`](/ui/Page), [`Block`](/ui/Block), [`Panel`](/ui/Panel), [`Title`](/ui/Title), [`Section`](/ui/Section), and [`TreeCards`](/ui/TreeCards), which carry their own themeable surfaces. Retheme through those, or change the hero colour via the `color=` on the wrapping `Block`.
-
-## See also
-
-- [`TreePage`](/ui/TreePage) — the generic `tree-element` renderer this replaces for the home route.
-- [`DocumentationPage`](/ui/DocumentationPage) — the per-symbol detail page that uses the same coloured-panel hero pattern.
-- [`Panel`](/ui/Panel) — the full-width hero band, here with `padding="5x"`.
-- [`TreeCards`](/ui/TreeCards) — the module card listing rendered below the hero.
-- [`TreeApp`](/ui/TreeApp) — wires renderers into a complete site.

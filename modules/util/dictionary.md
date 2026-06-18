@@ -63,8 +63,3 @@ setDictionaryItems(dict, { d: 4 });       // dict is now { a:1, b:2, c:3, d:4 }
 deleteDictionaryItem(dict, "a");          // dict is now { b:2, c:3, d:4 }
 deleteDictionaryItems(dict, "b", "c");    // dict is now { d:4 }
 ```
-
-## See also
-
-- [util](/util) — full util module overview
-- [`shelving/util/data`](/util/data) — [`Data`](/util/data/Data) type, a close relative for untyped-value plain objects

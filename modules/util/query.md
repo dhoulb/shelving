@@ -96,8 +96,3 @@ const filters = getQueryFilters({ status: "active", "price>=": 10 });
 matchQueryItem({ id: "1", status: "active", price: 10 }, filters); // true
 matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 ```
-
-## See also
-
-- [`shelving/db`](/db) — collection reads accept [`Query<T>`](/util/query/Query) directly
-- [util](/util) — full util module overview, including [`Updates`](/util/update/Updates)

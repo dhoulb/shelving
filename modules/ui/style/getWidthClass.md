@@ -22,7 +22,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--width-narrow` | `35rem` | The `narrow` constraint — single-column forms, dialogs. |
 | `--width-normal` | `55rem` | The `normal` constraint — standard content column. |
 | `--width-wide` | `75rem` | The `wide` constraint — readable prose measure. |
-
-## See also
-
-- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

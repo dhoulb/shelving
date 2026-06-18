@@ -54,9 +54,3 @@ import { PARTIAL } from "shelving/schema";
 const PARTIAL_PRODUCT = PARTIAL(PRODUCT);
 PARTIAL_PRODUCT.validate({ price: 4.99 }); // { price: 4.99 }
 ```
-
-## See also
-
-- [util](/util) — the [`Data`](/util/data/Data) and [`Item`](/util/item/Item) types this schema validates.
-- [`shelving/db`](/db) — [`Collection`](/db/Collection) extends `DataSchema` to validate stored documents.
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

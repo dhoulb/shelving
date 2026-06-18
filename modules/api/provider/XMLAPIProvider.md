@@ -14,9 +14,3 @@ const provider = new XMLAPIProvider({ url: "https://legacy.example.com" })
 // The result is the raw response text.
 const xml = await provider.call(getFeed, { channel: "news" })
 ```
-
-## See also
-
-- [`ClientAPIProvider`](/api/ClientAPIProvider) — the base network provider.
-- [`JSONAPIProvider`](/api/JSONAPIProvider) — the JSON equivalent.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

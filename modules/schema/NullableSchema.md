@@ -15,8 +15,3 @@ NULLABLE_NUMBER.validate(undefined);  // null
 NULLABLE_NUMBER.validate("");         // null
 NULLABLE_NUMBER.validate(42);         // 42
 ```
-
-## See also
-
-- [`OptionalSchema`](/schema/OptionalSchema) — the `undefined`-allowing equivalent.
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

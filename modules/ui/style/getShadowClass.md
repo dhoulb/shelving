@@ -15,9 +15,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--shadow-large` | `0 0.75rem 3rem -1.5rem #0006` |
 | `--shadow-xlarge` | `0 1rem 4rem -2rem #0006` |
 | `--shadow-xxlarge` | `0 1.5rem 6rem -3rem #0006` |
-
-## See also
-
-- [`getRadiusClass`](/ui/getRadiusClass) — corner-radius tokens.
-- [`getStrokeClass`](/ui/getStrokeClass) — border-thickness tokens.
-- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

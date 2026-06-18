@@ -48,10 +48,3 @@ import { Panel, Block, Title } from "shelving/ui";
 | `--title-leading` | Line height | `var(--leading)` |
 
 **Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
-
-## See also
-
-- [`Heading`](/ui/Heading) — the `<h2>` section heading that pairs with `Title`.
-- [`Subheading`](/ui/Subheading) — the `<h3>` subsection heading.
-- [`Section`](/ui/Section) — wraps a title and its content as a landmark region.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

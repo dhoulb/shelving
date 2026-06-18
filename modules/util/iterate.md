@@ -59,7 +59,3 @@ import { reduceItems } from "shelving/util";
 
 reduceItems([1, 2, 3, 4], (acc, n) => acc + n, 0); // 10
 ```
-
-## See also
-
-- [util](/util) — array-specific helpers such as [`withArrayItem()`](/util/array/withArrayItem), [`omitArrayItems()`](/util/array/omitArrayItems), and [`getUniqueArray()`](/util/array/getUniqueArray).

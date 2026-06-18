@@ -15,9 +15,3 @@ async function loadUser(provider: APIProvider, id: string) {
   return provider.call(getUser, { id }); // works with any provider in the chain
 }
 ```
-
-## See also
-
-- [`ClientAPIProvider`](/api/ClientAPIProvider) — the concrete network implementation.
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — base for wrapping providers.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

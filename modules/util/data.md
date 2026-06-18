@@ -71,9 +71,3 @@ import type { Data, LeafDataPath } from "shelving/util";
 type Profile = { name: string; address: { city: string } };
 type ProfileLeafPaths = LeafDataPath<Profile>; // "name" | "address.city"
 ```
-
-## See also
-
-- [util](/util) — full util module overview including Items, Queries, and Updates that build on [`Data`](/util/data/Data)
-- [`shelving/schema`](/schema) — schema validation that produces typed `Data` objects
-- [`shelving/db`](/db) — database layer that stores and queries `Data` items

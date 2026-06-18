@@ -33,9 +33,3 @@ import { Catcher, ErrorPage, RetryButton } from "shelving/ui";
   <RetryButton small />
 </Catcher>
 ```
-
-## See also
-
-- [`Notice`](/ui/Notice) — the callout `ErrorNotice` renders inside.
-- [`Button`](/ui/Button) — the element `RetryButton` renders.
-- [`Page`](/ui/Page) — the full-page shell `ErrorPage` renders inside.

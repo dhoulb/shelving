@@ -20,9 +20,3 @@ const user = await api.call(getUser, { id: "u_1" })
 
 console.log(api.requestCalls) // inspect recorded calls
 ```
-
-## See also
-
-- [`MockAPIProvider`](/api/MockAPIProvider) — the base mock provider.
-- [`shelving/api`](/api) — `endpoint.handler()` and `handleEndpoints()`.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

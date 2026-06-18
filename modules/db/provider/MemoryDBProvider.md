@@ -19,9 +19,3 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
   console.log(next);
 }
 ```
-
-## See also
-
-- [`DBProvider`](/db/DBProvider) — the abstract base.
-- [`CacheDBProvider`](/db/CacheDBProvider) — uses a `MemoryDBProvider` as its mirror.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

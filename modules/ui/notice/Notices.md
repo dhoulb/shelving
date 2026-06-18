@@ -51,9 +51,3 @@ await uploadFile(file);
 notice.show("Upload complete.", "success"); // Update in place.
 notice.close(); // Or close it immediately.
 ```
-
-## See also
-
-- [`Notice`](/ui/Notice) — the callout each entry in the list is rendered as.
-- [`notify`](/ui/notify) — `notify`, `notifySuccess`, `notifyError`, `callNotified`, and `subscribeNotices`.
-- [`shelving/store`](/store) — [`ArrayStore`](/store/ArrayStore) and [`DataStore`](/store/DataStore) that the notices store layer extends.

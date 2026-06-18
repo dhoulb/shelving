@@ -50,10 +50,3 @@ const el: DocumentationElement = {
   },
 };
 ```
-
-## See also
-
-- [`shelving/util/element`](/util/element) — the generic `Element` type and walk/filter helpers this builds on.
-- [`shelving/extract`](/extract) — builds [`TreeElement`](/util/tree/TreeElement) trees from TypeScript and Markdown source files.
-- [`shelving/ui`](/ui) — renders `TreeElement` trees in the documentation UI.
-- [util](/util) — full util module overview.

@@ -13,9 +13,3 @@ function checkResponse(res: Response): void {
 ```
 
 See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
-
-## See also
-
-- [`NetworkError`](/error/NetworkError) — for a transport-level failure where no response arrived.
-- [`RequestError`](/error/RequestError) — for a malformed or unacceptable incoming request.
-- [`shelving/error`](/error) — module overview and shared error behaviour.

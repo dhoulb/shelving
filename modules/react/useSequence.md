@@ -16,8 +16,3 @@ function LiveCounter({ counter }: { counter: AsyncIterable<number> }) {
 ```
 
 Because the subscription resets when the iterable reference changes, pass a stable reference — hoist it, or memoise it with [`useLazy`](/react/useLazy) / [`useInstance`](/react/useInstance) — to avoid resubscribing on every render.
-
-## See also
-
-- [`useStore()`](/react/useStore) — subscribe to a Shelving [`Store`](/store/Store) with Suspense support.
-- [`shelving/react`](/react) — overview of all React hooks and context helpers.

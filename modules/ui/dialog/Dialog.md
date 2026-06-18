@@ -62,12 +62,3 @@ function DeleteButton({ id }: { id: string }) {
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (8px) |
 
 **Global tokens it reads** — move these to retheme broadly: [`--space-normal`](/ui/getSpaceClass), [`--space-small`](/ui/getSpaceClass), [`--color-shadow`](/ui/getColorClass), and [`--duration-fast`](/ui/getDurationClass).
-
-## See also
-
-- [`Modal`](/ui/Modal) — a non-blocking `<aside>` overlay for persistent panels.
-- [`DialogsStore`](/ui/DialogsStore) — push dialogs imperatively; `.show()` and `.hideAll()`.
-- [`DialogsContext`](/ui/DialogsContext) / [`Dialogs`](/ui/Dialogs) — provide a store and render its open dialogs.
-- [`shelving/ui`](/ui) — inline and global notices (toasts, banners).
-- [`shelving/ui`](/ui) — form components to put inside dialogs.
-- [`shelving/ui`](/ui) — animate dialog enter / leave.

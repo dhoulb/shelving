@@ -16,10 +16,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--weight-body` | `var(--weight-normal)` | Body baseline. |
 | `--weight-label` | `var(--weight-strong)` | Labels (`<Label>`, table/definition headers). |
 | `--weight-code` | `500` | Monospace / code. |
-
-## See also
-
-- [`getSizeClass`](/ui/getSizeClass) — font size.
-- [`getFontClass`](/ui/getFontClass) — font family.
-- [`getTypographyClass`](/ui/getTypographyClass) — combines size, weight, font, alignment, and tint.
-- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

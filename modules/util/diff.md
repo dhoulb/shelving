@@ -51,8 +51,3 @@ import { deepDiff, SAME } from "shelving/util";
 const diff = deepDiff(previous, next);
 if (diff !== SAME) applyUpdate(diff);
 ```
-
-## See also
-
-- [util](/util) — full util module overview
-- [`shelving/util/data`](/util/data) — [`Data`](/util/data/Data) type used with object diffs

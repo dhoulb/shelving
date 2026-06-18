@@ -13,8 +13,3 @@ const PRICE = new CurrencyAmountSchema({ title: "Price", currency: "GBP", min: 0
 PRICE.validate("12.345");        // 12.35   (rounded to minor units)
 PRICE.format(12.3);              // "£12.30"
 ```
-
-## See also
-
-- [`NumberSchema`](/schema/NumberSchema) — the base class.
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

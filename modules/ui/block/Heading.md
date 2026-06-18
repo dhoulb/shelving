@@ -62,9 +62,3 @@ import { Heading } from "shelving/ui";
   --heading-size: var(--size-xxxlarge);
 }
 ```
-
-## See also
-
-- [`Title`](/ui/Title) — the top-level page heading that pairs with `Heading`.
-- [`Section`](/ui/Section) — wraps a heading and its content as a titled section.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

@@ -45,9 +45,3 @@ function findProduct(id: string, products: Items<string, { name: string; price: 
   return products.find(p => hasIdentifier(p, id));
 }
 ```
-
-## See also
-
-- [util](/util) — the `Data` type, query helpers, and update helpers that all operate on items.
-- [`shelving/db`](/db) — database layer built on [`Item`](/util/item/Item).
-- [`shelving/schema`](/schema) — schema validation for item shapes.

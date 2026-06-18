@@ -16,9 +16,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--radius-large` | `calc(var(--radius) * 1.5)` | 24px |
 | `--radius-xlarge` | `calc(var(--radius) * 2)` | 32px |
 | `--radius-xxlarge` | `calc(var(--radius) * 3)` | 48px |
-
-## See also
-
-- [`getStrokeClass`](/ui/getStrokeClass) — border-thickness tokens.
-- [`getShadowClass`](/ui/getShadowClass) — drop-shadow tokens.
-- [`shelving/ui`](/ui) — the styling-system overview and the full list of base token pages.

@@ -29,8 +29,3 @@ function handleEntity(e: ChallengeEntity) {
   // type is narrowed to "challenge"
 }
 ```
-
-## See also
-
-- [util](/util) — full util module overview.
-- [`shelving/error`](/error) — [`RequiredError`](/error/RequiredError) thrown by [`requireEntity()`](/util/entity/requireEntity).

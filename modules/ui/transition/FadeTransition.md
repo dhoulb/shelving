@@ -28,9 +28,3 @@ function Panel({ visible }: { visible: boolean }) {
 | `--fade-transition-duration` | Duration of the fade-in and fade-out keyframes | `var(--duration-fast)` |
 
 **Global tokens it reads** — [`--duration-fast`](/ui/getDurationClass).
-
-## See also
-
-- [`Transition`](/ui/Transition) — the base wrapper and `overlay` variant
-- [`CollapseTransition`](/ui/CollapseTransition) — size-based alternative
-- [`VerticalTransition`](/ui/VerticalTransition) / [`HorizontalTransition`](/ui/HorizontalTransition) — direction-aware slides

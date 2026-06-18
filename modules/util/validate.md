@@ -63,8 +63,3 @@ import type { ValidatorType, ValidatorsType } from "shelving/util";
 type MyNumber = ValidatorType<typeof positiveNumber>; // number
 type MyShape = ValidatorsType<typeof validators>;     // { name: string; age: number }
 ```
-
-## See also
-
-- [`shelving/schema`](/schema) — Higher-level schema system built on top of [`Validator<T>`](/util/validate/Validator).
-- [util](/util) — naming conventions and the full helper overview.

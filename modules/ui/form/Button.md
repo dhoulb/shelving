@@ -80,9 +80,3 @@ import { getButtonClass } from "shelving/ui";
   --button-radius: 999px;
 }
 ```
-
-## See also
-
-- [`Clickable`](/ui/Clickable) — the unstyled click/press primitive `Button` delegates to.
-- [`Link`](/ui/Link) — an inline text link (vs. a button-styled `<a>`).
-- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

@@ -14,9 +14,3 @@ await db.setItem(POSTS, "abc", { title: "Hi", body: "", published: true });
 console.log(db.changes);
 // [{ action: "set", collection: "posts", id: "abc", data: { … } }]
 ```
-
-## See also
-
-- [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
-- [`MockDBProvider`](/db/MockDBProvider) — records all calls, not just writes.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

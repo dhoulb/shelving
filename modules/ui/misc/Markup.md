@@ -26,9 +26,3 @@ import { Markup } from "shelving/ui";
   {comment.body}
 </Markup>
 ```
-
-## See also
-
-- [`Prose`](/ui/Prose) — longform typography wrapper for the rendered markup.
-- [`shelving/markup`](/markup) — the markup parser and rule set underlying `<Markup>`.
-- [`Meta`](/ui/Meta) — the page metadata `<Markup>` reads to resolve links.

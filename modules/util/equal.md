@@ -71,7 +71,3 @@ import { assertEqual, assertNot } from "shelving/util";
 assertEqual(value, expectedValue); // asserts value === expectedValue, narrows type
 assertNot(value, null);            // asserts value !== null, narrows type
 ```
-
-## See also
-
-- [util](/util) — full util module overview, including immutability conventions.

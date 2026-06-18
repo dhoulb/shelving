@@ -17,8 +17,3 @@ async function fetchData(url: string): Promise<Response> {
 ```
 
 See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
-
-## See also
-
-- [`ResponseError`](/error/ResponseError) — for a response that arrived but indicated an error.
-- [`shelving/error`](/error) — module overview and shared error behaviour.

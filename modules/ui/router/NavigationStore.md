@@ -26,9 +26,3 @@ import { NavigationStore } from "shelving/ui";
 const nav = new NavigationStore("/");
 nav.forward("/home");
 ```
-
-## See also
-
-- [`Navigation`](/ui/Navigation) — owns the store and exposes it via `requireNavigation()`
-- [`Router`](/ui/Router) — renders the page for whatever URL the store holds
-- [`shelving/store`](/store) — the `URLStore` base and subscription model

@@ -13,8 +13,3 @@ open.toggle();        // true
 open.value = 0;       // false — assigned values are coerced to boolean
 console.log(open.value); // false
 ```
-
-## See also
-
-- [`Store`](/store/Store) — the base class.
-- [`shelving/store`](/store) — overview of all store classes.

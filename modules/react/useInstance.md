@@ -17,8 +17,3 @@ function MyComponent({ provider }: { provider: APIProvider }) {
 ```
 
 Arguments are compared by deep equality, so passing equal-but-not-identical values (a fresh object literal each render) does not trigger reconstruction.
-
-## See also
-
-- [`useLazy()`](/react/useLazy) — the same memoisation for an arbitrary factory call rather than a constructor.
-- [`shelving/react`](/react) — overview of all React hooks and context helpers.

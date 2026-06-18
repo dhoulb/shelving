@@ -17,9 +17,3 @@ await provider.addItem(POSTS, { title: "Hello", body: "…", published: false })
 // If the backend ever returns data that fails the schema, this throws ValueError.
 const post = await provider.getItem(POSTS, "abc");
 ```
-
-## See also
-
-- [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
-- [`shelving/db`](/db) — the `Collection` schema validated against.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

@@ -49,11 +49,3 @@ import { TreeApp, TreePageMapping } from "shelving/ui";
 ```
 
 The same pattern works for [`TreeMenuMapping`](/ui/TreeMenu) (sidebar items) and [`TreeCardMapping`](/ui/TreeCards) (cards inside directory listings).
-
-## See also
-
-- [`shelving/extract`](/extract) — builds the `TreeElement` tree that `TreeApp` consumes.
-- [`TreeRouter`](/ui/TreeRouter) — resolves the URL to an element and dispatches it to a page renderer.
-- [`TreeSidebar`](/ui/TreeSidebar) / [`TreeMenu`](/ui/TreeMenu) — the navigation built into the sidebar.
-- [`TreePage`](/ui/TreePage) / [`TreeCards`](/ui/TreeCards) — the default directory/file page and card listing.
-- [`DocumentationPage`](/ui/DocumentationPage) — the default renderer for documented symbols.

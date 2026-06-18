@@ -75,7 +75,3 @@ import { formatURI, formatURL } from "shelving/util";
 formatURI("mailto:dave@shax.com");              // "dave@shax.com"
 formatURL("https://example.com/page?ref=123");  // "example.com/page"
 ```
-
-## See also
-
-- [util](/util) — full util module overview, including string and currency helpers.

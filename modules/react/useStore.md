@@ -30,8 +30,3 @@ function App() {
 ```
 
 The argument is optional — passing `undefined` is allowed (the hook is still called unconditionally, satisfying the rules of hooks) and returns `undefined`.
-
-## See also
-
-- [`shelving/store`](/store) — the [`Store`](/store/Store) class this hook subscribes to.
-- [`shelving/react`](/react) — overview of all React hooks and context helpers.

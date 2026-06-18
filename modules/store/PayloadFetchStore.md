@@ -24,9 +24,3 @@ store.payload.value = "u_2";
 ```
 
 Pass a fourth `debounce` argument (milliseconds) to delay the fetch after a payload change — rapid changes reset the timer, so only the final payload is fetched.
-
-## See also
-
-- [`FetchStore`](/store/FetchStore) — the base class.
-- [`shelving/store`](/store) — overview of all store classes.
-- [`shelving/api`](/api) — [`EndpointStore`](/api/EndpointStore) extends `PayloadFetchStore`.

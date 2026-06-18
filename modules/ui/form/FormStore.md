@@ -37,11 +37,3 @@ function ResetButton() {
   return <Button plain onClick={() => store.set("name", "")}>Clear name</Button>;
 }
 ```
-
-## See also
-
-- [`Form`](/ui/Form) — the component that creates and provides a `FormStore`.
-- [`Field`](/ui/Field) — renders a single field's value and message from the store.
-- [`shelving/store`](/store) — [`DataStore`](/store/DataStore) and the reactive store family `FormStore` builds on.
-- [`shelving/schema`](/schema) — schema validation and the `"fieldName: message"` split format.
-- [`shelving/react`](/react) — [`useStore`](/react/useStore), [`useInstance`](/react/useInstance), and other hooks used to subscribe to the store.

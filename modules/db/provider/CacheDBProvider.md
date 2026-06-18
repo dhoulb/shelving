@@ -18,9 +18,3 @@ await provider.getItem(POSTS, "abc"); // served synchronously from the mirror
 ```
 
 [`DBCache`](/db/DBCache) finds the `CacheDBProvider` in a chain automatically and reuses its mirror to seed reactive stores.
-
-## See also
-
-- [`MemoryDBProvider`](/db/MemoryDBProvider) — the mirror layer.
-- [`shelving/db`](/db) — `DBCache` reuses this provider's mirror.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

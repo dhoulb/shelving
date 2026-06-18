@@ -32,7 +32,3 @@ const obj = new MyClass();
 const getter = getGetter(obj, "name"); // the getter function, or undefined
 const setter = getSetter(obj, "name"); // the setter function, or undefined
 ```
-
-## See also
-
-- [util](/util)

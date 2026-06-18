@@ -55,10 +55,3 @@ import { SchemaField } from "shelving/ui";
 
 <SchemaField name="email" schema={EMAIL_SCHEMA} /> // <Field> wrapping a <TextInput>
 ```
-
-## See also
-
-- [`Form`](/ui/Form) — drives `SchemaInput` for every property of its schema.
-- [`Field`](/ui/Field) — the label + input + error wrapper `SchemaField` composes.
-- [`shelving/schema`](/schema) — the [`Schema`](/schema/Schema) types `SchemaInput` dispatches on.
-- [`shelving/ui`](/ui) — top-level UI module index.

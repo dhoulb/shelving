@@ -36,9 +36,3 @@ function navigate(direction: "forward" | "back", url: string) {
 | `--horizontal-transition-duration` | Duration of the slide keyframes | `var(--duration-normal)` |
 
 **Global tokens it reads** — [`--duration-normal`](/ui/getDurationClass).
-
-## See also
-
-- [`VerticalTransition`](/ui/VerticalTransition) — the vertical counterpart
-- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and [`setTransitionType()`](/ui/setTransitionType)
-- [`Navigation`](/ui/Navigation) — triggers the route changes this animates

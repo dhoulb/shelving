@@ -52,7 +52,3 @@ const white = new Color(255, 255, 255);
 const transparent = new Color(0, 0, 0, 0);
 Color.from("#abc");  // same as getColor
 ```
-
-## See also
-
-- [util](/util)

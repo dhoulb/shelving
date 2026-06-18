@@ -106,13 +106,3 @@ When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches i
 | `--form-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
 **Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass).
-
-## See also
-
-- [`FormStore`](/ui/FormStore) — the reactive state class underlying every form.
-- [`Field`](/ui/Field) — the label + input + error wrapper for a single control.
-- [`SchemaInput`](/ui/SchemaInput) — the schema-to-input dispatch component.
-- [`SubmitButton`](/ui/SubmitButton) — submit button that reads the surrounding form's busy state.
-- [`shelving/schema`](/schema) — [`DataSchema`](/schema/DataSchema), [`StringSchema`](/schema/StringSchema), [`NumberSchema`](/schema/NumberSchema), and the other schema types that drive automatic input selection.
-- [`shelving/react`](/react) — [`useStore`](/react/useStore), [`useInstance`](/react/useInstance), and other hooks used internally.
-- [`shelving/ui`](/ui) — top-level UI module index.

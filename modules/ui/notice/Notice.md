@@ -44,10 +44,3 @@ import { LOADING_NOTICE } from "shelving/ui";
 | `--notice-weight` | Font weight | `var(--weight-strong)` |
 
 **Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-small`](/ui/getSpaceClass), [`--radius-xsmall`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--size-normal`](/ui/getSizeClass), and [`--weight-strong`](/ui/getWeightClass).
-
-## See also
-
-- [`Notices`](/ui/Notices) — the global list that renders incoming notices as `<Notice>` elements.
-- [`StatusIcon`](/ui/StatusIcon) — the default icon shown for the notice's status.
-- [`notify`](/ui/notify) — dispatch notices into the global `<Notices>` list.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

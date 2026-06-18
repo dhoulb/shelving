@@ -33,7 +33,3 @@ getSource(Database, {});       // undefined  (no .source chain)
 requireSource(Database, db);       // the inner Database instance
 requireSource(Database, "oops");   // throws RequiredError
 ```
-
-## See also
-
-- [util](/util) — full util module overview

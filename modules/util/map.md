@@ -61,7 +61,3 @@ import { limitMap } from "shelving/util";
 
 const limited = limitMap(bigMap, 100); // at most 100 entries
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

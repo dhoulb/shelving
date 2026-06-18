@@ -20,9 +20,3 @@ for await (const ts of seq) {
   console.log(ts); // the interval runs only for the duration of this loop
 }
 ```
-
-## See also
-
-- [`ThroughSequence`](/sequence/ThroughSequence) — the base class.
-- [`DeferredSequence`](/sequence/DeferredSequence) — the source commonly wrapped by a `LazySequence`.
-- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

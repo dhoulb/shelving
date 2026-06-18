@@ -27,9 +27,3 @@ import { Table, TableCell } from "shelving/ui";
 ## Styling
 
 `TableCell` paints nothing of its own — it composes the [`width`](/ui/getWidthClass) and [`typography`](/ui/getTypographyClass) variants onto a `<td>`, and inherits the cell styling (borders, padding) from the surrounding [`Table`](/ui/Table). It exposes no hooks of its own.
-
-## See also
-
-- [`TableHeader`](/ui/TableHeader) — the `<th>` equivalent for header cells.
-- [`Table`](/ui/Table) — the table the cells belong to.
-- [`getWidthClass`](/ui/getWidthClass) — the full `width` / `grow` variant reference.

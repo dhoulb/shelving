@@ -51,9 +51,3 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-color-message` | Message colour | `var(--color-red)` |
 
 **Global tokens it reads:** the tint ladder [`--tint-00`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--size-normal`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--weight-normal`](/ui/getWeightClass), `--shade-dark`, and [`--color-red`](/ui/getColorClass).
-
-## See also
-
-- [`Form`](/ui/Form) — renders fields automatically from a schema.
-- [`SchemaInput`](/ui/SchemaInput) — the control [`SchemaField`](/ui/SchemaField) drops inside a `Field`.
-- [`shelving/ui`](/ui) — top-level UI module index.

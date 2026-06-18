@@ -20,8 +20,3 @@ class TimingDBProvider extends ThroughDBProvider {
   }
 }
 ```
-
-## See also
-
-- [`DBProvider`](/db/DBProvider) — the abstract base.
-- [`shelving/db`](/db) — overview of the provider hierarchy.

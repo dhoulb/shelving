@@ -16,9 +16,3 @@ const provider = new DebugAPIProvider(
 await provider.call(getUser, { id: "u_123" })
 // Console shows the full request and response, including bodies.
 ```
-
-## See also
-
-- [`LoggingAPIProvider`](/api/LoggingAPIProvider) — concise, production-safe logging.
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

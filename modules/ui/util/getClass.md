@@ -48,8 +48,3 @@ export function Button({ children, ...variants }: ButtonProps): ReactElement {
   );
 }
 ```
-
-## See also
-
-- [`requireContext`](/ui/requireContext) — the other helper at the heart of the component layer.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

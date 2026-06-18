@@ -24,9 +24,3 @@ await store.refresh();         // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.
-
-## See also
-
-- [`Store`](/store/Store) — the base class.
-- [`PayloadFetchStore`](/store/PayloadFetchStore) — a `FetchStore` driven by a payload store.
-- [`shelving/store`](/store) — overview of all store classes.

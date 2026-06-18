@@ -47,8 +47,3 @@ joinMessage(parts);
 getNamedMessage("address", "Street is required\nCity is required");
 // "address: Street is required\naddress: City is required"
 ```
-
-## See also
-
-- [`shelving/error`](/error) — typed error classes ([`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), etc.).
-- [util](/util) — full util module overview.

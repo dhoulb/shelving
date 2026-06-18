@@ -30,7 +30,3 @@ getXML({ name: "Alice", bio: undefined });
 escapeXML(`Tom & "Jerry"`);
 // "Tom &amp; &quot;Jerry&quot;"
 ```
-
-## See also
-
-- [util](/util) — naming conventions and the full helper overview.

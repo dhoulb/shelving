@@ -18,9 +18,3 @@ for await (const n of seq) {
   console.log(n); // 1, 2, 3
 }
 ```
-
-## See also
-
-- [`LazySequence`](/sequence/LazySequence) — a `ThroughSequence` with start/stop callbacks.
-- [`InspectSequence`](/sequence/InspectSequence) — a `ThroughSequence` that records what passed through.
-- [`shelving/sequence`](/sequence) — overview of all sequence primitives.

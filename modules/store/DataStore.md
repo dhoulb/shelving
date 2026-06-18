@@ -31,8 +31,3 @@ console.log(profile.exists);        // true
 console.log(profile.require().name); // "Dave" — throws RequiredError if absent
 profile.delete();                    // value is now undefined
 ```
-
-## See also
-
-- [`Store`](/store/Store) — the base class.
-- [`shelving/store`](/store) — overview of all store classes.

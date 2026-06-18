@@ -19,8 +19,3 @@ import { Page, Head } from "shelving/ui";
   …
 </Page>
 ```
-
-## See also
-
-- [`Page`](/ui/Page) — renders `Head` and supplies the per-page meta it reads
-- [`HTML`](/ui/HTML) — owns the literal `<head>` and the non-hoistable `<base>`

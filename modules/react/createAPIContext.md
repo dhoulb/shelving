@@ -38,9 +38,3 @@ function App() {
 ```
 
 `useAPI` accepts a nullish endpoint — passing `undefined` returns `undefined` instead of a store, which keeps the hook call unconditional. Calling `useAPI` outside an `<APIContext>` throws a [`RequiredError`](/error/RequiredError).
-
-## See also
-
-- [`createDBContext()`](/react/createDBContext) — the same pattern for a database provider.
-- [`shelving/api`](/api) — [`APIProvider`](/api/APIProvider), [`APICache`](/api/APICache), [`Endpoint`](/api/Endpoint), and [`EndpointStore`](/api/EndpointStore).
-- [`shelving/react`](/react) — overview of all React hooks and context helpers.

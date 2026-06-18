@@ -52,8 +52,3 @@ mergeObject({ a: 1 }, { b: 2 }, deepMerge);  // { a: 1, b: 2 }
 // Merge two arrays (unique items only).
 mergeArray([1, 2, 3], [3, 4, 5]); // [1, 2, 3, 4, 5]
 ```
-
-## See also
-
-- [`shelving/util/object`](/util/object) — immutable [`withProp()`](/util/object/withProp)/[`omitProp()`](/util/object/omitProp) helpers for single-property changes.
-- [util](/util) — full util module overview.

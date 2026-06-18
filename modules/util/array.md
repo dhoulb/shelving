@@ -80,7 +80,3 @@ import { isArrayItem, assertArrayItem } from "shelving/util";
 isArrayItem(["x", "y"], "x");    // true
 assertArrayItem(["x", "y"], "z"); // throws RequiredError
 ```
-
-## See also
-
-- [util](/util)

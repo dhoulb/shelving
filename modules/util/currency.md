@@ -33,7 +33,3 @@ getCurrencySymbol("JPY"); // "¥"
 getCurrencyStep("USD"); // 0.01
 getCurrencyStep("JPY"); // 1
 ```
-
-## See also
-
-- [util](/util) — full util module overview

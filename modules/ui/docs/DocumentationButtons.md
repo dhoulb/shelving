@@ -29,10 +29,3 @@ Drop a relation by omitting it, or tighten spacing with `space`.
 ## Styling
 
 `DocumentationButtons` has no own CSS hooks — it composes [`getParagraphClass()`](/ui/getParagraphClass) for block spacing and the flex utilities for layout, and renders its links as [`TreeButton`](/ui/TreeButton)s. Retheme through those.
-
-## See also
-
-- [`DocumentationPage`](/ui/DocumentationPage) — renders these relations below the title.
-- [`DocumentationCard`](/ui/DocumentationCard) — renders these relations inside the card (minus `member of`).
-- [`TreeButton`](/ui/TreeButton) — resolves each reference to a link or plain label.
-- [`TreeProvider`](/ui/TreeProvider) — provides the flattened tree map references are resolved against.

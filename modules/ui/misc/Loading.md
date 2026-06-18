@@ -21,8 +21,3 @@ import { Loading, LOADING } from "shelving/ui";
 
 {busy ? LOADING : children}
 ```
-
-## See also
-
-- [`StatusIcon`](/ui/StatusIcon) — uses `<Loading>` for the `"loading"` status.
-- [`Notice`](/ui/Notice) — shows `<Loading>` for a loading notice.

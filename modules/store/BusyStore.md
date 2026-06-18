@@ -19,9 +19,3 @@ for await (const busy of store.busy) {
   console.log(busy ? "loading…" : "idle");
 }
 ```
-
-## See also
-
-- [`Store`](/store/Store) — the base class.
-- [`FetchStore`](/store/FetchStore) — extends `BusyStore` with callback-driven fetching.
-- [`shelving/store`](/store) — overview of all store classes.

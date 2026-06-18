@@ -39,10 +39,3 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 | `--paragraph-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
 **Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass).
-
-## See also
-
-- [`Prose`](/ui/Prose) — wrap mixed content to style raw `<p>` and friends in one step.
-- [`Heading`](/ui/Heading) — the section heading that usually precedes a paragraph.
-- [`List`](/ui/List) — bulleted or numbered content alongside paragraphs.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

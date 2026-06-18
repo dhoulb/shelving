@@ -38,9 +38,3 @@ function App() {
 ```
 
 Both hooks accept nullish arguments — passing `undefined` for the collection, id, or query returns `undefined` instead of a store, keeping the hook call unconditional. Calling either hook outside a `<DBContext>` throws a [`RequiredError`](/error/RequiredError).
-
-## See also
-
-- [`createAPIContext()`](/react/createAPIContext) — the same pattern for an API provider.
-- [`shelving/db`](/db) — [`DBProvider`](/db/DBProvider), [`DBCache`](/db/DBCache), [`Collection`](/db/Collection), [`ItemStore`](/db/ItemStore), and [`QueryStore`](/db/QueryStore).
-- [`shelving/react`](/react) — overview of all React hooks and context helpers.

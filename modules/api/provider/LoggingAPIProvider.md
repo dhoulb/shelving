@@ -22,9 +22,3 @@ const custom = new LoggingAPIProvider(
   (reason, request) => logger.error("api error", request.url, reason),
 )
 ```
-
-## See also
-
-- [`DebugAPIProvider`](/api/DebugAPIProvider) — verbose console output for development.
-- [`ThroughAPIProvider`](/api/ThroughAPIProvider) — the pass-through base.
-- [`shelving/api`](/api) — overview of the provider hierarchy.

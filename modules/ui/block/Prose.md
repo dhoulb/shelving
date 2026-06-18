@@ -40,10 +40,3 @@ import { Prose, Paragraph } from "shelving/ui";
 | `--prose-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
 **Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass).
-
-## See also
-
-- [`Paragraph`](/ui/Paragraph) — body text; its prose variant styles raw `<p>` inside `Prose`.
-- [`List`](/ui/List) — its prose variant styles raw `<ul>` / `<ol>` inside `Prose`.
-- [`shelving/markup`](/markup) — renders a markup string into the raw HTML that `Prose` styles.
-- [`shelving/ui`](/ui) — the styling system and per-component theming hooks.

@@ -42,8 +42,3 @@ import { encodeBase64URL } from "shelving/util";
 const key = crypto.getRandomValues(new Uint8Array(32));
 const token = encodeBase64URL(key);
 ```
-
-## See also
-
-- [`shelving/util/bytes`](/util/bytes) — the [`Bytes`](/util/bytes/Bytes) / [`PossibleBytes`](/util/bytes/PossibleBytes) types used as encode input
-- [util](/util)

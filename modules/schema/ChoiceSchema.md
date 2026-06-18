@@ -19,7 +19,3 @@ const Priority = CHOICE({ low: "Low priority", high: "High priority" });
 ```
 
 `ChoiceSchema` is iterable and exposes `.keys()` and `.entries()` for building select menus. It does not implicitly default to the first option; pass `value` if you want a preselected choice.
-
-## See also
-
-- [`shelving/schema`](/schema) — overview of schema concepts and composition.

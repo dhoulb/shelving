@@ -53,7 +53,3 @@ import { indent } from "shelving/util";
 indent("single line");    // " single line"  (leading space)
 indent("line1\nline2");   // "\n\tline1\n\tline2"
 ```
-
-## See also
-
-- [util](/util) — full util module overview

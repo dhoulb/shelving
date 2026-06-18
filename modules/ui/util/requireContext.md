@@ -17,8 +17,3 @@ function requireNavigation(): NavigationStore {
   return requireContext(NavigationContext, requireNavigation);
 }
 ```
-
-## See also
-
-- [`getClass`](/ui/getClass) — the other helper at the heart of the component layer.
-- [`shelving/ui`](/ui) — uses `requireContext` to read the navigation and meta contexts.

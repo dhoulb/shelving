@@ -25,7 +25,3 @@ getFileExtension("no-ext");           // undefined
 requireFileExtension("style.css");    // "css"
 requireFileExtension("no-ext");       // throws RequiredError
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

@@ -58,8 +58,3 @@ import { WAITING, SUCCESS, FAILURE, UP, DOWN, LEFT, RIGHT } from "shelving/util"
 console.log(`${SUCCESS} Done`);
 console.log(`${FAILURE} Failed`);
 ```
-
-## See also
-
-- [util](/util) — full util module overview
-- [`shelving/util/date`](/util/date) — date helpers that use [`DAY`](/util/constants/DAY), [`WEEK`](/util/constants/WEEK), etc. conceptually

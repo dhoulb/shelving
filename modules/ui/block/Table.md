@@ -48,10 +48,3 @@ import { Table } from "shelving/ui";
 | `--table-label-color` | Label colour | `var(--tint-70)` |
 
 **Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--stroke-normal`](/ui/getStrokeClass), the tint-ladder steps [`--tint-70`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS), and the label tokens [`--font-label`](/ui/getFontClass) / [`--weight-label`](/ui/getWeightClass) / [`--size-label`](/ui/getSizeClass) / [`--case-label`](/ui/getFontClass) / [`--weight-strong`](/ui/getWeightClass).
-
-## See also
-
-- [`TableHeader`](/ui/TableHeader) / [`TableCell`](/ui/TableCell) — `<th>` / `<td>` cells that set column widths and typography via variants.
-- [`Definitions`](/ui/Definitions) — term/value pairs when a two-column key/value layout fits better than a grid.
-- [`Prose`](/ui/Prose) — styles raw `<table>` inside longform content.
-- [`shelving/ui`](/ui) — the styling system: tint ladder, label tokens, and theming.

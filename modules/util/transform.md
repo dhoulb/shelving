@@ -64,7 +64,3 @@ async function* process(stream: AsyncIterable<string>) {
   yield* mapSequence(stream, line => line.trim());
 }
 ```
-
-## See also
-
-- [util](/util) — Overview of all util helpers.

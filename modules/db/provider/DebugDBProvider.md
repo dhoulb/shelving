@@ -12,8 +12,3 @@ const provider = new DebugDBProvider(new MemoryDBProvider());
 await provider.addItem(POSTS, { title: "Hello", body: "…", published: false });
 // Console shows the addItem operation and its result.
 ```
-
-## See also
-
-- [`ThroughDBProvider`](/db/ThroughDBProvider) — the pass-through base.
-- [`shelving/db`](/db) — overview of the provider hierarchy.
