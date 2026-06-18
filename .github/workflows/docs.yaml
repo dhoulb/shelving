@@ -3,9 +3,10 @@
 # - On a push to `main`, the site is published to the root of the `docs` branch
 #   so it serves at `https://<owner>.github.io/<repo>/`.
 # - On a pull request, the site is published under `pr-<number>/` on the same branch
-#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. A
-#   comment is added (or updated) on the PR with the preview URL.
-# - When a pull request is closed, its preview directory is removed from `docs`.
+#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. The
+#   preview URL surfaces via a GitHub Deployment (`docs-preview` environment) on the PR.
+# - When a pull request is closed, its preview directory is removed from `docs` and its
+#   `docs-preview` deployments are deleted.
 name: Docs
 on:
   push:
@@ -29,7 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       deployments: write
     # Records a GitHub Deployment so the commit / PR / branch shows a "View deployment" link
     # pointing at the published site. PRs deploy to the shared `docs-preview` environment (URL
@@ -79,17 +79,6 @@ jobs:
           publish_branch: docs
           destination_dir: pr-${{ github.event.pull_request.number }}
           keep_files: true
-      - name: comment preview URL
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: docs-preview
-          message: |
-            **Docs preview** for this PR:
-
-            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/
-
-            Updated on every push.
 
   cleanup:
     name: Remove closed PR preview
@@ -97,7 +86,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       deployments: write
     steps:
       - name: checkout docs branch
@@ -143,9 +131,3 @@ jobs:
                 deployment_id: deployment.id,
               });
             }
-      - name: update PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: docs-preview
-          message: |
-            Docs preview for this PR has been removed.
