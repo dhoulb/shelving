@@ -24,7 +24,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     name: Build and deploy
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
     runs-on: ubuntu-latest
@@ -80,8 +80,8 @@ jobs:
           destination_dir: pr-${{ github.event.pull_request.number }}
           keep_files: true
 
-  cleanup:
-    name: Remove closed PR preview
+  teardown:
+    name: Teardown
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     permissions:
@@ -93,7 +93,7 @@ jobs:
         with:
           ref: docs
           fetch-depth: 0
-      - name: remove preview directory
+      - name: teardown (preview)
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
@@ -108,7 +108,7 @@ jobs:
       # GitHub never deletes deployment records on its own, so the `docs-preview` deployments this
       # PR created would linger forever pointing at a now-removed preview. Mark them inactive (you
       # can't delete an active deployment) then delete them.
-      - name: remove PR deployments
+      - name: teardown (deployments)
         uses: actions/github-script@v8
         with:
           script: |
