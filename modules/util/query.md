@@ -1,15 +1,15 @@
 # Query helpers
 
-A `Query<T>` is a plain object that describes filters, ordering, and a result limit for a set of data items. These helpers parse, apply, and paginate queries — the same `Query` type that [db](/db) uses for all collection reads.
+A [`Query<T>`](/util/query/Query) is a plain object that describes filters, ordering, and a result limit for a set of data items. These helpers parse, apply, and paginate queries — the same `Query` type that [`shelving/db`](/db) uses for all collection reads.
 
 **Things to know:**
 
 - Query keys use an encoded syntax (see table below). Plain keys mean equality; special suffixes or prefixes change the operator.
 - Passing an array as a value for a plain key (`key`) or negated key (`!key`) produces `in` / `out` membership checks.
 - `$order` accepts a single key string or an array. Prefix `!` on a key means descending.
-- `queryItems()` returns a lazy `Iterable<T>` — wrap with `Array.from()` when you need an array.
-- `queryWritableItems()` skips sorting when no `$limit` is set, for write-path performance.
-- `getBeforeQuery()` / `getAfterQuery()` produce cursor queries for token-based pagination; the query must include `$order`.
+- [`queryItems()`](/util/query/queryItems) returns a lazy `Iterable<T>` — wrap with `Array.from()` when you need an array.
+- [`queryWritableItems()`](/util/query/queryWritableItems) skips sorting when no `$limit` is set, for write-path performance.
+- [`getBeforeQuery()`](/util/query/getBeforeQuery) / [`getAfterQuery()`](/util/query/getAfterQuery) produce cursor queries for token-based pagination; the query must include `$order`.
 
 | Key syntax  | Meaning                                  |
 | ----------- | ---------------------------------------- |
@@ -96,8 +96,3 @@ const filters = getQueryFilters({ status: "active", "price>=": 10 });
 matchQueryItem({ id: "1", status: "active", price: 10 }, filters); // true
 matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 ```
-
-## See also
-
-- [db](/db) — collection reads accept `Query<T>` directly
-- [util](/util) — full util module overview, including `Updates`

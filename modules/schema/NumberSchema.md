@@ -28,9 +28,3 @@ const RATING = new NumberSchema({ title: "Rating", min: 1, max: 5, step: 1 });
 RATING.validate(3);              // 3
 RATING.validate(0);              // throws "Minimum 1"
 ```
-
-## See also
-
-- [CurrencyAmountSchema](/schema/CurrencyAmountSchema) — a `NumberSchema` subclass for currency amounts.
-- [StringSchema](/schema/StringSchema) — the string equivalent.
-- [schema](/schema) — overview of schema concepts and composition.

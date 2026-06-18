@@ -30,7 +30,7 @@ import { Transition } from "shelving/ui";
 </Transition>
 ```
 
-### Setting the direction with `setTransitionType`
+### Setting the direction with [`setTransitionType()`](/ui/setTransitionType)
 
 ```tsx
 import { HorizontalTransition, setTransitionType, requireNavigation } from "shelving/ui";
@@ -61,10 +61,3 @@ Transitions are driven by CSS `::view-transition-*` pseudo-element rules keyed o
 The `overlay` variant sets `z-index: 100` on `::view-transition-group(.overlay)`. The preset variants document their own timing/distance hooks (`--fade-transition-duration`, `--vertical-transition-size` / `-duration`, `--horizontal-transition-size` / `-duration`) on their pages.
 
 **Global tokens it reads** — none directly; the preset variants fall back to [`--duration-fast`](/ui/getDurationClass) / [`--duration-normal`](/ui/getDurationClass).
-
-## See also
-
-- [`FadeTransition`](/ui/FadeTransition) — opacity fade preset
-- [`CollapseTransition`](/ui/CollapseTransition) — size collapse preset
-- [`VerticalTransition`](/ui/VerticalTransition) / [`HorizontalTransition`](/ui/HorizontalTransition) — direction-aware slide presets
-- [`Navigation`](/ui/Navigation) — triggers the route changes transitions animate

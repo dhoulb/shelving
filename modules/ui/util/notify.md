@@ -42,9 +42,3 @@ import { subscribeNotices } from "shelving/ui";
 const stop = subscribeNotices((message, status) => show(message, status));
 // Call stop() to remove the listener.
 ```
-
-## See also
-
-- [`Notices`](/ui/Notices) — the global list that listens for these events and renders them.
-- [`Notice`](/ui/Notice) — the callout each notice is rendered as.
-- [`store`](/store) — the `ArrayStore` / `DataStore` layer behind the global notices.

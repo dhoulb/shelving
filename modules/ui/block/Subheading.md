@@ -49,10 +49,3 @@ import { Title, Heading, Subheading } from "shelving/ui";
 | `--subheading-leading` | Line height | `var(--leading)` |
 
 **Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-large`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
-
-## See also
-
-- [`Heading`](/ui/Heading) — the `<h2>` section heading one level up.
-- [`Title`](/ui/Title) — the top-level page `<h1>`.
-- [`Card`](/ui/Card) — a boxed surface whose title is usually a `Subheading`.
-- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

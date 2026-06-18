@@ -44,7 +44,7 @@ const node = MARKUP_PARSER.parse(content);
 
 ### Options
 
-`MarkupParser` is constructed with [`MarkupOptions`](/markup/MarkupOptions):
+[`MarkupParser`](/markup/MarkupParser) is constructed with [`MarkupOptions`](/markup/MarkupOptions):
 
 | Option | Type | Description |
 |---|---|---|
@@ -68,7 +68,7 @@ Link href resolution goes through [`getLink()`](/util/link/getLink) — site-abs
 
 ### Block-only or inline-only rendering
 
-`parse()` takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
+[`.parse()`](/markup/MarkupParser/parse) takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
 
 ```ts
 // Inline only — no block wrappers like <p> or <h1>.
@@ -93,7 +93,7 @@ const HIGHLIGHT_RULE = createMarkupRule<{ text: string }>(
 const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });
 ```
 
-`createMarkupRule()` takes a regexp (named captures are typed), a render function `(key, data, parser) => ReactElement`, the `contexts` the rule applies in, and an optional `priority` (default `0`; higher priorities form earlier-resolved tiers). See [`markup/rule`](/markup) for the full built-in rule set.
+`createMarkupRule()` takes a regexp (named captures are typed), a render function `(key, data, parser) => ReactElement`, the `contexts` the rule applies in, and an optional `priority` (default `0`; higher priorities form earlier-resolved tiers). See [`shelving/markup`](/markup) for the full built-in rule set.
 
 ## Input normalisation
 
@@ -106,7 +106,7 @@ The parser expects **normalised** input and deliberately does not try to absorb 
 
 Keeping this guarantee out of the rules is what keeps them simple: nesting — a sub-list inside a list item, a quote inside a quote — is always exactly one extra tab, never an ambiguous run of spaces.
 
-Normalisation is **not** performed by the parser — give it text that is already clean. [`sanitizeMultilineText()`](/util/string/sanitizeMultilineText) from [`shelving/util`](/util/string) produces exactly this form: it converts four-space indents to tabs, strips sub-tab leading spaces, trims trailing whitespace, and collapses three-or-more newlines to two. [`StringSchema`](/schema/StringSchema) runs `sanitizeMultilineText()` automatically when validating any multi-line field (`rows > 1`), so text stored through a schema is already normalised.
+Normalisation is **not** performed by the parser — give it text that is already clean. [`sanitizeMultilineText()`](/util/string/sanitizeMultilineText) from [`shelving/util/string`](/util/string) produces exactly this form: it converts four-space indents to tabs, strips sub-tab leading spaces, trims trailing whitespace, and collapses three-or-more newlines to two. [`StringSchema`](/schema/StringSchema) runs `sanitizeMultilineText()` automatically when validating any multi-line field (`rows > 1`), so text stored through a schema is already normalised.
 
 ```ts
 import { sanitizeMultilineText } from "shelving/util";
@@ -116,9 +116,3 @@ const node = MARKUP_PARSER.parse(sanitizeMultilineText(untrustedInput));
 ```
 
 If the text reaches you straight from a `StringSchema`-validated field it is already normalised, and you can parse it directly.
-
-## See also
-
-- [`markup/rule`](/markup) — the built-in rule set and per-rule syntax reference
-- [`util`](/util/string) — shared utilities, including `sanitizeMultilineText` and the regexp helpers used by rules
-- [`schema`](/schema) — `StringSchema`, which normalises multi-line text on validation

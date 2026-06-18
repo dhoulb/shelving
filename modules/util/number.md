@@ -1,14 +1,14 @@
 # Number helpers
 
-Type guards, conversions, rounding, clamping, and arithmetic utilities for numbers. The conversion functions (`getNumber`, `getInteger`) accept strings and `Date` instances as well as raw numbers, and always return a finite value or `undefined` — never `NaN` or `Infinity`.
+Type guards, conversions, rounding, clamping, and arithmetic utilities for numbers. The conversion functions ([`getNumber()`](/util/number/getNumber), [`getInteger()`](/util/number/getInteger)) accept strings and `Date` instances as well as raw numbers, and always return a finite value or `undefined` — never `NaN` or `Infinity`.
 
 **Things to know:**
 
-- `isNumber` and `isInteger` accept optional `min`/`max` bounds so you can validate a range in one call.
+- [`isNumber()`](/util/number/isNumber) and [`isInteger()`](/util/number/isInteger) accept optional `min`/`max` bounds so you can validate a range in one call.
 - `getNumber` strips non-numeric characters from strings before parsing, making it tolerant of formatted input like `"$1,200.50"`.
 - `-0` is normalised to `0` by both `getNumber` and `getInteger`.
-- `boundNumber` clamps to `[min, max]`; `wrapNumber` wraps around like a clock (works in both directions).
-- `roundNumber` trims trailing zeros, unlike `num.toFixed()`.
+- [`boundNumber()`](/util/number/boundNumber) clamps to `[min, max]`; [`wrapNumber()`](/util/number/wrapNumber) wraps around like a clock (works in both directions).
+- [`roundNumber()`](/util/number/roundNumber) trims trailing zeros, unlike `num.toFixed()`.
 
 ## Usage
 
@@ -61,7 +61,3 @@ getPercent(25, 200);              // 12.5  (25 is 12.5% of 200)
 sumNumbers([1, 2, 3, 4]);         // 10
 getClosestNumber([1, 5, 10], 4);  // 5
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

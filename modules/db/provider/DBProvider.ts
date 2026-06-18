@@ -11,7 +11,7 @@ import type { Collection } from "../collection/Collection.js";
  * Provider with a fully asynchronous interface for database access.
  *
  * - Abstract base for every database provider; subclasses implement the storage backend (memory, SQL, remote, etc.).
- * - All operations are keyed by a `Collection`, which carries the name plus identifier and data schemas.
+ * - All operations are keyed by a [`Collection`](/db/Collection), which carries the name plus identifier and data schemas.
  * - Layered behaviour (caching, validation, logging) is added by wrapping a provider in a `Through*Provider`.
  *
  * @example
@@ -38,7 +38,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to get.
 	 * @returns The item.
-	 * @throws `RequiredError` if no item exists with that id.
+	 * @throws [`RequiredError`](/error/RequiredError) if no item exists with that id.
 	 * @example await provider.requireItem(users, 123) // Item (or throws).
 	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/requireItem
 	 */
@@ -215,7 +215,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param collection Collection to query.
 	 * @param query Query to filter and sort the items.
 	 * @returns The first matching item.
-	 * @throws `RequiredError` if no item matches the query.
+	 * @throws [`RequiredError`](/error/RequiredError) if no item matches the query.
 	 * @example await provider.requireFirst(users, { $order: "name" }) // Item (or throws).
 	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/requireFirst
 	 */

@@ -6,7 +6,7 @@ import { NULLABLE } from "./NullableSchema.js";
 /**
  * Schema that defines a valid abstract time in 24h `hh:mm:ss.fff` format, e.g. `23:59` or `24:00`.
  *
- * - Validates a time without a timezone, e.g. a daily alarm; use `DateSchema` for dates and `DateTimeSchema` for UTC datetimes.
+ * - Validates a time without a timezone, e.g. a daily alarm; use [`DateSchema`](/schema/DateSchema) for dates and [`DateTimeSchema`](/schema/DateTimeSchema) for UTC datetimes.
  *
  * @example
  *  const schema = new TimeSchema({});

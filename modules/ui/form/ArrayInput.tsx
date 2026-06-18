@@ -25,7 +25,7 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
 }
 
 /**
- * Repeating input that edits an array of items, adding a `SchemaInput` row per item.
+ * Repeating input that edits an array of items, adding a [`SchemaInput`](/ui/SchemaInput) row per item.
  * - Each item is validated and rendered using the supplied `items` schema.
  * - Enforces `min`/`max` length and offers add, remove, and clear controls.
  *

@@ -1,6 +1,6 @@
 # requireContext
 
-Reads a React context and throws `RequiredError` if the value is `null` or `undefined`. Use it instead of `use(context)` when a context must be provided by an ancestor — every `require*()` hook in the library follows this pattern.
+Reads a React context and throws [`RequiredError`](/error/RequiredError) if the value is `null` or `undefined`. Use it instead of `use(context)` when a context must be provided by an ancestor — every `require*()` hook in the library follows this pattern.
 
 **Things to know:**
 
@@ -17,8 +17,3 @@ function requireNavigation(): NavigationStore {
   return requireContext(NavigationContext, requireNavigation);
 }
 ```
-
-## See also
-
-- [`getClass`](/ui/getClass) — the other helper at the heart of the component layer.
-- [`ui/router`](/ui) — uses `requireContext` to read the navigation and meta contexts.

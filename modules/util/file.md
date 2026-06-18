@@ -4,7 +4,7 @@ Tiny helpers for splitting filenames into base name and extension. They exist so
 
 **Things to know:**
 
-- `splitFileExtension(".gitignore")` returns `[undefined, "gitignore"]` — a leading dot only is treated as the extension, not the base name.
+- [`splitFileExtension(".gitignore")`](/util/file/splitFileExtension) returns `[undefined, "gitignore"]` — a leading dot only is treated as the extension, not the base name.
 - `splitFileExtension("no-ext")` returns `["no-ext", undefined]`.
 - Extensions are returned **without** a leading dot, e.g. `"ts"` not `".ts"`.
 
@@ -25,7 +25,3 @@ getFileExtension("no-ext");           // undefined
 requireFileExtension("style.css");    // "css"
 requireFileExtension("no-ext");       // throws RequiredError
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

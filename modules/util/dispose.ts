@@ -17,7 +17,7 @@ import { isObject } from "./object.js";
  *
  * @param values Zero or more disposables or callbacks.
  * - Callbacks are allowed because in real usage `[Symbol.asyncDispose]` may have other things to clean up too and it's neater to throw a single aggregate error.
- * - `Nullish` values are skipped (for convenience).
+ * - [`Nullish`](/util/null/Nullish) values are skipped (for convenience).
  *
  * @throws {Errors} Error that aggregates all the disposal errors.
  * @example dispose(resource, () => clearTimeout(id)) // disposes both, even if one throws
@@ -42,8 +42,8 @@ export function dispose(...values: Nullish<Disposable | Callback>[]): void {
  *
  * @param values Zero or more (possibly async) disposables, promises, or callbacks.
  * - Note that spec says `[Symbol.dispose]` is called on an object if `[Symbol.asyncDispose]` is not found.
- * - `Promises` and `Callback` are allowed because in real usage `[Symbol.asyncDispose]` may have other things to clean up too and it's neater to throw a single aggregate error.
- * - `Nullish` values are skipped (for convenience).
+ * - `Promises` and [`Callback`](/util/function/Callback) are allowed because in real usage `[Symbol.asyncDispose]` may have other things to clean up too and it's neater to throw a single aggregate error.
+ * - [`Nullish`](/util/null/Nullish) values are skipped (for convenience).
  *
  * @throws {Errors} Error that aggregates all the disposal errors.
  *

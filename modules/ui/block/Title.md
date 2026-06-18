@@ -4,7 +4,7 @@ The top-level page heading — renders an `<h1>`. It is the most prominent membe
 
 **Things to know:**
 
-- Pick the component that matches the level rather than overriding `level`. Choosing `Title` / `Heading` / `Subheading` keeps the visual size and the document outline in step.
+- Pick the component that matches the level rather than overriding `level`. Choosing `Title` / [`<Heading>`](/ui/Heading) / [`<Subheading>`](/ui/Subheading) keeps the visual size and the document outline in step.
 - The `level` prop (`1`–`6`) is an escape hatch for the rare case where the outline level must differ from the visual size — avoid it in normal use.
 - Inherits text colour by default so it picks up the surrounding tint; accepts `color=` and the typography variants.
 - Inside [`Prose`](/ui/Prose) a raw `<h1>` is styled by the same rules, so Markdown-rendered titles match component ones.
@@ -48,10 +48,3 @@ import { Panel, Block, Title } from "shelving/ui";
 | `--title-leading` | Line height | `var(--leading)` |
 
 **Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-xxxlarge`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
-
-## See also
-
-- [`Heading`](/ui/Heading) — the `<h2>` section heading that pairs with `Title`.
-- [`Subheading`](/ui/Subheading) — the `<h3>` subsection heading.
-- [`Section`](/ui/Section) — wraps a title and its content as a landmark region.
-- [`ui`](/ui) — the styling system: tint ladder, typography variants, and theming.

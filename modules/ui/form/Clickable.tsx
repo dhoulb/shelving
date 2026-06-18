@@ -13,8 +13,8 @@ import type { OptionalChildProps } from "../util/props.js";
 
 /**
  * Handler for a clickable `onClick` event.
- * - Returned value (if defined) is notified to the user using `notifySuccess()`
- * - Thrown value is notified to the user using `notifyError()`
+ * - Returned value (if defined) is notified to the user using [`notifySuccess()`](/ui/notifySuccess)
+ * - Thrown value is notified to the user using [`notifyError()`](/ui/notifyError)
  *
  * @param event The `MouseEvent` from the underlying `<button>`.
  * @returns A `ReactNode` (shown as a success notice), nothing, or a promise of either.

@@ -48,7 +48,7 @@ export function getMessage(input: unknown): string | undefined {
 }
 
 /**
- * Require a message from an unknown value, or throw `RequiredError` if it could not be found.
+ * Require a message from an unknown value, or throw [`RequiredError`](/error/RequiredError) if it could not be found.
  *
  * @param input The value to read a message from (a string, or an object with a `message` string).
  * @param caller Function to attribute a thrown error to (defaults to `requireMessage`).
@@ -71,7 +71,7 @@ export function requireMessage(input: PossibleMessage, caller: AnyCaller = requi
  *
  * @param input The value to read a message from (a string, or an object with a `message` string).
  * @returns Dictionary mapping each name (or `""` for unnamed lines) to its combined message.
- * @throws `RequiredError` if no message could be found.
+ * @throws [`RequiredError`](/error/RequiredError) if no message could be found.
  * @example splitMessage("name: Bad\nUh oh") // { name: "Bad", "": "Uh oh" }
  * @see https://dhoulb.github.io/shelving/util/error/splitMessage
  */
@@ -100,7 +100,7 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
  * Join a dictionary of named messages back into a single string.
  * - The `""` (empty string) key is emitted as unnamed lines.
  * - Named messages are emitted as `name: message`, one line per message line.
- * - Empty lines are skipped and each emitted line is trimmed to match `splitMessage()` semantics.
+ * - Empty lines are skipped and each emitted line is trimmed to match [`splitMessage()`](/util/error/splitMessage) semantics.
  *
  * @param input Dictionary mapping each name (or `""` for unnamed lines) to its message.
  * @returns The combined message string, with one line per message line.

@@ -33,14 +33,3 @@ import { TreeApp, TreePageMapping } from "shelving/ui";
 ## Styling
 
 `DocumentationPage` has no own CSS hooks — it composes [`Page`](/ui/Page), [`Panel`](/ui/Panel), [`Section`](/ui/Section), and the other block components, which carry their own themeable surfaces. Retheme through those.
-
-## See also
-
-- [`DocumentationCard`](/ui/DocumentationCard) — the compact card form of a symbol, used for the child sections here.
-- [`DocumentationButtons`](/ui/DocumentationButtons) — the relations nav rendered below the title.
-- [`DocumentationKind`](/ui/DocumentationKind) — the colour-coded kind tag carried by the title.
-- [`DocumentationSignatures`](/ui/DocumentationSignatures) — renders the symbol's signature blocks.
-- [`TreeApp`](/ui/TreeApp) — wires this renderer into a complete site via the page mappers.
-- [`TreeBreadcrumbs`](/ui/TreeBreadcrumbs) — the ancestor trail rendered above the title.
-- [extract](/extract) — produces the `TreeElement` tree whose props this renderer consumes.
-- [markup](/markup) — renders the Markdown `content` field carried by each element.

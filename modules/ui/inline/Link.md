@@ -4,7 +4,7 @@ An inline link or action. Delegates to [`Clickable`](/ui/Clickable), rendering a
 
 **Things to know:**
 
-- It handles busy state, URL resolution, and active-page highlighting automatically via the shared `Clickable` helper.
+- It handles busy state, URL resolution, and active-page highlighting automatically via the shared [`<Clickable>`](/ui/Clickable) helper.
 - An `<a>` (any actual link) shows an underline that disappears on hover; a `<button>` variant carries no underline.
 - Reach for `Link` for inline text links; for standalone calls to action use a button-styled component instead.
 - Inside [`Prose`](/ui/Prose) a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
@@ -38,10 +38,3 @@ import { Link } from "shelving/ui";
 | `--link-weight` | Text colour and font weight | `var(--color-link)` colour / `var(--weight-strong)` weight |
 
 **Global tokens it reads:** [`--color-link`](/ui/getColorClass), [`--weight-strong`](/ui/getWeightClass), and [`--stroke-normal`](/ui/getStrokeClass) (the underline thickness).
-
-## See also
-
-- [`Clickable`](/ui/Clickable) — the underlying primitive that renders `<a>` vs `<button>`.
-- [`Strong`](/ui/Strong) — emphasis for runs of text that are not links.
-- [`Prose`](/ui/Prose) — styles raw `<a>` inside longform content.
-- [`ui`](/ui) — the styling system and theming tokens.

@@ -13,9 +13,3 @@ const sorted = useLazy((items) => [...items].sort(), items);
 ```
 
 The result is recomputed only when `items` changes. Because arguments are compared by deep equality, a value that is equal-but-not-identical across renders does not trigger recomputation.
-
-## See also
-
-- [useInstance](/react/useInstance) — the same memoisation for a class constructor call.
-- [useReduce](/react/useReduce) — fold render state with custom equality logic.
-- [react](/react) — overview of all React hooks and context helpers.

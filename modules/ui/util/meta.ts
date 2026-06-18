@@ -109,7 +109,7 @@ export interface PossibleMeta extends Omit<Meta, "root" | "url" | "links" | "scr
 }
 
 /**
- * Turn a deconstructed `MetaCSP` into a `Content-Security-Policy` string.
+ * Turn a deconstructed [`MetaCSP`](/ui/MetaCSP) into a `Content-Security-Policy` string.
  *
  * @param csp The CSP to join, as a `{ resource: string[] }` object or a ready-made string.
  * @returns The joined CSP string, or `undefined` if `csp` was nullish.
@@ -135,7 +135,7 @@ export function joinTitles(...titles: (string | undefined)[]): string {
 }
 
 /**
- * Merge a `PossibleMeta` onto an existing `Meta`, resolving URLs and assets in the process.
+ * Merge a [`PossibleMeta`](/ui/PossibleMeta) onto an existing [`Meta`](/ui/Meta), resolving URLs and assets in the process.
  *
  * - `title` is merged with `joinTitles()`.
  * - `url` is resolved to an absolute URL, e.g. `./d/e/f` + `/a/b/c` becomes `https://d.com/a/b/c/d/e/f`
@@ -169,9 +169,9 @@ export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = 
 }
 
 /**
- * Create a fully-formed `Meta` from a `PossibleMeta`.
+ * Create a fully-formed [`Meta`](/ui/Meta) from a [`PossibleMeta`](/ui/PossibleMeta).
  *
- * - Like `mergeMeta()` but with no previous `Meta` to merge into — initialises meta from scratch.
+ * - Like [`mergeMeta()`](/ui/mergeMeta) but with no previous `Meta` to merge into — initialises meta from scratch.
  *
  * @param meta The input `PossibleMeta` to resolve.
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `createMeta`).

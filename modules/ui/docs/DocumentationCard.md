@@ -24,12 +24,3 @@ To replace this renderer across the whole site, wrap the app in [`TreeCardMappin
 ## Styling
 
 `DocumentationCard` has no own CSS hooks — it composes [`Card`](/ui/Card), [`Subheading`](/ui/Subheading), and [`Paragraph`](/ui/Paragraph). The card is tinted by `kind` via [`DocumentationKind`](/ui/DocumentationKind)'s colour map; retheme through `Card`'s `--card-*` hooks.
-
-## See also
-
-- [`DocumentationPage`](/ui/DocumentationPage) — the full detail page these cards link to.
-- [`DocumentationButtons`](/ui/DocumentationButtons) — the relations nav rendered inside the card.
-- [`DocumentationKind`](/ui/DocumentationKind) — supplies the colour that tints the card by kind.
-- [`TreeCards`](/ui/TreeCards) — the listing that dispatches cards, and the `*Mapping` override mechanism.
-- [`Card`](/ui/Card) — the surface this card is painted on.
-- [extract](/extract) — produces the `TreeElement` tree whose props this renderer consumes.

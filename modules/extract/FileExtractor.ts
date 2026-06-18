@@ -8,12 +8,12 @@ import { Extractor } from "./Extractor.js";
 /**
  * Base extractor for a file in a tree.
  * - Reads the file's content as text and stores it in `content`.
- * - Sets `source` to the file's absolute path (`BunFile.name`); throws `RequiredError` if missing or non-absolute.
+ * - Sets `source` to the file's absolute path (`BunFile.name`); throws [`RequiredError`](/error/RequiredError) if missing or non-absolute.
  * - Sets `name` to the basename without extension, preserving case (e.g. `"OptionalSchema"` from `"OptionalSchema.ts"`); URL paths use `name`.
  * - Sets `key` to the verbatim filename including extension (e.g. `"OptionalSchema.ts"`). Keys are unique within a directory
- *   and used by `MergingExtractor` to pair siblings (`{base}.md` + `{base}.ts`) and by `PackageExtractor` to look up sources.
- * - Does NOT set `title` — `title` is only set by subclasses that have a confident source for one (e.g. `MarkupExtractor` uses the first `<h1>`). Renderers fall back to `name` when missing.
- * - Subclasses (e.g. `MarkupExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.
+ *   and used by [`MergingExtractor`](/extract/MergingExtractor) to pair siblings (`{base}.md` + `{base}.ts`) and by [`PackageExtractor`](/extract/PackageExtractor) to look up sources.
+ * - Does NOT set `title` — `title` is only set by subclasses that have a confident source for one (e.g. [`MarkupExtractor`](/extract/MarkupExtractor) uses the first `<h1>`). Renderers fall back to `name` when missing.
+ * - Subclasses (e.g. `MarkupExtractor`, [`TypescriptExtractor`](/extract/TypescriptExtractor)) override `extractProps()` to parse the content into richer elements.
  *
  * @example new FileExtractor().extract(Bun.file("/abs/path/notes.txt"))
  * @see https://dhoulb.github.io/shelving/extract/FileExtractor/FileExtractor
@@ -24,7 +24,7 @@ export class FileExtractor extends Extractor<BunFile, TreeElement> {
 	 *
 	 * @param file The Bun file to read; its `name` must be an absolute path.
 	 * @returns A promise resolving to the file's `tree-element`, keyed by its verbatim filename.
-	 * @throws RequiredError If the file has no name or its path is not absolute.
+	 * @throws [`RequiredError`](/error/RequiredError) If the file has no name or its path is not absolute.
 	 * @example await new FileExtractor().extract(Bun.file("/abs/path/notes.txt"))
 	 * @see https://dhoulb.github.io/shelving/extract/FileExtractor/FileExtractor/extract
 	 */

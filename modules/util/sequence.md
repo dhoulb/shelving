@@ -4,9 +4,9 @@ Helpers for working with `AsyncIterable` sequences — repeating, driving, mergi
 
 **Things to know:**
 
-- `runSequence()` drives an async iterable outside of an `async for` loop and returns a `stop()` callback. Errors are delivered to `onError` and iteration continues — it does not stop on thrown errors unless the iterator itself signals done.
-- `repeatUntil()` wraps a source async iterable and races each `next()` call against one or more abort promises. When an abort signal resolves, the source iterator's `return()` is called for clean teardown.
-- `mergeSequences()` iterates sequences **in series** (one after another), not in parallel.
+- [`runSequence()`](/util/sequence/runSequence) drives an async iterable outside of an `async for` loop and returns a `stop()` callback. Errors are delivered to `onError` and iteration continues — it does not stop on thrown errors unless the iterator itself signals done.
+- [`repeatUntil()`](/util/sequence/repeatUntil) wraps a source async iterable and races each `next()` call against one or more abort promises. When an abort signal resolves, the source iterator's `return()` is called for clean teardown.
+- [`mergeSequences()`](/util/sequence/mergeSequences) iterates sequences **in series** (one after another), not in parallel.
 
 ## Usage
 

@@ -41,10 +41,3 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 | `--panel-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
 
 **Global tokens it reads:** the tint-ladder steps [`--tint-00`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS), plus [`--stroke-normal`](/ui/getStrokeClass). Vertical padding comes from the shared `padding` variant.
-
-## See also
-
-- [`Card`](/ui/Card) — a boxed surface for standalone content rather than a full-width band.
-- [`Block`](/ui/Block) — the inner width-constraining wrapper for panel content.
-- [`Section`](/ui/Section) — a landmark region that sits inside a panel's inner block.
-- [`ui`](/ui) — the styling system: tint ladder, padding variants, and theming.

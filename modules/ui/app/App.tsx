@@ -18,14 +18,14 @@ import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";
 
 /**
- * Props for `<App>` — the root `Meta` plus the application `children`.
+ * Props for `<App>` — the root [`Meta`](/ui/Meta) plus the application `children`.
  *
  * @see https://dhoulb.github.io/shelving/ui/app/App/AppProps
  */
 export interface AppProps extends PossibleMeta, ChildProps {}
 
 /**
- * Root component for an application, providing the top-level `Meta` context and global styles.
+ * Root component for an application, providing the top-level [`Meta`](/ui/Meta) context and global styles.
  * - Descendants can read or update metadata via the provided `<Meta>` context.
  * - Design tokens and body baseline typography are set globally via the `style/` token modules (`Color`, `Size`, `Font`, …).
  *

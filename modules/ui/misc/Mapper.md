@@ -34,7 +34,3 @@ const [TreeMenuMapping, TreeMenuMapper] = createMapper<{ path?: AbsolutePath }>(
 
 <TreeMenuMapper path="/foo">{queryElements(children, query)}</TreeMenuMapper>
 ```
-
-## See also
-
-- [`ui`](/ui) — the component library these element trees are rendered with.

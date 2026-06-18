@@ -4,11 +4,11 @@ These helpers measure the distance between two dates — in milliseconds, second
 
 **Things to know:**
 
-- `getDaysUntil` / `getDaysAgo` count **calendar** midnight-to-midnight days, not 24-hour periods — crossing midnight always counts as one day.
-- `getMonthsUntil` / `getYearsUntil` are also calendar-based: March 31 → April 1 is 1 month regardless of the number of hours.
-- Whole-unit helpers (`getSecondsUntil`, `getMinutesUntil`, `getHoursUntil`) **round** to the nearest unit; `getWeeksUntil` truncates.
-- `"now"` is accepted anywhere a `PossibleDate` is expected and resolves to the current time.
-- `formatWhen` collapses anything under 30 seconds to `"just now"`.
+- [`getDaysUntil()`](/util/duration/getDaysUntil) / [`getDaysAgo()`](/util/duration/getDaysAgo) count **calendar** midnight-to-midnight days, not 24-hour periods — crossing midnight always counts as one day.
+- [`getMonthsUntil()`](/util/duration/getMonthsUntil) / [`getYearsUntil()`](/util/duration/getYearsUntil) are also calendar-based: March 31 → April 1 is 1 month regardless of the number of hours.
+- Whole-unit helpers ([`getSecondsUntil()`](/util/duration/getSecondsUntil), [`getMinutesUntil()`](/util/duration/getMinutesUntil), [`getHoursUntil()`](/util/duration/getHoursUntil)) **round** to the nearest unit; [`getWeeksUntil()`](/util/duration/getWeeksUntil) truncates.
+- `"now"` is accepted anywhere a [`PossibleDate`](/util/date/PossibleDate) is expected and resolves to the current time.
+- [`formatWhen()`](/util/duration/formatWhen) collapses anything under 30 seconds to `"just now"`.
 
 ## Usage
 
@@ -60,7 +60,3 @@ import { getBestDurationUnit, DURATION_UNITS } from "shelving/util";
 const unit = getBestDurationUnit(3 * 24 * 60 * 60 * 1000); // → "day" Unit
 unit.format(unit.from(3 * 24 * 60 * 60 * 1000));           // "3d"
 ```
-
-## See also
-
-- [util](/util) — naming conventions and the full helper overview.

@@ -14,8 +14,4 @@ class BaseProvider {
 }
 ```
 
-See [error](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
-
-## See also
-
-- [error](/error) — module overview and shared error behaviour.
+See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.

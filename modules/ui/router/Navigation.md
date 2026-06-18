@@ -32,10 +32,3 @@ const nav = requireNavigation();
 nav.forward("/users/123");   // push a new history entry
 nav.redirect("/login");      // replace the current history entry
 ```
-
-## See also
-
-- [`Router`](/ui/Router) — matches the URL `<Navigation>` publishes and renders the page
-- [`NavigationStore`](/ui/NavigationStore) — the store `<Navigation>` owns and `requireNavigation()` returns
-- [`HTML`](/ui/HTML) / [`Page`](/ui/Page) — supply the initial url/base meta
-- [`HorizontalTransition`](/ui/HorizontalTransition) — animate the route changes `<Navigation>` triggers

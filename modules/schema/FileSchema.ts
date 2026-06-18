@@ -18,7 +18,7 @@ export interface FileSchemaOptions extends StringSchemaOptions {
  * Schema that validates a file name matching one or more extensions.
  *
  * - Requires the file name to have an extension.
- * - When `types` is set, the extension must be one of the allowed `FileTypes`.
+ * - When `types` is set, the extension must be one of the allowed [`FileTypes`](/util/file/FileTypes).
  *
  * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema
@@ -40,7 +40,7 @@ export class FileSchema extends StringSchema {
 	 *
 	 * @param unsafeValue Value to validate (defaults to this schema's `value`).
 	 * @returns The validated file name.
-	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from `StringSchema.validate()`.
+	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from [`StringSchema.validate()`](/schema/StringSchema).
 	 * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
 	 * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema/validate
 	 */

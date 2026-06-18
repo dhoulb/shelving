@@ -36,7 +36,7 @@ export interface ColorSchemaOptions extends SchemaOptions {
  * Schema that defines a valid color hex string, e.g. `#00CCFF`
  *
  * - Coerces the value to a six-digit uppercase `#RRGGBB` hex string.
- * - Rejects anything that isn't a valid hex color (use `NULLABLE_COLOR` to also allow `null`).
+ * - Rejects anything that isn't a valid hex color (use [`NULLABLE_COLOR`](/schema/NULLABLE_COLOR) to also allow `null`).
  *
  * @example COLOR.validate("00ccff"); // Returns "#00CCFF"
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchema

@@ -5,7 +5,7 @@ Lightweight, deterministic string-to-number hashing. Useful for consistently map
 **Things to know:**
 
 - The algorithm is intentionally simple (character code sum) — it is fast and stable but not cryptographic. Do not use it for security purposes.
-- `hashStringBetween` wraps the result into `[min, max)` using modular arithmetic, so the same string always produces the same number within the range.
+- [`hashStringBetween()`](/util/hash/hashStringBetween) wraps the result into `[min, max)` using modular arithmetic, so the same string always produces the same number within the range.
 
 ## Usage
 

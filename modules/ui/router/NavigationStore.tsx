@@ -4,7 +4,7 @@ import { type PossibleURL, requireURL } from "../../util/url.js";
 /**
  * Store holding the current navigation URL and driving browser history.
  *
- * - Extends `URLStore`; the current location is its `value`.
+ * - Extends [`URLStore`](/store/URLStore); the current location is its `value`.
  * - `forward()` pushes a new history entry; `redirect()` replaces the current one.
  * - TODO: switch to the browser Navigation API when broadly supported.
  *

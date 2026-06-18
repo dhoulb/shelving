@@ -117,7 +117,7 @@ const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
 
 /**
  * Create a regular expression that matches any one of a list of other expressions.
- * - If the list is empty the returned expression matches nothing (`NEVER_REGEXP`).
+ * - If the list is empty the returned expression matches nothing ([`NEVER_REGEXP`](/util/regexp/NEVER_REGEXP)).
  *
  * @param patterns The regular expressions or string sources to combine.
  * @param flags The flags to use when creating the combined `RegExp`.
@@ -136,7 +136,7 @@ export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, 
 
 /**
  * Create a regular expression that matches all of a list of other expressions.
- * - If the list is empty the returned expression matches everything (`ALWAYS_REGEXP`).
+ * - If the list is empty the returned expression matches everything ([`ALWAYS_REGEXP`](/util/regexp/ALWAYS_REGEXP)).
  *
  * @param patterns The regular expressions or string sources to combine.
  * @param flags The flags to use when creating the combined `RegExp`.
@@ -310,7 +310,7 @@ export function getMatch(str: string, regexp: RegExp): RegExpExecArray | undefin
 }
 
 /**
- * Get a required regular expression match, or throw `ValueError` if no match could be made.
+ * Get a required regular expression match, or throw [`ValueError`](/error/ValueError) if no match could be made.
  *
  * @param str String to match against the regular expression.
  * @param regexp Regular expression to match against the string.
@@ -346,7 +346,7 @@ export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | u
 }
 
 /**
- * Get the named groups of a required regular expression match, or throw `ValueError` if no match could be made.
+ * Get the named groups of a required regular expression match, or throw [`ValueError`](/error/ValueError) if no match could be made.
  *
  * @param str String to match against the regular expression.
  * @param regexp Regular expression to match against the string.

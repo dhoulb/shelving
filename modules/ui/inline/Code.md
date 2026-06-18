@@ -49,10 +49,3 @@ import { Code } from "shelving/ui";
 | `--code-radius` | Corner radius (non-`plain`) | `var(--radius-xxsmall)` |
 
 **Global tokens it reads:** [`--font-code`](/ui/getFontClass), [`--weight-code`](/ui/getWeightClass), [`--size-smaller`](/ui/getSizeClass), [`--leading`](/ui/getSizeClass), [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), and the tint-ladder steps [`--tint-00`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) for the box fill and text.
-
-## See also
-
-- [`Preformatted`](/ui/Preformatted) — block-level `<pre>` for multi-line code.
-- [`Mark`](/ui/Mark) — highlight a run of text rather than mark it as code.
-- [`Prose`](/ui/Prose) — styles raw `<code>` and friends inside longform content.
-- [`ui`](/ui) — the styling system: tint ladder and theming.

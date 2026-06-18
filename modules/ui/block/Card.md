@@ -5,8 +5,8 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 **Things to know:**
 
 - Set `href` or `onClick` to make the whole card navigable — a stretched, visually-hidden overlay `<a>` / `<button>` covers the card while the children render normally inside. Real interactive elements inside the card (inline links, buttons) stay clickable and keyboard-focusable.
-- `color=` and `status=` move the tint anchor for the card's scope, so the surface, border, text, and hover shade all re-derive together — and nested components (`Tag`, `Preformatted`, `Button`) inherit the same tint.
-- A card styles only the box. Lay out its contents with the usual block components (`Subheading`, `Paragraph`, `Row`, …).
+- `color=` and `status=` move the tint anchor for the card's scope, so the surface, border, text, and hover shade all re-derive together — and nested components ([`<Tag>`](/ui/Tag), [`<Preformatted>`](/ui/Preformatted), [`<Button>`](/ui/Button)) inherit the same tint.
+- A card styles only the box. Lay out its contents with the usual block components ([`<Subheading>`](/ui/Subheading), [`<Paragraph>`](/ui/Paragraph), [`<Row>`](/ui/Row), …).
 - Composes the standard styling variants: `color`, `status`, `padding`, `space`, `width`, plus typography.
 
 ## Usage
@@ -77,9 +77,3 @@ import { Card, Subheading } from "shelving/ui";
   --card-tint: var(--color-purple);
 }
 ```
-
-## See also
-
-- [`Panel`](/ui/Panel) — a card-like grouping for stacked sections rather than standalone content.
-- [`Section`](/ui/Section) — a titled block; cards often hold one or more sections.
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

@@ -20,9 +20,3 @@ url.isProud("https://example.com/search");          // true — current URL sits
 ```
 
 Param helpers come in mutating (`setParam`, `updateParams`, `deleteParam`, `clearParams`) and non-mutating (`withParam`, `withParams`, `omitParam`) forms — the latter return a new URL without changing the store.
-
-## See also
-
-- [Store](/store/Store) — the base class.
-- [PathStore](/store/PathStore) — the equivalent for absolute paths.
-- [store](/store) — overview of all store classes.

@@ -2,8 +2,8 @@
 
 Helpers for working with promises and async values: detecting sync/async values, running concurrent promises safely, creating deferreds, and handling cancellation with `AbortSignal`.
 
-- `awaitValues` differs from `Promise.all` in one important way: it waits for **all** promises to settle before rejecting, so no promise is left dangling in unhandled purgatory.
-- `awaitRace` silently absorbs rejections from the losing arm(s), preventing unhandled-rejection warnings in cancellation/timeout patterns.
+- [`awaitValues()`](/util/async/awaitValues) differs from `Promise.all` in one important way: it waits for **all** promises to settle before rejecting, so no promise is left dangling in unhandled purgatory.
+- [`awaitRace()`](/util/async/awaitRace) silently absorbs rejections from the losing arm(s), preventing unhandled-rejection warnings in cancellation/timeout patterns.
 
 ## Usage
 
@@ -60,7 +60,3 @@ import { runMicrotasks } from "shelving/util";
 
 await runMicrotasks(); // drain all queued microtasks
 ```
-
-## See also
-
-- [util](/util)

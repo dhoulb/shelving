@@ -15,7 +15,7 @@ type NoticeData<S extends string> = {
 };
 
 /**
- * Store holding a single notice's content and status, owned by a `NoticesStore`.
+ * Store holding a single notice's content and status, owned by a [`NoticesStore`](/ui/NoticesStore).
  *
  * - Auto-closes itself a few seconds after opening unless its status is `"loading"`.
  * - Adds itself to its parent `NoticesStore` on construction and removes itself on `close()` or disposal.
@@ -29,7 +29,7 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	readonly key = getRandomKey();
 
 	/**
-	 * Create a notice and register it with its parent `NoticesStore`.
+	 * Create a notice and register it with its parent [`NoticesStore`](/ui/NoticesStore).
 	 *
 	 * @param notices The parent store to add this notice to.
 	 * @param children The notice content (optional).
@@ -55,7 +55,7 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	}
 
 	/**
-	 * Close this notice permanently, removing it from its parent `NoticesStore`.
+	 * Close this notice permanently, removing it from its parent [`NoticesStore`](/ui/NoticesStore).
 	 *
 	 * @example notice.close();
 	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore/close

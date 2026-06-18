@@ -2,7 +2,7 @@ import { mergeElements } from "../util/element.js";
 import type { TreeElement } from "../util/tree.js";
 
 /**
- * Base class for an extractor that converts an input of type `I` into a `TreeElement` output.
+ * Base class for an extractor that converts an input of type `I` into a [`TreeElement`](/util/tree/TreeElement) output.
  * - Extractors are composable: outer extractors delegate to inner extractors.
  * - The output type is always a `TreeElement` (or a more specific subtype).
  *
@@ -17,7 +17,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
 	 * Extract a tree element from the given input.
 	 *
 	 * @param input The input value to extract from.
-	 * @returns The extracted `TreeElement`, or a promise resolving to one.
+	 * @returns The extracted [`TreeElement`](/util/tree/TreeElement), or a promise resolving to one.
 	 * @example await myExtractor.extract(input)
 	 * @see https://dhoulb.github.io/shelving/extract/Extractor/Extractor/extract
 	 */
@@ -33,7 +33,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
  *
  * @param primary The element whose identity is preserved and whose set fields win.
  * @param secondary The element whose metadata fills any gaps in `primary`.
- * @returns A new `TreeElement` with `primary`'s identity and the merged metadata of both.
+ * @returns A new [`TreeElement`](/util/tree/TreeElement) with `primary`'s identity and the merged metadata of both.
  * @example mergeTreeElements(tsElement, mdElement) // ts identity + md prose
  * @see https://dhoulb.github.io/shelving/extract/Extractor/mergeTreeElements
  */

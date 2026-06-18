@@ -14,11 +14,11 @@ export interface DocumentationSignaturesProps {
 
 /**
  * Render a documented symbol's signature(s) as monospace code blocks — one `<Preformatted>` per overload.
- * - Shared by `DocumentationCard` and `DocumentationPage` so signatures render identically in both (calm code
+ * - Shared by [`DocumentationCard`](/ui/DocumentationCard) and [`DocumentationPage`](/ui/DocumentationPage) so signatures render identically in both (calm code
  *   blocks, not a shouty heading).
  * - Renders nothing when there are no signatures.
  *
- * @returns One `<Preformatted>` block per signature, or `null` when there are none.
+ * @returns One [`<Preformatted>`](/ui/Preformatted) block per signature, or `null` when there are none.
  * @example <DocumentationSignatures signatures={["getArray<T>(arr: T[]): T"]} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignatures
  */

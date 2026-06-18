@@ -1,6 +1,6 @@
 # getWidthClass
 
-The `width` variant prop sets a component's inline-size — `<Card width="narrow">`, `<Block width="wide">`, `<TableCell width="12x">`. It's an **override** for one-off layout; for an app-wide change, retune the width variables below in a theme file. `Section` already defaults to the `--width-normal` width, so most pages never set `width` at all.
+The `width` variant prop sets a component's inline-size — `<Card width="narrow">`, `<Block width="wide">`, `<TableCell width="12x">`. It's an **override** for one-off layout; for an app-wide change, retune the width variables below in a theme file. [`Section`](/ui/Section) already defaults to the `--width-normal` width, so most pages never set `width` at all.
 
 `getWidthClass({ width, grow })` maps the props to a width class. Every value is capped at 100% of the container.
 
@@ -22,7 +22,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--width-narrow` | `35rem` | The `narrow` constraint — single-column forms, dialogs. |
 | `--width-normal` | `55rem` | The `normal` constraint — standard content column. |
 | `--width-wide` | `75rem` | The `wide` constraint — readable prose measure. |
-
-## See also
-
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.

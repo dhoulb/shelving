@@ -2,7 +2,7 @@
 
 The pass-through base class for wrapping providers. `ThroughAPIProvider` takes a `source` provider and delegates every method to it. Extend it to intercept only the methods you care about — adding auth headers, retries, metrics — without reimplementing transport logic.
 
-`ValidationAPIProvider`, `LoggingAPIProvider`, `DebugAPIProvider`, `MockAPIProvider`, and `CachedAPIProvider` are all `ThroughAPIProvider` subclasses.
+[`ValidationAPIProvider`](/api/ValidationAPIProvider), [`LoggingAPIProvider`](/api/LoggingAPIProvider), [`DebugAPIProvider`](/api/DebugAPIProvider), [`MockAPIProvider`](/api/MockAPIProvider), and [`CachedAPIProvider`](/api/CachedAPIProvider) are all `ThroughAPIProvider` subclasses.
 
 ## Usage
 
@@ -23,8 +23,3 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
   }
 }
 ```
-
-## See also
-
-- [APIProvider](/api/provider/APIProvider) — the abstract base.
-- [api/provider](/api/provider) — overview of the provider hierarchy.

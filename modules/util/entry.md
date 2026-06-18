@@ -41,7 +41,3 @@ import type { Entry, EntryObject } from "shelving/util";
 type E = Entry<"status", "active" | "inactive">;
 type O = EntryObject<E>; // { status: "active" | "inactive" }
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

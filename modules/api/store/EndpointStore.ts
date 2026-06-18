@@ -4,7 +4,7 @@ import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
 
 /**
- * Store that loads and tracks the result of calling a single API endpoint with a fixed payload, through an `APIProvider`.
+ * Store that loads and tracks the result of calling a single API endpoint with a fixed payload, through an [`APIProvider`](/api/APIProvider).
  *
  * @example
  *  const store = new EndpointStore(endpoint, payload, provider);

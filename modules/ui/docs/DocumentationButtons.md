@@ -7,7 +7,7 @@ Renders a documented symbol's relational metadata as a `<nav>` column of labelle
 - Each relation reads as `"{label} {Target}"`. The target is a [`TreeButton`](/ui/TreeButton), so it resolves the reference against the flattened tree map from [`TreeProvider`](/ui/TreeProvider): a hit becomes a link, a miss (e.g. a builtin like `Serializable`) renders as a plain non-linking label so the text still reads.
 - Relations come from the raw metadata the extractor records — `extends` and `implements` first, then the broader `member of` (the `class` relation) last.
 - It renders nothing when the symbol has no relations.
-- Block spacing defaults to paragraph spacing (it composes `getParagraphClass`); pass `space` to override. Inner spacing is the flex gap.
+- Block spacing defaults to paragraph spacing (it composes [`getParagraphClass()`](/ui/getParagraphClass)); pass `space` to override. Inner spacing is the flex gap.
 - Exported (plural) from `docs/DocumentationButtons.tsx`.
 
 ## Usage
@@ -28,11 +28,4 @@ Drop a relation by omitting it, or tighten spacing with `space`.
 
 ## Styling
 
-`DocumentationButtons` has no own CSS hooks — it composes `getParagraphClass` for block spacing and the flex utilities for layout, and renders its links as [`TreeButton`](/ui/TreeButton)s. Retheme through those.
-
-## See also
-
-- [`DocumentationPage`](/ui/DocumentationPage) — renders these relations below the title.
-- [`DocumentationCard`](/ui/DocumentationCard) — renders these relations inside the card (minus `member of`).
-- [`TreeButton`](/ui/TreeButton) — resolves each reference to a link or plain label.
-- [`TreeProvider`](/ui/TreeProvider) — provides the flattened tree map references are resolved against.
+`DocumentationButtons` has no own CSS hooks — it composes [`getParagraphClass()`](/ui/getParagraphClass) for block spacing and the flex utilities for layout, and renders its links as [`TreeButton`](/ui/TreeButton)s. Retheme through those.

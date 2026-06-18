@@ -13,7 +13,7 @@ export interface ThroughSchemaOptions<T> extends SchemaOptions {
 }
 
 /**
- * Schema that wraps and passes through to a source schema, used as a base for schemas that augment another schema's behaviour (e.g. `NullableSchema`, `OptionalSchema`, `RequiredSchema`).
+ * Schema that wraps and passes through to a source schema, used as a base for schemas that augment another schema's behaviour (e.g. [`NullableSchema`](/schema/NullableSchema), [`OptionalSchema`](/schema/OptionalSchema), [`RequiredSchema`](/schema/RequiredSchema)).
  *
  * @example
  *  class WrapSchema<T> extends ThroughSchema<T> {} // Delegates `validate()` to `this.source`.

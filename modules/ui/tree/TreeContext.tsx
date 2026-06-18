@@ -12,13 +12,13 @@ export const TreeContext = createContext<ReadonlyMap<string, TreeElement>>(new M
 TreeContext.displayName = "TreeContext";
 
 /**
- * Provide a tree to descendants as a flattened lookup map (see `flattenTree()`).
+ * Provide a tree to descendants as a flattened lookup map (see [`flattenTree()`](/util/tree/flattenTree)).
  *
  * - Flattens `tree` **once** (memoised) when set — not on every lookup in every element.
  * - Merges onto any parent `<TreeProvider>`'s map, so cross-references resolve across an entire nested set of trees; the outer (parent) tree wins on collision.
  *
  * @param props The `tree` to flatten and provide, plus `children`.
- * @returns A `<TreeContext>` provider wrapping the children with the flattened map.
+ * @returns A [`<TreeContext>`](/ui/TreeContext) provider wrapping the children with the flattened map.
  * @example <TreeProvider tree={tree}>{children}</TreeProvider>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/TreeProvider
  */
@@ -31,7 +31,7 @@ export function TreeProvider({ tree, children }: { readonly tree: TreeElement; r
 /**
  * Use the flattened tree lookup map from context.
  *
- * - Returns an empty map when there's no `<TreeProvider>` above (e.g. an isolated card rendered outside the tree shell), so callers can look up freely and fall back to plain text on a miss.
+ * - Returns an empty map when there's no [`<TreeProvider>`](/ui/TreeProvider) above (e.g. an isolated card rendered outside the tree shell), so callers can look up freely and fall back to plain text on a miss.
  *
  * @returns The flattened `key` → `element` map, or an empty map when no `<TreeProvider>` is present.
  * @example const element = useTreeMap().get("Store.get");
@@ -48,7 +48,7 @@ export function useTreeMap(): ReadonlyMap<string, TreeElement> {
  * - On a miss, a `Foo<…>`-shaped reference retries with the generics stripped (`"Schema<T>"` → `"Schema"`), so a generic type name still links without the extractor storing a separate un-generic'd key — the generics stay in the displayed label.
  * - A compound reference (`"Schema<T> | null"`, `"Omit<X, 'k'>"`) only retries on the leading identifier when the whole string is `Identifier<…>`; otherwise it stays a miss and the caller falls back to plain text.
  *
- * @param map The flattened tree lookup map (from `useTreeMap()`).
+ * @param map The flattened tree lookup map (from [`useTreeMap()`](/ui/useTreeMap)).
  * @param ref The reference string — a flat key, canonical path, or raw type expression.
  * @returns The resolved element, or `undefined` on a miss.
  * @example getTreeElement(useTreeMap(), "Schema<T>") // the `Schema` element

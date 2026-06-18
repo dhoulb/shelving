@@ -1,6 +1,6 @@
 # Timeout helper
 
-`Timeout` is a thin wrapper around `setTimeout` that tracks its own reference and cancels any in-flight timer before setting a new one. It removes the boilerplate of saving and clearing timeout handles manually.
+[`Timeout`](/util/timeout/Timeout) is a thin wrapper around `setTimeout` that tracks its own reference and cancels any in-flight timer before setting a new one. It removes the boilerplate of saving and clearing timeout handles manually.
 
 **Things to know:**
 

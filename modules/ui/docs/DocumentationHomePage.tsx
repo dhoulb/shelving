@@ -11,12 +11,12 @@ import { TreeCards } from "../tree/TreeCards.js";
 
 /**
  * Page renderer for the documentation site's home page — a bold coloured hero panel over the module listing.
- * - The whole page sits in a single `color="red"` `<Block>`, so the hero panel, prose, and child cards all pick up the red tint.
- * - The hero is a `padding="5x"` `<Panel>` with the package name centred as a `<Title>`.
+ * - The whole page sits in a single `color="red"` [`<Block>`](/ui/Block), so the hero panel, prose, and child cards all pick up the red tint.
+ * - The hero is a `padding="5x"` [`<Panel>`](/ui/Panel) with the package name centred as a [`<Title>`](/ui/Title).
  * - Below the hero it renders any absorbed prose content, then the root's children (the modules) as a stack of cards.
  *
  * @kind component
- * @returns A `<Page>` with a coloured hero panel followed by the module listing.
+ * @returns A [`<Page>`](/ui/Page) with a coloured hero panel followed by the module listing.
  * @example <DocumentationHomePage {...root.props} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationHomePage/DocumentationHomePage
  */

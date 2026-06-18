@@ -1,7 +1,7 @@
 /**
  * Minimal interface matching the Cloudflare Workers KV namespace runtime object.
  *
- * Declares only the subset of methods `CloudflareKVProvider` uses, so the `@cloudflare/workers-types` package is not required as a dependency.
+ * Declares only the subset of methods [`CloudflareKVProvider`](/cloudflare/CloudflareKVProvider) uses, so the `@cloudflare/workers-types` package is not required as a dependency.
  *
  * @see https://dhoulb.github.io/shelving/cloudflare/types/KVNamespace
  */
@@ -55,7 +55,7 @@ export interface D1ExecResult {
 /**
  * Minimal prepared statement interface for D1 databases and sessions.
  *
- * Declares only the subset of the D1 prepared-statement API used by `CloudflareD1Provider`.
+ * Declares only the subset of the D1 prepared-statement API used by [`CloudflareD1Provider`](/cloudflare/CloudflareD1Provider).
  *
  * @see https://dhoulb.github.io/shelving/cloudflare/types/D1PreparedStatement
  */
@@ -67,7 +67,7 @@ export interface D1PreparedStatement {
 }
 
 /**
- * Minimal D1 binding/session interface used by `CloudflareD1Provider`.
+ * Minimal D1 binding/session interface used by [`CloudflareD1Provider`](/cloudflare/CloudflareD1Provider).
  *
  * Declares only the subset of the D1 binding API the provider needs, so the `@cloudflare/workers-types` package is not required as a dependency.
  *

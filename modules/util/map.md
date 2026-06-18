@@ -4,10 +4,10 @@ Type definitions and helper functions for working with `Map` instances. Covers t
 
 **Things to know:**
 
-- `ImmutableMap` is a `ReadonlyMap` alias; `MutableMap` is the standard `Map`.
-- `getMap()` passes an existing `Map` through unchanged — it never copies unnecessarily.
-- `limitMap()` also returns the original map if `limit >= map.size`.
-- Mutable helpers (`setMapItem`, `setMapItems`, `removeMapItems`) mutate by reference.
+- [`ImmutableMap`](/util/map/ImmutableMap) is a `ReadonlyMap` alias; [`MutableMap`](/util/map/MutableMap) is the standard `Map`.
+- [`getMap()`](/util/map/getMap) passes an existing `Map` through unchanged — it never copies unnecessarily.
+- [`limitMap()`](/util/map/limitMap) also returns the original map if `limit >= map.size`.
+- Mutable helpers ([`setMapItem()`](/util/map/setMapItem), [`setMapItems()`](/util/map/setMapItems), [`removeMapItems()`](/util/map/removeMapItems)) mutate by reference.
 
 ## Usage
 
@@ -61,7 +61,3 @@ import { limitMap } from "shelving/util";
 
 const limited = limitMap(bigMap, 100); // at most 100 entries
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

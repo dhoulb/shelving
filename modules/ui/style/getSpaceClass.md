@@ -29,9 +29,3 @@ The following `:root` variables are defined by this module and can be overridden
 |---|---|---|
 | `--space-section` | `2rem` | Top margin for titles / headings / section blocks. |
 | `--space-paragraph` | `var(--space-normal)` | Default block-space for most prose elements. |
-
-## See also
-
-- [`getPaddingClass`](/ui/getPaddingClass) — the `padding-block` sibling on the same scale.
-- [`getGapClass`](/ui/getGapClass) — the flex/grid `gap` sibling on the same scale.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.

@@ -19,7 +19,3 @@ NUMBERS.validate([1, 2]);      // [1, 2]
 NUMBERS.validate("1,2,3");     // [1, 2, 3]  (split on comma, each coerced)
 NUMBERS.validate(undefined);   // []
 ```
-
-## See also
-
-- [schema](/schema) — overview of schema concepts and composition.

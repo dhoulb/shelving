@@ -16,8 +16,8 @@ export interface FormFooterProps extends OptionalChildProps {
 
 /**
  * Show a form footer with a submit button and the form's error message.
- * - Renders a row containing a `SubmitButton` (and any extra buttons passed as `children`).
- * - Renders a `<FormMessage>` beneath the buttons showing any error set on the form.
+ * - Renders a row containing a [`SubmitButton`](/ui/SubmitButton) (and any extra buttons passed as `children`).
+ * - Renders a [`<FormMessage>`](/ui/FormMessage) beneath the buttons showing any error set on the form.
  *
  * @returns A footer element with the submit row and form message.
  * @example <FormFooter submit="Save" />

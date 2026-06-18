@@ -5,7 +5,7 @@ import { FileExtractor } from "./FileExtractor.js";
 
 /**
  * File extractor for Markdown files.
- * - Stores the markdown text as `content`; rendering happens at output time via `<Markup>`.
+ * - Stores the markdown text as `content`; rendering happens at output time via [`<Markup>`](/ui/Markup).
  * - Sets `title` from the first `# h1` heading if one is present — otherwise leaves it undefined
  *   (a confident title only).
  * - When a `title` is found, strips the leading `# h1` from `content` so renderers (which show

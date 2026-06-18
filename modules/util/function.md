@@ -1,6 +1,6 @@
 # Function types and helpers
 
-Core type definitions and small utilities for working with functions. This file is the source of the `AnyCaller` type that threads through the whole library to produce accurate stack traces, and provides `BLACKHOLE` and `PASSTHROUGH` — two no-op sentinels used throughout as safe default callbacks.
+Core type definitions and small utilities for working with functions. This file is the source of the [`AnyCaller`](/util/function/AnyCaller) type that threads through the whole library to produce accurate stack traces, and provides [`BLACKHOLE()`](/util/function/BLACKHOLE) and [`PASSTHROUGH()`](/util/function/PASSTHROUGH) — two no-op sentinels used throughout as safe default callbacks.
 
 **Things to know:**
 
@@ -42,7 +42,3 @@ const onDone: Callback = () => console.log("done");
 const onValue: ValueCallback<string> = (v) => console.log(v);
 const onError: ErrorCallback = (err) => console.error(err);
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

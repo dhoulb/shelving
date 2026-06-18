@@ -13,9 +13,4 @@ function getUser(id: string | undefined): User {
 }
 ```
 
-See [error](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
-
-## See also
-
-- [error](/error) — module overview and shared error behaviour.
-- [util](/util) — `require*()` functions that throw `RequiredError`.
+See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.

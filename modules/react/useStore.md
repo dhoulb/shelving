@@ -1,6 +1,6 @@
 # useStore
 
-Subscribe a component to a Shelving [`Store`](/store) so it re-renders whenever the store emits a new value. The store is wired into React's `useSyncExternalStore`, and `useStore` returns the same store it was given.
+Subscribe a component to a Shelving [`shelving/store`](/store) so it re-renders whenever the store emits a new value. The store is wired into React's `useSyncExternalStore`, and `useStore` returns the same store it was given.
 
 `useStore` only handles the subscription. To read the value, use `store.value` — which throws a `Promise` while the store is loading (caught by `<Suspense>`) and throws the error reason if the store has failed (caught by an error boundary).
 
@@ -30,8 +30,3 @@ function App() {
 ```
 
 The argument is optional — passing `undefined` is allowed (the hook is still called unconditionally, satisfying the rules of hooks) and returns `undefined`.
-
-## See also
-
-- [store](/store) — the `Store` class this hook subscribes to.
-- [react](/react) — overview of all React hooks and context helpers.

@@ -1,7 +1,7 @@
 import type { AnyCaller } from "../util/function.js";
 
 /**
- * Options for `BaseError` that provide additional helpful error functionality.
+ * Options for [`BaseError`](/error/BaseError) that provide additional helpful error functionality.
  * - Extends the built-in `ErrorOptions` (so `cause` is supported) and adds a `caller` plus arbitrary contextual fields.
  *
  * @see https://dhoulb.github.io/shelving/error/BaseError/BaseErrorOptions
@@ -21,7 +21,7 @@ export interface BaseErrorOptions extends globalThis.ErrorOptions {
 /**
  * An `Error` that provides additional helpful functionality.
  * - Carries arbitrary named contextual data alongside the standard `Error` fields.
- * - All concrete error classes in this module (`ValueError`, `RequiredError`, etc.) implement this shape.
+ * - All concrete error classes in this module ([`ValueError`](/error/ValueError), [`RequiredError`](/error/RequiredError), etc.) implement this shape.
  *
  * @see https://dhoulb.github.io/shelving/error/BaseError/BaseError
  */
@@ -31,12 +31,12 @@ export interface BaseError extends Error {
 }
 
 /**
- * Apply `BaseErrorOptions` to an error instance by copying contextual fields onto it and trimming its stack.
+ * Apply [`BaseErrorOptions`](/error/BaseErrorOptions) to an error instance by copying contextual fields onto it and trimming its stack.
  * - Copies every option except `cause` and `caller` onto the error as a named property.
  * - Uses `Error.captureStackTrace()` with the resolved caller so the stack points at the user's call site, not the error plumbing.
  *
  * @param defaultCaller Function to attribute the stack to when `options.caller` is not supplied.
- * @param error The `BaseError` instance to mutate with contextual data and a trimmed stack.
+ * @param error The [`BaseError`](/error/BaseError) instance to mutate with contextual data and a trimmed stack.
  * @param options Options to apply — `cause` and `caller` are consumed, all other keys are copied onto `error`.
  * @returns Nothing — `error` is mutated in place.
  * @example

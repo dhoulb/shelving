@@ -1,6 +1,6 @@
 # Markup rules
 
-The built-in rule set that drives the [`markup`](/markup) renderer. This directory exports every individual rule constant, two context-specific rule arrays, and the combined default ruleset.
+The built-in rule set that drives the [`shelving/markup`](/markup) renderer. This directory exports every individual rule constant, two context-specific rule arrays, and the combined default ruleset.
 
 ## Concepts
 
@@ -14,7 +14,7 @@ Rules declare which contexts they apply in. Block rules fire in a `"block"` cont
 
 | Export | Contents |
 |---|---|
-| `MARKUP_RULES` | All block and inline rules — the default, use this unless you have a reason not to |
+| [`MARKUP_RULES`](/markup/MARKUP_RULES) | All block and inline rules — the default, use this unless you have a reason not to |
 | [`MARKUP_RULES_BLOCK`](/markup/MARKUP_RULES_BLOCK) | Block-only rules: fenced code, heading, separator, lists, blockquote, table, paragraph |
 | [`MARKUP_RULES_INLINE`](/markup/MARKUP_RULES_INLINE) | Inline-only rules: inline code, link, autolink, strong/em/del/ins/mark, linebreak |
 
@@ -43,7 +43,7 @@ Rules declare which contexts they apply in. Block rules fire in a `"block"` cont
 
 ## Adding a custom rule
 
-Use [`createMarkupRule()`](/markup/createMarkupRule) from `shelving/markup` to build a typed rule, then merge it into the rules array you give a `MarkupParser`:
+Use [`createMarkupRule()`](/markup/createMarkupRule) from `shelving/markup` to build a typed rule, then merge it into the rules array you give a [`MarkupParser`](/markup/MarkupParser):
 
 ```tsx
 import { createMarkupRule, MARKUP_RULES, MarkupParser } from "shelving/markup";
@@ -66,8 +66,3 @@ const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });
 4. An optional `priority` number (default `0`). Higher priorities form earlier-resolved tiers.
 
 To replace the built-in rule for a specific element, omit that constant from the base array and add your own.
-
-## See also
-
-- [`markup`](/markup) — `MarkupParser`, `MarkupRule`, `createMarkupRule`, and the full renderer
-- [`markup/util`](/markup) — regexp helpers and internal types used by the rules

@@ -36,7 +36,7 @@ export function Menu({ children }: MenuProps): ReactNode {
 }
 
 /**
- * Props for `<MenuItem>` — `<Clickable>` props plus `children` whose first node is the label and the rest the submenu.
+ * Props for `<MenuItem>` — [`<Clickable>`](/ui/Clickable) props plus `children` whose first node is the label and the rest the submenu.
  *
  * @see https://dhoulb.github.io/shelving/ui/menu/Menu/MenuItemProps
  */
@@ -50,7 +50,7 @@ export interface MenuItemProps extends ClickableProps {
 
 /**
  * A `<li>` containing an `<a>` link, plus optional submenu content shown when this item is "proud".
- * - Reads the current page URL from `<Meta>` and computes `active` / `proud` against its own `href`.
+ * - Reads the current page URL from [`<Meta>`](/ui/Meta) and computes `active` / `proud` against its own `href`.
  * - Splits `children` into `[label, ...after]`: label goes inside the `<a>`; `after` is rendered as siblings below it, only when proud.
  *
  * @kind component

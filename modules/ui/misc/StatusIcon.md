@@ -1,6 +1,6 @@
 # StatusIcon
 
-Renders the icon for a given status, coloured to match. Picks a heroicon per status (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
+Renders the icon for a given status, coloured to match. Picks a heroicon per status (`success`, `error`, `warning`, etc.) and uses the animated [`<Loading>`](/ui/Loading) spinner for `"loading"`.
 
 **Things to know:**
 
@@ -17,9 +17,3 @@ import { StatusIcon } from "shelving/ui";
 <StatusIcon status="error" />
 <StatusIcon status="loading" size="small" />
 ```
-
-## See also
-
-- [`Loading`](/ui/Loading) — the spinner used for the `"loading"` status.
-- [`Notice`](/ui/Notice) — uses `<StatusIcon>` as its default icon.
-- [`Tag`](/ui/Tag) — inline label sharing the same status vocabulary.

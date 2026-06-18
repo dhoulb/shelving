@@ -5,8 +5,8 @@ The visual wrapper for a single form control. `Field` renders a `<label>` with a
 **Things to know:**
 
 - Full width by default (one field per row). Pass `half` to render at 50% so two fields sit side-by-side.
-- The `message` prop renders below the input as an error `Message` — wire it to the field's error string.
-- `FormInput name="…"` combines a field's value, error, and schema lookup from the surrounding `FormContext`; reach for `Field` directly when you want explicit control over the label and layout.
+- The `message` prop renders below the input as an error [`Message`](/ui/Message) — wire it to the field's error string.
+- [`FormInput`](/ui/FormInput) combines a field's value, error, and schema lookup from the surrounding [`FormContext`](/ui/FormContext); reach for `Field` directly when you want explicit control over the label and layout.
 
 ## Usage
 
@@ -51,9 +51,3 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-color-message` | Message colour | `var(--color-red)` |
 
 **Global tokens it reads:** the tint ladder [`--tint-00`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--size-normal`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--weight-normal`](/ui/getWeightClass), `--shade-dark`, and [`--color-red`](/ui/getColorClass).
-
-## See also
-
-- [`Form`](/ui/Form) — renders fields automatically from a schema.
-- [`SchemaInput`](/ui/SchemaInput) — the control `SchemaField` drops inside a `Field`.
-- [ui](/ui) — top-level UI module index.

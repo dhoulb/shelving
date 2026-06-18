@@ -75,10 +75,3 @@ import type { CollectionItem, CollectionData } from "shelving/db";
 type Post = CollectionData<typeof POSTS>;      // { title: string; body: string; published: boolean }
 type PostItem = CollectionItem<typeof POSTS>;  // { id: string; title: string; body: string; published: boolean }
 ```
-
-## See also
-
-- [`db`](/db) — provider methods all accept a `Collection` as their first argument
-- [`schema`](/schema) — [`DataSchema`](/schema/DataSchema) that `Collection` extends; [`ITEM()`](/schema/ITEM) that builds `collection.item`
-- [`db`](/db) — [`DBProvider`](/db/DBProvider) and the built-in provider implementations
-- [`db`](/db) — [`SQLiteMigrator`](/db/SQLiteMigrator) and [`PostgreSQLMigrator`](/db/PostgreSQLMigrator) use collection schemas to create and alter tables

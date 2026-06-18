@@ -114,12 +114,12 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
 export const ANSI_RESET = "\x1b[0m";
 
 /**
- * Wrap a string in the ANSI color/style codes (at the start), and `ANSI_RESET` at the end.
+ * Wrap a string in the ANSI color/style codes (at the start), and [`ANSI_RESET`](/util/ansi/ANSI_RESET) at the end.
  *
  * - The `NO_COLOR` environment variable is read live on every call, so runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in whatever `NO_COLOR` was at module-load time.
  *
  * @param input The string to wrap in ANSI codes.
- * @param wrappers Any number of ANSI escape codes (e.g. `ANSI_RED`, `ANSI_BOLD`) to prepend before `input`.
+ * @param wrappers Any number of ANSI escape codes (e.g. [`ANSI_RED`](/util/ansi/ANSI_RED), [`ANSI_BOLD`](/util/ansi/ANSI_BOLD)) to prepend before `input`.
  * @returns The wrapped string, or `input` unchanged when the `NO_COLOR` environment variable is set.
  * @example ansiWrap("hello", ANSI_RED, ANSI_BOLD) // "\x1b[31m\x1b[1mhello\x1b[0m"
  * @see https://dhoulb.github.io/shelving/util/ansi/ansiWrap

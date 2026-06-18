@@ -5,7 +5,7 @@ import type { Status } from "../style/Status.js";
 import { NoticeStore } from "./NoticeStore.js";
 
 /**
- * Store holding the live list of `NoticeStore` notices currently shown.
+ * Store holding the live list of [`NoticeStore`](/ui/NoticeStore) notices currently shown.
  *
  * - Disposing the store disposes (and closes) every notice it contains.
  *
@@ -18,7 +18,7 @@ export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {
 	 *
 	 * @param children The notice content (optional).
 	 * @param status The notice status (optional).
-	 * @returns The newly created `NoticeStore`.
+	 * @returns The newly created [`NoticeStore`](/ui/NoticeStore).
 	 * @example notices.show("Saved your changes", "success");
 	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticesStore/NoticesStore/show
 	 */
@@ -35,7 +35,7 @@ export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {
 }
 
 /**
- * Global `NoticesStore` shown by `<Notices>`, accepting any of the default statuses.
+ * Global `NoticesStore` shown by [`<Notices>`](/ui/Notices), accepting any of the default statuses.
  *
  * @example NOTICES.show("Saved your changes", "success");
  * @see https://dhoulb.github.io/shelving/ui/notice/NoticesStore/NOTICES

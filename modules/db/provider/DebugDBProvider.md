@@ -1,6 +1,6 @@
 # DebugDBProvider
 
-A wrapping provider that logs every database operation to the console with ANSI formatting. `DebugDBProvider` extends [`ThroughDBProvider`](/db/provider/ThroughDBProvider) and is a development aid — drop it into a chain to see each read and write as it happens.
+A wrapping provider that logs every database operation to the console with ANSI formatting. `DebugDBProvider` extends [`ThroughDBProvider`](/db/ThroughDBProvider) and is a development aid — drop it into a chain to see each read and write as it happens.
 
 ## Usage
 
@@ -12,8 +12,3 @@ const provider = new DebugDBProvider(new MemoryDBProvider());
 await provider.addItem(POSTS, { title: "Hello", body: "…", published: false });
 // Console shows the addItem operation and its result.
 ```
-
-## See also
-
-- [ThroughDBProvider](/db/provider/ThroughDBProvider) — the pass-through base.
-- [db/provider](/db/provider) — overview of the provider hierarchy.

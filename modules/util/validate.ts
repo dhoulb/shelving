@@ -30,7 +30,7 @@ export interface Validator<T> {
 }
 
 /**
- * Extract the validated type from a `Validator`.
+ * Extract the validated type from a [`Validator`](/util/validate/Validator).
  *
  * @see https://dhoulb.github.io/shelving/util/validate/ValidatorType
  */
@@ -72,7 +72,7 @@ export function getValid<T>(value: unknown, validator: Validator<T>): T | undefi
 }
 
 /**
- * Validate a value with a given validator, or throw `RequiredError` if the value could not be validated.
+ * Validate a value with a given validator, or throw [`RequiredError`](/error/RequiredError) if the value could not be validated.
  *
  * - String validation messages are wrapped in a `RequiredError`; non-string errors are rethrown as-is.
  *

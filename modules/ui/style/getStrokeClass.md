@@ -12,9 +12,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--stroke-normal` | `calc(var(--stroke) * 1)` | Default borders. |
 | `--stroke-thick` | `calc(var(--stroke) * 1.5)` | Heavier borders. |
 | `--stroke-focus` | `var(--stroke-thick)` | Focus-outline thickness. |
-
-## See also
-
-- [`getRadiusClass`](/ui/getRadiusClass) — corner-radius tokens.
-- [`getShadowClass`](/ui/getShadowClass) — drop-shadow tokens.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.

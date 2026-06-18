@@ -26,9 +26,3 @@ import { VerticalTransition } from "shelving/ui";
 | `--vertical-transition-duration` | Duration of the slide keyframes | `var(--duration-normal)` |
 
 **Global tokens it reads** — [`--duration-normal`](/ui/getDurationClass).
-
-## See also
-
-- [`HorizontalTransition`](/ui/HorizontalTransition) — the horizontal counterpart
-- [`Transition`](/ui/Transition) — the base wrapper, `overlay`, and `setTransitionType`
-- [`Navigation`](/ui/Navigation) — triggers the route changes this animates

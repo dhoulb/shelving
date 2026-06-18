@@ -1,6 +1,6 @@
 # Head
 
-Low-level emitter of hoistable head metadata from the current `Meta` context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
+Low-level emitter of hoistable head metadata from the current [`Meta`](/ui/Meta) context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
 
 **Things to know:**
 
@@ -19,8 +19,3 @@ import { Page, Head } from "shelving/ui";
   …
 </Page>
 ```
-
-## See also
-
-- [`Page`](/ui/Page) — renders `Head` and supplies the per-page meta it reads
-- [`HTML`](/ui/HTML) — owns the literal `<head>` and the non-hoistable `<base>`

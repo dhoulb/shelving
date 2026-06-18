@@ -16,7 +16,3 @@ await logRequestResponse(response, request);
 // Log an error that occurred while handling a request (failure marker).
 logRequestError(error, request);
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

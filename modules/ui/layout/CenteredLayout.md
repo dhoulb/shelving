@@ -30,9 +30,3 @@ Layouts compose naturally as [`Router`](/ui/Router) route values — wrap a grou
 This layout exposes no own `--centered-layout-*` hooks. The inner column is capped at the global [`--width-wide`](/ui/getWidthClass) token (dropped when `fullWidth` is set), and the outer element composes the shared `.layout` behaviour, so it reads the layout hooks `--layout-space`, `--layout-padding`, and `--layout-inset-top` / `-bottom` / `-left` / `-right`.
 
 **Global tokens it reads** — [`--width-wide`](/ui/getWidthClass).
-
-## See also
-
-- [`SidebarLayout`](/ui/SidebarLayout) — the other full-viewport layout, with a fixed side column
-- [`Page`](/ui/Page) — sits above layouts in the tree
-- [`Router`](/ui/Router) — wrap route groups in a shared layout

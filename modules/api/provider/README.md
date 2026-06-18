@@ -17,7 +17,7 @@ The transport layer for API calls. A provider builds requests, sends them, and p
 | [`DebugAPIProvider`](/api/DebugAPIProvider) | Verbose console output including full request/response bodies — development only. |
 | [`JSONAPIProvider`](/api/JSONAPIProvider) | A `ClientAPIProvider` that forces JSON request bodies and always parses responses as JSON. |
 | [`XMLAPIProvider`](/api/XMLAPIProvider) | A `ClientAPIProvider` that sends XML request bodies and returns raw text responses. |
-| [`MockAPIProvider`](/api/MockAPIProvider) | Intercepts fetches through a `RequestHandler`; records all calls. No network requests. |
+| [`MockAPIProvider`](/api/MockAPIProvider) | Intercepts fetches through a [`RequestHandler`](/util/http/RequestHandler); records all calls. No network requests. |
 | [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider) | Routes mock fetches through a real [`EndpointHandler`](/api/EndpointHandler) array — test client and server together. |
 | [`CachedAPIProvider`](/api/CachedAPIProvider) | Serves calls through an [`APICache`](/api/APICache) and exposes `invalidate` / `refresh` helpers. |
 
@@ -39,12 +39,4 @@ const provider = new LoggingAPIProvider(
 const user = await provider.call(getUser, { id: "u_123" })
 ```
 
-`LoggingAPIProvider` sees every call first, `ValidationAPIProvider` validates next, `ClientAPIProvider` sends last.
-
-## See also
-
-- [`api`](/api) — parent module overview
-- [`api`](/api) — endpoint definitions and handler wiring
-- [`api`](/api) — [`APICache`](/api/APICache) and [`EndpointCache`](/api/EndpointCache) used internally
-- [`schema`](/schema) — `Schema<T>` used by [`ValidationAPIProvider`](/api/ValidationAPIProvider)
-- [`react`](/react) — [`createAPIContext()`](/react/createAPIContext) for React integration
+[`LoggingAPIProvider`](/api/LoggingAPIProvider) sees every call first, [`ValidationAPIProvider`](/api/ValidationAPIProvider) validates next, [`ClientAPIProvider`](/api/ClientAPIProvider) sends last.

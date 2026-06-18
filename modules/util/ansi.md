@@ -2,7 +2,7 @@
 
 Constants and a helper for wrapping terminal output in ANSI escape codes. Use these when writing CLI tools or test reporters that need colour and style without pulling in a third-party library.
 
-- All colour/style constants are plain escape-code strings, so you can concatenate them yourself or pass them to `ansiWrap`.
+- All colour/style constants are plain escape-code strings, so you can concatenate them yourself or pass them to [`ansiWrap()`](/util/ansi/ansiWrap).
 - `ansiWrap` is a no-op when the `NO_COLOR` environment variable is set, following the [no-color.org](https://no-color.org) convention.
 
 ## Usage
@@ -35,7 +35,3 @@ import { ANSI_CYAN, ANSI_UNDERLINE, ANSI_RESET } from "shelving/util";
 
 const styled = `${ANSI_CYAN}${ANSI_UNDERLINE}link text${ANSI_RESET}`;
 ```
-
-## See also
-
-- [util](/util)

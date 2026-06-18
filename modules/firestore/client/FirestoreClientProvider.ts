@@ -99,7 +99,7 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 }
 
 /**
- * Cloud Firestore database provider backed by the full Firebase JS SDK, implementing the `DBProvider` abstraction.
+ * Cloud Firestore database provider backed by the full Firebase JS SDK, implementing the [`DBProvider`](/db/DBProvider) abstraction.
  *
  * - Works with the Firebase JS SDK via `firebase/firestore`.
  * - Supports offline mode (local cache and write queueing).

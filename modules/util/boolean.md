@@ -28,7 +28,3 @@ assertFalse(value);    // throws RequiredError if not exactly false
 assertTruthy(value);   // throws RequiredError if falsy
 assertFalsy(value);    // throws RequiredError if truthy
 ```
-
-## See also
-
-- [util](/util)

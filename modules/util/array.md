@@ -2,9 +2,9 @@
 
 Typed helpers for reading, validating, and immutably transforming arrays. All immutable operations return the original reference when nothing changed, which keeps React state and memoisation stable.
 
-- `with*` / `omit*` / `toggle*` functions accept any `PossibleArray` (an array or any `Iterable`) but always return a typed `ImmutableArray`.
+- `with*` / `omit*` / `toggle*` functions accept any [`PossibleArray`](/util/array/PossibleArray) (an array or any `Iterable`) but always return a typed [`ImmutableArray`](/util/array/ImmutableArray).
 - `add*` / `delete*` functions mutate the array in place — use them only when you own the reference.
-- `withArrayItem` / `withArrayItems` are set-semantics: they skip items already present rather than creating duplicates.
+- [`withArrayItem()`](/util/array/withArrayItem) / [`withArrayItems()`](/util/array/withArrayItems) are set-semantics: they skip items already present rather than creating duplicates.
 
 ## Usage
 
@@ -80,7 +80,3 @@ import { isArrayItem, assertArrayItem } from "shelving/util";
 isArrayItem(["x", "y"], "x");    // true
 assertArrayItem(["x", "y"], "z"); // throws RequiredError
 ```
-
-## See also
-
-- [util](/util)

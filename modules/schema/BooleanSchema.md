@@ -19,7 +19,3 @@ BOOLEAN.validate("no");          // false  (coerced)
 BOOLEAN.validate(1);             // true   (truthiness)
 BOOLEAN.validate(undefined);     // false  (default)
 ```
-
-## See also
-
-- [schema](/schema) — overview of schema concepts and composition.

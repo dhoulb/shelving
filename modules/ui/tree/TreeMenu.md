@@ -27,9 +27,3 @@ import { TreeApp, TreeMenuMapping } from "shelving/ui";
   <TreeApp tree={tree} />
 </TreeMenuMapping>
 ```
-
-## See also
-
-- [`TreeSidebar`](/ui/TreeSidebar) — a home link plus this menu; the default sidebar.
-- [`TreeApp`](/ui/TreeApp) — wires the sidebar and routing into a complete site.
-- [`TreeCards`](/ui/TreeCards) — the card-listing equivalent for page bodies.

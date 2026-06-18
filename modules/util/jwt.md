@@ -5,10 +5,10 @@ Encode, decode, and verify JSON Web Tokens signed with HMAC SHA-512. Also provid
 **Things to know:**
 
 - Only HMAC SHA-512 (`HS512`) is supported — the algorithm is fixed.
-- Secrets must be at least 64 bytes (512 bits); shorter values throw `ValueError`.
+- Secrets must be at least 64 bytes (512 bits); shorter values throw [`ValueError`](/error/ValueError).
 - `exp` defaults to 30 days from "now"; `nbf` and `iat` both default to "now".
 - Verification allows a 1-minute clock skew for `nbf`/`exp`.
-- Expired or tampered tokens throw `UnauthorizedError`, not a generic error.
+- Expired or tampered tokens throw [`UnauthorizedError`](/error/UnauthorizedError), not a generic error.
 
 ## Usage
 
@@ -54,7 +54,3 @@ const raw = getRequestToken(request);
 // Read and verify in one step — throws UnauthorizedError if missing or invalid.
 const claims = await verifyRequestToken(request, secret);
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

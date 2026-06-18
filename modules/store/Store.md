@@ -1,8 +1,8 @@
 # Store
 
-The base observable value container. A `Store<T>` holds one current value, broadcasts changes to every active consumer, and suppresses duplicate emissions using deep equality. It is the class `useStore()` subscribes to and the base every other store extends.
+The base observable value container. A `Store<T>` holds one current value, broadcasts changes to every active consumer, and suppresses duplicate emissions using deep equality. It is the class [`useStore()`](/react/useStore) subscribes to and the base every other store extends.
 
-A store starts in a loading state (pass the `NONE` sentinel) or with an initial value. Reading `.value` while loading throws a `Promise`; reading `.loading` is always safe.
+A store starts in a loading state (pass the [`NONE`](/util/constants/NONE) sentinel) or with an initial value. Reading `.value` while loading throws a `Promise`; reading `.loading` is always safe.
 
 ## Usage
 
@@ -61,8 +61,3 @@ for await (const _ of store.through(someStream)) {
   // store.value is updated on each iteration
 }
 ```
-
-## See also
-
-- [sequence](/sequence) — `DeferredSequence` that powers the store's iteration.
-- [store](/store) — overview of all store classes.

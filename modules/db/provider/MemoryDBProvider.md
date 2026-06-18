@@ -1,6 +1,6 @@
 # MemoryDBProvider
 
-A fully in-memory `DBProvider`. `MemoryDBProvider` stores every collection in plain memory — fast, with no persistence. It is ideal for tests and prototypes, and it is also the mirror layer that `CacheDBProvider` keeps in sync.
+A fully in-memory [`DBProvider`](/db/DBProvider). `MemoryDBProvider` stores every collection in plain memory — fast, with no persistence. It is ideal for tests and prototypes, and it is also the mirror layer that [`CacheDBProvider`](/db/CacheDBProvider) keeps in sync.
 
 Unlike the SQL providers, `MemoryDBProvider` supports realtime sequences (`getItemSequence`, `getQuerySequence`).
 
@@ -19,9 +19,3 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
   console.log(next);
 }
 ```
-
-## See also
-
-- [DBProvider](/db/provider/DBProvider) — the abstract base.
-- [CacheDBProvider](/db/provider/CacheDBProvider) — uses a `MemoryDBProvider` as its mirror.
-- [db/provider](/db/provider) — overview of the provider hierarchy.

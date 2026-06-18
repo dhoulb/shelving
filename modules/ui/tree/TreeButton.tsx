@@ -17,11 +17,11 @@ export interface TreeButtonProps extends ButtonVariants {
 /**
  * Small button linking to a specific tree element, resolved by reference string.
  *
- * - Resolves `name` via `getTreeElement()` — by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`), falling back to the bare name for a single generic type (`"Schema<T>"` → `"Schema"`) — and links to the element's canonical `path`.
+ * - Resolves `name` via [`getTreeElement()`](/ui/getTreeElement) — by flat key (`"Store"`, `"Store.get"`) or canonical path (`"/schema/BooleanSchema"`), falling back to the bare name for a single generic type (`"Schema<T>"` → `"Schema"`) — and links to the element's canonical `path`.
  * - A hit becomes an `<a>` link; a miss (e.g. a builtin like `Serializable`, or a compound type like `Foo | null`) stays a plain non-link label so it still reads as text.
- * - Defaults to `small plain` styling; pass other `ButtonVariants` to override.
+ * - Defaults to `small plain` styling; pass other [`ButtonVariants`](/ui/ButtonVariants) to override.
  *
- * @returns A `<Button>` element linking to the resolved element, or a plain label on a miss.
+ * @returns A [`<Button>`](/ui/Button) element linking to the resolved element, or a plain label on a miss.
  * @example <TreeButton name="Store.get">Store.get()</TreeButton>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeButton/TreeButton
  */

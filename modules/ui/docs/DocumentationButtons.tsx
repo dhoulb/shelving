@@ -32,7 +32,7 @@ function* _relations({
  * Render a symbol's relational metadata as a `<nav>` column of labelled links.
  * - Each relation reads as `"{label} {Target}"` — e.g. `extends AbstractStore`, `implements Serializable`, `member of Store`.
  * - The target is a `<DocumentationButton>`, so it links to the referenced page when it exists in the tree and stays a plain label otherwise.
- * - Block spacing defaults to paragraph spacing (via `getParagraphClass`); pass `space` to override. Inner spacing is the flex gap.
+ * - Block spacing defaults to paragraph spacing (via [`getParagraphClass()`](/ui/getParagraphClass)); pass `space` to override. Inner spacing is the flex gap.
  * - Renders nothing when the symbol has no relations.
  *
  * @kind component

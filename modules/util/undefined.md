@@ -24,7 +24,3 @@ values.filter(notUndefined); // [1, 3, 5]
 assertDefined(someValue);
 const v = requireDefined(maybeValue); // returns the value or throws
 ```
-
-## See also
-
-- [util](/util) — Overview of all util helpers.

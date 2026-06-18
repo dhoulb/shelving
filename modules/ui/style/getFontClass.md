@@ -30,10 +30,3 @@ The following `:root` variables are defined by this module and can be overridden
 | Variable | Default | Used for |
 |---|---|---|
 | `--case-label` | `uppercase` | `text-transform` for labels and tags. |
-
-## See also
-
-- [`getSizeClass`](/ui/getSizeClass) — font size.
-- [`getWeightClass`](/ui/getWeightClass) — font weight.
-- [`getTypographyClass`](/ui/getTypographyClass) — combines size, weight, font, alignment, and tint.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.

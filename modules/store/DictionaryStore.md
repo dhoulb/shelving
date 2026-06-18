@@ -18,8 +18,3 @@ console.log(prices.count);        // 1
 
 for (const [key, value] of prices) console.log(key, value); // iterable over entries
 ```
-
-## See also
-
-- [Store](/store/Store) — the base class.
-- [store](/store) — overview of all store classes.

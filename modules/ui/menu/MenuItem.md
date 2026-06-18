@@ -1,11 +1,11 @@
 # MenuItem
 
-A single `<li>` link entry inside a [`Menu`](/ui/Menu). It reads the current page URL from the `Meta` context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
+A single `<li>` link entry inside a [`Menu`](/ui/Menu). It reads the current page URL from the [`Meta`](/ui/Meta) context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
 
 **Things to know:**
 
 - The first child is the link label (rendered inside the `<a>`). Any additional children form the submenu and are rendered only when the item is proud (the current URL starts with the item's `href`). Wrap that submenu in a nested [`Menu`](/ui/Menu) to get the `.menu .menu` indentation.
-- It forwards all `ClickableProps` — `href`, `onClick`, `disabled`, and so on — to the underlying [`Clickable`](/ui/Clickable).
+- It forwards all [`ClickableProps`](/ui/ClickableProps) — `href`, `onClick`, `disabled`, and so on — to the underlying [`Clickable`](/ui/Clickable).
 - `active` and `proud` are computed against the URL from [`Router`](/ui/Router) / [`Navigation`](/ui/Navigation) context.
 
 ## Usage
@@ -46,9 +46,3 @@ The item link's hooks (defined in `Menu.module.css`):
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on [`Menu`](/ui/Menu).
 
 **Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--stroke-focus`](/ui/getStrokeClass), [`--stroke-normal`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--weight-strong`](/ui/getWeightClass).
-
-## See also
-
-- [`Menu`](/ui/Menu) — the `<menu>` container these go inside
-- [`Clickable`](/ui/Clickable) — the link primitive `MenuItem` forwards its props to
-- [`Router`](/ui/Router) — provides the URL context used to compute `active`/`proud`

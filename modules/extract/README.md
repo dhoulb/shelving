@@ -4,7 +4,7 @@ Turn a folder of source files into a navigable tree of documentation. `extract` 
 
 API references and hand-written guides usually live in separate tools. `extract` unifies them: it reads files and directories from disk and produces a single [`TreeElement`](/util/tree/TreeElement) tree describing every directory, file, and exported code symbol. A directory's `README.md` becomes that directory's intro page. A TypeScript file's exports become documented symbols. A `name.md` file sitting next to `name.ts` is merged onto the same page. One tree, one site, prose and source together.
 
-Pair the tree with the [`tree components`](/ui) and you have a complete static documentation site — exactly how this site is built.
+Pair the tree with the [`shelving/ui`](/ui) and you have a complete static documentation site — exactly how this site is built.
 
 ## Concepts
 
@@ -23,7 +23,7 @@ An [`Extractor`](/extract/Extractor) converts an input into a [`TreeElement`](/u
 
 ### The tree
 
-Every extractor produces a `TreeElement` (see [`tree`](/util/tree)). There are two element types:
+Every extractor produces a [`TreeElement`](/util/tree/TreeElement) (see [`shelving/util/tree`](/util/tree)). There are two element types:
 
 - `tree-element` — a directory or a file. A directory's content is absorbed from an index file; a file's children are its exported symbols (for TypeScript). Its `source` records the absolute path it came from.
 - `tree-documentation` — one documented symbol (function, class, type, constant), carrying the `signatures`, `params`, `returns`, `throws`, and `examples` parsed from its JSDoc.
@@ -106,10 +106,3 @@ The tree components render through *mappings* — wrap a subtree to swap a rende
   <TreeApp tree={root} />
 </TreePageMapping>
 ```
-
-## See also
-
-- [`ui/tree`](/ui) — [`<TreeApp>`](/ui/TreeApp), [`<TreePage>`](/ui/TreePage), and the sidebar and menu components
-- [`ui/docs`](/ui) — the directory, file, and documentation page and card renderers
-- [`element`](/util/element) — the [`TreeElement`](/util/tree/TreeElement) types and tree-walking helpers
-- [`markup`](/markup) — renders the Markdown `content` carried by each element

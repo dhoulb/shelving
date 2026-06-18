@@ -3,7 +3,7 @@ import type { RequestOptions } from "../../util/http.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 
 /**
- * Abstract base for API providers that send requests to a set of `Endpoint` definitions rooted at a common base URL.
+ * Abstract base for API providers that send requests to a set of [`Endpoint`](/api/Endpoint) definitions rooted at a common base URL.
  * - Concrete subclasses implement `renderURL()`, `createRequest()`, `fetch()`, and `parseResponse()`; `call()` orchestrates them.
  * - Implements `AsyncDisposable` so providers can be wrapped and disposed in a chain.
  *
@@ -44,7 +44,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * - Path `{placeholders}` are rendered from `payload`
 	 * - For `GET` and `HEAD`, remaining `payload` fields are appended as `?query` params.
 	 * - For all other requests, `payload` is sent as the body.
-	 * @param options The `RequestOptions` to use when creating the `Request`, merged over the provider's own options.
+	 * @param options The [`RequestOptions`](/util/http/RequestOptions) to use when creating the `Request`, merged over the provider's own options.
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The created `Request`, including any timeout `AbortSignal` configured on the provider.
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
@@ -71,8 +71,8 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 
 	/**
 	 * Parse an HTTP `Response` for this endpoint into a result value.
-	 * - Non-2xx responses become `ResponseError`.
-	 * - Does not validate the result against the endpoint schema — use `ValidationAPIProvider` for that.
+	 * - Non-2xx responses become [`ResponseError`](/error/ResponseError).
+	 * - Does not validate the result against the endpoint schema — use [`ValidationAPIProvider`](/api/ValidationAPIProvider) for that.
 	 *
 	 * @param _endpoint The endpoint the response was produced for.
 	 * @param response The `Response` to parse.
@@ -85,12 +85,12 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	abstract parseResponse<PP extends P, RR extends R>(_endpoint: Endpoint<PP, RR>, response: Response, caller?: AnyCaller): Promise<RR>;
 
 	/**
-	 * Send a payload to an `Endpoint` and retrieve the parsed result.
+	 * Send a payload to an [`Endpoint`](/api/Endpoint) and retrieve the parsed result.
 	 * - Composes `createRequest()`, `fetch()`, and `parseResponse()` into a single round trip.
 	 *
 	 * @param endpoint The endpoint to call.
 	 * @param payload The payload to send to the endpoint.
-	 * @param options The `RequestOptions` to use, merged over the provider's own options.
+	 * @param options The [`RequestOptions`](/util/http/RequestOptions) to use, merged over the provider's own options.
 	 * @param caller The function to attribute thrown errors to.
 	 * @returns A promise resolving to the parsed result.
 	 * @throws {ResponseError} if the response status is non-2xx.

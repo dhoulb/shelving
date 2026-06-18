@@ -66,9 +66,3 @@ await cache.refreshItems(POSTS, 30_000);
 await using cache = new DBCache(provider);
 // All stores are disposed automatically when cache goes out of scope.
 ```
-
-## See also
-
-- [`db`](/db) — [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) that `CollectionCache` creates and manages
-- [`db`](/db) — [`CacheDBProvider`](/db/CacheDBProvider) whose memory layer `DBCache` reuses
-- [`react`](/react) — [`createDBContext()`](/react/createDBContext) builds a `DBCache` internally for React hooks

@@ -11,8 +11,3 @@ The following `:root` variables are defined by this module and can be overridden
 | `--duration-fast` | `150ms` | Snappy UI feedback — hovers, small toggles. |
 | `--duration-normal` | `300ms` | Default transitions. |
 | `--duration-slow` | `600ms` | Deliberate, large movements. |
-
-## See also
-
-- [`Transition`](/ui/Transition) — the enter/leave animation component that reads these.
-- [`ui`](/ui) — the styling-system overview and the full list of base token pages.

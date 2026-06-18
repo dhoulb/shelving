@@ -454,8 +454,11 @@ i.e. ``[`nameOfToken`](/canonical/path)``. This is mandatory for **"See also" li
 | Property | leading dot | `.value` |
 | Component | angle brackets | `<Section>` |
 | Class / interface / type / constant | bare name | `BooleanSchema`, `STRING` |
+| Module | `shelving/` package prefix | `shelving/schema`, `shelving/firestore/client` |
 
 So a linked reference reads ``[`<Section>`](/ui/Section)``, ``[`formatDate()`](/util/format/formatDate)``, ``[`.validate()`](/schema/BooleanSchema/validate)``, or ``[`.value`](/store/Store/value)``. Apply the same styling to unlinked mentions (e.g. a builtin or external symbol with no page) so the kind is still obvious.
+
+**Module links carry the `shelving/` package prefix.** When the link *target* is a whole-module page rather than a token — a top-level `/<module>` (`/schema`, `/db`, `/store`, `/ui`, …), a per-file `/firestore/<file>` (`/firestore/client`), or a per-file `/util/<file>` (`/util/array`) — the backtick-quoted link text is the **importable package subpath**, not the bare module name: ``[`shelving/schema`](/schema)``, ``[`shelving/firestore/client`](/firestore/client)``, ``[`shelving/util/array`](/util/array)``. This matches the `import { … } from "shelving/schema"` specifier a user actually types, and the module page's own title — [`PackageExtractor`](/extract/PackageExtractor) builds each module title by prefixing the package `name` (so `ui` renders as `shelving/ui`). Never link a module as a bare ``[`schema`](/schema)``; the `shelving/` prefix is what distinguishes a module reference from a same-named token. (Token links keep the token's own display style above — only the path's *kind*, module vs token, decides whether the prefix applies.)
 
 **Generics belong in the link text.** When a token is referenced with its generic parameters, keep the whole thing inside one backtick-quoted link — ``[`Schema<T>`](/schema/Schema)``, ``[`ItemStore<I, T>`](/db/ItemStore)`` — not the bare name linked with the generics trailing in a second code span (``[`Schema`](/schema/Schema)`<T>``), which renders as two separate, awkwardly-split chips. The path still targets the bare token; only the displayed name carries the generics.
 

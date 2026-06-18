@@ -23,9 +23,3 @@ import { RouteCache } from "shelving/ui";
   </RouteCache>
 </SidebarLayout>
 ```
-
-## See also
-
-- [`SidebarLayout`](/ui/SidebarLayout) / [`CenteredLayout`](/ui/CenteredLayout) — wrap their scrollable content column in a `<RouteCache>` for you
-- [`Router`](/ui/Router) — matches a URL to a route; render it inside a `<RouteCache>` to keep pages alive
-- [`Navigation`](/ui/Navigation) — drives the URL changes that move between cached pages

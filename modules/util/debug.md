@@ -2,8 +2,8 @@
 
 Convert any JavaScript value to a readable debug string. Use these when building error messages, logging, or printing diagnostic output — they produce compact, human-readable representations without relying on `JSON.stringify` (which omits `undefined`, symbols, functions, and circular refs).
 
-- `debug` dispatches to the specialised helpers below based on the value's type; pass a `depth` argument to control how deeply nested structures are expanded (default `1`).
-- `debugFullRequest` and `debugFullResponse` are async because they read the body stream; they clone the message first so the original remains usable.
+- [`debug()`](/util/debug/debug) dispatches to the specialised helpers below based on the value's type; pass a `depth` argument to control how deeply nested structures are expanded (default `1`).
+- [`debugFullRequest()`](/util/debug/debugFullRequest) and [`debugFullResponse()`](/util/debug/debugFullResponse) are async because they read the body stream; they clone the message first so the original remains usable.
 - Body reads are capped at 64 KB — larger bodies are truncated with a `[truncated at N bytes]` note.
 
 ## Usage
@@ -53,7 +53,3 @@ import { indent } from "shelving/util";
 indent("single line");    // " single line"  (leading space)
 indent("line1\nline2");   // "\n\tline1\n\tline2"
 ```
-
-## See also
-
-- [util](/util) — full util module overview

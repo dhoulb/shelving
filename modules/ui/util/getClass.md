@@ -4,9 +4,9 @@ Joins any mix of class inputs into a single `className` string. These two helper
 
 **Things to know:**
 
-- `getClass(...classes)` accepts strings, `null` / `undefined` (ignored), nested arrays, and `Variants` objects. A `Variants` object is a plain boolean dictionary: keys whose value is strictly `true` are included, all others ignored — so you can pass component `props` straight through and boolean variant flags are picked up automatically.
+- `getClass(...classes)` accepts strings, `null` / `undefined` (ignored), nested arrays, and [`Variants`](/ui/Variants) objects. A `Variants` object is a plain boolean dictionary: keys whose value is strictly `true` are included, all others ignored — so you can pass component `props` straight through and boolean variant flags are picked up automatically.
 - `getModuleClass(module, ...classes)` does the same but maps each resolved class through a CSS module dictionary, yielding only the hashed names that exist in the module. If `module` is a string (the environment doesn't process `.module.css` files) it returns `undefined` silently, so components degrade gracefully.
-- The `Classes` type describes every accepted input form: `string | null | undefined | Classes[] | Variants`.
+- The [`Classes`](/ui/Classes) type describes every accepted input form: `string | null | undefined | Classes[] | Variants`.
 
 ## Usage
 
@@ -48,8 +48,3 @@ export function Button({ children, ...variants }: ButtonProps): ReactElement {
   );
 }
 ```
-
-## See also
-
-- [`requireContext`](/ui/requireContext) — the other helper at the heart of the component layer.
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

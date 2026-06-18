@@ -26,9 +26,3 @@ function Details({ open }: { open: boolean }) {
 This preset exposes no own `--collapse-transition-*` hooks. Its `CollapseTransition.css` only sets `overflow: hidden` on `::view-transition-image-pair(.collapse)` so the collapsing content is clipped.
 
 **Global tokens it reads** — none.
-
-## See also
-
-- [`Transition`](/ui/Transition) — the base wrapper and `overlay` variant
-- [`FadeTransition`](/ui/FadeTransition) — opacity-based alternative
-- [`VerticalTransition`](/ui/VerticalTransition) / [`HorizontalTransition`](/ui/HorizontalTransition) — direction-aware slides

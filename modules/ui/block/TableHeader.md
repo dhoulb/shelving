@@ -6,7 +6,7 @@ A table header cell — renders a `<th>`. Use it for the header row of a [`Table
 
 - Set the column's width with the `width` variant — `width="fit"` hugs the content. Because a cell (unlike a `<col>`) honours `min-width`, `width="12x" grow` gives the column a *hard* minimum it can grow past, so the table scrolls rather than collapsing the column on a narrow screen. See [`getWidthClass`](/ui/getWidthClass).
 - A column's width is the widest of its cells, so sizing the `<th>` sizes the whole column — set the width once on the header instead of on every body cell.
-- Carries the same [typography variants](/ui/getTypographyClass) as the prose components (`size`, `weight`, `font`, `tint`, alignment), though the `Table` already styles header cells in the label style by default.
+- Carries the same [typography variants](/ui/getTypographyClass) as the prose components (`size`, `weight`, `font`, `tint`, alignment), though the [`<Table>`](/ui/Table) already styles header cells in the label style by default.
 - For a column that has no header, set the width on its [`TableCell`](/ui/TableCell)s instead.
 
 ## Usage
@@ -35,9 +35,3 @@ import { Table, TableCell, TableHeader } from "shelving/ui";
 ## Styling
 
 `TableHeader` paints nothing of its own — it composes the [`width`](/ui/getWidthClass) and [`typography`](/ui/getTypographyClass) variants onto a `<th>`, and inherits the header styling (label font, borders, padding) from the surrounding [`Table`](/ui/Table). It exposes no hooks of its own.
-
-## See also
-
-- [`TableCell`](/ui/TableCell) — the `<td>` equivalent for body cells.
-- [`Table`](/ui/Table) — the table the cells belong to.
-- [`getWidthClass`](/ui/getWidthClass) — the full `width` / `grow` variant reference.

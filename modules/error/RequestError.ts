@@ -1,6 +1,6 @@
 import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./BaseError.js";
 
-/** Options for `RequestError`. */
+/** Options for [`RequestError`](/error/RequestError). */
 interface RequestErrorOptions extends BaseErrorOptions {
 	readonly code?: number;
 }
@@ -8,7 +8,7 @@ interface RequestErrorOptions extends BaseErrorOptions {
 /**
  * Throw when a request isn't well-formed or is unacceptable in some way.
  * - Carries an HTTP-style `code` in the `400-499` client-error range (defaults to `400`).
- * - Base class for the specific request errors in this file (`UnauthorizedError`, `NotFoundError`, etc.).
+ * - Base class for the specific request errors in this file ([`UnauthorizedError`](/error/UnauthorizedError), [`NotFoundError`](/error/NotFoundError), etc.).
  *
  * @example
  * 	throw new RequestError("Bad request", { code: 400 });
@@ -29,7 +29,7 @@ export class RequestError extends Error implements BaseError {
 	 * Create a new `RequestError`.
 	 *
 	 * @param message Optional human-readable description of why the request was rejected.
-	 * @param options Optional options — `code` sets the HTTP status (defaults to `400`); `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` sets the HTTP status (defaults to `400`); `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, { code = 400, ...options }: RequestErrorOptions = {}) {
 		super(message, options);
@@ -52,7 +52,7 @@ export class UnauthorizedError extends RequestError {
 	 * Create a new `UnauthorizedError` with HTTP status `401`.
 	 *
 	 * @param message Optional human-readable description of the authorization failure.
-	 * @param options Optional options — `code` defaults to `401`; `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` defaults to `401`; `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: UnauthorizedError, code: 401, ...options });
@@ -73,7 +73,7 @@ export class NotFoundError extends RequestError {
 	 * Create a new `NotFoundError` with HTTP status `404`.
 	 *
 	 * @param message Optional human-readable description of what was not found.
-	 * @param options Optional options — `code` defaults to `404`; `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` defaults to `404`; `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: NotFoundError, code: 404, ...options });
@@ -94,7 +94,7 @@ export class UnprocessableError extends RequestError {
 	 * Create a new `UnprocessableError` with HTTP status `422`.
 	 *
 	 * @param message Optional human-readable description of why the data could not be processed.
-	 * @param options Optional options — `code` defaults to `422`; `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` defaults to `422`; `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: UnprocessableError, code: 422, ...options });
@@ -115,7 +115,7 @@ export class ForbiddenError extends RequestError {
 	 * Create a new `ForbiddenError` with HTTP status `403`.
 	 *
 	 * @param message Optional human-readable description of the privilege failure.
-	 * @param options Optional options — `code` defaults to `403`; `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` defaults to `403`; `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: ForbiddenError, code: 403, ...options });
@@ -136,7 +136,7 @@ export class MethodNotAllowedError extends RequestError {
 	 * Create a new `MethodNotAllowedError` with HTTP status `405`.
 	 *
 	 * @param message Optional human-readable description of the unsupported method.
-	 * @param options Optional options — `code` defaults to `405`; `caller` and contextual fields are applied via `setBaseErrorOptions()`.
+	 * @param options Optional options — `code` defaults to `405`; `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
 	 */
 	constructor(message?: string, options?: RequestErrorOptions) {
 		super(message, { caller: MethodNotAllowedError, code: 405, ...options });

@@ -1,10 +1,10 @@
 # createDBContext
 
-Create a React context for a Shelving [database](/db) provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory `DBCache`; if the provider chain includes a `CacheDBProvider`, the returned stores reuse that cached data.
+Create a React context for a Shelving [`shelving/db`](/db) provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory [`DBCache`](/db/DBCache); if the provider chain includes a [`CacheDBProvider`](/db/CacheDBProvider), the returned stores reuse that cached data.
 
 ## Usage
 
-Wrap your tree in the context component, then call `useItem` for a single document or `useQuery` for a collection query. Both return a store (`ItemStore` / `QueryStore`); read `.value` to get the data — the component suspends while loading.
+Wrap your tree in the context component, then call `useItem` for a single document or `useQuery` for a collection query. Both return a store ([`ItemStore`](/db/ItemStore) / [`QueryStore`](/db/QueryStore)); read `.value` to get the data — the component suspends while loading.
 
 ```tsx
 import { Suspense } from "react";
@@ -37,10 +37,4 @@ function App() {
 }
 ```
 
-Both hooks accept nullish arguments — passing `undefined` for the collection, id, or query returns `undefined` instead of a store, keeping the hook call unconditional. Calling either hook outside a `<DBContext>` throws a `RequiredError`.
-
-## See also
-
-- [createAPIContext](/react/createAPIContext) — the same pattern for an API provider.
-- [db](/db) — `DBProvider`, `DBCache`, `Collection`, `ItemStore`, and `QueryStore`.
-- [react](/react) — overview of all React hooks and context helpers.
+Both hooks accept nullish arguments — passing `undefined` for the collection, id, or query returns `undefined` instead of a store, keeping the hook call unconditional. Calling either hook outside a `<DBContext>` throws a [`RequiredError`](/error/RequiredError).

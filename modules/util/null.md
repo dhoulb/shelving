@@ -30,7 +30,3 @@ values.filter(notNull); // string[]
 // getNull is useful as a no-op factory.
 const fallback = getNull; // () => null
 ```
-
-## See also
-
-- [util](/util) — full util module overview.

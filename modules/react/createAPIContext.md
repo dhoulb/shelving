@@ -1,10 +1,10 @@
 # createAPIContext
 
-Create a React context for a Shelving [API](/api) provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory `APICache`, so independent subtrees can use independent providers.
+Create a React context for a Shelving [`shelving/api`](/api) provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory [`APICache`](/api/APICache), so independent subtrees can use independent providers.
 
 ## Usage
 
-Wrap your tree in the context component and call `useAPI(endpoint, payload)` wherever you need data. `useAPI` returns an `EndpointStore`; read `.value` to get the response — the component suspends while loading and surfaces errors to the nearest error boundary.
+Wrap your tree in the context component and call `useAPI(endpoint, payload)` wherever you need data. `useAPI` returns an [`EndpointStore`](/api/EndpointStore); read `.value` to get the response — the component suspends while loading and surfaces errors to the nearest error boundary.
 
 ```tsx
 import { Suspense } from "react";
@@ -37,10 +37,4 @@ function App() {
 }
 ```
 
-`useAPI` accepts a nullish endpoint — passing `undefined` returns `undefined` instead of a store, which keeps the hook call unconditional. Calling `useAPI` outside an `<APIContext>` throws a `RequiredError`.
-
-## See also
-
-- [createDBContext](/react/createDBContext) — the same pattern for a database provider.
-- [api](/api) — `APIProvider`, `APICache`, `Endpoint`, and `EndpointStore`.
-- [react](/react) — overview of all React hooks and context helpers.
+`useAPI` accepts a nullish endpoint — passing `undefined` returns `undefined` instead of a store, which keeps the hook call unconditional. Calling `useAPI` outside an `<APIContext>` throws a [`RequiredError`](/error/RequiredError).

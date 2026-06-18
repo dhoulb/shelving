@@ -20,9 +20,4 @@ console.log(tags.exists);  // true
 for (const tag of tags) console.log(tag); // ArrayStore is iterable
 ```
 
-Use `.optionalFirst` / `.optionalLast` instead of `.first` / `.last` to get `undefined` rather than a thrown `RequiredError` when the array is empty.
-
-## See also
-
-- [Store](/store/Store) — the base class.
-- [store](/store) — overview of all store classes.
+Use `.optionalFirst` / `.optionalLast` instead of `.first` / `.last` to get `undefined` rather than a thrown [`RequiredError`](/error/RequiredError) when the array is empty.

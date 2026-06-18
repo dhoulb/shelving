@@ -14,7 +14,7 @@ export interface Sourceable<T> {
 }
 
 /**
- * Recurse through `Sourceable` objects and return the first one that is an instance of `type`, or `undefined` if no source object matches.
+ * Recurse through [`Sourceable`](/util/source/Sourceable) objects and return the first one that is an instance of `type`, or `undefined` if no source object matches.
  * - Follows the `source` property chain (e.g. layered providers) until a matching instance is found.
  *
  * @param type The class to search for an instance of.
@@ -31,8 +31,8 @@ export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
 }
 
 /**
- * Recurse through `Sourceable` objects and return the first one that is an instance of `type`, or throw `RequiredError` if no source object matches.
- * - Like `getSource`, but throws instead of returning `undefined` when no match is found.
+ * Recurse through [`Sourceable`](/util/source/Sourceable) objects and return the first one that is an instance of `type`, or throw [`RequiredError`](/error/RequiredError) if no source object matches.
+ * - Like [`getSource()`](/util/source/getSource), but throws instead of returning `undefined` when no match is found.
  *
  * @param type The class to search for an instance of.
  * @param data The object to start searching from.

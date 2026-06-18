@@ -1,6 +1,6 @@
 # App
 
-Root component for a client-side Shelving app. `<App>` applies the theme CSS class to `document.body` and provides a `Meta` context so every descendant can read or update page metadata.
+Root component for a client-side Shelving app. `<App>` applies the theme CSS class to `document.body` and provides a [`Meta`](/ui/Meta) context so every descendant can read or update page metadata.
 
 Use `<App>` when mounting into an existing HTML page on the client. For server-side rendering where you need the full `<html>` document shell, use [`HTML`](/ui/HTML) instead.
 
@@ -46,13 +46,6 @@ export function MyApp() {
 }
 ```
 
-`<App>` accepts all `PossibleMeta` props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
+`<App>` accepts all [`PossibleMeta`](/ui/PossibleMeta) props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
 
-For a documentation site, hand an extracted tree to [`TreeApp`](/ui/TreeApp) instead — see the [extract](/extract) guide.
-
-## See also
-
-- [`HTML`](/ui/HTML) — the full `<html>` document shell for server-side rendering (vs. `<App>` for client mounts).
-- [`Navigation`](/ui/Navigation) and [`Router`](/ui/Router) — client-side routing wrapped inside the app.
-- [`CenteredLayout`](/ui/CenteredLayout) and [`SidebarLayout`](/ui/SidebarLayout) — the page layouts that go inside an app.
-- [`TreeApp`](/ui/TreeApp) — a ready-made documentation-site root built on the same pieces.
+For a documentation site, hand an extracted tree to [`TreeApp`](/ui/TreeApp) instead — see the [`shelving/extract`](/extract) guide.

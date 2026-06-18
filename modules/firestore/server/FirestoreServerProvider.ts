@@ -66,7 +66,7 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 }
 
 /**
- * Cloud Firestore database provider backed by the Firebase Admin SDK, implementing the `DBProvider` abstraction.
+ * Cloud Firestore database provider backed by the Firebase Admin SDK, implementing the [`DBProvider`](/db/DBProvider) abstraction.
  *
  * - Runs server-side via `@google-cloud/firestore` (the Firebase Admin SDK for Node.JS).
  * - Supports realtime subscriptions through Firestore `onSnapshot` listeners.

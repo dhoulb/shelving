@@ -12,7 +12,7 @@ import type { SchemaOptions, Schemas } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
 /**
- * Options for `DataSchema`.
+ * Options for [`DataSchema`](/schema/DataSchema).
  *
  * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchemaOptions
  */
@@ -27,7 +27,7 @@ export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
  * Schema that validates a data object against a fixed set of named property schemas.
  *
  * - Each property is validated by its own schema in `props`.
- * - Excess keys are stripped and `undefined` outputs removed (via `validateData()`).
+ * - Excess keys are stripped and `undefined` outputs removed (via [`validateData()`](/util/validate/validateData)).
  *
  * @example
  *  const schema = new DataSchema({ props: { name: STRING, age: NUMBER } });
@@ -103,7 +103,7 @@ function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value
 }
 
 /**
- * Create a `DataSchema` for a set of properties.
+ * Create a [`DataSchema`](/schema/DataSchema) for a set of properties.
  *
  * Sugar factory for [`DataSchema`](/schema/DataSchema).
  *
@@ -129,7 +129,7 @@ export function NULLABLE_DATA<T extends Data>(props: Schemas<T>): NullableSchema
 }
 
 /**
- * Create a `DataSchema` that validates partially, i.e. every property can be its value or `undefined`.
+ * Create a [`DataSchema`](/schema/DataSchema) that validates partially, i.e. every property can be its value or `undefined`.
  *
  * Sugar factory for [`DataSchema`](/schema/DataSchema).
  *
@@ -150,7 +150,7 @@ function _optionalProp([, v]: Prop<Schemas<Data>>): Schema<unknown> {
 }
 
 /**
- * Create a `DataSchema` that validates a data item, i.e. it has a string or number `.id` identifier property.
+ * Create a [`DataSchema`](/schema/DataSchema) that validates a data item, i.e. it has a string or number `.id` identifier property.
  *
  * Sugar factory for [`DataSchema`](/schema/DataSchema).
  *

@@ -33,7 +33,7 @@ export type UITint =
 	| "100";
 
 /**
- * Text-alignment variant props — opt-in modifiers any prose component can mix in via `getTypographyClass()`.
+ * Text-alignment variant props — opt-in modifiers any prose component can mix in via [`getTypographyClass()`](/ui/getTypographyClass).
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/AlignVariants
  */

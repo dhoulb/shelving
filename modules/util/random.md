@@ -5,7 +5,7 @@ Small utilities for generating random numbers, characters, and short human-reada
 **Things to know:**
 
 - These helpers use `Math.random()` — they are **not** cryptographically secure.
-- `getRandomKey()` omits visually ambiguous characters (`i`, `l`, `o`, `u`) to improve readability.
+- [`getRandomKey()`](/util/random/getRandomKey) omits visually ambiguous characters (`i`, `l`, `o`, `u`) to improve readability.
 - Random keys can clash. Check for an existing record before saving one as a database ID.
 
 ## Usage

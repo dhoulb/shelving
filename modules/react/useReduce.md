@@ -19,8 +19,3 @@ const stable = useReduce((prev, next) => {
 ```
 
 Here `stable` keeps the same reference for as long as the incoming value is deeply equal, even though `incoming` is a fresh object each render.
-
-## See also
-
-- [useLazy](/react/useLazy) — memoise a factory call by deep-equality of its arguments.
-- [react](/react) — overview of all React hooks and context helpers.

@@ -14,7 +14,7 @@ export interface EntitySchemaOptions<T extends string> extends StringSchemaOptio
 }
 
 /**
- * Schema that validates an `Entity` string combining a type and ID, e.g. `challenge:a1b2c3`.
+ * Schema that validates an [`Entity`](/util/entity/Entity) string combining a type and ID, e.g. `challenge:a1b2c3`.
  *
  * - The input must contain both a type and an ID separated by `:`, otherwise it is rejected.
  * - When `types` is set, the entity's type must be one of the allowed types.
@@ -37,11 +37,11 @@ export class EntitySchema<T extends string> extends StringSchema {
 	}
 
 	/**
-	 * Validate an unknown value as an `Entity` string with a valid type and ID.
+	 * Validate an unknown value as an [`Entity`](/util/entity/Entity) string with a valid type and ID.
 	 *
 	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
 	 * @returns The valid `Entity` string.
-	 * @throws `string` `"Must be entity"` if the value lacks a type and ID, or `"Invalid entity type"` if its type is not in the allowed `types`. Also throws any `string` from the underlying `StringSchema`.
+	 * @throws `string` `"Must be entity"` if the value lacks a type and ID, or `"Invalid entity type"` if its type is not in the allowed `types`. Also throws any `string` from the underlying [`StringSchema`](/schema/StringSchema).
 	 * @example schema.validate("challenge:a1b2c3") // "challenge:a1b2c3"
 	 * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchema/validate
 	 */

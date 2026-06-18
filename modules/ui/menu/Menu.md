@@ -43,9 +43,3 @@ import { Menu, MenuItem } from "shelving/ui";
 Item-state hooks (`--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on [`MenuItem`](/ui/MenuItem).
 
 **Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-50`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass) / [`--space-xsmall`](/ui/getSpaceClass), [`--font-body`](/ui/getFontClass), [`--size-normal`](/ui/getSizeClass), [`--leading`](/ui/getSizeClass), and [`--stroke-focus`](/ui/getStrokeClass).
-
-## See also
-
-- [`MenuItem`](/ui/MenuItem) — the individual link entries
-- [`SidebarLayout`](/ui/SidebarLayout) — renders a `<nav>` that typically contains a `<Menu>`
-- [`Router`](/ui/Router) — provides the URL context items read

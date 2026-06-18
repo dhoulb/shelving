@@ -14,7 +14,7 @@ import { Row } from "../style/Flex.js";
 import { TreeCards } from "./TreeCards.js";
 import { useTreeMap } from "./TreeContext.js";
 
-/** Canonical URL path of the `TreeIndexPage`, wired as a `<TreeApp>` fallback route. */
+/** Canonical URL path of the [`TreeIndexPage`](/ui/TreeIndexPage), wired as a [`<TreeApp>`](/ui/TreeApp) fallback route. */
 export const TREE_INDEX_PATH = "/all" as AbsolutePath;
 
 /** Title shown for the index page. */
@@ -23,7 +23,7 @@ const INDEX_TITLE = "All elements";
 /** Description shown for the index page (page `<meta>` description). */
 const INDEX_DESCRIPTION = "Search every documented element in the system.";
 
-/** Kinds offered as filter chips, in display order — mirrors `DocumentationPage`'s sections. */
+/** Kinds offered as filter chips, in display order — mirrors [`DocumentationPage`](/ui/DocumentationPage)'s sections. */
 const INDEX_KINDS = ["component", "function", "class", "interface", "type", "constant", "method", "property"];
 
 /** Cap on the flat listing when there's no query — keeps "show everything" sane. */
@@ -32,14 +32,14 @@ const INDEX_LIMIT = 100;
 /**
  * Page listing every element in the system in one flat, searchable view.
  *
- * - A `<TextInput>` filters as you type; a row of kind checkboxes narrows by `kind` via `searchTree`'s `filter`.
+ * - A [`<TextInput>`](/ui/TextInput) filters as you type; a row of kind checkboxes narrows by `kind` via [`searchTree`](/util/tree/searchTree)'s `filter`.
  * - The kind checkboxes are multi-select — ticking several narrows to a `kind IN […]` filter; ticking none shows every kind.
  * - An empty query lists everything (capped at 100); a non-empty query ranks with `searchTree` and caps at 20.
- * - Reads the whole tree from the surrounding `<TreeProvider>` (the flattened map's root), so it works on every page.
- * - Wired as a `<TreeApp>` fallback route at `TREE_INDEX_PATH` (`/all`) — it's not a node in the tree.
+ * - Reads the whole tree from the surrounding [`<TreeProvider>`](/ui/TreeProvider) (the flattened map's root), so it works on every page.
+ * - Wired as a [`<TreeApp>`](/ui/TreeApp) fallback route at [`TREE_INDEX_PATH`](/ui/TREE_INDEX_PATH) (`/all`) — it's not a node in the tree.
  *
  * @kind component
- * @returns A `<Page>` with a search input, kind checkboxes, and a flat card listing of results.
+ * @returns A [`<Page>`](/ui/Page) with a search input, kind checkboxes, and a flat card listing of results.
  * @example <Router routes={{ [TREE_INDEX_PATH]: TreeIndexPage }} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeIndexPage/TreeIndexPage
  */

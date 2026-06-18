@@ -2,7 +2,7 @@
 
 A sequence that external code drives on demand. Call `resolve(value)` to publish the next value to every active iterator, `reject(reason)` to publish an error, or `done()` to end iteration cleanly. Calling `cancel()` discards a queued resolution without advancing iterators.
 
-`DeferredSequence` is also a `Promise`, so you can `await` it directly to get just the next value without a loop. It is the primitive [`Store`](/store) uses internally to broadcast changes.
+`DeferredSequence` is also a `Promise`, so you can `await` it directly to get just the next value without a loop. It is the primitive [`shelving/store`](/store) uses internally to broadcast changes.
 
 ## Usage
 
@@ -31,9 +31,3 @@ Because `DeferredSequence` implements `Promise`, you can `await` it for a single
 ```ts
 const next = await seq; // resolves when resolve() is next called
 ```
-
-## See also
-
-- [Sequence](/sequence/Sequence) — the abstract base class.
-- [store](/store) — `Store` broadcasts changes through a `DeferredSequence`.
-- [sequence](/sequence) — overview of all sequence primitives.

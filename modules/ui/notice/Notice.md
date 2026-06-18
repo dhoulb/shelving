@@ -4,9 +4,9 @@ A block-level status callout with an icon and message, used to highlight feedbac
 
 **Things to know:**
 
-- Shows a `<StatusIcon>` for the current `status` by default; pass `icon` to override, or `false` / `null` to hide it.
+- Shows a [`<StatusIcon>`](/ui/StatusIcon) for the current `status` by default; pass `icon` to override, or `false` / `null` to hide it.
 - Sets an ARIA `role` of `"alert"` for `error` / `danger` statuses, otherwise `"status"`.
-- `LOADING_NOTICE` is a shared `<Notice status="loading" />` element ready to drop into `Suspense` fallbacks.
+- [`LOADING_NOTICE`](/ui/LOADING_NOTICE) is a shared `<Notice status="loading" />` element ready to drop into `Suspense` fallbacks.
 
 ## Usage
 
@@ -44,10 +44,3 @@ import { LOADING_NOTICE } from "shelving/ui";
 | `--notice-weight` | Font weight | `var(--weight-strong)` |
 
 **Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS), plus [`--space-paragraph`](/ui/getSpaceClass), [`--space-small`](/ui/getSpaceClass), [`--radius-xsmall`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--size-normal`](/ui/getSizeClass), and [`--weight-strong`](/ui/getWeightClass).
-
-## See also
-
-- [`Notices`](/ui/Notices) — the global list that renders incoming notices as `<Notice>` elements.
-- [`StatusIcon`](/ui/StatusIcon) — the default icon shown for the notice's status.
-- [`notify`](/ui/notify) — dispatch notices into the global `<Notices>` list.
-- [`ui`](/ui) — the styling system: tint ladder, cascade layers, and theming.

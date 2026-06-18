@@ -41,11 +41,4 @@ import { List } from "shelving/ui";
 | `--list-indent` | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
 | `--list-marker-color` | Bullet / number colour | `var(--tint-80)` |
 
-**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), and the tint-ladder step [`--tint-80`](/ui/TINT_CLASS). The `gap` variant comes from the shared [`ui`](/ui) styling system.
-
-## See also
-
-- [`Definitions`](/ui/Definitions) — term/value pairs in a styled `<dl>` when a key/value list is needed.
-- [`Paragraph`](/ui/Paragraph) — body text that sits alongside lists.
-- [`Prose`](/ui/Prose) — styles raw `<ul>` / `<ol>` inside longform content.
-- [`ui`](/ui) — the styling system: gap and tint variants, and theming.
+**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), and the tint-ladder step [`--tint-80`](/ui/TINT_CLASS). The `gap` variant comes from the shared [`shelving/ui`](/ui) styling system.

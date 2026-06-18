@@ -4,7 +4,7 @@
 
 ## When to use this
 
-Choose [`firestore/server`](/firestore/server) for server-side code. It uses the `@google-cloud/firestore` package directly (the same driver the Admin SDK uses) rather than the browser-oriented Firebase JS SDK. It supports realtime subscriptions and uses `BulkWriter` for efficient bulk mutations.
+Choose [`shelving/firestore/server`](/firestore/server) for server-side code. It uses the `@google-cloud/firestore` package directly (the same driver the Admin SDK uses) rather than the browser-oriented Firebase JS SDK. It supports realtime subscriptions and uses `BulkWriter` for efficient bulk mutations.
 
 ## Install
 
@@ -50,10 +50,3 @@ const provider = new FirestoreServerProvider();
 ## Bulk query mutations
 
 [`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), and [`.deleteQuery()`](/db/DBProvider/deleteQuery) use `BulkWriter` for efficient batched writes. Documents are fetched in pages of 1000 using `select()` (a field-mask query with no fields) to minimise data transfer, and writes are flushed as each page is processed.
-
-## See also
-
-- [`firestore`](/firestore/client) — provider comparison and parent module overview
-- [`firestore/client`](/firestore/client) — full Firebase JS SDK for browser use
-- [`firestore/lite`](/firestore/lite) — lighter browser SDK without realtime
-- [`db`](/db) — [`DBProvider`](/db/DBProvider) base class, [`Collection`](/db/Collection), and query syntax
