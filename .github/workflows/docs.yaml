@@ -42,7 +42,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: install
         run: bun install
-      # Resolve the URL the build will be served from — reused as the deployment environment URL.
+      # Resolve the URL the build is served from — the single source for both the deployment
+      # `environment.url` (above) and `APP_URL` (below). Includes the `pr-<number>/` subfolder for PRs.
       - name: url
         id: url
         run: |
@@ -51,14 +52,10 @@ jobs:
           else
             echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
           fi
-      # APP_URL must match where the build is actually served so links and assets resolve correctly.
-      - name: build (main)
-        if: github.event_name != 'pull_request'
-        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" bun run docs:build
-      # PR previews are served from the `pr-<number>/` sub-directory, so the build resolves against that.
-      - name: build (preview)
-        if: github.event_name == 'pull_request'
-        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}" bun run docs:build
+      # `APP_URL` must match where the build is served so links and assets resolve; the docs build
+      # normalises it to a trailing slash (see `docs/env.ts`), so the resolved URL above feeds it directly.
+      - name: build
+        run: APP_URL="${{ steps.url.outputs.url }}" bun run docs:build
       # `keep_files: true` leaves every existing `pr-<number>/` preview untouched. Do NOT add
       # `exclude_assets: pr-*` here — peaceiris's `exclude_assets` runs `rm -rf` on matching
       # paths in the publish branch, so it would delete every PR preview on each main deploy.
