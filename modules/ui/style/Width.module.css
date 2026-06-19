@@ -4,133 +4,66 @@
 @layer defaults {
 	:root {
 		/* Semantic widths */
-		--width-narrow: 35rem;
-		--width-normal: 55rem;
-		--width-wide: 75rem;
+		--width-xxnarrow: 16rem;
+		--width-xnarrow: 24rem;
+		--width-narrow: 36rem;
+		--width-normal: 48rem;
+		--width-wide: 80rem;
+		--width-xwide: 96rem;
+		--width-xxwide: 112rem;
+		--width-xxxwide: 128rem;
 	}
 
 	/* Frame shared by every width value (weak default — a component's own margin can still beat the centering). */
 	.width {
 		box-sizing: border-box;
-		max-inline-size: 100%;
+		max-width: 100%;
 		margin-inline: auto;
 	}
 }
 
 @layer variants {
-	/* Apply the chosen value (set as `--width` by the value classes below). */
 	.width {
-		inline-size: var(--width, auto);
+		width: var(--width);
 	}
 
 	/* Semantic widths. */
-	.narrow {
+	.width-xxnarrow {
+		--width: var(--width-xxnarrow);
+	}
+	.width-xnarrow {
+		--width: var(--width-xnarrow);
+	}
+	.width-narrow {
 		--width: var(--width-narrow);
 	}
-	.normal {
+	.width-normal {
 		--width: var(--width-normal);
 	}
-	.wide {
+	.width-wide {
 		--width: var(--width-wide);
 	}
-	.full {
+	.width-xwide {
+		--width: var(--width-xwide);
+	}
+	.width-xxwide {
+		--width: var(--width-xxwide);
+	}
+	.width-full {
 		--width: 100%;
-		margin-inline: 0;
 	}
-	.fit {
+	.width-fit {
 		--width: fit-content;
-	}
-
-	/* Numeric exact widths — multiples of `--space-normal` (16px). */
-	.\31 x {
-		--width: calc(var(--space-normal) * 1);
-	}
-	.\32 x {
-		--width: calc(var(--space-normal) * 2);
-	}
-	.\33 x {
-		--width: calc(var(--space-normal) * 3);
-	}
-	.\34 x {
-		--width: calc(var(--space-normal) * 4);
-	}
-	.\35 x {
-		--width: calc(var(--space-normal) * 5);
-	}
-	.\36 x {
-		--width: calc(var(--space-normal) * 6);
-	}
-	.\37 x {
-		--width: calc(var(--space-normal) * 7);
-	}
-	.\38 x {
-		--width: calc(var(--space-normal) * 8);
-	}
-	.\31 0x {
-		--width: calc(var(--space-normal) * 10);
-	}
-	.\31 2x {
-		--width: calc(var(--space-normal) * 12);
-	}
-	.\31 4x {
-		--width: calc(var(--space-normal) * 14);
-	}
-	.\31 6x {
-		--width: calc(var(--space-normal) * 16);
-	}
-	.\32 0x {
-		--width: calc(var(--space-normal) * 20);
-	}
-	.\32 4x {
-		--width: calc(var(--space-normal) * 24);
-	}
-	.\32 8x {
-		--width: calc(var(--space-normal) * 28);
-	}
-	.\33 2x {
-		--width: calc(var(--space-normal) * 32);
-	}
-	.\34 0x {
-		--width: calc(var(--space-normal) * 40);
-	}
-	.\34 8x {
-		--width: calc(var(--space-normal) * 48);
-	}
-	.\35 6x {
-		--width: calc(var(--space-normal) * 56);
-	}
-	.\36 4x {
-		--width: calc(var(--space-normal) * 64);
-	}
-	.\37 2x {
-		--width: calc(var(--space-normal) * 72);
-	}
-	.\38 0x {
-		--width: calc(var(--space-normal) * 80);
-	}
-	.\38 8x {
-		--width: calc(var(--space-normal) * 88);
-	}
-	.\39 6x {
-		--width: calc(var(--space-normal) * 96);
-	}
-	.\31 04x {
-		--width: calc(var(--space-normal) * 104);
-	}
-	.\31 12x {
-		--width: calc(var(--space-normal) * 112);
-	}
-	.\31 20x {
-		--width: calc(var(--space-normal) * 120);
-	}
-	.\31 28x {
-		--width: calc(var(--space-normal) * 128);
 	}
 
 	/* Grow modifier — turn the chosen width into a floor and expand to fill (flex items + table columns). */
 	.grow {
-		margin-inline: 0;
-		min-inline-size: var(--width);
 		flex-grow: 1;
+
+		&:where(td, th) {
+			/* Table layouts don't grow unless forced with `width: 100%` */
+			width: 100%;
+			min-width: var(--width);
+		}
 	}
 }

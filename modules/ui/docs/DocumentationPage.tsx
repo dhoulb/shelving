@@ -7,15 +7,14 @@ import { Panel } from "../block/Panel.js";
 import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
-import { Table } from "../block/Table.js";
-import { TableCell } from "../block/TableCell.js";
-import { TableHeader } from "../block/TableHeader.js";
 import { Title } from "../block/Title.js";
 import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import { Scroll } from "../style/Scroll.js";
+import { Cell } from "../table/Cell.js";
+import { Table } from "../table/Table.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
@@ -142,8 +141,13 @@ export function DocumentationPage({
 									<Table>
 										<thead>
 											<tr>
-												<TableHeader width="fit">Param</TableHeader>
-												<TableHeader width="fit">Type</TableHeader>
+												<Cell header width="fit">
+													Param
+												</Cell>
+												<Cell header width="fit">
+													Type
+												</Cell>
+												<Cell header width="xxsmall" grow />
 											</tr>
 										</thead>
 										<tbody>
@@ -153,30 +157,28 @@ export function DocumentationPage({
 												return (
 													<Fragment key={`${name}-${type}`}>
 														<tr>
-															<TableCell>
-																<Code>{name}</Code>
-															</TableCell>
-															<TableCell>
-																<TreeLink name={type} />
-															</TableCell>
-															<TableCell width="20x" grow>
-																{_renderRowDescription(description || resolved?.description || "", def)}
-															</TableCell>
+															<td>
+																<Code nowrap>{name}</Code>
+															</td>
+															<td>
+																<TreeLink name={type} nowrap />
+															</td>
+															<td>{_renderRowDescription(description || resolved?.description || "", def)}</td>
 														</tr>
 														{resolved?.properties?.map(prop => (
 															<tr key={`${name}.${prop.name}`}>
-																<TableCell>
-																	<Code>{`.${prop.name}`}</Code>
-																</TableCell>
-																<TableCell>
-																	<TreeLink name={prop.type ?? DEFAULT_TYPE} />
-																</TableCell>
-																<TableCell width="20x" grow>
+																<td>
+																	<Code nowrap>{`.${prop.name}`}</Code>
+																</td>
+																<td>
+																	<TreeLink name={prop.type ?? DEFAULT_TYPE} nowrap />
+																</td>
+																<td>
 																	{_renderRowDescription(
 																		_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description),
 																		prop.default,
 																	)}
-																</TableCell>
+																</td>
 															</tr>
 														))}
 													</Fragment>
@@ -193,18 +195,16 @@ export function DocumentationPage({
 									<Table>
 										<thead>
 											<tr>
-												<TableHeader width="fit">Return</TableHeader>
+												<th>Return</th>
 											</tr>
 										</thead>
 										<tbody>
 											{returns.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
-													<TableCell>
-														<TreeLink name={type} />
-													</TableCell>
-													<TableCell width="20x" grow>
-														{_getRowDescription(map, type, description)}
-													</TableCell>
+													<td>
+														<TreeLink name={type} nowrap />
+													</td>
+													<td>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -218,18 +218,16 @@ export function DocumentationPage({
 									<Table>
 										<thead>
 											<tr>
-												<TableHeader width="fit">Throws</TableHeader>
+												<th>Throws</th>
 											</tr>
 										</thead>
 										<tbody>
 											{throws.map(({ type = DEFAULT_TYPE, description }) => (
 												<tr key={`${type}-${description}`}>
-													<TableCell>
-														<TreeLink name={type} />
-													</TableCell>
-													<TableCell width="20x" grow>
-														{_getRowDescription(map, type, description)}
-													</TableCell>
+													<td>
+														<TreeLink name={type} nowrap />
+													</td>
+													<td>{_getRowDescription(map, type, description)}</td>
 												</tr>
 											))}
 										</tbody>
@@ -243,18 +241,16 @@ export function DocumentationPage({
 									<Table>
 										<thead>
 											<tr>
-												<TableHeader width="fit">Type</TableHeader>
+												<th>Type</th>
 											</tr>
 										</thead>
 										<tbody>
 											{types.map(type => (
 												<tr key={type}>
-													<TableCell>
+													<td>
 														<TreeLink name={type} />
-													</TableCell>
-													<TableCell width="20x" grow>
-														{_getRowDescription(map, type)}
-													</TableCell>
+													</td>
+													<td>{_getRowDescription(map, type)}</td>
 												</tr>
 											))}
 										</tbody>
