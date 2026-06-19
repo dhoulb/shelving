@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
 import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
@@ -8,39 +8,18 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { Code } from "../inline/Code.js";
 import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
-import { Scroll } from "../style/Scroll.js";
-import { Cell } from "../table/Cell.js";
-import { Table } from "../table/Table.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
-import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
-import { TreeLink } from "../tree/TreeLink.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
+import { DocumentationParams } from "./DocumentationParams.js";
+import { DocumentationReferences } from "./DocumentationReferences.js";
+import { DocumentationReturns } from "./DocumentationReturns.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
-
-const DEFAULT_TYPE = "unknown";
-
-/** Resolve a table row's description — the manually-written one, falling back to the referenced type's own `description` from the tree map (exact-match only). */
-function _getRowDescription(map: ReadonlyMap<string, TreeElement>, type: string, description?: string | undefined): string {
-	return description || getTreeElement(map, type)?.props.description || "";
-}
-
-/** Render a parameter/property row's description, appending a `Defaults to …` line (linking the value if it's a documented token) when a default exists. */
-function _renderRowDescription(description: string, def?: string | undefined): ReactNode {
-	if (!def) return description;
-	return (
-		<>
-			{description}
-			{description && <br />}
-			Defaults to <TreeLink name={def} />
-		</>
-	);
-}
+import { DocumentationThrows } from "./DocumentationThrows.js";
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
 const KIND_SECTIONS = {
@@ -116,7 +95,6 @@ export function DocumentationPage({
 	children,
 	...props
 }: DocumentationElementProps): ReactNode {
-	const map = useTreeMap();
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
@@ -135,129 +113,10 @@ export function DocumentationPage({
 				{signatures?.length || params?.length || returns?.length || throws?.length || types?.length ? (
 					<Section>
 						<DocumentationSignatures signatures={signatures} />
-						{params?.length && (
-							<Section>
-								<Scroll horizontal>
-									<Table>
-										<thead>
-											<tr>
-												<Cell header width="fit">
-													Param
-												</Cell>
-												<Cell header width="fit">
-													Type
-												</Cell>
-												<Cell header width="xxsmall" grow />
-											</tr>
-										</thead>
-										<tbody>
-											{params.map(({ name, type = DEFAULT_TYPE, description, default: def }) => {
-												// An options-bag param whose type resolves to a documented interface/object type is flattened into its individual fields as indented child rows.
-												const resolved = getTreeElement(map, type)?.props as DocumentationElementProps | undefined;
-												return (
-													<Fragment key={`${name}-${type}`}>
-														<tr>
-															<td>
-																<Code nowrap>{name}</Code>
-															</td>
-															<td>
-																<TreeLink name={type} nowrap />
-															</td>
-															<td>{_renderRowDescription(description || resolved?.description || "", def)}</td>
-														</tr>
-														{resolved?.properties?.map(prop => (
-															<tr key={`${name}.${prop.name}`}>
-																<td>
-																	<Code nowrap>{`.${prop.name}`}</Code>
-																</td>
-																<td>
-																	<TreeLink name={prop.type ?? DEFAULT_TYPE} nowrap />
-																</td>
-																<td>
-																	{_renderRowDescription(
-																		_getRowDescription(map, prop.type ?? DEFAULT_TYPE, prop.description),
-																		prop.default,
-																	)}
-																</td>
-															</tr>
-														))}
-													</Fragment>
-												);
-											})}
-										</tbody>
-									</Table>
-								</Scroll>
-							</Section>
-						)}
-						{returns?.length && (
-							<Section>
-								<Scroll horizontal>
-									<Table>
-										<thead>
-											<tr>
-												<th>Return</th>
-											</tr>
-										</thead>
-										<tbody>
-											{returns.map(({ type = DEFAULT_TYPE, description }) => (
-												<tr key={`${type}-${description}`}>
-													<td>
-														<TreeLink name={type} nowrap />
-													</td>
-													<td>{_getRowDescription(map, type, description)}</td>
-												</tr>
-											))}
-										</tbody>
-									</Table>
-								</Scroll>
-							</Section>
-						)}
-						{throws?.length && (
-							<Section>
-								<Scroll horizontal>
-									<Table>
-										<thead>
-											<tr>
-												<th>Throws</th>
-											</tr>
-										</thead>
-										<tbody>
-											{throws.map(({ type = DEFAULT_TYPE, description }) => (
-												<tr key={`${type}-${description}`}>
-													<td>
-														<TreeLink name={type} nowrap />
-													</td>
-													<td>{_getRowDescription(map, type, description)}</td>
-												</tr>
-											))}
-										</tbody>
-									</Table>
-								</Scroll>
-							</Section>
-						)}
-						{types?.length && (
-							<Section>
-								<Scroll horizontal>
-									<Table>
-										<thead>
-											<tr>
-												<th>Type</th>
-											</tr>
-										</thead>
-										<tbody>
-											{types.map(type => (
-												<tr key={type}>
-													<td>
-														<TreeLink name={type} />
-													</td>
-													<td>{_getRowDescription(map, type)}</td>
-												</tr>
-											))}
-										</tbody>
-									</Table>
-								</Scroll>
-							</Section>
-						)}
+						<DocumentationParams params={params} />
+						<DocumentationReturns returns={returns} />
+						<DocumentationThrows throws={throws} />
+						<DocumentationReferences types={types} />
 					</Section>
 				) : null}
 				{content && (
