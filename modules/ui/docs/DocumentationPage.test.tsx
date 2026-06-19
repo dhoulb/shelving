@@ -60,12 +60,54 @@ describe("DocumentationPage", () => {
 		expect(html).toContain(">Param</th>");
 		expect(html).toContain(">Type</th>");
 		expect(html).not.toContain(">Default</th>");
-		// A param with a default surfaces it as a `Defaults to …` line in its description; one without adds nothing.
+		// A param with a default surfaces it as a `Defaults to …` note in its description; a param with neither a default nor optionality is marked `Required.`.
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("false");
+		expect(html).toContain("Required.");
 		// Returns table headers.
 		expect(html).toContain(">Return</th>");
 		expect(html).toContain("The new thing.");
+	});
+
+	test("splits a union type onto one linked token per member, dropping `undefined` as an optionality marker", () => {
+		const html = render(
+			<DocumentationPage
+				path="/make"
+				name="make"
+				kind="function"
+				params={[
+					// A real multi-member union stacks each member on its own line (separated by a `<br>`).
+					{ name: "data", type: "Schemas | DataSchema", description: "The data schema." },
+					// A `T | undefined` reads as optional: the `undefined` member is dropped and no `Required.` is added.
+					{ name: "caller", type: "AnyCaller | undefined", description: "The caller." },
+				]}
+			/>,
+			"./make",
+		);
+		// Each union member renders as its own `<code>` token, stacked with a line break.
+		expect(html).toContain(">Schemas</code><br/><code");
+		expect(html).toContain(">DataSchema</code>");
+		// `data` is a genuine required union (no default, no `| undefined`), so it is marked `Required.`.
+		expect(html).toContain(">AnyCaller</code>");
+		// The `undefined` member is never shown — neither as a type token nor leaking into the description.
+		expect(html).not.toContain(">undefined</code>");
+		// The `caller` param read as optional, so its description carries no `Required.` note (the cell ends right after the description).
+		expect(html).toContain("The caller.</div></td>");
+	});
+
+	test("renders param descriptions as inline markup rather than literal source", () => {
+		const html = render(
+			<DocumentationPage
+				path="/configure"
+				name="configure"
+				kind="function"
+				params={[{ name: "label", type: "string", description: "The `code` label." }]}
+			/>,
+			"./configure",
+		);
+		// Backticks in the description parse to a `<code>` token rather than rendering literally.
+		expect(html).toContain("<code");
+		expect(html).not.toContain("`code`");
 	});
 
 	test("groups static members into their own sections, before instance sections", () => {
