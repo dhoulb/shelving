@@ -38,7 +38,7 @@ export function ListingForm({ listing }: { listing?: typeof LISTING_SCHEMA.type 
       }}
     /&gt;
   );
-}</code></pre></figure><h3>Custom layout</h3><p>Provide explicit <code>children</code> when you need control over field order, groupings, or extra buttons. <a href="https://dhoulb.github.io/shelving/ui/FormInput"><code>&lt;FormInput&gt;</code></a> uses <a href="https://dhoulb.github.io/shelving/ui/useField"><code>useField()</code></a> to pull the current value, error, and schema from context, then delegates to <a href="https://dhoulb.github.io/shelving/ui/SchemaInput"><code>SchemaInput</code></a> so each field renders the correct control type.</p><figure><figcaption>tsx</figcaption><pre><code>import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from &quot;shelving/ui&quot;;
+}</code></pre></figure><h3>Custom layout</h3><p>Provide explicit <code>children</code> when you need control over field order, groupings, or extra buttons. <a href="https://dhoulb.github.io/shelving/ui/FormInput"><code>&lt;FormInput&gt;</code></a> uses <a href="https://dhoulb.github.io/shelving/ui/useField"><code>useField()</code></a> to pull the current value, error, and schema from context, then delegates to <a href="https://dhoulb.github.io/shelving/ui/SchemaInput"><code>&lt;SchemaInput&gt;</code></a> so each field renders the correct control type.</p><figure><figcaption>tsx</figcaption><pre><code>import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from &quot;shelving/ui&quot;;
 
 &lt;Form schema={LISTING_SCHEMA} data={listing} onSubmit={handleSubmit}&gt;
   &lt;Field title=&quot;Title&quot; required&gt;

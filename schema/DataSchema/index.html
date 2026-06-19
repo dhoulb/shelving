@@ -11,7 +11,7 @@ PRODUCT.validate({ name: &quot;Widget&quot;, price: 9.99, available: true });
 
 PRODUCT.validate({ name: &quot;&quot;, price: -1, available: true });
 // throws &quot;name: Required\nprice: Minimum 0&quot;</code></pre></figure><p>Use <code>.pick()</code> and <code>.omit()</code> to derive subset schemas without redefining props:</p><figure><figcaption>ts</figcaption><pre><code>const PatchProduct = PRODUCT.omit(&quot;available&quot;);
-const NameOnly = PRODUCT.pick(&quot;name&quot;);</code></pre></figure><h3><code>ITEM</code> — add a typed <code>id</code> field</h3><p><code>ITEM</code> wraps a <code>DataSchema</code> to add a typed <code>id</code> field, matching the <a href="https://dhoulb.github.io/shelving/util/item/Item"><code>Item</code></a> type in <a href="https://dhoulb.github.io/shelving/util">util</a>.</p><figure><figcaption>ts</figcaption><pre><code>import { ITEM, STRING, INTEGER, NUMBER } from &quot;shelving/schema&quot;;
+const NameOnly = PRODUCT.pick(&quot;name&quot;);</code></pre></figure><h3><code>ITEM</code> — add a typed <code>id</code> field</h3><p><code>ITEM</code> wraps a <code>DataSchema</code> to add a typed <code>id</code> field, matching the <a href="https://dhoulb.github.io/shelving/util/item/Item"><code>Item</code></a> type in <a href="https://dhoulb.github.io/shelving/util/item"><code>shelving/util/item</code></a>.</p><figure><figcaption>ts</figcaption><pre><code>import { ITEM, STRING, INTEGER, NUMBER } from &quot;shelving/schema&quot;;
 
 const PRODUCT_ITEM = ITEM(INTEGER, {
   name: STRING,
