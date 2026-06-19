@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import GAP_CSS from "./Gap.module.css";
 
 /**
- * Enumerated gap scale selectable via the `gap` variant prop — sets `gap` on flex/grid containers and List/Definitions item spacing.
+ * Allowed values for gap spacing for components that support [`GapVariants`](/ui/GapVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Gap/CSSGap
+ * @see https://dhoulb.github.io/shelving/ui/style/Gap/GapValue
  */
-export type CSSGap = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type GapValue = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 /**
  * Variant props for the gap between a component's children, e.g. `gap="large"`.
@@ -15,12 +15,13 @@ export type CSSGap = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large
  */
 export interface GapVariants {
 	/** Gap between child elements. */
-	gap?: CSSGap | undefined;
+	gap?: GapValue | undefined;
 }
 
 /**
  * Get the gap class for a component from its `gap` variant prop.
  *
+ * @param variants
  * @returns The gap class string, or `undefined` when no `gap` is set.
  * @example getGapClass({ gap: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Gap/getGapClass

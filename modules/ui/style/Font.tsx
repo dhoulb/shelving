@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import FONT_CSS from "./Font.module.css";
 
 /**
- * Enumerated font-family names selectable via the `font` variant prop.
+ * Allowed values for font family for components that support [`FontVariants`](/ui/FontVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Font/UIFont
+ * @see https://dhoulb.github.io/shelving/ui/style/Font/FontValue
  */
-export type UIFont = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
+export type FontValue = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
 
 /**
  * Variant props for the font family of an element, e.g. `font="title"`.
@@ -15,12 +15,13 @@ export type UIFont = "title" | "body" | "label" | "code" | "serif" | "sans" | "m
  */
 export interface FontVariants {
 	/** Font family of the element. */
-	font?: UIFont | undefined;
+	font?: FontValue | undefined;
 }
 
 /**
  * Get the font-family class for a component from its `font` variant prop.
  *
+ * @param variants
  * @returns The font class string, or `undefined` when no `font` is set.
  * @example getFontClass({ font: "title" }) // "title"
  * @see https://dhoulb.github.io/shelving/ui/style/Font/getFontClass

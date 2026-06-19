@@ -15,11 +15,11 @@
 
 @layer variants {
 	/* Border-thickness variants. */
-	.stroke-normal {
+	.normal {
 		border-style: solid;
 		border-width: var(--stroke-normal);
 	}
-	.stroke-thick {
+	.thick {
 		border-style: solid;
 		border-width: var(--stroke-thick);
 	}

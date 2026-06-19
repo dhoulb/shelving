@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import SHADOW_CSS from "./Shadow.module.css";
 
 /**
- * Enumerated drop-shadow scale selectable via the `shadow` variant prop.
+ * Enumerated drop-shadow scale selectable via the `shadow="normal"` variant prop.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Shadow/UIShadow
+ * @see https://dhoulb.github.io/shelving/ui/style/Shadow/ShadowVariant
  */
-export type UIShadow = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type ShadowVariant = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 /**
  * Variant props for the drop shadow of an element, e.g. `shadow="large"`.
@@ -15,12 +15,13 @@ export type UIShadow = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "lar
  */
 export interface ShadowVariants {
 	/** Drop shadow of the element. */
-	shadow?: UIShadow | undefined;
+	shadow?: ShadowVariant | undefined;
 }
 
 /**
  * Get the drop-shadow class for a component from its `shadow` variant prop.
  *
+ * @param variants
  * @returns The shadow class string, or `undefined` when no `shadow` is set.
  * @example getShadowClass({ shadow: "large" }) // "shadow-large"
  * @see https://dhoulb.github.io/shelving/ui/style/Shadow/getShadowClass

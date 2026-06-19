@@ -4,7 +4,6 @@ import type { ChildProps } from "../util/index.js";
 import SCROLLABLE_CSS from "./Scroll.module.css";
 
 const SCROLL_HORIZONTAL_CLASS = getModuleClass(SCROLLABLE_CSS, "horizontal");
-
 const SCROLL_VERTICAL_CLASS = getModuleClass(SCROLLABLE_CSS, "vertical");
 
 /**
@@ -12,7 +11,7 @@ const SCROLL_VERTICAL_CLASS = getModuleClass(SCROLLABLE_CSS, "vertical");
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/ScrollProps
  */
-export interface ScrollProps {
+export interface ScrollVariants {
 	/** Vertical scrolling (defaults to `false`). */
 	vertical?: boolean | undefined;
 	/** Horizontal scrolling (defaults to `false`). */
@@ -22,11 +21,12 @@ export interface ScrollProps {
 /**
  * Get the scroll class for a component from its `horizontal` / `vertical` variant props.
  *
+ * @param variants
  * @returns The combined scroll class string (empty when neither axis is enabled).
  * @example getScrollClass({ horizontal: true }) // "horizontal"
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/getScrollClass
  */
-export function getScrollClass({ horizontal, vertical }: ScrollProps): string {
+export function getScrollClass({ horizontal, vertical }: ScrollVariants): string {
 	return getClass(
 		horizontal && SCROLL_HORIZONTAL_CLASS, //
 		vertical && SCROLL_VERTICAL_CLASS,
@@ -38,7 +38,7 @@ export function getScrollClass({ horizontal, vertical }: ScrollProps): string {
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/ScrollComponentProps
  */
-export interface ScrollComponentProps extends ChildProps, ScrollProps {}
+export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
 
 /**
  * Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.

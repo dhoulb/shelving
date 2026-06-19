@@ -77,4 +77,12 @@
 	.right {
 		text-align: right;
 	}
+
+	/* Whitespace variants */
+	.wrap {
+		white-space: wrap;
+	}
+	.nowrap {
+		white-space: nowrap;
+	}
 }

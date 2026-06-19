@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import SPACE_CSS from "./Space.module.css";
 
 /**
- * Enumerated block-space scale selectable via the `space` variant prop — sets the `margin-block` (top + bottom) of a block-level component.
+ * Allowed values for block spacing for components that support [`SpaceVariants`](/ui/SpaceVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Space/UISpace
+ * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceValue
  */
-export type UISpace =
+export type SpaceValue =
 	| "none"
 	| "xxsmall"
 	| "xsmall"
@@ -27,18 +27,19 @@ export type UISpace =
 	| "10x";
 
 /**
- * Variant props for the block-space (top + bottom margin) of a block-level component, e.g. `space="large"`.
+ * Variants to control block spacing on components, e.g. `space="large"`.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceVariants
  */
 export interface SpaceVariants {
-	/** Block-space (top + bottom margin) of the element. */
-	space?: UISpace | undefined;
+	/** Block spacing for this component. */
+	space?: SpaceValue | undefined;
 }
 
 /**
- * Get the block-space class for a component from its `space` variant prop.
+ * Get the block spacing class for a component from its `space=""` variant prop.
  *
+ * @param variants
  * @returns The space class string, or `undefined` when no `space` is set.
  * @example getSpaceClass({ space: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Space/getSpaceClass

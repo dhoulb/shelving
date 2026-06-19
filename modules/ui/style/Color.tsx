@@ -3,11 +3,12 @@ import COLOR_CSS from "./Color.module.css";
 import { TINT_CLASS } from "./Tint.js";
 
 /**
- * Enumerated colour names selectable via the `color` variant prop.
+ * Enumerated colour names selectable via the `color="purple"` prop for components that support that support [`ColorVariants`](/ui/ColorVariants)
+ * - Applies a tint color to the element.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Color/UIColor
+ * @see https://dhoulb.github.io/shelving/ui/style/Color/ColorVariant
  */
-export type UIColor =
+export type ColorVariant =
 	| "primary"
 	| "secondary"
 	| "tertiary"
@@ -28,7 +29,7 @@ export type UIColor =
  */
 export interface ColorVariants {
 	/** Colour of the element. */
-	color?: UIColor | undefined;
+	color?: ColorVariant | undefined;
 }
 
 /**
@@ -38,6 +39,7 @@ export interface ColorVariants {
  * - Full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected color.
  * - Element can now compose these shades to style itself using the selected color.
  *
+ * @param variants
  * @returns The combined tint + colour class string, or `undefined` when no `color` is set.
  * @example getColorClass({ color: "purple" }) // "tint color-purple"
  * @see https://dhoulb.github.io/shelving/ui/style/Color/getColorClass

@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import DURATION_CSS from "./Duration.module.css";
 
 /**
- * Enumerated transition-duration names selectable via the `duration` variant prop.
+ * Allowed values for transition timing for components that support [`DurationVariants`](/ui/DurationVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Duration/UIDuration
+ * @see https://dhoulb.github.io/shelving/ui/style/Duration/DurationValue
  */
-export type UIDuration = "fast" | "normal" | "slow";
+export type DurationValue = "fast" | "normal" | "slow";
 
 /**
  * Variant props for the transition duration of an element, e.g. `duration="fast"`.
@@ -15,12 +15,13 @@ export type UIDuration = "fast" | "normal" | "slow";
  */
 export interface DurationVariants {
 	/** Transition duration of the element. */
-	duration?: UIDuration | undefined;
+	duration?: DurationValue | undefined;
 }
 
 /**
  * Get the transition-duration class for a component from its `duration` variant prop.
  *
+ * @param variants
  * @returns The duration class string, or `undefined` when no `duration` is set.
  * @example getDurationClass({ duration: "fast" }) // "duration-fast"
  * @see https://dhoulb.github.io/shelving/ui/style/Duration/getDurationClass

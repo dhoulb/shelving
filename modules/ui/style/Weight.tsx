@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import WEIGHT_CSS from "./Weight.module.css";
 
 /**
- * Enumerated font-weight names selectable via the `weight` variant prop.
+ * Allowed values for font weight for components that support [`WeightVariants`](/ui/WeightVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Weight/UIWeight
+ * @see https://dhoulb.github.io/shelving/ui/style/Weight/WeightVariant
  */
-export type UIWeight = "title" | "body" | "label" | "code" | "normal" | "strong";
+export type WeightVariant = "title" | "body" | "label" | "code" | "normal" | "strong";
 
 /**
  * Variant props for the font weight of an element, e.g. `weight="strong"`.
@@ -15,12 +15,13 @@ export type UIWeight = "title" | "body" | "label" | "code" | "normal" | "strong"
  */
 export interface WeightVariants {
 	/** Font weight of the element. */
-	weight?: UIWeight | undefined;
+	weight?: WeightVariant | undefined;
 }
 
 /**
- * Get the font-weight class for a component from its `weight` variant prop.
+ * Get the font weight class for a component from its `weight` variant prop.
  *
+ * @param variants
  * @returns The weight class string, or `undefined` when no `weight` is set.
  * @example getWeightClass({ weight: "strong" }) // "weight-strong"
  * @see https://dhoulb.github.io/shelving/ui/style/Weight/getWeightClass
