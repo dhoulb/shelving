@@ -28,7 +28,7 @@ export interface TreeCardsProps {
 /**
  * Render a list of tree elements as a stack of cards.
  *
- * - Each element is dispatched via [`<TreeCardMapper>`](/ui/TreeCardMapper) to its registered renderer; each card links to its own stamped `path`.
+ * - Each element is dispatched via `<TreeCardMapper>` to its registered renderer; each card links to its own stamped `path`.
  * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  *
  * @returns A `<TreeCardMapper>` rendering each element as a card.

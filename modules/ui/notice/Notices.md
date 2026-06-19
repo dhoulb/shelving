@@ -1,12 +1,12 @@
 # Notices
 
-Renders the global list of active notices and subscribes to incoming `"notice"` events. It listens for `"notice"` events on `window` (dispatched by the [`notify()`](/ui/notify) helpers) and shows each one as a [`<Notice>`](/ui/Notice) — this is how components like [`<Button>`](/ui/Button) and [`<FormNotify>`](/ui/FormNotify) send notices into the global list.
+Renders the global list of active notices and subscribes to incoming `"notice"` events. It listens for `"notice"` events on `window` (dispatched by the `notify()` helpers) and shows each one as a `<Notice>` — this is how components like `<Button>` and `<FormNotify>` send notices into the global list.
 
 **Things to know:**
 
 - Mount `<Notices>` once near the root of your app. It renders at that point in the DOM and listens automatically — no context required.
 - Notices auto-dismiss after a short delay unless they carry a `"loading"` status.
-- Backed by the [`NOTICES`](/ui/NOTICES) store singleton; for advanced use you can keep a reference to a notice to update or close it manually.
+- Backed by the `NOTICES` store singleton; for advanced use you can keep a reference to a notice to update or close it manually.
 
 ## Usage
 

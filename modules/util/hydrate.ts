@@ -32,7 +32,7 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
 }
 
 /**
- * Deeply hydrate a class instance based on a set of [`Hydrations`](/util/hydrate/Hydrations)
+ * Deeply hydrate a class instance based on a set of `Hydrations`
  * - Hydration allows a client to receive class instances from a server.
  * - By its nature hydration is an unsafe operation.
  * - Deeply iterates into arrays and plain objects to hydrate their items and props too.
@@ -41,7 +41,7 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
  * @param value The dehydrated value to hydrate.
  * @param hydrations The set of `$type` keys mapped to the class constructors used to rebuild instances.
  * @returns The hydrated value, with matched objects rebuilt as their class instances.
- * @throws [`ValueError`](/error/ValueError) If a dehydrated object's `$type` is not matched by any constructor in `hydrations`.
+ * @throws `ValueError` If a dehydrated object's `$type` is not matched by any constructor in `hydrations`.
  * @example hydrate({ $type: "Date", $value: 0 }, {}) // Date instance
  * @see https://dhoulb.github.io/shelving/util/hydrate/hydrate
  */
@@ -66,7 +66,7 @@ function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
 }
 
 /**
- * Deeply dehydrate a class instance based on a set of [`Hydrations`](/util/hydrate/Hydrations)
+ * Deeply dehydrate a class instance based on a set of `Hydrations`
  * - Dehydration allows you to pass class instances from a server back to a client.
  * - By its nature dehydration is an unsafe operation.
  * - Deeply iterates into arrays and plain objects to dehydrate their items and props too.
@@ -75,7 +75,7 @@ function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
  * @param value The value to dehydrate.
  * @param hydrations The set of `$type` keys mapped to the class constructors used to recognise instances.
  * @returns The dehydrated version of the specified value.
- * @throws [`ValueError`](/error/ValueError) If the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
+ * @throws `ValueError` If the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
  * @example dehydrate(new Date(0), {}) // { $type: "Date", $value: 0 }
  * @see https://dhoulb.github.io/shelving/util/hydrate/dehydrate
  */

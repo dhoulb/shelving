@@ -7,7 +7,7 @@ import type { Identifier } from "../util/item.js";
 /**
  * PostgreSQL database provider backed by Bun's built-in `Bun.SQL` driver.
  *
- * Implements the [`PostgreSQLProvider`](/db/PostgreSQLProvider) SQL abstraction by executing tagged-template queries against a `Bun.SQL` connection.
+ * Implements the `PostgreSQLProvider` SQL abstraction by executing tagged-template queries against a `Bun.SQL` connection.
  * - Identifiers are escaped through `Bun.SQL`'s own `sql()` helper rather than naive string quoting, which is more secure.
  * - Requires the `bun` peer dependency and a running Bun environment.
  *
@@ -50,7 +50,7 @@ export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends 
 	 * Overrides the base implementation because the Bun SQL engine supports first-class identifier wrapping, which is more secure than manual quoting.
 	 *
 	 * @param name The identifier (table or column name) to escape.
-	 * @returns An [`SQLFragment`](/db/SQLFragment) wrapping the escaped identifier.
+	 * @returns An `SQLFragment` wrapping the escaped identifier.
 	 * @example provider.sqlIdentifier("items")
 	 * @see https://dhoulb.github.io/shelving/bun/BunPostgreSQLProvider/BunPostgreSQLProvider/sqlIdentifier
 	 */

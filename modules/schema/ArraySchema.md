@@ -2,7 +2,7 @@
 
 Validates a value into a `readonly` array, validating each element against an `items` schema. Following the robustness principle, a comma-separated string is split into an array, and a missing value falls back to an empty array.
 
-[`ARRAY(itemSchema)`](/schema/ARRAY) is the sugar factory that builds an `ArraySchema` for a given element schema.
+`ARRAY(itemSchema)` is the sugar factory that builds an `ArraySchema` for a given element schema.
 
 ## Usage
 

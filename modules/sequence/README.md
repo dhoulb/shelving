@@ -1,24 +1,24 @@
 # sequence
 
-Async-iterator primitives used throughout the shelving library. A "sequence" is an `AsyncIterable<T>` — something you can consume with `for await...of`. This module provides the building blocks for producing and connecting sequences, most importantly [`DeferredSequence`](/sequence/DeferredSequence), which lets external code drive an async iterator by resolving or rejecting it on demand.
+Async-iterator primitives used throughout the shelving library. A "sequence" is an `AsyncIterable<T>` — something you can consume with `for await...of`. This module provides the building blocks for producing and connecting sequences, most importantly `DeferredSequence`, which lets external code drive an async iterator by resolving or rejecting it on demand.
 
 ## Concepts
 
-**[`Sequence`](/sequence/Sequence)** is the abstract base class for every sequence type. It implements `AsyncIterator`, `AsyncIterable`, and `AsyncDisposable` at once, so a single object can be iterated, passed around as an iterable, and disposed. Subclasses implement [`.next()`](/sequence/Sequence/next).
+**`Sequence`** is the abstract base class for every sequence type. It implements `AsyncIterator`, `AsyncIterable`, and `AsyncDisposable` at once, so a single object can be iterated, passed around as an iterable, and disposed. Subclasses implement `Sequence.next()`.
 
-**`DeferredSequence`** is a sequence you push values into: call [`.resolve()`](/sequence/DeferredSequence/resolve) to publish the next value, [`.reject()`](/sequence/DeferredSequence/reject) to publish an error, or [`.done()`](/sequence/DeferredSequence/done) to end iteration. It is also a `Promise`, so you can `await` it to get just the next value. Multiple concurrent iterators all advance together when it resolves.
+**`DeferredSequence`** is a sequence you push values into: call `DeferredSequence.resolve()` to publish the next value, `DeferredSequence.reject()` to publish an error, or `DeferredSequence.done()` to end iteration. It is also a `Promise`, so you can `await` it to get just the next value. Multiple concurrent iterators all advance together when it resolves.
 
-**[`ThroughSequence`](/sequence/ThroughSequence)** wraps a source `AsyncIterator` and presents it as a full `Sequence` — useful for turning a bare iterator into a reusable iterable and guaranteeing [`.return()`](/sequence/Sequence/return) / [`.throw()`](/sequence/Sequence/throw) are present.
+**`ThroughSequence`** wraps a source `AsyncIterator` and presents it as a full `Sequence` — useful for turning a bare iterator into a reusable iterable and guaranteeing `Sequence.return()` / `Sequence.throw()` are present.
 
-**[`LazySequence`](/sequence/LazySequence)** is a `ThroughSequence` paired with a [`StartCallback`](/util/start/StartCallback) / [`StopCallback`](/util/start/StopCallback). The start callback runs when the first iterator begins iterating and is torn down when the last one finishes — the sequence equivalent of an observable subscription.
+**`LazySequence`** is a `ThroughSequence` paired with a `StartCallback` / `StopCallback`. The start callback runs when the first iterator begins iterating and is torn down when the last one finishes — the sequence equivalent of an observable subscription.
 
-**[`InspectSequence`](/sequence/InspectSequence)** is a `ThroughSequence` that records what passed through it — [`.first`](/sequence/InspectSequence/first), [`.last`](/sequence/InspectSequence/last), [`.count`](/sequence/InspectSequence/count), [`.done`](/sequence/InspectSequence/done), and [`.returned`](/sequence/InspectSequence/returned) — without changing the values.
+**`InspectSequence`** is a `ThroughSequence` that records what passed through it — `InspectSequence.first`, `InspectSequence.last`, `InspectSequence.count`, `InspectSequence.done`, and `InspectSequence.returned` — without changing the values.
 
-Most application code interacts with sequences indirectly via [`Store`](/store/Store), which uses `DeferredSequence` internally. Use the sequence primitives directly only when building new reactive data sources.
+Most application code interacts with sequences indirectly via `Store`, which uses `DeferredSequence` internally. Use the sequence primitives directly only when building new reactive data sources.
 
 ## Usage
 
-The per-class pages carry the detailed usage. As an integration example, wrapping a [`DeferredSequence`](/sequence/DeferredSequence) in a [`LazySequence`](/sequence/LazySequence) gives a producer that only runs while something is listening:
+The per-class pages carry the detailed usage. As an integration example, wrapping a `DeferredSequence` in a `LazySequence` gives a producer that only runs while something is listening:
 
 ```ts
 import { DeferredSequence, LazySequence } from "shelving/sequence";

@@ -1,6 +1,6 @@
 # LoggingAPIProvider
 
-A wrapping provider that logs requests, responses, and errors. `LoggingAPIProvider` is production-safe — it logs concise lines rather than full bodies (use [`DebugAPIProvider`](/api/DebugAPIProvider) for verbose development output).
+A wrapping provider that logs requests, responses, and errors. `LoggingAPIProvider` is production-safe — it logs concise lines rather than full bodies (use `DebugAPIProvider` for verbose development output).
 
 The constructor takes the `source` provider plus three optional callbacks — `onRequest`, `onResponse`, `onError` — each defaulting to a `console`-based logger.
 

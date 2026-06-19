@@ -39,7 +39,7 @@ export type URIHash = `#${string}`;
  * Construct a correctly-typed `URI` object.
  * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
  * - Takes a URI string or URI object that already encodes a complete URI — no base parameter, so relative inputs are not accepted.
- * - To resolve a relative input against a base, use [`getBasedURI()`](/util/url/getBasedURI) from `url.ts`.
+ * - To resolve a relative input against a base, use `getBasedURI()` from `url.ts`.
  *
  * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURIConstructor
  */
@@ -177,7 +177,7 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
 /**
  * Convert a possible URI to a URI, or return `undefined` if conversion fails.
  * - Only inputs that already encode a complete URI succeed — relative inputs return `undefined`. No implicit fallback to the document or window URL.
- * - To resolve a relative ref against a base, use [`getBasedURI()`](/util/url/getBasedURI) from `url.ts`.
+ * - To resolve a relative ref against a base, use `getBasedURI()` from `url.ts`.
  *
  * @param possible Possible URI value to convert (a nullish value returns `undefined`).
  * @returns Converted `ImmutableURI`, or `undefined` if conversion fails.
@@ -195,7 +195,7 @@ export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined
 }
 
 /**
- * Convert a possible URI to a URI, or throw [`RequiredError`](/error/RequiredError) if conversion fails.
+ * Convert a possible URI to a URI, or throw `RequiredError` if conversion fails.
  *
  * @param possible Possible URI value to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireURI` itself).

@@ -1,12 +1,12 @@
 # BusyStore
 
-A [`Store`](/store/Store) that tracks whether it is currently awaiting a new value. `BusyStore<T>` exposes a `.busy` boolean store that becomes `true` when the store starts awaiting an async value and `false` once that value (or an error) arrives.
+A `Store` that tracks whether it is currently awaiting a new value. `BusyStore<T>` exposes a `.busy` boolean store that becomes `true` when the store starts awaiting an async value and `false` once that value (or an error) arrives.
 
-`BusyStore` is the base class for [`DataStore`](/store/DataStore), [`ArrayStore`](/store/ArrayStore), [`DictionaryStore`](/store/DictionaryStore), and [`FetchStore`](/store/FetchStore) — anything that may resolve a value asynchronously.
+`BusyStore` is the base class for `DataStore`, `ArrayStore`, `DictionaryStore`, and `FetchStore` — anything that may resolve a value asynchronously.
 
 ## Usage
 
-`.busy` is itself a [`BooleanStore`](/store/BooleanStore), so you can read it or iterate it like any store — useful for driving a loading spinner that is separate from the store's own value:
+`.busy` is itself a `BooleanStore`, so you can read it or iterate it like any store — useful for driving a loading spinner that is separate from the store's own value:
 
 ```ts
 import { BusyStore, NONE } from "shelving/store";

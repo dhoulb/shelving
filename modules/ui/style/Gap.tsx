@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import GAP_CSS from "./Gap.module.css";
 
 /**
- * Allowed values for gap spacing for components that support [`GapVariants`](/ui/GapVariants)
+ * Allowed values for gap spacing for components that support `GapVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Gap/GapValue
  */

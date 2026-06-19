@@ -12,7 +12,7 @@ export type MarkupContexts = [string, ...string[]];
 
 /**
  * A single markup rule: a regular expression that matches a span of input plus a renderer that turns the match into an element.
- * - Rules are grouped into priority tiers and resolved highest tier first by [`MarkupParser`](/markup/MarkupParser).
+ * - Rules are grouped into priority tiers and resolved highest tier first by `MarkupParser`.
  * - A rule renders only in the contexts it lists, letting the same syntax behave differently in block vs inline vs list context.
  *
  * @see https://dhoulb.github.io/shelving/markup/MarkupRule/MarkupRule
@@ -29,14 +29,14 @@ export interface MarkupRule {
 }
 
 /**
- * An immutable list of [`MarkupRule`](/markup/MarkupRule) instances applied by a [`MarkupParser`](/markup/MarkupParser).
+ * An immutable list of `MarkupRule` instances applied by a `MarkupParser`.
  *
  * @see https://dhoulb.github.io/shelving/markup/MarkupRule/MarkupRules
  */
 export type MarkupRules = readonly MarkupRule[];
 
 /**
- * Create a typed [`MarkupRule`](/markup/MarkupRule) from a [`NamedRegExp`](/util/regexp/NamedRegExp), a renderer, its contexts, and an optional priority.
+ * Create a typed `MarkupRule` from a `NamedRegExp`, a renderer, its contexts, and an optional priority.
  *
  * *Factory for `MarkupRule`.*
  *
@@ -47,7 +47,7 @@ export type MarkupRules = readonly MarkupRule[];
  * @param render Renderer turning a `key`, the matched `data`, and the active `parser` into a `ReactElement`.
  * @param contexts One or more contexts this rule renders in (e.g. `["block"]`).
  * @param priority Tier priority — higher rules override lower ones (defaults to `0`).
- * @returns A `MarkupRule` ready to add to a [`MarkupRules`](/markup/MarkupRules) list.
+ * @returns A `MarkupRule` ready to add to a `MarkupRules` list.
  * @example
  * const HR_RULE = createMarkupRule(/^---$/m, key => <hr key={key} />, ["block"]);
  * @see https://dhoulb.github.io/shelving/markup/MarkupRule/createMarkupRule

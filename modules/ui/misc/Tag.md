@@ -4,7 +4,7 @@ A small inline label used to annotate other content. Accepts a status variant or
 
 **Things to know:**
 
-- Delegates to [`<Clickable>`](/ui/Clickable) — renders as `<a>` when `href` is set, otherwise `<button>`.
+- Delegates to `<Clickable>` — renders as `<a>` when `href` is set, otherwise `<button>`.
 - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.). Use `status` for semantic meaning and `color` for purely decorative differentiation.
 - Composes status, colour, and typography styling variants.
 
@@ -38,4 +38,4 @@ import { Tag } from "shelving/ui";
 | `--tag-case` | Text transform | `var(--case-label)` |
 | `--tag-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-55`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--font-body`](/ui/getFontClass), [`--size-small`](/ui/getSizeClass), [`--weight-strong`](/ui/getWeightClass), [`--leading`](/ui/getSizeClass), [`--case-label`](/ui/getFontClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), and [`--color-focus`](/ui/getColorClass).
+**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.

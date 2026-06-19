@@ -1,6 +1,6 @@
 # CollapseTransition
 
-A [`<Transition>`](/ui/Transition) preset that collapses its children in and out by animating their size, clipping the overflow during the animation.
+A `<Transition>` preset that collapses its children in and out by animating their size, clipping the overflow during the animation.
 
 **Things to know:**
 

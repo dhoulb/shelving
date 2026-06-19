@@ -17,8 +17,8 @@ export type CurrencyCode = string;
 export const CURRENCY_CODES: ImmutableArray<CurrencyCode> = Intl.supportedValuesOf("currency");
 
 /**
- * Normalise a value to a valid ISO 4217 [`CurrencyCode`](/util/currency/CurrencyCode), or `undefined` if it isn't a supported currency.
- * - Upper-cases and trims the input before checking it against [`CURRENCY_CODES`](/util/currency/CURRENCY_CODES).
+ * Normalise a value to a valid ISO 4217 `CurrencyCode`, or `undefined` if it isn't a supported currency.
+ * - Upper-cases and trims the input before checking it against `CURRENCY_CODES`.
  *
  * @param value The string to normalise and check.
  * @returns The normalised `CurrencyCode`, or `undefined` if the value isn't a supported currency.
@@ -32,7 +32,7 @@ export function getCurrencyCode(value: string): CurrencyCode | undefined {
 }
 
 /**
- * Normalise a value to a valid ISO 4217 [`CurrencyCode`](/util/currency/CurrencyCode), or throw [`RequiredError`](/error/RequiredError) if it isn't a supported currency.
+ * Normalise a value to a valid ISO 4217 `CurrencyCode`, or throw `RequiredError` if it isn't a supported currency.
  *
  * @param value The string to normalise and check.
  * @param caller The function to attribute a thrown error to (defaults to `requireCurrencyCode`).

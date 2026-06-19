@@ -9,7 +9,7 @@ import { RadioInput } from "./RadioInput.js";
 const MAX_ROW_OPTIONS = 2;
 
 /**
- * Props for `ChoiceRadioInputs`, which renders a radio for each entry in a [`ChoiceOptions`](/schema/ChoiceOptions) set.
+ * Props for `ChoiceRadioInputs`, which renders a radio for each entry in a `ChoiceOptions` set.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/ChoiceRadioInputs/ChoiceRadioInputsProps
  */
@@ -23,8 +23,8 @@ export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProp
 }
 
 /**
- * Output a list of [`<RadioInput>`](/ui/RadioInput) elements for each item in a set of [`ChoiceOptions`](/schema/ChoiceOptions) in `{ key: title }` format.
- * - This is the same type a [`ChoiceSchema`](/schema/ChoiceSchema) uses for its `.options` field.
+ * Output a list of `<RadioInput>` elements for each item in a set of `ChoiceOptions` in `{ key: title }` format.
+ * - This is the same type a `ChoiceSchema` uses for its `.options` field.
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *
  * @returns Element rendering one radio per option plus an optional empty placeholder radio.

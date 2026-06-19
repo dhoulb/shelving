@@ -6,14 +6,14 @@ import LINK_CSS from "./Link.module.css";
 const LINK_CLASS = getModuleClass(LINK_CSS, "link");
 
 /**
- * Props for `Link` — identical to [`ClickableProps`](/ui/ClickableProps) (`href` for navigation or `onClick` for actions).
+ * Props for `Link` — identical to `ClickableProps` (`href` for navigation or `onClick` for actions).
  *
  * @see https://dhoulb.github.io/shelving/ui/inline/Link/LinkProps
  */
 export interface LinkProps extends ClickableProps {}
 
 /**
- * Inline link — delegates to [`<Clickable>`](/ui/Clickable), rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
+ * Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
  *
  * @kind component
  * @returns Rendered inline `<a>` or `<button>` element.

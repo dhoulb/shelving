@@ -1,6 +1,6 @@
 import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./BaseError.js";
 
-/** Options for [`ResponseError`](/error/ResponseError). */
+/** Options for `ResponseError`. */
 interface ResponseErrorOptions extends BaseErrorOptions {
 	readonly code?: number;
 }
@@ -28,7 +28,7 @@ export class ResponseError extends Error implements BaseError {
 	 * Create a new `ResponseError`.
 	 *
 	 * @param message Optional human-readable description of why the response was rejected.
-	 * @param options Optional options — `code` sets the HTTP status (defaults to `400`); `caller` and contextual fields are applied via [`setBaseErrorOptions()`](/error/setBaseErrorOptions).
+	 * @param options Optional options — `code` sets the HTTP status (defaults to `400`); `caller` and contextual fields are applied via `setBaseErrorOptions()`.
 	 */
 	constructor(message?: string, { code = 400, ...options }: ResponseErrorOptions = {}) {
 		super(message, options);

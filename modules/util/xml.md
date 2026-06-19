@@ -4,8 +4,8 @@ Two small helpers for producing XML strings from data objects. They exist for ca
 
 **Things to know:**
 
-- [`getXML()`](/util/xml/getXML) only accepts [`Data`](/util/data/Data) (plain `Record<string, unknown>`) at the top level — arrays and primitives cannot be the root because XML requires named elements.
-- Keys must match `[a-zA-Z][a-zA-Z0-9]*`. Any key that does not match throws a [`RequiredError`](/error/RequiredError).
+- `getXML()` only accepts `Data` (plain `Record<string, unknown>`) at the top level — arrays and primitives cannot be the root because XML requires named elements.
+- Keys must match `[a-zA-Z][a-zA-Z0-9]*`. Any key that does not match throws a `RequiredError`.
 - `undefined` values are silently omitted from the output.
 - Nested `Data` objects become nested elements. Strings, numbers, and booleans become text content (strings are XML-escaped). Other value types throw.
 

@@ -6,7 +6,7 @@ import { NULLABLE } from "./NullableSchema.js";
 /**
  * Schema that defines a valid abstract time in 24h `hh:mm:ss.fff` format, e.g. `23:59` or `24:00`.
  *
- * - Validates a time without a timezone, e.g. a daily alarm; use [`DateSchema`](/schema/DateSchema) for dates and [`DateTimeSchema`](/schema/DateTimeSchema) for UTC datetimes.
+ * - Validates a time without a timezone, e.g. a daily alarm; use `DateSchema` for dates and `DateTimeSchema` for UTC datetimes.
  *
  * @example
  *  const schema = new TimeSchema({});
@@ -45,7 +45,7 @@ export class TimeSchema extends DateSchema {
 }
 
 /**
- * Sugar instance of [`TimeSchema`](/schema/TimeSchema) for a required abstract time. Equivalent to `new TimeSchema({})`.
+ * Sugar instance of `TimeSchema` for a required abstract time. Equivalent to `new TimeSchema({})`.
  *
  * @example TIME.validate("23:59") // "23:59:00.000"
  * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TIME
@@ -53,7 +53,7 @@ export class TimeSchema extends DateSchema {
 export const TIME = new TimeSchema({});
 
 /**
- * Sugar instance allowing a [`TIME`](/schema/TIME) or `null`. Equivalent to `NULLABLE(TIME)`.
+ * Sugar instance allowing a `TIME` or `null`. Equivalent to `NULLABLE(TIME)`.
  *
  * @example NULLABLE_TIME.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/TimeSchema/NULLABLE_TIME

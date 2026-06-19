@@ -11,7 +11,7 @@ import type { DBProvider } from "./DBProvider.js";
  * Database provider that passes every operation straight through to a wrapped `source` provider.
  *
  * - Base for the layered `Through*Provider` family (validation, caching, logging, change tracking); subclasses override individual methods to add behaviour and call `super` to delegate.
- * - Exposes `source` and implements [`Sourceable`](/util/source/Sourceable), so wrapped providers can be discovered with [`getSource()`](/util/source/getSource) / [`requireSource()`](/util/source/requireSource).
+ * - Exposes `source` and implements `Sourceable`, so wrapped providers can be discovered with `getSource()` / `requireSource()`.
  *
  * @example
  *  const provider = new ValidationDBProvider(new MemoryDBProvider());
@@ -54,7 +54,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to get.
 	 * @returns The item.
-	 * @throws [`RequiredError`](/error/RequiredError) if no item exists with that id.
+	 * @throws `RequiredError` if no item exists with that id.
 	 * @example await provider.requireItem(users, 123) // Item (or throws).
 	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/requireItem
 	 */
@@ -226,7 +226,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param collection Collection to query.
 	 * @param query Query to filter and sort the items.
 	 * @returns The first matching item.
-	 * @throws [`RequiredError`](/error/RequiredError) if no item matches the query.
+	 * @throws `RequiredError` if no item matches the query.
 	 * @example await provider.requireFirst(users, { $order: "name" }) // Item (or throws).
 	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/requireFirst
 	 */

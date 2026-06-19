@@ -125,7 +125,7 @@ export function assertDictionaryItem<T>(
 }
 
 /**
- * Get an item in a dictionary object, or throw [`RequiredError`](/error/RequiredError) if it doesn't exist.
+ * Get an item in a dictionary object, or throw `RequiredError` if it doesn't exist.
  *
  * @param dict The dictionary to read the item from.
  * @param key The key of the item to read.

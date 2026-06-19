@@ -1,6 +1,6 @@
 # Cache
 
-Reactive caching layer for API calls. [`APICache`](/api/APICache) manages one [`EndpointCache`](/api/EndpointCache) per endpoint; each `EndpointCache` manages one [`EndpointStore`](/api/EndpointStore) per unique rendered URL. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
+Reactive caching layer for API calls. `APICache` manages one `EndpointCache` per endpoint; each `EndpointCache` manages one `EndpointStore` per unique rendered URL. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
 
 ## Concepts
 
@@ -12,20 +12,20 @@ APICache
         └── EndpointStore  (one per unique rendered URL / payload)
 ```
 
-[`EndpointStore`](/api/EndpointStore) does the actual fetching and holds the reactive value. [`EndpointCache`](/api/EndpointCache) keys stores by rendered URL so `GET /users/1` and `GET /users/2` are independent. [`APICache`](/api/APICache) groups endpoint caches so you can address all payloads for a given endpoint at once.
+`EndpointStore` does the actual fetching and holds the reactive value. `EndpointCache` keys stores by rendered URL so `GET /users/1` and `GET /users/2` are independent. `APICache` groups endpoint caches so you can address all payloads for a given endpoint at once.
 
 ### Cache keys
 
-[`.get(payload)`](/api/EndpointCache/get) renders the full URL (including `?query` params for `GET`/`HEAD`) and uses that as the map key. Two payloads that produce the same URL share a store.
+`EndpointCache.get(payload)` renders the full URL (including `?query` params for `GET`/`HEAD`) and uses that as the map key. Two payloads that produce the same URL share a store.
 
 ### `call()` vs `refresh()`
 
-- [`.call(payload, maxAge)`](/api/EndpointCache/call) — returns a cached value if it is younger than `maxAge`. Awaits any in-flight fetch. Good for on-demand reads.
-- [`.refresh(payload, maxAge?)`](/api/EndpointCache/refresh) — triggers a re-fetch unless the value is already younger than `maxAge`. Does not await.
+- `EndpointCache.call(payload, maxAge)` — returns a cached value if it is younger than `maxAge`. Awaits any in-flight fetch. Good for on-demand reads.
+- `EndpointCache.refresh(payload, maxAge?)` — triggers a re-fetch unless the value is already younger than `maxAge`. Does not await.
 
 ## Usage
 
-Direct use of [`APICache`](/api/APICache) or [`EndpointCache`](/api/EndpointCache) is rarely necessary outside of [`CachedAPIProvider`](/api/CachedAPIProvider). They power the [React integration](#see-also) via [`createAPIContext()`](/react/createAPIContext).
+Direct use of `APICache` or `EndpointCache` is rarely necessary outside of `CachedAPIProvider`. They power the [React integration](#see-also) via `createAPIContext()`.
 
 ```ts
 import { APICache } from "shelving/api"

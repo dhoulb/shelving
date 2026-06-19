@@ -36,7 +36,7 @@ export interface ColorSchemaOptions extends SchemaOptions {
  * Schema that defines a valid color hex string, e.g. `#00CCFF`
  *
  * - Coerces the value to a six-digit uppercase `#RRGGBB` hex string.
- * - Rejects anything that isn't a valid hex color (use [`NULLABLE_COLOR`](/schema/NULLABLE_COLOR) to also allow `null`).
+ * - Rejects anything that isn't a valid hex color (use `NULLABLE_COLOR` to also allow `null`).
  *
  * @example COLOR.validate("00ccff"); // Returns "#00CCFF"
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchema
@@ -76,7 +76,7 @@ export class ColorSchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`ColorSchema`](/schema/ColorSchema) for a required hex color string, e.g. `#00CCFF`. Equivalent to `new ColorSchema({})`.
+ * Sugar instance of `ColorSchema` for a required hex color string, e.g. `#00CCFF`. Equivalent to `new ColorSchema({})`.
  *
  * @example COLOR.validate("#00CCFF"); // Returns "#00CCFF"
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/COLOR
@@ -84,7 +84,7 @@ export class ColorSchema extends StringSchema {
 export const COLOR = new ColorSchema({});
 
 /**
- * Sugar instance allowing a [`COLOR`](/schema/COLOR) or `null`. Equivalent to `NULLABLE(COLOR)`.
+ * Sugar instance allowing a `COLOR` or `null`. Equivalent to `NULLABLE(COLOR)`.
  *
  * @example NULLABLE_COLOR.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/ColorSchema/NULLABLE_COLOR

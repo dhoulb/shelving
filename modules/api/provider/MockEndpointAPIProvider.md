@@ -1,6 +1,6 @@
 # MockEndpointAPIProvider
 
-A [`MockAPIProvider`](/api/MockAPIProvider) that wires the mock transport directly to a real [`EndpointHandler`](/api/EndpointHandler) array. Client code calls endpoints exactly as in production, but each call is dispatched to its handler in the same process — so you can test client and server logic together without a network.
+A `MockAPIProvider` that wires the mock transport directly to a real `EndpointHandler` array. Client code calls endpoints exactly as in production, but each call is dispatched to its handler in the same process — so you can test client and server logic together without a network.
 
 The constructor takes the `handlers` array, a `context` value passed to every handler, and an optional `source` provider.
 

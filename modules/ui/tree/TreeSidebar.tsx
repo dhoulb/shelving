@@ -23,11 +23,11 @@ export interface TreeSidebarProps {
 /**
  * Sidebar built from a tree element, in three sections separated by dividers.
  *
- * - **Top:** a "Home" link to the root and an "All elements" link to the [`<TreeIndexPage>`](/ui/TreeIndexPage) (`/all`).
- * - **Middle:** a [`<TextInput>`](/ui/TextInput) search-as-you-type filter.
- * - **Bottom:** the root's children as a [`<TreeMenuMapper>`](/ui/TreeMenuMapper) — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
+ * - **Top:** a "Home" link to the root and an "All elements" link to the `<TreeIndexPage>` (`/all`).
+ * - **Middle:** a `<TextInput>` search-as-you-type filter.
+ * - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
  *
- * Child and result hrefs use each element's canonical `path` (or `joinPath(parent, name)` as a fallback). To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as [`<TreeMenu>`](/ui/TreeMenu)).
+ * Child and result hrefs use each element's canonical `path` (or `joinPath(parent, name)` as a fallback). To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
  *
  * @kind component
  * @returns The sectioned sidebar — home/index links, a search input, and either the tree menu or search results.

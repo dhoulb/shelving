@@ -3,8 +3,8 @@ import type { ClientAPIProvider } from "./ClientAPIProvider.js";
 import { MockAPIProvider } from "./MockAPIProvider.js";
 
 /**
- * Provider that mocks an API that calls and matches an array of [`EndpointHandler`](/api/EndpointHandler) objects returned from [`.handler()`](/api/Endpoint/handler)
- * - Used to test server-side API code, calls against an API made up of multiple [`Endpoint`](/api/Endpoint) instances.
+ * Provider that mocks an API that calls and matches an array of `EndpointHandler` objects returned from `Endpoint.handler()`
+ * - Used to test server-side API code, calls against an API made up of multiple `Endpoint` instances.
  *
  * @example
  *  const endpoint = POST("/squared", INTEGER, INTEGER); // Create an endpoint designed to square its input number.
@@ -18,7 +18,7 @@ export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
 	/**
 	 * Create a mock provider that routes calls through an array of endpoint handlers instead of the network.
 	 *
-	 * @param handlers The endpoint handlers (from [`.handler()`](/api/Endpoint/handler)) that serve matching requests.
+	 * @param handlers The endpoint handlers (from `Endpoint.handler()`) that serve matching requests.
 	 * @param context The context value passed to each handler.
 	 * @param source Optional source provider used to build requests and parse responses.
 	 * @example new MockEndpointAPIProvider(handlers, context)

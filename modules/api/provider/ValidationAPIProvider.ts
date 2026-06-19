@@ -6,7 +6,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /**
  * Provider that validates payloads and results against the endpoint's schemas, so a source of any type is made type-safe.
- * - Payload validation errors bubble up as user-readable strings; result validation errors are wrapped in [`ResponseError`](/error/ResponseError).
+ * - Payload validation errors bubble up as user-readable strings; result validation errors are wrapped in `ResponseError`.
  *
  * @example
  *  const api = new ValidationAPIProvider(source);

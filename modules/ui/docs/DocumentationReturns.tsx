@@ -23,12 +23,12 @@ export interface DocumentationReturnsProps {
 
 /**
  * Render a documented symbol's `@returns` entries as a scrollable table — one row per return type.
- * - Self-contained: pulls its own copy of the tree map from [`useTreeMap()`](/ui/useTreeMap) so the `Type` column can link each type to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text).
+ * - Self-contained: pulls its own copy of the tree map from `useTreeMap()` so the `Type` column can link each type to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text).
  * - A row with no hand-written description falls back to the referenced type's own `description`.
  * - Renders nothing when there are no return entries.
  *
  * @kind component
- * @returns A [`<Section>`](/ui/Section) containing the returns table, or `null` when there are none.
+ * @returns A `<Section>` containing the returns table, or `null` when there are none.
  * @example <DocumentationReturns returns={returns} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationReturns/DocumentationReturns
  */

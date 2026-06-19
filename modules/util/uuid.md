@@ -5,8 +5,8 @@ Three small helpers for generating and validating UUIDs. They exist to provide a
 **Things to know:**
 
 - All UUIDs in this module are stored and returned **without dashes** — 32 lowercase hex characters. Dashes are stripped on input and never added on output.
-- [`randomUUID()`](/util/uuid/randomUUID) uses `crypto.randomUUID()` internally, so it requires a secure context (available in Node.js and modern browsers).
-- [`getUUID()`](/util/uuid/getUUID) accepts hyphenated UUIDs, dash-free UUIDs, and mixed-case variants — it normalises them all to the same 32-char lowercase form.
+- `randomUUID()` uses `crypto.randomUUID()` internally, so it requires a secure context (available in Node.js and modern browsers).
+- `getUUID()` accepts hyphenated UUIDs, dash-free UUIDs, and mixed-case variants — it normalises them all to the same 32-char lowercase form.
 
 ## Usage
 

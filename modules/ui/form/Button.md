@@ -1,13 +1,13 @@
 # Button
 
-A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared [`<Clickable>`](/ui/Clickable) primitive picks the element, so a button is always the right semantics for what it does.
+A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared `<Clickable>` primitive picks the element, so a button is always the right semantics for what it does.
 
 **Things to know:**
 
 - Content-width by default: it sizes to its label and never grows. Pass `full` to fill the available width (it then shrinks to share a row, down to the content floor).
 - `strong` marks the default action in a form — a filled background instead of an outline. `plain` and `outline` drop the background until hover/focus.
 - `color=` / `status=` move the tint anchor, so the background, border and label re-derive from the same ladder; `small` tightens the padding.
-- [`getButtonClass(variants)`](/ui/getButtonClass) returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
+- `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 
 ## Usage
 
@@ -72,7 +72,7 @@ import { getButtonClass } from "shelving/ui";
 | `--button-strong-border` | Border when `strong` | `var(--button-stroke) solid transparent` |
 | `--button-strong-hover-background` | Hover fill when `strong` | `var(--tint-55)` |
 
-**Global tokens it reads:** the tint ladder [`--tint-50`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-95`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS) / [`--tint-55`](/ui/TINT_CLASS), plus [`--space-small`](/ui/getSpaceClass), [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xsmall`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), [`--font-body`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-normal`](/ui/getSizeClass), [`--leading`](/ui/getSizeClass), and [`--duration-fast`](/ui/getDurationClass).
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90` / `--tint-95` / `--tint-100` / `--tint-55`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons. */

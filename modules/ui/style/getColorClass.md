@@ -2,7 +2,7 @@
 
 The `color` variant prop moves the [tint ladder](/ui/TINT_CLASS) anchor to a named palette colour — `<Card color="red">`, `<Tag color="primary">`. It's an **override** for one-off recolouring of a component in a page; for an app-wide look, override the palette variables below in a theme file instead.
 
-`getColorClass({ color })` returns `getClass(TINT_CLASS, "<colour>")` — it moves `--tint-50` to the chosen colour and recomposes the ladder, so the whole subtree retints. See [`TINT_CLASS`](/ui/TINT_CLASS) for how the ladder works.
+`getColorClass({ color })` returns `getClass(TINT_CLASS, "<colour>")` — it moves `--tint-50` to the chosen colour and recomposes the ladder, so the whole subtree retints. See `TINT_CLASS` for how the ladder works.
 
 ## Theme variables
 

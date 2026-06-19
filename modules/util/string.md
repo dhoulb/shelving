@@ -4,11 +4,11 @@ Core helpers for checking, converting, sanitising, and transforming strings. Use
 
 **Things to know:**
 
-- [`getString()`](/util/string/getString) converts `boolean`, `number`, `Date`, and arrays to strings but returns `undefined` for anything else (e.g. objects, `null`). Use [`requireString()`](/util/string/requireString) to throw instead.
-- [`sanitizeText()`](/util/string/sanitizeText) is for single-line input (titles, labels). [`sanitizeMultilineText()`](/util/string/sanitizeMultilineText) is for longer content — it preserves `\n` but normalises everything else.
-- [`simplifyString()`](/util/string/simplifyString) uses Unicode normalisation (`NFKD`) so accented/ligature characters (`é`, `ﬀ`) collapse to plain ASCII equivalents before stripping. This makes it reliable for search and slug generation.
-- [`splitString()`](/util/string/splitString) differs from `String.prototype.split()` in that excess segments are concatenated onto the last segment rather than discarded, and it enforces min/max segment counts.
-- [`getWords()`](/util/string/getWords) honours quoted phrases: `"hello world"` is one word, not two.
+- `getString()` converts `boolean`, `number`, `Date`, and arrays to strings but returns `undefined` for anything else (e.g. objects, `null`). Use `requireString()` to throw instead.
+- `sanitizeText()` is for single-line input (titles, labels). `sanitizeMultilineText()` is for longer content — it preserves `\n` but normalises everything else.
+- `simplifyString()` uses Unicode normalisation (`NFKD`) so accented/ligature characters (`é`, `ﬀ`) collapse to plain ASCII equivalents before stripping. This makes it reliable for search and slug generation.
+- `splitString()` differs from `String.prototype.split()` in that excess segments are concatenated onto the last segment rather than discarded, and it enforces min/max segment counts.
+- `getWords()` honours quoted phrases: `"hello world"` is one word, not two.
 
 ## Usage
 

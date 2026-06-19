@@ -10,7 +10,7 @@ import type { Parser } from "./Parser.js";
 import { MARKUP_RULES } from "./rule/index.js";
 
 /**
- * Options configuring a [`MarkupParser`](/markup/MarkupParser) (represents the current state of the parsing).
+ * Options configuring a `MarkupParser` (represents the current state of the parsing).
  * - Every field is optional — an empty object yields a parser with the default rules and behaviour.
  * - Link resolution honours `url`, `root`, and `schemes`; link safety hinges on `schemes`.
  *
@@ -54,7 +54,7 @@ export type MarkupOptions = {
 
 /**
  * Parses a Markdownish markup string and renders it as a React node using a tiered, masking rule engine.
- * - The syntax isn't hardcoded — it's defined entirely by the `rules` supplied (defaults to [`MARKUP_RULES`](/markup/MARKUP_RULES)).
+ * - The syntax isn't hardcoded — it's defined entirely by the `rules` supplied (defaults to `MARKUP_RULES`).
  * - Rules are grouped into priority tiers and resolved highest tier first; a claimed region is masked so lower-priority rules can't match into or across it.
  * - Rules own the recursion into their own children by calling `parse()` again, optionally with a different context.
  *
@@ -156,7 +156,7 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 * Resolve a link href against this parser's `url` and `root`, returning it only if its scheme is allowed.
 	 *
 	 * @param href The raw link reference to resolve (relative or absolute), or a nullish value.
-	 * @returns An [`ImmutableURI`](/util/uri/ImmutableURI) if the link parses and its scheme is in `schemes`, otherwise `undefined`.
+	 * @returns An `ImmutableURI` if the link parses and its scheme is in `schemes`, otherwise `undefined`.
 	 * @example parser.getLink("/about") // ImmutableURI | undefined
 	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/getLink
 	 */
@@ -358,7 +358,7 @@ function _mask(text: string, start: number, end: number): string {
 }
 
 /**
- * Shared [`MarkupParser`](/markup/MarkupParser) instance configured with the default markup rules and behaviour.
+ * Shared `MarkupParser` instance configured with the default markup rules and behaviour.
  * - Use this singleton when no custom rules, link resolution, or default context are needed.
  *
  * @example MARKUP_PARSER.parse("This is a *bold* string.")

@@ -14,7 +14,7 @@ export type ElementProps = {
 
 /**
  * Element with a type, props, and optional key (compatible with `React.ReactElement`).
- * - Declared as a `type`, not an `interface`, so its implicit index signature lets it satisfy [`Data`](/util/data/Data) — [`queryElements()`](/util/element/queryElements) runs elements through [`queryItems()`](/util/query/queryItems).
+ * - Declared as a `type`, not an `interface`, so its implicit index signature lets it satisfy `Data` — `queryElements()` runs elements through `queryItems()`.
  *
  * @see https://dhoulb.github.io/shelving/util/element/Element
  */
@@ -83,7 +83,7 @@ export function getElementText(elements: Elements): string {
 }
 
 /**
- * Walk an [`Elements`](/util/element/Elements) value into a flat iterable of [`Element`](/util/element/Element) objects.
+ * Walk an `Elements` value into a flat iterable of `Element` objects.
  * - Accepts any shape the `Elements` union allows: a single element, a (possibly deeply nested) iterable, `null`, `undefined`, or a string (strings are skipped — there's no element to yield).
  * - Recurses through *iterable nesting* only (e.g. `[[a, b], c]` flattens to `a, b, c`); it does NOT descend into an element's own `props.children`. Walking deeper is the consumer's job.
  *
@@ -102,8 +102,8 @@ export function* walkElements(elements: Elements): Iterable<Element> {
 }
 
 /**
- * Filter elements yielded by [`walkElements()`](/util/element/walkElements) using a [`Query<Element>`](/util/query/Query) object.
- * - Supports any property query (e.g. `{ type: "tree-element" }`, `{ type: ["tree-element", "tree-documentation"] }`), sorting, limiting — anything [`queryItems()`](/util/query/queryItems) accepts.
+ * Filter elements yielded by `walkElements()` using a `Query<Element>` object.
+ * - Supports any property query (e.g. `{ type: "tree-element" }`, `{ type: ["tree-element", "tree-documentation"] }`), sorting, limiting — anything `queryItems()` accepts.
  *
  * @param elements The elements to walk and filter.
  * @param query The `Query<Element>` object describing the filter, sort, and limit to apply.
@@ -116,7 +116,7 @@ export function queryElements(elements: Elements, query: Query<Element>): Iterab
 }
 
 /**
- * Filter elements yielded by [`walkElements()`](/util/element/walkElements) using a match function.
+ * Filter elements yielded by `walkElements()` using a match function.
  *
  * @param elements The elements to walk and filter.
  * @param match Function called with each element; return `true` to keep the element.
@@ -129,7 +129,7 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
 }
 
 /**
- * Combine two [`Elements`](/util/element/Elements), preserving both if both are set.
+ * Combine two `Elements`, preserving both if both are set.
  * - If either side is falsy the other side is returned unchanged.
  *
  * @param a The first elements.

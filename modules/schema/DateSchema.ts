@@ -42,7 +42,7 @@ export interface DateSchemaOptions extends SchemaOptions {
 /**
  * Schema that defines a valid date stored as a `YYYY-MM-DD` string, e.g. `2005-09-12`.
  *
- * - Validates an abstract date without a timezone; use [`DateTimeSchema`](/schema/DateTimeSchema) for UTC datetimes and [`TimeSchema`](/schema/TimeSchema) for times.
+ * - Validates an abstract date without a timezone; use `DateTimeSchema` for UTC datetimes and `TimeSchema` for times.
  * - The input is coerced to a `Date`, optionally rounded to `step`, range-checked against `min`/`max`, then stringified.
  *
  * @example
@@ -120,7 +120,7 @@ export class DateSchema extends Schema<string> {
 }
 
 /**
- * Sugar instance of [`DateSchema`](/schema/DateSchema) for a required date. Equivalent to `new DateSchema({})`.
+ * Sugar instance of `DateSchema` for a required date. Equivalent to `new DateSchema({})`.
  *
  * @example DATE.validate("2005-09-12") // "2005-09-12"
  * @see https://dhoulb.github.io/shelving/schema/DateSchema/DATE
@@ -128,7 +128,7 @@ export class DateSchema extends Schema<string> {
 export const DATE = new DateSchema({});
 
 /**
- * Sugar instance allowing a [`DATE`](/schema/DATE) or `null`. Equivalent to `NULLABLE(DATE)`.
+ * Sugar instance allowing a `DATE` or `null`. Equivalent to `NULLABLE(DATE)`.
  *
  * @example NULLABLE_DATE.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/DateSchema/NULLABLE_DATE

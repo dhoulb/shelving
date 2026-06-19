@@ -70,7 +70,7 @@ export function compareAscending(left: unknown, right: unknown): number {
 
 /**
  * Compare two unknown values in descending order.
- * - The exact inverse of [`compareAscending()`](/util/sort/compareAscending).
+ * - The exact inverse of `compareAscending()`.
  *
  * @param left The first value to rank.
  * @param right The second value to rank.
@@ -142,7 +142,7 @@ function _quicksort<T, A extends Arguments>(
  * - When the input is already an array and the sort makes no change, the original array reference is returned unchanged.
  *
  * @param input The array or iterable of items to sort.
- * @param compare A `Compare` function ranking two items (defaults to [`compareAscending()`](/util/sort/compareAscending)).
+ * @param compare A `Compare` function ranking two items (defaults to `compareAscending()`).
  * @param args Extra arguments forwarded to `compare` on each call.
  * @returns A sorted array (the original reference if it was an already-sorted array).
  * @example sortArray([3, 1, 2]) // [1, 2, 3]

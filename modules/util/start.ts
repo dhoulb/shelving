@@ -17,7 +17,7 @@ export type StopCallback = () => void;
 
 /**
  * Callback function that does nothing and returns a blackhole stop callback.
- * - Useful as a no-op default where a [`StartCallback`](/util/start/StartCallback) is expected.
+ * - Useful as a no-op default where a `StartCallback` is expected.
  *
  * @example STOPHOLE() // BLACKHOLE
  * @see https://dhoulb.github.io/shelving/util/start/STOPHOLE
@@ -92,17 +92,17 @@ export class Starter<T extends Arguments = []> implements Disposable {
 }
 
 /**
- * Something that can be made into a [`Starter`](/util/start/Starter).
+ * Something that can be made into a `Starter`.
  *
  * @see https://dhoulb.github.io/shelving/util/start/PossibleStarter
  */
 export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>;
 
 /**
- * Get a [`Starter`](/util/start/Starter) from a [`PossibleStarter`](/util/start/PossibleStarter).
+ * Get a `Starter` from a `PossibleStarter`.
  * - Returns the input unchanged when it is already a `Starter`; otherwise wraps the callback in a new `Starter`.
  *
- * @param start A [`StartCallback`](/util/start/StartCallback) or an existing `Starter`.
+ * @param start A `StartCallback` or an existing `Starter`.
  * @example getStarter(() => () => {}) // Starter instance
  * @see https://dhoulb.github.io/shelving/util/start/getStarter
  */

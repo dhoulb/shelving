@@ -14,14 +14,14 @@ import NOTICE_CSS from "./Notice.module.css";
  * @see https://dhoulb.github.io/shelving/ui/notice/Notice/NoticeProps
  */
 export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants, OptionalChildProps {
-	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to [`<StatusIcon>`](/ui/StatusIcon)). */
+	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
 }
 
 /**
  * Block-level status callout with an icon and message, used to highlight feedback.
  *
- * - Shows a [`<StatusIcon>`](/ui/StatusIcon) for the current `status` by default; pass `icon` to override, or `false`/`null` to hide it.
+ * - Shows a `<StatusIcon>` for the current `status` by default; pass `icon` to override, or `false`/`null` to hide it.
  * - Sets an ARIA `role` of `"alert"` for error/danger statuses, otherwise `"status"`.
  *
  * @param children The notice content.

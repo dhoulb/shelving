@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import RADIUS_CSS from "./Radius.module.css";
 
 /**
- * Allowed values for border radius for components that support [`RadiusVariants`](/ui/RadiusVariants)
+ * Allowed values for border radius for components that support `RadiusVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Radius/RadiusVariant
  */

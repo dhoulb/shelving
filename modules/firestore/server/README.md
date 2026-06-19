@@ -1,10 +1,10 @@
 # Firestore server SDK
 
-[`FirestoreServerProvider`](/firestore/server/FirestoreServerProvider) for the Firebase Admin SDK (`@google-cloud/firestore`). Use this in Node.js backends, Cloud Functions, or any server environment that authenticates via a service account or Application Default Credentials.
+`FirestoreServerProvider` for the Firebase Admin SDK (`@google-cloud/firestore`). Use this in Node.js backends, Cloud Functions, or any server environment that authenticates via a service account or Application Default Credentials.
 
 ## When to use this
 
-Choose [`shelving/firestore/server`](/firestore/server) for server-side code. It uses the `@google-cloud/firestore` package directly (the same driver the Admin SDK uses) rather than the browser-oriented Firebase JS SDK. It supports realtime subscriptions and uses `BulkWriter` for efficient bulk mutations.
+Choose `shelving/firestore/server` for server-side code. It uses the `@google-cloud/firestore` package directly (the same driver the Admin SDK uses) rather than the browser-oriented Firebase JS SDK. It supports realtime subscriptions and uses `BulkWriter` for efficient bulk mutations.
 
 ## Install
 
@@ -45,8 +45,8 @@ const provider = new FirestoreServerProvider();
 
 ## Realtime subscriptions
 
-[`.getItemSequence()`](/db/DBProvider/getItemSequence) and [`.getQuerySequence()`](/db/DBProvider/getQuerySequence) use `onSnapshot` from the Admin SDK and return `AsyncIterable` backed by a live Firestore listener.
+`DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` use `onSnapshot` from the Admin SDK and return `AsyncIterable` backed by a live Firestore listener.
 
 ## Bulk query mutations
 
-[`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), and [`.deleteQuery()`](/db/DBProvider/deleteQuery) use `BulkWriter` for efficient batched writes. Documents are fetched in pages of 1000 using `select()` (a field-mask query with no fields) to minimise data transfer, and writes are flushed as each page is processed.
+`DBProvider.setQuery()`, `DBProvider.updateQuery()`, and `DBProvider.deleteQuery()` use `BulkWriter` for efficient batched writes. Documents are fetched in pages of 1000 using `select()` (a field-mask query with no fields) to minimise data transfer, and writes are flushed as each page is processed.

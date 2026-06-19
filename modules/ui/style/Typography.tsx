@@ -6,7 +6,7 @@ import { getWeightClass, type WeightVariants } from "./Weight.js";
 
 /**
  * Shades of the currently selected tint color, from `"00"` (black) through `"50"` (the hue itself) to `"100"` (white).
- * - Can be applied as the text `color:` for components that support [`TypographyVariants`](/ui/TypographyVariants)
+ * - Can be applied as the text `color:` for components that support `TypographyVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/TintVariant
  */
@@ -34,7 +34,7 @@ export type TintVariant =
 	| "100";
 
 /**
- * Text-alignment variant props — opt-in modifiers any prose component can mix in via [`getTypographyClass()`](/ui/getTypographyClass).
+ * Text-alignment variant props — opt-in modifiers any prose component can mix in via `getTypographyClass()`.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/AlignVariants
  */
@@ -48,7 +48,7 @@ export type AlignVariants = {
 };
 
 /**
- * Whitespace wrap variant props — opt-in modifiers any prose component can mix in via [`getTypographyClass()`](/ui/getTypographyClass).
+ * Whitespace wrap variant props — opt-in modifiers any prose component can mix in via `getTypographyClass()`.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Typography/WrapVariants
  */

@@ -1,6 +1,6 @@
 # JSONAPIProvider
 
-A [`ClientAPIProvider`](/api/ClientAPIProvider) that forces JSON. It sends request bodies as JSON and always parses responses as JSON, regardless of content-type headers — useful against APIs that are inconsistent about declaring `application/json`.
+A `ClientAPIProvider` that forces JSON. It sends request bodies as JSON and always parses responses as JSON, regardless of content-type headers — useful against APIs that are inconsistent about declaring `application/json`.
 
 Because it extends `ClientAPIProvider`, it is a concrete network provider: construct it with the same `{ url, options?, timeout? }` options.
 

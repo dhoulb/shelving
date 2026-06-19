@@ -1,6 +1,6 @@
 # DataStore
 
-A [`Store`](/store/Store) for a plain object value. `DataStore<T>` adds object-aware helpers on top of the base store: read the whole object with `.data`, or update it without replacing the reference yourself.
+A `Store` for a plain object value. `DataStore<T>` adds object-aware helpers on top of the base store: read the whole object with `.data`, or update it without replacing the reference yourself.
 
 `OptionalDataStore<T>` is the variant whose value may be `undefined` — it adds `.exists`, `.require()`, and `.delete()` for the absent case.
 

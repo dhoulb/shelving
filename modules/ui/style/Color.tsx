@@ -3,7 +3,7 @@ import COLOR_CSS from "./Color.module.css";
 import { TINT_CLASS } from "./Tint.js";
 
 /**
- * Enumerated colour names selectable via the `color="purple"` prop for components that support that support [`ColorVariants`](/ui/ColorVariants)
+ * Enumerated colour names selectable via the `color="purple"` prop for components that support that support `ColorVariants`
  * - Applies a tint color to the element.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Color/ColorVariant

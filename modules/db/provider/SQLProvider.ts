@@ -26,8 +26,8 @@ type CountRow = {
  * Abstract database provider that implements CRUD and query operations by generating and executing SQL.
  *
  * - Subclasses implement `exec()` to run a query against a concrete database (e.g. SQLite, PostgreSQL).
- * - The `sql*` helpers build composable [`SQLFragment`](/db/SQLFragment) objects so dialect differences can be overridden.
- * - Realtime subscriptions are unsupported and throw [`UnimplementedError`](/error/UnimplementedError).
+ * - The `sql*` helpers build composable `SQLFragment` objects so dialect differences can be overridden.
+ * - Realtime subscriptions are unsupported and throw `UnimplementedError`.
  *
  * @example
  *  class MyProvider extends SQLProvider { async exec(strings, ...values) { ... } }
@@ -263,7 +263,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 *
 	 * @param strings The template string parts of the fragment.
 	 * @param values The interpolated values to embed into the fragment.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sql`SELECT * FROM ${table}`; // SQLFragment
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sql
 	 */
@@ -275,7 +275,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for an escaped identifier, e.g. `"myTable"`.
 	 *
 	 * @param name The identifier (table or column name) to escape.
-	 * @returns An [`SQLFragment`](/db/SQLFragment) containing the quoted identifier.
+	 * @returns An `SQLFragment` containing the quoted identifier.
 	 * @example this.sqlIdentifier("myTable"); // "myTable"
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlIdentifier
 	 */
@@ -288,7 +288,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * - Base implementation only supports flat (single-segment) keys; subclasses override for nested JSON paths.
 	 *
 	 * @param key The key segments identifying the column (and any nested path).
-	 * @returns An [`SQLFragment`](/db/SQLFragment) extracting the value.
+	 * @returns An `SQLFragment` extracting the value.
 	 * @throws {UnimplementedError} If the key is nested (multi-segment).
 	 * @example this.sqlExtract(["name"]); // "name"
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlExtract
@@ -305,7 +305,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param separator The separator placed between fragments.
 	 * @param before Text placed before the first fragment.
 	 * @param after Text placed after the last fragment.
-	 * @returns The joined [`SQLFragment`](/db/SQLFragment).
+	 * @returns The joined `SQLFragment`.
 	 * @example this.sqlConcat([a, b], " AND "); // a AND b
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlConcat
 	 */
@@ -318,7 +318,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for setting a list of values, e.g. `"a" = 1, "b" = 2`.
 	 *
 	 * @param data The data whose entries become `column = value` assignments.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlSetters({ a: 1, b: 2 }); // "a" = 1, "b" = 2
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlSetters
 	 */
@@ -334,7 +334,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for a set of updates, e.g. `"a" = 1, "b" = "b" + 5`.
 	 *
 	 * @param updates The updates to convert into SQL assignments.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlUpdates({ a: 1 }); // "a" = 1
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlUpdates
 	 */
@@ -348,11 +348,11 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	/**
 	 * Define an SQL fragment for a single update action.
 	 * - Handles flat `set` and `sum` only (single-segment key).
-	 * - Nested keys (multi-segment) and `with`/`omit` actions throw [`UnimplementedError`](/error/UnimplementedError).
+	 * - Nested keys (multi-segment) and `with`/`omit` actions throw `UnimplementedError`.
 	 * - Subclasses should override to support nested keys and array mutation actions.
 	 *
 	 * @param update The update action (`action`, `key`, `value`) to convert.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the key is nested or the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a"], value: 1 }); // "a" = 1
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlUpdate
@@ -369,7 +369,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for `VALUES` syntax, e.g. `("a", "b") VALUES (1, 2)`.
 	 *
 	 * @param data The data whose keys and values become the column list and values.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlValues({ a: 1, b: 2 }); // ("a", "b") VALUES (1, 2)
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlValues
 	 */
@@ -390,7 +390,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for the `WHERE`, `ORDER BY` and `LIMIT` clauses of a query, e.g. ` WHERE x = 1 ORDER BY "name" LIMIT 0, 50`.
 	 *
 	 * @param query The query to translate into clauses.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlClauses(query); // WHERE ... ORDER BY ... LIMIT ...
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlClauses
 	 */
@@ -402,7 +402,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for a `WHERE` clause, e.g. ` WHERE x = 1 AND y <= 100`.
 	 *
 	 * @param query The query whose filters become the `WHERE` clause.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment) (empty if there are no filters).
+	 * @returns The composed `SQLFragment` (empty if there are no filters).
 	 * @example this.sqlWhere(query); // WHERE x = 1
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlWhere
 	 */
@@ -419,7 +419,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for a single filter clause on a column, e.g. `x = 1` or `x IN (1, 2)`.
 	 *
 	 * @param filter The filter (`key`, `operator`, `value`) to translate.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["x"], operator: "is", value: 1 }); // "x" = 1
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlFilter
@@ -445,10 +445,10 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 
 	/**
 	 * Define an SQL fragment for an `ORDER BY` clause, e.g. ` ORDER BY "a" ASC, "b" DESC`.
-	 * - Nested keys (multi-segment) throw [`UnimplementedError`](/error/UnimplementedError).
+	 * - Nested keys (multi-segment) throw `UnimplementedError`.
 	 *
 	 * @param query The query whose orders become the `ORDER BY` clause.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment) (empty if there are no orders).
+	 * @returns The composed `SQLFragment` (empty if there are no orders).
 	 * @throws {UnimplementedError} If an order key is nested (multi-segment).
 	 * @example this.sqlOrder(query); // ORDER BY "a" ASC
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlOrder
@@ -466,7 +466,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for an individual column in an `ORDER BY`, e.g. `"a" ASC`.
 	 *
 	 * @param order The order (`key`, `direction`) to translate.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlSort({ key: ["a"], direction: "asc" }); // "a" ASC
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlSort
 	 */
@@ -481,7 +481,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for a `LIMIT` clause, e.g. ` LIMIT 50`.
 	 *
 	 * @param query The query whose limit becomes the `LIMIT` clause.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment) (empty if the query has no limit).
+	 * @returns The composed `SQLFragment` (empty if the query has no limit).
 	 * @example this.sqlLimit(query); // LIMIT 50
 	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlLimit
 	 */

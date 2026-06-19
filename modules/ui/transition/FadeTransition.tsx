@@ -12,7 +12,7 @@ export interface FadeTransitionProps extends TransitionProps {}
  * Transition that fades its children in and out by animating their opacity.
  *
  * @kind component
- * @returns A [`<Transition>`](/ui/Transition) element configured with the `fade` class.
+ * @returns A `<Transition>` element configured with the `fade` class.
  * @example <FadeTransition>{visible && <Toast />}</FadeTransition>
  * @see https://dhoulb.github.io/shelving/ui/transition/FadeTransition/FadeTransition
  */

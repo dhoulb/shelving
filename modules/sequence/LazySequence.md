@@ -1,6 +1,6 @@
 # LazySequence
 
-A [`ThroughSequence`](/sequence/ThroughSequence) paired with a start/stop callback. The [`StartCallback`](/util/start/StartCallback) runs when the first iterator begins iterating; the [`StopCallback`](/util/start/StopCallback) it returns runs when the last iterator finishes. This is the sequence equivalent of an observable subscription — work happens only while something is listening.
+A `ThroughSequence` paired with a start/stop callback. The `StartCallback` runs when the first iterator begins iterating; the `StopCallback` it returns runs when the last iterator finishes. This is the sequence equivalent of an observable subscription — work happens only while something is listening.
 
 ## Usage
 

@@ -21,10 +21,10 @@ export interface DocumentationDescriptionProps {
  * Render a documentation table row's description cell.
  * - The description is parsed as inline markup (`context="inline"`), so backticks, emphasis and links resolve rather than showing as literal source.
  * - When a `default` is given it renders a trailing `Defaults to …` note on the same line (linking the value when it's a documented token); otherwise, when `optional` is explicitly `false`, it renders `Required.` for clarity.
- * - Wrapped in [`<Prose>`](/ui/Prose) so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
+ * - Wrapped in `<Prose>` so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
  *
  * @kind component
- * @returns The description and any trailing note wrapped in a [`<Prose>`](/ui/Prose), or `null` when both are empty.
+ * @returns The description and any trailing note wrapped in a `<Prose>`, or `null` when both are empty.
  * @example <DocumentationDescription description="The `foo` value." optional={false} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationDescription/DocumentationDescription
  */

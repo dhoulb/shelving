@@ -31,7 +31,7 @@ export function isNumber(value: unknown, min = Number.NEGATIVE_INFINITY, max = N
  * @param max Maximum allowed value, inclusive.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `number`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is not a finite number within range.
+ * @throws `RequiredError` if `value` is not a finite number within range.
  * @example assertNumber(5, 0, 10); // passes
  * @see https://dhoulb.github.io/shelving/util/number/assertNumber
  */
@@ -67,14 +67,14 @@ export function getNumber(value: unknown): number | undefined {
 const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
 
 /**
- * Convert a possible number to a finite number, or throw [`ValueError`](/error/ValueError) if the value cannot be converted.
+ * Convert a possible number to a finite number, or throw `ValueError` if the value cannot be converted.
  *
  * @param value The value to convert.
  * @param min Minimum allowed value, inclusive.
  * @param max Maximum allowed value, inclusive.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The finite number.
- * @throws [`RequiredError`](/error/RequiredError) if `value` cannot be converted to a finite number within range.
+ * @throws `RequiredError` if `value` cannot be converted to a finite number within range.
  * @example requireNumber("42") // 42
  * @see https://dhoulb.github.io/shelving/util/number/requireNumber
  */
@@ -106,7 +106,7 @@ export function isInteger(value: unknown, min = Number.MIN_SAFE_INTEGER, max = N
  * @param max Maximum allowed value, inclusive.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `number`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is not an integer within range.
+ * @throws `RequiredError` if `value` is not an integer within range.
  * @example assertInteger(5, 0, 10); // passes
  * @see https://dhoulb.github.io/shelving/util/number/assertInteger
  */
@@ -140,14 +140,14 @@ export function getInteger(value: unknown): number | undefined {
 }
 
 /**
- * Convert a possible number to an integer, or throw [`ValueError`](/error/ValueError) if the value cannot be converted.
+ * Convert a possible number to an integer, or throw `ValueError` if the value cannot be converted.
  *
  * @param value The value to convert.
  * @param min Minimum allowed value, inclusive.
  * @param max Maximum allowed value, inclusive.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The integer.
- * @throws [`RequiredError`](/error/RequiredError) if `value` cannot be converted to an integer within range.
+ * @throws `RequiredError` if `value` cannot be converted to an integer within range.
  * @example requireInteger("42") // 42
  * @see https://dhoulb.github.io/shelving/util/number/requireInteger
  */
@@ -223,7 +223,7 @@ export function truncateNumber(num: number, precision = 0): number {
  * @param min The minimum bound, inclusive.
  * @param max The maximum bound, inclusive.
  * @returns `num` clamped to lie between `min` and `max`.
- * @throws [`ValueError`](/error/ValueError) if `max` is less than `min`.
+ * @throws `ValueError` if `max` is less than `min`.
  * @example boundNumber(12, 2, 8) // 8
  * @see https://dhoulb.github.io/shelving/util/number/boundNumber
  */
@@ -243,7 +243,7 @@ export function boundNumber(num: number, min: number, max: number): number {
  * @param min The minimum bound, inclusive.
  * @param max The maximum bound, exclusive (values wrap back to `min`).
  * @returns `num` wrapped to lie between `min` and `max`.
- * @throws [`ValueError`](/error/ValueError) if `max` is less than `min`.
+ * @throws `ValueError` if `max` is less than `min`.
  * @example wrapNumber(12, 2, 8) // 6
  * @see https://dhoulb.github.io/shelving/util/number/wrapNumber
  */

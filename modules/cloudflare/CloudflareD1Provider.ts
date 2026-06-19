@@ -16,9 +16,9 @@ type D1Query = {
 /**
  * SQLite database provider backed by Cloudflare D1.
  *
- * Implements the [`SQLiteProvider`](/db/SQLiteProvider) SQL abstraction by binding tagged-template queries and running them through the D1 Worker API.
- * - Tagged-template values are flattened into positional `?` bindings; nested [`SQLFragment`](/db/SQLFragment) values are inlined recursively.
- * - Array and plain-object values are JSON-encoded before binding; other non-primitive values throw [`ValueError`](/error/ValueError).
+ * Implements the `SQLiteProvider` SQL abstraction by binding tagged-template queries and running them through the D1 Worker API.
+ * - Tagged-template values are flattened into positional `?` bindings; nested `SQLFragment` values are inlined recursively.
+ * - Array and plain-object values are JSON-encoded before binding; other non-primitive values throw `ValueError`.
  * - The `D1Database` binding is provided by the Cloudflare Workers runtime environment.
  *
  * @example
@@ -47,7 +47,7 @@ export class CloudflareD1Provider<I extends Identifier = Identifier, T extends D
 	 * Converts the tagged-template query into a parameterised statement, binds its values, and runs it via `prepare().bind().run()`.
 	 *
 	 * @param strings The tagged-template string parts of the query.
-	 * @param values The interpolated values, bound as positional parameters or inlined [`SQLFragment`](/db/SQLFragment) instances.
+	 * @param values The interpolated values, bound as positional parameters or inlined `SQLFragment` instances.
 	 * @returns Promise resolving to the array of result rows (empty if D1 returns no results).
 	 * @throws {ValueError} If a value cannot be converted to a D1 binding.
 	 * @example provider.exec`SELECT * FROM ${provider.sqlIdentifier("items")}`

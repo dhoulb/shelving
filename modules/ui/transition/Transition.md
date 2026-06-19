@@ -1,6 +1,6 @@
 # Transition
 
-The base View Transition wrapper. It wraps its children in React 19's `<ViewTransition>` and applies named CSS transition classes, so swapping content between renders produces a smooth animation. Use it directly to specify any transition class names, or reach for a preset variant — [`<FadeTransition>`](/ui/FadeTransition), [`<CollapseTransition>`](/ui/CollapseTransition), [`<VerticalTransition>`](/ui/VerticalTransition), [`<HorizontalTransition>`](/ui/HorizontalTransition).
+The base View Transition wrapper. It wraps its children in React 19's `<ViewTransition>` and applies named CSS transition classes, so swapping content between renders produces a smooth animation. Use it directly to specify any transition class names, or reach for a preset variant — `<FadeTransition>`, `<CollapseTransition>`, `<VerticalTransition>`, `<HorizontalTransition>`.
 
 **Things to know:**
 
@@ -30,7 +30,7 @@ import { Transition } from "shelving/ui";
 </Transition>
 ```
 
-### Setting the direction with [`setTransitionType()`](/ui/setTransitionType)
+### Setting the direction with `setTransitionType()`
 
 ```tsx
 import { HorizontalTransition, setTransitionType, requireNavigation } from "shelving/ui";
@@ -60,4 +60,4 @@ Transitions are driven by CSS `::view-transition-*` pseudo-element rules keyed o
 
 The `overlay` variant sets `z-index: 100` on `::view-transition-group(.overlay)`. The preset variants document their own timing/distance hooks (`--fade-transition-duration`, `--vertical-transition-size` / `-duration`, `--horizontal-transition-size` / `-duration`) on their pages.
 
-**Global tokens it reads** — none directly; the preset variants fall back to [`--duration-fast`](/ui/getDurationClass) / [`--duration-normal`](/ui/getDurationClass).
+**Global tokens it reads** — none directly; the preset variants fall back to `--duration-fast` / `--duration-normal`.

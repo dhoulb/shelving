@@ -8,7 +8,7 @@ import type { FormStore } from "./FormStore.js";
 import { isSchemaRequired, type SchemaInputProps } from "./SchemaInput.js";
 
 /**
- * React context holding the current [`FormStore`](/ui/FormStore), provided by the [`Form`](/ui/Form) component.
+ * React context holding the current `FormStore`, provided by the `Form` component.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/FormContext/FormContext
  */
@@ -16,11 +16,11 @@ export const FormContext = createContext<FormStore<Data> | undefined>(undefined)
 FormContext.displayName = "FormContext";
 
 /**
- * Hook that returns the current form's [`FormStore`](/ui/FormStore) from context.
+ * Hook that returns the current form's `FormStore` from context.
  *
  * @param caller Function to attribute the error to if no form context is found.
  * @returns The current `FormStore` instance.
- * @throws [`RequiredError`](/error/RequiredError) if called outside a [`Form`](/ui/Form) component.
+ * @throws `RequiredError` if called outside a `Form` component.
  * @example const form = requireForm();
  * @see https://dhoulb.github.io/shelving/ui/form/FormContext/requireForm
  */

@@ -1,6 +1,6 @@
 # URLStore
 
-A [`Store`](/store/Store) for a URL such as `https://example.com/a/b/c`. `URLStore` coerces any assigned URL or URL string (resolved against an optional `base`), exposes the URL's parts as accessors, and adds query-param and route-matching helpers.
+A `Store` for a URL such as `https://example.com/a/b/c`. `URLStore` coerces any assigned URL or URL string (resolved against an optional `base`), exposes the URL's parts as accessors, and adds query-param and route-matching helpers.
 
 ## Usage
 

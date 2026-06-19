@@ -84,7 +84,7 @@ export class EmailSchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`EmailSchema`](/schema/EmailSchema) for a valid email address. Equivalent to `new EmailSchema({})`.
+ * Sugar instance of `EmailSchema` for a valid email address. Equivalent to `new EmailSchema({})`.
  *
  * @example EMAIL.validate("test@test.com"); // Returns "test@test.com"
  * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EMAIL
@@ -92,7 +92,7 @@ export class EmailSchema extends StringSchema {
 export const EMAIL = new EmailSchema({});
 
 /**
- * Sugar instance allowing an [`EMAIL`](/schema/EMAIL) or `null`. Equivalent to `NULLABLE(EMAIL)`.
+ * Sugar instance allowing an `EMAIL` or `null`. Equivalent to `NULLABLE(EMAIL)`.
  *
  * @example NULLABLE_EMAIL.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/EmailSchema/NULLABLE_EMAIL

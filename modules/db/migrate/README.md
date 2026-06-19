@@ -1,16 +1,16 @@
 # Migrations
 
-Schema migration for SQL-backed database providers. [`DBMigrator`](/db/DBMigrator) and its subclasses compare a provider's live table schema against your [`Collection`](/db/Collection) definitions and emit the SQL statements needed to bring them in sync — creating missing tables and adding or dropping generated columns.
+Schema migration for SQL-backed database providers. `DBMigrator` and its subclasses compare a provider's live table schema against your `Collection` definitions and emit the SQL statements needed to bring them in sync — creating missing tables and adding or dropping generated columns.
 
 ## Concepts
 
 ### DBMigrator
 
-`DBMigrator` is the abstract base class. It holds a reference to the provider and declares one method: [`.migrate()`](/db/DBMigrator/migrate). Concrete subclasses implement `migrate` to inspect the live schema and run the required SQL.
+`DBMigrator` is the abstract base class. It holds a reference to the provider and declares one method: `DBMigrator.migrate()`. Concrete subclasses implement `migrate` to inspect the live schema and run the required SQL.
 
 ### SQLMigrator
 
-[`SQLMigrator`](/db/SQLMigrator) extends `DBMigrator` with the shared SQL diffing logic. It:
+`SQLMigrator` extends `DBMigrator` with the shared SQL diffing logic. It:
 
 - Calls `getTables()` to list existing tables.
 - For each collection, calls `getTable(name)` to read the current column definitions.
@@ -44,7 +44,7 @@ await migrator.migrate(POSTS, COMMENTS);
 
 ### Inspect migrations without running them
 
-[`.getMigrations()`](/db/SQLMigrator/getMigrations) returns the SQL strings without executing them. Useful for previewing or logging:
+`SQLMigrator.getMigrations()` returns the SQL strings without executing them. Useful for previewing or logging:
 
 ```ts
 const sql = await migrator.getMigrations(POSTS, COMMENTS);

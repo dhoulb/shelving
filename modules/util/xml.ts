@@ -28,7 +28,7 @@ export function escapeXML(value: string): string {
  * @param data The data object to serialize.
  * @param caller Function to attribute thrown errors to (defaults to `getXML`).
  * @returns The serialized XML string.
- * @throws [`RequiredError`](/error/RequiredError) if a key is not a valid XML element name.
+ * @throws `RequiredError` if a key is not a valid XML element name.
  * @throws `RequiredError` if a value cannot be converted to XML.
  * @example getXML({ user: { name: "Alice", age: 30 } }) // "<user><name>Alice</name><age>30</age></user>"
  * @see https://dhoulb.github.io/shelving/util/xml/getXML

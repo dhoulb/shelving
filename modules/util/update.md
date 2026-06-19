@@ -1,6 +1,6 @@
 # Update helpers
 
-`Updates<T>` is the mutation language for Shelving data objects. An updates object uses encoded key prefixes to describe how each field should change — set, increment, or add/remove array items — and `updateData()` applies those changes immutably. This is the format consumed by the [`shelving/db`](/db) layer when writing documents.
+`Updates<T>` is the mutation language for Shelving data objects. An updates object uses encoded key prefixes to describe how each field should change — set, increment, or add/remove array items — and `updateData()` applies those changes immutably. This is the format consumed by the `shelving/db` layer when writing documents.
 
 **Things to know:**
 

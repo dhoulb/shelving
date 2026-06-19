@@ -16,7 +16,7 @@ export interface CountrySchemaOptions extends SchemaOptions {
 /**
  * Schema that defines a valid ISO 3166 country code, e.g. `GB`.
  *
- * - The input is coerced with [`getCountry()`](/util/geo/getCountry), then checked against the known set of [`COUNTRIES`](/util/geo/COUNTRIES).
+ * - The input is coerced with `getCountry()`, then checked against the known set of `COUNTRIES`.
  * - A `value` of `"detect"` resolves the default country from the browser language.
  *
  * @example
@@ -52,7 +52,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 }
 
 /**
- * Sugar instance of [`CountrySchema`](/schema/CountrySchema) for a required ISO 3166 country code, e.g. `GB`. Equivalent to `new CountrySchema({})`.
+ * Sugar instance of `CountrySchema` for a required ISO 3166 country code, e.g. `GB`. Equivalent to `new CountrySchema({})`.
  *
  * @example COUNTRY.validate("GB") // "GB"
  * @see https://dhoulb.github.io/shelving/schema/CountrySchema/COUNTRY
@@ -60,7 +60,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 export const COUNTRY = new CountrySchema({});
 
 /**
- * Sugar instance allowing a [`COUNTRY`](/schema/COUNTRY) or `null`. Equivalent to `NULLABLE(COUNTRY)`.
+ * Sugar instance allowing a `COUNTRY` or `null`. Equivalent to `NULLABLE(COUNTRY)`.
  *
  * @example NULLABLE_COUNTRY.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/CountrySchema/NULLABLE_COUNTRY

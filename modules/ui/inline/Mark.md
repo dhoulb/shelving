@@ -4,9 +4,9 @@ Highlighted text — renders a `<mark>` element to call attention to a run of te
 
 **Things to know:**
 
-- Use it for relevance highlighting (search hits, the current match), not for general emphasis — reach for [`<Strong>`](/ui/Strong) or [`<Emphasis>`](/ui/Emphasis) for that.
+- Use it for relevance highlighting (search hits, the current match), not for general emphasis — reach for `<Strong>` or `<Emphasis>` for that.
 - It is a self-contained inline pill: it adds its own inline padding and rounded corners.
-- Inside [`<Prose>`](/ui/Prose) a raw `<mark>` picks up the same styling, so Markdown-rendered highlights match component ones.
+- Inside `<Prose>` a raw `<mark>` picks up the same styling, so Markdown-rendered highlights match component ones.
 
 ## Usage
 
@@ -30,4 +30,4 @@ import { Mark } from "shelving/ui";
 | `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--mark-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads:** `--light-yellow`, `--dark-yellow`, [`--radius-xxsmall`](/ui/getRadiusClass), and [`--weight-strong`](/ui/getWeightClass).
+**Global tokens it reads:** `--light-yellow`, `--dark-yellow`, `--radius-xxsmall`, and `--weight-strong`.

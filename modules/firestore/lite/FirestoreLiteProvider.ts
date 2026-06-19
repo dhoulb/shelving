@@ -97,11 +97,11 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
 }
 
 /**
- * Cloud Firestore database provider backed by the Firebase Lite SDK, implementing the [`DBProvider`](/db/DBProvider) abstraction.
+ * Cloud Firestore database provider backed by the Firebase Lite SDK, implementing the `DBProvider` abstraction.
  *
  * - Works with the Firebase JS SDK via `firebase/firestore/lite`, which keeps bundle size small.
  * - Does not support offline mode.
- * - Does not support realtime subscriptions: `getItemSequence()` and `getQuerySequence()` throw [`UnimplementedError`](/error/UnimplementedError).
+ * - Does not support realtime subscriptions: `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
  *
  * @example
  * import { getFirestore } from "firebase/firestore/lite";
