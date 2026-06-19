@@ -15,4 +15,4 @@ function LiveCounter({ counter }: { counter: AsyncIterable<number> }) {
 }
 ```
 
-Because the subscription resets when the iterable reference changes, pass a stable reference — hoist it, or memoise it with [`useLazy`](/react/useLazy) / [`useInstance`](/react/useInstance) — to avoid resubscribing on every render.
+Because the subscription resets when the iterable reference changes, pass a stable reference — hoist it, or memoise it with [`useLazy()`](/react/useLazy) / [`useInstance()`](/react/useInstance) — to avoid resubscribing on every render.

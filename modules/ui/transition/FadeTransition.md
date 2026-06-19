@@ -1,6 +1,6 @@
 # FadeTransition
 
-A [`Transition`](/ui/Transition) preset that fades its children in and out by animating opacity. Wrap any content that should animate when it mounts or unmounts.
+A [`<Transition>`](/ui/Transition) preset that fades its children in and out by animating opacity. Wrap any content that should animate when it mounts or unmounts.
 
 **Things to know:**
 

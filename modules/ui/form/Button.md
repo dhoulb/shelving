@@ -1,6 +1,6 @@
 # Button
 
-A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared [`Clickable`](/ui/Clickable) primitive picks the element, so a button is always the right semantics for what it does.
+A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared [`<Clickable>`](/ui/Clickable) primitive picks the element, so a button is always the right semantics for what it does.
 
 **Things to know:**
 

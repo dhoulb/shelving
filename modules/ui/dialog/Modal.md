@@ -1,10 +1,10 @@
 # Modal
 
-A non-blocking `<aside>` overlay for persistent panels — drawers, toasts, and side-sheets that coexist with the page rather than blocking interaction with it. Unlike [`Dialog`](/ui/Dialog), it is not a native `<dialog>` and does not trap focus or dim the page.
+A non-blocking `<aside>` overlay for persistent panels — drawers, toasts, and side-sheets that coexist with the page rather than blocking interaction with it. Unlike [`<Dialog>`](/ui/Dialog), it is not a native `<dialog>` and does not trap focus or dim the page.
 
 **Things to know:**
 
-- Reach for `Modal` when the overlay should sit alongside the page (a notification panel, a side drawer); reach for [`Dialog`](/ui/Dialog) when it should block interaction until dismissed.
+- Reach for `Modal` when the overlay should sit alongside the page (a notification panel, a side drawer); reach for [`<Dialog>`](/ui/Dialog) when it should block interaction until dismissed.
 - It only styles the box — lay out its contents with the usual block components.
 
 ## Usage

@@ -4,8 +4,8 @@ Low-level emitter of hoistable head metadata from the current [`Meta`](/ui/Meta)
 
 **Things to know:**
 
-- [`Page`](/ui/Page) renders `<Head>` automatically — you rarely need it directly.
-- It does not render `<base>`, which is not hoistable; that lives in the [`HTML`](/ui/HTML) shell.
+- [`<Page>`](/ui/Page) renders `<Head>` automatically — you rarely need it directly.
+- It does not render `<base>`, which is not hoistable; that lives in the [`<HTML>`](/ui/HTML) shell.
 - The composed title combines the page `title` with the app name from context.
 
 ## Usage

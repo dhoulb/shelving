@@ -1,11 +1,11 @@
 # HorizontalTransition
 
-A direction-aware [`Transition`](/ui/Transition) preset that slides its children horizontally — right when moving forward, left when moving back. It reads the active transition type so the slide direction matches the navigation direction.
+A direction-aware [`<Transition>`](/ui/Transition) preset that slides its children horizontally — right when moving forward, left when moving back. It reads the active transition type so the slide direction matches the navigation direction.
 
 **Things to know:**
 
 - Defaults to `slideRight`; with the type set to `"forward"` it slides right (`slideRight`), and to `"back"` it slides left (`slideLeft`).
-- Set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback before navigating — see [`Transition`](/ui/Transition).
+- Set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback before navigating — see [`<Transition>`](/ui/Transition).
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 
 ## Usage

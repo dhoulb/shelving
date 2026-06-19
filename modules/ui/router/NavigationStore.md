@@ -1,6 +1,6 @@
 # NavigationStore
 
-The store holding the current navigation URL and driving browser history. It extends [`URLStore`](/store/URLStore) — the current location is its `value` — and is owned by [`Navigation`](/ui/Navigation). Reach for it via [`requireNavigation()`](/ui/Navigation) rather than constructing your own.
+The store holding the current navigation URL and driving browser history. It extends [`URLStore`](/store/URLStore) — the current location is its `value` — and is owned by [`<Navigation>`](/ui/Navigation). Reach for it via [`requireNavigation()`](/ui/Navigation) rather than constructing your own.
 
 **Things to know:**
 

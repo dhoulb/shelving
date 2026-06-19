@@ -20,7 +20,7 @@ The ladder is computed at `:root` and *recomputed* under `TINT_CLASS` (the `.tin
 }
 ```
 
-[`getColorClass`](/ui/getColorClass) and [`getStatusClass`](/ui/getStatusClass) compose `TINT_CLASS` automatically, so `<Card color="red">` is: move the anchor to red, rebuild the ladder, and let the card paint from the same steps it always paints from. Descendants inherit the rebuilt ladder, which is why a [`Tag`](/ui/Tag) or [`Preformatted`](/ui/Preformatted) nested in a red card tints to match it.
+[`getColorClass()`](/ui/getColorClass) and [`getStatusClass()`](/ui/getStatusClass) compose `TINT_CLASS` automatically, so `<Card color="red">` is: move the anchor to red, rebuild the ladder, and let the card paint from the same steps it always paints from. Descendants inherit the rebuilt ladder, which is why a [`<Tag>`](/ui/Tag) or [`<Preformatted>`](/ui/Preformatted) nested in a red card tints to match it.
 
 ## How components paint from the ladder
 
@@ -31,7 +31,7 @@ Components paint from the ladder by convention:
 | `--tint-00` | Body text, headings — maximum contrast |
 | `--tint-50` | The hue itself — accents, labels, `Tag` backgrounds, `strong` button backgrounds |
 | `--tint-80` | Borders |
-| `--tint-90` | Surfaces — [`Card`](/ui/Card), `Preformatted`, [`Button`](/ui/Button) backgrounds |
+| `--tint-90` | Surfaces — [`<Card>`](/ui/Card), `Preformatted`, [`<Button>`](/ui/Button) backgrounds |
 | `--tint-95` | Hover state of those surfaces |
 | `--tint-100` | The page background; text on `--tint-50` backgrounds |
 

@@ -1,6 +1,6 @@
 # getDurationClass
 
-This module's main job is to **define and document the transition/animation timing tokens**. Components and [transitions](/ui/Transition) read these tokens directly; `getDurationClass({ duration })` exists as a utility (e.g. `duration="fast"` → `duration-fast`) and as the home for this documentation.
+This module's main job is to **define and document the transition/animation timing tokens**. Components and [`<Transition>`](/ui/Transition) components read these tokens directly; `getDurationClass({ duration })` exists as a utility (e.g. `duration="fast"` → `duration-fast`) and as the home for this documentation.
 
 ## Theme variables
 

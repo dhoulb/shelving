@@ -1,11 +1,11 @@
 # Menu
 
-A `<menu>` list of [`MenuItem`](/ui/MenuItem) children — the container for URL-aware navigation in sidebars, dropdowns, and any other list of links.
+A `<menu>` list of [`<MenuItem>`](/ui/MenuItem) children — the container for URL-aware navigation in sidebars, dropdowns, and any other list of links.
 
 **Things to know:**
 
-- Renders as a bare `<menu>` element (semantically equivalent to `<ul>` but more meaningful for menus). Place it inside a `<nav>` — or a [`SidebarLayout`](/ui/SidebarLayout) sidebar, which is already a `<nav>` landmark — if a navigation landmark is needed.
-- Nesting a `<Menu>` inside a [`MenuItem`](/ui/MenuItem) gets indented automatically via the `.menu .menu` descendant rule.
+- Renders as a bare `<menu>` element (semantically equivalent to `<ul>` but more meaningful for menus). Place it inside a `<nav>` — or a [`<SidebarLayout>`](/ui/SidebarLayout) sidebar, which is already a `<nav>` landmark — if a navigation landmark is needed.
+- Nesting a `<Menu>` inside a [`<MenuItem>`](/ui/MenuItem) gets indented automatically via the `.menu .menu` descendant rule.
 
 ## Usage
 
@@ -40,6 +40,6 @@ import { Menu, MenuItem } from "shelving/ui";
 | `--menu-nested-color-border` | Nested submenu left-border colour | `var(--tint-50)` |
 | `--menu-nested-indent` | Nested submenu left padding | `var(--space-xsmall)` |
 
-Item-state hooks (`--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on [`MenuItem`](/ui/MenuItem).
+Item-state hooks (`--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on [`<MenuItem>`](/ui/MenuItem).
 
 **Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-50`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass) / [`--space-xsmall`](/ui/getSpaceClass), [`--font-body`](/ui/getFontClass), [`--size-normal`](/ui/getSizeClass), [`--leading`](/ui/getSizeClass), and [`--stroke-focus`](/ui/getStrokeClass).

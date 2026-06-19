@@ -66,4 +66,4 @@ type EndpointCallback<P, R, C = void> =
   (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>
 ```
 
-Return `R` to let [`handleEndpoints`](/api/handleEndpoints) validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.
+Return `R` to let [`handleEndpoints()`](/api/handleEndpoints) validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.

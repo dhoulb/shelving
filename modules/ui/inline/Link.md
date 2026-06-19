@@ -1,13 +1,13 @@
 # Link
 
-An inline link or action. Delegates to [`Clickable`](/ui/Clickable), rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
+An inline link or action. Delegates to [`<Clickable>`](/ui/Clickable), rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
 
 **Things to know:**
 
 - It handles busy state, URL resolution, and active-page highlighting automatically via the shared [`<Clickable>`](/ui/Clickable) helper.
 - An `<a>` (any actual link) shows an underline that disappears on hover; a `<button>` variant carries no underline.
 - Reach for `Link` for inline text links; for standalone calls to action use a button-styled component instead.
-- Inside [`Prose`](/ui/Prose) a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
+- Inside [`<Prose>`](/ui/Prose) a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
 
 ## Usage
 

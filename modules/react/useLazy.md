@@ -2,7 +2,7 @@
 
 Compute a value once and recompute it only when its arguments change (by deep equality of the argument list). If the first argument is a function it is called with the remaining arguments; otherwise the value is returned as-is.
 
-`useLazy` is the factory-call counterpart to [`useInstance`](/react/useInstance) — use it when you have a plain function rather than a class constructor.
+`useLazy` is the factory-call counterpart to [`useInstance()`](/react/useInstance) — use it when you have a plain function rather than a class constructor.
 
 ## Usage
 

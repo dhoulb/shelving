@@ -1,6 +1,6 @@
 # RequiredError
 
-Thrown when something required was absent — a missing argument, an empty lookup result, or an unset value. The `require*()` helpers in [util](/util) throw this class.
+Thrown when something required was absent — a missing argument, an empty lookup result, or an unset value. The `require*()` helpers — e.g. [`requireString()`](/util/string/requireString) — throw this class.
 
 ## Usage
 

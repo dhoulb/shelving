@@ -5,9 +5,9 @@ A full-viewport layout with a fixed-width side column next to a scrollable main 
 **Things to know:**
 
 - Pass `right` to place the sidebar on the right rather than the left.
-- The sidebar renders as `<nav>`, so it is a navigation landmark without extra markup — drop a [`Menu`](/ui/Menu) inside it.
+- The sidebar renders as `<nav>`, so it is a navigation landmark without extra markup — drop a [`<Menu>`](/ui/Menu) inside it.
 - While the drawer is open an overlay dims the page; clicking the overlay closes it.
-- Inside a [`Navigation`](/ui/Navigation) context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
+- Inside a [`<Navigation>`](/ui/Navigation) context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - The layout owns scroll, padding, and safe-area insets so individual pages don't have to.
 
 ## Usage
@@ -31,7 +31,7 @@ function AppShell() {
 }
 ```
 
-Layouts compose naturally as [`Router`](/ui/Router) route values — wrap a group of routes in a shared layout, then route further inside it.
+Layouts compose naturally as [`<Router>`](/ui/Router) route values — wrap a group of routes in a shared layout, then route further inside it.
 
 ### Keyboard-aware safe area
 

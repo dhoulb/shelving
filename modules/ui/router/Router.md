@@ -1,6 +1,6 @@
 # Router
 
-A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no [`Navigation`](/ui/Navigation) at all — wrap it in [`Navigation`](/ui/Navigation) on the client to get live URL updates.
+A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no [`<Navigation>`](/ui/Navigation) at all — wrap it in [`<Navigation>`](/ui/Navigation) on the client to get live URL updates.
 
 **Things to know:**
 

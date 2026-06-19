@@ -4,9 +4,9 @@ Highlighted text — renders a `<mark>` element to call attention to a run of te
 
 **Things to know:**
 
-- Use it for relevance highlighting (search hits, the current match), not for general emphasis — reach for [`Strong`](/ui/Strong) or [`Emphasis`](/ui/Emphasis) for that.
+- Use it for relevance highlighting (search hits, the current match), not for general emphasis — reach for [`<Strong>`](/ui/Strong) or [`<Emphasis>`](/ui/Emphasis) for that.
 - It is a self-contained inline pill: it adds its own inline padding and rounded corners.
-- Inside [`Prose`](/ui/Prose) a raw `<mark>` picks up the same styling, so Markdown-rendered highlights match component ones.
+- Inside [`<Prose>`](/ui/Prose) a raw `<mark>` picks up the same styling, so Markdown-rendered highlights match component ones.
 
 ## Usage
 
