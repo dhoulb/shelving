@@ -91,8 +91,8 @@ describe("DocumentationPage", () => {
 		expect(html).toContain(">AnyCaller</code>");
 		// The `undefined` member is never shown — neither as a type token nor leaking into the description.
 		expect(html).not.toContain(">undefined</code>");
-		// The `caller` param read as optional, so its description carries no `Required.` note.
-		expect(html).toContain("The caller.</td>");
+		// The `caller` param read as optional, so its description carries no `Required.` note (the cell ends right after the description).
+		expect(html).toContain("The caller.</div></td>");
 	});
 
 	test("renders param descriptions as inline markup rather than literal source", () => {
