@@ -14,8 +14,9 @@ export interface DocumentationKindProps extends TagProps {
 
 /**
  * Mapping from a documented symbol's `kind` to its colour variant.
- * - Every kind gets a distinct hue so no two tags ever share a colour.
- * - The eight raw hues don't stretch to all eleven kinds, so the brand aliases (`primary`, `secondary`, `tertiary`) fill the gap; `gray` stays free for future kinds.
+ * - Each mapped kind gets its own hue, except `method` and `static method`, which share `aqua`.
+ * - `property` is intentionally absent — it falls through to `undefined` and renders untinted.
+ * - The mapped kinds fit inside the eight raw hues plus `gray`; the brand aliases stay free for future kinds.
  */
 const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
 	module: "red",
@@ -23,12 +24,11 @@ const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
 	class: "pink",
 	function: "blue",
 	method: "aqua",
-	"static method": "tertiary",
+	"static method": "aqua",
 	interface: "green",
 	type: "yellow",
 	constant: "orange",
-	property: "secondary",
-	"static property": "primary",
+	"static property": "gray",
 };
 
 /**
