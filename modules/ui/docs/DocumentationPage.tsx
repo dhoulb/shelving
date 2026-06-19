@@ -16,12 +16,13 @@ import { TreeCards } from "../tree/TreeCards.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationParams } from "./DocumentationParams.js";
+import { DocumentationProperties } from "./DocumentationProperties.js";
 import { DocumentationReferences } from "./DocumentationReferences.js";
 import { DocumentationReturns } from "./DocumentationReturns.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 import { DocumentationThrows } from "./DocumentationThrows.js";
 
-/** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. */
+/** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. Data members (properties) are not child elements — they render as the Properties table instead. */
 const KIND_SECTIONS = {
 	component: "Components",
 	function: "Functions",
@@ -30,9 +31,7 @@ const KIND_SECTIONS = {
 	type: "Types",
 	constant: "Constants",
 	"static method": "Static methods",
-	"static property": "Static properties",
 	method: "Methods",
-	property: "Properties",
 };
 
 /** Render a list of tree elements grouped into kind-based card sections, in `KIND_SECTIONS` order. */
@@ -68,11 +67,11 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
- * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, referenced types, and examples.
- * - In the Parameters / Returns / Throws tables the `Type` column links each type to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text), and a row with no hand-written description falls back to the referenced type's own `description`. A parameter/property default renders as a `Defaults to …` line at the foot of its description cell (linking the value when it's a documented token) rather than in a dedicated column.
- * - An options-bag parameter whose type resolves to a documented interface/object type is flattened into indented child rows (one per property), so readers see the individual fields inline.
+ * - Renders breadcrumbs, title (with kind + `readonly` tags), relational links (`member of`, `extends`, `implements`), signatures (one per overload), content, parameters, returns, throws, properties, referenced types, and examples.
+ * - In the Parameters / Returns / Throws / Properties tables the `Type` column links each type to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text), and a row with no hand-written description falls back to the referenced type's own `description`. A default renders as a `Defaults to …` note (linking the value when it's a documented token) rather than in a dedicated column.
+ * - A class/interface/object-literal type's data members render as the Properties table (see [`DocumentationProperties`](/ui/DocumentationProperties)); an options-bag parameter whose type resolves to one is flattened into indented child rows from the same structured list.
  * - A `type` alias's referenced type names render as a linked `Type` table, each row carrying the resolved element's `description` (exact-match only).
- * - Child symbols are grouped by `kind` into card sections (Functions, Classes, Methods, Properties, …), each under its own heading.
+ * - Child symbols (functions, classes, methods — not data members) are grouped by `kind` into card sections, each under its own heading.
  * - All sections are conditional — only render when they have entries.
  *
  * @kind component
@@ -90,6 +89,7 @@ export function DocumentationPage({
 	params,
 	returns,
 	throws,
+	properties,
 	types,
 	examples,
 	children,
@@ -110,12 +110,13 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				{signatures?.length || params?.length || returns?.length || throws?.length || types?.length ? (
+				{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
 					<Section>
 						<DocumentationSignatures signatures={signatures} />
 						<DocumentationParams params={params} />
 						<DocumentationReturns returns={returns} />
 						<DocumentationThrows throws={throws} />
+						<DocumentationProperties properties={properties} />
 						<DocumentationReferences types={types} />
 					</Section>
 				) : null}

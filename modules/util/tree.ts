@@ -151,8 +151,8 @@ export interface DocumentationElementProps extends TreeElementProps {
 	 */
 	readonly types?: ImmutableArray<string> | undefined;
 	/**
-	 * Structured member list for an `interface` or object-literal `type` — each property's `name`, `type`, optionality, `default`, and `description`.
-	 * - Reuses the `DocumentationParam` shape so an options-bag parameter can be flattened into its individual fields at render time.
+	 * Structured data-member list for a `class`, `interface`, or object-literal `type` — each property's `name`, `type`, optionality, `default`, and `description`. Methods stay as child elements; only data members live here.
+	 * - Reuses the `DocumentationParam` shape so it can both render the type's own Properties table and be flattened into an options-bag parameter's individual fields at render time.
 	 */
 	readonly properties?: ImmutableArray<DocumentationParam> | undefined;
 }

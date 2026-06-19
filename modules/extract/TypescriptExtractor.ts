@@ -21,9 +21,9 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * - Class declarations synthesise their `signatures`, `params`, and `returns` from the constructor — `new ClassName<…>(…)` including generics, one signature per constructor overload, with `returns` set to the class type. Param descriptions come from the constructor's `@param` first, then the class's `@param`.
  * - A `@kind` tag in a symbol's JSDoc overrides the inferred kind — e.g. `@kind component` relabels a React component (otherwise a `function`) so the docs site groups and colours it as a component. The override also drops the trailing `()` from the title, since a non-function kind reads as a bare name.
  * - Sets `description` (a plain-text summary from the first JSDoc paragraph) on every `tree-documentation` child.
- * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, `Class.name` for properties, bare `name` for other kinds.
+ * - Sets `title` on every `tree-documentation` child — `name()` for functions, `Class.name()` for methods, bare `name` for other kinds. (Data members are not child elements — see `properties` below.)
  * - Records relational metadata as raw strings for render-time linking: `class` (owning class), `readonly`, `extends` / `implements` (full heritage type text including generic arguments, e.g. `AbstractStore<string>` or `Omit<StringSchemaOptions, "value">`), and `types` (the type names a `type` alias's body references, e.g. `OtherType` in `string | OtherType`).
- * - Records a structured `properties` list for interfaces and object-literal `type` aliases — each member's name, type, optionality, `@default`, and description — so an options-bag parameter can be flattened into its fields at render time.
+ * - Records a structured `properties` list for classes, interfaces, and object-literal `type` aliases — each data member's (property/getter/setter) name, type, optionality, default, and description. This is the single source for a type's data members: they render as the type's Properties table and flatten into an options-bag parameter's fields at render time, rather than each becoming its own child element. Methods stay as child elements.
  * - Names a destructured (binding-pattern) parameter for the Param column — which has no name of its own — from an explicit `@param`, else its rest element (`...options`), else a type-derived fallback (`props` / `options`). The signature still shows the full `{ … }`.
  * - Pretty-prints object-literal signatures (interfaces and object-literal `type` aliases) as multi-line `{ … }` blocks, one member per line; other type bodies (`string | null`, mapped types, …) are emitted verbatim.
  * - Members declared with the `override` or `declare` modifier are skipped — the base class already documents overrides, and `declare` members are ambient type-only re-declarations rather than new API.
@@ -215,30 +215,50 @@ function _getReferencedTypes(statement: ts.Statement, source: ts.SourceFile): Im
 }
 
 /**
- * Extract structured property entries from an interface or object-literal `type` alias, mirroring the `DocumentationParam` shape.
- * - Lets a consumer flatten an options-bag parameter into its individual fields at render time (resolve the param's type in the tree map, then list these).
- * - Skips private `_`-prefixed members. Descriptions and `@default` values come from each member's own JSDoc.
+ * Extract structured property entries from a class, interface, or object-literal `type` alias, mirroring the `DocumentationParam` shape.
+ * - This is the single source of truth for a type's data members: properties (and getters/setters) are documented here as a structured list, not as their own child elements. Methods stay as child elements (see `_getClassMembers`).
+ * - Used both to render the type's own Properties table and to flatten an options-bag parameter into its individual fields at render time (resolve the param's type in the tree map, then list these).
+ * - Skips private/protected, `_`-prefixed, `override`, and `declare` members. Optionality comes from a `?` token; defaults from a class-field initializer or a member's `@default` JSDoc; descriptions from each member's own JSDoc.
+ * - Getters/setters fold into a single entry per name (the getter's type wins for a get/set pair).
  */
 function _getProperties(statement: ts.Statement, source: ts.SourceFile): ImmutableArray<DocumentationParam> | undefined {
-	const members = ts.isInterfaceDeclaration(statement)
-		? statement.members
-		: ts.isTypeAliasDeclaration(statement) && ts.isTypeLiteralNode(statement.type)
-			? statement.type.members
-			: undefined;
+	const members =
+		ts.isInterfaceDeclaration(statement) || ts.isClassDeclaration(statement)
+			? statement.members
+			: ts.isTypeAliasDeclaration(statement) && ts.isTypeLiteralNode(statement.type)
+				? statement.type.members
+				: undefined;
 	if (!members) return;
 	const properties: DocumentationParam[] = [];
 	for (const member of members) {
-		if (!ts.isPropertySignature(member)) continue;
 		const name = member.name && ts.isIdentifier(member.name) ? member.name.text : undefined;
 		if (!name || name.startsWith("_")) continue;
+		const modifiers = ts.canHaveModifiers(member) ? ts.getModifiers(member) : undefined;
+		// Skip private/protected (not public API), `override` (documented on the base class), and `declare` (ambient re-declarations).
+		if (modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword)) continue;
+		if (modifiers?.some(m => m.kind === ts.SyntaxKind.OverrideKeyword || m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
 		const jsDoc = _getJSDoc(member, source);
-		properties.push({
-			name,
-			type: member.type?.getText(source),
-			description: jsDoc?.description,
-			optional: !!member.questionToken,
-			default: jsDoc?.default,
-		});
+		if (ts.isPropertySignature(member) || ts.isPropertyDeclaration(member)) {
+			// A class field's initializer is its default; otherwise fall back to an explicit `@default` tag.
+			const def = (ts.isPropertyDeclaration(member) ? member.initializer?.getText(source) : undefined) ?? jsDoc?.default;
+			properties.push({
+				name,
+				type: member.type?.getText(source),
+				description: jsDoc?.description,
+				optional: !!member.questionToken,
+				default: def,
+			});
+		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
+			const type = ts.isGetAccessor(member) ? member.type?.getText(source) : member.parameters[0]?.type?.getText(source);
+			const index = properties.findIndex(p => p.name === name);
+			const found = index >= 0 ? properties[index] : undefined;
+			// Fold a get/set pair into one entry; the getter's declared type wins when both are present.
+			if (found) {
+				if (ts.isGetAccessor(member) && type) properties[index] = { ...found, type };
+			} else {
+				properties.push({ name, type, description: jsDoc?.description, optional: false, default: jsDoc?.default });
+			}
+		}
 	}
 	return properties.length ? properties : undefined;
 }
@@ -457,12 +477,12 @@ function _getReturns(
 }
 
 /**
- * Extract class or interface members as child elements.
- * - `className` is stamped onto every member as its `class` prop (the source of the qualified flat key and the "member of …" affordance) and is prebaked into the member `title` (`Class.name` / `Class.name()`).
+ * Extract a class or interface's **methods** as child elements.
+ * - Data members (properties, getters/setters) are NOT child elements — they're collected as a structured list by [`_getProperties`](#) and rendered as the type's Properties table instead. Only methods, which carry their own params/returns/throws docs, warrant a dedicated page.
+ * - `className` is stamped onto every method as its `class` prop (the source of the qualified flat key and the "member of …" affordance) and is prebaked into the member `title` (`Class.name()`).
  * - Members declared with the `override` modifier are skipped — the base class already documents them, so a subclass page lists only its newly-introduced API.
- * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations (e.g. narrowing an inherited property's type), not new API.
- * - Getters/setters fold into a single `property` element per name; a getter with no matching setter is `readonly`.
- * - `static` members are labelled `static method` / `static property` so the docs site groups them in their own sections, separate from instance `method` / `property`, and their rendered signature is prefixed with the `static ` keyword.
+ * - Members declared with the `declare` modifier are skipped — they're ambient type-only re-declarations, not new API.
+ * - `static` methods are labelled `static method` so the docs site groups them in their own section, separate from instance `method`s, and their rendered signature is prefixed with the `static ` keyword.
  */
 function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, className: string): DocumentationElement[] | undefined {
 	if (!ts.isClassDeclaration(statement) && !ts.isInterfaceDeclaration(statement)) return;
@@ -479,7 +499,7 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 		// Skip `declare` members — ambient type-only re-declarations (e.g. a subclass narrowing an inherited property's type), not new API.
 		if (modifiers?.some(m => m.kind === ts.SyntaxKind.DeclareKeyword)) continue;
 
-		// `static` members are grouped and labelled separately from instance members (`static method` / `static property`),
+		// `static` methods are grouped and labelled separately from instance methods (`static method`),
 		// and carry the `static ` keyword in their rendered signature.
 		const isStatic = modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword);
 		const staticPrefix = isStatic ? "static " : "";
@@ -515,56 +535,8 @@ function _getClassMembers(statement: ts.Statement, source: ts.SourceFile, classN
 					},
 				});
 			}
-		} else if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
-			const type = member.type?.getText(source);
-			const readonly = modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword) || undefined;
-			members.push({
-				type: "tree-documentation",
-				key: name,
-				props: {
-					name,
-					title: `${className}.${name}`,
-					description,
-					content,
-					kind: isStatic ? "static property" : "property",
-					class: className,
-					readonly,
-					signatures: type ? [`${staticPrefix}${readonly ? "readonly " : ""}${name}: ${type}`] : undefined,
-				},
-			});
-		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
-			// Getters/setters fold into one `property`. A getter alone (no setter) is read-only; a setter clears that.
-			const type = ts.isGetAccessor(member) ? member.type?.getText(source) : member.parameters[0]?.type?.getText(source);
-			const key = name;
-			const existingIndex = members.findIndex(m => m.key === key);
-			const existing = members[existingIndex];
-			if (existing) {
-				members[existingIndex] = {
-					...existing,
-					props: {
-						...existing.props,
-						// A getter + setter pair is writable — drop the read-only flag and the `readonly ` signature prefix.
-						readonly: undefined,
-						signatures: type ? [`${staticPrefix}${name}: ${type}`] : existing.props.signatures,
-					},
-				};
-			} else {
-				members.push({
-					type: "tree-documentation",
-					key,
-					props: {
-						name,
-						title: `${className}.${name}`,
-						description,
-						content,
-						kind: isStatic ? "static property" : "property",
-						class: className,
-						readonly: ts.isGetAccessor(member) || undefined,
-						signatures: type ? [`${staticPrefix}${ts.isGetAccessor(member) ? "readonly " : ""}${name}: ${type}`] : undefined,
-					},
-				});
-			}
 		}
+		// Properties, getters, and setters are not child elements — `_getProperties` collects them as a structured list instead.
 	}
 
 	return members.length ? members : undefined;
