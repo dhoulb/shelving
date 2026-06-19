@@ -18,6 +18,7 @@ export interface ButtonInputProps extends InputProps, ClickableProps, FlexVarian
  * - Falls back to rendering the `placeholder` when no `children`/`title` content is supplied.
  *
  * @returns A [`Clickable`](/ui/Clickable) element styled with the button-input class.
+ * @kind component
  * @example <ButtonInput name="choose" onClick={open}>Choose…</ButtonInput>
  * @see https://dhoulb.github.io/shelving/ui/form/ButtonInput/ButtonInput
  */

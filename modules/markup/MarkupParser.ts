@@ -129,12 +129,12 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 * - Syntax is not defined by this code, but by the rules supplied to it.
 	 *
 	 * @param input The string content possibly containing markup syntax, e.g. `"This is a *bold* string."`.
-	 * @param context The context to render in (defaults to `"block"`).
+	 * @param context The context to render in (defaults to this parser's `context`, i.e. `"block"` unless overridden).
 	 * @returns A React node — an element, a string, `null`, or an array of zero or more of those.
 	 * @example new MarkupParser().parse("This is a *bold* string.")
 	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/parse
 	 */
-	parse(input: string, context = "block"): ReactNode {
+	parse(input: string, context = this.context): ReactNode {
 		const nodes = _parseNodes(input, this, context);
 		return !nodes.length ? null : nodes.length === 1 ? nodes[0] : nodes;
 	}

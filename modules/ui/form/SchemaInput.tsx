@@ -115,6 +115,7 @@ export interface DateSchemaInputProps extends SchemaInputProps<DateSchema, unkno
  * Show a [`DateInput`](/ui/DateInput) for a [`DateSchema`](/schema/DateSchema).
  *
  * @returns A `DateInput` element bound to the schema.
+ * @kind component
  * @example <DateSchemaInput name="dob" schema={DATE} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DateSchemaInput
  */
@@ -133,6 +134,7 @@ export interface NumberSchemaInputProps extends SchemaInputProps<NumberSchema, u
  * Show a [`NumberInput`](/ui/NumberInput) for a [`NumberSchema`](/schema/NumberSchema), formatting values with the schema's `format()`.
  *
  * @returns A `NumberInput` element bound to the schema.
+ * @kind component
  * @example <NumberSchemaInput name="age" schema={NUMBER} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/NumberSchemaInput
  */
@@ -151,6 +153,7 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
  * Show a choice input for a [`ChoiceSchema`](/schema/ChoiceSchema) — radio inputs for up to 8 options, otherwise a select.
  *
  * @returns A [`ChoiceRadioInputs`](/ui/ChoiceRadioInputs) or [`SelectInput`](/ui/SelectInput) element bound to the schema.
+ * @kind component
  * @example <ChoiceSchemaInput name="role" schema={ROLE} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInput
  */
@@ -171,6 +174,7 @@ export interface BooleanSchemaInputProps extends SchemaInputProps<BooleanSchema,
  * Show a [`CheckboxInput`](/ui/CheckboxInput) for a [`BooleanSchema`](/schema/BooleanSchema).
  *
  * @returns A `CheckboxInput` element bound to the schema.
+ * @kind component
  * @example <BooleanSchemaInput name="agree" schema={BOOLEAN} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/BooleanSchemaInput
  */
@@ -189,6 +193,7 @@ export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, u
  * Show a [`TextInput`](/ui/TextInput) for a [`StringSchema`](/schema/StringSchema), sanitising and formatting values with the schema.
  *
  * @returns A `TextInput` element bound to the schema.
+ * @kind component
  * @example <StringSchemaInput name="email" schema={EMAIL} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/StringSchemaInput
  */
@@ -207,6 +212,7 @@ export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unkn
  * Show an [`ArrayInput`](/ui/ArrayInput) for an [`ArraySchema`](/schema/ArraySchema).
  *
  * @returns An `ArrayInput` element bound to the schema.
+ * @kind component
  * @example <ArraySchemaInput name="tags" schema={TAGS} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ArraySchemaInput
  */
@@ -225,6 +231,7 @@ export interface DictionarySchemaInputProps extends SchemaInputProps<DictionaryS
  * Show a [`DictionaryInput`](/ui/DictionaryInput) for a [`DictionarySchema`](/schema/DictionarySchema).
  *
  * @returns A `DictionaryInput` element bound to the schema.
+ * @kind component
  * @example <DictionarySchemaInput name="meta" schema={META} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DictionarySchemaInput
  */
@@ -243,6 +250,7 @@ export interface DataSchemaInputProps extends SchemaInputProps<DataSchema<Data>,
  * Show a [`DataInput`](/ui/DataInput) for a nested [`DataSchema`](/schema/DataSchema).
  *
  * @returns A `DataInput` element bound to the schema.
+ * @kind component
  * @example <DataSchemaInput name="address" schema={ADDRESS} />
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DataSchemaInput
  */
@@ -262,6 +270,7 @@ export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, Opt
  * - Renders custom `children` inside the field, or a `SchemaInput` when none are provided.
  *
  * @returns A `<Field>` wrapping the schema's input.
+ * @kind component
  * @example <SchemaField name="email" schema={EMAIL} /> // Outputs a `<Field>` wrapping a `<TextInput>`.
  * @example <SchemaField name="age" schema={AGE} /> // Outputs a `<Field>` wrapping a `<NumberInput>`.
  * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaField

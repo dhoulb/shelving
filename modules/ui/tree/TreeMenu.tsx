@@ -37,6 +37,7 @@ interface TreeMenuExtras {
  *
  * @param props The tree element props plus the parent's `path`.
  * @returns A `<MenuItem>` for the element, with a nested [`<Menu>`](/ui/Menu) when it has menu-eligible children.
+ * @kind component
  * @example <TreeMenuItem {...element.props} path="/" />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenuItem
  */

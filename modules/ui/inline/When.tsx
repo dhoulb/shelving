@@ -41,6 +41,7 @@ export interface WhenProps extends OptionalChildProps {
  *
  * @returns Rendered `<time>` element showing the relative time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @kind component
  * @example <When target="2030-01-01" />
  * @see https://dhoulb.github.io/shelving/ui/inline/When/When
  */
@@ -60,6 +61,7 @@ export interface AgoProps extends WhenProps {}
  *
  * @returns Rendered `<time>` element showing the elapsed time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @kind component
  * @example <Ago target="2020-01-01" />
  * @see https://dhoulb.github.io/shelving/ui/inline/When/Ago
  */
@@ -79,6 +81,7 @@ export interface UntilProps extends WhenProps {}
  *
  * @returns Rendered `<time>` element showing the remaining time.
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
+ * @kind component
  * @example <Until target="2030-01-01" />
  * @see https://dhoulb.github.io/shelving/ui/inline/When/Until
  */

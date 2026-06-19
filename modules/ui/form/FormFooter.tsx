@@ -20,6 +20,7 @@ export interface FormFooterProps extends OptionalChildProps {
  * - Renders a [`<FormMessage>`](/ui/FormMessage) beneath the buttons showing any error set on the form.
  *
  * @returns A footer element with the submit row and form message.
+ * @kind component
  * @example <FormFooter submit="Save" />
  * @see https://dhoulb.github.io/shelving/ui/form/FormFooter/FormFooter
  */

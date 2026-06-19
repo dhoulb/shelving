@@ -8,6 +8,7 @@ import { requireForm } from "./FormContext.js";
  *
  * @param props Message props (excluding `children`) forwarded to the underlying `<Message>`.
  * @returns A `<Message status="error">` containing the message, or `null` when empty.
+ * @kind component
  * @example <FormMessage />
  * @see https://dhoulb.github.io/shelving/ui/form/FormMessage/FormMessage
  */

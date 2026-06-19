@@ -44,6 +44,7 @@ export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
  * Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
  *
  * @returns A `<div>` element with the computed scroll class.
+ * @kind component
  * @example <Scroll horizontal>{wideContent}</Scroll>
  * @see https://dhoulb.github.io/shelving/ui/style/Scroll/Scroll
  */

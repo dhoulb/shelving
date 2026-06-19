@@ -6,6 +6,7 @@ import { Cell } from "../table/Cell.js";
 import { Table } from "../table/Table.js";
 import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
 import { TreeLink } from "../tree/TreeLink.js";
+import { DocumentationDescription } from "./DocumentationDescription.js";
 
 /**
  * Props for `DocumentationReferences` — the referenced type names to render, one row each.
@@ -48,7 +49,9 @@ export function DocumentationReferences({ types }: DocumentationReferencesProps)
 								<td>
 									<TreeLink name={type} />
 								</td>
-								<td>{getTreeElement(map, type)?.props.description}</td>
+								<td>
+									<DocumentationDescription description={getTreeElement(map, type)?.props.description} />
+								</td>
 							</tr>
 						))}
 					</tbody>

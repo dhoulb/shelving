@@ -60,6 +60,7 @@ export const LOADING_INPUT = <div className={getClass(getInputClass({}), getFlex
 /**
  * Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
  * - This is so you can put an icon before or after an input.
+ * @kind component
  */
 export function InputWrapper({ children }: ChildProps): ReactElement {
 	return <div className={getClass(getInputClass({}), getModuleClass(INPUT_CSS, "wrapper"))}>{children}</div>;

@@ -30,6 +30,7 @@ export interface PreformattedProps
  * - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
  *
  * @returns Rendered `<pre>` element.
+ * @kind component
  * @example <Preformatted>{"line one\nline two"}</Preformatted>
  * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/Preformatted
  */

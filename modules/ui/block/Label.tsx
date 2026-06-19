@@ -21,6 +21,7 @@ export interface LabelProps extends SubheadingProps {}
  * - Default text properties for all of these can be controlled with global variables: `--size-label`, `--font-label`, `--case-label`.
  *
  * @returns Rendered `<h3>` label heading element.
+ * @kind component
  * @example <Label>Email address</Label>
  * @see https://dhoulb.github.io/shelving/ui/block/Label/Label
  */

@@ -45,6 +45,7 @@ export interface TreeRouterProps extends PossibleMeta {
  *
  * @returns The resolved element rendered as a page, or the `fallback`.
  * @throws [`NotFoundError`](/error/NotFoundError) When no element matches the URL and no `fallback` is given.
+ * @kind component
  * @example <TreeRouter tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouter
  */
