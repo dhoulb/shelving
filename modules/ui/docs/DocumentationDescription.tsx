@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { Prose } from "../block/Prose.js";
-import { Markup } from "../misc/Markup.js";
 import { Tag } from "../misc/Tag.js";
 import { TreeLink } from "../tree/TreeLink.js";
+import { TreeMarkup } from "../tree/TreeMarkup.js";
 
 /**
  * Props for `DocumentationDescription` — a description cell's resolved text, plus an optional default/optionality note.
@@ -22,7 +22,7 @@ export interface DocumentationDescriptionProps {
 
 /**
  * Render a documentation table row's description cell.
- * - The description is parsed as inline markup (`context="inline"`), so backticks, emphasis and links resolve rather than showing as literal source.
+ * - The description is parsed as inline markup via `TreeMarkup` (`context="inline"`), so backticks, emphasis and links resolve rather than showing as literal source — and each inline-code span auto-links to its documented token when one exists.
  * - When a `default` is given it renders a trailing `Defaults to …` note on the same line (linking the value when it's a documented token); otherwise, when `optional` is explicitly `false`, it renders a `required` `<Tag>`. (Optionality has no tag — it's implicit, and an optional value usually carries the longer `Defaults to …` text instead.)
  * - When `readonly` is set, a `readonly` `<Tag>` is appended at the very end (after any default/required note).
  * - Wrapped in `<Prose>` so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
@@ -33,7 +33,7 @@ export interface DocumentationDescriptionProps {
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationDescription/DocumentationDescription
  */
 export function DocumentationDescription({ description, default: def, optional, readonly }: DocumentationDescriptionProps): ReactNode {
-	const body = description ? <Markup context="inline">{description}</Markup> : null;
+	const body = description ? <TreeMarkup context="inline">{description}</TreeMarkup> : null;
 	const requirement = def ? (
 		<>
 			Defaults to <TreeLink name={def} />
