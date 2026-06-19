@@ -9,7 +9,7 @@ import type { SubheadingProps } from "./Subheading.js";
 const LABEL_CLASS = getModuleClass(LABEL_CSS, "label");
 
 /**
- * Props for `Label` — identical to [`SubheadingProps`](/ui/SubheadingProps).
+ * Props for `Label` — identical to `SubheadingProps`.
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Label/LabelProps
  */

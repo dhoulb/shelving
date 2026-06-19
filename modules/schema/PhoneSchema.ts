@@ -75,7 +75,7 @@ export class PhoneSchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`PhoneSchema`](/schema/PhoneSchema) for a valid phone number. Equivalent to `new PhoneSchema({})`.
+ * Sugar instance of `PhoneSchema` for a valid phone number. Equivalent to `new PhoneSchema({})`.
  *
  * @example PHONE.validate("+441234567890"); // Returns "+441234567890"
  * @see https://dhoulb.github.io/shelving/schema/PhoneSchema/PHONE
@@ -83,7 +83,7 @@ export class PhoneSchema extends StringSchema {
 export const PHONE = new PhoneSchema({});
 
 /**
- * Sugar instance allowing a [`PHONE`](/schema/PHONE) or `null`. Equivalent to `NULLABLE(PHONE)`.
+ * Sugar instance allowing a `PHONE` or `null`. Equivalent to `NULLABLE(PHONE)`.
  *
  * @example NULLABLE_PHONE.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/PhoneSchema/NULLABLE_PHONE

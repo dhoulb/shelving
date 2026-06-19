@@ -30,7 +30,7 @@ export interface TreeRouterProps extends PossibleMeta {
 
 	/**
 	 * Optional fallback element.
-	 * - Explicit `null` means fallback to nothing (router will not throw [`NotFoundError`](/error/NotFoundError)).
+	 * - Explicit `null` means fallback to nothing (router will not throw `NotFoundError`).
 	 */
 	readonly fallback?: ReactElement | undefined | null;
 }
@@ -38,13 +38,13 @@ export interface TreeRouterProps extends PossibleMeta {
 /**
  * Resolve a URL path to a tree element and render it as a full page.
  *
- * - Flattens the tree once (via [`<TreeProvider>`](/ui/TreeProvider)) into a `path` → element map, then resolves the current URL with a single `map.get(path)`.
+ * - Flattens the tree once (via `<TreeProvider>`) into a `path` → element map, then resolves the current URL with a single `map.get(path)`.
  * - `/` renders the root itself; deeper paths render the matching descendant (composite module names like `/util/string` resolve for free — they're whole keys in the map).
  * - The resolved element is already stamped with its canonical `path`, so the page and its cards link straight to their own paths — nothing needs threading.
  * - To override the renderer for a specific element type, wrap in `<TreeRouterMapping mapping={…}>`.
  *
  * @returns The resolved element rendered as a page, or the `fallback`.
- * @throws [`NotFoundError`](/error/NotFoundError) When no element matches the URL and no `fallback` is given.
+ * @throws `NotFoundError` When no element matches the URL and no `fallback` is given.
  * @kind component
  * @example <TreeRouter tree={tree} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouter
@@ -61,7 +61,7 @@ export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactN
 	);
 }
 
-/** Resolve the current URL `path` to a tree element via the flattened map and render it; otherwise fall back, or throw [`NotFoundError`](/error/NotFoundError). */
+/** Resolve the current URL `path` to a tree element via the flattened map and render it; otherwise fall back, or throw `NotFoundError`. */
 function TreeRoute({ path, fallback }: { readonly path: AbsolutePath; readonly fallback: ReactElement | null | undefined }): ReactNode {
 	const element = useTreeMap().get(path);
 	if (element) return <TreeRouterMapper>{element}</TreeRouterMapper>;

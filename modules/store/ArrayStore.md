@@ -1,6 +1,6 @@
 # ArrayStore
 
-A [`Store`](/store/Store) for an array value. `ArrayStore<T>` defaults to an empty array, accepts any iterable as input, and adds immutable array helpers — every mutation produces a new array so consumers see a genuine change.
+A `Store` for an array value. `ArrayStore<T>` defaults to an empty array, accepts any iterable as input, and adds immutable array helpers — every mutation produces a new array so consumers see a genuine change.
 
 ## Usage
 
@@ -20,4 +20,4 @@ console.log(tags.exists);  // true
 for (const tag of tags) console.log(tag); // ArrayStore is iterable
 ```
 
-Use `.optionalFirst` / `.optionalLast` instead of `.first` / `.last` to get `undefined` rather than a thrown [`RequiredError`](/error/RequiredError) when the array is empty.
+Use `.optionalFirst` / `.optionalLast` instead of `.first` / `.last` to get `undefined` rather than a thrown `RequiredError` when the array is empty.

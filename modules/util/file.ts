@@ -42,7 +42,7 @@ export function getFileExtension(file: Nullish<string>): string | undefined {
 }
 
 /**
- * Get the file extension from a file path e.g. `"tsx"`, or throw [`RequiredError`](/error/RequiredError) if the input has no extension.
+ * Get the file extension from a file path e.g. `"tsx"`, or throw `RequiredError` if the input has no extension.
  *
  * @param file The filename to read the extension from.
  * @param caller Function to attribute a thrown error to (defaults to `requireFileExtension`).

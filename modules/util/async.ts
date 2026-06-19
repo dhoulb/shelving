@@ -209,7 +209,7 @@ export function getDelay(ms: number): Promise<void> {
 /**
  * Get a promise that rejects with the signal's reason when an `AbortSignal` fires.
  * - Rejects immediately if the signal is already aborted.
- * - Use with [`awaitRace()`](/util/async/awaitRace) to cancel a concurrent operation when a signal fires.
+ * - Use with `awaitRace()` to cancel a concurrent operation when a signal fires.
  *
  * @param signal The `AbortSignal` to watch.
  * @returns A promise that never resolves and rejects with the signal's reason when it fires.

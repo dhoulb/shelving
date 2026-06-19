@@ -70,7 +70,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 /**
  * Create a `NullableSchema` that wraps a source schema and also allows `null`.
  *
- * Sugar factory for [`NullableSchema`](/schema/NullableSchema).
+ * Sugar factory for `NullableSchema`.
  *
  * @param source Source schema to wrap.
  *

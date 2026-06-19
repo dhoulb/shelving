@@ -1,6 +1,6 @@
 # DebugDBProvider
 
-A wrapping provider that logs every database operation to the console with ANSI formatting. `DebugDBProvider` extends [`ThroughDBProvider`](/db/ThroughDBProvider) and is a development aid — drop it into a chain to see each read and write as it happens.
+A wrapping provider that logs every database operation to the console with ANSI formatting. `DebugDBProvider` extends `ThroughDBProvider` and is a development aid — drop it into a chain to see each read and write as it happens.
 
 ## Usage
 

@@ -2,7 +2,7 @@
 
 Validates that a value is one of a known set of options — designed to power a `<select>` field in HTML. The validated type is the union of the option keys.
 
-[`CHOICE`](/schema/CHOICE) is the sugar factory that builds a `ChoiceSchema` from either an array of strings (keys and labels are the same) or an object (keys are the validated values, object values are display labels).
+`CHOICE` is the sugar factory that builds a `ChoiceSchema` from either an array of strings (keys and labels are the same) or an object (keys are the validated values, object values are display labels).
 
 ## Usage
 

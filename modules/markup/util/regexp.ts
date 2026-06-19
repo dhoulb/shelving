@@ -72,7 +72,7 @@ export const WORD_END_REGEXP = "(?![\\p{L}\\p{N}])"; // End of word (next charac
  *
  * *Factory for `RegExp`.*
  *
- * @param pattern The content pattern to match between the boundaries (a [`NamedRegExp`](/util/regexp/NamedRegExp) to type the captured data).
+ * @param pattern The content pattern to match between the boundaries (a `NamedRegExp` to type the captured data).
  * @param start The leading boundary pattern (defaults to `BLOCK_START_REGEXP`).
  * @param end The trailing boundary pattern (defaults to `BLOCK_END_REGEXP`).
  * @returns A `RegExp` (a `NamedRegExp<T>` when the content pattern names its capture groups).
@@ -102,7 +102,7 @@ export function createBlockRegExp(
  *
  * *Factory for `RegExp`.*
  *
- * @param pattern The content pattern to match between the boundaries (a [`NamedRegExp`](/util/regexp/NamedRegExp) to type the captured data).
+ * @param pattern The content pattern to match between the boundaries (a `NamedRegExp` to type the captured data).
  * @param start The leading boundary pattern (defaults to `LINE_START_REGEXP`).
  * @param end The trailing boundary pattern (defaults to `LINE_END_REGEXP`).
  * @returns A `RegExp` (a `NamedRegExp<T>` when the content pattern names its capture groups).
@@ -132,7 +132,7 @@ export function createLineRegExp(
  *
  * *Factory for `RegExp`.*
  *
- * @param pattern The content pattern to match between the boundaries (a [`NamedRegExp`](/util/regexp/NamedRegExp) to type the captured data).
+ * @param pattern The content pattern to match between the boundaries (a `NamedRegExp` to type the captured data).
  * @param start The leading boundary pattern (defaults to `WORD_START_REGEXP`).
  * @param end The trailing boundary pattern (defaults to `WORD_END_REGEXP`).
  * @returns A `RegExp` (a `NamedRegExp<T>` when the content pattern names its capture groups).

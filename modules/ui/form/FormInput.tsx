@@ -4,15 +4,15 @@ import type { InputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 
 /**
- * Props for `FormInput`, a bare [`SchemaInput`](/ui/SchemaInput) bound to a named form field.
+ * Props for `FormInput`, a bare `SchemaInput` bound to a named form field.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInputProps
  */
 export interface FormInputProps extends InputProps {}
 
 /**
- * Show a [`SchemaInput`](/ui/SchemaInput) for a single named property of the current form.
- * - Reads the field's value, schema, and message from the form context via [`useField()`](/ui/useField).
+ * Show a `SchemaInput` for a single named property of the current form.
+ * - Reads the field's value, schema, and message from the form context via `useField()`.
  *
  * @returns A `SchemaInput` bound to the named field.
  * @kind component
@@ -25,7 +25,7 @@ export function FormInput({ name, ...props }: FormInputProps): ReactElement {
 }
 
 /**
- * Show a [`SchemaInput`](/ui/SchemaInput) for every property in the current form's schema.
+ * Show a `SchemaInput` for every property in the current form's schema.
  *
  * @returns A fragment of `FormInput` elements, one per schema property.
  * @kind component

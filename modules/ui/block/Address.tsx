@@ -20,7 +20,7 @@ const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
 export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
 /**
- * Props for `PhysicalAddress` — an optional name and a nullable [`AddressData`](/util/geo/AddressData) object.
+ * Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddressProps
  */
@@ -61,7 +61,7 @@ export function Address({ children, ...props }: AddressProps) {
 }
 
 /**
- * Show an optional [`AddressData`](/util/geo/AddressData) object correctly on screen.
+ * Show an optional `AddressData` object correctly on screen.
  * - Renders an optional `name` in bold, followed by the formatted address; shows "No address" when `address` is empty.
  *
  * @kind component

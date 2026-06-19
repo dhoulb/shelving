@@ -8,7 +8,7 @@ A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ord
 - Each child becomes one list item — give it plain content, not an `<li>`.
 - Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
 - Like the other block components it carries its own outer block margin and collapses it when it is the first or last child of its container.
-- Inside [`<Prose>`](/ui/Prose) a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
+- Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
 ## Usage
 
@@ -41,4 +41,4 @@ import { List } from "shelving/ui";
 | `--list-indent` | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
 | `--list-marker-color` | Bullet / number colour | `var(--tint-80)` |
 
-**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), and the tint-ladder step [`--tint-80`](/ui/TINT_CLASS). The `gap` variant comes from the shared [`shelving/ui`](/ui) styling system.
+**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, and the tint-ladder step `--tint-80`. The `gap` variant comes from the shared `shelving/ui` styling system.

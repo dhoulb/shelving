@@ -164,7 +164,7 @@ export type FlatData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof
  * Is an unknown value a data object?
  *
  * @param value The value to check.
- * @returns `true` if the value is a plain data object, narrowing it to [`Data`](/util/data/Data).
+ * @returns `true` if the value is a plain data object, narrowing it to `Data`.
  * @example isData({ a: 1 }) // true
  * @see https://dhoulb.github.io/shelving/util/data/isData
  */
@@ -190,7 +190,7 @@ export function assertData(value: unknown, caller: AnyCaller = assertData): asse
  *
  * @param data The data object to check against.
  * @param key The value to check as a key.
- * @returns `true` if `key` is an own string key of `data`, narrowing it to [`DataKey<T>`](/util/data/DataKey).
+ * @returns `true` if `key` is an own string key of `data`, narrowing it to `DataKey<T>`.
  * @example isDataProp({ a: 1 }, "a") // true
  * @see https://dhoulb.github.io/shelving/util/data/isDataProp
  */

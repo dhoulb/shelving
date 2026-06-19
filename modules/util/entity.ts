@@ -10,7 +10,7 @@ import type { Nullish } from "./null.js";
 export type Entity<T extends string = string> = `${T}:${string}`;
 
 /**
- * Extract the type portion from an [`Entity`](/util/entity/Entity) string.
+ * Extract the type portion from an `Entity` string.
  *
  * @see https://dhoulb.github.io/shelving/util/entity/EntityType
  */
@@ -24,17 +24,17 @@ export type EntityType<E extends Entity> = E extends Entity<infer T> ? T : never
 export type EmptyEntity = [type: undefined, id: undefined];
 
 /**
- * Shared [`EmptyEntity`](/util/entity/EmptyEntity) constant returned when an entity string is invalid.
+ * Shared `EmptyEntity` constant returned when an entity string is invalid.
  *
  * @see https://dhoulb.github.io/shelving/util/entity/EMPTY_ENTITY
  */
 export const EMPTY_ENTITY: EmptyEntity = [undefined, undefined];
 
 /**
- * Split an optional entity tag like `challenge:a1b2c3` into its `type` and `id`, or return [`EmptyEntity`](/util/entity/EmptyEntity) if the entity was invalid.
+ * Split an optional entity tag like `challenge:a1b2c3` into its `type` and `id`, or return `EmptyEntity` if the entity was invalid.
  *
  * @param entity The entity string to split, or a nullish value.
- * @returns A `[type, id]` tuple, or [`EMPTY_ENTITY`](/util/entity/EMPTY_ENTITY) if the entity was missing or invalid.
+ * @returns A `[type, id]` tuple, or `EMPTY_ENTITY` if the entity was missing or invalid.
  * @example getEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
  * @example getEntity(undefined) // [undefined, undefined]
  * @see https://dhoulb.github.io/shelving/util/entity/getEntity
@@ -51,7 +51,7 @@ export function getEntity(entity: Nullish<string>): [type: string, id: string] |
 }
 
 /**
- * Split an entity tag like `challenge:a1b2c3` into its `type` and `id`, or throw [`RequiredError`](/error/RequiredError) if the entity tag was invalid.
+ * Split an entity tag like `challenge:a1b2c3` into its `type` and `id`, or throw `RequiredError` if the entity tag was invalid.
  *
  * @param entity The entity string to split.
  * @param caller Function to attribute a thrown error to (defaults to `requireEntity`).

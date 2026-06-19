@@ -1,13 +1,13 @@
 # Link
 
-An inline link or action. Delegates to [`<Clickable>`](/ui/Clickable), rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
+An inline link or action. Delegates to `<Clickable>`, rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
 
 **Things to know:**
 
-- It handles busy state, URL resolution, and active-page highlighting automatically via the shared [`<Clickable>`](/ui/Clickable) helper.
+- It handles busy state, URL resolution, and active-page highlighting automatically via the shared `<Clickable>` helper.
 - An `<a>` (any actual link) shows an underline that disappears on hover; a `<button>` variant carries no underline.
 - Reach for `Link` for inline text links; for standalone calls to action use a button-styled component instead.
-- Inside [`<Prose>`](/ui/Prose) a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
+- Inside `<Prose>` a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
 
 ## Usage
 
@@ -31,10 +31,10 @@ import { Link } from "shelving/ui";
 
 ## Styling
 
-`Link` exposes a couple of inline hooks; the link colour comes from the global [`--color-link`](/ui/getColorClass) token.
+`Link` exposes a couple of inline hooks; the link colour comes from the global `--color-link` token.
 
 | Variable | Styles | Default |
 |---|---|---|
 | `--link-weight` | Text colour and font weight | `var(--color-link)` colour / `var(--weight-strong)` weight |
 
-**Global tokens it reads:** [`--color-link`](/ui/getColorClass), [`--weight-strong`](/ui/getWeightClass), and [`--stroke-normal`](/ui/getStrokeClass) (the underline thickness).
+**Global tokens it reads:** `--color-link`, `--weight-strong`, and `--stroke-normal` (the underline thickness).

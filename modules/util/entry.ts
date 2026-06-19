@@ -16,21 +16,21 @@ import { isSet } from "./set.js";
 export type Entry<K = unknown, T = unknown> = readonly [K, T];
 
 /**
- * Extract the key type from an [`Entry`](/util/entry/Entry).
+ * Extract the key type from an `Entry`.
  *
  * @see https://dhoulb.github.io/shelving/util/entry/EntryKey
  */
 export type EntryKey<X> = X extends Entry<infer Y, unknown> ? Y : never;
 
 /**
- * Extract the value type from an [`Entry`](/util/entry/Entry).
+ * Extract the value type from an `Entry`.
  *
  * @see https://dhoulb.github.io/shelving/util/entry/EntryValue
  */
 export type EntryValue<X> = X extends Entry<unknown, infer Y> ? Y : never;
 
 /**
- * Turn an [`Entry`](/util/entry/Entry) type back into an object with a single property.
+ * Turn an `Entry` type back into an object with a single property.
  * i.e. `EntryObject<Entry<"a", string>>` produces `{ a: string }`
  *
  * @see https://dhoulb.github.io/shelving/util/entry/EntryObject

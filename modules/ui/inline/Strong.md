@@ -4,9 +4,9 @@ Strong importance — renders a `<strong>` element for text that carries strong 
 
 **Things to know:**
 
-- Use `Strong` for importance, [`<Emphasis>`](/ui/Emphasis) for stress emphasis (italic), and [`<Mark>`](/ui/Mark) for relevance highlighting — they are not interchangeable.
+- Use `Strong` for importance, `<Emphasis>` for stress emphasis (italic), and `<Mark>` for relevance highlighting — they are not interchangeable.
 - It only sets the font weight; it inherits colour and size from the surrounding text.
-- Inside [`<Prose>`](/ui/Prose) raw `<strong>` / `<b>` pick up the same styling, so Markdown-rendered bold text matches component ones.
+- Inside `<Prose>` raw `<strong>` / `<b>` pick up the same styling, so Markdown-rendered bold text matches component ones.
 
 ## Usage
 
@@ -24,4 +24,4 @@ import { Paragraph, Strong } from "shelving/ui";
 
 `Strong` has no own theming hooks — it sets `font-weight: var(--weight-strong)` and inherits everything else from its surroundings.
 
-**Global tokens it reads:** [`--weight-strong`](/ui/getWeightClass).
+**Global tokens it reads:** `--weight-strong`.

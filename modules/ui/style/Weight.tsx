@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import WEIGHT_CSS from "./Weight.module.css";
 
 /**
- * Allowed values for font weight for components that support [`WeightVariants`](/ui/WeightVariants)
+ * Allowed values for font weight for components that support `WeightVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Weight/WeightVariant
  */

@@ -13,7 +13,7 @@ export interface HorizontalTransitionProps extends TransitionProps {}
  * Transition that slides its children horizontally — right when moving forward, left when moving back.
  *
  * @kind component
- * @returns A [`<Transition>`](/ui/Transition) element configured with the horizontal slide classes.
+ * @returns A `<Transition>` element configured with the horizontal slide classes.
  * @example <HorizontalTransition>{currentStep}</HorizontalTransition>
  * @see https://dhoulb.github.io/shelving/ui/transition/HorizontalTransition/HorizontalTransition
  */

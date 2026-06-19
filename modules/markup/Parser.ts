@@ -1,7 +1,7 @@
 /**
  * Base class for a parser that converts an input of type `I` into an output of type `O`.
  * - Subclasses implement `parse()` to define the actual transformation.
- * - [`MarkupParser`](/markup/MarkupParser) is the canonical implementation — it parses a markup string into a React node.
+ * - `MarkupParser` is the canonical implementation — it parses a markup string into a React node.
  *
  * @example
  * class UppercaseParser extends Parser<string, string> {

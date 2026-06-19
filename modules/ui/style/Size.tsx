@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import SIZE_CSS from "./Size.module.css";
 
 /**
- * Allowed values for font size for components that support [`SizeVariants`](/ui/SizeVariants)
+ * Allowed values for font size for components that support `SizeVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Size/SizeVariant
  */

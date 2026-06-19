@@ -34,7 +34,7 @@ export function getUUID(value: string): string | undefined {
 }
 
 /**
- * Convert/validate a string value as a UUID, or throw [`RequiredError`](/error/RequiredError) if it isn't valid.
+ * Convert/validate a string value as a UUID, or throw `RequiredError` if it isn't valid.
  *
  * @param value The value to convert/validate as a UUID.
  * @returns The normalised UUID string.

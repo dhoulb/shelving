@@ -134,7 +134,7 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
 
 /**
  * Match a path-shaped template against a target path.
- * - Like [`matchTemplate()`](/util/template/matchTemplate), but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
+ * - Like `matchTemplate()`, but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
  * - A trailing catchall (e.g. `/files/{...path}`) also matches when the trailing separator is absent (e.g. `/files`), with the catchall value as `""`.
  *
  * @param template The path-shaped template string, e.g. `/users/{name}`.
@@ -265,7 +265,7 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 }
 
 /**
- * Render a path-shaped template. Behaviourally identical to [`renderTemplate()`](/util/template/renderTemplate) — substitution doesn't need separator awareness — but provided as a sibling to [`matchPathTemplate()`](/util/template/matchPathTemplate) so callers can pair them.
+ * Render a path-shaped template. Behaviourally identical to `renderTemplate()` — substitution doesn't need separator awareness — but provided as a sibling to `matchPathTemplate()` so callers can pair them.
  *
  * @param template The path-shaped template including placeholders, e.g. `/users/{name}`.
  * @param values An object containing values (functions are called, everything else converted to string), or a function or string to use for all placeholders.

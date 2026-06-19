@@ -1,6 +1,6 @@
 # PostgreSQLProvider
 
-The abstract SQL provider for PostgreSQL. `PostgreSQLProvider` extends [`SQLProvider`](/db/SQLProvider) with PostgreSQL-specific behaviour: the `data` column is `jsonb NOT NULL`, generated columns use the `#>>` operator with a cast, and compatible numeric/string column type changes are applied in place with `ALTER COLUMN TYPE`.
+The abstract SQL provider for PostgreSQL. `PostgreSQLProvider` extends `SQLProvider` with PostgreSQL-specific behaviour: the `data` column is `jsonb NOT NULL`, generated columns use the `#>>` operator with a cast, and compatible numeric/string column type changes are applied in place with `ALTER COLUMN TYPE`.
 
 It is abstract — a concrete subclass implements `exec()` against a specific PostgreSQL driver.
 
@@ -17,4 +17,4 @@ class BunPostgreSQLProvider extends PostgreSQLProvider {
 }
 ```
 
-Pair it with [`PostgreSQLMigrator`](/db/PostgreSQLMigrator) to create and alter tables to match your collection schemas. A ready-made provider is available in the [`shelving/bun`](/bun) module.
+Pair it with `PostgreSQLMigrator` to create and alter tables to match your collection schemas. A ready-made provider is available in the `shelving/bun` module.

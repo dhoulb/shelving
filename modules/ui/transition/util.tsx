@@ -16,7 +16,7 @@ export type TransitionClasses = {
 };
 
 /**
- * Known view-transition type names that all transitions support — the keys of [`TransitionClasses`](/ui/TransitionClasses).
+ * Known view-transition type names that all transitions support — the keys of `TransitionClasses`.
  *
  * @see https://dhoulb.github.io/shelving/ui/transition/util/TransitionType
  */
@@ -25,7 +25,7 @@ export type TransitionType = keyof TransitionClasses;
 /**
  * Type-safe passthrough for React's `addTransitionType()` that checks `type` is one of our known view-transition types.
  *
- * @param type The transition type to activate, constrained to a known [`TransitionType`](/ui/TransitionType).
+ * @param type The transition type to activate, constrained to a known `TransitionType`.
  * @example setTransitionType("forward")
  * @see https://dhoulb.github.io/shelving/ui/transition/util/setTransitionType
  */

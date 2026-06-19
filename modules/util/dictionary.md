@@ -1,10 +1,10 @@
 # Dictionary objects
 
-Typed helpers for working with `{ [key: string]: T }` objects — called *dictionaries* to distinguish them from the more permissive [`Data`](/util/data/Data) type. Mirrors the naming conventions of the array and object helpers: `with*` for immutable updates, `set*`/`delete*` for mutable by-reference mutations.
+Typed helpers for working with `{ [key: string]: T }` objects — called *dictionaries* to distinguish them from the more permissive `Data` type. Mirrors the naming conventions of the array and object helpers: `with*` for immutable updates, `set*`/`delete*` for mutable by-reference mutations.
 
-- [`ImmutableDictionary<T>`](/util/dictionary/ImmutableDictionary) and [`MutableDictionary<T>`](/util/dictionary/MutableDictionary) are the two variants; all immutable helpers return the same reference when nothing changed.
-- [`requireDictionary()`](/util/dictionary/requireDictionary) converts an iterable of `[key, value]` pairs into a plain object — useful when you receive entries from a `Map` or other iterable source.
-- [`EMPTY_DICTIONARY`](/util/dictionary/EMPTY_DICTIONARY) is a prototype-null singleton; use it as a safe empty default.
+- `ImmutableDictionary<T>` and `MutableDictionary<T>` are the two variants; all immutable helpers return the same reference when nothing changed.
+- `requireDictionary()` converts an iterable of `[key, value]` pairs into a plain object — useful when you receive entries from a `Map` or other iterable source.
+- `EMPTY_DICTIONARY` is a prototype-null singleton; use it as a safe empty default.
 
 ## Usage
 

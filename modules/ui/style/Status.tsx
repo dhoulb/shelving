@@ -11,7 +11,7 @@ import { TINT_CLASS } from "./Tint.js";
 export const STATUSES: ImmutableArray<Status> = ["loading", "info", "danger", "error", "warning", "success"];
 
 /**
- * Allowed status names selected via the `status="info"` prop for components that support that support [`StatusVariants`](/ui/StatusVariants)
+ * Allowed status names selected via the `status="info"` prop for components that support that support `StatusVariants`
  * - Applies a semantic tint color to the element.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Status/Status

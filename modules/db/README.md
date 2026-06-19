@@ -1,12 +1,12 @@
 # db
 
-Typed database provider abstraction. Define your schema once as a [`Collection`](/db/Collection), then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
+Typed database provider abstraction. Define your schema once as a `Collection`, then swap providers (in-memory, SQLite, Firestore, Cloudflare D1, …) without changing any call sites. Providers are composable wrappers — add validation, logging, or caching by stacking them in a chain.
 
 ## Concepts
 
 ### Collection
 
-A [`Collection`](/db/Collection) is a declarative description of a database table or collection. It extends [`DataSchema`](/schema/DataSchema) and carries three things: a string `name`, an `id` schema (the identifier type), and a data schema (the shape of each record).
+A `Collection` is a declarative description of a database table or collection. It extends `DataSchema` and carries three things: a string `name`, an `id` schema (the identifier type), and a data schema (the shape of each record).
 
 ```ts
 import { COLLECTION } from "shelving/db"
@@ -23,14 +23,14 @@ const POSTS = COLLECTION("posts", STRING, {
 
 ### DBProvider
 
-[`DBProvider`](/db/DBProvider) is the abstract base class every backend implements. Its surface covers:
+`DBProvider` is the abstract base class every backend implements. Its surface covers:
 
 | Category | Methods |
 |---|---|
-| Single item | [`.getItem()`](/db/DBProvider/getItem), [`.requireItem()`](/db/DBProvider/requireItem), [`.addItem()`](/db/DBProvider/addItem), [`.setItem()`](/db/DBProvider/setItem), [`.updateItem()`](/db/DBProvider/updateItem), [`.deleteItem()`](/db/DBProvider/deleteItem) |
-| Single item (realtime) | [`.getItemSequence()`](/db/DBProvider/getItemSequence) |
-| Queries | [`.getQuery()`](/db/DBProvider/getQuery), [`.countQuery()`](/db/DBProvider/countQuery), [`.setQuery()`](/db/DBProvider/setQuery), [`.updateQuery()`](/db/DBProvider/updateQuery), [`.deleteQuery()`](/db/DBProvider/deleteQuery), [`.getFirst()`](/db/DBProvider/getFirst), [`.requireFirst()`](/db/DBProvider/requireFirst) |
-| Query (realtime) | [`.getQuerySequence()`](/db/DBProvider/getQuerySequence) |
+| Single item | `DBProvider.getItem()`, `DBProvider.requireItem()`, `DBProvider.addItem()`, `DBProvider.setItem()`, `DBProvider.updateItem()`, `DBProvider.deleteItem()` |
+| Single item (realtime) | `DBProvider.getItemSequence()` |
+| Queries | `DBProvider.getQuery()`, `DBProvider.countQuery()`, `DBProvider.setQuery()`, `DBProvider.updateQuery()`, `DBProvider.deleteQuery()`, `DBProvider.getFirst()`, `DBProvider.requireFirst()` |
+| Query (realtime) | `DBProvider.getQuerySequence()` |
 
 `.getItemSequence()` and `.getQuerySequence()` return `AsyncIterable` — iterate them with `for await...of` to receive realtime updates as data changes.
 
@@ -51,17 +51,17 @@ Query objects use encoded key names alongside plain field names:
 
 Providers are layered wrappers. Each takes a `source` and delegates to it, intercepting only what it needs.
 
-- **[`MemoryDBProvider`](/db/MemoryDBProvider)** — fully in-memory, ideal for testing and as a lightweight standalone store.
-- **[`ValidationDBProvider`](/db/ValidationDBProvider)** — validates data in and out using the collection's schema. Throws [`ValueError`](/error/ValueError) on bad data from the backend.
-- **[`CacheDBProvider`](/db/CacheDBProvider)** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the [React integration](#react-integration).
-- **[`ThroughDBProvider`](/db/ThroughDBProvider)** — identity wrapper; extend this to intercept only specific methods (e.g. [`DebugDBProvider`](/db/DebugDBProvider)).
-- **[`SQLiteProvider`](/db/SQLiteProvider)** / **[`PostgreSQLProvider`](/db/PostgreSQLProvider)** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
+- **`MemoryDBProvider`** — fully in-memory, ideal for testing and as a lightweight standalone store.
+- **`ValidationDBProvider`** — validates data in and out using the collection's schema. Throws `ValueError` on bad data from the backend.
+- **`CacheDBProvider`** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the [React integration](#react-integration).
+- **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
+- **`SQLiteProvider`** / **`PostgreSQLProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
-Cloud providers live in the [`shelving/cloudflare`](/cloudflare) and [`shelving/firestore/client`](/firestore/client) sibling modules.
+Cloud providers live in the `shelving/cloudflare` and `shelving/firestore/client` sibling modules.
 
 ### Migrations
 
-[`DBMigrator`](/db/DBMigrator) is an abstract base for schema migrations. SQL-backed providers ship [`SQLiteMigrator`](/db/SQLiteMigrator) and [`PostgreSQLMigrator`](/db/PostgreSQLMigrator), which implement [`.migrate()`](/db/DBMigrator/migrate) to create or alter tables to match the current collection schemas.
+`DBMigrator` is an abstract base for schema migrations. SQL-backed providers ship `SQLiteMigrator` and `PostgreSQLMigrator`, which implement `DBMigrator.migrate()` to create or alter tables to match the current collection schemas.
 
 ## Usage
 
@@ -117,7 +117,7 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 
 ## React integration
 
-The [`shelving/react`](/react) module's [`createDBContext()`](/react/createDBContext) is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — [`.useItem()`](/react/DBContext/useItem) and [`.useQuery()`](/react/DBContext/useQuery) — that return reactive [`Store`](/store/Store) instances and suspend automatically while loading.
+The `shelving/react` module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `DBContext.useItem()` and `DBContext.useQuery()` — that return reactive `Store` instances and suspend automatically while loading.
 
 ```ts
 import { createDBContext } from "shelving/react"
@@ -127,4 +127,4 @@ const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvid
 export const { DBContext, useItem, useQuery } = createDBContext(provider)
 ```
 
-See the [`shelving/react`](/react) module for full usage.
+See the `shelving/react` module for full usage.

@@ -3,7 +3,7 @@ import { Tag, type TagProps } from "../misc/Tag.js";
 import type { ColorVariant } from "../style/Color.js";
 
 /**
- * Props for `DocumentationKind` — a [`TagProps`](/ui/TagProps) plus the documented symbol's `kind`.
+ * Props for `DocumentationKind` — a `TagProps` plus the documented symbol's `kind`.
  *
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKindProps
  */
@@ -46,7 +46,7 @@ export function getDocumentationKindColor(kind: string): ColorVariant | undefine
 
 /**
  * Colour-coded tag for a documented symbol's kind.
- * - Thin wrapper over [`<Tag>`](/ui/Tag) that maps the kind string to a raw colour variant.
+ * - Thin wrapper over `<Tag>` that maps the kind string to a raw colour variant.
  *
  * @returns A `<Tag>` showing the kind, tinted by its colour.
  * @kind component

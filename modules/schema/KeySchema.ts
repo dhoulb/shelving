@@ -39,7 +39,7 @@ export class KeySchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`KeySchema`](/schema/KeySchema) for a database key. Equivalent to `new KeySchema({ title: "ID" })`.
+ * Sugar instance of `KeySchema` for a database key. Equivalent to `new KeySchema({ title: "ID" })`.
  *
  * @example KEY.validate("a1b2c3") // "a1b2c3"
  * @see https://dhoulb.github.io/shelving/schema/KeySchema/KEY
@@ -47,7 +47,7 @@ export class KeySchema extends StringSchema {
 export const KEY = new KeySchema({ title: "ID" });
 
 /**
- * Sugar instance allowing a [`KEY`](/schema/KEY) or `null`. Equivalent to `NULLABLE(KEY)`.
+ * Sugar instance allowing a `KEY` or `null`. Equivalent to `NULLABLE(KEY)`.
  *
  * @example NULLABLE_KEY.validate("") // null
  * @see https://dhoulb.github.io/shelving/schema/KeySchema/NULLABLE_KEY

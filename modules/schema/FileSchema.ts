@@ -18,7 +18,7 @@ export interface FileSchemaOptions extends StringSchemaOptions {
  * Schema that validates a file name matching one or more extensions.
  *
  * - Requires the file name to have an extension.
- * - When `types` is set, the extension must be one of the allowed [`FileTypes`](/util/file/FileTypes).
+ * - When `types` is set, the extension must be one of the allowed `FileTypes`.
  *
  * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema
@@ -40,7 +40,7 @@ export class FileSchema extends StringSchema {
 	 *
 	 * @param unsafeValue Value to validate (defaults to this schema's `value`).
 	 * @returns The validated file name.
-	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from [`StringSchema.validate()`](/schema/StringSchema).
+	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from `StringSchema.validate()`.
 	 * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
 	 * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema/validate
 	 */
@@ -54,7 +54,7 @@ export class FileSchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`FileSchema`](/schema/FileSchema) for a file name, e.g. `file.txt`. Equivalent to `new FileSchema({})`.
+ * Sugar instance of `FileSchema` for a file name, e.g. `file.txt`. Equivalent to `new FileSchema({})`.
  *
  * @example FILE.validate("file.txt"); // Returns "file.txt"
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/FILE
@@ -62,7 +62,7 @@ export class FileSchema extends StringSchema {
 export const FILE = new FileSchema({});
 
 /**
- * Sugar instance allowing a [`FILE`](/schema/FILE) or `null`. Equivalent to `NULLABLE(FILE)`.
+ * Sugar instance allowing a `FILE` or `null`. Equivalent to `NULLABLE(FILE)`.
  *
  * @example NULLABLE_FILE.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/FileSchema/NULLABLE_FILE

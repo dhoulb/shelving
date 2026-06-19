@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import SPACE_CSS from "./Space.module.css";
 
 /**
- * Allowed values for block spacing for components that support [`SpaceVariants`](/ui/SpaceVariants)
+ * Allowed values for block spacing for components that support `SpaceVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceValue
  */

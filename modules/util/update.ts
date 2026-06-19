@@ -62,13 +62,13 @@ export type Update =
 	| { action: "sum"; key: Segments; value: number };
 
 /**
- * Decode the prop updates in an [`Updates`](/util/update/Updates) object into a set of [`Update`](/util/update/Update) objects.
+ * Decode the prop updates in an `Updates` object into a set of `Update` objects.
  *
  * - Props with `undefined` value are skipped.
  *
  * @param data The `Updates` object to decode.
  * @returns Array of decoded `Update` objects.
- * @throws [`RequiredError`](/error/RequiredError) if a `+=`/`-=` sum update has a non-number value.
+ * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
  * @example getUpdates({ "+=count": 1 }) // [{ action: "sum", key: ["count"], value: 1 }]
  * @see https://dhoulb.github.io/shelving/util/update/getUpdates
  */
@@ -96,12 +96,12 @@ function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
  * Return a copy of a data object with a set of updates applied.
  *
  * - Returns the original reference unchanged when no update changed a value.
- * - Supports nested paths, sum/increment, and array add/remove updates via the encoded [`Updates`](/util/update/Updates) syntax.
+ * - Supports nested paths, sum/increment, and array add/remove updates via the encoded `Updates` syntax.
  *
  * @param data The data object to update.
  * @param updates The set of updates to apply.
  * @returns The updated data object (or the original reference if nothing changed).
- * @throws [`RequiredError`](/error/RequiredError) if a `+=`/`-=` sum update has a non-number value.
+ * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
  * @example updateData({ count: 1 }, { "+=count": 2 }) // { count: 3 }
  * @see https://dhoulb.github.io/shelving/util/update/updateData
  */

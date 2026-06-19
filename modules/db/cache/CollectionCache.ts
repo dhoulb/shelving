@@ -11,7 +11,7 @@ import { ItemStore } from "../store/ItemStore.js";
 import { QueryStore } from "../store/QueryStore.js";
 
 /**
- * Cache of [`ItemStore`](/db/ItemStore) and [`QueryStore`](/db/QueryStore) objects for a single collection.
+ * Cache of `ItemStore` and `QueryStore` objects for a single collection.
  * - Use `getItem(id)` to retrieve or create the `ItemStore` for a given id.
  * - Use `getQuery(query)` to retrieve or create the `QueryStore` for a given query.
  *
@@ -55,7 +55,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	}
 
 	/**
-	 * Get (or create) the [`ItemStore`](/db/ItemStore) for the given id.
+	 * Get (or create) the `ItemStore` for the given id.
 	 *
 	 * @param id The ID of the item to get a store for.
 	 * @returns The cached (or newly created) `ItemStore` for the id.
@@ -67,7 +67,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	}
 
 	/**
-	 * Get (or create) the [`QueryStore`](/db/QueryStore) for the given query.
+	 * Get (or create) the `QueryStore` for the given query.
 	 *
 	 * @param query The query to get a store for.
 	 * @returns The cached (or newly created) `QueryStore` for the query.

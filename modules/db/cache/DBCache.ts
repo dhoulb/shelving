@@ -13,10 +13,10 @@ import type { QueryStore } from "../store/QueryStore.js";
 import { CollectionCache } from "./CollectionCache.js";
 
 /**
- * Cache of [`CollectionCache`](/db/CollectionCache) objects for multiple collections.
+ * Cache of `CollectionCache` objects for multiple collections.
  * - Use `get(collection)` to retrieve or create the `CollectionCache` for a given collection,
  *   then `getItem(id)` / `getQuery(query)` on that to get a specific store.
- * - If the provider chain contains a [`CacheDBProvider`](/db/CacheDBProvider), its memory is reused so stores can seed synchronously.
+ * - If the provider chain contains a `CacheDBProvider`, its memory is reused so stores can seed synchronously.
  *
  * @example
  *  const cache = new DBCache(provider);
@@ -55,7 +55,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	}
 
 	/**
-	 * Get (or create) the [`CollectionCache`](/db/CollectionCache) for the given collection.
+	 * Get (or create) the `CollectionCache` for the given collection.
 	 *
 	 * @param collection The collection to get a cache for.
 	 * @returns The cached (or newly created) `CollectionCache` for the collection.
@@ -68,7 +68,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	}
 
 	/**
-	 * Get (or create) an [`ItemStore`](/db/ItemStore) for a collection/id in one hop.
+	 * Get (or create) an `ItemStore` for a collection/id in one hop.
 	 *
 	 * @param collection The collection the item lives in.
 	 * @param id The ID of the item to get a store for.
@@ -81,7 +81,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	}
 
 	/**
-	 * Get (or create) a [`QueryStore`](/db/QueryStore) for a collection/query in one hop.
+	 * Get (or create) a `QueryStore` for a collection/query in one hop.
 	 *
 	 * @param collection The collection the query runs against.
 	 * @param query The query to get a store for.

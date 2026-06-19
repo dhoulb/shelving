@@ -6,7 +6,7 @@ A rule-based Markdown renderer that turns user-facing text into React nodes.
 
 This module converts Markdown-ish text into React nodes — suitable for rendering blog post bodies, user-written descriptions, or any rich text that originates outside your code.
 
-Rendering is done by a [`MarkupParser`](/markup/MarkupParser) instance. Each block element type — heading, paragraph, blockquote, fenced code, ordered list, unordered list (including `[ ]` / `[x]` todo items), table, separator — is handled by an independent [`MarkupRule`](/markup/MarkupRule). Inline elements — bold, italic, inserted/deleted/highlighted text, inline code, links, autolinks, line breaks — are a separate rule set applied within block content.
+Rendering is done by a `MarkupParser` instance. Each block element type — heading, paragraph, blockquote, fenced code, ordered list, unordered list (including `[ ]` / `[x]` todo items), table, separator — is handled by an independent `MarkupRule`. Inline elements — bold, italic, inserted/deleted/highlighted text, inline code, links, autolinks, line breaks — are a separate rule set applied within block content.
 
 The engine groups rules into priority tiers and resolves the highest tier first. Once a tier claims a region of the text that region is "masked" so lower tiers cannot match into or across it. Each rule renders its match to a React element and recurses into its own children, optionally in a different context.
 
@@ -22,7 +22,7 @@ The default ruleset intentionally diverges from CommonMark:
 
 ### Rendering markup
 
-Create a [`MarkupParser`](/markup/MarkupParser) and call [`.parse()`](/markup/MarkupParser/parse):
+Create a `MarkupParser` and call `MarkupParser.parse()`:
 
 ```ts
 import { MarkupParser } from "shelving/markup";
@@ -34,7 +34,7 @@ const node = parser.parse("# Hello\n\nThis is *bold* and _italic_.");
 
 `parse()` returns a `ReactNode`: a single element, a string, an array of those, or `null`.
 
-For the common case the shared [`MARKUP_PARSER`](/markup/MARKUP_PARSER) sentinel — a `MarkupParser` with default options — saves constructing one:
+For the common case the shared `MARKUP_PARSER` sentinel — a `MarkupParser` with default options — saves constructing one:
 
 ```ts
 import { MARKUP_PARSER } from "shelving/markup";
@@ -44,15 +44,15 @@ const node = MARKUP_PARSER.parse(content);
 
 ### Options
 
-[`MarkupParser`](/markup/MarkupParser) is constructed with [`MarkupOptions`](/markup/MarkupOptions):
+`MarkupParser` is constructed with `MarkupOptions`:
 
 | Option | Type | Description |
 |---|---|---|
-| `rules` | [`MarkupRules`](/markup/MarkupRules) | Rules to apply. Defaults to [`MARKUP_RULES`](/markup/MARKUP_RULES) (all block + inline rules). |
+| `rules` | `MarkupRules` | Rules to apply. Defaults to `MARKUP_RULES` (all block + inline rules). |
 | `rel` | `string` | `rel` attribute applied to every rendered link, e.g. `"nofollow ugc"`. |
-| `url` | [`ImmutableURL`](/util/url/ImmutableURL) | Current page URL — base for resolving relative refs (`./foo`, `#x`). |
+| `url` | `ImmutableURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`). |
 | `root` | `ImmutableURL` | Site root URL — base for resolving site-absolute paths (`/foo`). |
-| `schemes` | [`URISchemes`](/util/uri/URISchemes) | Allowed URI schemes for links. Defaults to `["http:", "https:"]`. |
+| `schemes` | `URISchemes` | Allowed URI schemes for links. Defaults to `["http:", "https:"]`. |
 | `context` | `string` | Default starting context. Defaults to `"block"`. |
 
 ```ts
@@ -64,22 +64,22 @@ const parser = new MarkupParser({
 });
 ```
 
-Link href resolution goes through [`getLink()`](/util/link/getLink) — site-absolute paths resolve against `root`, relative refs against `url`, scheme-prefixed URIs (`mailto:`, `tel:`, …) pass through, `URL` instances are emitted as-is.
+Link href resolution goes through `getLink()` — site-absolute paths resolve against `root`, relative refs against `url`, scheme-prefixed URIs (`mailto:`, `tel:`, …) pass through, `URL` instances are emitted as-is.
 
 ### Block-only or inline-only rendering
 
-[`.parse()`](/markup/MarkupParser/parse) takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
+`MarkupParser.parse()` takes an optional second argument — the starting context. Rules declare which contexts they apply in, so `"inline"` skips every block-level rule:
 
 ```ts
 // Inline only — no block wrappers like <p> or <h1>.
 const inline = MARKUP_PARSER.parse("Some *bold* text", "inline");
 ```
 
-[`MARKUP_RULES_BLOCK`](/markup/MARKUP_RULES_BLOCK) and [`MARKUP_RULES_INLINE`](/markup/MARKUP_RULES_INLINE) expose the block and inline rule sets separately if you want a parser with only one.
+`MARKUP_RULES_BLOCK` and `MARKUP_RULES_INLINE` expose the block and inline rule sets separately if you want a parser with only one.
 
 ### Custom rules
 
-Build custom rules with [`createMarkupRule()`](/markup/createMarkupRule) and combine them with the defaults:
+Build custom rules with `createMarkupRule()` and combine them with the defaults:
 
 ```tsx
 import { createMarkupRule, MARKUP_RULES, MarkupParser } from "shelving/markup";
@@ -93,7 +93,7 @@ const HIGHLIGHT_RULE = createMarkupRule<{ text: string }>(
 const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });
 ```
 
-`createMarkupRule()` takes a regexp (named captures are typed), a render function `(key, data, parser) => ReactElement`, the `contexts` the rule applies in, and an optional `priority` (default `0`; higher priorities form earlier-resolved tiers). See [`shelving/markup`](/markup) for the full built-in rule set.
+`createMarkupRule()` takes a regexp (named captures are typed), a render function `(key, data, parser) => ReactElement`, the `contexts` the rule applies in, and an optional `priority` (default `0`; higher priorities form earlier-resolved tiers). See `shelving/markup` for the full built-in rule set.
 
 ## Input normalisation
 
@@ -106,7 +106,7 @@ The parser expects **normalised** input and deliberately does not try to absorb 
 
 Keeping this guarantee out of the rules is what keeps them simple: nesting — a sub-list inside a list item, a quote inside a quote — is always exactly one extra tab, never an ambiguous run of spaces.
 
-Normalisation is **not** performed by the parser — give it text that is already clean. [`sanitizeMultilineText()`](/util/string/sanitizeMultilineText) from [`shelving/util/string`](/util/string) produces exactly this form: it converts four-space indents to tabs, strips sub-tab leading spaces, trims trailing whitespace, and collapses three-or-more newlines to two. [`StringSchema`](/schema/StringSchema) runs `sanitizeMultilineText()` automatically when validating any multi-line field (`rows > 1`), so text stored through a schema is already normalised.
+Normalisation is **not** performed by the parser — give it text that is already clean. `sanitizeMultilineText()` from `shelving/util/string` produces exactly this form: it converts four-space indents to tabs, strips sub-tab leading spaces, trims trailing whitespace, and collapses three-or-more newlines to two. `StringSchema` runs `sanitizeMultilineText()` automatically when validating any multi-line field (`rows > 1`), so text stored through a schema is already normalised.
 
 ```ts
 import { sanitizeMultilineText } from "shelving/util";

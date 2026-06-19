@@ -4,10 +4,10 @@ Typed utilities for building and parsing `Request` and `Response` objects using 
 
 **Things to know:**
 
-- [`createRequest()`](/util/http/createRequest) is the smart constructor — it inspects the payload type and picks the right content type automatically. Use the specific [`createJSONRequest()`](/util/http/createJSONRequest), [`createTextRequest()`](/util/http/createTextRequest), etc. when you need explicit control.
-- `GET` and `HEAD` requests cannot carry a body. Pass a [`Data`](/util/data/Data) object as the payload and it becomes `?query` params; anything else throws [`RequiredError`](/error/RequiredError).
-- [`getErrorResponse()`](/util/http/getErrorResponse) never leaks error details by default — pass `debug: true` only in development.
-- [`mergeRequestOptions()`](/util/http/mergeRequestOptions) merges headers by key and combines two `AbortSignal`s so either one cancels the request.
+- `createRequest()` is the smart constructor — it inspects the payload type and picks the right content type automatically. Use the specific `createJSONRequest()`, `createTextRequest()`, etc. when you need explicit control.
+- `GET` and `HEAD` requests cannot carry a body. Pass a `Data` object as the payload and it becomes `?query` params; anything else throws `RequiredError`.
+- `getErrorResponse()` never leaks error details by default — pass `debug: true` only in development.
+- `mergeRequestOptions()` merges headers by key and combines two `AbortSignal`s so either one cancels the request.
 
 ## Usage
 

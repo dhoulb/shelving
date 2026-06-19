@@ -4,11 +4,11 @@ Core immutable helpers for reading and updating plain objects, plus utility type
 
 **Things to know:**
 
-- [`withProp()`](/util/object/withProp) and [`withProps()`](/util/object/withProps) preserve the object's prototype, so subclass instances survive updates intact.
+- `withProp()` and `withProps()` preserve the object's prototype, so subclass instances survive updates intact.
 - Same-reference shortcut: if the new value is `===` to the existing value, the original object is returned without allocating.
-- [`omitProp()`](/util/object/omitProp) is an alias for [`omitProps()`](/util/object/omitProps) with a single key — they are the same function.
-- [`deleteProp()`](/util/object/deleteProp) / [`deleteProps()`](/util/object/deleteProps) and [`setProp()`](/util/object/setProp) / [`setProps()`](/util/object/setProps) mutate by reference; use the `with*` / `omit*` variants for immutable operations.
-- [`isObject()`](/util/object/isObject) returns `true` for any non-null object including arrays and class instances. Use [`isPlainObject()`](/util/object/isPlainObject) when you need only `{}` shaped objects.
+- `omitProp()` is an alias for `omitProps()` with a single key — they are the same function.
+- `deleteProp()` / `deleteProps()` and `setProp()` / `setProps()` mutate by reference; use the `with*` / `omit*` variants for immutable operations.
+- `isObject()` returns `true` for any non-null object including arrays and class instances. Use `isPlainObject()` when you need only `{}` shaped objects.
 
 ## Usage
 

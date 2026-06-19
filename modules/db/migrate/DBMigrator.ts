@@ -4,7 +4,7 @@ import type { DBProvider } from "../provider/DBProvider.js";
 /**
  * Base class for database schema migrators that bring a provider's storage into line with a set of collection schemas.
  *
- * - Subclasses implement `migrate()` for a specific backend (e.g. SQL via [`SQLMigrator`](/db/SQLMigrator)).
+ * - Subclasses implement `migrate()` for a specific backend (e.g. SQL via `SQLMigrator`).
  *
  * @example
  *  class MyMigrator extends DBMigrator { async migrate(...collections) { ... } }

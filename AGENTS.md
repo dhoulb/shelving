@@ -428,41 +428,38 @@ Checklist:
 
 ### Cross-references and token display
 
-Whenever a README, per-symbol `.md` page, or docblock names another module or token — a class, function, constant, type, method, property, or component — link it to its canonical docs-site page. Use a backtick-quoted name as the link text and a site-root-relative path as the target:
+Whenever a README, per-symbol `.md` page, or docblock names another module or token — a class, function, constant, type, method, property, or component — write it as a **backtick-quoted name in its display style and nothing more**. Do **not** wrap it in a markdown link:
 
 ```
-[`BooleanSchema`](/schema/BooleanSchema)
+`BooleanSchema`
 ```
 
-i.e. ``[`nameOfToken`](/canonical/path)``. This is mandatory for **"See also" lists** and for **inline references** to classes / functions / methods / properties / components alike — not just link lists. Link the first mention in a passage; don't re-link the same token on every line.
+Documentation content renders through `<TreeMarkup>`, whose code-span rule resolves each backtick token against the surrounding tree (`getTreeElement()`) and **auto-links it to its canonical page at render time**. A token that resolves becomes a link; one that doesn't (a builtin like `string`, a shell snippet like `bun run fix`) stays plain code. This means cross-references are automatic and maintenance-free — never hand-write ``[`name`](/path)`` link syntax for an internal token. It is liable to rot, and the auto-linker does a better job.
 
-**Canonical paths** mirror the docs-site router (the path the page actually resolves at — note this is *not* the same as the longer `@see` page URL):
+This applies to **"See also" lists** and **inline references** alike. There's no need to link "the first mention only" — repeat the plain backtick reference as often as it reads naturally; the renderer decides what links.
 
-- A top-level module is `/<module>` — `/schema`, `/db`, `/store`, `/ui`.
-- A token is `/<module>/<Token>` — `/schema/BooleanSchema`, `/db/Collection`, `/store/Store`.
-- A member is `/<module>/<Token>/<member>` — `/schema/BooleanSchema/validate`, `/store/Store/value`.
-- The `util` module is published per-file, so its tokens are `/util/<file>/<Token>` — `/util/array/getArray`, `/util/format/formatDate`, `/util/object/withProp`.
-
-**Only link to paths that resolve to a real page.** The docs tree is flat per top-level module: there are no submodule pages (`/db/collection`, `/api/provider`, `/markup/rule`, `/ui/tree`), and no bare `/firestore` or `/util` page. Link a submodule or module concept to its nearest real page instead — `/db`, `/api`, `/markup`, `/firestore/client`, or the specific `/util/<file>`.
-
-**Token display style.** Format a token name so its kind reads from the text, then put the styled name inside the link:
+**Token display style.** Format a token so its kind reads from the text. The resolver strips these decorations before lookup, so the styled form resolves directly:
 
 | Kind | Style | Example |
 |---|---|---|
 | Function | trailing parens | `formatDate()` |
-| Method | leading dot + trailing parens | `.validate()` |
-| Property | leading dot | `.value` |
+| Method | qualified, trailing parens | `Store.get()` |
+| Property | qualified | `Store.value` |
 | Component | angle brackets | `<Section>` |
 | Class / interface / type / constant | bare name | `BooleanSchema`, `STRING` |
 | Module | `shelving/` package prefix | `shelving/schema`, `shelving/firestore/client` |
 
-So a linked reference reads ``[`<Section>`](/ui/Section)``, ``[`formatDate()`](/util/format/formatDate)``, ``[`.validate()`](/schema/BooleanSchema/validate)``, or ``[`.value`](/store/Store/value)``. Apply the same styling to unlinked mentions (e.g. a builtin or external symbol with no page) so the kind is still obvious.
+- **Methods and properties use the qualified `Owner.member` form** — `` `Store.get()` ``, `` `Store.value` `` — never a bare leading-dot `` `.get()` ``. A bare member has no owner to resolve against; the qualified form resolves to the member's page, or falls back to the owner's page when the member has none of its own.
+- **Generics stay in the backtick text** as one span — `` `Schema<T>` ``, `` `ItemStore<I, T>` `` — not split into a name plus a trailing `` `<T>` `` chip. The resolver trims the generics for lookup.
+- **Modules carry the `shelving/` package prefix** — `` `shelving/schema` ``, `` `shelving/firestore/client` ``, `` `shelving/util/array` `` — matching the `import { … } from "shelving/schema"` specifier and the module page's own title. The prefix is what distinguishes a module reference from a same-named token; the resolver maps it to the module's canonical path.
 
-**Module links carry the `shelving/` package prefix.** When the link *target* is a whole-module page rather than a token — a top-level `/<module>` (`/schema`, `/db`, `/store`, `/ui`, …), a per-file `/firestore/<file>` (`/firestore/client`), or a per-file `/util/<file>` (`/util/array`) — the backtick-quoted link text is the **importable package subpath**, not the bare module name: ``[`shelving/schema`](/schema)``, ``[`shelving/firestore/client`](/firestore/client)``, ``[`shelving/util/array`](/util/array)``. This matches the `import { … } from "shelving/schema"` specifier a user actually types, and the module page's own title — [`PackageExtractor`](/extract/PackageExtractor) builds each module title by prefixing the package `name` (so `ui` renders as `shelving/ui`). Never link a module as a bare ``[`schema`](/schema)``; the `shelving/` prefix is what distinguishes a module reference from a same-named token. (Token links keep the token's own display style above — only the path's *kind*, module vs token, decides whether the prefix applies.)
+**What still uses real markdown links.** Auto-linking only covers internal tokens written as backtick code spans, so keep an explicit `[text](target)` link for everything else:
 
-**Generics belong in the link text.** When a token is referenced with its generic parameters, keep the whole thing inside one backtick-quoted link — ``[`Schema<T>`](/schema/Schema)``, ``[`ItemStore<I, T>`](/db/ItemStore)`` — not the bare name linked with the generics trailing in a second code span (``[`Schema`](/schema/Schema)`<T>``), which renders as two separate, awkwardly-split chips. The path still targets the bare token; only the displayed name carries the generics.
+- **External URLs** — `[Conventional Commits](https://www.conventionalcommits.org/)`, GitHub links, spec links.
+- **Descriptive prose phrases** that point at a page but aren't a token name — e.g. linking the words "tint ladder" to a page.
+- **CSS custom properties** (`--tint-90`, `--space-paragraph`) are **not** tree tokens and never auto-link. Write them as plain backtick code (`` `--tint-90` ``); the Styling-table prose around them names the owning `get*Class` helper as an ordinary backtick reference, which does link.
 
-**Member access belongs in the link text too.** A qualified reference like `PostgreSQLMigrator.migrate()` is a single link whose text holds the whole chain — ``[`PostgreSQLMigrator.migrate()`](/db/PostgreSQLMigrator)`` — not a class link with the `.method()` trailing in a second span. Target the **class** page in most cases (the member often has no page of its own); only link the member page directly when the reference is to the bare member (``[`.validate()`](/schema/BooleanSchema/validate)``). Never split one styled reference across two adjacent code spans.
+**`@see` block tags are unaffected** — they still carry the full `https://dhoulb.github.io/shelving/<path>/<name>` URL (see the docblock standards below), since IDE hover needs an absolute link, not a docs-site-relative one.
 
 ### UI component pages and CSS-variable documentation
 
@@ -486,11 +483,11 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
 - A **sugar instance** is a pre-instantiated copy of a `Schema` class exported as an `ALL_CAPS` constant — e.g. `STRING` is `new StringSchema({})`, `REQUIRED_STRING` is `new StringSchema({ min: 1 })`.
 - A **sugar factory** is a `function` whose purpose is to call `new SomeClass(...)` with sensible defaults — e.g. `DATA` builds a `DataSchema`, `NULLABLE` a `NullableSchema`.
 
-**Sugar instances.** Open the docblock with one line that states the class it instantiates (as a docs-site markdown link) and the equivalent constructor call, since that first line becomes the card `description`:
+**Sugar instances.** Open the docblock with one line that states the class it instantiates (as a plain backtick reference, which auto-links) and the equivalent constructor call, since that first line becomes the card `description`:
 
   ```ts
   /**
-   * Sugar instance of [`StringSchema`](/schema/StringSchema) for an unconstrained string. Equivalent to `new StringSchema({})`.
+   * Sugar instance of `StringSchema` for an unconstrained string. Equivalent to `new StringSchema({})`.
    *
    * @example STRING.validate(123); // Returns "123"
    * @see https://dhoulb.github.io/shelving/schema/StringSchema/STRING
@@ -498,7 +495,7 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
   export const STRING = new StringSchema({});
   ```
 
-  When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and link the wrapped sugar instance (`` [`TITLE`](/schema/TITLE) ``).
+  When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and name the wrapped sugar instance as a plain backtick reference (`` `TITLE` ``).
 
 **Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
 
@@ -506,14 +503,14 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
   /**
    * Create a `DataSchema` for a set of properties.
    *
-   * Sugar factory for [`DataSchema`](/schema/DataSchema).
+   * Sugar factory for `DataSchema`.
    */
   export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
   	return new DataSchema({ props });
   }
   ```
 
-- The canonical wording is exactly `Sugar factory for [\`ClassName\`](/schema/ClassName).` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with a backtick-quoted class name linked to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+- The canonical wording is exactly `` Sugar factory for `ClassName`. `` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with the class name as a plain backtick reference that auto-links to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
 
 ### Docblock standards
 

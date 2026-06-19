@@ -97,7 +97,7 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 /**
  * Create a schema for a valid choice from an allowed set of values.
  *
- * Sugar factory for [`ChoiceSchema`](/schema/ChoiceSchema).
+ * Sugar factory for `ChoiceSchema`.
  *
  * @param options The allowed choices, as a `{ key: title }` dictionary or an array of keys.
  * @example CHOICE({ yes: "Yes", no: "No" }) // ChoiceSchema<"yes" | "no">

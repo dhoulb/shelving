@@ -13,8 +13,8 @@ import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 /**
  * Store that fetches and tracks a single item by ID in a collection from a database provider.
  *
- * - Holds an [`OptionalItem`](/util/item/OptionalItem) value: the item if it exists, or `undefined` if it doesn't.
- * - Seeds from a [`MemoryDBProvider`](/db/MemoryDBProvider) snapshot when available, and subscribes to realtime updates.
+ * - Holds an `OptionalItem` value: the item if it exists, or `undefined` if it doesn't.
+ * - Seeds from a `MemoryDBProvider` snapshot when available, and subscribes to realtime updates.
  *
  * @example
  *  const store = new ItemStore(collection, "abc", provider);

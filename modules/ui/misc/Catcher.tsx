@@ -16,7 +16,7 @@ const RetryContext = createContext<Callback | undefined>(undefined);
 RetryContext.displayName = "RetryContext";
 
 /**
- * Props for `<RetryButton>` — [`<Button>`](/ui/Button) variants plus optional `children` to override the default "Retry" label.
+ * Props for `<RetryButton>` — `<Button>` variants plus optional `children` to override the default "Retry" label.
  *
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButtonProps
  */
@@ -139,9 +139,9 @@ export function PageCatcher({ children }: PageCatcherProps): ReactElement {
 export interface ErrorNoticeProps extends ErrorComponentProps {}
 
 /**
- * Render a caught error as an inline [`<Notice>`](/ui/Notice) with a retry button.
+ * Render a caught error as an inline `<Notice>` with a retry button.
  *
- * - Uses [`getMessage()`](/util/error/getMessage) to extract a human-readable message, falling back to `"Unknown error"`.
+ * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
  *
  * @param reason The caught error to display.
  * @returns An error `<Notice>` containing the message and a `<RetryButton>`.
@@ -167,9 +167,9 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 export interface ErrorPageProps extends ErrorComponentProps {}
 
 /**
- * Render a caught error as a full-page [`<Page>`](/ui/Page) with an error [`<Card>`](/ui/Card) and retry button.
+ * Render a caught error as a full-page `<Page>` with an error `<Card>` and retry button.
  *
- * - Uses [`getMessage()`](/util/error/getMessage) to extract a human-readable message, falling back to `"Unknown error"`.
+ * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
  *
  * @param reason The caught error to display.
  * @returns A centered error page containing the message and a `<RetryButton>`.

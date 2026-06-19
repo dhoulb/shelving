@@ -79,7 +79,7 @@ export class BooleanSchema extends Schema<boolean> {
 }
 
 /**
- * Sugar instance of [`BooleanSchema`](/schema/BooleanSchema) for a coerced boolean. Equivalent to `new BooleanSchema({})`.
+ * Sugar instance of `BooleanSchema` for a coerced boolean. Equivalent to `new BooleanSchema({})`.
  *
  * @example
  *  BOOLEAN.validate("yes"); // Returns true

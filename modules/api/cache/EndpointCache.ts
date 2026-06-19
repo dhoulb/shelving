@@ -8,7 +8,7 @@ import type { APIProvider } from "../provider/APIProvider.js";
 import { EndpointStore } from "../store/EndpointStore.js";
 
 /**
- * Cache of [`EndpointStore`](/api/EndpointStore) objects for a single endpoint, keyed by the rendered request URL of each payload.
+ * Cache of `EndpointStore` objects for a single endpoint, keyed by the rendered request URL of each payload.
  * - Use `get(payload)` to retrieve or create the `EndpointStore` for a given payload.
  * - Disposing the cache disposes every nested `EndpointStore` and clears the map.
  *
@@ -29,7 +29,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	readonly endpoint: Endpoint<P, R>;
 
 	/**
-	 * The [`APIProvider`](/api/APIProvider) used to render URLs and fetch results for this endpoint.
+	 * The `APIProvider` used to render URLs and fetch results for this endpoint.
 	 *
 	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/provider
 	 */
@@ -39,7 +39,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * Create a new `EndpointCache` for a single endpoint and provider.
 	 *
 	 * @param endpoint The endpoint that every cached store fetches from.
-	 * @param provider The [`APIProvider`](/api/APIProvider) used to render URLs and fetch results.
+	 * @param provider The `APIProvider` used to render URLs and fetch results.
 	 * @example new EndpointCache(getUser, provider)
 	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache
 	 */
@@ -49,7 +49,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	}
 
 	/**
-	 * Get (or create) the [`EndpointStore`](/api/EndpointStore) for the given payload.
+	 * Get (or create) the `EndpointStore` for the given payload.
 	 * - Stores are keyed by the rendered request URL, so equivalent payloads share a store.
 	 *
 	 * @param payload The payload identifying the store to return.
@@ -67,7 +67,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * Fetch (or return a cached result) for the given payload.
 	 * - Returns the cached value immediately if one exists.
 	 * - Waits for the in-flight fetch if the store is loading.
-	 * - Throws if the fetch fails, matching [`APIProvider.call`](/api/APIProvider/call) behaviour.
+	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
 	 *
 	 * @param payload The payload to send to the endpoint.
 	 * @param maxAge The maximum age in milliseconds (defaults to only refreshing if the value is still in a loading state).

@@ -1,6 +1,6 @@
 # DictionaryStore
 
-A [`Store`](/store/Store) for a string-keyed object (a dictionary). `DictionaryStore<T>` defaults to an empty object and adds entry-level helpers — each mutation produces a new object so consumers see a genuine change.
+A `Store` for a string-keyed object (a dictionary). `DictionaryStore<T>` defaults to an empty object and adds entry-level helpers — each mutation produces a new object so consumers see a genuine change.
 
 ## Usage
 

@@ -37,7 +37,7 @@ export function isNull(value: unknown): value is null {
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `T`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is not `null`.
+ * @throws `RequiredError` if `value` is not `null`.
  * @see https://dhoulb.github.io/shelving/util/null/assertNull
  */
 export function assertNull<T>(value: Nullable<T>, caller: AnyCaller = assertNull): asserts value is T {
@@ -61,7 +61,7 @@ export function notNull<T>(value: Nullable<T>): value is T {
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `T`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is `null`.
+ * @throws `RequiredError` if `value` is `null`.
  * @see https://dhoulb.github.io/shelving/util/null/assertNotNull
  */
 export function assertNotNull<T>(value: Nullable<T>, caller: AnyCaller = assertNotNull): asserts value is T {
@@ -69,7 +69,7 @@ export function assertNotNull<T>(value: Nullable<T>, caller: AnyCaller = assertN
 }
 
 /**
- * Get the not-null version of a value, or throw [`RequiredError`](/error/RequiredError) if it is `null`.
+ * Get the not-null version of a value, or throw `RequiredError` if it is `null`.
  *
  * @param value The value to require.
  * @param caller Function used to attribute a thrown error to the calling site.
@@ -107,7 +107,7 @@ export function isNullish<T>(value: Nullish<T>): value is null | undefined {
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `T`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is not `null` or `undefined`.
+ * @throws `RequiredError` if `value` is not `null` or `undefined`.
  * @see https://dhoulb.github.io/shelving/util/null/assertNullish
  */
 export function assertNullish<T>(value: Nullish<T>, caller: AnyCaller = assertNullish): asserts value is T {
@@ -131,7 +131,7 @@ export function notNullish<T>(value: Nullish<T>): value is T {
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `T`.
- * @throws [`RequiredError`](/error/RequiredError) if `value` is `null` or `undefined`.
+ * @throws `RequiredError` if `value` is `null` or `undefined`.
  * @see https://dhoulb.github.io/shelving/util/null/assertNotNullish
  */
 export function assertNotNullish<T>(value: Nullish<T>, caller: AnyCaller = assertNotNullish): asserts value is T {
@@ -139,7 +139,7 @@ export function assertNotNullish<T>(value: Nullish<T>, caller: AnyCaller = asser
 }
 
 /**
- * Get the not-nullish version of a value, or throw [`RequiredError`](/error/RequiredError) if it is `null` or `undefined`.
+ * Get the not-nullish version of a value, or throw `RequiredError` if it is `null` or `undefined`.
  *
  * @param value The value to require.
  * @param caller Function used to attribute a thrown error to the calling site.

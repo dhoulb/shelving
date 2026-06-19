@@ -2,8 +2,8 @@
 
 Validate ISO 4217 currency codes and retrieve display metadata (symbol, smallest unit step) using the runtime's built-in `Intl` API. The list of supported codes comes from `Intl.supportedValuesOf("currency")` so it stays current without a bundled lookup table.
 
-- [`getCurrencyCode()`](/util/currency/getCurrencyCode) normalises to uppercase and returns `undefined` for unrecognised codes; [`requireCurrencyCode()`](/util/currency/requireCurrencyCode) throws instead.
-- [`getCurrencyStep()`](/util/currency/getCurrencyStep) returns `0.01` for most currencies (e.g. USD, GBP), `1` for zero-decimal currencies (e.g. JPY), and smaller fractions for some crypto.
+- `getCurrencyCode()` normalises to uppercase and returns `undefined` for unrecognised codes; `requireCurrencyCode()` throws instead.
+- `getCurrencyStep()` returns `0.01` for most currencies (e.g. USD, GBP), `1` for zero-decimal currencies (e.g. JPY), and smaller fractions for some crypto.
 
 ## Usage
 

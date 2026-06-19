@@ -1,8 +1,8 @@
 # RouteCache
 
-A keep-alive page cache. Drop it into a layout around its scrolling content region: it reads the current URL from the surrounding [`<Meta>`](/ui/MetaContext) context and keeps a handful of recently-visited pages mounted but *hidden* (using React's [`<Activity>`](https://react.dev/reference/react/Activity)), so navigating back or forward to a page restores its entire DOM and component state — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — instead of remounting it fresh at the top.
+A keep-alive page cache. Drop it into a layout around its scrolling content region: it reads the current URL from the surrounding `<Meta>` context and keeps a handful of recently-visited pages mounted but *hidden* (using React's [`<Activity>`](https://react.dev/reference/react/Activity)), so navigating back or forward to a page restores its entire DOM and component state — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — instead of remounting it fresh at the top.
 
-Shelving's [`<SidebarLayout>`](/ui/SidebarLayout) and [`<CenteredLayout>`](/ui/CenteredLayout) already wrap their scrollable content column in one for you, so pages rendered inside them keep their state across navigation automatically. Reach for it by hand only when building a custom layout.
+Shelving's `<SidebarLayout>` and `<CenteredLayout>` already wrap their scrollable content column in one for you, so pages rendered inside them keep their state across navigation automatically. Reach for it by hand only when building a custom layout.
 
 **Things to know:**
 

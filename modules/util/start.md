@@ -1,6 +1,6 @@
 # Start/stop lifecycle helpers
 
-Manage processes that have a start callback and an optional stop callback. [`Starter`](/util/start/Starter) prevents double-starts and wraps errors, making it easy to build safe, disposable lifecycle objects.
+Manage processes that have a start callback and an optional stop callback. `Starter` prevents double-starts and wraps errors, making it easy to build safe, disposable lifecycle objects.
 
 ## Usage
 
@@ -21,7 +21,7 @@ starter.stop();  // calls the stop callback
 
 ### Using as a disposable
 
-[`Starter`](/util/start/Starter) implements `Disposable`, so it works with `using`:
+`Starter` implements `Disposable`, so it works with `using`:
 
 ```ts
 {
@@ -44,7 +44,7 @@ function setup(s: PossibleStarter<[]>) {
 
 ### No-op stop placeholder
 
-[`STOPHOLE`](/util/start/STOPHOLE) is a start callback that always returns a no-op stop callback. Useful as a safe default.
+`STOPHOLE` is a start callback that always returns a no-op stop callback. Useful as a safe default.
 
 ```ts
 import { STOPHOLE } from "shelving/util";

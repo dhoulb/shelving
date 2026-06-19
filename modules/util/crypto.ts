@@ -18,7 +18,7 @@ function _getKey(password: string): Promise<CryptoKey> {
  * Get cryptographically-random bytes from the platform crypto API.
  *
  * @param length The number of random bytes to generate.
- * @returns A [`Bytes`](/util/bytes/Bytes) (`Uint8Array`) of the requested length filled with random values.
+ * @returns A `Bytes` (`Uint8Array`) of the requested length filled with random values.
  * @example getRandomBytes(16) // Uint8Array(16) [ ... ]
  * @see https://dhoulb.github.io/shelving/util/crypto/getRandomBytes
  */

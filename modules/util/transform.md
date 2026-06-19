@@ -4,9 +4,9 @@ Map and transform values across arrays, objects, dictionaries, and async sequenc
 
 **Things to know:**
 
-- [`mapItems()`](/util/transform/mapItems) is a generator — it yields lazily and does not produce an array. Use [`mapArray()`](/util/transform/mapArray) when you need an [`ImmutableArray`](/util/array/ImmutableArray).
-- [`transformObject()`](/util/transform/transformObject) returns the same reference when none of the transforms change a value, making it safe for equality checks and memoisation.
-- [`mapSequence()`](/util/transform/mapSequence) is for `AsyncIterable` streams; it is an async generator.
+- `mapItems()` is a generator — it yields lazily and does not produce an array. Use `mapArray()` when you need an `ImmutableArray`.
+- `transformObject()` returns the same reference when none of the transforms change a value, making it safe for equality checks and memoisation.
+- `mapSequence()` is for `AsyncIterable` streams; it is an async generator.
 
 ## Usage
 

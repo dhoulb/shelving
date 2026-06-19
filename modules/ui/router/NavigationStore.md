@@ -1,11 +1,11 @@
 # NavigationStore
 
-The store holding the current navigation URL and driving browser history. It extends [`URLStore`](/store/URLStore) — the current location is its `value` — and is owned by [`<Navigation>`](/ui/Navigation). Reach for it via [`requireNavigation()`](/ui/Navigation) rather than constructing your own.
+The store holding the current navigation URL and driving browser history. It extends `URLStore` — the current location is its `value` — and is owned by `<Navigation>`. Reach for it via `requireNavigation()` rather than constructing your own.
 
 **Things to know:**
 
 - `forward()` pushes a new browser history entry; `redirect()` replaces the current one. Both resolve the destination against the store's `base`.
-- It is a [`shelving/store`](/store) `URLStore`, so components can subscribe to it for re-renders.
+- It is a `shelving/store` `URLStore`, so components can subscribe to it for re-renders.
 
 ## Usage
 

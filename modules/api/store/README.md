@@ -1,26 +1,26 @@
 # Endpoint store
 
-Reactive per-request state for a single API call. [`EndpointStore`](/api/EndpointStore) holds the current result for one endpoint+payload pair and fetches automatically on first read.
+Reactive per-request state for a single API call. `EndpointStore` holds the current result for one endpoint+payload pair and fetches automatically on first read.
 
 ## Concepts
 
 ### EndpointStore
 
-[`EndpointStore<P, R>`](/api/EndpointStore) extends [`PayloadFetchStore`](/store/PayloadFetchStore) from the [`shelving/store`](/store) module. It binds an [`Endpoint`](/api/Endpoint), a payload value, and an [`APIProvider`](/api/APIProvider) together. When [`.value`](/store/Store/value) or [`.loading`](/store/Store/loading) is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
+`EndpointStore<P, R>` extends `PayloadFetchStore` from the `shelving/store` module. It binds an `Endpoint`, a payload value, and an `APIProvider` together. When `Store.value` or `Store.loading` is first read, it triggers a fetch automatically. Concurrent reads de-duplicate the in-flight request — only one network call goes out regardless of how many subscribers read the value.
 
 The store's reactive contract follows the rest of the shelving store layer:
 
-- [`.value`](/store/Store/value) — throws a `Promise` while loading (suspense-compatible), throws [`.reason`](/store/Store/reason) on failure, returns `R` when ready.
-- [`.loading`](/store/Store/loading) — `true` while a fetch is in progress; reading it also triggers the initial fetch.
-- [`.invalidate()`](/store/FetchStore/invalidate) — marks the value stale; the next read starts a fresh fetch.
-- [`.refresh(maxAge?)`](/store/FetchStore/refresh) — triggers a re-fetch unless the cached value is younger than `maxAge` milliseconds.
+- `Store.value` — throws a `Promise` while loading (suspense-compatible), throws `Store.reason` on failure, returns `R` when ready.
+- `Store.loading` — `true` while a fetch is in progress; reading it also triggers the initial fetch.
+- `FetchStore.invalidate()` — marks the value stale; the next read starts a fresh fetch.
+- `FetchStore.refresh(maxAge?)` — triggers a re-fetch unless the cached value is younger than `maxAge` milliseconds.
 - Implements `AsyncIterable<R>` — `for await...of` emits each new value as it arrives.
 
-Payload changes are tracked via the inner [`.payload`](/store/PayloadFetchStore/payload) store. Updating `store.payload.value` cancels any in-flight fetch and starts a new one.
+Payload changes are tracked via the inner `PayloadFetchStore.payload` store. Updating `store.payload.value` cancels any in-flight fetch and starts a new one.
 
 ### Where EndpointStore lives in the stack
 
-[`EndpointStore`](/api/EndpointStore) is the leaf node in a three-level cache hierarchy:
+`EndpointStore` is the leaf node in a three-level cache hierarchy:
 
 ```
 APICache
@@ -28,7 +28,7 @@ APICache
         └── EndpointStore  (one per unique rendered URL / payload)
 ```
 
-In normal use you don't create `EndpointStore` directly. [`EndpointCache`](/api/EndpointCache) creates and keys them by rendered URL. The [`shelving/react`](/react) module's [`createAPIContext()`](/react/createAPIContext) exposes them through hooks.
+In normal use you don't create `EndpointStore` directly. `EndpointCache` creates and keys them by rendered URL. The `shelving/react` module's `createAPIContext()` exposes them through hooks.
 
 ## Usage
 

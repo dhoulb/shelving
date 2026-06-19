@@ -2,7 +2,7 @@
 
 The identity pass-through base for wrapping providers. `ThroughDBProvider` takes a `source` provider and delegates every method to it. Extend it to intercept only the methods you care about — timing, metrics, access control — without reimplementing the rest.
 
-[`ValidationDBProvider`](/db/ValidationDBProvider), [`DebugDBProvider`](/db/DebugDBProvider), and [`ChangesDBProvider`](/db/ChangesDBProvider) are all `ThroughDBProvider` subclasses.
+`ValidationDBProvider`, `DebugDBProvider`, and `ChangesDBProvider` are all `ThroughDBProvider` subclasses.
 
 ## Usage
 

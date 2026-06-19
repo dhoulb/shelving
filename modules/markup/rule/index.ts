@@ -44,7 +44,7 @@ export const MARKUP_RULES_INLINE: MarkupRules = [
 ];
 
 /**
- * Default markup rules — the combined block and inline rules [`MarkupParser`](/markup/MarkupParser) uses when none are supplied.
+ * Default markup rules — the combined block and inline rules `MarkupParser` uses when none are supplied.
  *
  * These rules define a syntax similar to Markdown but with improvements:
  * 1. Syntax is more intuitive (e.g. `*strong*` always uses `*` asterisk and `_em_` always uses `_` underscore, and URLs are always autolinked).

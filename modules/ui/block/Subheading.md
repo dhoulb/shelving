@@ -1,6 +1,6 @@
 # Subheading
 
-A subsection heading — renders an `<h3>`. It is the smallest member of the three-level heading family: [`<Title>`](/ui/Title) (`<h1>`), [`<Heading>`](/ui/Heading) (`<h2>`), `Subheading` (`<h3>`). Use it for card titles, in-section labels, and panel titles.
+A subsection heading — renders an `<h3>`. It is the smallest member of the three-level heading family: `<Title>` (`<h1>`), `<Heading>` (`<h2>`), `Subheading` (`<h3>`). Use it for card titles, in-section labels, and panel titles.
 
 **Things to know:**
 
@@ -8,7 +8,7 @@ A subsection heading — renders an `<h3>`. It is the smallest member of the thr
 - Pick the component that matches the level rather than overriding `level` — that keeps the visual size and the document outline in step.
 - The `level` prop (`1`–`6`) is an escape hatch for the rare case where the outline level must differ from the visual size — avoid it in normal use.
 - Inherits text colour by default so it picks up the surrounding tint; accepts `color=` and the typography variants.
-- Inside [`<Prose>`](/ui/Prose) raw `<h3>`–`<h6>` are styled by the same rules, so Markdown-rendered subheadings match component ones.
+- Inside `<Prose>` raw `<h3>`–`<h6>` are styled by the same rules, so Markdown-rendered subheadings match component ones.
 
 ## Usage
 
@@ -48,4 +48,4 @@ import { Title, Heading, Subheading } from "shelving/ui";
 | `--subheading-size` | Font size | `var(--size-large)` |
 | `--subheading-leading` | Line height | `var(--leading)` |
 
-**Global tokens it reads:** [`--space-section`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--font-title`](/ui/getFontClass), [`--weight-strong`](/ui/getWeightClass), [`--size-large`](/ui/getSizeClass), and [`--leading`](/ui/getSizeClass).
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading`.

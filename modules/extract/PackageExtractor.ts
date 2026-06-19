@@ -39,7 +39,7 @@ export interface PackageExtractorOptions {
 	 * - Defaults to `{ js: ["ts", "tsx", "js", "jsx"] }`.
 	 */
 	readonly extensions?: ImmutableDictionary<readonly string[]>;
-	/** [`ModuleExtractor`](/extract/ModuleExtractor) used to build each module element. Defaults to a fresh `new ModuleExtractor()`. */
+	/** `ModuleExtractor` used to build each module element. Defaults to a fresh `new ModuleExtractor()`. */
 	readonly module?: ModuleExtractor;
 	/** Absolute base path used to resolve a relative `package.json` path passed to `extract()`. */
 	readonly base?: AbsolutePath;
@@ -47,7 +47,7 @@ export interface PackageExtractorOptions {
 
 /**
  * Extractor that reads a `package.json` and produces a flat tree of modules — one `kind: "module"`
- * [`DocumentationElement`](/util/tree/DocumentationElement) per export entry, in declaration order.
+ * `DocumentationElement` per export entry, in declaration order.
  * - Static export keys (e.g. `"./api"`, `"./firestore/client"`) become one module each.
  * - Wildcard export keys (e.g. `"./util/*"`) expand against the source tree — one module per matching child file or subdirectory.
  * - Each export's *target* extension (e.g. the `.js` in `"./util/*.js"`) is mapped to source extensions via `extensions`, so built `.js` paths resolve to their `.ts` sources.

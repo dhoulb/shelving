@@ -2,13 +2,13 @@
 
 Validates a value into a `boolean`. Following the robustness principle, the strings `"no"` and `"false"` coerce to `false`, and any other value is tested for truthiness. A missing value falls back to the schema's `value` default (`false`).
 
-[`BOOLEAN`](/schema/BOOLEAN) is the ready-made sugar instance for a boolean field.
+`BOOLEAN` is the ready-made sugar instance for a boolean field.
 
 ## Usage
 
 ### Sugar instances
 
-To save creating a new instance of `BooleanSchema` for trivial uses, you can use the [`BOOLEAN`](/schema/BOOLEAN) sugar instance instead.
+To save creating a new instance of `BooleanSchema` for trivial uses, you can use the `BOOLEAN` sugar instance instead.
 
 ```ts
 import { BOOLEAN } from "shelving/schema";

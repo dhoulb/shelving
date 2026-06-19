@@ -1,6 +1,6 @@
 # requireContext
 
-Reads a React context and throws [`RequiredError`](/error/RequiredError) if the value is `null` or `undefined`. Use it instead of `use(context)` when a context must be provided by an ancestor — every `require*()` hook in the library follows this pattern.
+Reads a React context and throws `RequiredError` if the value is `null` or `undefined`. Use it instead of `use(context)` when a context must be provided by an ancestor — every `require*()` hook in the library follows this pattern.
 
 **Things to know:**
 

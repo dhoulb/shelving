@@ -15,7 +15,7 @@ import type { EndpointCallback, EndpointHandler } from "./util.js";
  *
  * @param method The method of the endpoint, e.g. `GET`
  * @param path Endpoint path, possibly including placeholders e.g. `/users/{id}`
- * @param payload A [`Schema`](/schema/Schema) for the payload of the endpoint.
+ * @param payload A `Schema` for the payload of the endpoint.
  * @param result A `Schema` for the result of the endpoint.
  *
  * @example
@@ -46,14 +46,14 @@ export class Endpoint<P = unknown, R = unknown> {
 	readonly placeholders: TemplatePlaceholders;
 
 	/**
-	 * The [`Schema`](/schema/Schema) that request payloads are validated against.
+	 * The `Schema` that request payloads are validated against.
 	 *
 	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/payload
 	 */
 	readonly payload: Schema<P>;
 
 	/**
-	 * The [`Schema`](/schema/Schema) that response results are validated against.
+	 * The `Schema` that response results are validated against.
 	 *
 	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/result
 	 */
@@ -108,7 +108,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * Create an endpoint handler pairing for this endpoint.
 	 *
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
-	 * @returns An [`EndpointHandler`](/api/EndpointHandler) object combining this endpoint and the callback into a single typed object.
+	 * @returns An `EndpointHandler` object combining this endpoint and the callback into a single typed object.
 	 * @example endpoint.handler((payload, request) => ({ ...payload }))
 	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/handler
 	 */
@@ -129,7 +129,7 @@ export class Endpoint<P = unknown, R = unknown> {
 }
 
 /**
- * An [`Endpoint`](/api/Endpoint) with any payload and result type, for use where the specific types don't matter.
+ * An `Endpoint` with any payload and result type, for use where the specific types don't matter.
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/AnyEndpoint
  */
@@ -144,14 +144,14 @@ export type AnyEndpoint = Endpoint<any, any>;
 export type Endpoints = ImmutableArray<AnyEndpoint>;
 
 /**
- * Extract the payload type from an [`Endpoint`](/api/Endpoint).
+ * Extract the payload type from an `Endpoint`.
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/PayloadType
  */
 export type PayloadType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<infer Y, unknown> ? Y : never;
 
 /**
- * Extract the result type from an [`Endpoint`](/api/Endpoint).
+ * Extract the result type from an `Endpoint`.
  *
  * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/EndpointType
  */
@@ -161,10 +161,10 @@ export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpo
  * Define a `HEAD` endpoint at a path, with validated payload and result types.
  * - "The HEAD method requests a representation of the specified resource. Requests using HEAD should only retrieve data and should not contain a request content."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `HEAD` method.
  * @example HEAD("/users/{id}")
@@ -181,10 +181,10 @@ export function HEAD(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * Define a `GET` endpoint at a path, with validated payload and result types.
  * - "The GET method requests a representation of the specified resource. Requests using GET should only retrieve data and should not contain a request content."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `GET` method.
  * @example GET("/users/{id}", undefined, USER)
@@ -201,10 +201,10 @@ export function GET(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * Define a `POST` endpoint at a path, with validated payload and result types.
  * - "The POST method submits an entity to the specified resource, often causing a change in state or side effects on the server."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `POST` method.
  * @example POST("/users", USER, USER_RESULT)
@@ -221,10 +221,10 @@ export function POST(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * Define a `PUT` endpoint at a path, with validated payload and result types.
  * - "The PUT method replaces all current representations of the target resource with the request content."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `PUT` method.
  * @example PUT("/users/{id}", USER)
@@ -241,10 +241,10 @@ export function PUT(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * Define a `PATCH` endpoint at a path, with validated payload and result types.
  * - "The PATCH method applies partial modifications to a resource."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `PATCH` method.
  * @example PATCH("/users/{id}", PARTIAL_USER)
@@ -261,10 +261,10 @@ export function PATCH(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINE
  * Define a `DELETE` endpoint at a path, with validated payload and result types.
  * - "The DELETE method deletes the specified resource."
  *
- * *Factory for [`Endpoint`](/api/Endpoint).*
+ * *Factory for `Endpoint`.*
  *
  * @param path The endpoint path, possibly including `{placeholders}`
- * @param payload An optional [`Schema`](/schema/Schema) validating the request payload.
+ * @param payload An optional `Schema` validating the request payload.
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `DELETE` method.
  * @example DELETE("/users/{id}")

@@ -64,7 +64,7 @@ export function notEqual<T, N>(left: T | N, right: N): left is T {
 }
 
 /**
- * Is unknown value `left` less than `right` (using [`compareAscending()`](/util/sort/compareAscending))?
+ * Is unknown value `left` less than `right` (using `compareAscending()`)?
  *
  * @param left The value to compare.
  * @param right The value to compare against.
@@ -77,7 +77,7 @@ export function isLess(left: unknown, right: unknown) {
 }
 
 /**
- * Is unknown value `left` less than or equal to `right` (using [`compareAscending()`](/util/sort/compareAscending))?
+ * Is unknown value `left` less than or equal to `right` (using `compareAscending()`)?
  *
  * @param left The value to compare.
  * @param right The value to compare against.
@@ -90,7 +90,7 @@ export function isEqualLess(left: unknown, right: unknown) {
 }
 
 /**
- * Is unknown value `left` greater than `right` (using [`compareAscending()`](/util/sort/compareAscending))?
+ * Is unknown value `left` greater than `right` (using `compareAscending()`)?
  *
  * @param left The value to compare.
  * @param right The value to compare against.
@@ -103,7 +103,7 @@ export function isGreater(left: unknown, right: unknown) {
 }
 
 /**
- * Is unknown value `left` greater than or equal to `right` (using [`compareAscending()`](/util/sort/compareAscending))?
+ * Is unknown value `left` greater than or equal to `right` (using `compareAscending()`)?
  *
  * @param left The value to compare.
  * @param right The value to compare against.
@@ -185,7 +185,7 @@ export function notDeepEqual<T>(left: unknown, right: T): left is T {
  *
  * @param left The map to check and narrow.
  * @param right The map to compare against.
- * @param recursor Function that checks each value of the map (defaults to [`isEqual()`](/util/equal/isEqual) for strict equality; pass [`isDeepEqual()`](/util/equal/isDeepEqual) for deep equality).
+ * @param recursor Function that checks each value of the map (defaults to `isEqual()` for strict equality; pass `isDeepEqual()` for deep equality).
  * @returns `true` if both maps have the same keys and matching values.
  * @example isMapEqual(new Map([["a", 1]]), new Map([["a", 1]])) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isMapEqual
@@ -208,8 +208,8 @@ export function isMapEqual<T extends ImmutableMap>(left: ImmutableMap, right: T,
  * @param left The array to check and narrow.
  * @param right The array to compare against.
  * @param recursor Function that checks each item of the array.
- * - Defaults to [`isEqual()`](/util/equal/isEqual) to check strict equality of the items.
- * - Use [`isDeepEqual()`](/util/equal/isDeepEqual) as the recursor to check to check deep equality of the items.
+ * - Defaults to `isEqual()` to check strict equality of the items.
+ * - Use `isDeepEqual()` as the recursor to check to check deep equality of the items.
  * @returns `true` if both arrays have the same length and matching items.
  * @example isArrayEqual([1, 2], [1, 2]) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isArrayEqual
@@ -281,8 +281,8 @@ export function notArrayWith(left: unknown, right: unknown): boolean {
  * @param left The object to check and narrow.
  * @param right The object to compare against.
  * @param recursor Function that checks each prop of the object.
- * - Defaults to [`isEqual()`](/util/equal/isEqual) to check strict equality of the properties.
- * - Use [`isDeepEqual()`](/util/equal/isDeepEqual) as the recursor to check to check deep equality of the properties.
+ * - Defaults to `isEqual()` to check strict equality of the properties.
+ * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  * @returns `true` if both objects have exactly the same own props and matching values.
  * @example isObjectEqual({ a: 1 }, { a: 1 }) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isObjectEqual
@@ -304,8 +304,8 @@ export function isObjectEqual<T extends ImmutableObject>(left: ImmutableObject, 
  * @param left The object to check and narrow.
  * @param right The object whose props `left` must contain.
  * @param recursor Function that checks each prop of the object.
- * - Defaults to [`isEqual()`](/util/equal/isEqual) to check strict equality of the properties.
- * - Use [`isDeepEqual()`](/util/equal/isDeepEqual) as the recursor to check to check deep equality of the properties.
+ * - Defaults to `isEqual()` to check strict equality of the properties.
+ * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  * @returns `true` if `left` contains every prop of `right` with matching values.
  * @example isObjectMatch({ a: 1, b: 2 }, { a: 1 }) // true
  * @see https://dhoulb.github.io/shelving/util/equal/isObjectMatch

@@ -43,8 +43,8 @@ async function _mockHandler(request: Request): Promise<Response> {
 
 /**
  * Provider that records API calls and serves them from a handler without sending network requests.
- * - Extends [`ThroughAPIProvider`](/api/ThroughAPIProvider) to delegate request building and response parsing to a source [`APIProvider`](/api/APIProvider).
- * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a [`RequestHandler`](/util/http/RequestHandler).
+ * - Extends `ThroughAPIProvider` to delegate request building and response parsing to a source `APIProvider`.
+ * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a `RequestHandler`.
  * - Records `requestCalls`, `fetchCalls`, and `responseCalls` so tests can assert on what happened.
  *
  * @example

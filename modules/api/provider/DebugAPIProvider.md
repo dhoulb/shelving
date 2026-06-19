@@ -2,7 +2,7 @@
 
 A wrapping provider for development. `DebugAPIProvider` writes verbose console output for every call — including full request and response bodies — so you can see exactly what is going over the wire.
 
-It is the noisy counterpart to [`LoggingAPIProvider`](/api/LoggingAPIProvider): use `DebugAPIProvider` while developing, and `LoggingAPIProvider` (or nothing) in production.
+It is the noisy counterpart to `LoggingAPIProvider`: use `DebugAPIProvider` while developing, and `LoggingAPIProvider` (or nothing) in production.
 
 ## Usage
 

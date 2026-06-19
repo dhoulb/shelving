@@ -1,12 +1,12 @@
 # FetchStore
 
-A [`Store`](/store/Store) that fetches its value from a callback. `FetchStore<T>` calls its callback to produce a value, tracks staleness, and re-fetches on demand. Reading `.value` or `.loading` triggers the initial fetch automatically, and concurrent fetches are de-duplicated — only one runs at a time.
+A `Store` that fetches its value from a callback. `FetchStore<T>` calls its callback to produce a value, tracks staleness, and re-fetches on demand. Reading `.value` or `.loading` triggers the initial fetch automatically, and concurrent fetches are de-duplicated — only one runs at a time.
 
-It is the base class for the API and database stores ([`EndpointStore`](/api/EndpointStore), [`ItemStore`](/db/ItemStore), [`QueryStore`](/db/QueryStore)).
+It is the base class for the API and database stores (`EndpointStore`, `ItemStore`, `QueryStore`).
 
 ## Usage
 
-Pass an initial value (or [`NONE`](/util/constants/NONE)) and a callback. The callback receives an `AbortSignal` it can pass to `fetch()` so a superseded request is cancelled:
+Pass an initial value (or `NONE`) and a callback. The callback receives an `AbortSignal` it can pass to `fetch()` so a superseded request is cancelled:
 
 ```ts
 import { FetchStore, NONE } from "shelving/store";

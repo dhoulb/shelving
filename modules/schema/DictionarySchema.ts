@@ -103,7 +103,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 /**
  * Create a schema for a valid dictionary object with specified entry values.
  *
- * Sugar factory for [`DictionarySchema`](/schema/DictionarySchema).
+ * Sugar factory for `DictionarySchema`.
  *
  * @param items Schema every entry value in the dictionary must conform to.
  * @example DICTIONARY(NUMBER) // DictionarySchema<number>

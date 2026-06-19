@@ -32,8 +32,8 @@ export interface AddressSchemaOptions extends SchemaOptions {
 /**
  * Schema that validates a postal address.
  *
- * - Validates the `address1`, `address2`, `city`, `state`, `postcode`, and `country` fields as a single [`AddressData`](/util/geo/AddressData) object.
- * - Formats validated values into a human-readable address string via [`formatAddress()`](/util/geo/formatAddress).
+ * - Validates the `address1`, `address2`, `city`, `state`, `postcode`, and `country` fields as a single `AddressData` object.
+ * - Formats validated values into a human-readable address string via `formatAddress()`.
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchema
@@ -60,7 +60,7 @@ export class AddressSchema extends DataSchema<AddressData> {
 }
 
 /**
- * Sugar instance of [`AddressSchema`](/schema/AddressSchema) for postal address data. Equivalent to `new AddressSchema({})`.
+ * Sugar instance of `AddressSchema` for postal address data. Equivalent to `new AddressSchema({})`.
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/ADDRESS
@@ -68,7 +68,7 @@ export class AddressSchema extends DataSchema<AddressData> {
 export const ADDRESS = new AddressSchema({});
 
 /**
- * Sugar instance allowing an [`ADDRESS`](/schema/ADDRESS) or `null`. Equivalent to `NULLABLE(ADDRESS)`.
+ * Sugar instance allowing an `ADDRESS` or `null`. Equivalent to `NULLABLE(ADDRESS)`.
  *
  * @example NULLABLE_ADDRESS.validate(null); // Returns null
  * @see https://dhoulb.github.io/shelving/schema/AddressSchema/NULLABLE_ADDRESS

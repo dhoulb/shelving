@@ -8,7 +8,7 @@ import INPUT_CSS from "./Input.module.css";
 
 /**
  * Styling variants shared by every form input — currently the `width` variant (`width="narrow"`, `"normal"`, `"wide"`, `"full"`, `"fit"`).
- * - Extends [`WidthVariants`](/ui/WidthVariants) so any input can be sized (e.g. `<CheckboxInput width="fit">` to shrink to its content).
+ * - Extends `WidthVariants` so any input can be sized (e.g. `<CheckboxInput width="fit">` to shrink to its content).
  * - Designed to grow: new cross-cutting input styling props (e.g. spacing) should be added here so every input picks them up consistently.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/Input/InputVariants

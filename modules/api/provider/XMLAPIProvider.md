@@ -1,6 +1,6 @@
 # XMLAPIProvider
 
-A [`ClientAPIProvider`](/api/ClientAPIProvider) for XML APIs. It sends request bodies as XML and returns the raw text of the response rather than parsing it as JSON.
+A `ClientAPIProvider` for XML APIs. It sends request bodies as XML and returns the raw text of the response rather than parsing it as JSON.
 
 Because it extends `ClientAPIProvider`, it is a concrete network provider: construct it with the same `{ url, options?, timeout? }` options.
 

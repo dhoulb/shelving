@@ -1,24 +1,24 @@
 # Cache
 
-[`DBCache`](/db/DBCache) and [`CollectionCache`](/db/CollectionCache) are the store-management layer that sits between a [`DBProvider`](/db/DBProvider) and the reactive [`ItemStore`](/db/ItemStore) / [`QueryStore`](/db/QueryStore) instances used by UI code. They ensure that only one store exists per (collection, id) or (collection, query) pair and expose a `refresh` API to pull fresh data on demand.
+`DBCache` and `CollectionCache` are the store-management layer that sits between a `DBProvider` and the reactive `ItemStore` / `QueryStore` instances used by UI code. They ensure that only one store exists per (collection, id) or (collection, query) pair and expose a `refresh` API to pull fresh data on demand.
 
 ## Concepts
 
 ### DBCache
 
-`DBCache` is a registry of `CollectionCache` objects, one per [`Collection`](/db/Collection). Call [`.getItem()`](/db/DBCache/getItem) or [`.getQuery()`](/db/DBCache/getQuery) to retrieve or lazily create a store. Calling the same method twice with the same arguments returns the exact same store instance.
+`DBCache` is a registry of `CollectionCache` objects, one per `Collection`. Call `DBCache.getItem()` or `DBCache.getQuery()` to retrieve or lazily create a store. Calling the same method twice with the same arguments returns the exact same store instance.
 
-If the provider chain contains a [`CacheDBProvider`](/db/CacheDBProvider), `DBCache` finds it automatically via `getSource` and reuses its [`MemoryDBProvider`](/db/MemoryDBProvider) mirror. Stores are then seeded with the current in-memory snapshot and subscribe to live updates from it — so the first render is synchronous when data is already cached.
+If the provider chain contains a `CacheDBProvider`, `DBCache` finds it automatically via `getSource` and reuses its `MemoryDBProvider` mirror. Stores are then seeded with the current in-memory snapshot and subscribe to live updates from it — so the first render is synchronous when data is already cached.
 
 ### CollectionCache
 
 `CollectionCache` manages stores for a single collection. It is used internally by `DBCache` but is also available directly when you need per-collection refresh control.
 
-- [`.getItem()`](/db/CollectionCache/getItem) — returns an `ItemStore` for the id, creating it if needed.
-- [`.getQuery()`](/db/CollectionCache/getQuery) — returns a `QueryStore` for the query, keyed by `JSON.stringify(query)`.
-- [`.refreshItem()`](/db/CollectionCache/refreshItem) / [`.refreshItems()`](/db/CollectionCache/refreshItems) — re-fetch one or all item stores.
-- [`.refreshQuery()`](/db/CollectionCache/refreshQuery) / [`.refreshQueries()`](/db/CollectionCache/refreshQueries) — re-fetch one or all query stores.
-- [`.refreshAll()`](/db/CollectionCache/refreshAll) — re-fetch everything in this collection at once.
+- `CollectionCache.getItem()` — returns an `ItemStore` for the id, creating it if needed.
+- `CollectionCache.getQuery()` — returns a `QueryStore` for the query, keyed by `JSON.stringify(query)`.
+- `CollectionCache.refreshItem()` / `CollectionCache.refreshItems()` — re-fetch one or all item stores.
+- `CollectionCache.refreshQuery()` / `CollectionCache.refreshQueries()` — re-fetch one or all query stores.
+- `CollectionCache.refreshAll()` — re-fetch everything in this collection at once.
 
 Both `DBCache` and `CollectionCache` implement `AsyncDisposable`. Disposing them disposes every store they hold.
 
