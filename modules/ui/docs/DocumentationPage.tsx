@@ -8,11 +8,11 @@ import { Preformatted } from "../block/Preformatted.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { TreeMarkup } from "../tree/TreeMarkup.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationParams } from "./DocumentationParams.js";
@@ -122,7 +122,7 @@ export function DocumentationPage({
 				{content && (
 					<Section>
 						<Prose>
-							<Markup>{content}</Markup>
+							<TreeMarkup>{content}</TreeMarkup>
 						</Prose>
 					</Section>
 				)}

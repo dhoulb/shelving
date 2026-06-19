@@ -5,9 +5,9 @@ import { Panel } from "../block/Panel.js";
 import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "../tree/TreeCards.js";
+import { TreeMarkup } from "../tree/TreeMarkup.js";
 
 /**
  * Page renderer for the documentation site's home page — a bold coloured hero panel over the module listing.
@@ -30,7 +30,7 @@ export function DocumentationHomePage({ title, name, description, content, child
 				{content && (
 					<Section>
 						<Prose>
-							<Markup>{content}</Markup>
+							<TreeMarkup>{content}</TreeMarkup>
 						</Prose>
 					</Section>
 				)}

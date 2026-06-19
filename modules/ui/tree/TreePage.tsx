@@ -3,9 +3,9 @@ import type { TreeElementProps } from "../../util/tree.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "./TreeCards.js";
+import { TreeMarkup } from "./TreeMarkup.js";
 
 /**
  * Page renderer for a generic `tree-element` (a directory or file).
@@ -26,7 +26,7 @@ export function TreePage({ title, name, description, content, children }: TreeEl
 			<Section>
 				{content && (
 					<Prose>
-						<Markup>{content}</Markup>
+						<TreeMarkup>{content}</TreeMarkup>
 					</Prose>
 				)}
 			</Section>
