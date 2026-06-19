@@ -97,10 +97,10 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 
 /**
  * Resolve a possible URI relative to a base, or return `undefined` if conversion fails.
- * - Returns any kind of URI — not just hierarchical `scheme://host` URLs. Use [`getURL()`](/util/url/getURL) when a true URL is specifically required.
+ * - Returns any kind of URI — not just hierarchical `scheme://host` URLs. Use `getURL()` when a true URL is specifically required.
  * - A `URL` instance is returned as-is (already absolute, base ignored).
  *
- * Note: the base is normalised with [`getBaseURL()`](/util/url/getBaseURL), so it is always treated as if it ends in a slash.
+ * Note: the base is normalised with `getBaseURL()`, so it is always treated as if it ends in a slash.
  * - e.g. if `base` is `http://p.com/a/b/c` the path resolves relative to `c/` as if a trailing slash was present.
  * - This differs from the default behaviour of `new URL()`, but is the more natural expected result.
  *
@@ -124,7 +124,7 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
 
 /**
  * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
- * - Like [`getBasedURI()`](/util/url/getBasedURI) but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
+ * - Like `getBasedURI()` but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
  *
  * @param target URL string, URL object, or path to resolve — falsy values return `undefined`.
  * @param base Base URL to resolve a relative `target` against.
@@ -142,7 +142,7 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
 }
 
 /**
- * Convert a possible URL to a URL, or throw [`RequiredError`](/error/RequiredError) if conversion fails.
+ * Convert a possible URL to a URL, or throw `RequiredError` if conversion fails.
  *
  * @param target URL string, URL object, or path to resolve.
  * @param base Base URL to resolve a relative `target` against.

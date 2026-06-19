@@ -7,7 +7,7 @@ import { type ImmutableURL, matchURLPrefix } from "../../util/url.js";
 import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
 
 /**
- * React context holding the current [`Meta`](/ui/Meta) object (page URL, site root, title, etc.).
+ * React context holding the current `Meta` object (page URL, site root, title, etc.).
  *
  * @example <MetaContext value={meta}>…</MetaContext>
  * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaContext
@@ -16,7 +16,7 @@ export const MetaContext = createContext<Meta>({});
 MetaContext.displayName = "MetaContext";
 
 /**
- * Read the current [`Meta`](/ui/Meta) context, optionally merging in additional meta data.
+ * Read the current `Meta` context, optionally merging in additional meta data.
  *
  * - Must be called inside a component or hook (reads context via React's `use()`).
  *
@@ -31,7 +31,7 @@ export function requireMeta(meta?: PossibleMeta): Meta {
 }
 
 /**
- * A [`Meta`](/ui/Meta) object with a guaranteed `url`, plus derived `path` and `params` properties.
+ * A `Meta` object with a guaranteed `url`, plus derived `path` and `params` properties.
  *
  * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaURL
  */
@@ -44,10 +44,10 @@ export interface MetaURL extends Meta {
 }
 
 /**
- * Read the current [`Meta`](/ui/Meta) context and derive URL helpers (`path` and `params`) from its `url`.
+ * Read the current `Meta` context and derive URL helpers (`path` and `params`) from its `url`.
  *
  * @param meta A set of new possible meta data to combine into the current meta context.
- * @param caller Function to attribute thrown [`RequiredError`](/error/RequiredError)s to (defaults to `requireMetaURL`).
+ * @param caller Function to attribute thrown `RequiredError`s to (defaults to `requireMetaURL`).
  * @returns A `Meta` object with a defined `url`, plus `path` and `params` properties combined in.
  * @throws RequiredError If the current meta has no `url`.
  * @throws RequiredError If the current meta `url` does not share an origin with the meta `root`.

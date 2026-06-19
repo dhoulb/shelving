@@ -13,7 +13,7 @@ export interface CollapseTransitionProps extends TransitionProps {}
  * Transition that collapses its children in and out by animating their size.
  *
  * @kind component
- * @returns A [`<Transition>`](/ui/Transition) element configured with the `collapse` class.
+ * @returns A `<Transition>` element configured with the `collapse` class.
  * @example <CollapseTransition>{visible && <Panel />}</CollapseTransition>
  * @see https://dhoulb.github.io/shelving/ui/transition/CollapseTransition/CollapseTransition
  */

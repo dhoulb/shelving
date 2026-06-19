@@ -9,8 +9,8 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 - Wrap a wide table in a horizontally scrollable container if it may exceed the content width on small screens.
 - Like the other block components it collapses its outer block margin when it is the first or last child.
 - Spans the full width of its container by default; set the `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) to constrain it.
-- Size columns with [`<Cell>`](/ui/Cell) and the `width` variant — `width="fit"` hugs the content, and `width="12x" grow` gives a column a hard minimum it can grow past (cells honour `min-width`, so the table scrolls rather than collapsing the column on a narrow screen). A column's width is the widest of its cells.
-- Inside [`<Prose>`](/ui/Prose) a raw `<table>` picks up the same styling, so Markdown-rendered tables match component ones.
+- Size columns with `<Cell>` and the `width` variant — `width="fit"` hugs the content, and `width="12x" grow` gives a column a hard minimum it can grow past (cells honour `min-width`, so the table scrolls rather than collapsing the column on a narrow screen). A column's width is the widest of its cells.
+- Inside `<Prose>` a raw `<table>` picks up the same styling, so Markdown-rendered tables match component ones.
 
 ## Usage
 
@@ -47,19 +47,19 @@ import { Table } from "shelving/ui";
 | `--table-label-case` | Label letter case | `var(--case-label)` |
 | `--table-label-color` | Label colour | `var(--tint-70)` |
 
-**Global tokens it reads:** [`--space-paragraph`](/ui/getSpaceClass), [`--space-xsmall`](/ui/getSpaceClass), [`--stroke-normal`](/ui/getStrokeClass), the tint-ladder steps [`--tint-70`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS), and the label tokens [`--font-label`](/ui/getFontClass) / [`--weight-label`](/ui/getWeightClass) / [`--size-label`](/ui/getSizeClass) / [`--case-label`](/ui/getFontClass) / [`--weight-strong`](/ui/getWeightClass).
+**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-80`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
 
 ## Table contents
 
 Defining contents for the `<Table>` is done with standard `<tr>`, `<th>`, `<td>`, `<thead>`, `<tbody>`, `<tfoot>` elements.
 
-The [`<Cell>`](/ui/Cell) element can be used to define a `<td>` or `<th>`, and supports [`WidthVariants`](/ui/WidthVariants) and [`TypographyVariants`](/ui/TypographyVariants) for styling.
+The `<Cell>` element can be used to define a `<td>` or `<th>`, and supports `WidthVariants` and `TypographyVariants` for styling.
 
 ## Column widths
 
 Column widths in table layout are notoriously tricky, as browsers interpret widths as _suggestions_ not hard rules (in order to prevent the table from overflowing its desired total width unless absolutely necessary). The algorithm _tries_ to honor fixed widths first e.g. `120px`, while percentage widths e.g. `100%` get reduced by the algorithm and effectively mean "I'll take whatever width is left after resolving fixed widths".
 
-A useful tool for table layouts is `white-space: nowrap`, which forces a table cell to never wrap its contents. When combined with the `nowrap` variant on cells (or other components that use [`TypographyVariants`](/ui/TypographyVariants)) this can force cells to respect the width of their content.
+A useful tool for table layouts is `white-space: nowrap`, which forces a table cell to never wrap its contents. When combined with the `nowrap` variant on cells (or other components that use `TypographyVariants`) this can force cells to respect the width of their content.
 
 The following table will be defined with two fixed width cells and a longer cell that takes the remaining space:
 

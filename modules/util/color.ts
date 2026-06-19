@@ -22,7 +22,7 @@ export const HEX3_REGEXP = /^#?([0-F])([0-F])([0-F])$/i;
 export const HEX6_REGEXP = /^#?([0-F]{2})([0-F]{2})([0-F]{2})([0-F]{2})?$/i;
 
 /**
- * Things that can be converted to a [`Color`](/util/color/Color) instance.
+ * Things that can be converted to a `Color` instance.
  *
  * @see https://dhoulb.github.io/shelving/util/color/PossibleColor
  */
@@ -214,7 +214,7 @@ export function getColor(value: unknown): Color | undefined {
 }
 
 /**
- * Convert a possible color to a [`Color`](/util/color/Color) instance, or throw [`RequiredError`](/error/RequiredError) if it can't be converted.
+ * Convert a possible color to a `Color` instance, or throw `RequiredError` if it can't be converted.
  *
  * @param value The possible color to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireColor` itself).

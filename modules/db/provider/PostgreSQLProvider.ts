@@ -28,7 +28,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * Get the Postgres JSONB extract syntax for a key, e.g. `"a" #>> {"b","c"}`.
 	 *
 	 * @param key The key segments identifying the column and any nested JSONB path.
-	 * @returns An [`SQLFragment`](/db/SQLFragment) extracting the value.
+	 * @returns An `SQLFragment` extracting the value.
 	 * @example this.sqlExtract(["a", "b"]); // "a" #>> {"b"}
 	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlExtract
 	 */
@@ -45,7 +45,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * Define an SQL fragment for a single update action, with Postgres JSONB support for nested keys and `with`/`omit` array mutations.
 	 *
 	 * @param update The update action (`action`, `key`, `value`) to convert.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a", "b"], value: 1 })
 	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlUpdate
@@ -104,7 +104,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * Define an SQL fragment for a filter clause, with Postgres JSONB support for `contains` and deeply-nested queries.
 	 *
 	 * @param filter The filter (`key`, `operator`, `value`) to translate.
-	 * @returns The composed [`SQLFragment`](/db/SQLFragment).
+	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["tags"], operator: "contains", value: "x" })
 	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlFilter

@@ -1,8 +1,8 @@
 # App
 
-Root component for a client-side Shelving app. `<App>` applies the theme CSS class to `document.body` and provides a [`Meta`](/ui/Meta) context so every descendant can read or update page metadata.
+Root component for a client-side Shelving app. `<App>` applies the theme CSS class to `document.body` and provides a `Meta` context so every descendant can read or update page metadata.
 
-Use `<App>` when mounting into an existing HTML page on the client. For server-side rendering where you need the full `<html>` document shell, use [`<HTML>`](/ui/HTML) instead.
+Use `<App>` when mounting into an existing HTML page on the client. For server-side rendering where you need the full `<html>` document shell, use `<HTML>` instead.
 
 ## A minimal app
 
@@ -27,7 +27,7 @@ function HelloApp() {
 
 ## A routed app
 
-For a multi-page app, wrap the routes in [`<Navigation>`](/ui/Navigation) and [`<Router>`](/ui/Router):
+For a multi-page app, wrap the routes in `<Navigation>` and `<Router>`:
 
 ```tsx
 import { App, Navigation, Router } from "shelving/ui";
@@ -46,6 +46,6 @@ export function MyApp() {
 }
 ```
 
-`<App>` accepts all [`PossibleMeta`](/ui/PossibleMeta) props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
+`<App>` accepts all `PossibleMeta` props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
 
-For a documentation site, hand an extracted tree to [`<TreeApp>`](/ui/TreeApp) instead — see the [`shelving/extract`](/extract) guide.
+For a documentation site, hand an extracted tree to `<TreeApp>` instead — see the `shelving/extract` guide.

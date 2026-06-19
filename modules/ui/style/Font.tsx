@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import FONT_CSS from "./Font.module.css";
 
 /**
- * Allowed values for font family for components that support [`FontVariants`](/ui/FontVariants)
+ * Allowed values for font family for components that support `FontVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Font/FontValue
  */

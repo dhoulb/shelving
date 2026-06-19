@@ -105,8 +105,8 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * @param left The left object to merge into.
  * @param right The right object whose props replace or merge with `left`.
  * @param recursor Function that merges each property of the object.
- * - Defaults to [`exactMerge()`](/util/merge/exactMerge) to just swap the property for a newer one if it exists.
- * - Use [`deepMerge()`](/util/merge/deepMerge) as the recursor to merge objects deeply.
+ * - Defaults to `exactMerge()` to just swap the property for a newer one if it exists.
+ * - Use `deepMerge()` as the recursor to merge objects deeply.
  *
  * @returns Merged object.
  * - Returned instances will be the same if no changes were made.

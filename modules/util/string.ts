@@ -72,7 +72,7 @@ export function getString(value: unknown): string | undefined {
 }
 
 /**
- * Convert a possible string to a string, or throw [`RequiredError`](/error/RequiredError) if conversion fails.
+ * Convert a possible string to a string, or throw `RequiredError` if conversion fails.
  *
  * @param value The value to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireString`).
@@ -117,7 +117,7 @@ export function assertStringLength(value: unknown, min?: number, max?: number, c
 }
 
 /**
- * Convert a possible string to a string with min/max length, or throw [`RequiredError`](/error/RequiredError) if conversion fails.
+ * Convert a possible string to a string with min/max length, or throw `RequiredError` if conversion fails.
  *
  * @param value The value to convert.
  * @param min The minimum allowed length.
@@ -183,7 +183,7 @@ export function sanitizeText(str: string): string {
 /**
  * Sanitize a single word of text.
  * - Used when you're sanitising a value that can never contain whitespace, e.g. an email address or token.
- * - Remove all control characters (like [`sanitizeText()`](/util/string/sanitizeText)).
+ * - Remove all control characters (like `sanitizeText()`).
  * - Strip all whitespace entirely (rather than collapsing runs to a single space like `sanitizeText()`).
  *
  * @param str The string to sanitize.
@@ -259,7 +259,7 @@ export function getSlug(str: string): string | undefined {
 }
 
 /**
- * Convert a string to a `kebab-case` URL slug, or throw [`RequiredError`](/error/RequiredError) if conversion resulted in an empty ref.
+ * Convert a string to a `kebab-case` URL slug, or throw `RequiredError` if conversion resulted in an empty ref.
  *
  * @param str The string to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireSlug` itself).
@@ -287,7 +287,7 @@ export function getRef(str: string): string | undefined {
 }
 
 /**
- * Convert a string to a unique ref e.g. `abc123`, or throw [`RequiredError`](/error/RequiredError) if conversion resulted in an empty string.
+ * Convert a string to a unique ref e.g. `abc123`, or throw `RequiredError` if conversion resulted in an empty string.
  *
  * @param str The string to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireRef` itself).

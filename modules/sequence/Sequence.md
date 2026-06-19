@@ -6,7 +6,7 @@ Unlike a generator, a `Sequence` places no one-shot constraint on iteration — 
 
 ## Usage
 
-`Sequence` is not used directly — extend it, or use a built-in subclass ([`DeferredSequence`](/sequence/DeferredSequence), [`ThroughSequence`](/sequence/ThroughSequence), [`LazySequence`](/sequence/LazySequence), [`InspectSequence`](/sequence/InspectSequence)). A minimal subclass only needs `next()`:
+`Sequence` is not used directly — extend it, or use a built-in subclass (`DeferredSequence`, `ThroughSequence`, `LazySequence`, `InspectSequence`). A minimal subclass only needs `next()`:
 
 ```ts
 import { Sequence } from "shelving/sequence";

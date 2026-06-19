@@ -13,16 +13,16 @@ export interface ModuleExtractorInput {
 	readonly name: string;
 	/**
 	 * The source element this module is built from.
-	 * - A file-backed `tree-element` — the module is backed by a single source file (with its `.md` sibling already merged in by [`MergingExtractor`](/extract/MergingExtractor)).
+	 * - A file-backed `tree-element` — the module is backed by a single source file (with its `.md` sibling already merged in by `MergingExtractor`).
 	 * - A directory-backed `tree-element` — the module is backed by a directory; its absorbed index file provides the content.
 	 */
 	readonly source: TreeElement;
 }
 
 /**
- * Extractor that builds a `kind: "module"` [`DocumentationElement`](/util/tree/DocumentationElement) from a source file or directory.
- * - The module's `content`, `description`, and `title` are taken from the source element ([`MergingExtractor`](/extract/MergingExtractor) and
- *   [`IndexExtractor`](/extract/IndexExtractor) are expected to have run upstream so `.md` siblings and `README.md` are already folded in).
+ * Extractor that builds a `kind: "module"` `DocumentationElement` from a source file or directory.
+ * - The module's `content`, `description`, and `title` are taken from the source element (`MergingExtractor` and
+ *   `IndexExtractor` are expected to have run upstream so `.md` siblings and `README.md` are already folded in).
  * - The module's `children` are every `tree-documentation` element found by deep-walking the source — flattened across
  *   files and subdirectories, but never descending into a `tree-documentation`'s own members.
  *
@@ -32,7 +32,7 @@ export interface ModuleExtractorInput {
  */
 export class ModuleExtractor extends Extractor<ModuleExtractorInput, DocumentationElement> {
 	/**
-	 * Build a `kind: "module"` [`DocumentationElement`](/util/tree/DocumentationElement) from a source file or directory element.
+	 * Build a `kind: "module"` `DocumentationElement` from a source file or directory element.
 	 *
 	 * @param input Module name and source element to build from.
 	 * @returns `tree-documentation` element of `kind: "module"` with flattened documented children.

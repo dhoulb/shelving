@@ -4,10 +4,10 @@ A collection of helpers for converting typed values into user-readable strings. 
 
 **Things to know:**
 
-- [`formatPercent()`](/util/format/formatPercent) takes a 0–100 numerator (not 0–1 like the raw `Intl` API), defaults to zero decimal places, and rounds toward zero so "99.99%" shows as "99%".
-- [`formatUnit()`](/util/format/formatUnit) falls back gracefully when the browser does not support a given unit in `Intl.NumberFormat`.
-- [`formatValue()`](/util/format/formatValue) is the catch-all: `null`/`undefined` → `"None"`, booleans → `"Yes"`/`"No"`, arrays → locale list, objects → `name`/`title`/`id` property.
-- [`formatURI()`](/util/format/formatURI) strips the scheme and query string — `mailto:dave@shax.com` → `dave@shax.com`.
+- `formatPercent()` takes a 0–100 numerator (not 0–1 like the raw `Intl` API), defaults to zero decimal places, and rounds toward zero so "99.99%" shows as "99%".
+- `formatUnit()` falls back gracefully when the browser does not support a given unit in `Intl.NumberFormat`.
+- `formatValue()` is the catch-all: `null`/`undefined` → `"None"`, booleans → `"Yes"`/`"No"`, arrays → locale list, objects → `name`/`title`/`id` property.
+- `formatURI()` strips the scheme and query string — `mailto:dave@shax.com` → `dave@shax.com`.
 
 ## Usage
 

@@ -15,11 +15,11 @@ import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
 
 /**
- * Synchronous in-memory database provider, storing each collection in a [`MemoryTable`](/db/MemoryTable).
+ * Synchronous in-memory database provider, storing each collection in a `MemoryTable`.
  *
- * - Extremely fast (ideal as the cache behind [`CacheDBProvider`](/db/CacheDBProvider)!), but does not persist data after the process or browser window closes.
+ * - Extremely fast (ideal as the cache behind `CacheDBProvider`!), but does not persist data after the process or browser window closes.
  * - Identity-preserving: `getItem()` etc. return the exact same object instance that was passed into `setItem()`.
- * - Supports live subscriptions, so it can back [`ItemStore`](/db/ItemStore) / [`QueryStore`](/db/QueryStore) reads.
+ * - Supports live subscriptions, so it can back `ItemStore` / `QueryStore` reads.
  *
  * @example
  *  const provider = new MemoryDBProvider();
@@ -32,7 +32,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	private _tables: { [K in string]?: MemoryTable<I, T> } = {};
 
 	/**
-	 * Get (or lazily create) the [`MemoryTable`](/db/MemoryTable) backing a collection.
+	 * Get (or lazily create) the `MemoryTable` backing a collection.
 	 *
 	 * @param collection Collection to get the table for.
 	 * @returns The `MemoryTable` holding that collection's items.
@@ -238,10 +238,10 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 }
 
 /**
- * In-memory table holding the items of a single collection for a [`MemoryDBProvider`](/db/MemoryDBProvider).
+ * In-memory table holding the items of a single collection for a `MemoryDBProvider`.
  *
  * - Keys items by id in a `Map`, preserving the exact object instance passed in.
- * - Exposes a `next` [`DeferredSequence`](/sequence/DeferredSequence) that resolves on every change, powering the live `*Sequence` subscriptions.
+ * - Exposes a `next` `DeferredSequence` that resolves on every change, powering the live `*Sequence` subscriptions.
  *
  * @example
  *  const table = provider.getTable(users);

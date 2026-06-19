@@ -1,8 +1,8 @@
 # CurrencyAmountSchema
 
-A [`NumberSchema`](/schema/NumberSchema) subclass for monetary amounts. It rounds to the currency's minor units (e.g. two decimal places for `GBP`) and exposes a `format()` method that renders the amount with the correct currency symbol.
+A `NumberSchema` subclass for monetary amounts. It rounds to the currency's minor units (e.g. two decimal places for `GBP`) and exposes a `format()` method that renders the amount with the correct currency symbol.
 
-[`USD_AMOUNT`](/schema/USD_AMOUNT), [`GBP_AMOUNT`](/schema/GBP_AMOUNT), and [`EUR_AMOUNT`](/schema/EUR_AMOUNT) are ready-made sugar instances; the [`CURRENCY_AMOUNT(code)`](/schema/CURRENCY_AMOUNT) sugar factory builds one for any currency code.
+`USD_AMOUNT`, `GBP_AMOUNT`, and `EUR_AMOUNT` are ready-made sugar instances; the `CURRENCY_AMOUNT(code)` sugar factory builds one for any currency code.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # BooleanStore
 
-A [`Store`](/store/Store) for a boolean value. `BooleanStore` defaults to `false`, coerces any assigned value to a boolean, and adds a `.toggle()` helper.
+A `Store` for a boolean value. `BooleanStore` defaults to `false`, coerces any assigned value to a boolean, and adds a `.toggle()` helper.
 
 ## Usage
 

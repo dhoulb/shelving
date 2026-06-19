@@ -18,7 +18,7 @@ export interface TransitionProps extends ChildProps {
 /**
  * Wrap children in a React View Transition, applying the configured transition classes.
  *
- * - Allows known view transition types in [`TransitionClasses`](/ui/TransitionClasses) (`default`/`forward`/`back`) to be overridden.
+ * - Allows known view transition types in `TransitionClasses` (`default`/`forward`/`back`) to be overridden.
  *   - These must correspond to a `::view-transition(.className)` that is set in CSS.
  * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition(.overlay)` from `Transition.css`.
  *

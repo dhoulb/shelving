@@ -32,7 +32,7 @@ export interface ClientAPIProviderOptions {
 	 * Note: When resolving URLs for endpoints this is treated as if it ends in a slash.
 	 * - e.g. in `http://p.com/a/b/c` the path will be relative to `c` as if a `/` trailing slash was present.
 	 * - This is different to the default behaviour of `new URL()`, but is the more natural expected result
-	 * - This is consistent with our e.g. [`getURL()`](/util/url/getURL) utilities.
+	 * - This is consistent with our e.g. `getURL()` utilities.
 	 */
 	readonly url: PossibleURL;
 
@@ -54,9 +54,9 @@ export interface ClientAPIProviderOptions {
  * A client-side API provider that sends requests over the network using `fetch()`.
  * - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
  * - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
- * - Parses JSON responses and throws [`ResponseError`](/error/ResponseError) for non-2xx responses.
+ * - Parses JSON responses and throws `ResponseError` for non-2xx responses.
  * - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
- * - Wrap in [`ValidationAPIProvider`](/api/ValidationAPIProvider) to add automatic validation of request payloads and response results against endpoint schemas.
+ * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
  *
  * @example
  * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
@@ -138,7 +138,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 *
 	 * @param endpoint The endpoint the request targets.
 	 * @param payload The payload to embed into the `Request`.
-	 * @param options Per-call [`RequestOptions`](/util/http/RequestOptions) merged over the provider's defaults.
+	 * @param options Per-call `RequestOptions` merged over the provider's defaults.
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The created `Request`.
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
@@ -203,7 +203,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	}
 
 	/**
-	 * Parse a response body into a result, throwing [`ResponseError`](/error/ResponseError) for non-2xx responses.
+	 * Parse a response body into a result, throwing `ResponseError` for non-2xx responses.
 	 *
 	 * @param _endpoint The endpoint the response was produced for.
 	 * @param response The `Response` to parse.

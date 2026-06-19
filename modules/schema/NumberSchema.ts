@@ -103,7 +103,7 @@ export class NumberSchema extends Schema<number> {
 }
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for an unconstrained number. Equivalent to `new NumberSchema({ title: "Number" })`.
+ * Sugar instance of `NumberSchema` for an unconstrained number. Equivalent to `new NumberSchema({ title: "Number" })`.
  *
  * @example
  *  NUMBER.validate("42"); // Returns 42
@@ -113,7 +113,7 @@ export class NumberSchema extends Schema<number> {
 export const NUMBER = new NumberSchema({ title: "Number" });
 
 /**
- * Sugar instance allowing a [`NUMBER`](/schema/NUMBER) or `null`. Equivalent to `NULLABLE(NUMBER)`.
+ * Sugar instance allowing a `NUMBER` or `null`. Equivalent to `NULLABLE(NUMBER)`.
  *
  * @example
  *  NULLABLE_NUMBER.validate(null); // Returns null
@@ -123,7 +123,7 @@ export const NUMBER = new NumberSchema({ title: "Number" });
 export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for an integer. Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
+ * Sugar instance of `NumberSchema` for an integer. Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
  *
  * @example
  *  INTEGER.validate("42.7"); // Returns 43 (rounded to step)
@@ -133,7 +133,7 @@ export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for a positive integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER })`.
+ * Sugar instance of `NumberSchema` for a positive integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER })`.
  *
  * @example
  *  POSITIVE_INTEGER.validate(0); // Throws "Required"
@@ -143,7 +143,7 @@ export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER,
 export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER });
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for a non-negative integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER })`.
+ * Sugar instance of `NumberSchema` for a non-negative integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER })`.
  *
  * @example
  *  NON_NEGATIVE_INTEGER.validate(0); // Returns 0
@@ -153,7 +153,7 @@ export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.
 export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER });
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for a negative integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 })`.
+ * Sugar instance of `NumberSchema` for a negative integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 })`.
  *
  * @example
  *  NEGATIVE_INTEGER.validate(-3); // Returns -3
@@ -163,7 +163,7 @@ export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Num
 export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 });
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for a non-positive integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 })`.
+ * Sugar instance of `NumberSchema` for a non-positive integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 })`.
  *
  * @example
  *  NON_POSITIVE_INTEGER.validate(0); // Returns 0
@@ -173,7 +173,7 @@ export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE
 export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 });
 
 /**
- * Sugar instance allowing an [`INTEGER`](/schema/INTEGER) or `null`. Equivalent to `NULLABLE(INTEGER)`.
+ * Sugar instance allowing an `INTEGER` or `null`. Equivalent to `NULLABLE(INTEGER)`.
  *
  * @example
  *  NULLABLE_INTEGER.validate(null); // Returns null
@@ -183,7 +183,7 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
 export const NULLABLE_INTEGER = NULLABLE(INTEGER);
 
 /**
- * Sugar instance of [`NumberSchema`](/schema/NumberSchema) for a Unix timestamp (including milliseconds). Equivalent to `new NumberSchema({ title: "Timestamp", step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
+ * Sugar instance of `NumberSchema` for a Unix timestamp (including milliseconds). Equivalent to `new NumberSchema({ title: "Timestamp", step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
  *
  * @example
  *  TIMESTAMP.validate(1700000000000); // Returns 1700000000000
@@ -198,7 +198,7 @@ export const TIMESTAMP = new NumberSchema({
 });
 
 /**
- * Sugar instance — alias of [`NULLABLE_INTEGER`](/schema/NULLABLE_INTEGER). Equivalent to `NULLABLE_INTEGER`.
+ * Sugar instance — alias of `NULLABLE_INTEGER`. Equivalent to `NULLABLE_INTEGER`.
  *
  * @example
  *  NULLABLE_TIMESTAMP.validate(null); // Returns null

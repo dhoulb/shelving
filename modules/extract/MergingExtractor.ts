@@ -39,7 +39,7 @@ export interface MergingExtractorOptions {
  * - **Token-first:** a secondary (e.g. `Card.md`) is preferentially folded into the same-named documentation token declared by a sibling file (the `Card` symbol inside `Card.tsx`), not the file element. Exported names are unique across the package, so this is unambiguous — and it lands the prose on the published symbol page, which survives the module flatten (file-element content does not).
  * - **File fallback:** when no same-named token exists, the secondary folds into a sibling *file* whose key matches a `merges` candidate (whole-file prose like `template.md` → `template.ts`).
  * - The primary (winning) element keeps its `key`, `source`, and `type`; the secondary's `title`, `description`,
- *   `content`, and `children` are folded in via [`mergeTreeElements()`](/extract/mergeTreeElements).
+ *   `content`, and `children` are folded in via `mergeTreeElements()`.
  * - A secondary with no matching token or file is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
  *
  * @example const extractor = new MergingExtractor(new DirectoryExtractor());

@@ -1,6 +1,6 @@
 # InspectSequence
 
-A [`ThroughSequence`](/sequence/ThroughSequence) that records what passes through it without changing the values. As it iterates a source sequence it tracks the `first` and `last` yielded values, the `count` of values, whether iteration is `done`, and the final `returned` value.
+A `ThroughSequence` that records what passes through it without changing the values. As it iterates a source sequence it tracks the `first` and `last` yielded values, the `count` of values, whether iteration is `done`, and the final `returned` value.
 
 Useful in tests and diagnostics when you need to assert on what a sequence produced.
 
@@ -24,4 +24,4 @@ console.log(watch.last);   // 30
 console.log(watch.done);   // true
 ```
 
-`first`, `last`, and `returned` throw an [`UnexpectedError`](/error/UnexpectedError) if read before the relevant values exist — e.g. `first` before iteration has yielded anything, or `returned` before iteration is `done`.
+`first`, `last`, and `returned` throw an `UnexpectedError` if read before the relevant values exist — e.g. `first` before iteration has yielded anything, or `returned` before iteration is `done`.

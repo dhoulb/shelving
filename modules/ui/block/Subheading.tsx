@@ -9,7 +9,7 @@ import SUBHEADING_CSS from "./Subheading.module.css";
 const SUBHEADING_CLASS = getModuleClass(SUBHEADING_CSS, "subheading");
 
 /**
- * Props for `Subheading` — identical to [`HeadingProps`](/ui/HeadingProps).
+ * Props for `Subheading` — identical to `HeadingProps`.
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Subheading/SubheadingProps
  */

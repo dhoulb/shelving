@@ -13,9 +13,9 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
 /**
  * Database provider that validates data flowing to and from an asynchronous source provider.
  *
- * - Wraps a `source` provider (which may have any type, because validation guarantees the type) and runs every value through the relevant [`Collection`](/db/Collection) schema before writing and after reading.
+ * - Wraps a `source` provider (which may have any type, because validation guarantees the type) and runs every value through the relevant `Collection` schema before writing and after reading.
  * - Written data is validated against the collection's data schema; read data is validated against the item schema, so trusted, correctly-typed values reach the rest of the app.
- * - Validation failures here are program-state errors, so they throw a typed [`ValueError`](/error/ValueError) rather than a raw validation `string`.
+ * - Validation failures here are program-state errors, so they throw a typed `ValueError` rather than a raw validation `string`.
  *
  * @example
  *  const provider = new ValidationDBProvider(new FirestoreProvider());
@@ -30,7 +30,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to get.
 	 * @returns The validated item, or `undefined` if no item exists with that id.
-	 * @throws [`ValueError`](/error/ValueError) if the stored item does not validate against the collection schema.
+	 * @throws `ValueError` if the stored item does not validate against the collection schema.
 	 * @example await provider.getItem(users, 123) // Validated item or undefined.
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getItem
 	 */
@@ -44,7 +44,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the validated item (or `undefined`) on every change.
-	 * @throws [`ValueError`](/error/ValueError) if an emitted item does not validate against the collection schema.
+	 * @throws `ValueError` if an emitted item does not validate against the collection schema.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getItemSequence
 	 */
@@ -61,7 +61,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to add the item to.
 	 * @param data Data for the new item (validated before writing).
 	 * @returns The validated generated identifier for the new item.
-	 * @throws [`ValueError`](/error/ValueError) if the data or returned id does not validate against the collection schema.
+	 * @throws `ValueError` if the data or returned id does not validate against the collection schema.
 	 * @example await provider.addItem(users, { name: "Dave", age: 40 }) // 123
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/addItem
 	 */
@@ -75,7 +75,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item (validated before writing).
-	 * @throws [`ValueError`](/error/ValueError) if the data does not validate against the collection schema.
+	 * @throws `ValueError` if the data does not validate against the collection schema.
 	 * @example await provider.setItem(users, 123, { name: "Dave", age: 40 });
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/setItem
 	 */
@@ -89,7 +89,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply (validated before writing).
-	 * @throws [`ValueError`](/error/ValueError) if the updates do not validate against the collection schema.
+	 * @throws `ValueError` if the updates do not validate against the collection schema.
 	 * @example await provider.updateItem(users, 123, { age: 41 });
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/updateItem
 	 */
@@ -120,7 +120,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to query.
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of validated matching items.
-	 * @throws [`ValueError`](/error/ValueError) if one or more stored items do not validate against the collection schema.
+	 * @throws `ValueError` if one or more stored items do not validate against the collection schema.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Validated items.
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getQuery
 	 */
@@ -137,7 +137,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to query.
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the validated matching items on every change.
-	 * @throws [`ValueError`](/error/ValueError) if one or more emitted items do not validate against the collection schema.
+	 * @throws `ValueError` if one or more emitted items do not validate against the collection schema.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getQuerySequence
 	 */
@@ -154,7 +154,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item (validated before writing).
-	 * @throws [`ValueError`](/error/ValueError) if the data does not validate against the collection schema.
+	 * @throws `ValueError` if the data does not validate against the collection schema.
 	 * @example await provider.setQuery(users, { age: 40 }, { name: "Dave", age: 41 });
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/setQuery
 	 */
@@ -172,7 +172,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item (validated before writing).
-	 * @throws [`ValueError`](/error/ValueError) if the updates do not validate against the collection schema.
+	 * @throws `ValueError` if the updates do not validate against the collection schema.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
 	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/updateQuery
 	 */
@@ -215,7 +215,7 @@ function _validateIdentifier<I extends Identifier, T extends Data>(
 
 /**
  * Validate an entity for a collection item.
- * @throws [`ValueError`](/error/ValueError) if one or more items did not validate (conflict because the program is not in an expected state).
+ * @throws `ValueError` if one or more items did not validate (conflict because the program is not in an expected state).
  */
 function _validateItem<I extends Identifier, T extends Data>(
 	collection: Collection<string, I, T>,
@@ -243,7 +243,7 @@ function _validateItem<I extends Identifier, T extends Data>(
 
 /**
  * Validate a set of entities for this query reference.
- * @throws [`ValueError`](/error/ValueError) if one or more items did not validate (conflict because the program is not in an expected state).
+ * @throws `ValueError` if one or more items did not validate (conflict because the program is not in an expected state).
  */
 function _validateItems<I extends Identifier, T extends Data>(
 	collection: Collection<string, I, T>,
@@ -271,11 +271,11 @@ function* _yieldValidItems<I extends Identifier, T extends Data>(
 
 /**
  * Validate a set of updates for a collection.
- * @throws [`ValueError`](/error/ValueError) if the updates do not validate (conflict because the program is not in an expected state).
+ * @throws `ValueError` if the updates do not validate (conflict because the program is not in an expected state).
  *
  * @todo This currently is not correct — it's only validating the main keys of the object in a partial way
- *   We need to make a [`Schema`](/schema/Schema) validator for [`Updates<T>`](/util/update/Updates) objects.
- *   And while we're doing it, we should make one for [`Query<T>`](/util/query/Query) objects too.
+ *   We need to make a `Schema` validator for `Updates<T>` objects.
+ *   And while we're doing it, we should make one for `Query<T>` objects too.
  */
 function _validateUpdates<I extends Identifier, T extends Data>(
 	collection: Collection<string, I, T>,

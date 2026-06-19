@@ -1,6 +1,6 @@
 # ResponseError
 
-Thrown when a received response indicates an error — the HTTP 4xx/5xx range. Its `.code` property defaults to `400`. Use it for a response that arrived but was unsuccessful, as distinct from a transport failure ([`NetworkError`](/error/NetworkError)).
+Thrown when a received response indicates an error — the HTTP 4xx/5xx range. Its `.code` property defaults to `400`. Use it for a response that arrived but was unsuccessful, as distinct from a transport failure (`NetworkError`).
 
 ## Usage
 
@@ -12,4 +12,4 @@ function checkResponse(res: Response): void {
 }
 ```
 
-See [`shelving/error`](/error) for shared behaviour — attaching context fields, `caller` trimming, and catching by type.
+See `shelving/error` for shared behaviour — attaching context fields, `caller` trimming, and catching by type.

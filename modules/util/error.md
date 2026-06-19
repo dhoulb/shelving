@@ -2,13 +2,13 @@
 
 Low-level helpers for working with error messages as plain strings. They exist to give call-site code a uniform way to extract, split, join, and annotate messages without caring whether the source is an `Error` object, a plain string, or any other value.
 
-These are **not** the typed error classes — see [`shelving/error`](/error) for [`RequiredError`](/error/RequiredError), [`ValueError`](/error/ValueError), and friends.
+These are **not** the typed error classes — see `shelving/error` for `RequiredError`, `ValueError`, and friends.
 
 **Things to know:**
 
-- [`splitMessage()`](/util/error/splitMessage) parses a newline-separated string and looks for `"name: message"` lines, building a keyed dictionary. Lines without a `name: ` prefix land under the `""` (empty-string) key.
-- [`joinMessage()`](/util/error/joinMessage) is the exact inverse of `splitMessage` — round-tripping through both returns the original content.
-- [`getNamedMessage()`](/util/error/getNamedMessage) applies a prefix to every line, which is useful when wrapping a child error message into a parent field's error.
+- `splitMessage()` parses a newline-separated string and looks for `"name: message"` lines, building a keyed dictionary. Lines without a `name: ` prefix land under the `""` (empty-string) key.
+- `joinMessage()` is the exact inverse of `splitMessage` — round-tripping through both returns the original content.
+- `getNamedMessage()` applies a prefix to every line, which is useful when wrapping a child error message into a parent field's error.
 
 ## Usage
 

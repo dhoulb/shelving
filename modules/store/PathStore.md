@@ -1,6 +1,6 @@
 # PathStore
 
-A [`Store`](/store/Store) for an absolute path such as `/a/b/c`. `PathStore` resolves any relative path assigned to it against a fixed `base`, and adds route-matching helpers useful for navigation state.
+A `Store` for an absolute path such as `/a/b/c`. `PathStore` resolves any relative path assigned to it against a fixed `base`, and adds route-matching helpers useful for navigation state.
 
 ## Usage
 

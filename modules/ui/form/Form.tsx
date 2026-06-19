@@ -17,8 +17,8 @@ import { FormStore } from "./FormStore.js";
 
 /**
  * Callback invoked when a `Form` is submitted with its validated data.
- * - Returned value (if defined) is notified to the user using [`notifySuccess()`](/ui/notifySuccess).
- * - Thrown value is notified to the user using [`notifyError()`](/ui/notifyError).
+ * - Returned value (if defined) is notified to the user using `notifySuccess()`.
+ * - Thrown value is notified to the user using `notifyError()`.
  *
  * @see https://dhoulb.github.io/shelving/ui/form/Form/FormCallback
  */
@@ -46,7 +46,7 @@ export interface FormProps<T extends Data> extends OptionalChildProps {
 }
 
 /**
- * Schema-driven form that creates a [`FormStore`](/ui/FormStore), provides it via [`FormContext`](/ui/FormContext), and validates/submits on submit.
+ * Schema-driven form that creates a `FormStore`, provides it via `FormContext`, and validates/submits on submit.
  * - Renders its fields and footer by default, or custom `children` that read the form via hooks.
  * - Closes a parent `<dialog>` automatically on successful submit.
  *
@@ -107,7 +107,7 @@ export function Form({
  * - Async callbacks are awaited via `awaitNotifiedForm()`.
  *
  * @param value The validated form data passed to the callback.
- * @param store The [`FormStore`](/ui/FormStore) the form is bound to.
+ * @param store The `FormStore` the form is bound to.
  * @param form The underlying `HTMLFormElement` notices are anchored to.
  * @param callback Optional callback to run with the value and extra args.
  * @param args Additional arguments forwarded to the callback.
@@ -135,7 +135,7 @@ export function callNotifiedForm<T extends Data, A extends Arguments>(
 /**
  * Await a pending submit result and publish a success or error notice to a form once it settles.
  *
- * @param store The [`FormStore`](/ui/FormStore) the form is bound to.
+ * @param store The `FormStore` the form is bound to.
  * @param form The underlying `HTMLFormElement` notices are anchored to.
  * @param pending The pending result to await.
  * @returns A `Promise` resolving to `true` on success or `false` on failure.
@@ -160,7 +160,7 @@ export async function awaitNotifiedForm<T extends Data>(
  * Notify the user about a value thrown during submit, storing string errors as form field messages.
  * - Assigning a string `reason` to the store splits it into per-field messages instead of a global notice.
  *
- * @param store The [`FormStore`](/ui/FormStore) the thrown value is recorded on.
+ * @param store The `FormStore` the thrown value is recorded on.
  * @param form The underlying `HTMLFormElement` notices are anchored to.
  * @param thrown The value thrown during submit.
  * @returns Always `false`, signalling the submit failed.

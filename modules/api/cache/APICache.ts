@@ -7,8 +7,8 @@ import type { APIProvider } from "../provider/APIProvider.js";
 import { EndpointCache } from "./EndpointCache.js";
 
 /**
- * Cache of [`EndpointCache`](/api/EndpointCache) objects keyed by [`Endpoint`](/api/Endpoint), providing memoised API results across many endpoints.
- * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific [`EndpointStore`](/api/EndpointStore).
+ * Cache of `EndpointCache` objects keyed by `Endpoint`, providing memoised API results across many endpoints.
+ * - Use `get(endpoint)` to retrieve or create the `EndpointCache` for a given endpoint, then `get(payload)` on that to get a specific `EndpointStore`.
  * - Disposing the cache disposes every nested `EndpointCache` and clears the map.
  *
  * @example
@@ -21,14 +21,14 @@ export class APICache<P, R> implements AsyncDisposable {
 	private readonly _endpoints = new Map<Endpoint, EndpointCache>();
 
 	/**
-	 * The underlying [`APIProvider`](/api/APIProvider) that backs every cached endpoint.
+	 * The underlying `APIProvider` that backs every cached endpoint.
 	 *
 	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/provider
 	 */
 	readonly provider: APIProvider<P, R>;
 
 	/**
-	 * Create a new `APICache` backed by an [`APIProvider`](/api/APIProvider).
+	 * Create a new `APICache` backed by an `APIProvider`.
 	 *
 	 * @param provider The `APIProvider` used to fetch results for every cached endpoint.
 	 * @example new APICache(provider)
@@ -44,7 +44,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	}
 
 	/**
-	 * Get (or create) the [`EndpointCache`](/api/EndpointCache) for the given endpoint.
+	 * Get (or create) the `EndpointCache` for the given endpoint.
 	 *
 	 * @param endpoint The endpoint whose `EndpointCache` should be returned.
 	 * @returns The existing `EndpointCache` for `endpoint`, or a newly created one.
@@ -60,7 +60,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * Fetch (or return a cached result) for the given endpoint and payload.
 	 * - Returns the cached value immediately if one exists.
 	 * - Waits for the in-flight fetch if the store is loading.
-	 * - Throws if the fetch fails, matching [`APIProvider.call`](/api/APIProvider/call) behaviour.
+	 * - Throws if the fetch fails, matching `APIProvider.call` behaviour.
 	 *
 	 * @param endpoint The endpoint to fetch a result for.
 	 * @param payload The payload to send to the endpoint.

@@ -76,7 +76,7 @@ export function isMap(value: unknown): value is ImmutableMap {
  *
  * @param value The value to assert.
  * @param caller Function used to attribute a thrown error to the calling site.
- * @returns Nothing; narrows `value` to [`ImmutableMap`](/util/map/ImmutableMap).
+ * @returns Nothing; narrows `value` to `ImmutableMap`.
  * @throws {RequiredError} If `value` is not a `Map` instance.
  * @example assertMap(new Map()); // passes
  * @see https://dhoulb.github.io/shelving/util/map/assertMap
@@ -89,7 +89,7 @@ export function assertMap(value: unknown, caller: AnyCaller = assertMap): assert
  * Convert an iterable to a `Map` (if it's already a `Map` it passes through unchanged).
  *
  * @param input The map, object, or iterable of entries to convert.
- * @returns An [`ImmutableMap`](/util/map/ImmutableMap) — the input unchanged if it's already a `Map`, otherwise a new `Map`.
+ * @returns An `ImmutableMap` — the input unchanged if it's already a `Map`, otherwise a new `Map`.
  * @example getMap({ a: 1, b: 2 }) // Map { "a" => 1, "b" => 2 }
  * @see https://dhoulb.github.io/shelving/util/map/getMap
  */
@@ -105,7 +105,7 @@ export function getMap(input: PossibleMap<unknown, unknown> | { readonly [key: s
  *
  * @param map The map to limit.
  * @param limit The maximum number of items to keep.
- * @returns An [`ImmutableMap`](/util/map/ImmutableMap) with at most `limit` items (the input map unchanged if it already fits).
+ * @returns An `ImmutableMap` with at most `limit` items (the input map unchanged if it already fits).
  * @example limitMap(new Map([["a", 1], ["b", 2]]), 1) // Map { "a" => 1 }
  * @see https://dhoulb.github.io/shelving/util/map/limitMap
  */

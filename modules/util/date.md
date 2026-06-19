@@ -1,11 +1,11 @@
 # Date and time helpers
 
-Parse, validate, format, and manipulate dates. The central idea is [`PossibleDate`](/util/date/PossibleDate) — a value that *could* be a date — which the helpers accept everywhere so you rarely need to call `new Date()` yourself.
+Parse, validate, format, and manipulate dates. The central idea is `PossibleDate` — a value that *could* be a date — which the helpers accept everywhere so you rarely need to call `new Date()` yourself.
 
-- [`getDate()`](/util/date/getDate) accepts `Date`, number (ms since epoch), date/time strings, and the convenience strings `"now"`, `"today"`, `"tomorrow"`, `"yesterday"`.
-- All string output is **local time**, not UTC — [`getDateString()`](/util/date/getDateString) produces `"2015-09-12"`, not an ISO UTC string.
-- Invalid `Date` objects (e.g. `new Date("blah")`) are treated the same as missing values — [`isDate()`](/util/date/isDate) returns `false`, `getDate` returns `undefined`.
-- [`addMonths()`](/util/date/addMonths) and [`addYears()`](/util/date/addYears) clamp to the end of the month to avoid JavaScript's rollover behaviour (e.g. adding one month to 31 August gives 30 September, not 1 October).
+- `getDate()` accepts `Date`, number (ms since epoch), date/time strings, and the convenience strings `"now"`, `"today"`, `"tomorrow"`, `"yesterday"`.
+- All string output is **local time**, not UTC — `getDateString()` produces `"2015-09-12"`, not an ISO UTC string.
+- Invalid `Date` objects (e.g. `new Date("blah")`) are treated the same as missing values — `isDate()` returns `false`, `getDate` returns `undefined`.
+- `addMonths()` and `addYears()` clamp to the end of the month to avoid JavaScript's rollover behaviour (e.g. adding one month to 31 August gives 30 September, not 1 October).
 
 ## Usage
 

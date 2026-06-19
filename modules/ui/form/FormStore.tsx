@@ -12,7 +12,7 @@ import { getRandomKey } from "../../util/random.js";
 
 /**
  * Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
- * - Extends [`DataStore`](/store/DataStore) with the form's `schema`, per-field error `messages`, and validate/submit helpers.
+ * - Extends `DataStore` with the form's `schema`, per-field error `messages`, and validate/submit helpers.
  * - Assigning a string `reason` splits it into per-field messages rather than a global failure.
  *
  * @example const store = new FormStore(USER_SCHEMA, { name: "Dave" });
@@ -75,11 +75,11 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	}
 
 	/**
-	 * Get the [`Schema`](/schema/Schema) for a named field of this form.
+	 * Get the `Schema` for a named field of this form.
 	 *
 	 * @param name Name of the field to look up.
 	 * @returns The `Schema` for that field.
-	 * @throws [`RequiredError`](/error/RequiredError) if no schema exists for the named field.
+	 * @throws `RequiredError` if no schema exists for the named field.
 	 * @example store.requireSchema("email")
 	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/requireSchema
 	 */

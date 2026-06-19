@@ -8,7 +8,7 @@ Match placeholders out of a string, or render values into one. Useful when a ful
 - Catchall variants (`**`, `:name*`, `{...name}`) allow empty values and, in path mode, can span `/` separators.
 - Adjacent placeholders are not allowed — there must be at least one character between them.
 - Parsed templates are cached, so repeated calls with the same template string are cheap.
-- [`matchPathTemplate()`](/util/template/matchPathTemplate) and [`renderPathTemplate()`](/util/template/renderPathTemplate) are path-aware siblings of [`matchTemplate()`](/util/template/matchTemplate) and [`renderTemplate()`](/util/template/renderTemplate). Non-catchall placeholders in path templates cannot span `/` segments.
+- `matchPathTemplate()` and `renderPathTemplate()` are path-aware siblings of `matchTemplate()` and `renderTemplate()`. Non-catchall placeholders in path templates cannot span `/` segments.
 
 ## Usage
 
@@ -56,7 +56,7 @@ renderTemplate("*-*-*", ["A", "B", "C"]);
 // "A-B-C"
 ```
 
-Missing values throw a [`RequiredError`](/error/RequiredError):
+Missing values throw a `RequiredError`:
 
 ```ts
 renderTemplate("{name}-{date}", { name: "Dave" });

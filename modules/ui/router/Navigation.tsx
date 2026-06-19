@@ -16,10 +16,10 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 
 /**
  * Top-level navigation provider.
- * - Owns a single [`NavigationStore`](/ui/NavigationStore) initialised from the surrounding `<Meta>` url/base.
+ * - Owns a single `NavigationStore` initialised from the surrounding `<Meta>` url/base.
  * - Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls.
  * - Listens for `popstate` to sync the store with browser back/forward.
- * - Publishes the live URL via `<Meta url={…} params={…}>` so descendant [`<Router>`](/ui/Router)s re-render on navigation.
+ * - Publishes the live URL via `<Meta url={…} params={…}>` so descendant `<Router>`s re-render on navigation.
  *
  * Exactly one `<Navigation>` per app — nested routers share this single store.
  *

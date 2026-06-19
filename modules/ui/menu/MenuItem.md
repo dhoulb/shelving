@@ -1,12 +1,12 @@
 # MenuItem
 
-A single `<li>` link entry inside a [`<Menu>`](/ui/Menu). It reads the current page URL from the [`Meta`](/ui/Meta) context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
+A single `<li>` link entry inside a `<Menu>`. It reads the current page URL from the `Meta` context and automatically marks itself `active` (exact match) or `proud` (an ancestor of the current page) — and when proud, reveals its submenu children.
 
 **Things to know:**
 
-- The first child is the link label (rendered inside the `<a>`). Any additional children form the submenu and are rendered only when the item is proud (the current URL starts with the item's `href`). Wrap that submenu in a nested [`<Menu>`](/ui/Menu) to get the `.menu .menu` indentation.
-- It forwards all [`ClickableProps`](/ui/ClickableProps) — `href`, `onClick`, `disabled`, and so on — to the underlying [`<Clickable>`](/ui/Clickable).
-- `active` and `proud` are computed against the URL from [`<Router>`](/ui/Router) / [`<Navigation>`](/ui/Navigation) context.
+- The first child is the link label (rendered inside the `<a>`). Any additional children form the submenu and are rendered only when the item is proud (the current URL starts with the item's `href`). Wrap that submenu in a nested `<Menu>` to get the `.menu .menu` indentation.
+- It forwards all `ClickableProps` — `href`, `onClick`, `disabled`, and so on — to the underlying `<Clickable>`.
+- `active` and `proud` are computed against the URL from `<Router>` / `<Navigation>` context.
 
 ## Usage
 
@@ -43,6 +43,6 @@ The item link's hooks (defined in `Menu.module.css`):
 | `--menu-active-color` | Text colour when active | `var(--tint-00)` |
 | `--menu-active-weight` | Font weight when active | `var(--weight-strong)` |
 
-List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on [`<Menu>`](/ui/Menu).
+List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on `<Menu>`.
 
-**Global tokens it reads** — the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-100`](/ui/TINT_CLASS), plus [`--space-xxsmall`](/ui/getSpaceClass), [`--radius-xxsmall`](/ui/getRadiusClass), [`--stroke-focus`](/ui/getStrokeClass), [`--stroke-normal`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--weight-strong`](/ui/getWeightClass).
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--stroke-focus`, `--stroke-normal`, `--color-focus`, and `--weight-strong`.

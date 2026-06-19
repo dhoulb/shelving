@@ -1,11 +1,11 @@
 # Geographic helpers
 
-Country codes, names, and address formatting. Provides the [`COUNTRIES`](/util/geo/COUNTRIES) lookup (ISO 3166-1 alpha-2), typed [`Country`](/util/geo/Country) and [`AddressData`](/util/geo/AddressData) types, and helpers for parsing and displaying country information.
+Country codes, names, and address formatting. Provides the `COUNTRIES` lookup (ISO 3166-1 alpha-2), typed `Country` and `AddressData` types, and helpers for parsing and displaying country information.
 
 **Things to know:**
 
-- [`getCountry()`](/util/geo/getCountry) with `"detect"` reads `navigator.language` in the browser to guess the user's country — it returns `undefined` in non-browser environments or when the locale cannot be mapped to a country code.
-- [`formatCountry()`](/util/geo/formatCountry) is tolerant of unknown codes — it returns the input string unchanged rather than throwing.
+- `getCountry()` with `"detect"` reads `navigator.language` in the browser to guess the user's country — it returns `undefined` in non-browser environments or when the locale cannot be mapped to a country code.
+- `formatCountry()` is tolerant of unknown codes — it returns the input string unchanged rather than throwing.
 
 ## Usage
 

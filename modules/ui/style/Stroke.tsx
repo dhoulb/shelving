@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import STROKE_CSS from "./Stroke.module.css";
 
 /**
- * Allowed values for border thickness for components that support [`StrokeVariants`](/ui/StrokeVariants)
+ * Allowed values for border thickness for components that support `StrokeVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Stroke/UIStroke
  */

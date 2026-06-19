@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import PADDING_CSS from "./Padding.module.css";
 
 /**
- * Allowed values for padding for components that support [`PaddingVariants`](/ui/PaddingVariants)
+ * Allowed values for padding for components that support `PaddingVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Padding/PaddingVariant
  */

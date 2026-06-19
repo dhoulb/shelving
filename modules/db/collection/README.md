@@ -1,6 +1,6 @@
 # Collection
 
-[`Collection`](/db/Collection) is the typed definition of a database table. It combines a name, an identifier schema, and a data schema into a single object that every provider method uses as its source of truth for types and validation.
+`Collection` is the typed definition of a database table. It combines a name, an identifier schema, and a data schema into a single object that every provider method uses as its source of truth for types and validation.
 
 By convention, instantiated collections are constants and use `UPPERCASE`.
 
@@ -11,14 +11,14 @@ By convention, instantiated collections are constants and use `UPPERCASE`.
 A `Collection<N, I, T>` carries three things:
 
 - `name` — the string key used as the table or collection name in the database.
-- `id` — a [`Schema<I>`](/schema/Schema) that validates the identifier type. Use [`INTEGER`](/schema/INTEGER) for auto-increment integer IDs, [`STRING`](/schema/STRING) for UUIDs, or any other schema.
-- The data schema — the shape of each record, defined as a plain object of named schemas. `Collection` extends [`DataSchema`](/schema/DataSchema), so it validates data directly via [`.validate()`](/schema/Schema/validate).
+- `id` — a `Schema<I>` that validates the identifier type. Use `INTEGER` for auto-increment integer IDs, `STRING` for UUIDs, or any other schema.
+- The data schema — the shape of each record, defined as a plain object of named schemas. `Collection` extends `DataSchema`, so it validates data directly via `Schema.validate()`.
 
 It also exposes `collection.item`, a combined `DataSchema<{ id: I } & T>` used by providers to validate complete items returned from the backend.
 
 ### The `ID` constant
 
-[`ID`](/db/ID) is the default integer identifier schema (step 1, safe integer range). Import it when you want an explicit integer ID or when extending a collection.
+`ID` is the default integer identifier schema (step 1, safe integer range). Import it when you want an explicit integer ID or when extending a collection.
 
 ### Utility types
 
@@ -26,12 +26,12 @@ The module exports helper types to extract typed parts from a `Collection` varia
 
 | Type | Extracts |
 |---|---|
-| [`CollectionName<C>`](/db/CollectionName) | The string literal name |
-| [`CollectionIdentifier<C>`](/db/CollectionIdentifier) | The identifier type `I` |
-| [`CollectionData<C>`](/db/CollectionData) | The data type `T` |
-| [`CollectionItem<C>`](/db/CollectionItem) | [`Item<I, T>`](/util/item/Item) |
-| [`OptionalCollectionItem<C>`](/db/OptionalCollectionItem) | `Item<I, T> \| undefined` |
-| [`CollectionItems<C>`](/db/CollectionItems) | `readonly Item<I, T>[]` |
+| `CollectionName<C>` | The string literal name |
+| `CollectionIdentifier<C>` | The identifier type `I` |
+| `CollectionData<C>` | The data type `T` |
+| `CollectionItem<C>` | `Item<I, T>` |
+| `OptionalCollectionItem<C>` | `Item<I, T> \| undefined` |
+| `CollectionItems<C>` | `readonly Item<I, T>[]` |
 
 ## Usage
 

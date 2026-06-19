@@ -1,6 +1,6 @@
 # FadeTransition
 
-A [`<Transition>`](/ui/Transition) preset that fades its children in and out by animating opacity. Wrap any content that should animate when it mounts or unmounts.
+A `<Transition>` preset that fades its children in and out by animating opacity. Wrap any content that should animate when it mounts or unmounts.
 
 **Things to know:**
 
@@ -27,4 +27,4 @@ function Panel({ visible }: { visible: boolean }) {
 |---|---|---|
 | `--fade-transition-duration` | Duration of the fade-in and fade-out keyframes | `var(--duration-fast)` |
 
-**Global tokens it reads** — [`--duration-fast`](/ui/getDurationClass).
+**Global tokens it reads** — `--duration-fast`.

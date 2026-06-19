@@ -1,14 +1,14 @@
 # api
 
-Typed, provider-based framework for HTTP API access. Define your routes as [`Endpoint`](/api/Endpoint) definitions, then call them through a composable provider stack — the same pattern the [`shelving/db`](/db) module uses for databases.
+Typed, provider-based framework for HTTP API access. Define your routes as `Endpoint` definitions, then call them through a composable provider stack — the same pattern the `shelving/db` module uses for databases.
 
 ## Concepts
 
 ### Endpoint
 
-An [`Endpoint`](/api/Endpoint) is a declarative, typed description of a single API route. It captures the HTTP method, the URL path (with optional `{placeholder}` segments), a [`shelving/schema`](/schema) for the request payload, and a schema for the response. Think of it the way [`Collection`](/db/Collection) describes a database table — a shared definition both client and server reference.
+An `Endpoint` is a declarative, typed description of a single API route. It captures the HTTP method, the URL path (with optional `{placeholder}` segments), a `shelving/schema` for the request payload, and a schema for the response. Think of it the way `Collection` describes a database table — a shared definition both client and server reference.
 
-Factory functions ([`GET()`](/api/GET), [`POST()`](/api/POST), [`PUT()`](/api/PUT), [`PATCH()`](/api/PATCH), [`DELETE()`](/api/DELETE), [`HEAD()`](/api/HEAD)) create endpoints concisely:
+Factory functions (`GET()`, `POST()`, `PUT()`, `PATCH()`, `DELETE()`, `HEAD()`) create endpoints concisely:
 
 ```ts
 import { GET, POST } from "shelving/api"
@@ -22,18 +22,18 @@ For `GET` and `HEAD` requests, payload fields that don't fill a `{placeholder}` 
 
 ### Providers
 
-An [`APIProvider`](/api/APIProvider) is the abstract interface for executing calls against endpoints. [`ClientAPIProvider`](/api/ClientAPIProvider) is the concrete implementation that uses the global `fetch` API. Wrap it with [`ThroughAPIProvider`](/api/ThroughAPIProvider) subclasses to layer in behaviour without rewriting transport logic:
+An `APIProvider` is the abstract interface for executing calls against endpoints. `ClientAPIProvider` is the concrete implementation that uses the global `fetch` API. Wrap it with `ThroughAPIProvider` subclasses to layer in behaviour without rewriting transport logic:
 
 | Provider | Purpose |
 |---|---|
-| [`ClientAPIProvider`](/api/ClientAPIProvider) | Concrete base — sends requests over the network with `fetch()` |
-| [`ThroughAPIProvider`](/api/ThroughAPIProvider) | Pass-through base for wrapping another provider |
-| [`ValidationAPIProvider`](/api/ValidationAPIProvider) | Validates payload and result against endpoint schemas |
-| [`DebugAPIProvider`](/api/DebugAPIProvider) | Logs fetch attempts, results, and errors to the console |
-| [`JSONAPIProvider`](/api/JSONAPIProvider) | Forces JSON request bodies and JSON response parsing |
-| [`MockAPIProvider`](/api/MockAPIProvider) | Records calls without sending network requests |
-| [`MockEndpointAPIProvider`](/api/MockEndpointAPIProvider) | Dispatches calls through handler objects (useful for unit tests) |
-| [`XMLAPIProvider`](/api/XMLAPIProvider) | Forces XML request bodies and returns raw text responses |
+| `ClientAPIProvider` | Concrete base — sends requests over the network with `fetch()` |
+| `ThroughAPIProvider` | Pass-through base for wrapping another provider |
+| `ValidationAPIProvider` | Validates payload and result against endpoint schemas |
+| `DebugAPIProvider` | Logs fetch attempts, results, and errors to the console |
+| `JSONAPIProvider` | Forces JSON request bodies and JSON response parsing |
+| `MockAPIProvider` | Records calls without sending network requests |
+| `MockEndpointAPIProvider` | Dispatches calls through handler objects (useful for unit tests) |
+| `XMLAPIProvider` | Forces XML request bodies and returns raw text responses |
 
 Extend `ThroughAPIProvider` to add custom behaviour such as auth headers:
 
@@ -52,7 +52,7 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 
 ### Caching
 
-[`APICache`](/api/APICache) manages [`EndpointCache`](/api/EndpointCache) objects, one per endpoint. Each `EndpointCache` manages [`EndpointStore`](/api/EndpointStore) objects, one per unique payload — keyed by the rendered URL. For `GET`/`HEAD` requests, query params are part of the key so `?role=admin` and `?role=editor` are stored separately. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
+`APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by the rendered URL. For `GET`/`HEAD` requests, query params are part of the key so `?role=admin` and `?role=editor` are stored separately. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
 
 The cache is primarily useful as the backbone of the [React integration](#react-integration). Use it directly only when you need a reactive layer outside React.
 
@@ -105,7 +105,7 @@ const user = await api.call(getUser, { id: "u_123" })
 
 ## React integration
 
-The [`shelving/react`](/react) module's [`createAPIContext()`](/react/createAPIContext) is the primary way to use a provider in a React app. It creates a context backed by an [`APICache`](/api/APICache) and exposes a typed [`.useAPI()`](/react/APIContext/useAPI) hook that returns reactive [`EndpointStore`](/api/EndpointStore) instances and suspends automatically while loading.
+The `shelving/react` module's `createAPIContext()` is the primary way to use a provider in a React app. It creates a context backed by an `APICache` and exposes a typed `APIContext.useAPI()` hook that returns reactive `EndpointStore` instances and suspends automatically while loading.
 
 ```ts
 import { createAPIContext } from "shelving/react"
@@ -115,4 +115,4 @@ const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https:/
 export const { APIContext, useAPI } = createAPIContext(provider)
 ```
 
-See the [`shelving/react`](/react) module for full usage.
+See the `shelving/react` module for full usage.

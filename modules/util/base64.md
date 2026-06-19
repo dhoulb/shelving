@@ -34,7 +34,7 @@ decodeBase64URLBytes("aGVsbG8");    // Uint8Array
 
 ### Encoding binary data
 
-All encode functions accept a `string`, `ArrayBuffer`, or `Uint8Array` ([`PossibleBytes`](/util/bytes/PossibleBytes)):
+All encode functions accept a `string`, `ArrayBuffer`, or `Uint8Array` (`PossibleBytes`):
 
 ```ts
 import { encodeBase64URL } from "shelving/util";

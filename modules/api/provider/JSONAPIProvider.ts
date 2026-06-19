@@ -29,7 +29,7 @@ export class JSONAPIProvider<P = unknown, R = unknown> extends ClientAPIProvider
 
 	/**
 	 * Parse a JSON `Response` for an endpoint.
-	 * - Non-2xx responses become [`ResponseError`](/error/ResponseError).
+	 * - Non-2xx responses become `ResponseError`.
 	 * - JSON is parsed even if the server omitted or mis-set the response content type.
 	 *
 	 * @param _endpoint The endpoint the response was produced for.

@@ -30,7 +30,7 @@ export interface StatusIconProps {
 /**
  * Render the icon for a given status, coloured to match.
  *
- * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated [`<Loading>`](/ui/Loading) spinner for `"loading"`.
+ * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @param status The status to represent (defaults to `"info"`).
  * @param size Optional icon size (defaults to the current line height).

@@ -32,7 +32,7 @@ export abstract class ThroughExtractor<I, O extends TreeElement = TreeElement> e
 	 * - Default implementation is a pass-through; subclasses override to do work before or after.
 	 *
 	 * @param input The input value to extract from.
-	 * @returns The extracted [`TreeElement`](/util/tree/TreeElement), or a promise resolving to one.
+	 * @returns The extracted `TreeElement`, or a promise resolving to one.
 	 * @example await myThroughExtractor.extract(input)
 	 * @see https://dhoulb.github.io/shelving/extract/ThroughExtractor/ThroughExtractor/extract
 	 */

@@ -10,7 +10,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import CARD_CSS from "./Card.module.css";
 
 /**
- * Props for `Card` — combines [`ClickableProps`](/ui/ClickableProps) (for navigable cards) with colour, status, padding, space, typography, and width variants.
+ * Props for `Card` — combines `ClickableProps` (for navigable cards) with colour, status, padding, space, typography, and width variants.
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Card/CardProps
  */

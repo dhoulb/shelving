@@ -1,6 +1,6 @@
 # MockDBProvider
 
-A test provider that records every call. `MockDBProvider` extends [`MemoryDBProvider`](/db/MemoryDBProvider) — so it behaves like a real in-memory database — and additionally captures every operation in a `.calls` array so tests can assert exactly what happened.
+A test provider that records every call. `MockDBProvider` extends `MemoryDBProvider` — so it behaves like a real in-memory database — and additionally captures every operation in a `.calls` array so tests can assert exactly what happened.
 
 ## Usage
 

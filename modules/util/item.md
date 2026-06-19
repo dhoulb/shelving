@@ -1,11 +1,11 @@
 # Items
 
-The [`Item`](/util/item/Item) type and its helpers. An `Item` is a [`Data`](/util/data/Data) object — a plain JSON-safe record — that also carries an `id` of type `string | number`. Every database collection in Shelving operates on items, so this is the fundamental unit of persisted data.
+The `Item` type and its helpers. An `Item` is a `Data` object — a plain JSON-safe record — that also carries an `id` of type `string | number`. Every database collection in Shelving operates on items, so this is the fundamental unit of persisted data.
 
 **Things to know:**
 
-- [`getItem()`](/util/item/getItem) returns the same reference if `data` already has that `id` — safe for use in equality checks and memoisation.
-- [`getIdentifiers()`](/util/item/getIdentifiers) is a generator; wrap it in `Array.from()` to materialise the list.
+- `getItem()` returns the same reference if `data` already has that `id` — safe for use in equality checks and memoisation.
+- `getIdentifiers()` is a generator; wrap it in `Array.from()` to materialise the list.
 
 ## Usage
 

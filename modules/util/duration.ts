@@ -33,7 +33,7 @@ export function getMilliseconds(from?: PossibleDate, to?: PossibleDate, caller: 
  * @param from Date the duration is measured from (defaults to now).
  * @param to Date the duration is measured to (defaults to now).
  * @param caller Function to attribute a thrown error to (defaults to `getDuration` itself).
- * @returns [`DurationData`](/util/duration/DurationData) object breaking the span down into years, months, weeks, days, hours, minutes, seconds, and milliseconds.
+ * @returns `DurationData` object breaking the span down into years, months, weeks, days, hours, minutes, seconds, and milliseconds.
  * @throws {RequiredError} If `from` or `to` cannot be converted to a valid date.
  * @example getDuration("2025-01-01", "2025-01-02") // { years: 0, months: 0, weeks: 0, days: 1, ... }
  * @see https://dhoulb.github.io/shelving/util/duration/getDuration
@@ -58,7 +58,7 @@ export function getDuration(from?: PossibleDate, to?: PossibleDate, caller: AnyC
  * @param target Date the duration counts up to.
  * @param current Date the duration counts from (defaults to now).
  * @param caller Function to attribute a thrown error to (defaults to `getUntil` itself).
- * @returns [`DurationData`](/util/duration/DurationData) object for the span from `current` to `target`.
+ * @returns `DurationData` object for the span from `current` to `target`.
  * @throws {RequiredError} If `target` or `current` cannot be converted to a valid date.
  * @example getUntil("2099-01-01") // { years: 73, ... }
  * @see https://dhoulb.github.io/shelving/util/duration/getUntil
@@ -73,7 +73,7 @@ export function getUntil(target: PossibleDate, current: PossibleDate = "now", ca
  * @param target Date the duration counts back from.
  * @param current Date the duration counts to (defaults to now).
  * @param caller Function to attribute a thrown error to (defaults to `getAgo` itself).
- * @returns [`DurationData`](/util/duration/DurationData) object for the span from `target` to `current`.
+ * @returns `DurationData` object for the span from `target` to `current`.
  * @throws {RequiredError} If `target` or `current` cannot be converted to a valid date.
  * @example getAgo("2000-01-01") // { years: 26, ... }
  * @see https://dhoulb.github.io/shelving/util/duration/getAgo
@@ -402,7 +402,7 @@ export const DURATION_UNITS = new UnitList({
 	year: { roundingMode: "trunc", maximumFractionDigits: 0, to: { millisecond: YEAR } },
 });
 /**
- * Key for one of the duration units in [`DURATION_UNITS`](/util/duration/DURATION_UNITS).
+ * Key for one of the duration units in `DURATION_UNITS`.
  *
  * @see https://dhoulb.github.io/shelving/util/duration/DurationUnitKey
  */
@@ -420,7 +420,7 @@ export type DurationUnitKey = MapKey<typeof DURATION_UNITS>;
  * - Seconds will be used for anything 1000 milliseconds or more, e.g. `in 59 seconds`
  *
  * @param ms Amount of time in milliseconds (the sign is ignored, only the magnitude matters).
- * @returns The best-fit [`Unit`](/util/units/Unit) from [`DURATION_UNITS`](/util/duration/DURATION_UNITS) for the given magnitude.
+ * @returns The best-fit `Unit` from `DURATION_UNITS` for the given magnitude.
  * @example getBestDurationUnit(90000).key // "minute"
  * @see https://dhoulb.github.io/shelving/util/duration/getBestDurationUnit
  */
@@ -438,7 +438,7 @@ export function getBestDurationUnit(ms: number): Unit<DurationUnitKey> {
 
 /**
  * Format a compact best-fit description of when a date happens or happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now`
- * - See [`getBestDurationUnit()`](/util/duration/getBestDurationUnit) for details on how the best-fit unit is chosen.
+ * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
  * - But: anything under 30 seconds will show `just now`, which makes more sense in most UIs.
  *
  * @param target Date the duration is measured to.
@@ -465,7 +465,7 @@ export function formatWhen(
 
 /**
  * Format a compact best-fit description of how long until a date, e.g. `10d` or `2h` or `-1w`
- * - See [`getBestDurationUnit()`](/util/duration/getBestDurationUnit) for details on how the best-fit unit is chosen.
+ * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
  *
  * @param target Date to count up to.
  * @param current Date to count from (defaults to now).
@@ -489,7 +489,7 @@ export function formatUntil(
 
 /**
  * Format a compact best-fit description of how long since a date, e.g. `10d` or `2h` or `-1w`
- * - See [`getBestDurationUnit()`](/util/duration/getBestDurationUnit) for details on how the best-fit unit is chosen.
+ * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
  *
  * @param target Date to count back from.
  * @param current Date to count to (defaults to now).
@@ -511,13 +511,13 @@ export function formatAgo(
 	return unit.format(unit.from(ms), options);
 }
 
-/** Options for formatting a [`DurationData`](/util/duration/DurationData) object with [`formatDuration()`](/util/duration/formatDuration). */
+/** Options for formatting a `DurationData` object with `formatDuration()`. */
 interface DurationFormatOptions extends FormatOptions, Intl.DurationFormatOptions {}
 
 /**
  * Format a duration as a string, e.g. `1 year, 2 months, 3 days` or `1y 2m 3d`
  *
- * @param duration [`DurationData`](/util/duration/DurationData) object to format.
+ * @param duration `DurationData` object to format.
  * @param options Formatting options passed through to `Intl.DurationFormat`.
  * @returns Human-readable string describing the duration.
  * @example formatDuration({ years: 1, months: 2, days: 3 }) // "1 yr, 2 mths, 3 days"

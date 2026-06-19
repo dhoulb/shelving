@@ -2,7 +2,7 @@ import { getModuleClass } from "../util/css.js";
 import DURATION_CSS from "./Duration.module.css";
 
 /**
- * Allowed values for transition timing for components that support [`DurationVariants`](/ui/DurationVariants)
+ * Allowed values for transition timing for components that support `DurationVariants`
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Duration/DurationValue
  */

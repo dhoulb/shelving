@@ -5,8 +5,8 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 **Things to know:**
 
 - Set `href` or `onClick` to make the whole card navigable — a stretched, visually-hidden overlay `<a>` / `<button>` covers the card while the children render normally inside. Real interactive elements inside the card (inline links, buttons) stay clickable and keyboard-focusable.
-- `color=` and `status=` move the tint anchor for the card's scope, so the surface, border, text, and hover shade all re-derive together — and nested components ([`<Tag>`](/ui/Tag), [`<Preformatted>`](/ui/Preformatted), [`<Button>`](/ui/Button)) inherit the same tint.
-- A card styles only the box. Lay out its contents with the usual block components ([`<Subheading>`](/ui/Subheading), [`<Paragraph>`](/ui/Paragraph), [`<Row>`](/ui/Row), …).
+- `color=` and `status=` move the tint anchor for the card's scope, so the surface, border, text, and hover shade all re-derive together — and nested components (`<Tag>`, `<Preformatted>`, `<Button>`) inherit the same tint.
+- A card styles only the box. Lay out its contents with the usual block components (`<Subheading>`, `<Paragraph>`, `<Row>`, …).
 - Composes the standard styling variants: `color`, `status`, `padding`, `space`, `width`, plus typography.
 
 ## Usage
@@ -62,7 +62,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--card-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder [`--tint-00`](/ui/TINT_CLASS) / [`--tint-80`](/ui/TINT_CLASS) / [`--tint-90`](/ui/TINT_CLASS) / [`--tint-95`](/ui/TINT_CLASS), plus [`--space-normal`](/ui/getSpaceClass), [`--space-paragraph`](/ui/getSpaceClass), [`--radius-normal`](/ui/getRadiusClass), [`--stroke-normal`](/ui/getStrokeClass), [`--stroke-focus`](/ui/getStrokeClass), [`--color-focus`](/ui/getColorClass), and [`--duration-fast`](/ui/getDurationClass).
+**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 
 ```css
 /* Theme: borderless cards with a soft shadow and tighter corners. */

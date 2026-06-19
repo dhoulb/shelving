@@ -3,9 +3,9 @@ import type { TreeElementProps } from "../../util/tree.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
-import { Markup } from "../misc/Markup.js";
 import { Page } from "../page/Page.js";
 import { TreeCards } from "./TreeCards.js";
+import { TreeMarkup } from "./TreeMarkup.js";
 
 /**
  * Page renderer for a generic `tree-element` (a directory or file).
@@ -13,7 +13,7 @@ import { TreeCards } from "./TreeCards.js";
  * - Shows the title, any absorbed prose content, and the element's children as a stack of cards.
  * - Child cards cover both nested directories/files and the code symbols of a source file.
  *
- * @returns A [`<Page>`](/ui/Page) with the title, prose content, and a stack of child cards.
+ * @returns A `<Page>` with the title, prose content, and a stack of child cards.
  * @kind component
  * @example <TreePage {...element.props} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreePage/TreePage
@@ -27,7 +27,7 @@ export function TreePage({ title, name, description, content, children }: TreeEl
 			<Section>
 				{content && (
 					<Prose>
-						<Markup>{content}</Markup>
+						<TreeMarkup>{content}</TreeMarkup>
 					</Prose>
 				)}
 			</Section>

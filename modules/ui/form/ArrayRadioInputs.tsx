@@ -18,7 +18,7 @@ export interface ArrayRadioInputsProps<T> extends ValueInputProps<T> {
 }
 
 /**
- * Output a list of [`<RadioInput>`](/ui/RadioInput) elements for each item in an array.
+ * Output a list of `<RadioInput>` elements for each item in an array.
  * - The items can be any type, and can be formatted for output through an optional `formatter()` function.
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *

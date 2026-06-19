@@ -114,7 +114,7 @@ export class URISchema extends StringSchema {
 }
 
 /**
- * Sugar instance of [`URISchema`](/schema/URISchema) for an absolute URI string. Equivalent to `new URISchema({})`.
+ * Sugar instance of `URISchema` for an absolute URI string. Equivalent to `new URISchema({})`.
  *
  * @example URI_SCHEMA.validate("https://www.google.com") // "https://www.google.com/"
  * @see https://dhoulb.github.io/shelving/schema/URISchema/URI_SCHEMA
@@ -122,7 +122,7 @@ export class URISchema extends StringSchema {
 export const URI_SCHEMA = new URISchema({});
 
 /**
- * Sugar instance allowing a [`URI_SCHEMA`](/schema/URI_SCHEMA) or `null`. Equivalent to `NULLABLE(URI_SCHEMA)`.
+ * Sugar instance allowing a `URI_SCHEMA` or `null`. Equivalent to `NULLABLE(URI_SCHEMA)`.
  *
  * @example NULLABLE_URI_SCHEMA.validate(null) // null
  * @see https://dhoulb.github.io/shelving/schema/URISchema/NULLABLE_URI_SCHEMA

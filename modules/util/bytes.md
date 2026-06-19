@@ -2,8 +2,8 @@
 
 Type guards, conversion, and assertion for `Uint8Array<ArrayBuffer>` byte sequences. Used throughout the library wherever raw binary data is accepted — cryptographic operations, Base64 encoding, and binary I/O.
 
-- The [`Bytes`](/util/bytes/Bytes) type is an alias for `Uint8Array<ArrayBuffer>` specifically. A `Uint8Array` backed by a `SharedArrayBuffer` does **not** satisfy it.
-- [`getBytes()`](/util/bytes/getBytes) accepts a `string` (UTF-8 encoded), `ArrayBuffer`, or an existing `Bytes` and returns a `Bytes` — or `undefined` for anything else.
+- The `Bytes` type is an alias for `Uint8Array<ArrayBuffer>` specifically. A `Uint8Array` backed by a `SharedArrayBuffer` does **not** satisfy it.
+- `getBytes()` accepts a `string` (UTF-8 encoded), `ArrayBuffer`, or an existing `Bytes` and returns a `Bytes` — or `undefined` for anything else.
 
 ## Usage
 
