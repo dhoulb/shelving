@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { Tag, type TagProps } from "../misc/Tag.js";
-import type { UIColor } from "../style/Color.js";
+import type { ColorVariant } from "../style/Color.js";
 
 /**
  * Props for `DocumentationKind` — a [`TagProps`](/ui/TagProps) plus the documented symbol's `kind`.
@@ -17,7 +17,7 @@ export interface DocumentationKindProps extends TagProps {
  * - Related kinds share a hue: component/class (purple), function/method (blue), interface/type (aqua).
  * - Leaves `orange`, `pink`, and the brand aliases free for future kinds.
  */
-const KIND_COLOR: { readonly [K in string]?: UIColor } = {
+const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
 	module: "red",
 	component: "purple",
 	class: "purple",
@@ -36,11 +36,11 @@ const KIND_COLOR: { readonly [K in string]?: UIColor } = {
  * - Shared source of truth so the kind tag and its surrounding card pick the same hue.
  *
  * @param kind The documented symbol's kind (e.g. `"function"`, `"class"`, `"method"`).
- * @returns The matching `UIColor`, or `undefined` when the kind is unrecognised.
+ * @returns The matching `ColorVariant`, or `undefined` when the kind is unrecognised.
  * @example getDocumentationKindColor("class") // "purple"
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/getDocumentationKindColor
  */
-export function getDocumentationKindColor(kind: string): UIColor | undefined {
+export function getDocumentationKindColor(kind: string): ColorVariant | undefined {
 	return KIND_COLOR[kind];
 }
 
