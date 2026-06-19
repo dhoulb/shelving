@@ -67,18 +67,20 @@ export class Store {
 		);
 		const children = element.props.children as unknown[];
 		expect(children).toHaveLength(1);
-		const cls = children[0] as { type: string; props: { kind: string; name: string; title: string; children: unknown[] } };
+		const cls = children[0] as {
+			type: string;
+			props: { kind: string; name: string; title: string; children: unknown[]; properties: unknown[] };
+		};
 		expect(cls.type).toBe("tree-documentation");
 		expect(cls.props.kind).toBe("class");
 		expect(cls.props.name).toBe("Store");
 		expect(cls.props.title).toBe("Store");
+		// Methods stay as child elements…
 		expect(cls.props.children).toMatchObject([
-			{
-				type: "tree-documentation",
-				props: { kind: "property", name: "value", title: "Store.value", class: "Store", signatures: ["value: string"] },
-			},
 			{ type: "tree-documentation", props: { kind: "method", name: "set", title: "Store.set()", class: "Store" } },
 		]);
+		// …while data members are collected as a structured `properties` list, not as child elements.
+		expect(cls.props.properties).toMatchObject([{ name: "value", type: "string", description: "Current value.", optional: false }]);
 	});
 
 	test("labels static members as `static method` / `static property`", async () => {
@@ -98,7 +100,8 @@ export class Color {
 `),
 		);
 		const children = element.props.children as unknown[];
-		const cls = children[0] as { props: { children: unknown[] } };
+		const cls = children[0] as { props: { children: unknown[]; properties: unknown[] } };
+		// Static and instance methods stay as child elements (labelled separately)…
 		expect(cls.props.children).toMatchObject([
 			{
 				type: "tree-documentation",
@@ -112,22 +115,13 @@ export class Color {
 			},
 			{
 				type: "tree-documentation",
-				props: {
-					kind: "static property",
-					name: "DEFAULT",
-					title: "Color.DEFAULT",
-					class: "Color",
-					signatures: ["static DEFAULT: string"],
-				},
-			},
-			{
-				type: "tree-documentation",
 				props: { kind: "method", name: "toString", title: "Color.toString()", class: "Color", signatures: ["toString(): string"] },
 			},
-			{
-				type: "tree-documentation",
-				props: { kind: "property", name: "red", title: "Color.red", class: "Color", signatures: ["red: number"] },
-			},
+		]);
+		// …while data members (static or instance) are collected as the structured `properties` list, with a field initializer captured as the default.
+		expect(cls.props.properties).toMatchObject([
+			{ name: "DEFAULT", type: "string", default: '"#000"' },
+			{ name: "red", type: "number" },
 		]);
 	});
 
@@ -193,8 +187,11 @@ export class Foo {
 }
 `),
 		);
-		const cls = (element.props.children as unknown[])[0] as { props: { children: unknown[] } };
-		expect(cls.props.children).toHaveLength(1);
+		const cls = (element.props.children as unknown[])[0] as { props: { children?: unknown[]; properties: unknown[] } };
+		// `bar` is the only public member; it's a data member, so it lands in `properties` and there are no method child elements.
+		expect(cls.props.children).toBeUndefined();
+		expect(cls.props.properties).toMatchObject([{ name: "bar", type: "string" }]);
+		expect(cls.props.properties).toHaveLength(1);
 	});
 
 	test("leaves the file element title undefined (no confident source for a TS source file)", async () => {
@@ -231,10 +228,9 @@ export class Widget {
 					kind: "class",
 					name: "Widget",
 					title: "Widget",
-					children: [
-						{ props: { kind: "property", name: "size", title: "Widget.size" } },
-						{ props: { kind: "method", name: "resize", title: "Widget.resize()" } },
-					],
+					// The method is a child element with a `Class.name()` title; the property is a structured entry, not an element.
+					children: [{ props: { kind: "method", name: "resize", title: "Widget.resize()" } }],
+					properties: [{ name: "size", type: "number" }],
 				},
 			},
 		]);
@@ -336,15 +332,16 @@ export class MemoryStore extends AbstractStore {
 }
 `),
 		);
-		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
+		const cls = (element.props.children as { props: { children?: unknown[]; properties: { name: string }[] } }[])[0];
 		// Only the directly-implemented `value` survives — `get()` and `size` carry `override` and are documented on the base class.
-		expect(cls?.props.children).toMatchObject([
-			{ props: { kind: "property", name: "value", title: "MemoryStore.value", class: "MemoryStore", readonly: true } },
-		]);
-		expect(cls?.props.children).toHaveLength(1);
+		// `get()` is the only method and it's an override, so there are no method child elements; `value` lands in `properties`; the overridden `size` is excluded there too.
+		expect(cls?.props.children).toBeUndefined();
+		// The `readonly` modifier is captured onto the property.
+		expect(cls?.props.properties).toMatchObject([{ name: "value", type: "string", description: "The current value.", readonly: true }]);
+		expect(cls?.props.properties).toHaveLength(1);
 	});
 
-	test("treats a getter without a setter as readonly, and a getter+setter pair as writable", async () => {
+	test("folds getters and setters into the structured properties list (getter type wins for a get/set pair)", async () => {
 		const element = await extractor.extract(
 			file(`
 /** A store. */
@@ -357,22 +354,18 @@ export class Store {
 }
 `),
 		);
-		const cls = (element.props.children as { props: { children: { props: Record<string, unknown> }[] } }[])[0];
-		expect(cls?.props.children).toMatchObject([
-			{
-				props: {
-					kind: "property",
-					name: "size",
-					title: "Store.size",
-					class: "Store",
-					readonly: true,
-					signatures: ["readonly size: number"],
-				},
-			},
-			{ props: { kind: "property", name: "name", title: "Store.name", class: "Store", signatures: ["name: string"] } },
+		const cls = (
+			element.props.children as { props: { children?: unknown[]; properties: { name: string; type?: string; readonly?: boolean }[] } }[]
+		)[0];
+		// Accessors are data members, not method elements — they land in `properties`, and a get/set pair folds into one entry typed from the getter.
+		expect(cls?.props.children).toBeUndefined();
+		// A lone getter is read-only; a get/set pair is writable.
+		expect(cls?.props.properties).toMatchObject([
+			{ name: "size", type: "number", description: "Read-only size.", readonly: true },
+			{ name: "name", type: "string", description: "Writable name." },
 		]);
-		// The getter+setter pair must NOT be flagged readonly.
-		expect((cls?.props.children[1]?.props as { readonly?: boolean }).readonly).toBeUndefined();
+		expect(cls?.props.properties).toHaveLength(2);
+		expect(cls?.props.properties[1]?.readonly).toBeUndefined();
 	});
 
 	test("merges overloaded function declarations into one element with multiple signatures, dropping the implementation", async () => {
@@ -910,9 +903,12 @@ export class Store {
 }
 `),
 		);
-		const cls = (element.props.children as { props: { children: { props: { description?: string } }[] } }[])[0];
-		expect(cls?.props.children[0]?.props.description).toBe("The current value of the store.");
-		expect(cls?.props.children[1]?.props.description).toBe("Replace the stored value.");
+		const cls = (
+			element.props.children as { props: { children: { props: { description?: string } }[]; properties: { description?: string }[] } }[]
+		)[0];
+		// The property's description comes from its JSDoc (in the structured list); the method's from its own (as a child element).
+		expect(cls?.props.properties[0]?.description).toBe("The current value of the store.");
+		expect(cls?.props.children[0]?.props.description).toBe("Replace the stored value.");
 	});
 
 	test("leaves description undefined when a symbol has no JSDoc", async () => {

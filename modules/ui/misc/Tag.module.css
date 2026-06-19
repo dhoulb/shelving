@@ -14,7 +14,7 @@
 		--tint-50: var(--tag-tint, inherit);
 
 		/* Box */
-		display: block;
+		display: inline-block;
 		box-sizing: border-box;
 		inline-size: fit-content;
 		min-inline-size: fit-content;

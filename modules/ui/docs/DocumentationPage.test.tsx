@@ -32,14 +32,43 @@ describe("DocumentationPage", () => {
 	test("renders a section only for kinds that have children", () => {
 		const html = render(
 			<DocumentationPage path="/Store" name="Store" kind="class">
-				{[doc("get", "method"), doc("size", "property")]}
+				{[doc("get", "method")]}
 			</DocumentationPage>,
 			"./Store",
 		);
 		expect(html).toContain("Methods");
-		expect(html).toContain("Properties");
 		expect(html).not.toContain("Functions");
 		expect(html).not.toContain("Interfaces");
+	});
+
+	test("renders properties as a table with dot-prefixed names, dropping `| undefined` as optional", () => {
+		const html = render(
+			<DocumentationPage
+				path="/Opts"
+				name="Opts"
+				kind="interface"
+				properties={[
+					{ name: "caller", type: "AnyCaller | undefined", description: "The caller." },
+					{ name: "id", type: "string", description: "The id." },
+					{ name: "timeout", type: "number", description: "The timeout.", default: "20000" },
+					{ name: "size", type: "number", description: "The size.", readonly: true },
+				]}
+			/>,
+			"./Opts",
+		);
+		// Dedicated Properties table with dot-prefixed names.
+		expect(html).toContain(">Property</th>");
+		expect(html).toContain(">.caller</code>");
+		expect(html).toContain(">.timeout</code>");
+		// `| undefined` is dropped from the type and marks the property optional (no `Required.`).
+		expect(html).toContain(">AnyCaller</code>");
+		expect(html).not.toContain(">undefined</code>");
+		// A property with no default and no optionality gets a `required` tag; one with a default surfaces `Defaults to …`.
+		expect(html).toContain(">required</span>");
+		expect(html).toContain("Defaults to");
+		expect(html).toContain("20000");
+		// A read-only property appends a `readonly` tag at the end of its description.
+		expect(html).toContain(">readonly</span>");
 	});
 
 	test("renders parameters as a table, folding any default into the description as a `Defaults to …` line", () => {
@@ -60,10 +89,10 @@ describe("DocumentationPage", () => {
 		expect(html).toContain(">Param</th>");
 		expect(html).toContain(">Type</th>");
 		expect(html).not.toContain(">Default</th>");
-		// A param with a default surfaces it as a `Defaults to …` note in its description; a param with neither a default nor optionality is marked `Required.`.
+		// A param with a default surfaces it as a `Defaults to …` note in its description; a param with neither a default nor optionality gets a `required` tag.
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("false");
-		expect(html).toContain("Required.");
+		expect(html).toContain(">required</span>");
 		// Returns table headers.
 		expect(html).toContain(">Return</th>");
 		expect(html).toContain("The new thing.");
@@ -110,19 +139,16 @@ describe("DocumentationPage", () => {
 		expect(html).not.toContain("`code`");
 	});
 
-	test("groups static members into their own sections, before instance sections", () => {
+	test("groups static methods into their own section, before instance methods", () => {
 		const html = render(
 			<DocumentationPage path="/Color" name="Color" kind="class">
-				{[doc("from", "static method"), doc("DEFAULT", "static property"), doc("toString", "method"), doc("red", "property")]}
+				{[doc("from", "static method"), doc("toString", "method")]}
 			</DocumentationPage>,
 			"./Color",
 		);
 		expect(html).toContain("Static methods");
-		expect(html).toContain("Static properties");
 		expect(html).toContain("Methods");
-		expect(html).toContain("Properties");
-		// Static sections render before their instance counterparts (the `Methods` / `Properties` headings use a capital, so they don't match inside `Static methods`).
+		// Static methods render before instance methods (the `Methods` heading uses a capital, so it doesn't match inside `Static methods`).
 		expect(html.indexOf("Static methods")).toBeLessThan(html.indexOf("Methods"));
-		expect(html.indexOf("Static properties")).toBeLessThan(html.indexOf("Properties"));
 	});
 });

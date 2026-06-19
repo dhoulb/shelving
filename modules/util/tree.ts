@@ -87,6 +87,8 @@ export interface DocumentationParam {
 	readonly optional?: boolean | undefined;
 	/** Default-value expression from the parameter's initializer (e.g. `"false"`, `"{}"`), or `undefined` when the parameter has none. */
 	readonly default?: string | undefined;
+	/** Whether this is a read-only data member (a `readonly` property, or a getter with no matching setter). Only meaningful for `properties`, not function params. */
+	readonly readonly?: boolean | undefined;
 }
 
 /**
@@ -151,8 +153,8 @@ export interface DocumentationElementProps extends TreeElementProps {
 	 */
 	readonly types?: ImmutableArray<string> | undefined;
 	/**
-	 * Structured member list for an `interface` or object-literal `type` — each property's `name`, `type`, optionality, `default`, and `description`.
-	 * - Reuses the `DocumentationParam` shape so an options-bag parameter can be flattened into its individual fields at render time.
+	 * Structured data-member list for a `class`, `interface`, or object-literal `type` — each property's `name`, `type`, optionality, `default`, and `description`. Methods stay as child elements; only data members live here.
+	 * - Reuses the `DocumentationParam` shape so it can both render the type's own Properties table and be flattened into an options-bag parameter's individual fields at render time.
 	 */
 	readonly properties?: ImmutableArray<DocumentationParam> | undefined;
 }

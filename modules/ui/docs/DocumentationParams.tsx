@@ -7,37 +7,16 @@ import { Scroll } from "../style/Scroll.js";
 import { Cell } from "../table/Cell.js";
 import { Table } from "../table/Table.js";
 import { getTreeElement, useTreeMap } from "../tree/TreeContext.js";
-import { TreeLink } from "../tree/TreeLink.js";
 import { DocumentationDescription } from "./DocumentationDescription.js";
+import { DocumentationType, splitType } from "./DocumentationType.js";
 
 const DEFAULT_TYPE = "unknown";
 
 /** Indentation (non-breaking spaces, so HTML doesn't collapse it) prefixed to a flattened sub-property's name so it reads as nested under its parent param. */
 const SUBPARAM_INDENT = "\u00A0\u00A0\u00A0\u00A0";
 
-/**
- * Split a type expression on ` | ` into its individual union members.
- * - An `undefined` member is dropped from display and instead flags the value as optional — we often write `| undefined` explicitly (e.g. for `exactOptionalPropertyTypes`, or to allow an explicit `undefined` to trigger a default), which reads as noise in the docs.
- * - When nothing but `undefined` is left, the members are kept as-is rather than emptied.
- */
-function _splitType(type: string): { readonly members: readonly string[]; readonly optional: boolean } {
-	const parts = type
-		.split(" | ")
-		.map(part => part.trim())
-		.filter(Boolean);
-	const members = parts.filter(part => part !== "undefined");
-	return members.length ? { members, optional: members.length !== parts.length } : { members: parts, optional: false };
-}
-
-/** Render a type expression as one linked `Type`-column token per union member, each stacked on its own line (an `undefined` member is dropped — see `_splitType`). */
-function _renderType(members: readonly string[]): ReactNode {
-	return members.map((member, index) => (
-		<Fragment key={member}>
-			{index > 0 && <br />}
-			<TreeLink name={member} nowrap />
-		</Fragment>
-	));
-}
+/** Kinds whose `properties` represent an options-bag worth flattening into a param's child rows — interfaces and object-literal `type` aliases, not full classes. */
+const FLATTEN_KINDS = new Set(["interface", "type"]);
 
 /**
  * Props for `DocumentationParams` — the parameter list to render, one row per parameter.
@@ -82,17 +61,20 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 					</thead>
 					<tbody>
 						{params.map(({ name, type = DEFAULT_TYPE, description, default: def, optional }) => {
-							const { members, optional: typeOptional } = _splitType(type);
+							const { members, optional: typeOptional } = splitType(type);
 							// An options-bag param whose (single, concrete) type resolves to a documented interface/object type is flattened into its individual fields as indented child rows.
 							const single = members.length === 1 ? members[0] : undefined;
 							const resolved = single ? (getTreeElement(map, single)?.props as DocumentationElementProps | undefined) : undefined;
+							const properties = resolved && FLATTEN_KINDS.has(resolved.kind ?? "") ? resolved.properties : undefined;
 							return (
 								<Fragment key={`${name}-${type}`}>
 									<tr>
 										<td>
 											<Code nowrap>{name}</Code>
 										</td>
-										<td>{_renderType(members)}</td>
+										<td>
+											<DocumentationType members={members} />
+										</td>
 										<td>
 											<DocumentationDescription
 												description={description || resolved?.description}
@@ -101,15 +83,16 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 											/>
 										</td>
 									</tr>
-									{resolved?.properties?.map(
+									{properties?.map(
 										({
 											name: propName,
 											type: propType = DEFAULT_TYPE,
 											description: propDescription,
 											default: propDef,
 											optional: propOptional,
+											readonly: propReadonly,
 										}) => {
-											const { members: propMembers, optional: propTypeOptional } = _splitType(propType);
+											const { members: propMembers, optional: propTypeOptional } = splitType(propType);
 											const propSingle = propMembers[0] ?? DEFAULT_TYPE;
 											return (
 												<tr key={`${propName}-${propType}-${propDescription}`}>
@@ -117,12 +100,15 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 														{SUBPARAM_INDENT}
 														<Code nowrap>{`.${propName}`}</Code>
 													</Cell>
-													<td>{_renderType(propMembers)}</td>
+													<td>
+														<DocumentationType members={propMembers} />
+													</td>
 													<td>
 														<DocumentationDescription
 															description={propDescription || getTreeElement(map, propSingle)?.props.description}
 															default={propDef}
 															optional={!!propOptional || propTypeOptional}
+															readonly={propReadonly}
 														/>
 													</td>
 												</tr>
