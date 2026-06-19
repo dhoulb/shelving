@@ -13,22 +13,22 @@ export interface DocumentationKindProps extends TagProps {
 }
 
 /**
- * Mapping from a documented symbol's `kind` to its raw colour variant.
- * - Related kinds share a hue: component/class (purple), function/method (blue), interface/type (aqua).
- * - Leaves `orange`, `pink`, and the brand aliases free for future kinds.
+ * Mapping from a documented symbol's `kind` to its colour variant.
+ * - Each mapped kind gets its own hue, except `method` and `static method`, which share `aqua`.
+ * - `property` is intentionally absent — it falls through to `undefined` and renders untinted.
+ * - The mapped kinds fit inside the eight raw hues plus `gray`; the brand aliases stay free for future kinds.
  */
 const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
 	module: "red",
 	component: "purple",
-	class: "purple",
+	class: "pink",
 	function: "blue",
-	method: "blue",
-	"static method": "blue",
-	interface: "aqua",
-	type: "aqua",
-	constant: "green",
-	property: "yellow",
-	"static property": "yellow",
+	method: "aqua",
+	"static method": "aqua",
+	interface: "green",
+	type: "yellow",
+	constant: "orange",
+	"static property": "gray",
 };
 
 /**
@@ -37,7 +37,7 @@ const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
  *
  * @param kind The documented symbol's kind (e.g. `"function"`, `"class"`, `"method"`).
  * @returns The matching `ColorVariant`, or `undefined` when the kind is unrecognised.
- * @example getDocumentationKindColor("class") // "purple"
+ * @example getDocumentationKindColor("class") // "pink"
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/getDocumentationKindColor
  */
 export function getDocumentationKindColor(kind: string): ColorVariant | undefined {
