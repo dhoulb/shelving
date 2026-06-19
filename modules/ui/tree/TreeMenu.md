@@ -4,10 +4,10 @@ A sidebar navigation menu built from the children of a root tree element. Each c
 
 **Things to know:**
 
-- Only directories and files appear, plus documentation symbols of `kind: "module"` — functions, classes, methods, properties, etc. are kept off the navigation (they still get their own pages via [`TreeApp`](/ui/TreeApp)).
+- Only directories and files appear, plus documentation symbols of `kind: "module"` — functions, classes, methods, properties, etc. are kept off the navigation (they still get their own pages via [`<TreeApp>`](/ui/TreeApp)).
 - Each item computes its own href by appending its `name` to the parent `path` (defaulting to `/`).
-- It is a `[Mapping, Mapper]` pair: wrap any subtree in `<TreeMenuMapping mapping={…}>` to swap the per-type menu-item renderer without touching the rest of the site. [`TreeSidebar`](/ui/TreeSidebar) shares this same mapper.
-- Use it directly for finer layout control; otherwise [`TreeApp`](/ui/TreeApp) wires a [`TreeSidebar`](/ui/TreeSidebar) (a home link plus this menu) for you.
+- It is a `[Mapping, Mapper]` pair: wrap any subtree in `<TreeMenuMapping mapping={…}>` to swap the per-type menu-item renderer without touching the rest of the site. [`<TreeSidebar>`](/ui/TreeSidebar) shares this same mapper.
+- Use it directly for finer layout control; otherwise [`<TreeApp>`](/ui/TreeApp) wires a [`<TreeSidebar>`](/ui/TreeSidebar) (a home link plus this menu) for you.
 
 ## Usage
 

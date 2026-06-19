@@ -1,6 +1,6 @@
 # Transition
 
-The base View Transition wrapper. It wraps its children in React 19's `<ViewTransition>` and applies named CSS transition classes, so swapping content between renders produces a smooth animation. Use it directly to specify any transition class names, or reach for a preset variant — [`FadeTransition`](/ui/FadeTransition), [`CollapseTransition`](/ui/CollapseTransition), [`VerticalTransition`](/ui/VerticalTransition), [`HorizontalTransition`](/ui/HorizontalTransition).
+The base View Transition wrapper. It wraps its children in React 19's `<ViewTransition>` and applies named CSS transition classes, so swapping content between renders produces a smooth animation. Use it directly to specify any transition class names, or reach for a preset variant — [`<FadeTransition>`](/ui/FadeTransition), [`<CollapseTransition>`](/ui/CollapseTransition), [`<VerticalTransition>`](/ui/VerticalTransition), [`<HorizontalTransition>`](/ui/HorizontalTransition).
 
 **Things to know:**
 

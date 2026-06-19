@@ -1,6 +1,6 @@
 # Notices
 
-Renders the global list of active notices and subscribes to incoming `"notice"` events. It listens for `"notice"` events on `window` (dispatched by the [`notify`](/ui/notify) helpers) and shows each one as a [`<Notice>`](/ui/Notice) — this is how components like [`<Button>`](/ui/Button) and [`<FormNotify>`](/ui/FormNotify) send notices into the global list.
+Renders the global list of active notices and subscribes to incoming `"notice"` events. It listens for `"notice"` events on `window` (dispatched by the [`notify()`](/ui/notify) helpers) and shows each one as a [`<Notice>`](/ui/Notice) — this is how components like [`<Button>`](/ui/Button) and [`<FormNotify>`](/ui/FormNotify) send notices into the global list.
 
 **Things to know:**
 

@@ -17,4 +17,4 @@ const provider = new ClientAPIProvider({
 const user = await provider.call(getUser, { id: "u_123" })
 ```
 
-In practice you wrap it — e.g. `new ValidationAPIProvider(new ClientAPIProvider({ url }))` — so payloads and results are validated. See [building a provider chain](/api).
+In practice you wrap it — e.g. `new ValidationAPIProvider(new ClientAPIProvider({ url }))` — so payloads and results are validated. See [`shelving/api`](/api) for building a provider chain.

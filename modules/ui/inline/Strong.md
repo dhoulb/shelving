@@ -4,9 +4,9 @@ Strong importance — renders a `<strong>` element for text that carries strong 
 
 **Things to know:**
 
-- Use `Strong` for importance, [`Emphasis`](/ui/Emphasis) for stress emphasis (italic), and [`Mark`](/ui/Mark) for relevance highlighting — they are not interchangeable.
+- Use `Strong` for importance, [`<Emphasis>`](/ui/Emphasis) for stress emphasis (italic), and [`<Mark>`](/ui/Mark) for relevance highlighting — they are not interchangeable.
 - It only sets the font weight; it inherits colour and size from the surrounding text.
-- Inside [`Prose`](/ui/Prose) raw `<strong>` / `<b>` pick up the same styling, so Markdown-rendered bold text matches component ones.
+- Inside [`<Prose>`](/ui/Prose) raw `<strong>` / `<b>` pick up the same styling, so Markdown-rendered bold text matches component ones.
 
 ## Usage
 

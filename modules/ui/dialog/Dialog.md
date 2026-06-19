@@ -4,10 +4,10 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 
 **Things to know:**
 
-- Closes on a backdrop click, on any link or `<nav>` button clicked inside it, or via the built-in [`DialogCloseButton`](/ui/DialogCloseButton) (an X icon, top-right).
+- Closes on a backdrop click, on any link or `<nav>` button clicked inside it, or via the built-in [`<DialogCloseButton>`](/ui/DialogCloseButton) (an X icon, top-right).
 - Children render inside a `<Suspense>` boundary, so lazy content can stream in.
 - `onClose` fires when the dialog closes — use it to clear the React state that mounts the dialog, or (when pushed via a store) to remove it from the list.
-- Pair with [`DialogsStore`](/ui/DialogsStore), [`DialogsContext`](/ui/DialogsContext), and [`Dialogs`](/ui/Dialogs) to open dialogs imperatively from anywhere in the app. For a non-blocking persistent overlay, reach for [`Modal`](/ui/Modal) instead.
+- Pair with [`DialogsStore`](/ui/DialogsStore), [`<DialogsContext>`](/ui/DialogsContext), and [`<Dialogs>`](/ui/Dialogs) to open dialogs imperatively from anywhere in the app. For a non-blocking persistent overlay, reach for [`<Modal>`](/ui/Modal) instead.
 
 ## Usage
 
@@ -34,7 +34,7 @@ function ConfirmDelete({ onConfirm, onClose }: { onConfirm: () => void; onClose:
 
 ### Imperative
 
-Set up the context once near the app root (see [`DialogsContext`](/ui/DialogsContext) and [`Dialogs`](/ui/Dialogs)), then push a `<Dialog>` from anywhere with [`requireDialogs()`](/ui/requireDialogs).
+Set up the context once near the app root (see [`<DialogsContext>`](/ui/DialogsContext) and [`<Dialogs>`](/ui/Dialogs)), then push a `<Dialog>` from anywhere with [`requireDialogs()`](/ui/requireDialogs).
 
 ```tsx
 import { requireDialogs } from "shelving/ui";

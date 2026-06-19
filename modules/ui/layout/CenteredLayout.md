@@ -23,7 +23,7 @@ function LoginPage() {
 }
 ```
 
-Layouts compose naturally as [`Router`](/ui/Router) route values — wrap a group of routes in a shared layout, then route further inside it.
+Layouts compose naturally as [`<Router>`](/ui/Router) route values — wrap a group of routes in a shared layout, then route further inside it.
 
 ## Styling
 

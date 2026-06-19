@@ -4,7 +4,7 @@ A wrapper that applies cohesive longform typography to a subtree of mixed HTML c
 
 **Things to know:**
 
-- `Prose` applies the "prose" variant of *every* block and inline component as a single compound class, so raw `<p>`, `<ul>`, `<h2>`, `<code>`, `<a>`, etc. are styled to match their component counterparts ([`Paragraph`](/ui/Paragraph), [`List`](/ui/List), [`Heading`](/ui/Heading), [`Code`](/ui/Code), [`Link`](/ui/Link), …).
+- `Prose` applies the "prose" variant of *every* block and inline component as a single compound class, so raw `<p>`, `<ul>`, `<h2>`, `<code>`, `<a>`, etc. are styled to match their component counterparts ([`<Paragraph>`](/ui/Paragraph), [`<List>`](/ui/List), [`<Heading>`](/ui/Heading), [`<Code>`](/ui/Code), [`<Link>`](/ui/Link), …).
 - This is the bridge for markup: wrap [`shelving/markup`](/markup) output (or anything that emits raw HTML) in `<Prose>` and it just works — no per-element component wrapping needed.
 - It only sets up typography and its own outer margin; it paints no colour and adds no box of its own.
 

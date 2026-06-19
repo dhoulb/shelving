@@ -68,7 +68,7 @@ export function ListingForm({ listing }: { listing?: typeof LISTING_SCHEMA.type 
 
 ### Custom layout
 
-Provide explicit `children` when you need control over field order, groupings, or extra buttons. [`<FormInput>`](/ui/FormInput) uses [`useField()`](/ui/useField) to pull the current value, error, and schema from context, then delegates to [`SchemaInput`](/ui/SchemaInput) so each field renders the correct control type.
+Provide explicit `children` when you need control over field order, groupings, or extra buttons. [`<FormInput>`](/ui/FormInput) uses [`useField()`](/ui/useField) to pull the current value, error, and schema from context, then delegates to [`<SchemaInput>`](/ui/SchemaInput) so each field renders the correct control type.
 
 ```tsx
 import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from "shelving/ui";

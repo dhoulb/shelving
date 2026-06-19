@@ -4,10 +4,10 @@ A landmark content region — renders a `<section>` with block-level spacing and
 
 **Things to know:**
 
-- Pick the component whose HTML element matches the semantic meaning rather than reaching for a generic [`Block`](/ui/Block). `<Section>` is a `<section>`, `<Nav>` a `<nav>`, `<Figure>` a `<figure>`, and so on.
+- Pick the component whose HTML element matches the semantic meaning rather than reaching for a generic [`<Block>`](/ui/Block). `<Section>` is a `<section>`, `<Nav>` a `<nav>`, `<Figure>` a `<figure>`, and so on.
 - Every section centres its content and caps the line length so text never touches the viewport edges. Nested sections relax that cap so they can fill their parent.
 - Sections default to the `--width-normal` content width, so most of the time you set no width at all. Pass `width="narrow"` / `"wide"` / `"full"` (or `"fit"`) to change that, and the usual `color` / `space` / typography variants to retint and respace.
-- Pair [`Figure`](/ui/Section) with [`Caption`](/ui/Caption) for a `<figure>` / `<figcaption>` pair.
+- Pair [`Figure`](/ui/Section) with [`<Caption>`](/ui/Caption) for a `<figure>` / `<figcaption>` pair.
 
 ## Usage
 

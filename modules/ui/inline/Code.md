@@ -14,7 +14,7 @@ An inline code span — renders a `<code>` element with monospace type and a sub
 - Pick the sibling whose semantics match — they all look the same but mean different things to assistive tech and search.
 - Pass `plain` to drop the default background and inline padding (useful when the code already sits inside a tinted container).
 - Painted from the [tint ladder](/ui/TINT_CLASS): the background is [`--tint-90`](/ui/TINT_CLASS) and the text [`--tint-00`](/ui/TINT_CLASS), so it re-tints with its surrounding scope.
-- Inside [`Prose`](/ui/Prose) raw `<code>` / `<kbd>` / `<samp>` / `<var>` pick up the same styling, and code inside a `<pre>` drops the inline box automatically.
+- Inside [`<Prose>`](/ui/Prose) raw `<code>` / `<kbd>` / `<samp>` / `<var>` pick up the same styling, and code inside a `<pre>` drops the inline box automatically.
 
 ## Usage
 

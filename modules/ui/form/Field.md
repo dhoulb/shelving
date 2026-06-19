@@ -1,12 +1,12 @@
 # Field
 
-The visual wrapper for a single form control. `Field` renders a `<label>` with an optional title and description above the input, and an inline error message below it. Use it when composing inputs by hand rather than relying on the automatic fields rendered by [`Form`](/ui/Form).
+The visual wrapper for a single form control. `Field` renders a `<label>` with an optional title and description above the input, and an inline error message below it. Use it when composing inputs by hand rather than relying on the automatic fields rendered by [`<Form>`](/ui/Form).
 
 **Things to know:**
 
 - Full width by default (one field per row). Pass `half` to render at 50% so two fields sit side-by-side.
-- The `message` prop renders below the input as an error [`Message`](/ui/Message) — wire it to the field's error string.
-- [`FormInput`](/ui/FormInput) combines a field's value, error, and schema lookup from the surrounding [`FormContext`](/ui/FormContext); reach for `Field` directly when you want explicit control over the label and layout.
+- The `message` prop renders below the input as an error [`<Message>`](/ui/Message) — wire it to the field's error string.
+- [`<FormInput>`](/ui/FormInput) combines a field's value, error, and schema lookup from the surrounding [`FormContext`](/ui/FormContext); reach for `Field` directly when you want explicit control over the label and layout.
 
 ## Usage
 

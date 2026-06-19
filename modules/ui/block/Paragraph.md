@@ -6,8 +6,8 @@ A block of body text — renders a `<p>`. The default container for running pros
 
 - Carries its own outer block margin and collapses it when it is the first or last child of its container, so stacked paragraphs space evenly without doubling up at the edges.
 - Accepts `color=` and the typography variants (`size`, `serif`, `center`, …) to retint or restyle the text.
-- Fill it with inline annotations such as [`Strong`](/ui/Strong), [`Emphasis`](/ui/Emphasis), [`Code`](/ui/Code), [`Mark`](/ui/Mark), and [`Link`](/ui/Link).
-- Inside [`Prose`](/ui/Prose) a raw `<p>` picks up the same styling, so Markdown-rendered paragraphs match component ones.
+- Fill it with inline annotations such as [`<Strong>`](/ui/Strong), [`<Emphasis>`](/ui/Emphasis), [`<Code>`](/ui/Code), [`<Mark>`](/ui/Mark), and [`<Link>`](/ui/Link).
+- Inside [`<Prose>`](/ui/Prose) a raw `<p>` picks up the same styling, so Markdown-rendered paragraphs match component ones.
 
 ## Usage
 

@@ -33,7 +33,7 @@ const NameOnly = PRODUCT.pick("name");
 
 ### `ITEM` — add a typed `id` field
 
-`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the [`Item`](/util/item/Item) type in [util](/util).
+`ITEM` wraps a `DataSchema` to add a typed `id` field, matching the [`Item`](/util/item/Item) type in [`shelving/util/item`](/util/item).
 
 ```ts
 import { ITEM, STRING, INTEGER, NUMBER } from "shelving/schema";
