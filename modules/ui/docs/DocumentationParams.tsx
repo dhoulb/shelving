@@ -113,10 +113,10 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 											const propSingle = propMembers[0] ?? DEFAULT_TYPE;
 											return (
 												<tr key={`${propName}-${propType}-${propDescription}`}>
-													<td>
+													<Cell nowrap>
 														{SUBPARAM_INDENT}
 														<Code nowrap>{`.${propName}`}</Code>
-													</td>
+													</Cell>
 													<td>{_renderType(propMembers)}</td>
 													<td>
 														<DocumentationDescription
