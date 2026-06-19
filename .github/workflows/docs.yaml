@@ -16,11 +16,19 @@ on:
     types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
 
-# Serialize every run onto a single queue. All runs publish to the `docs`
-# branch, so they must not race; and a PR-close cleanup run must never cancel
-# the main-branch deploy that publishes the site root.
+# Scope concurrency per PR (and per ref for branch pushes) so one PR's build — or `main`'s — never
+# supersedes another's. A single shared group meant only the newest *pending* run survived, so a PR
+# whose build was still queued got silently dropped whenever anything else pushed.
+# - `github.event.pull_request.number` keys every event of a PR (open/sync/reopen/close) to the same
+#   group; `github.ref` keys branch pushes (e.g. `main`) to their own. A PR-close cleanup therefore
+#   shares only that PR's group and can never cancel the `main` deploy.
+# - `cancel-in-progress: false` still never interrupts an in-progress publish mid-push; within a group,
+#   rapid pushes simply collapse to the latest commit.
+# Trade-off: different groups can now run concurrently, so two publishes could race on the push to the
+# shared `docs` branch. Each writes its own directory (`pr-<n>/` or the root) with `keep_files: true`,
+# so the only conflict is the git push itself — rare given build times, and recoverable by a re-run.
 concurrency:
-  group: docs
+  group: docs-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
