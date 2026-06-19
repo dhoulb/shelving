@@ -247,16 +247,25 @@ function _getProperties(statement: ts.Statement, source: ts.SourceFile): Immutab
 				description: jsDoc?.description,
 				optional: !!member.questionToken,
 				default: def,
+				readonly: modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword) || undefined,
 			});
 		} else if (ts.isGetAccessor(member) || ts.isSetAccessor(member)) {
 			const type = ts.isGetAccessor(member) ? member.type?.getText(source) : member.parameters[0]?.type?.getText(source);
 			const index = properties.findIndex(p => p.name === name);
 			const found = index >= 0 ? properties[index] : undefined;
-			// Fold a get/set pair into one entry; the getter's declared type wins when both are present.
+			// Fold a get/set pair into one entry: the getter's declared type wins, and the matching setter clears read-only.
 			if (found) {
-				if (ts.isGetAccessor(member) && type) properties[index] = { ...found, type };
+				properties[index] = { ...found, type: ts.isGetAccessor(member) && type ? type : found.type, readonly: undefined };
 			} else {
-				properties.push({ name, type, description: jsDoc?.description, optional: false, default: jsDoc?.default });
+				// A lone getter is read-only until a setter is seen; a lone setter is writable.
+				properties.push({
+					name,
+					type,
+					description: jsDoc?.description,
+					optional: false,
+					default: jsDoc?.default,
+					readonly: ts.isGetAccessor(member) || undefined,
+				});
 			}
 		}
 	}

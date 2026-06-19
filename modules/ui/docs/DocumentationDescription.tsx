@@ -15,34 +15,42 @@ export interface DocumentationDescriptionProps {
 	readonly default?: string | undefined;
 	/** Whether the value is optional — pass an explicit boolean to opt into the note: `false` appends `Required.` (when there's no default), `true` appends nothing. Leave `undefined` to suppress the note entirely (e.g. for returns/throws). */
 	readonly optional?: boolean | undefined;
+	/** Whether the value is read-only — appends a trailing `Readonly` note at the very end (after any `Defaults to …` / `Required.`). */
+	readonly readonly?: boolean | undefined;
 }
 
 /**
  * Render a documentation table row's description cell.
  * - The description is parsed as inline markup (`context="inline"`), so backticks, emphasis and links resolve rather than showing as literal source.
  * - When a `default` is given it renders a trailing `Defaults to …` note on the same line (linking the value when it's a documented token); otherwise, when `optional` is explicitly `false`, it renders `Required.` for clarity.
+ * - When `readonly` is set, a `Readonly` note is appended at the very end (after any default/required note).
  * - Wrapped in [`<Prose>`](/ui/Prose) so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
  *
  * @kind component
- * @returns The description and any trailing note wrapped in a [`<Prose>`](/ui/Prose), or `null` when both are empty.
- * @example <DocumentationDescription description="The `foo` value." optional={false} />
+ * @returns The description and any trailing notes wrapped in a [`<Prose>`](/ui/Prose), or `null` when all are empty.
+ * @example <DocumentationDescription description="The `foo` value." optional={false} readonly />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationDescription/DocumentationDescription
  */
-export function DocumentationDescription({ description, default: def, optional }: DocumentationDescriptionProps): ReactNode {
+export function DocumentationDescription({ description, default: def, optional, readonly }: DocumentationDescriptionProps): ReactNode {
 	const body = description ? <Markup context="inline">{description}</Markup> : null;
-	const note = def ? (
+	const requirement = def ? (
 		<>
 			Defaults to <TreeLink name={def} />
 		</>
 	) : optional === false ? (
 		<>Required.</>
 	) : null;
-	if (!body && !note) return null;
+	if (!body && !requirement && !readonly) return null;
 	return (
 		<Prose>
 			{body}
-			{body && note ? " " : null}
-			{note}
+			{requirement ? (
+				<>
+					{body ? " " : null}
+					{requirement}
+				</>
+			) : null}
+			{readonly ? <>{body || requirement ? " " : null}Readonly</> : null}
 		</Prose>
 	);
 }

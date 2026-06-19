@@ -336,7 +336,8 @@ export class MemoryStore extends AbstractStore {
 		// Only the directly-implemented `value` survives — `get()` and `size` carry `override` and are documented on the base class.
 		// `get()` is the only method and it's an override, so there are no method child elements; `value` lands in `properties`; the overridden `size` is excluded there too.
 		expect(cls?.props.children).toBeUndefined();
-		expect(cls?.props.properties).toMatchObject([{ name: "value", type: "string", description: "The current value." }]);
+		// The `readonly` modifier is captured onto the property.
+		expect(cls?.props.properties).toMatchObject([{ name: "value", type: "string", description: "The current value.", readonly: true }]);
 		expect(cls?.props.properties).toHaveLength(1);
 	});
 
@@ -353,14 +354,18 @@ export class Store {
 }
 `),
 		);
-		const cls = (element.props.children as { props: { children?: unknown[]; properties: { name: string; type?: string }[] } }[])[0];
+		const cls = (
+			element.props.children as { props: { children?: unknown[]; properties: { name: string; type?: string; readonly?: boolean }[] } }[]
+		)[0];
 		// Accessors are data members, not method elements — they land in `properties`, and a get/set pair folds into one entry typed from the getter.
 		expect(cls?.props.children).toBeUndefined();
+		// A lone getter is read-only; a get/set pair is writable.
 		expect(cls?.props.properties).toMatchObject([
-			{ name: "size", type: "number", description: "Read-only size." },
+			{ name: "size", type: "number", description: "Read-only size.", readonly: true },
 			{ name: "name", type: "string", description: "Writable name." },
 		]);
 		expect(cls?.props.properties).toHaveLength(2);
+		expect(cls?.props.properties[1]?.readonly).toBeUndefined();
 	});
 
 	test("merges overloaded function declarations into one element with multiple signatures, dropping the implementation", async () => {

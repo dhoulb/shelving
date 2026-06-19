@@ -54,7 +54,7 @@ export function DocumentationProperties({ properties }: DocumentationPropertiesP
 						</tr>
 					</thead>
 					<tbody>
-						{properties.map(({ name, type = DEFAULT_TYPE, description, default: def, optional }) => {
+						{properties.map(({ name, type = DEFAULT_TYPE, description, default: def, optional, readonly }) => {
 							const { members, optional: typeOptional } = splitType(type);
 							return (
 								<tr key={`${name}-${type}`}>
@@ -69,6 +69,7 @@ export function DocumentationProperties({ properties }: DocumentationPropertiesP
 											description={description || getTreeElement(map, members[0] ?? DEFAULT_TYPE)?.props.description}
 											default={def}
 											optional={!!optional || typeOptional}
+											readonly={readonly}
 										/>
 									</td>
 								</tr>

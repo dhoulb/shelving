@@ -90,6 +90,7 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 											description: propDescription,
 											default: propDef,
 											optional: propOptional,
+											readonly: propReadonly,
 										}) => {
 											const { members: propMembers, optional: propTypeOptional } = splitType(propType);
 											const propSingle = propMembers[0] ?? DEFAULT_TYPE;
@@ -107,6 +108,7 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 															description={propDescription || getTreeElement(map, propSingle)?.props.description}
 															default={propDef}
 															optional={!!propOptional || propTypeOptional}
+															readonly={propReadonly}
 														/>
 													</td>
 												</tr>

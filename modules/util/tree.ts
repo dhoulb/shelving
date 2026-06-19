@@ -87,6 +87,8 @@ export interface DocumentationParam {
 	readonly optional?: boolean | undefined;
 	/** Default-value expression from the parameter's initializer (e.g. `"false"`, `"{}"`), or `undefined` when the parameter has none. */
 	readonly default?: string | undefined;
+	/** Whether this is a read-only data member (a `readonly` property, or a getter with no matching setter). Only meaningful for `properties`, not function params. */
+	readonly readonly?: boolean | undefined;
 }
 
 /**

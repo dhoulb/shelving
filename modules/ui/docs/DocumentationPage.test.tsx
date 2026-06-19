@@ -51,6 +51,7 @@ describe("DocumentationPage", () => {
 					{ name: "caller", type: "AnyCaller | undefined", description: "The caller." },
 					{ name: "id", type: "string", description: "The id." },
 					{ name: "timeout", type: "number", description: "The timeout.", default: "20000" },
+					{ name: "size", type: "number", description: "The size.", readonly: true },
 				]}
 			/>,
 			"./Opts",
@@ -66,6 +67,8 @@ describe("DocumentationPage", () => {
 		expect(html).toContain("Required.");
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("20000");
+		// A read-only property appends `Readonly` at the end of its description.
+		expect(html).toContain("Readonly");
 	});
 
 	test("renders parameters as a table, folding any default into the description as a `Defaults to …` line", () => {
