@@ -27,6 +27,7 @@ export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants,
  * - Renders nothing at the tree root (no ancestors) or when there's no [`<TreeProvider>`](/ui/TreeProvider) to resolve labels from.
  *
  * @returns A `<nav>` of breadcrumb links, or `null` at the tree root.
+ * @kind component
  * @example <TreeBreadcrumbs />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeBreadcrumbs/TreeBreadcrumbs
  */

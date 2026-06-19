@@ -16,6 +16,7 @@ export interface SmallProps extends OptionalChildProps {}
  * Small print — renders a `<small>` element for side comments and fine print.
  *
  * @returns Rendered `<small>` element.
+ * @kind component
  * @example <Small>Terms apply.</Small>
  * @see https://dhoulb.github.io/shelving/ui/inline/Small/Small
  */

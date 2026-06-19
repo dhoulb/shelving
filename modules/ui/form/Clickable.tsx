@@ -55,6 +55,7 @@ export interface StylableClickableProps extends ClickableProps {
  * Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
  * - `href` renders a `LinkClickable`; `onClick` renders a `ButtonClickable`; neither renders a `SpanClickable`.
  *
+ * @kind component
  * @example <Clickable href="/about">About</Clickable>
  * @example <Clickable onClick={save}>Save</Clickable>
  * @see https://dhoulb.github.io/shelving/ui/form/Clickable/Clickable

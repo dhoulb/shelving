@@ -19,6 +19,7 @@ TreeContext.displayName = "TreeContext";
  *
  * @param props The `tree` to flatten and provide, plus `children`.
  * @returns A [`<TreeContext>`](/ui/TreeContext) provider wrapping the children with the flattened map.
+ * @kind component
  * @example <TreeProvider tree={tree}>{children}</TreeProvider>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/TreeProvider
  */

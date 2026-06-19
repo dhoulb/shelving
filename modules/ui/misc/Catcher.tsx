@@ -36,6 +36,7 @@ const RETRY_CHILDREN = (
  * - Defaults to an "Retry" label with a refresh icon; pass `children` to override.
  *
  * @returns The retry button, or `null` when not inside a `<Catcher>`.
+ * @kind component
  * @example <RetryButton small />
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButton
  */
@@ -122,6 +123,7 @@ export interface PageCatcherProps extends ChildProps {}
  *
  * @param children The page content to guard.
  * @returns A `<Catcher>` configured to render `<ErrorPage>` on error.
+ * @kind component
  * @example <PageCatcher><SettingsPage /></PageCatcher>
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/PageCatcher
  */
@@ -143,6 +145,7 @@ export interface ErrorNoticeProps extends ErrorComponentProps {}
  *
  * @param reason The caught error to display.
  * @returns An error `<Notice>` containing the message and a `<RetryButton>`.
+ * @kind component
  * @example <ErrorNotice reason={thrown} />
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorNotice
  */
@@ -170,6 +173,7 @@ export interface ErrorPageProps extends ErrorComponentProps {}
  *
  * @param reason The caught error to display.
  * @returns A centered error page containing the message and a `<RetryButton>`.
+ * @kind component
  * @example <ErrorPage reason={thrown} />
  * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorPage
  */

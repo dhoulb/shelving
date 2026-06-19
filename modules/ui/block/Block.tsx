@@ -49,6 +49,7 @@ export function getBlockClass(variants: BlockProps): string {
  * Plain `<div>` block with block-level spacing.
  * - Pass `as` to render a different semantic element (`section`, `header`, `footer`, `nav`, `aside`, `figure`).
  *
+ * @kind component
  * @example <Block><Paragraph>Hello</Paragraph></Block>
  * @example <Block as="aside" width="narrow"><Paragraph>Sidebar</Paragraph></Block>
  * @see https://dhoulb.github.io/shelving/ui/block/Block/Block

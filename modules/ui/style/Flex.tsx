@@ -96,6 +96,7 @@ export interface RowProps extends FlexVariants, OptionalChildProps {}
  *
  * @param variants
  * @returns A `<div>` element with the computed flex class.
+ * @kind component
  * @example <Row gap="small" center>{items}</Row>
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/Row
  */
@@ -115,6 +116,7 @@ export interface ColumnProps extends FlexVariants, OptionalChildProps {}
  *
  * @param variants
  * @returns A `<div>` element with the computed flex class.
+ * @kind component
  * @example <Column gap="small">{items}</Column>
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/Column
  */

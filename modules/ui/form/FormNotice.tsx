@@ -8,6 +8,7 @@ import { requireForm } from "./FormContext.js";
  *
  * @param props Notice props (excluding `children`) forwarded to the underlying `<Notice>`.
  * @returns A `<Notice status="error">` containing the message, or `null` when empty.
+ * @kind component
  * @example <FormNotice />
  * @see https://dhoulb.github.io/shelving/ui/form/FormNotice/FormNotice
  */

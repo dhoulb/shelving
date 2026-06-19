@@ -19,6 +19,7 @@ export interface DocumentationSignaturesProps {
  * - Renders nothing when there are no signatures.
  *
  * @returns One [`<Preformatted>`](/ui/Preformatted) block per signature, or `null` when there are none.
+ * @kind component
  * @example <DocumentationSignatures signatures={["getArray<T>(arr: T[]): T"]} />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignatures
  */

@@ -32,6 +32,7 @@ export interface TreeCardsProps {
  * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  *
  * @returns A `<TreeCardMapper>` rendering each element as a card.
+ * @kind component
  * @example <TreeCards>{element.props.children}</TreeCards>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeCards/TreeCards
  */
