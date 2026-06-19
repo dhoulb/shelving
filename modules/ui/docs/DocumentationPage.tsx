@@ -147,7 +147,7 @@ export function DocumentationPage({
 												<Cell header width="fit">
 													Type
 												</Cell>
-												<Cell header width="xxsmall" grow />
+												<Cell header width="xxnarrow" grow />
 											</tr>
 										</thead>
 										<tbody>

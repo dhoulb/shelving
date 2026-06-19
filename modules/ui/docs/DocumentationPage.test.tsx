@@ -56,15 +56,15 @@ describe("DocumentationPage", () => {
 			/>,
 			"./makeThing",
 		);
-		// Parameters table headers — name and type only; the default lives in the description column now.
-		expect(html).toContain("<th>Param</th>");
-		expect(html).toContain("<th>Type</th>");
-		expect(html).not.toContain("<th>Default</th>");
+		// Parameters table headers — name and type only; the default lives in the description column now (header cells carry a class, so match on the closing tag).
+		expect(html).toContain(">Param</th>");
+		expect(html).toContain(">Type</th>");
+		expect(html).not.toContain(">Default</th>");
 		// A param with a default surfaces it as a `Defaults to …` line in its description; one without adds nothing.
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("false");
 		// Returns table headers.
-		expect(html).toContain("<th>Return</th>");
+		expect(html).toContain(">Return</th>");
 		expect(html).toContain("The new thing.");
 	});
 
