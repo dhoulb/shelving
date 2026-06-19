@@ -64,6 +64,7 @@ export function Address({ children, ...props }: AddressProps) {
  * Show an optional [`AddressData`](/util/geo/AddressData) object correctly on screen.
  * - Renders an optional `name` in bold, followed by the formatted address; shows "No address" when `address` is empty.
  *
+ * @kind component
  * @example <PhysicalAddress name="Acme" address={addressData} />
  * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddress
  */
@@ -81,6 +82,7 @@ export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactE
  * Show an optional email address string correctly on screen.
  * - Renders an optional `name` in bold, followed by a `mailto:` link; shows "No email" when `email` is empty.
  *
+ * @kind component
  * @example <EmailAddress name="Acme" email="hi@example.com" />
  * @see https://dhoulb.github.io/shelving/ui/block/Address/EmailAddress
  */

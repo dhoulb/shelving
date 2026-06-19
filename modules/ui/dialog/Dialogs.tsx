@@ -90,6 +90,7 @@ export interface DialogsProps {
  *
  * @param children The subtree that can open dialogs via `requireDialogs()`.
  * @returns The dialogs context provider wrapping `children`.
+ * @kind component
  * @example <DialogsContext><App /></DialogsContext>
  * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsContext
  */
@@ -101,6 +102,7 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
  * Render the open dialogs from the current `DialogsContext`.
  *
  * @returns The list of open dialog elements, or `null` when there are none.
+ * @kind component
  * @example <DialogsContext><App /><Dialogs /></DialogsContext>
  * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/Dialogs
  */

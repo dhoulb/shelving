@@ -18,6 +18,7 @@ export interface CaptionProps extends ColorVariants, SpaceVariants, TypographyVa
 /**
  * `<figcaption>` block — caption text for a `<Figure>`.
  *
+ * @kind component
  * @example <Figure><Image src="/cat.jpg" /><Caption>A cat</Caption></Figure>
  * @see https://dhoulb.github.io/shelving/ui/block/Caption/Caption
  */

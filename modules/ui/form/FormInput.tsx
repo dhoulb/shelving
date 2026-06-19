@@ -15,6 +15,7 @@ export interface FormInputProps extends InputProps {}
  * - Reads the field's value, schema, and message from the form context via [`useField()`](/ui/useField).
  *
  * @returns A `SchemaInput` bound to the named field.
+ * @kind component
  * @example <FormInput name="email" />
  * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInput
  */
@@ -27,6 +28,7 @@ export function FormInput({ name, ...props }: FormInputProps): ReactElement {
  * Show a [`SchemaInput`](/ui/SchemaInput) for every property in the current form's schema.
  *
  * @returns A fragment of `FormInput` elements, one per schema property.
+ * @kind component
  * @example <FormInputs />
  * @see https://dhoulb.github.io/shelving/ui/form/FormInput/FormInputs
  */

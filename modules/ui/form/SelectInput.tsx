@@ -20,6 +20,7 @@ export interface SelectProps<T extends string> extends ValueInputProps<T>, Input
  * - Shows a placeholder empty option unless the field is required and already has a value.
  *
  * @returns A `<select>` element.
+ * @kind component
  * @example <SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
  * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectInput
  */

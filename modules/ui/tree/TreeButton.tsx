@@ -22,6 +22,7 @@ export interface TreeButtonProps extends ButtonVariants {
  * - Defaults to `small plain` styling; pass other [`ButtonVariants`](/ui/ButtonVariants) to override.
  *
  * @returns A [`<Button>`](/ui/Button) element linking to the resolved element, or a plain label on a miss.
+ * @kind component
  * @example <TreeButton name="Store.get">Store.get()</TreeButton>
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeButton/TreeButton
  */

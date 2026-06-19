@@ -21,6 +21,7 @@ export interface DefinitionsProps extends ColorVariants, GapVariants, SpaceVaria
  * - Children are raw `<dt>` / `<dd>` elements — `<dt>` is the term label, `<dd>` the value, stacked term-above-value.
  * - The spacing between pairs is overridable via the `--definitions-gap` hook.
  *
+ * @kind component
  * @example <Definitions><dt>Name</dt><dd>Acme</dd></Definitions>
  * @see https://dhoulb.github.io/shelving/ui/block/Definitions/Definitions
  */

@@ -18,6 +18,7 @@ export interface BlockquoteProps extends ColorVariants, SpaceVariants, Typograph
 /**
  * Quoted block of text — rendered as `<blockquote>`.
  *
+ * @kind component
  * @example <Blockquote>To be or not to be.</Blockquote>
  * @see https://dhoulb.github.io/shelving/ui/block/Blockquote/Blockquote
  */

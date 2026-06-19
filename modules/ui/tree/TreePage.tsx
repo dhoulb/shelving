@@ -14,6 +14,7 @@ import { TreeCards } from "./TreeCards.js";
  * - Child cards cover both nested directories/files and the code symbols of a source file.
  *
  * @returns A [`<Page>`](/ui/Page) with the title, prose content, and a stack of child cards.
+ * @kind component
  * @example <TreePage {...element.props} />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreePage/TreePage
  */

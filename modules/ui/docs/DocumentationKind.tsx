@@ -49,6 +49,7 @@ export function getDocumentationKindColor(kind: string): ColorVariant | undefine
  * - Thin wrapper over [`<Tag>`](/ui/Tag) that maps the kind string to a raw colour variant.
  *
  * @returns A `<Tag>` showing the kind, tinted by its colour.
+ * @kind component
  * @example <DocumentationKind kind="function" />
  * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKind
  */

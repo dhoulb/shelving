@@ -40,6 +40,7 @@ export interface VideoButtonProps extends ChildProps {
  * - Shows its contents (i.e. a `<video>` element or a `<TwilioRoom>`.
  *
  * @returns Rendered `<figure>` video container.
+ * @kind component
  * @example <Video><video src="/clip.mp4" /></Video>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/Video
  */
@@ -68,6 +69,7 @@ export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
  * Individual video button over a video — renders a `<button>`.
  *
  * @returns Rendered `<button>` element overlaid on the video.
+ * @kind component
  * @example <VideoButton title="Play" onClick={play}><PlayIcon /></VideoButton>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButton
  */
@@ -96,6 +98,7 @@ export interface FullscreenVideoButtonProps {
  * - Tracks fullscreen state so the icon and title flip between enter/exit.
  *
  * @returns Rendered fullscreen toggle button, or `null` when fullscreen is unavailable.
+ * @kind component
  * @example <Video><video src="/clip.mp4" /><VideoButtons><FullscreenVideoButton /></VideoButtons></Video>
  * @see https://dhoulb.github.io/shelving/ui/block/Video/FullscreenVideoButton
  */

@@ -67,6 +67,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
  * @param children Optional button content (defaults to an X icon).
  * @param variants Button styling variants.
  * @returns The close button element.
+ * @kind component
  * @example <DialogCloseButton plain />
  * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogCloseButton
  */

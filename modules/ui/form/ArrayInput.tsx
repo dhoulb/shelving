@@ -30,6 +30,7 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
  * - Enforces `min`/`max` length and offers add, remove, and clear controls.
  *
  * @returns Element rendering one input row per array item plus add/clear controls.
+ * @kind component
  * @example <ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
  * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInput
  */

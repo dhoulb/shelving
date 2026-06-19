@@ -28,6 +28,7 @@ export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProp
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *
  * @returns Element rendering one radio per option plus an optional empty placeholder radio.
+ * @kind component
  * @example <ChoiceRadioInputs name="role" options={{ admin: "Admin", user: "User" }} value={role} onValue={setRole} />
  * @see https://dhoulb.github.io/shelving/ui/form/ChoiceRadioInputs/ChoiceRadioInputs
  */
