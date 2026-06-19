@@ -3,4 +3,8 @@ export * from "./DocumentationCard.js";
 export * from "./DocumentationHomePage.js";
 export * from "./DocumentationKind.js";
 export * from "./DocumentationPage.js";
+export * from "./DocumentationParams.js";
+export * from "./DocumentationReferences.js";
+export * from "./DocumentationReturns.js";
 export * from "./DocumentationSignatures.js";
+export * from "./DocumentationThrows.js";
