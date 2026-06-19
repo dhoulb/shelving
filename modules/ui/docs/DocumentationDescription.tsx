@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Prose } from "../block/Prose.js";
 import { Markup } from "../misc/Markup.js";
+import { Tag } from "../misc/Tag.js";
 import { TreeLink } from "../tree/TreeLink.js";
 
 /**
@@ -22,8 +23,8 @@ export interface DocumentationDescriptionProps {
 /**
  * Render a documentation table row's description cell.
  * - The description is parsed as inline markup (`context="inline"`), so backticks, emphasis and links resolve rather than showing as literal source.
- * - When a `default` is given it renders a trailing `Defaults to …` note on the same line (linking the value when it's a documented token); otherwise, when `optional` is explicitly `false`, it renders `Required.` for clarity.
- * - When `readonly` is set, a `Readonly` note is appended at the very end (after any default/required note).
+ * - When a `default` is given it renders a trailing `Defaults to …` note on the same line (linking the value when it's a documented token); otherwise, when `optional` is explicitly `false`, it renders a `required` [`<Tag>`](/ui/Tag). (Optionality has no tag — it's implicit, and an optional value usually carries the longer `Defaults to …` text instead.)
+ * - When `readonly` is set, a `readonly` [`<Tag>`](/ui/Tag) is appended at the very end (after any default/required note).
  * - Wrapped in [`<Prose>`](/ui/Prose) so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
  *
  * @kind component
@@ -38,7 +39,7 @@ export function DocumentationDescription({ description, default: def, optional, 
 			Defaults to <TreeLink name={def} />
 		</>
 	) : optional === false ? (
-		<>Required.</>
+		<Tag>required</Tag>
 	) : null;
 	if (!body && !requirement && !readonly) return null;
 	return (
@@ -50,7 +51,12 @@ export function DocumentationDescription({ description, default: def, optional, 
 					{requirement}
 				</>
 			) : null}
-			{readonly ? <>{body || requirement ? " " : null}Readonly</> : null}
+			{readonly ? (
+				<>
+					{body || requirement ? " " : null}
+					<Tag>readonly</Tag>
+				</>
+			) : null}
 		</Prose>
 	);
 }

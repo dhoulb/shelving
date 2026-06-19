@@ -63,12 +63,12 @@ describe("DocumentationPage", () => {
 		// `| undefined` is dropped from the type and marks the property optional (no `Required.`).
 		expect(html).toContain(">AnyCaller</code>");
 		expect(html).not.toContain(">undefined</code>");
-		// A property with no default and no optionality is marked `Required.`; one with a default surfaces `Defaults to …`.
-		expect(html).toContain("Required.");
+		// A property with no default and no optionality gets a `required` tag; one with a default surfaces `Defaults to …`.
+		expect(html).toContain(">required</span>");
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("20000");
-		// A read-only property appends `Readonly` at the end of its description.
-		expect(html).toContain("Readonly");
+		// A read-only property appends a `readonly` tag at the end of its description.
+		expect(html).toContain(">readonly</span>");
 	});
 
 	test("renders parameters as a table, folding any default into the description as a `Defaults to …` line", () => {
@@ -89,10 +89,10 @@ describe("DocumentationPage", () => {
 		expect(html).toContain(">Param</th>");
 		expect(html).toContain(">Type</th>");
 		expect(html).not.toContain(">Default</th>");
-		// A param with a default surfaces it as a `Defaults to …` note in its description; a param with neither a default nor optionality is marked `Required.`.
+		// A param with a default surfaces it as a `Defaults to …` note in its description; a param with neither a default nor optionality gets a `required` tag.
 		expect(html).toContain("Defaults to");
 		expect(html).toContain("false");
-		expect(html).toContain("Required.");
+		expect(html).toContain(">required</span>");
 		// Returns table headers.
 		expect(html).toContain(">Return</th>");
 		expect(html).toContain("The new thing.");
