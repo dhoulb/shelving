@@ -204,7 +204,7 @@
 			margin-block-end: 0;
 		}
 
-		:not(&:focus, &:focus-within) {
+		&:not(:focus, :focus-within) {
 			outline-color: transparent;
 		}
 	}

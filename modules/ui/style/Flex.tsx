@@ -10,8 +10,10 @@ import { type GapVariants, getGapClass } from "./Gap.js";
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/FlexVariants
  */
 export interface FlexVariants extends GapVariants {
-	/** Wrap overflowing elements onto the next line (defaults to no wrapping). */
+	/** Wrap overflowing elements onto the next line. */
 	wrap?: boolean | undefined;
+	/** Overflowing elements _do not_ wrap onto the next line. */
+	nowrap?: boolean | undefined;
 	/** Display the elements as a column (defaults to row). */
 	column?: boolean | undefined;
 	/** Reverse the order of the elements. */
@@ -73,12 +75,13 @@ export interface FlexVariants extends GapVariants {
  *
  * - Composes the `gap` prop so `<Flex gap="large">` etc. just works.
  *
+ * @param variants
  * @returns The combined flex + gap class string.
  * @example getFlexClass({ column: true, center: true, gap: "large" })
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/getFlexClass
  */
-export function getFlexClass(props: FlexVariants): string {
-	return getClass(getModuleClass(FLEX_CSS, "flex", props), getGapClass(props));
+export function getFlexClass(variants: FlexVariants): string {
+	return getClass(getModuleClass(FLEX_CSS, "flex", variants), getGapClass(variants));
 }
 
 /**
@@ -91,6 +94,7 @@ export interface RowProps extends FlexVariants, OptionalChildProps {}
 /**
  * Flex container that arranges its children as a row by default.
  *
+ * @param variants
  * @returns A `<div>` element with the computed flex class.
  * @example <Row gap="small" center>{items}</Row>
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/Row
@@ -109,6 +113,7 @@ export interface ColumnProps extends FlexVariants, OptionalChildProps {}
 /**
  * Flex container that stacks its children as a column by default.
  *
+ * @param variants
  * @returns A `<div>` element with the computed flex class.
  * @example <Column gap="small">{items}</Column>
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/Column

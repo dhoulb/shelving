@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
-import { Code } from "../inline/Code.js";
+import type { ReactElement } from "react";
+import { Code, type CodeProps } from "../inline/Code.js";
 import { Link } from "../inline/Link.js";
 import { getTreeElement, useTreeMap } from "./TreeContext.js";
 
@@ -8,11 +8,9 @@ import { getTreeElement, useTreeMap } from "./TreeContext.js";
  *
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeLink/TreeLinkProps
  */
-export interface TreeLinkProps {
+export interface TreeLinkProps extends CodeProps {
 	/** Reference to an element in the tree — a flat key (`"BooleanSchema"`, `"Store.get"`) or a canonical path (`"/schema/BooleanSchema"`). */
 	readonly name: string;
-	/** Visible label — defaults to `name` (typically a raw type expression like `"SlugSchemaOptions"`). */
-	readonly children?: ReactNode | undefined;
 }
 
 /**
@@ -27,9 +25,9 @@ export interface TreeLinkProps {
  * @example <TreeLink name="BooleanSchema" />
  * @see https://dhoulb.github.io/shelving/ui/tree/TreeLink/TreeLink
  */
-export function TreeLink({ name, children }: TreeLinkProps): ReactElement {
+export function TreeLink({ name, children, ...props }: TreeLinkProps): ReactElement {
 	const href = getTreeElement(useTreeMap(), name)?.props.path;
-	const code = <Code>{children ?? name}</Code>;
+	const code = <Code {...props}>{children ?? name}</Code>;
 	// A resolved reference links via its canonical `path`; an unresolved one stays a plain code token rather than an empty link.
 	return href ? <Link href={href}>{code}</Link> : code;
 }

@@ -1,3 +1,4 @@
+import type { ImmutableArray } from "../../util/array.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import STATUS_CSS from "./Status.module.css";
 import { TINT_CLASS } from "./Tint.js";
@@ -7,14 +8,15 @@ import { TINT_CLASS } from "./Tint.js";
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Status/STATUSES
  */
-export const STATUSES = ["loading", "info", "danger", "error", "warning", "success"] as const;
+export const STATUSES: ImmutableArray<Status> = ["loading", "info", "danger", "error", "warning", "success"];
 
 /**
- * Enumerated status name selectable via the `status` variant prop — maps to a semantic tint colour.
+ * Allowed status names selected via the `status="info"` prop for components that support that support [`StatusVariants`](/ui/StatusVariants)
+ * - Applies a semantic tint color to the element.
  *
  * @see https://dhoulb.github.io/shelving/ui/style/Status/Status
  */
-export type Status = (typeof STATUSES)[number];
+export type Status = "loading" | "info" | "danger" | "error" | "warning" | "success";
 
 /**
  * Variant props for the semantic status of an element, e.g. `status="success"`.
@@ -22,7 +24,7 @@ export type Status = (typeof STATUSES)[number];
  * @see https://dhoulb.github.io/shelving/ui/style/Status/StatusVariants
  */
 export interface StatusVariants {
-	/** Specific status for the element. */
+	/** Status for the element. */
 	status?: Status | undefined;
 }
 
@@ -32,6 +34,7 @@ export interface StatusVariants {
  * - Sets the key `.tint-50` colour for an element (e.g. `--color-success`) based on e.g. `status="success"`.
  * - The full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected colour, ready for the element to compose.
  *
+ * @param variants
  * @returns The combined tint + status class string, or `undefined` when no `status` is set.
  * @example getStatusClass({ status: "success" }) // "tint success"
  * @see https://dhoulb.github.io/shelving/ui/style/Status/getStatusClass

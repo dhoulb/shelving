@@ -83,15 +83,13 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	readonly rel: string | undefined;
 
 	/**
-	 * Current page URL — used as the base for resolving relative refs (`./foo`, `#x`, bare segments) in link hrefs.
-	 * @default Falls back to `root` if not set.
+	 * Current page URL — used as the base for resolving relative refs (`./foo`, `#x`, bare segments) in link hrefs. Falls back to `root` if not set.
 	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/url
 	 */
 	readonly url: ImmutableURL | undefined;
 
 	/**
-	 * Site root URL — used as the base for resolving site-absolute path hrefs (`/foo`), honoring its subfolder.
-	 * @default Falls back to `url` if not set.
+	 * Site root URL — used as the base for resolving site-absolute path hrefs (`/foo`), honoring its subfolder. Falls back to `url` if not set.
 	 * @see https://dhoulb.github.io/shelving/markup/MarkupParser/MarkupParser/root
 	 */
 	readonly root: ImmutableURL | undefined;

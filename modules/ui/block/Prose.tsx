@@ -9,6 +9,7 @@ import SMALL_CSS from "../inline/Small.module.css";
 import STRONG_CSS from "../inline/Strong.module.css";
 import SUBSCRIPT_CSS from "../inline/Subscript.module.css";
 import SUPERSCRIPT_CSS from "../inline/Superscript.module.css";
+import TABLE_CSS from "../table/Table.module.css";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
@@ -23,7 +24,6 @@ import PARAGRAPH_CSS from "./Paragraph.module.css";
 import PREFORMATTED_CSS from "./Preformatted.module.css";
 import SECTION_CSS from "./Section.module.css";
 import SUBHEADING_CSS from "./Subheading.module.css";
-import TABLE_CSS from "./Table.module.css";
 import TITLE_CSS from "./Title.module.css";
 
 // Combine the `.prose` class from every block and inline component's CSS module into a single string.

@@ -2,11 +2,11 @@ import { getModuleClass } from "../util/css.js";
 import PADDING_CSS from "./Padding.module.css";
 
 /**
- * Enumerated block-padding scale selectable via the `padding` variant prop — sets the `padding-block` (top + bottom) of a component.
+ * Allowed values for padding for components that support [`PaddingVariants`](/ui/PaddingVariants)
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Padding/UIPadding
+ * @see https://dhoulb.github.io/shelving/ui/style/Padding/PaddingVariant
  */
-export type UIPadding =
+export type PaddingVariant =
 	| "none"
 	| "xxsmall"
 	| "xsmall"
@@ -33,12 +33,13 @@ export type UIPadding =
  */
 export interface PaddingVariants {
 	/** Block-padding (top + bottom) of the element. */
-	padding?: UIPadding | undefined;
+	padding?: PaddingVariant | undefined;
 }
 
 /**
  * Get the block-padding class for a component from its `padding` variant prop.
  *
+ * @param variants
  * @returns The padding class string, or `undefined` when no `padding` is set.
  * @example getPaddingClass({ padding: "large" }) // "large"
  * @see https://dhoulb.github.io/shelving/ui/style/Padding/getPaddingClass

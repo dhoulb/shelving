@@ -42,7 +42,7 @@ describe("DocumentationPage", () => {
 		expect(html).not.toContain("Interfaces");
 	});
 
-	test("renders parameters as a table with a default column, hyphenating params without a default", () => {
+	test("renders parameters as a table, folding any default into the description as a `Defaults to …` line", () => {
 		const html = render(
 			<DocumentationPage
 				path="/makeThing"
@@ -56,15 +56,15 @@ describe("DocumentationPage", () => {
 			/>,
 			"./makeThing",
 		);
-		// Parameters table headers — name, type, default, description in separate columns.
-		expect(html).toContain("<th>Param</th>");
-		expect(html).toContain("<th>Type</th>");
-		expect(html).toContain("<th>Default</th>");
-		// A param with a default renders it; one without gets a hyphen.
+		// Parameters table headers — name and type only; the default lives in the description column now (header cells carry a class, so match on the closing tag).
+		expect(html).toContain(">Param</th>");
+		expect(html).toContain(">Type</th>");
+		expect(html).not.toContain(">Default</th>");
+		// A param with a default surfaces it as a `Defaults to …` line in its description; one without adds nothing.
+		expect(html).toContain("Defaults to");
 		expect(html).toContain("false");
-		expect(html).toContain("<td>-</td>");
 		// Returns table headers.
-		expect(html).toContain("<th>Return</th>");
+		expect(html).toContain(">Return</th>");
 		expect(html).toContain("The new thing.");
 	});
 

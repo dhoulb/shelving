@@ -33,6 +33,9 @@
 		&.wrap {
 			flex-wrap: wrap;
 		}
+		&.nowrap {
+			flex-wrap: nowrap;
+		}
 		&.between {
 			justify-content: space-between;
 		}

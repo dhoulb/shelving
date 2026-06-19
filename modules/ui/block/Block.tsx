@@ -1,7 +1,6 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -38,8 +37,7 @@ export interface BlockProps extends ColorVariants, SpaceVariants, TypographyVari
  */
 export function getBlockClass(variants: BlockProps): string {
 	return getClass(
-		BLOCK_CLASS,
-		TINT_CLASS,
+		BLOCK_CLASS, //
 		getColorClass(variants),
 		getSpaceClass(variants),
 		getTypographyClass(variants),

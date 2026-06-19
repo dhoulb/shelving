@@ -11,6 +11,7 @@ export * from "./notice/index.js";
 export * from "./page/index.js";
 export * from "./router/index.js";
 export * from "./style/index.js";
+export * from "./table/index.js";
 export * from "./transition/index.js";
 export * from "./tree/index.js";
 export * from "./util/index.js";

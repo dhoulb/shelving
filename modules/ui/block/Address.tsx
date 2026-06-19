@@ -5,7 +5,6 @@ import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
@@ -51,7 +50,6 @@ export function Address({ children, ...props }: AddressProps) {
 		<address
 			className={getClass(
 				ADDRESS_CLASS, //
-				TINT_CLASS,
 				getColorClass(props),
 				getSpaceClass(props),
 				getTypographyClass(props),

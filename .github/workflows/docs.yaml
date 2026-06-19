@@ -3,9 +3,10 @@
 # - On a push to `main`, the site is published to the root of the `docs` branch
 #   so it serves at `https://<owner>.github.io/<repo>/`.
 # - On a pull request, the site is published under `pr-<number>/` on the same branch
-#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. A
-#   comment is added (or updated) on the PR with the preview URL.
-# - When a pull request is closed, its preview directory is removed from `docs`.
+#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. The
+#   preview URL surfaces via a GitHub Deployment (`docs-preview` environment) on the PR.
+# - When a pull request is closed, its preview directory is removed from `docs` and its
+#   `docs-preview` deployments are deleted.
 name: Docs
 on:
   push:
@@ -23,26 +24,38 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     name: Build and deploy
     if: github.event_name != 'pull_request' || github.event.action != 'closed'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
+      deployments: write
+    # Records a GitHub Deployment so the commit / PR / branch shows a "View deployment" link
+    # pointing at the published site. PRs deploy to the shared `docs-preview` environment (URL
+    # per-PR); pushes to `main` deploy to `docs`. The job's success/failure sets the status.
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'docs-preview' || 'docs' }}
+      url: ${{ steps.url.outputs.url }}
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
       - name: install
         run: bun install
-      # APP_URL must match where the build is actually served so links and assets resolve correctly.
-      - name: build (main)
-        if: github.event_name != 'pull_request'
-        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" bun run docs:build
-      # PR previews are served from the `pr-<number>/` sub-directory, so the build resolves against that.
-      - name: build (preview)
-        if: github.event_name == 'pull_request'
-        run: APP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}" bun run docs:build
+      # Resolve the URL the build is served from — the single source for both the deployment
+      # `environment.url` (above) and `APP_URL` (below). Includes the `pr-<number>/` subfolder for PRs.
+      - name: url
+        id: url
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
+          fi
+      # `APP_URL` must match where the build is served so links and assets resolve; the docs build
+      # normalises it to a trailing slash (see `docs/env.ts`), so the resolved URL above feeds it directly.
+      - name: build
+        run: APP_URL="${{ steps.url.outputs.url }}" bun run docs:build
       # `keep_files: true` leaves every existing `pr-<number>/` preview untouched. Do NOT add
       # `exclude_assets: pr-*` here — peaceiris's `exclude_assets` runs `rm -rf` on matching
       # paths in the publish branch, so it would delete every PR preview on each main deploy.
@@ -63,32 +76,21 @@ jobs:
           publish_branch: docs
           destination_dir: pr-${{ github.event.pull_request.number }}
           keep_files: true
-      - name: comment preview URL
-        if: github.event_name == 'pull_request'
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: docs-preview
-          message: |
-            **Docs preview** for this PR:
 
-            https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/
-
-            Updated on every push.
-
-  cleanup:
-    name: Remove closed PR preview
+  teardown:
+    name: Teardown
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
+      deployments: write
     steps:
       - name: checkout docs branch
         uses: actions/checkout@v6
         with:
           ref: docs
           fetch-depth: 0
-      - name: remove preview directory
+      - name: teardown (preview)
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
@@ -100,9 +102,29 @@ jobs:
             git commit -m "chore: remove docs preview for PR #${PR_NUMBER}"
             git push
           fi
-      - name: update PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
+      # GitHub never deletes deployment records on its own, so the `docs-preview` deployments this
+      # PR created would linger forever pointing at a now-removed preview. Mark them inactive (you
+      # can't delete an active deployment) then delete them.
+      - name: teardown (deployments)
+        uses: actions/github-script@v8
         with:
-          header: docs-preview
-          message: |
-            Docs preview for this PR has been removed.
+          script: |
+            const { data: deployments } = await github.rest.repos.listDeployments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              environment: 'docs-preview',
+              ref: `refs/pull/${context.issue.number}/merge`,
+            });
+            for (const deployment of deployments) {
+              await github.rest.repos.createDeploymentStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+                state: 'inactive',
+              });
+              await github.rest.repos.deleteDeployment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                deployment_id: deployment.id,
+              });
+            }
