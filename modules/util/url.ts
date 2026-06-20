@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
-import type { AbsolutePath } from "./path.js";
+import { type AbsolutePath, cleanPath } from "./path.js";
 import type { ImmutableURI } from "./uri.js";
 
 /**
@@ -166,6 +166,7 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  * - Need to be valid _URLs_ not just _URIs_, i.e. needs to have `protocol://` at the start.
  * - Origins need to match, i.e. `http://localhost` !== `http://localhost:4020`
  * - Relative targets are resolved against the normalized base URL.
+ * - The resolved target pathname is normalised with `cleanPath()` — runs of slashes are collapsed and a trailing slash is stripped (the root `/` is preserved) — so `/foo` and `/foo/` resolve to the same path. This mirrors the path-based sibling `matchPathPrefix()`.
  *
  * @param target URL to match against `base` — if this is a relative path it will be resolved against `base`
  * @param base Base URL the `target` is matched against.
@@ -175,6 +176,7 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  * @throws RequiredError If `target` or `base` cannot be resolved to a true URL.
  *
  * @example matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
+ * @example matchURLPrefix("http://x.com/a/b/", "http://x.com/a/"); // `/b` (trailing slash normalised away)
  *
  * @see https://dhoulb.github.io/shelving/util/url/matchURLPrefix
  */
@@ -188,7 +190,7 @@ export function matchURLPrefix(
 	const targetURL = requireURL(target, baseURL, caller);
 	if (targetURL.origin !== baseURL.origin) return;
 	const basePath = baseURL.pathname;
-	const targetPath = targetURL.pathname;
+	const targetPath = cleanPath(targetURL.pathname);
 	if (basePath === "/") return targetPath;
 	// `basePath` may or may not have a trailing slash, so strip it and re-assert the directory boundary explicitly.
 	const bareBase = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;

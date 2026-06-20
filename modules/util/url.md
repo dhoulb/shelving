@@ -44,6 +44,9 @@ import { matchURLPrefix } from "shelving/util";
 matchURLPrefix("https://example.com/app/page", "https://example.com/app");
 // "/page"  (path after the base)
 
+matchURLPrefix("https://example.com/app/page/", "https://example.com/app");
+// "/page"  (trailing slash normalised away, so `/page` and `/page/` resolve the same)
+
 matchURLPrefix("https://example.com/other", "https://example.com/app");
 // undefined  (no match)
 

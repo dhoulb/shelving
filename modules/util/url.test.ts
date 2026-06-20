@@ -96,6 +96,15 @@ describe("matchURLPrefix()", () => {
 		expect(matchURLPrefix("def", "https://x.com/abc")).toBe("/def");
 		expect(matchURLPrefix("https://x.com/abc", "https://x.com/abc")).toBe("/");
 	});
+
+	test("normalizes a trailing slash on the target away", () => {
+		// A trailing slash on the target resolves to the same path as the slash-less form.
+		expect(matchURLPrefix("https://x.com/enquiry/loan/", "https://x.com/")).toBe("/enquiry/loan");
+		expect(matchURLPrefix("https://x.com/enquiry/loan", "https://x.com/")).toBe("/enquiry/loan");
+		expect(matchURLPrefix("https://x.com/abc/def/", "https://x.com/abc/")).toBe("/def");
+		// The root `/` is preserved (it doesn't collapse to an empty string).
+		expect(matchURLPrefix("https://x.com/", "https://x.com/")).toBe("/");
+	});
 });
 describe("isURLActive()", () => {
 	test("true when target equals base (after resolution)", () => {

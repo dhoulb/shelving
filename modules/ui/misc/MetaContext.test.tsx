@@ -29,6 +29,16 @@ describe("requireMetaURL", () => {
 		expect(html).toBe("/");
 	});
 
+	test("normalizes a trailing slash on the url away", () => {
+		// `/enquiry/loan/` resolves to the same path as `/enquiry/loan`, so trailing-slash URLs match the same route.
+		const html = renderToStaticMarkup(
+			<MetaContext value={createMeta({ root: "http://x.com/", url: "http://x.com/enquiry/loan/" })}>
+				<Probe />
+			</MetaContext>,
+		);
+		expect(html).toBe("/enquiry/loan");
+	});
+
 	test("throws RequiredError when url is unset", () => {
 		expect(() => renderToStaticMarkup(<Probe />)).toThrow(RequiredError);
 	});
