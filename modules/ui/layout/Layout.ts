@@ -1,14 +1,3 @@
-import { getModuleClass } from "../util/css.js";
-import styles from "./Layout.module.css";
-
-/**
- * Resolved `.layout` class for composing the layout's padding/scroll/safe-area behaviour onto a custom element.
- *
- * @example <main className={LAYOUT_CLASS}>…</main>
- * @see https://dhoulb.github.io/shelving/ui/layout/Layout/LAYOUT_CLASS
- */
-export const LAYOUT_CLASS = getModuleClass(styles, "layout");
-
 /**
  * Track the dynamic viewport height so layout safe-area insets follow the on-screen keyboard.
  *

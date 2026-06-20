@@ -1,9 +1,8 @@
 import type { ReactElement } from "react";
 import { RouteCache } from "../router/RouteCache.js";
-import { getClass, getModuleClass } from "../util/css.js";
+import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
-import { LAYOUT_CLASS } from "./Layout.js";
 
 /**
  * Props for `<CenteredLayout>` — optional `children` and a `fullWidth` flag to drop the max-width.
@@ -30,7 +29,7 @@ export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutPr
 	// keeping their scroll position and state intact across back/forward navigation.
 	return (
 		<RouteCache>
-			<main className={getClass(getModuleClass(CENTERED_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
+			<main className={getModuleClass(CENTERED_LAYOUT_CSS, "main")}>
 				<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner")} style={fullWidth ? { maxWidth: "none" } : undefined}>
 					{children}
 				</div>

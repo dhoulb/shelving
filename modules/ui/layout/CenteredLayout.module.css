@@ -1,13 +1,73 @@
 @import "../style/layers.css";
+@import "../style/Space.module.css";
+@import "../style/Tint.module.css";
 @import "../style/Width.module.css";
 
-@layer components {
+/* Low-priority padding defaults live in `@layer defaults` so consumers can override them */
+/* with normal-specificity selectors without needing `:where()` tricks. */
+@layer defaults {
 	.main {
-		/* Content */
+		/* Top/bottom use `layout-space` and left/right use `layout-padding`, plus safe-area additions. */
+		padding: var(--layout-space, var(--space-normal)) var(--layout-padding, var(--space-normal));
+		padding-top: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-bottom: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)));
+		padding-left: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
+		padding-right: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
+
+		/* Grow to fill the body. */
+		flex: 1;
+	}
+}
+
+@layer components {
+	/*
+	 * Lock the document and let `.main` own the page scroll.
+	 * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
+	 * - <body> stacks its children vertically (flex column).
+	 * - The `.main` element grows to fill the body and is the only scroll container.
+	 */
+	html:has(.main) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		height: 100vh;
+		height: 100dvh; /* Make the height dynamically expand/contract as the address bar shows/hides on iOS. */
+		width: 100vw;
+		width: 100dvw;
+
+		/* Contents */
+		overflow: hidden;
+		overflow-wrap: break-word; /* Break overlong words only as a last resort. */
+	}
+
+	body:has(.main) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+
+		/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
+		position: fixed;
+		inset: 0;
+
+		/* Layout-specific bg hook. */
+		background: var(--layout-body-bg, var(--tint-100));
+	}
+
+	.main {
+		/* Content — a flex column whose inner column centres itself with `margin: auto` (both axes). */
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: start;
+
+		/* Scrolling */
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior-x: auto;
+		overscroll-behavior-y: contain;
+		scroll-behavior: smooth;
 	}
 
 	.mainInner {

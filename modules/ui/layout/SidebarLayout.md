@@ -53,6 +53,6 @@ useEffect(useSafeKeyboardArea, []);
 | `--sidebar-layout-content-background` | Main content column fill | `var(--tint-100)` |
 | `--sidebar-layout-border` | Divider between sidebar and content | `var(--stroke-normal) solid var(--tint-80)` |
 
-The content column composes the shared `.layout` behaviour, so it also reads the layout hooks `--layout-space`, `--layout-padding`, `--layout-inset-top` / `-bottom` / `-left` / `-right`, and `--layout-body-bg`.
+The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class). `useSafeKeyboardArea()` still writes `--layout-inset-bottom` for layouts that pad to the safe area.
 
 **Global tokens it reads** — the tint ladder `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.

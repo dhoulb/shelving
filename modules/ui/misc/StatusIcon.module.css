@@ -1,5 +1,6 @@
 @import "../style/layers.css";
 @import "../style/Size.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.icon {
@@ -7,6 +8,9 @@
 		border-radius: 999px;
 		width: var(--status-icon-size, 1lh);
 		height: var(--status-icon-size, 1lh);
+
+		/* Paint from the status tint anchor so e.g. `status="error"` renders red, `success` green, etc. */
+		color: var(--status-icon-color, var(--tint-50));
 
 		/* Variants */
 		&.small {
