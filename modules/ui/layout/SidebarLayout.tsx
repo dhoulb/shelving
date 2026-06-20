@@ -5,7 +5,6 @@ import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import { LAYOUT_CLASS } from "./Layout.js";
 import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
 
 /**
@@ -60,7 +59,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 	// duplicated nor remounted as the URL changes.
 	const contentEl = (
 		<RouteCache key="content">
-			<div className={getClass(LAYOUT_CLASS, getModuleClass(SIDEBAR_LAYOUT_CSS, "content"))}>
+			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "content")}>
 				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "toggle")}>
 					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 						{open ? <XMarkIcon /> : <Bars3Icon />}
@@ -80,7 +79,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		/>
 	);
 	return (
-		<main className={getClass(getModuleClass(SIDEBAR_LAYOUT_CSS, "main"), LAYOUT_CLASS)}>
+		<main className={getModuleClass(SIDEBAR_LAYOUT_CSS, "main")}>
 			{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}
 		</main>
 	);

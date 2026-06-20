@@ -68,7 +68,8 @@
 
 @layer overrides {
 	.card {
-		&:has(.overlay:not(focus-visible)) {
+		/* Show the focus ring only while the navigable overlay is keyboard-focused; hide it otherwise (including non-clickable cards, which have no overlay). */
+		&:not(:has(.overlay:focus-visible)) {
 			outline-color: transparent;
 		}
 	}

@@ -8,10 +8,9 @@
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
 *
-* The outer `.layout` class (from Layout.module.css) owns the overall page scroll —
-* here we override its block-level behaviour so the sidebar and content each scroll independently.
-* The inner `.content` element reuses the `.layout` class too so it picks up the standard
-* layout padding, safe-area insets, and `overflow: hidden auto` scroll behaviour.
+* This layout owns its page styling completely: `.main` is the body-filling grid container, and the
+* inner `.content` column owns the scroll/safe-area behaviour. The `html`/`body` rules below lock the
+* document so `.main` is the only scroll container.
 *
 * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
 * screen; the `.toggle` button opens/closes it and the `.overlay` dims the page behind the open
@@ -19,12 +18,44 @@
 */
 
 @layer components {
+	/*
+	 * Lock the document and let `.main` own the page scroll.
+	 * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
+	 * - <body> stacks its children vertically (flex column).
+	 * - The `.main` element grows to fill the body.
+	 */
+	html:has(.main) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		height: 100vh;
+		height: 100dvh; /* Make the height dynamically expand/contract as the address bar shows/hides on iOS. */
+		width: 100vw;
+		width: 100dvw;
+
+		/* Contents */
+		overflow: hidden;
+		overflow-wrap: break-word; /* Break overlong words only as a last resort. */
+	}
+
 	body:has(.main) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+
+		/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
+		position: fixed;
+		inset: 0;
+
 		/* Style */
 		background: var(--sidebar-layout-background, var(--tint-100));
 	}
 
 	.main {
+		/* Grow to fill the body (it is the body's flex child). */
+		flex: 1;
 		display: grid;
 		grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
 		gap: 0;
@@ -47,9 +78,17 @@
 	}
 
 	.content {
-		/* Combined with `.layout` (added at the JSX layer) for scroll/padding/safe-area behaviour. */
+		/* Owns the page scroll for the content column (previously inherited from the shared `.layout`). */
 		min-width: 0;
 		padding: 0;
+
+		/* Scrolling */
+		display: flow-root;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior-x: auto;
+		overscroll-behavior-y: contain;
+		scroll-behavior: smooth;
 
 		/* Style */
 		background: var(--sidebar-layout-content-background, var(--tint-100));
