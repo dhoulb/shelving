@@ -3,10 +3,12 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MetaContext } from "../misc/MetaContext.js";
 import { createMeta } from "../util/meta.js";
 import { Router } from "./Router.js";
+import type { RouteProps } from "./Routes.js";
 
 const ROUTES = {
 	"/": () => <main>Home</main>,
 	"/about": () => <main>About</main>,
+	"/enquiry/{form}": ({ form }: RouteProps) => <main>Enquiry {form}</main>,
 } as const;
 
 function render(url: string) {
@@ -24,5 +26,12 @@ describe("Router", () => {
 
 	test("throws when no route matches and no fallback is given", () => {
 		expect(() => render("./missing")).toThrow();
+	});
+
+	test("matches a route when the url has a trailing slash", () => {
+		// A trailing slash on the url resolves to the same route as the slash-less form.
+		expect(render("http://x.com/about/")).toContain("About");
+		expect(render("http://x.com/enquiry/loan")).toContain("Enquiry loan");
+		expect(render("http://x.com/enquiry/loan/")).toContain("Enquiry loan");
 	});
 });
