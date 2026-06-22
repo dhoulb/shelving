@@ -5,23 +5,23 @@ import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
+import type { BlockElement } from "./Block.js";
 import PANEL_CSS from "./Panel.module.css";
 
 const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
-
-/**
- * Allowed semantic elements for a `<Panel>`.
- *
- * @see https://dhoulb.github.io/shelving/ui/block/Panel/PanelElement
- */
-export type PanelElement = "section" | "header" | "footer" | "nav" | "aside" | "article" | "div";
 
 /**
  * Props for `Panel` — colour, status, and typography variants plus optional `children`.
  *
  * @see https://dhoulb.github.io/shelving/ui/block/Panel/PanelProps
  */
-export interface PanelProps extends ColorVariants, PaddingVariants, StatusVariants, TypographyVariants, OptionalChildProps {}
+export interface PanelProps extends ColorVariants, PaddingVariants, StatusVariants, TypographyVariants, OptionalChildProps {
+	/**
+	 * Element this `<Panel>` renders as, e.g. "header" to output a "<header>"
+	 * @default "section"
+	 */
+	as?: BlockElement | undefined;
+}
 
 /**
  * Full-width vertical region that paints the current surface colour. Use to break a page into stacked
@@ -36,9 +36,9 @@ export interface PanelProps extends ColorVariants, PaddingVariants, StatusVarian
  * @example <Panel padding="xlarge" color="primary"><Title>Welcome</Title></Panel>
  * @see https://dhoulb.github.io/shelving/ui/block/Panel/Panel
  */
-export function Panel({ children, ...props }: PanelProps): ReactElement {
+export function Panel({ as: Element = "section", children, ...props }: PanelProps): ReactElement {
 	return (
-		<div
+		<Element
 			className={getClass(
 				PANEL_CLASS, //
 				getStatusClass(props),
@@ -48,6 +48,6 @@ export function Panel({ children, ...props }: PanelProps): ReactElement {
 			)}
 		>
 			{children}
-		</div>
+		</Element>
 	);
 }
