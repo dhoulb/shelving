@@ -187,8 +187,8 @@ export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 						<Row left>
 							<StatusIcon status="error" size="xlarge" /> {message}
 						</Row>
-						<RetryButton />
 					</Subheading>
+					<RetryButton />
 				</Card>
 			</CenteredLayout>
 		</Page>
