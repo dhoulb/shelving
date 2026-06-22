@@ -81,7 +81,10 @@ export interface FlexVariants extends GapVariants {
  * @see https://dhoulb.github.io/shelving/ui/style/Flex/getFlexClass
  */
 export function getFlexClass(variants: FlexVariants): string {
-	return getClass(getModuleClass(FLEX_CSS, "flex", variants), getGapClass(variants));
+	return getClass(
+		getModuleClass(FLEX_CSS, "flex", variants), //
+		getGapClass(variants),
+	);
 }
 
 /**
