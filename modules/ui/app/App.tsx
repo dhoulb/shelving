@@ -1,19 +1,5 @@
 import type { ReactElement } from "react";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
-// Load the global design tokens, cascade-layer order, and body baseline. Each module owns its own
-// `:root` tokens (and body rules where relevant); see `modules/ui/README.md` for the styling system.
-import "../style/layers.css";
-import "../style/Color.module.css";
-import "../style/Duration.module.css";
-import "../style/Font.module.css";
-import "../style/Radius.module.css";
-import "../style/Shadow.module.css";
-import "../style/Size.module.css";
-import "../style/Space.module.css";
-import "../style/Stroke.module.css";
-import "../style/Tint.module.css";
-import "../style/Weight.module.css";
-import "../style/Width.module.css";
 import type { PossibleMeta } from "../util/index.js";
 import type { ChildProps } from "../util/props.js";
 

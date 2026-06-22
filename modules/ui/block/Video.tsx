@@ -6,6 +6,8 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Video.module.css";
 
+const VIDEO_CLASS = getModuleClass(styles, "video");
+
 /**
  * Props for `Video` — space and width variants plus optional `children`.
  *
@@ -48,7 +50,14 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
 	const ref = useRef<HTMLElement | null>(null);
 
 	return (
-		<figure ref={ref} className={getClass(getModuleClass(styles, "video"), getSpaceClass(variants), getWidthClass(variants))}>
+		<figure
+			ref={ref}
+			className={getClass(
+				VIDEO_CLASS, //
+				getSpaceClass(variants),
+				getWidthClass(variants),
+			)}
+		>
 			{children}
 		</figure>
 	);

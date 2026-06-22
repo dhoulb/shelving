@@ -1,10 +1,8 @@
 @import "../style/layers.css";
-@import "../style/Font.module.css";
-@import "../style/Size.module.css";
 @import "../style/Space.module.css";
 @import "../style/Stroke.module.css";
 @import "../style/Tint.module.css";
-@import "../style/Weight.module.css";
+@import "../style/Typography.module.css";
 
 @layer components {
 	.table,

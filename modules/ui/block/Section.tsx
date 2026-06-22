@@ -36,7 +36,13 @@ export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVa
  * @see https://dhoulb.github.io/shelving/ui/block/Section/getSectionClass
  */
 export function getSectionClass(variants: SectionProps): string {
-	return getClass(SECTION_CLASS, getColorClass(variants), getSpaceClass(variants), getTypographyClass(variants), getWidthClass(variants));
+	return getClass(
+		SECTION_CLASS, //
+		getColorClass(variants),
+		getSpaceClass(variants),
+		getTypographyClass(variants),
+		getWidthClass(variants),
+	);
 }
 
 function renderSection(

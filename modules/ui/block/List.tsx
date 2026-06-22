@@ -7,7 +7,6 @@ import { getClass, getModuleClass } from "../util/css.js";
 import LIST_CSS from "./List.module.css";
 
 const LIST_ORDERED_CLASS = getModuleClass(LIST_CSS, "ordered");
-
 const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
 
 /**

@@ -34,12 +34,6 @@
 		--tint-100: white;
 	}
 
-	body {
-		/* Apply default colours to body. */
-		color: var(--tint-00);
-		background: var(--tint-100);
-	}
-
 	.tint {
 		/* Neutralise bright colors in tinted areas. */
 		--color-link: inherit;

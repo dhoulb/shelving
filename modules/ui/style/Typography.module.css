@@ -1,7 +1,170 @@
 @import "layers.css";
 @import "Tint.module.css";
 
+@layer defaults {
+	:root {
+		/* Font faces */
+		--font-sans: system-ui;
+		--font-monospace: ui-monospace, "SF Mono", "Consolas", "Menlo", monospace;
+		--font-serif: "Palatino", "Garamond", serif;
+
+		/* Semantic font faces */
+		--font-title: var(--font-sans);
+		--font-body: var(--font-sans);
+		--font-label: var(--font-sans);
+		--font-code: var(--font-monospace);
+
+		/* Font weights */
+		--weight-normal: 400;
+		--weight-strong: 700;
+
+		/* Semantic font weights */
+		--weight-title: var(--weight-strong);
+		--weight-body: var(--weight-normal);
+		--weight-label: var(--weight-strong);
+		--weight-code: 500;
+
+		/* Sizings */
+		--size-scale: 1.25;
+		--size-xxsmall: calc(var(--size-normal) * pow(var(--size-scale), -3));
+		--size-xsmall: calc(var(--size-normal) * pow(var(--size-scale), -2));
+		--size-small: calc(var(--size-normal) * pow(var(--size-scale), -1));
+		--size-normal: 1rem;
+		--size-large: calc(var(--size-normal) * pow(var(--size-scale), 1));
+		--size-xlarge: calc(var(--size-normal) * pow(var(--size-scale), 2));
+		--size-xxlarge: calc(var(--size-normal) * pow(var(--size-scale), 3));
+		--size-xxxlarge: calc(var(--size-normal) * pow(var(--size-scale), 4));
+
+		/* Semantic sizes */
+		--size-icon: var(--size-large);
+		--size-label: var(--size-small);
+
+		/* Relative sizes */
+		--size-smaller: 0.875em;
+		--size-larger: 1.5em;
+		--size-xlarger: 2.5em;
+		--size-xxlarger: 5em;
+
+		/* Line heights */
+		--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
+		--leading-normal: 1.5;
+
+		/* Semantic cases */
+		--case-title: none;
+		--case-body: none;
+		--case-label: uppercase;
+		--case-code: none;
+	}
+
+	body {
+		font-family: var(--font-body);
+		font-weight: var(--weight-body);
+		font-size: var(--size-normal);
+		line-height: var(--leading);
+		text-align: start;
+		text-transform: var(--case-body);
+		color: var(--tint-00);
+		background-color: var(--tint-100);
+	}
+}
+
 @layer variants {
+	/* Font-size variants. */
+	.size-xxsmall {
+		font-size: var(--size-xxsmall);
+		line-height: var(--leading);
+	}
+	.size-xsmall {
+		font-size: var(--size-xsmall);
+		line-height: var(--leading);
+	}
+	.size-small {
+		font-size: var(--size-small);
+		line-height: var(--leading);
+	}
+	.size-normal {
+		font-size: var(--size-normal);
+		line-height: var(--leading);
+	}
+	.size-large {
+		font-size: var(--size-large);
+		line-height: var(--leading);
+	}
+	.size-xlarge {
+		font-size: var(--size-xlarge);
+		line-height: var(--leading);
+	}
+	.size-xxlarge {
+		font-size: var(--size-xxlarge);
+		line-height: var(--leading);
+	}
+
+	/* Font-family variants. */
+	.font-title {
+		font-family: var(--font-title);
+	}
+	.font-body {
+		font-family: var(--font-body);
+	}
+	.font-code {
+		font-family: var(--font-code);
+	}
+	.font-label {
+		font-family: var(--font-label);
+	}
+	.font-sans {
+		font-family: var(--font-sans);
+	}
+	.font-serif {
+		font-family: var(--font-serif);
+	}
+	.font-monospace {
+		font-family: var(--font-monospace);
+	}
+
+	/* Font-weight variants. */
+	.weight-title {
+		font-weight: var(--weight-title);
+	}
+	.weight-body {
+		font-weight: var(--weight-body);
+	}
+	.weight-code {
+		font-weight: var(--weight-code);
+	}
+	.weight-label {
+		font-weight: var(--weight-label);
+	}
+	.weight-normal {
+		font-weight: var(--weight-normal);
+	}
+	.weight-strong {
+		font-weight: var(--weight-strong);
+	}
+
+	/* Font-case variants. */
+	.case-title {
+		text-transform: var(--case-title);
+	}
+	.case-body {
+		text-transform: var(--case-body);
+	}
+	.case-code {
+		text-transform: var(--case-code);
+	}
+	.case-label {
+		text-transform: var(--case-label);
+	}
+	.case-upper {
+		text-transform: uppercase;
+	}
+	.case-lower {
+		text-transform: lowercase;
+	}
+	.case-normal {
+		text-transform: none;
+	}
+
 	/* Text tint variants — set CSS `color:` to a shade of the current tint ladder. */
 	.tint-00 {
 		color: var(--tint-00);

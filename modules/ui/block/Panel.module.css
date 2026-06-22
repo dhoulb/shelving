@@ -1,6 +1,9 @@
 @import "../style/layers.css";
 @import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
+@import "../style/Typography.module.css";
+@import "../style/Status.module.css";
+@import "../style/Color.module.css";
+@import "../style/Padding.module.css";
 
 /*
  * Full-width vertical region that paints the current surface. Panels always have zero block-space

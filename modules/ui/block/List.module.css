@@ -1,6 +1,8 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
-@import "../style/Tint.module.css";
+@import "../style/Color.module.css";
+@import "../style/Gap.module.css";
+@import "../style/Typography.module.css";
 
 @layer components {
 	.unordered,

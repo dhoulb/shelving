@@ -1,5 +1,5 @@
 @import "../style/layers.css";
-@import "../style/Size.module.css";
+@import "../style/Typography.module.css";
 @import "../style/Tint.module.css";
 
 @layer components {

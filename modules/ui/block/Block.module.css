@@ -1,4 +1,8 @@
 @import "../style/layers.css";
+@import "../style/Color.module.css";
+@import "../style/Space.module.css";
+@import "../style/Typography.module.css";
+@import "../style/Width.module.css";
 
 @layer components {
 	.block {

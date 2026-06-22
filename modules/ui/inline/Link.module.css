@@ -1,7 +1,7 @@
 @import "../style/layers.css";
 @import "../style/Color.module.css";
 @import "../style/Stroke.module.css";
-@import "../style/Weight.module.css";
+@import "../style/Typography.module.css";
 
 @layer components {
 	.link,

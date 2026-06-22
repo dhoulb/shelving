@@ -1,13 +1,11 @@
 @import "../style/layers.css";
 @import "../style/Color.module.css";
 @import "../style/Duration.module.css";
-@import "../style/Font.module.css";
 @import "../style/Radius.module.css";
-@import "../style/Size.module.css";
 @import "../style/Space.module.css";
 @import "../style/Stroke.module.css";
 @import "../style/Tint.module.css";
-@import "../style/Weight.module.css";
+@import "../style/Typography.module.css";
 
 @layer components {
 	.button {

@@ -8,8 +8,8 @@
  *   • `defaults`   — `:root` design tokens (spread across the themed token modules), the tint ladder, and the
  *                    body baseline. Low-priority opt-in defaults.
  *   • `components` — component-defining CSS. The bulk of the codebase.
- *   • `variants`   — cross-cutting opt-in modifiers (Color, Status, Space, Padding, Gap, Width, Size, Weight,
- *                    Font, Flex, Scroll). Always beat components.
+ *   • `variants`   — cross-cutting opt-in modifiers (Color, Status, Space, Padding, Gap, Width, Typography,
+ *                    Flex, Scroll). Always beat components.
  *   • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin collapses,
  *                    which must beat variant-set margins.
  *
