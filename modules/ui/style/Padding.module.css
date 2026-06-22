@@ -3,60 +3,60 @@
 
 @layer variants {
 	/* Block-padding variants. */
-	.none {
+	.padding-none {
 		padding-block: 0;
 	}
-	.xxsmall {
+	.padding-xxsmall {
 		padding-block: var(--space-xxsmall);
 	}
-	.xsmall {
+	.padding-xsmall {
 		padding-block: var(--space-xsmall);
 	}
-	.small {
+	.padding-small {
 		padding-block: var(--space-small);
 	}
-	.normal {
+	.padding-normal {
 		padding-block: var(--space-normal);
 	}
-	.large {
+	.padding-large {
 		padding-block: var(--space-large);
 	}
-	.xlarge {
+	.padding-xlarge {
 		padding-block: var(--space-xlarge);
 	}
-	.xxlarge {
+	.padding-xxlarge {
 		padding-block: var(--space-xxlarge);
 	}
 
 	/* Numeric block-padding multiples of `--space-normal` (`1x` … `10x`). */
-	.\31 x {
+	.padding-1x {
 		padding-block: calc(var(--space-normal) * 1);
 	}
-	.\32 x {
+	.padding-2x {
 		padding-block: calc(var(--space-normal) * 2);
 	}
-	.\33 x {
+	.padding-3x {
 		padding-block: calc(var(--space-normal) * 3);
 	}
-	.\34 x {
+	.padding-4x {
 		padding-block: calc(var(--space-normal) * 4);
 	}
-	.\35 x {
+	.padding-5x {
 		padding-block: calc(var(--space-normal) * 5);
 	}
-	.\36 x {
+	.padding-6x {
 		padding-block: calc(var(--space-normal) * 6);
 	}
-	.\37 x {
+	.padding-7x {
 		padding-block: calc(var(--space-normal) * 7);
 	}
-	.\38 x {
+	.padding-8x {
 		padding-block: calc(var(--space-normal) * 8);
 	}
-	.\39 x {
+	.padding-9x {
 		padding-block: calc(var(--space-normal) * 9);
 	}
-	.\31 0x {
+	.padding-10x {
 		padding-block: calc(var(--space-normal) * 10);
 	}
 }

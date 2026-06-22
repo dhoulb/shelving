@@ -45,5 +45,5 @@ export interface PaddingVariants {
  * @see https://dhoulb.github.io/shelving/ui/style/Padding/getPaddingClass
  */
 export function getPaddingClass({ padding }: PaddingVariants): string | undefined {
-	return padding && getModuleClass(PADDING_CSS, padding);
+	return padding && getModuleClass(PADDING_CSS, `padding-${padding}`);
 }

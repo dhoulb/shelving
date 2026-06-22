@@ -3,14 +3,13 @@
 @layer defaults {
 	:root {
 		/* Spacings */
-		--space: 1rem;
-		--space-xxsmall: calc(var(--space) * 0.25); /* 4px */
-		--space-xsmall: calc(var(--space) * 0.5); /* 8px */
-		--space-small: calc(var(--space) * 0.75); /* 12px */
-		--space-normal: calc(var(--space) * 1); /* 16px */
-		--space-large: calc(var(--space) * 1.5); /* 24px */
-		--space-xlarge: calc(var(--space) * 2); /* 32px */
-		--space-xxlarge: calc(var(--space) * 3); /* 48px */
+		--space-xxsmall: calc(var(--space-normal) * 0.25); /* 4px */
+		--space-xsmall: calc(var(--space-normal) * 0.5); /* 8px */
+		--space-small: calc(var(--space-normal) * 0.75); /* 12px */
+		--space-normal: 1rem; /* 16px */
+		--space-large: calc(var(--space-normal) * 1.5); /* 24px */
+		--space-xlarge: calc(var(--space-normal) * 2); /* 32px */
+		--space-xxlarge: calc(var(--space-normal) * 3); /* 48px */
 
 		/* Semantic spacings */
 		--space-section: 2rem; /* Default top margin for titles/headings/section blocks. */
@@ -20,60 +19,60 @@
 
 @layer variants {
 	/* Block-space variants — opt-in margin-block modifiers for any block-level component. */
-	.none {
+	.space-none {
 		margin-block: 0;
 	}
-	.xxsmall {
+	.space-xxsmall {
 		margin-block: var(--space-xxsmall);
 	}
-	.xsmall {
+	.space-xsmall {
 		margin-block: var(--space-xsmall);
 	}
-	.small {
+	.space-small {
 		margin-block: var(--space-small);
 	}
-	.normal {
+	.space-normal {
 		margin-block: var(--space-normal);
 	}
-	.large {
+	.space-large {
 		margin-block: var(--space-large);
 	}
-	.xlarge {
+	.space-xlarge {
 		margin-block: var(--space-xlarge);
 	}
-	.xxlarge {
+	.space-xxlarge {
 		margin-block: var(--space-xxlarge);
 	}
 
 	/* Numeric block-space multiples of `--space-normal` (`1x` … `10x`). */
-	.\31 x {
+	.space-1x {
 		margin-block: calc(var(--space-normal) * 1);
 	}
-	.\32 x {
+	.space-2x {
 		margin-block: calc(var(--space-normal) * 2);
 	}
-	.\33 x {
+	.space-3x {
 		margin-block: calc(var(--space-normal) * 3);
 	}
-	.\34 x {
+	.space-4x {
 		margin-block: calc(var(--space-normal) * 4);
 	}
-	.\35 x {
+	.space-5x {
 		margin-block: calc(var(--space-normal) * 5);
 	}
-	.\36 x {
+	.space-6x {
 		margin-block: calc(var(--space-normal) * 6);
 	}
-	.\37 x {
+	.space-7x {
 		margin-block: calc(var(--space-normal) * 7);
 	}
-	.\38 x {
+	.space-8x {
 		margin-block: calc(var(--space-normal) * 8);
 	}
-	.\39 x {
+	.space-9x {
 		margin-block: calc(var(--space-normal) * 9);
 	}
-	.\31 0x {
+	.space-10x {
 		margin-block: calc(var(--space-normal) * 10);
 	}
 }

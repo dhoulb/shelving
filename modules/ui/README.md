@@ -38,8 +38,8 @@ The recommended way to give an app its own look is a **theme stylesheet**, not s
 :root {
 	--color-primary: oklch(58% 0.25 300); /* purple brand */
 	--font-body: "Inter", system-ui;
-	--radius: 0.5rem; /* tighter corners everywhere */
-	--space: 1.125rem; /* roomier spacing scale */
+	--radius-normal: 0.5rem; /* tighter corners everywhere */
+	--space-normal: 1.125rem; /* roomier spacing scale */
 }
 ```
 

@@ -4,15 +4,14 @@ This module's main job is to **define and document the corner-radius design toke
 
 ## Theme variables
 
-The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app. Every step derives from `--radius`, so changing that one value reflows the whole ramp.
+The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app. Every step derives from `--radius-normal`, so changing that one value reflows the whole ramp.
 
 | Variable | Default | Notes |
 |---|---|---|
-| `--radius` | `1rem` | Base radius — the root of the scale. |
-| `--radius-xxsmall` | `calc(var(--radius) * 0.25)` | 4px |
-| `--radius-xsmall` | `calc(var(--radius) * 0.5)` | 8px |
-| `--radius-small` | `calc(var(--radius) * 0.75)` | 12px |
-| `--radius-normal` | `calc(var(--radius) * 1)` | 16px |
-| `--radius-large` | `calc(var(--radius) * 1.5)` | 24px |
-| `--radius-xlarge` | `calc(var(--radius) * 2)` | 32px |
-| `--radius-xxlarge` | `calc(var(--radius) * 3)` | 48px |
+| `--radius-xxsmall` | `calc(var(--radius-normal) * 0.25)` | 4px |
+| `--radius-xsmall` | `calc(var(--radius-normal) * 0.5)` | 8px |
+| `--radius-small` | `calc(var(--radius-normal) * 0.75)` | 12px |
+| `--radius-normal` | `var(--radius-normal)` | 16px — Base radius (the root of the scale) |
+| `--radius-large` | `calc(var(--radius-normal) * 1.5)` | 24px |
+| `--radius-xlarge` | `calc(var(--radius-normal) * 2)` | 32px |
+| `--radius-xxlarge` | `calc(var(--radius-normal) * 3)` | 48px |

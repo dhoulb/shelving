@@ -45,5 +45,5 @@ export interface SpaceVariants {
  * @see https://dhoulb.github.io/shelving/ui/style/Space/getSpaceClass
  */
 export function getSpaceClass({ space }: SpaceVariants): string | undefined {
-	return space && getModuleClass(SPACE_CSS, space);
+	return space && getModuleClass(SPACE_CSS, `space-${space}`);
 }
