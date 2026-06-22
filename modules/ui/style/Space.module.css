@@ -75,4 +75,11 @@
 	.space-10x {
 		margin-block: calc(var(--space-normal) * 10);
 	}
+
+	.space-section {
+		margin-block: var(--space-section);
+	}
+	.space-paragraph {
+		margin-block: var(--space-paragraph);
+	}
 }

@@ -7,6 +7,8 @@ import SPACE_CSS from "./Space.module.css";
  * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceValue
  */
 export type SpaceValue =
+	| "section"
+	| "paragraph"
 	| "none"
 	| "xxsmall"
 	| "xsmall"
