@@ -1,10 +1,10 @@
 # Build and publish the documentation site.
 #
 # - On a push to `main`, the site is published to the root of the `docs` branch
-#   so it serves at `https://<owner>.github.io/<repo>/`.
+#   so it serves at `https://shelving.cc/` (the GitHub Pages custom domain).
 # - On a pull request, the site is published under `pr-<number>/` on the same branch
-#   so a preview is available at `https://<owner>.github.io/<repo>/pr-<number>/`. The
-#   preview URL surfaces via a GitHub Deployment (`docs-preview` environment) on the PR.
+#   so a preview is available at `https://shelving.cc/pr-<number>/`. The preview URL
+#   surfaces via a GitHub Deployment (`docs-preview` environment) on the PR.
 # - When a pull request is closed, its preview directory is removed from `docs` and its
 #   `docs-preview` deployments are deleted.
 name: Docs
@@ -56,9 +56,9 @@ jobs:
         id: url
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/" >> "$GITHUB_OUTPUT"
+            echo "url=https://shelving.cc/pr-${{ github.event.pull_request.number }}/" >> "$GITHUB_OUTPUT"
           else
-            echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> "$GITHUB_OUTPUT"
+            echo "url=https://shelving.cc/" >> "$GITHUB_OUTPUT"
           fi
       # `APP_URL` must match where the build is served so links and assets resolve; the docs build
       # normalises it to a trailing slash (see `docs/env.ts`), so the resolved URL above feeds it directly.
@@ -67,6 +67,9 @@ jobs:
       # `keep_files: true` leaves every existing `pr-<number>/` preview untouched. Do NOT add
       # `exclude_assets: pr-*` here — peaceiris's `exclude_assets` runs `rm -rf` on matching
       # paths in the publish branch, so it would delete every PR preview on each main deploy.
+      # `cname` writes a `CNAME` file at the publish-branch root so GitHub Pages serves the site
+      # from the custom domain `shelving.cc`. Only set here (not in the preview deploy) — its
+      # `destination_dir` would otherwise write `CNAME` inside `pr-<number>/`, where it does nothing.
       - name: deploy (main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
@@ -75,6 +78,7 @@ jobs:
           publish_dir: ./.build/docs
           publish_branch: docs
           keep_files: true
+          cname: shelving.cc
       - name: deploy (preview)
         if: github.event_name == 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
