@@ -28,6 +28,7 @@
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
+		padding-block: var(--panel-padding, var(--space-section));
 		padding-inline: var(--panel-indent, var(--space-normal));
 		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
 		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));

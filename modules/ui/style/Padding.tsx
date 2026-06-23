@@ -1,30 +1,6 @@
 import { getModuleClass } from "../util/css.js";
 import PADDING_CSS from "./Padding.module.css";
-
-/**
- * Allowed values for padding for components that support `PaddingVariants`
- *
- * @see https://shelving.cc/ui/PaddingVariant
- */
-export type PaddingVariant =
-	| "none"
-	| "xxsmall"
-	| "xsmall"
-	| "small"
-	| "normal"
-	| "large"
-	| "xlarge"
-	| "xxlarge"
-	| "1x"
-	| "2x"
-	| "3x"
-	| "4x"
-	| "5x"
-	| "6x"
-	| "7x"
-	| "8x"
-	| "9x"
-	| "10x";
+import type { SpaceValue } from "./Space.js";
 
 /**
  * Variant props for the block-padding (top + bottom) of a component, e.g. `padding="large"`.
@@ -33,7 +9,7 @@ export type PaddingVariant =
  */
 export interface PaddingVariants {
 	/** Block-padding (top + bottom) of the element. */
-	padding?: PaddingVariant | undefined;
+	padding?: SpaceValue | undefined;
 }
 
 /**

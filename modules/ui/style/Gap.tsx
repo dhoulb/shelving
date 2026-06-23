@@ -1,12 +1,6 @@
 import { getModuleClass } from "../util/css.js";
 import GAP_CSS from "./Gap.module.css";
-
-/**
- * Allowed values for gap spacing for components that support `GapVariants`
- *
- * @see https://shelving.cc/ui/GapValue
- */
-export type GapValue = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+import type { SpaceValue } from "./Space.js";
 
 /**
  * Variant props for the gap between a component's children, e.g. `gap="large"`.
@@ -15,7 +9,7 @@ export type GapValue = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "lar
  */
 export interface GapVariants {
 	/** Gap between child elements. */
-	gap?: GapValue | undefined;
+	gap?: SpaceValue | undefined;
 }
 
 /**
@@ -27,5 +21,5 @@ export interface GapVariants {
  * @see https://shelving.cc/ui/getGapClass
  */
 export function getGapClass({ gap }: GapVariants): string | undefined {
-	return gap && getModuleClass(GAP_CSS, gap);
+	return gap && getModuleClass(GAP_CSS, `gap-${gap}`);
 }

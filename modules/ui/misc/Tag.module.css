@@ -13,6 +13,7 @@
 
 		/* Box */
 		display: inline-block;
+		vertical-align: text-bottom;
 		box-sizing: border-box;
 		inline-size: fit-content;
 		min-inline-size: fit-content;

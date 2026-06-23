@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getIndentClass, type IndentVariants } from "../style/Indent.js";
+import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
@@ -22,7 +23,14 @@ export type BlockElement = "div" | "section" | "header" | "footer" | "article" |
  *
  * @see https://shelving.cc/ui/BlockProps
  */
-export interface BlockProps extends ColorVariants, IndentVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+export interface BlockProps
+	extends ColorVariants,
+		PaddingVariants,
+		IndentVariants,
+		SpaceVariants,
+		TypographyVariants,
+		WidthVariants,
+		OptionalChildProps {
 	/**
 	 * Element this `<Block>` renders as, e.g. "header" to output a "<header>"
 	 * @default "div"
@@ -45,6 +53,7 @@ export function getBlockClass(variants: BlockProps): string {
 		BLOCK_CLASS, //
 		getColorClass(variants),
 		getIndentClass(variants),
+		getPaddingClass(variants),
 		getSpaceClass(variants),
 		getTypographyClass(variants),
 		getWidthClass(variants),

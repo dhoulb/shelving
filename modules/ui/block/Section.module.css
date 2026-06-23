@@ -18,3 +18,15 @@
 		margin-block: var(--section-space, var(--space-section));
 	}
 }
+
+@layer overrides {
+	.prose :where(section, article, aside, nav, header, footer, figure),
+	.section {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
+	}
+}

@@ -6,6 +6,7 @@
 	.mark,
 	.prose mark {
 		display: inline-block;
+		vertical-align: text-bottom;
 		padding-inline: var(--mark-padding, 0.375em);
 		border-radius: var(--mark-radius, var(--radius-xxsmall));
 		background-color: var(--mark-color-bg, var(--light-yellow));

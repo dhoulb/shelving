@@ -18,10 +18,18 @@
 }
 
 @layer variants {
-	/* Block-space variants — opt-in margin-block modifiers for any block-level component. */
+	/* Named. */
 	.space-none {
 		margin-block: 0;
 	}
+	.space-paragraph {
+		margin-block: var(--space-paragraph);
+	}
+	.space-section {
+		margin-block: var(--space-section);
+	}
+
+	/* Scale. */
 	.space-xxsmall {
 		margin-block: var(--space-xxsmall);
 	}
@@ -44,7 +52,7 @@
 		margin-block: var(--space-xxlarge);
 	}
 
-	/* Numeric block-space multiples of `--space-normal` (`1x` … `10x`). */
+	/* Numeric. */
 	.space-1x {
 		margin-block: calc(var(--space-normal) * 1);
 	}
@@ -74,12 +82,5 @@
 	}
 	.space-10x {
 		margin-block: calc(var(--space-normal) * 10);
-	}
-
-	.space-section {
-		margin-block: var(--space-section);
-	}
-	.space-paragraph {
-		margin-block: var(--space-paragraph);
 	}
 }

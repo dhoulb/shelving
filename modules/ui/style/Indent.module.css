@@ -2,10 +2,18 @@
 @import "Space.module.css";
 
 @layer variants {
-	/* Inline-padding ("indent") variants — left + right padding to keep content off the edges. */
+	/* Named. */
 	.indent-none {
 		padding-inline: 0;
 	}
+	.indent-paragraph {
+		padding-inline: var(--space-paragraph);
+	}
+	.indent-section {
+		padding-inline: var(--space-section);
+	}
+
+	/* Scale. */
 	.indent-xxsmall {
 		padding-inline: var(--space-xxsmall);
 	}
@@ -28,7 +36,7 @@
 		padding-inline: var(--space-xxlarge);
 	}
 
-	/* Numeric inline-padding multiples of `--space-normal` (`1x` … `10x`). */
+	/* Numeric. */
 	.indent-1x {
 		padding-inline: calc(var(--space-normal) * 1);
 	}

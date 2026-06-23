@@ -2,10 +2,18 @@
 @import "Space.module.css";
 
 @layer variants {
-	/* Block-padding variants. */
+	/* Named. */
 	.padding-none {
 		padding-block: 0;
 	}
+	.padding-paragraph {
+		padding-block: var(--space-paragraph);
+	}
+	.padding-section {
+		padding-block: var(--space-section);
+	}
+
+	/* Scale. */
 	.padding-xxsmall {
 		padding-block: var(--space-xxsmall);
 	}
@@ -28,7 +36,7 @@
 		padding-block: var(--space-xxlarge);
 	}
 
-	/* Numeric block-padding multiples of `--space-normal` (`1x` … `10x`). */
+	/* Numeric. */
 	.padding-1x {
 		padding-block: calc(var(--space-normal) * 1);
 	}

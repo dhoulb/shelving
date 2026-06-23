@@ -2,29 +2,69 @@
 @import "Space.module.css";
 
 @layer variants {
-	/* Gap variants — sets `gap` directly. Used by flex/grid layouts and by Lists/Definitions for the spacing between their items. */
-	.none {
+	/* Named. */
+	.gap-none {
 		gap: 0;
 	}
-	.xxsmall {
+	.gap-paragraph {
+		gap: var(--space-paragraph);
+	}
+	.gap-section {
+		gap: var(--space-section);
+	}
+
+	/* Scale. */
+	.gap-xxsmall {
 		gap: var(--space-xxsmall);
 	}
-	.xsmall {
+	.gap-xsmall {
 		gap: var(--space-xsmall);
 	}
-	.small {
+	.gap-small {
 		gap: var(--space-small);
 	}
-	.normal {
+	.gap-normal {
 		gap: var(--space-normal);
 	}
-	.large {
+	.gap-large {
 		gap: var(--space-large);
 	}
-	.xlarge {
+	.gap-xlarge {
 		gap: var(--space-xlarge);
 	}
-	.xxlarge {
+	.gap-xxlarge {
 		gap: var(--space-xxlarge);
+	}
+
+	/* Numeric. */
+	.gap-1x {
+		gap: calc(var(--space-normal) * 1);
+	}
+	.gap-2x {
+		gap: calc(var(--space-normal) * 2);
+	}
+	.gap-3x {
+		gap: calc(var(--space-normal) * 3);
+	}
+	.gap-4x {
+		gap: calc(var(--space-normal) * 4);
+	}
+	.gap-5x {
+		gap: calc(var(--space-normal) * 5);
+	}
+	.gap-6x {
+		gap: calc(var(--space-normal) * 6);
+	}
+	.gap-7x {
+		gap: calc(var(--space-normal) * 7);
+	}
+	.gap-8x {
+		gap: calc(var(--space-normal) * 8);
+	}
+	.gap-9x {
+		gap: calc(var(--space-normal) * 9);
+	}
+	.gap-10x {
+		gap: calc(var(--space-normal) * 10);
 	}
 }
