@@ -5,8 +5,8 @@ A landmark content region — renders a `<section>` with block-level spacing and
 **Things to know:**
 
 - Pick the component whose HTML element matches the semantic meaning rather than reaching for a generic `<Block>`. `<Section>` is a `<section>`, `<Figure>` a `<figure>`, and so on.
-- Every section centres its content and caps the line length so text never touches the viewport edges. Nested sections relax that cap so they can fill their parent.
-- Sections default to the `--width-normal` content width, so most of the time you set no width at all. Pass `width="narrow"` / `"wide"` / `"full"` (or `"fit"`) to change that, and the usual `color` / `space` / typography variants to retint and respace.
+- Every section centres its content and caps the line length, but it adds **no inline padding of its own**, so its content can run to the edge of its container. Keep content off the edges by placing the section inside something that already pads — a `<Panel>`, a `<Block indent="normal">`, or a layout that pads its scroll area — or by giving the section its own `indent` variant (`<Section indent="normal">`).
+- Sections default to the `--width-normal` content width, so most of the time you set no width at all. Pass `width="narrow"` / `"wide"` / `"full"` (or `"fit"`) to change that, and the usual `color` / `space` / `indent` / typography variants to retint, respace, and inset.
 - Pair `Figure` with `<Caption>` for a `<figure>` / `<figcaption>` pair.
 
 ## Usage
@@ -43,7 +43,6 @@ import { Header, Nav, Footer } from "shelving/ui";
 | Variable | Styles | Default |
 |---|---|---|
 | `--section-width` | Content width | `var(--width-normal)` (55rem) |
-| `--section-indent` | Inline gutter kept on each side so text doesn't touch the edges | `var(--space-normal)` (16px) |
 | `--section-space` | Outer block margin (top + bottom) | `var(--space-section)` (2rem) |
 
-**Global tokens it reads:** `--space-normal`, `--space-section`, and `--width-normal` (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) comes from the shared `shelving/ui` styling system.
+**Global tokens it reads:** `--space-section` and `--width-normal` (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) and the `indent` variant (inline padding, via `getIndentClass()`) come from the shared `shelving/ui` styling system.

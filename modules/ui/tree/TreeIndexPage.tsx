@@ -4,6 +4,7 @@ import type { AbsolutePath } from "../../util/path.js";
 import type { Query } from "../../util/query.js";
 import type { DocumentationElementProps } from "../../util/tree.js";
 import { searchTree } from "../../util/tree.js";
+import { Block } from "../block/Block.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
 import { DocumentationKind } from "../docs/DocumentationKind.js";
@@ -64,30 +65,32 @@ export function TreeIndexPage(): ReactNode {
 
 	return (
 		<Page title={INDEX_TITLE} description={INDEX_DESCRIPTION}>
-			<Header>
-				<Title>{INDEX_TITLE}</Title>
-			</Header>
-			<Section>
-				<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
-				{!!kinds.length && (
-					<Row left wrap>
-						{kinds.map(kind => (
-							<CheckboxInput
-								key={kind}
-								name={kind}
-								width="fit"
-								value={selected.includes(kind)}
-								onValue={() => setSelected(s => toggleArrayItem(s, kind))}
-							>
-								<DocumentationKind kind={kind} />
-							</CheckboxInput>
-						))}
-					</Row>
-				)}
-			</Section>
-			<Section>
-				<TreeCards>{cards}</TreeCards>
-			</Section>
+			<Block indent="normal">
+				<Header>
+					<Title>{INDEX_TITLE}</Title>
+				</Header>
+				<Section>
+					<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
+					{!!kinds.length && (
+						<Row left wrap>
+							{kinds.map(kind => (
+								<CheckboxInput
+									key={kind}
+									name={kind}
+									width="fit"
+									value={selected.includes(kind)}
+									onValue={() => setSelected(s => toggleArrayItem(s, kind))}
+								>
+									<DocumentationKind kind={kind} />
+								</CheckboxInput>
+							))}
+						</Row>
+					)}
+				</Section>
+				<Section>
+					<TreeCards>{cards}</TreeCards>
+				</Section>
+			</Block>
 		</Page>
 	);
 }

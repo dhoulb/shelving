@@ -6,7 +6,8 @@ import { isAsync } from "../../util/async.js";
 import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
-import { getModuleClass } from "../util/css.js";
+import { getIndentClass, type IndentVariants } from "../style/Indent.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { OptionalChildProps } from "../util/props.js";
 import FORM_CSS from "./Form.module.css";
@@ -35,7 +36,7 @@ export type FormCallback<T extends Data> = (
  *
  * @see https://shelving.cc/ui/FormProps
  */
-export interface FormProps<T extends Data> extends OptionalChildProps {
+export interface FormProps<T extends Data> extends IndentVariants, OptionalChildProps {
 	/** Schema for the form. */
 	schema: DataSchema<T>;
 	/** Initial data for the form. */
@@ -71,6 +72,7 @@ export function Form({
 			<FormFooter submit={submit} />
 		</>
 	),
+	...props
 }: FormProps<Data>): ReactElement {
 	// Create a form store instance and subscribe to changes in it.
 	const store = useStore(useInstance(FormStore, schema, initialData, messages));
@@ -94,7 +96,7 @@ export function Form({
 				// Close the parent dialog on successful submit.
 				if (result) dialog?.close();
 			}}
-			className={FORM_CLASS}
+			className={getClass(FORM_CLASS, getIndentClass(props))}
 			noValidate={true}
 		>
 			<fieldset className={FORM_FIELDSET_CLASS} disabled={busy}>

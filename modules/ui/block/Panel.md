@@ -5,7 +5,8 @@ A full-width vertical region that paints the current surface colour. Use panels 
 **Things to know:**
 
 - A panel always spans the full width of its container. To constrain the content inside, compose a `<Block>` `width="narrow"` (or `width="wide"`) within it.
-- Block margin is always zero so panels stack flush; control the vertical breathing room with the `padding` variant (`<Panel padding="large">`, `<Panel padding="none">`). Inline padding is fixed.
+- Block margin is always zero so panels stack flush; control the vertical breathing room with the `padding` variant (`<Panel padding="large">`, `<Panel padding="none">`).
+- Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface, border, and text re-derive together and cascade into nested content.
 - The top and bottom borders are dropped on the first and last panel so the page doesn't gain stray edge lines.
 
@@ -39,5 +40,6 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 | `--panel-color` | Text colour | `var(--tint-00)` |
 | `--panel-border` | Top/bottom border shorthand | `var(--panel-stroke) solid var(--tint-80)` |
 | `--panel-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
+| `--panel-indent` | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px) |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal`. Vertical padding comes from the shared `padding` variant.
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal` and `--space-normal`. Vertical padding comes from the shared `padding` variant; inline padding from the shared `indent` variant.

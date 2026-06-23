@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { TreeElementProps } from "../../util/tree.js";
+import { Block } from "../block/Block.js";
 import { Prose } from "../block/Prose.js";
 import { Header, Section } from "../block/Section.js";
 import { Title } from "../block/Title.js";
@@ -21,19 +22,21 @@ import { TreeMarkup } from "./TreeMarkup.js";
 export function TreePage({ title, name, description, content, children }: TreeElementProps): ReactNode {
 	return (
 		<Page title={title ?? name} description={description}>
-			<Header>
-				<Title>{title ?? name}</Title>
-			</Header>
-			<Section>
-				{content && (
-					<Prose>
-						<TreeMarkup>{content}</TreeMarkup>
-					</Prose>
-				)}
-			</Section>
-			<Section>
-				<TreeCards>{children}</TreeCards>
-			</Section>
+			<Block indent="normal">
+				<Header>
+					<Title>{title ?? name}</Title>
+				</Header>
+				<Section>
+					{content && (
+						<Prose>
+							<TreeMarkup>{content}</TreeMarkup>
+						</Prose>
+					)}
+				</Section>
+				<Section>
+					<TreeCards>{children}</TreeCards>
+				</Section>
+			</Block>
 		</Page>
 	);
 }

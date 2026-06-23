@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
@@ -15,7 +16,7 @@ const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
  *
  * @see https://shelving.cc/ui/PanelProps
  */
-export interface PanelProps extends ColorVariants, PaddingVariants, StatusVariants, TypographyVariants, OptionalChildProps {
+export interface PanelProps extends ColorVariants, IndentVariants, PaddingVariants, StatusVariants, TypographyVariants, OptionalChildProps {
 	/**
 	 * Element this `<Panel>` renders as, e.g. "header" to output a "<header>"
 	 * @default "section"
@@ -43,6 +44,7 @@ export function Panel({ as: Element = "section", children, ...props }: PanelProp
 				PANEL_CLASS, //
 				getStatusClass(props),
 				getColorClass(props),
+				getIndentClass(props),
 				getPaddingClass(props),
 				getTypographyClass(props),
 			)}

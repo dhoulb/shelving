@@ -105,4 +105,4 @@ When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches i
 |---|---|---|
 | `--form-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
-**Global tokens it reads:** `--space-paragraph`.
+**Global tokens it reads:** `--space-paragraph`. The `indent` variant (inline padding, via `getIndentClass()`) comes from the shared `shelving/ui` styling system — set `<Form indent="normal">` to inset the form's content from the edges.

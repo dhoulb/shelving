@@ -27,16 +27,18 @@ export function DocumentationHomePage({ title, name, description, content, child
 				<Panel padding="5x">
 					<Title center>{title ?? name}</Title>
 				</Panel>
-				{content && (
+				<Block indent="normal">
+					{content && (
+						<Section>
+							<Prose>
+								<TreeMarkup>{content}</TreeMarkup>
+							</Prose>
+						</Section>
+					)}
 					<Section>
-						<Prose>
-							<TreeMarkup>{content}</TreeMarkup>
-						</Prose>
+						<TreeCards>{children}</TreeCards>
 					</Section>
-				)}
-				<Section>
-					<TreeCards>{children}</TreeCards>
-				</Section>
+				</Block>
 			</Block>
 		</Page>
 	);
