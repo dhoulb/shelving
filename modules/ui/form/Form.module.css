@@ -17,6 +17,9 @@
 		margin: 0;
 		padding: 0;
 		border: 0;
+
+		/* Chrome sets a default min-inline-size that we override. */
+		min-inline-size: none;
 	}
 }
 
