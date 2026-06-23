@@ -94,7 +94,7 @@ Before writing new code, find what already exists. The codebase deliberately exp
 ## Pull Requests
 
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
-- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://dhoulb.github.io/shelving/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
+- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
 
 ## Naming
 
@@ -425,6 +425,14 @@ Checklist:
 - Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
+
+### Docs site
+
+The public docs live at **`https://shelving.cc/`** — every public token ships as a page, and each module / per-symbol `.md` is merged onto it (see below).
+
+- The site is built by the `docs.yaml` workflow (`bun run docs:build`) and published to the `docs` branch, which GitHub Pages serves from the `shelving.cc` custom domain. The workflow writes the `CNAME` file at publish time (the `cname:` option on the deploy step), so there is no `CNAME` committed in the repo.
+- A push to `main` publishes to the site root; each PR publishes a preview under `pr-<number>/`, so `https://shelving.cc/pr-<number>/` is the live preview for that PR (linked from the PR's `docs-preview` deployment — see [Pull Requests](#pull-requests)).
+- Page URLs are **package-relative**, not source-path-relative: a token's canonical page is `https://shelving.cc/<package>/<name>`, where `<package>` is its `package.json` export subpath. This is the same scheme the `@see` block tags use — see the [docblock standards](#docblock-standards) for the exact rule.
 
 ### Cross-references and token display
 
