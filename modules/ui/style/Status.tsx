@@ -6,7 +6,7 @@ import { TINT_CLASS } from "./Tint.js";
 /**
  * Tuple of the status names selectable via the `status` variant prop.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Status/STATUSES
+ * @see https://shelving.cc/ui/STATUSES
  */
 export const STATUSES: ImmutableArray<Status> = ["loading", "info", "danger", "error", "warning", "success"];
 
@@ -14,14 +14,14 @@ export const STATUSES: ImmutableArray<Status> = ["loading", "info", "danger", "e
  * Allowed status names selected via the `status="info"` prop for components that support that support `StatusVariants`
  * - Applies a semantic tint color to the element.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Status/Status
+ * @see https://shelving.cc/ui/Status
  */
 export type Status = "loading" | "info" | "danger" | "error" | "warning" | "success";
 
 /**
  * Variant props for the semantic status of an element, e.g. `status="success"`.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Status/StatusVariants
+ * @see https://shelving.cc/ui/StatusVariants
  */
 export interface StatusVariants {
 	/** Status for the element. */
@@ -37,7 +37,7 @@ export interface StatusVariants {
  * @param variants
  * @returns The combined tint + status class string, or `undefined` when no `status` is set.
  * @example getStatusClass({ status: "success" }) // "tint success"
- * @see https://dhoulb.github.io/shelving/ui/style/Status/getStatusClass
+ * @see https://shelving.cc/ui/getStatusClass
  */
 export function getStatusClass({ status }: StatusVariants): string | undefined {
 	if (status) return getClass(TINT_CLASS, getModuleClass(STATUS_CSS, status));

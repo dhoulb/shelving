@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
  * @param delay The debounce delay in milliseconds (defaults to `500`).
  * @returns A `[state, setState]` tuple, where `setState` defers the update by `delay`.
  * @example const [query, setQuery] = useDebouncedState("");
- * @see https://dhoulb.github.io/shelving/ui/util/state/useDebouncedState
+ * @see https://shelving.cc/ui/useDebouncedState
  */
 export function useDebouncedState<T>(initial: T, delay = 500): [T, (v: T) => void] {
 	const [state, setState] = useState(initial);
@@ -33,7 +33,7 @@ export function useDebouncedState<T>(initial: T, delay = 500): [T, (v: T) => voi
  * @param delay The debounce delay in milliseconds (defaults to `500`).
  * @returns A debounced function that schedules `callback` after `delay`.
  * @example const submit = useDebouncedCallback(() => form.submit());
- * @see https://dhoulb.github.io/shelving/ui/util/state/useDebouncedCallback
+ * @see https://shelving.cc/ui/useDebouncedCallback
  */
 export function useDebouncedCallback(callback: (() => void) | undefined, delay = 500): () => void {
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);

@@ -13,7 +13,7 @@ import { runSequence } from "../util/sequence.js";
  *
  * @example const value = useSequence(myAsyncIterable);
  *
- * @see https://dhoulb.github.io/shelving/react/useSequence
+ * @see https://shelving.cc/react/useSequence
  */
 export function useSequence<T>(sequence?: AsyncIterable<T>): T | undefined {
 	const [value, setValue] = useState<T | undefined>(undefined);

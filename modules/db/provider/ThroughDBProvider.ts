@@ -16,13 +16,13 @@ import type { DBProvider } from "./DBProvider.js";
  * @example
  *  const provider = new ValidationDBProvider(new MemoryDBProvider());
  *
- * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider
+ * @see https://shelving.cc/db/ThroughDBProvider
  */
 export class ThroughDBProvider<I extends Identifier, T extends Data> implements DBProvider<I, T>, Sourceable<DBProvider<I, T>> {
 	/**
 	 * The wrapped source provider that every operation is delegated to.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/source
+	 * @see https://shelving.cc/db/ThroughDBProvider/source
 	 */
 	readonly source: DBProvider<I, T>;
 
@@ -42,7 +42,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/getItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/getItem
 	 */
 	getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return this.source.getItem(collection, id);
@@ -56,7 +56,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @returns The item.
 	 * @throws `RequiredError` if no item exists with that id.
 	 * @example await provider.requireItem(users, 123) // Item (or throws).
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/requireItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/requireItem
 	 */
 	requireItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<Item<II, TT>> {
 		return this.source.requireItem(collection, id);
@@ -69,7 +69,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/getItemSequence
+	 * @see https://shelving.cc/db/ThroughDBProvider/getItemSequence
 	 */
 	getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		return this.source.getItemSequence(collection, id);
@@ -82,7 +82,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/addItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/addItem
 	 */
 	addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return this.source.addItem(collection, data);
@@ -95,7 +95,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/setItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/setItem
 	 */
 	setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		return this.source.setItem(collection, id, data);
@@ -108,7 +108,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/updateItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/updateItem
 	 */
 	updateItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, updates: Updates<Item<II, TT>>): Promise<void> {
 		return this.source.updateItem(collection, id, updates);
@@ -120,7 +120,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/deleteItem
+	 * @see https://shelving.cc/db/ThroughDBProvider/deleteItem
 	 */
 	deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		return this.source.deleteItem(collection, id);
@@ -133,7 +133,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/countQuery
+	 * @see https://shelving.cc/db/ThroughDBProvider/countQuery
 	 */
 	countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return this.source.countQuery(collection, query);
@@ -146,7 +146,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/getQuery
+	 * @see https://shelving.cc/db/ThroughDBProvider/getQuery
 	 */
 	getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return this.source.getQuery(collection, query);
@@ -159,7 +159,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/ThroughDBProvider/getQuerySequence
 	 */
 	getQuerySequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		return this.source.getQuerySequence(collection, query);
@@ -172,7 +172,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/setQuery
+	 * @see https://shelving.cc/db/ThroughDBProvider/setQuery
 	 */
 	setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
 		return this.source.setQuery(collection, query, data);
@@ -185,7 +185,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/updateQuery
+	 * @see https://shelving.cc/db/ThroughDBProvider/updateQuery
 	 */
 	updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -201,7 +201,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/ThroughDBProvider/deleteQuery
 	 */
 	deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
 		return this.source.deleteQuery(collection, query);
@@ -214,7 +214,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @param query Query to filter and sort the items.
 	 * @returns The first matching item, or `undefined` if none match.
 	 * @example await provider.getFirst(users, { $order: "name" }) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/getFirst
+	 * @see https://shelving.cc/db/ThroughDBProvider/getFirst
 	 */
 	getFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<OptionalItem<II, TT>> {
 		return this.source.getFirst(collection, query);
@@ -228,7 +228,7 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	 * @returns The first matching item.
 	 * @throws `RequiredError` if no item matches the query.
 	 * @example await provider.requireFirst(users, { $order: "name" }) // Item (or throws).
-	 * @see https://dhoulb.github.io/shelving/db/provider/ThroughDBProvider/ThroughDBProvider/requireFirst
+	 * @see https://shelving.cc/db/ThroughDBProvider/requireFirst
 	 */
 	requireFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<Item<II, TT>> {
 		return this.source.requireFirst(collection, query);

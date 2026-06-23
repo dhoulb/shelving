@@ -15,14 +15,14 @@ import { mapArray, mapProps } from "./transform.js";
  * A set of hydrations describes a set of string keys and the class constructor to be dehydrated and rehydrated.
  * - We can't use `class.name` because we don't know that the name of the class will survive minification.
  *
- * @see https://dhoulb.github.io/shelving/util/hydrate/Hydrations
+ * @see https://shelving.cc/util/hydrate/Hydrations
  */
 export type Hydrations = ImmutableDictionary<Class<unknown>>;
 
 /**
  * A dehydrated object with a `$type` key.
  *
- * @see https://dhoulb.github.io/shelving/util/hydrate/DehydratedObject
+ * @see https://shelving.cc/util/hydrate/DehydratedObject
  */
 export type DehydratedObject = { readonly $type: string; readonly $value: unknown };
 
@@ -43,7 +43,7 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
  * @returns The hydrated value, with matched objects rebuilt as their class instances.
  * @throws `ValueError` If a dehydrated object's `$type` is not matched by any constructor in `hydrations`.
  * @example hydrate({ $type: "Date", $value: 0 }, {}) // Date instance
- * @see https://dhoulb.github.io/shelving/util/hydrate/hydrate
+ * @see https://shelving.cc/util/hydrate/hydrate
  */
 export function hydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isArray(value)) return mapArray(value, hydrate, hydrations);
@@ -77,7 +77,7 @@ function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
  * @returns The dehydrated version of the specified value.
  * @throws `ValueError` If the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
  * @example dehydrate(new Date(0), {}) // { $type: "Date", $value: 0 }
- * @see https://dhoulb.github.io/shelving/util/hydrate/dehydrate
+ * @see https://shelving.cc/util/hydrate/dehydrate
  */
 export function dehydrate(value: unknown, hydrations: Hydrations): unknown {
 	if (isObject(value)) {

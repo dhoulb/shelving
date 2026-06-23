@@ -5,7 +5,7 @@ import styles from "./Progress.module.css";
 /**
  * Props for `Progress`, a continuous horizontal progress bar.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Progress/ProgressProps
+ * @see https://shelving.cc/ui/ProgressProps
  */
 export interface ProgressProps {
 	value: number;
@@ -20,7 +20,7 @@ export interface ProgressProps {
  * @returns A progress bar element.
  * @kind component
  * @example <Progress value={0.5} />
- * @see https://dhoulb.github.io/shelving/ui/form/Progress/Progress
+ * @see https://shelving.cc/ui/Progress
  */
 export function Progress({ value, success, warning, danger }: ProgressProps): ReactElement | null {
 	const clamped = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
@@ -44,7 +44,7 @@ export function Progress({ value, success, warning, danger }: ProgressProps): Re
 /**
  * Props for `SegmentedProgress`, a stepped progress bar of discrete segments.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Progress/SegmentedProgressProps
+ * @see https://shelving.cc/ui/SegmentedProgressProps
  */
 export interface SegmentedProgressProps {
 	total: number;
@@ -60,7 +60,7 @@ export interface SegmentedProgressProps {
  * @returns A segmented progress bar element, or `null` when `total` is not positive.
  * @kind component
  * @example <SegmentedProgress total={4} current={1} />
- * @see https://dhoulb.github.io/shelving/ui/form/Progress/SegmentedProgress
+ * @see https://shelving.cc/ui/SegmentedProgress
  */
 export function SegmentedProgress({ total, current, success, warning, danger }: SegmentedProgressProps): ReactElement | null {
 	if (total <= 0) return null;

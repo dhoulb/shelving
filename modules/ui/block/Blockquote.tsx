@@ -11,7 +11,7 @@ const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
 /**
  * Props for `Blockquote` — colour, space, and typography variants plus optional children.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Blockquote/BlockquoteProps
+ * @see https://shelving.cc/ui/BlockquoteProps
  */
 export interface BlockquoteProps extends ColorVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
 
@@ -20,7 +20,7 @@ export interface BlockquoteProps extends ColorVariants, SpaceVariants, Typograph
  *
  * @kind component
  * @example <Blockquote>To be or not to be.</Blockquote>
- * @see https://dhoulb.github.io/shelving/ui/block/Blockquote/Blockquote
+ * @see https://shelving.cc/ui/Blockquote
  */
 export function Blockquote({ children, ...props }: BlockquoteProps): ReactElement {
 	return (

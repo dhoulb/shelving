@@ -13,7 +13,7 @@ const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
 /**
  * Props for `Panel` — colour, status, and typography variants plus optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Panel/PanelProps
+ * @see https://shelving.cc/ui/PanelProps
  */
 export interface PanelProps extends ColorVariants, PaddingVariants, StatusVariants, TypographyVariants, OptionalChildProps {
 	/**
@@ -34,7 +34,7 @@ export interface PanelProps extends ColorVariants, PaddingVariants, StatusVarian
  * @returns Rendered full-width panel region.
  * @example <Panel><Block width="narrow"><Title>Welcome</Title></Block></Panel>
  * @example <Panel padding="xlarge" color="primary"><Title>Welcome</Title></Panel>
- * @see https://dhoulb.github.io/shelving/ui/block/Panel/Panel
+ * @see https://shelving.cc/ui/Panel
  */
 export function Panel({ as: Element = "section", children, ...props }: PanelProps): ReactElement {
 	return (

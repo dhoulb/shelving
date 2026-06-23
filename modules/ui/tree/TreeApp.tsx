@@ -13,7 +13,7 @@ import { TreeSidebar } from "./TreeSidebar.js";
 /**
  * Props for the `TreeApp` component — the tree to render plus optional extra routes and app meta.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeApp/TreeAppProps
+ * @see https://shelving.cc/ui/TreeAppProps
  */
 export interface TreeAppProps extends PossibleMeta {
 	/** The tree elements to display. */
@@ -37,7 +37,7 @@ export interface TreeAppProps extends PossibleMeta {
  * @kind component
  * @returns The configured `<App>` element with sidebar layout and tree routing.
  * @example <TreeApp tree={tree} title="Docs" />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeApp/TreeApp
+ * @see https://shelving.cc/ui/TreeApp
  */
 export function TreeApp({ tree, routes: extraRoutes, ...meta }: TreeAppProps): ReactElement {
 	// URLs that don't resolve to a tree element fall through to this router: the built-in index page plus any extra routes.

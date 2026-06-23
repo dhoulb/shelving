@@ -10,7 +10,7 @@ import { requireForm } from "./FormContext.js";
  * @returns A `<Notice status="error">` containing the message, or `null` when empty.
  * @kind component
  * @example <FormNotice />
- * @see https://dhoulb.github.io/shelving/ui/form/FormNotice/FormNotice
+ * @see https://shelving.cc/ui/FormNotice
  */
 export function FormNotice(props: Omit<NoticeProps, "children">): ReactElement | null {
 	const message = useStore(requireForm().messages).get("");

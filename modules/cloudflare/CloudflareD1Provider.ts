@@ -25,7 +25,7 @@ type D1Query = {
  * // `env.DB` is the D1 binding from the Worker environment.
  * const provider = new CloudflareD1Provider(env.DB);
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareD1Provider/CloudflareD1Provider
+ * @see https://shelving.cc/cloudflare/CloudflareD1Provider
  */
 export class CloudflareD1Provider<I extends Identifier = Identifier, T extends Data = Data> extends SQLiteProvider<I, T> {
 	private readonly _db: D1Database;
@@ -34,7 +34,7 @@ export class CloudflareD1Provider<I extends Identifier = Identifier, T extends D
 	 * Create a provider wrapping a Cloudflare D1 database binding.
 	 *
 	 * @param db The `D1Database` binding from the Worker environment.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareD1Provider/CloudflareD1Provider
+	 * @see https://shelving.cc/cloudflare/CloudflareD1Provider
 	 */
 	constructor(db: D1Database) {
 		super();
@@ -51,7 +51,7 @@ export class CloudflareD1Provider<I extends Identifier = Identifier, T extends D
 	 * @returns Promise resolving to the array of result rows (empty if D1 returns no results).
 	 * @throws {ValueError} If a value cannot be converted to a D1 binding.
 	 * @example provider.exec`SELECT * FROM ${provider.sqlIdentifier("items")}`
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareD1Provider/CloudflareD1Provider/exec
+	 * @see https://shelving.cc/cloudflare/CloudflareD1Provider/exec
 	 */
 	override async exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<readonly X[]> {
 		const { query, values: bindings } = _getD1Query(strings, values, this.exec);

@@ -16,7 +16,7 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
  * @kind component
  * @returns A `<Card>` linking to the symbol's own page.
  * @example <DocumentationCard {...element.props} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationCard/DocumentationCard
+ * @see https://shelving.cc/ui/DocumentationCard
  */
 export function DocumentationCard({
 	path,

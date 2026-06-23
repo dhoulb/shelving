@@ -13,7 +13,7 @@ import type { MutableObject } from "./object.js";
 /**
  * Object that can validate an unknown value with its `validate()` method.
  *
- * @see https://dhoulb.github.io/shelving/util/validate/Validator
+ * @see https://shelving.cc/util/validate/Validator
  */
 export interface Validator<T> {
 	/**
@@ -24,7 +24,7 @@ export interface Validator<T> {
 	 * @throws `Error` If the value is invalid and cannot be fixed.
 	 * @throws `string` If the value is invalid and cannot be fixed and we want to explain why to an end user.
 	 * @example validator.validate(unsafeValue) // valid value (or throws)
-	 * @see https://dhoulb.github.io/shelving/util/validate/Validator/validate
+	 * @see https://shelving.cc/util/validate/Validator/validate
 	 */
 	validate(unsafeValue: unknown): T;
 }
@@ -32,21 +32,21 @@ export interface Validator<T> {
 /**
  * Extract the validated type from a `Validator`.
  *
- * @see https://dhoulb.github.io/shelving/util/validate/ValidatorType
+ * @see https://shelving.cc/util/validate/ValidatorType
  */
 export type ValidatorType<X> = X extends Validator<infer Y> ? Y : never;
 
 /**
  * A set of named validators in `{ name: Validator }` format.
  *
- * @see https://dhoulb.github.io/shelving/util/validate/Validators
+ * @see https://shelving.cc/util/validate/Validators
  */
 export type Validators<T extends Data = Data> = { readonly [K in keyof T]: Validator<T[K]> };
 
 /**
  * Extract the validated data type from a set of validators.
  *
- * @see https://dhoulb.github.io/shelving/util/validate/ValidatorsType
+ * @see https://shelving.cc/util/validate/ValidatorsType
  */
 export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> };
 
@@ -60,7 +60,7 @@ export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> }
  * @returns The valid value, or `undefined` if validation threw a string message.
  * @throws `Error` if the validator throws a non-string error.
  * @example getValid(unsafeValue, STRING) // valid string, or `undefined`
- * @see https://dhoulb.github.io/shelving/util/validate/getValid
+ * @see https://shelving.cc/util/validate/getValid
  */
 export function getValid<T>(value: unknown, validator: Validator<T>): T | undefined {
 	try {
@@ -83,7 +83,7 @@ export function getValid<T>(value: unknown, validator: Validator<T>): T | undefi
  * @throws `RequiredError` if validation threw a string message.
  * @throws `Error` if the validator throws a non-string error.
  * @example requireValid(unsafeValue, STRING) // valid string (or throws)
- * @see https://dhoulb.github.io/shelving/util/validate/requireValid
+ * @see https://shelving.cc/util/validate/requireValid
  */
 export function requireValid<T>(value: unknown, validator: Validator<T>, caller: AnyCaller = requireValid): T {
 	try {
@@ -104,7 +104,7 @@ export function requireValid<T>(value: unknown, validator: Validator<T>, caller:
  * @yields Valid items.
  * @throws `string` if one or more items did not validate (one `"index: message"` line per failure, joined by newlines).
  * @example Array.from(validateItems(["a", "b"], STRING)) // ["a", "b"]
- * @see https://dhoulb.github.io/shelving/util/validate/validateItems
+ * @see https://shelving.cc/util/validate/validateItems
  */
 export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator: Validator<T>): Iterable<T> {
 	let index = 0;
@@ -131,7 +131,7 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
  * @returns Array with valid items.
  * @throws `string` if one or more items did not validate (one `"index: message"` line per failure, joined by newlines).
  * @example validateArray(["a", "b"], STRING) // ["a", "b"]
- * @see https://dhoulb.github.io/shelving/util/validate/validateArray
+ * @see https://shelving.cc/util/validate/validateArray
  */
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
 	let index = 0;
@@ -163,7 +163,7 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  * @returns Dictionary with valid values.
  * @throws `string` if one or more entry values did not validate (one `"key: message"` line per failure, joined by newlines).
  * @example validateDictionary({ a: "1", b: "2" }, STRING) // { a: "1", b: "2" }
- * @see https://dhoulb.github.io/shelving/util/validate/validateDictionary
+ * @see https://shelving.cc/util/validate/validateDictionary
  */
 export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let changed = false;
@@ -196,7 +196,7 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
  * @returns Valid object.
  * @throws `string` if one or more props did not validate (one `"key: message"` line per failure, joined by newlines).
  * @example validateData({ name: "Alice" }, { name: STRING }) // { name: "Alice" }
- * @see https://dhoulb.github.io/shelving/util/validate/validateData
+ * @see https://shelving.cc/util/validate/validateData
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {
 	let changes = 0;

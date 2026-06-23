@@ -9,7 +9,7 @@ import { type AsyncStoreInput, Store } from "./Store.js";
  * - Receives the current payload plus the `AbortSignal` so it can cancel in-flight requests.
  * - May return a value synchronously or a `PromiseLike` resolving to one (which the store will await).
  *
- * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchCallback
+ * @see https://shelving.cc/store/PayloadFetchCallback
  */
 export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => AsyncStoreInput<R>;
 
@@ -25,14 +25,14 @@ export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => As
  * @example
  * const store = new PayloadFetchStore("dave", NONE, async (name, signal) => (await fetch(`/api/user/${name}`, { signal })).json());
  * store.payload.value = "sam"; // triggers a new fetch
- * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchStore
+ * @see https://shelving.cc/store/PayloadFetchStore
  */
 export class PayloadFetchStore<P, R> extends FetchStore<R> {
 	/**
 	 * Store keeping the current payload to send to the fetch on send.
 	 * - New payloads can be set using `this.payload.value`
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/PayloadFetchStore/PayloadFetchStore/payload
+	 * @see https://shelving.cc/store/PayloadFetchStore/payload
 	 */
 	readonly payload: Store<P>;
 

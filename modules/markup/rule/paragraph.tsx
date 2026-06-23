@@ -7,7 +7,7 @@ import { BLOCK_SPACE_REGEXP, BLOCK_START_REGEXP, createBlockRegExp } from "../ut
  * - Leading and trailing whitespace is trimmed.
  *
  * @example new MarkupParser({ rules: [PARAGRAPH_RULE] }).parse("Some plain text")
- * @see https://dhoulb.github.io/shelving/markup/rule/paragraph/PARAGRAPH_RULE
+ * @see https://shelving.cc/markup/PARAGRAPH_RULE
  */
 export const PARAGRAPH_RULE = createMarkupRule<{
 	paragraph: string;

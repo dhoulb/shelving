@@ -11,7 +11,7 @@ import INPUT_CSS from "./Input.module.css";
  * - Extends `WidthVariants` so any input can be sized (e.g. `<CheckboxInput width="fit">` to shrink to its content).
  * - Designed to grow: new cross-cutting input styling props (e.g. spacing) should be added here so every input picks them up consistently.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Input/InputVariants
+ * @see https://shelving.cc/ui/InputVariants
  */
 export interface InputVariants extends WidthVariants {}
 
@@ -20,7 +20,7 @@ export interface InputVariants extends WidthVariants {}
  *
  * @returns The merged base input `className` string.
  * @example getClass(getInputClass(props), getModuleClass(INPUT_CSS, "text")) // a text input that also honours width variants
- * @see https://dhoulb.github.io/shelving/ui/form/Input/getInputClass
+ * @see https://shelving.cc/ui/getInputClass
  */
 export function getInputClass(props: InputVariants): string {
 	return getClass(getModuleClass(INPUT_CSS, "input"), getWidthClass(props));
@@ -29,7 +29,7 @@ export function getInputClass(props: InputVariants): string {
 /**
  * Base props shared by every form input (name, title, placeholder, required/disabled state, and error message).
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Input/InputProps
+ * @see https://shelving.cc/ui/InputProps
  */
 export interface InputProps {
 	/** The `name=""` prop of the input. */

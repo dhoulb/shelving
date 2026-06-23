@@ -9,7 +9,7 @@ import type { ImmutableURI } from "./uri.js";
  * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
  * - URLs have a concept of "absolute" or "relative" URLs, since they have a path.
  *
- * @see https://dhoulb.github.io/shelving/util/url/URLString
+ * @see https://shelving.cc/util/url/URLString
  */
 export type URLString = `${string}://${string}`;
 
@@ -20,7 +20,7 @@ export type URLString = `${string}://${string}`;
  * - If a path is provided as input, a base URL _must_ also be provided.
  * - The returned type is
  *
- * @see https://dhoulb.github.io/shelving/util/url/ImmutableURLConstructor
+ * @see https://shelving.cc/util/url/ImmutableURLConstructor
  */
 export interface ImmutableURLConstructor {
 	new (input: URLString | ImmutableURL, base?: URLString | ImmutableURL): ImmutableURL;
@@ -44,7 +44,7 @@ export interface ImmutableURLConstructor {
  * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
  * - Javascript URLs are mutable which can lead to subtle bugs.
  *
- * @see https://dhoulb.github.io/shelving/util/url/ImmutableURL
+ * @see https://shelving.cc/util/url/ImmutableURL
  */
 export interface ImmutableURL extends ImmutableURI {
 	readonly href: URLString;
@@ -56,7 +56,7 @@ export const ImmutableURL = URL as ImmutableURLConstructor;
 /**
  * Values that can be converted to a URL instance.
  *
- * @see https://dhoulb.github.io/shelving/util/url/PossibleURL
+ * @see https://shelving.cc/util/url/PossibleURL
  */
 export type PossibleURL = string | URL;
 
@@ -69,7 +69,7 @@ export type PossibleURL = string | URL;
  *
  * @example if (isURL(value)) value.pathname; // `value` is narrowed to `ImmutableURL`
  *
- * @see https://dhoulb.github.io/shelving/util/url/isURL
+ * @see https://shelving.cc/util/url/isURL
  */
 export function isURL(value: unknown): value is ImmutableURL {
 	return value instanceof URL && _isURL(value);
@@ -89,7 +89,7 @@ function _isURL(uri: URL): uri is ImmutableURL {
  * assertURL(value);
  * value.pathname; // `value` is narrowed to `ImmutableURL`
  *
- * @see https://dhoulb.github.io/shelving/util/url/assertURL
+ * @see https://shelving.cc/util/url/assertURL
  */
 export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is ImmutableURL {
 	if (!isURL(value)) throw new RequiredError("Invalid URL", { received: value, caller });
@@ -110,7 +110,7 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
  *
  * @example getBasedURI("path/to/page", "http://example.com/base/"); // `http://example.com/base/path/to/page`
  *
- * @see https://dhoulb.github.io/shelving/util/url/getBasedURI
+ * @see https://shelving.cc/util/url/getBasedURI
  */
 export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURI | undefined {
 	if (!input) return;
@@ -134,7 +134,7 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
  * getURL("/page", "http://example.com/"); // `http://example.com/page`
  * getURL("mailto:a@b.com"); // `undefined` — not a hierarchical URL
  *
- * @see https://dhoulb.github.io/shelving/util/url/getURL
+ * @see https://shelving.cc/util/url/getURL
  */
 export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
 	const uri = getBasedURI(target, base);
@@ -152,7 +152,7 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
  *
  * @example requireURL("/page", "http://example.com/"); // `http://example.com/page`
  *
- * @see https://dhoulb.github.io/shelving/util/url/requireURL
+ * @see https://shelving.cc/util/url/requireURL
  */
 export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): ImmutableURL {
 	const url = getURL(target, base);
@@ -178,7 +178,7 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  * @example matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
  * @example matchURLPrefix("http://x.com/a/b/", "http://x.com/a/"); // `/b` (trailing slash normalised away)
  *
- * @see https://dhoulb.github.io/shelving/util/url/matchURLPrefix
+ * @see https://shelving.cc/util/url/matchURLPrefix
  */
 export function matchURLPrefix(
 	target: PossibleURL | undefined,
@@ -210,7 +210,7 @@ export function matchURLPrefix(
  *
  * @example isURLActive("http://x.com/a", "http://x.com/a"); // `true`
  *
- * @see https://dhoulb.github.io/shelving/util/url/isURLActive
+ * @see https://shelving.cc/util/url/isURLActive
  */
 export function isURLActive(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLActive): boolean {
 	return !!target && !!base && matchURLPrefix(target, base, caller) === "/";
@@ -229,7 +229,7 @@ export function isURLActive(target: PossibleURL | undefined, base: PossibleURL |
  *
  * @example isURLProud("http://x.com/a/b", "http://x.com/a"); // `true`
  *
- * @see https://dhoulb.github.io/shelving/util/url/isURLProud
+ * @see https://shelving.cc/util/url/isURLProud
  */
 export function isURLProud(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLProud): boolean {
 	return !!target && !!base && matchURLPrefix(target, base, caller) !== undefined;
@@ -238,7 +238,7 @@ export function isURLProud(target: PossibleURL | undefined, base: PossibleURL | 
 /**
  * BaseURL is a URL with a guaranteed trailing slash on pathname.
  *
- * @see https://dhoulb.github.io/shelving/util/url/BaseURL
+ * @see https://shelving.cc/util/url/BaseURL
  */
 export interface BaseURL extends ImmutableURL {
 	readonly pathname: `/` | `/${string}/`;
@@ -253,7 +253,7 @@ export interface BaseURL extends ImmutableURL {
  *
  * @example isBaseURL(new URL("http://x.com/a/")); // `true`
  *
- * @see https://dhoulb.github.io/shelving/util/url/isBaseURL
+ * @see https://shelving.cc/util/url/isBaseURL
  */
 export function isBaseURL(value: PossibleURL): value is BaseURL {
 	return isURL(value) && _isBaseURL(value);
@@ -272,7 +272,7 @@ function _isBaseURL(uri: URL): uri is BaseURL {
  *
  * @example getBaseURL("http://x.com/a"); // `http://x.com/a/`
  *
- * @see https://dhoulb.github.io/shelving/util/url/getBaseURL
+ * @see https://shelving.cc/util/url/getBaseURL
  */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
 	if (!input) return;
@@ -295,7 +295,7 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
  *
  * @example requireBaseURL("http://x.com/a", requireBaseURL); // `http://x.com/a/`
  *
- * @see https://dhoulb.github.io/shelving/util/url/requireBaseURL
+ * @see https://shelving.cc/util/url/requireBaseURL
  */
 export function requireBaseURL(value: PossibleURL, caller: AnyCaller): BaseURL {
 	const url = getBaseURL(value);

@@ -34,7 +34,7 @@ import type { KVNamespace } from "./types.js";
  * // `env.KV` is the KV namespace binding from the Worker environment.
  * const provider = new CloudflareKVProvider(env.KV);
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider
+ * @see https://shelving.cc/cloudflare/CloudflareKVProvider
  */
 export class CloudflareKVProvider<I extends string = string, T extends Data = Data> extends DBProvider<I, T> {
 	private readonly _kv: KVNamespace;
@@ -43,7 +43,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * Create a provider wrapping a Cloudflare Workers KV namespace binding.
 	 *
 	 * @param kv The `KVNamespace` binding from the Worker environment.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider
 	 */
 	constructor(kv: KVNamespace) {
 		super();
@@ -57,7 +57,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param id The ID of the item to read.
 	 * @returns Promise resolving to the item, or `undefined` if no value exists for the key.
 	 * @example await provider.getItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/getItem
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>({ name }: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const data = (await this._kv.get(_getKey(name, id), { type: "json" })) as TT | null; // `as TT` needed: KV returns unknown from JSON parse.
@@ -71,7 +71,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param id The ID of the item to subscribe to.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support realtime subscriptions.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/getItemSequence
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/getItemSequence
 	 */
 	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
@@ -84,7 +84,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param data The data for the new item.
 	 * @returns Promise resolving to the generated ID of the new item.
 	 * @example const id = await provider.addItem(users, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/addItem
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>({ name }: Collection<string, II, TT>, data: TT): Promise<II> {
 		const id = randomUUID() as II; // `as II` needed: TypeScript can't narrow II from string return type.
@@ -100,7 +100,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param data The data to store for the item.
 	 * @returns Promise resolving once the write completes.
 	 * @example await provider.setItem(users, "abc123", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/setItem
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>({ name }: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this._kv.put(_getKey(name, id), JSON.stringify(data));
@@ -114,7 +114,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param updates The updates to apply.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support item updates.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/updateItem
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -131,7 +131,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param id The ID of the item to delete.
 	 * @returns Promise resolving once the deletion completes.
 	 * @example await provider.deleteItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/deleteItem
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>({ name }: Collection<string, II, TT>, id: II): Promise<void> {
 		await this._kv.delete(_getKey(name, id));
@@ -144,7 +144,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param query The query to run.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support collection queries.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/getQuery
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -160,7 +160,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param query The query to subscribe to.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support realtime subscriptions.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/getQuerySequence
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/getQuerySequence
 	 */
 	override getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -177,7 +177,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param data The data to write to each matching item.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support collection queries.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/setQuery
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -195,7 +195,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param updates The updates to apply to each matching item.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support item updates.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/updateQuery
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -212,7 +212,7 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 	 * @param query The query selecting items to delete.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because KV does not support collection queries.
-	 * @see https://dhoulb.github.io/shelving/cloudflare/CloudflareKVProvider/CloudflareKVProvider/deleteQuery
+	 * @see https://shelving.cc/cloudflare/CloudflareKVProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,

@@ -10,28 +10,28 @@ import type { Nullish } from "./null.js";
 /**
  * Absolute path string starting with a `/` slash.
  *
- * @see https://dhoulb.github.io/shelving/util/path/AbsolutePath
+ * @see https://shelving.cc/util/path/AbsolutePath
  */
 export type AbsolutePath = `/` | `/${string}`;
 
 /**
  * Relative path string that is `.` dot, or starts with `./` dot slash.
  *
- * @see https://dhoulb.github.io/shelving/util/path/RelativePath
+ * @see https://shelving.cc/util/path/RelativePath
  */
 export type RelativePath = `.` | `./` | `./${string}`;
 
 /**
  * Either an absolute or relative path.
  *
- * @see https://dhoulb.github.io/shelving/util/path/Path
+ * @see https://shelving.cc/util/path/Path
  */
 export type Path = AbsolutePath | RelativePath;
 
 /**
  * Things that can be converted to a path.
  *
- * @see https://dhoulb.github.io/shelving/util/path/PossiblePath
+ * @see https://shelving.cc/util/path/PossiblePath
  */
 export type PossiblePath = string | readonly string[];
 
@@ -41,7 +41,7 @@ export type PossiblePath = string | readonly string[];
  * @param path The path to test.
  * @returns `true` if `path` is an `AbsolutePath` starting with `/`, narrowing its type.
  * @example isAbsolutePath("/a/b") // true
- * @see https://dhoulb.github.io/shelving/util/path/isAbsolutePath
+ * @see https://shelving.cc/util/path/isAbsolutePath
  */
 export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
 	return typeof path === "string" && path.startsWith("/");
@@ -53,7 +53,7 @@ export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
  * @param path The path to test.
  * @returns `true` if `path` is a `RelativePath` (`.` or starting with `./`), narrowing its type.
  * @example isRelativePath("./a") // true
- * @see https://dhoulb.github.io/shelving/util/path/isRelativePath
+ * @see https://shelving.cc/util/path/isRelativePath
  */
 export function isRelativePath(path: PossiblePath): path is RelativePath {
 	return typeof path === "string" && (path === "." || path.startsWith("./"));
@@ -69,7 +69,7 @@ export function isRelativePath(path: PossiblePath): path is RelativePath {
  * @param inputBase Absolute path used for resolving relative paths in `inputPath`.
  * @returns Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`, or `undefined` if `inputPath` is not a valid path.
  * @example getPath("./a", "/b") // "/b/a"
- * @see https://dhoulb.github.io/shelving/util/path/getPath
+ * @see https://shelving.cc/util/path/getPath
  */
 export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePath = "/"): AbsolutePath | undefined {
 	if (isNullish(inputPath)) return;
@@ -87,7 +87,7 @@ export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePat
  * @param path The path to normalise.
  * @returns The normalised path, preserving the absolute/relative type of `path`.
  * @example cleanPath("/a//b/") // "/a/b"
- * @see https://dhoulb.github.io/shelving/util/path/cleanPath
+ * @see https://shelving.cc/util/path/cleanPath
  */
 export function cleanPath(path: AbsolutePath): AbsolutePath;
 export function cleanPath(path: string): string;
@@ -107,7 +107,7 @@ export function cleanPath(path: string): string {
  * @returns Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`.
  * @throws {RequiredError} If `path` is not a valid path.
  * @example requirePath("./a", "/b") // "/b/a"
- * @see https://dhoulb.github.io/shelving/util/path/requirePath
+ * @see https://shelving.cc/util/path/requirePath
  */
 export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
 	const output = getPath(path, base);
@@ -126,7 +126,7 @@ export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: Any
  * @returns The remaining absolute path after stripping `base`, `/` for an exact match, or `undefined` if `target` is not under `base`.
  * @throws {RequiredError} If `target` or `base` is not a valid path.
  * @example matchPathPrefix("/a/b", "/a") // "/b"
- * @see https://dhoulb.github.io/shelving/util/path/matchPathPrefix
+ * @see https://shelving.cc/util/path/matchPathPrefix
  */
 export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller: AnyCaller = matchPathPrefix): AbsolutePath | undefined {
 	const basePath = requirePath(base, undefined, caller);
@@ -144,7 +144,7 @@ export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller
  * @param current Current path to test against.
  * @returns `true` if `target` is exactly `current`.
  * @example isPathActive("/a", "/a") // true
- * @see https://dhoulb.github.io/shelving/util/path/isPathActive
+ * @see https://shelving.cc/util/path/isPathActive
  */
 export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
 	return target === current;
@@ -158,7 +158,7 @@ export function isPathActive(target: AbsolutePath, current: AbsolutePath): boole
  * @param current Current path to test against.
  * @returns `true` if `current` is `target` or a descendant of `target`.
  * @example isPathProud("/a", "/a/b") // true
- * @see https://dhoulb.github.io/shelving/util/path/isPathProud
+ * @see https://shelving.cc/util/path/isPathProud
  */
 export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolean {
 	return target === current || (target !== "/" && target.startsWith(`${current}/`));
@@ -171,7 +171,7 @@ export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolea
  * @param path Path to split (an array of segments is returned as-is).
  * @returns Array of path segments.
  * @example splitPath("/a/b") // ["a", "b"]
- * @see https://dhoulb.github.io/shelving/util/path/splitPath
+ * @see https://shelving.cc/util/path/splitPath
  */
 export function splitPath(path: PossiblePath): readonly string[] {
 	if (typeof path !== "string") return path;
@@ -182,7 +182,7 @@ export function splitPath(path: PossiblePath): readonly string[] {
 /**
  * A single argument accepted by `joinPath()` — either a string (full path or single segment) or an array of segments.
  *
- * @see https://dhoulb.github.io/shelving/util/path/PathPart
+ * @see https://shelving.cc/util/path/PathPart
  */
 export type PathPart = string | readonly string[];
 

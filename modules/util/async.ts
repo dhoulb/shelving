@@ -8,7 +8,7 @@ import { BLACKHOLE, type ErrorCallback, type ValueCallback } from "./function.js
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `PromiseLike`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/async/isAsync
+ * @see https://shelving.cc/util/async/isAsync
  */
 export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
 	return typeof value === "object" && value !== null && typeof (value as Promise<T>).then === "function";
@@ -19,7 +19,7 @@ export function isAsync<T>(value: PromiseLike<T> | T): value is PromiseLike<T> {
  *
  * @param value The value to test.
  * @returns `true` if `value` is not a `PromiseLike`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/async/notAsync
+ * @see https://shelving.cc/util/async/notAsync
  */
 export function notAsync<T>(value: PromiseLike<T> | T): value is T {
 	return !isAsync(value);
@@ -32,7 +32,7 @@ export function notAsync<T>(value: PromiseLike<T> | T): value is T {
  * @returns Synchronous (not promised) value.
  * @throws Promise if value is an asynchronous (promised) value.
  * @example throwAsync(123) // 123
- * @see https://dhoulb.github.io/shelving/util/async/throwAsync
+ * @see https://shelving.cc/util/async/throwAsync
  */
 export function throwAsync<T>(value: PromiseLike<T> | T): T {
 	if (isAsync(value)) throw value;
@@ -45,7 +45,7 @@ export function throwAsync<T>(value: PromiseLike<T> | T): T {
  * @param value The value to assert.
  * @throws {RequiredError} If `value` is a `PromiseLike`.
  * @example assertNotAsync(123); // passes
- * @see https://dhoulb.github.io/shelving/util/async/assertNotAsync
+ * @see https://shelving.cc/util/async/assertNotAsync
  */
 export function assertNotAsync<T>(value: PromiseLike<T> | T): asserts value is T {
 	if (isAsync(value)) throw new RequiredError("Must be synchronous", { received: value, caller: assertNotAsync });
@@ -57,7 +57,7 @@ export function assertNotAsync<T>(value: PromiseLike<T> | T): asserts value is T
  * @param value The value to assert.
  * @throws {RequiredError} If `value` is not a `PromiseLike`.
  * @example assertAsync(Promise.resolve(1)); // passes
- * @see https://dhoulb.github.io/shelving/util/async/assertAsync
+ * @see https://shelving.cc/util/async/assertAsync
  */
 export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is PromiseLike<T> {
 	if (!isAsync(value)) throw new RequiredError("Must be asynchronous", { received: value, caller: assertAsync });
@@ -69,7 +69,7 @@ export function assertAsync<T>(value: PromiseLike<T> | T): asserts value is Prom
  * @param value The value to assert.
  * @throws {RequiredError} If `value` is not a `Promise` instance.
  * @example assertPromise(Promise.resolve(1)); // passes
- * @see https://dhoulb.github.io/shelving/util/async/assertPromise
+ * @see https://shelving.cc/util/async/assertPromise
  */
 export function assertPromise<T>(value: Promise<T> | T): asserts value is Promise<T> {
 	if (!(value instanceof Promise)) throw new RequiredError("Must be promise", { received: value, caller: assertPromise });
@@ -80,7 +80,7 @@ export function assertPromise<T>(value: Promise<T> | T): asserts value is Promis
  *
  * @returns A promise that resolves after all currently-queued microtasks have run.
  * @example await runMicrotasks();
- * @see https://dhoulb.github.io/shelving/util/async/runMicrotasks
+ * @see https://shelving.cc/util/async/runMicrotasks
  */
 export function runMicrotasks(): Promise<void> {
 	// Timeouts are part of the main event queue, and events in the main queue are run _after_ all microtasks complete.
@@ -99,7 +99,7 @@ export function runMicrotasks(): Promise<void> {
  * @returns Array of values of all promises (in the same order/positions as input).
  * @throws {Errors} If one or more promises throws all rejection reasons after resolving all of the promises.
  * @example const [a, b] = await awaitValues(getA(), getB());
- * @see https://dhoulb.github.io/shelving/util/async/awaitValues
+ * @see https://shelving.cc/util/async/awaitValues
  */
 export async function awaitValues<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
 export async function awaitValues(...promises: unknown[]): Promise<ImmutableArray<unknown>> {
@@ -119,7 +119,7 @@ export async function awaitValues(...promises: unknown[]): Promise<ImmutableArra
  * @param promises Values (usually async, but not necessarily) that we need to wait for.
  * @returns Array of rejection reasons of all promises (or empty array if no promises threw).
  * @example const errors = await awaitErrors(getA(), getB());
- * @see https://dhoulb.github.io/shelving/util/async/awaitErrors
+ * @see https://shelving.cc/util/async/awaitErrors
  */
 export async function awaitErrors(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
 	const errors: unknown[] = [];
@@ -134,7 +134,7 @@ export async function awaitErrors(...promises: PromiseLike<unknown>[]): Promise<
  * class MyPromise extends BasePromise<number> {
  * 	done() { this._resolve(123); }
  * }
- * @see https://dhoulb.github.io/shelving/util/async/BasePromise
+ * @see https://shelving.cc/util/async/BasePromise
  */
 export abstract class BasePromise<T> extends Promise<T> {
 	// Make `this.then()` create a `Promise` not a `Deferred`
@@ -163,7 +163,7 @@ export abstract class BasePromise<T> extends Promise<T> {
 /**
  * Deferred allows you to access the internal resolve/reject callbacks of a `Promise`.
  *
- * @see https://dhoulb.github.io/shelving/util/async/Deferred
+ * @see https://shelving.cc/util/async/Deferred
  */
 export type Deferred<T = unknown> = {
 	promise: Promise<T>;
@@ -177,7 +177,7 @@ export type Deferred<T = unknown> = {
  *
  * @returns A `Deferred` exposing the promise and its `resolve()`/`reject()` functions.
  * @example const { promise, resolve } = createDeferred<number>();
- * @see https://dhoulb.github.io/shelving/util/async/createDeferred
+ * @see https://shelving.cc/util/async/createDeferred
  */
 export function createDeferred<T = void>(): Deferred<T> {
 	let resolve: ValueCallback<T>;
@@ -200,7 +200,7 @@ export function createDeferred<T = void>(): Deferred<T> {
  * @param ms The delay in milliseconds before the promise resolves.
  * @returns A promise that resolves with `undefined` after `ms` milliseconds.
  * @example await getDelay(300); // resolves after 300ms
- * @see https://dhoulb.github.io/shelving/util/async/getDelay
+ * @see https://shelving.cc/util/async/getDelay
  */
 export function getDelay(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -215,7 +215,7 @@ export function getDelay(ms: number): Promise<void> {
  * @returns A promise that never resolves and rejects with the signal's reason when it fires.
  * @throws The signal's `reason` when the signal aborts.
  * @example await awaitRace(getDelay(300), awaitAbort(signal));
- * @see https://dhoulb.github.io/shelving/util/async/awaitAbort
+ * @see https://shelving.cc/util/async/awaitAbort
  */
 export function awaitAbort(signal: AbortSignal): Promise<never> {
 	const promise = new Promise<never>((_, reject) => {
@@ -236,7 +236,7 @@ export function awaitAbort(signal: AbortSignal): Promise<never> {
  * @returns A promise that settles with the first input to settle.
  * @throws The rejection reason of the first input to settle, if it rejects.
  * @example await awaitRace(getDelay(300), awaitAbort(signal)); // delay or abort, no leaked ABORT rejection if delay wins
- * @see https://dhoulb.github.io/shelving/util/async/awaitRace
+ * @see https://shelving.cc/util/async/awaitRace
  */
 export function awaitRace<T>(...promises: Promise<T>[]): Promise<T> {
 	for (const promise of promises) promise.catch(BLACKHOLE);

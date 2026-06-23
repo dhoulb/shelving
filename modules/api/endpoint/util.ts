@@ -18,7 +18,7 @@ import type { Endpoint } from "./Endpoint.js";
  * @returns {Response} Returning a `Response` object (this will pass back to the client without validation).
  * @returns {R} Returning the return type of the handler (this will be validated against the Endpoint's result schema).
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointCallback
+ * @see https://shelving.cc/api/EndpointCallback
  */
 export type EndpointCallback<P, R, C = void> = (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>;
 
@@ -26,7 +26,7 @@ export type EndpointCallback<P, R, C = void> = (payload: P, request: Request, co
  * A typed endpoint definition paired with its implementation callback.
  * - Created with `Endpoint.handler()`; matched and invoked by `handleEndpoints()`.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandler
+ * @see https://shelving.cc/api/EndpointHandler
  */
 export interface EndpointHandler<P, R, C = void> {
 	readonly endpoint: Endpoint<P, R>;
@@ -36,7 +36,7 @@ export interface EndpointHandler<P, R, C = void> {
 /**
  * An `EndpointHandler` with any payload and result type, for use where the specific types don't matter.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/util/AnyEndpointHandler
+ * @see https://shelving.cc/api/AnyEndpointHandler
  */
 // biome-ignore lint/suspicious/noExplicitAny: Intentional.
 export type AnyEndpointHandler<C = any> = EndpointHandler<any, any, C>;
@@ -44,7 +44,7 @@ export type AnyEndpointHandler<C = any> = EndpointHandler<any, any, C>;
 /**
  * A collection of endpoint handlers that can be matched and invoked by `handleEndpoints()`.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/util/EndpointHandlers
+ * @see https://shelving.cc/api/EndpointHandlers
  */
 export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
 
@@ -63,7 +63,7 @@ export type EndpointHandlers<C = void> = Iterable<AnyEndpointHandler<C>>;
  * @throws {MethodNotAllowedError} if the request method is not a supported HTTP method.
  * @throws {NotFoundError} if no base path matches, or no endpoint matches the target path.
  * @example await handleEndpoints("https://myapi.com", [getUser.handler(loadUser)], request, undefined)
- * @see https://dhoulb.github.io/shelving/api/endpoint/util/handleEndpoints
+ * @see https://shelving.cc/api/handleEndpoints
  */
 export function handleEndpoints<C>(
 	base: PossibleURL,

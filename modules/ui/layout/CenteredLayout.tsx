@@ -7,7 +7,7 @@ import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
 /**
  * Props for `<CenteredLayout>` — optional `children` and a `fullWidth` flag to drop the max-width.
  *
- * @see https://dhoulb.github.io/shelving/ui/layout/CenteredLayout/CenteredLayoutProps
+ * @see https://shelving.cc/ui/CenteredLayoutProps
  */
 export interface CenteredLayoutProps extends OptionalChildProps {
 	fullWidth?: boolean;
@@ -22,7 +22,7 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  * @param fullWidth Drop the narrow max-width and let content fill the width (defaults to `false`).
  * @returns The centred layout element.
  * @example <CenteredLayout><LoginForm /></CenteredLayout>
- * @see https://dhoulb.github.io/shelving/ui/layout/CenteredLayout/CenteredLayout
+ * @see https://shelving.cc/ui/CenteredLayout
  */
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {
 	// Wrap the scrolling `<main>` in `<RouteCache>` so recently-visited pages stay mounted but hidden,

@@ -5,28 +5,28 @@ import type { Nullish } from "./null.js";
 /**
  * Entity string combining a type and ID, e.g. `challenge:a1b2c3`
  *
- * @see https://dhoulb.github.io/shelving/util/entity/Entity
+ * @see https://shelving.cc/util/entity/Entity
  */
 export type Entity<T extends string = string> = `${T}:${string}`;
 
 /**
  * Extract the type portion from an `Entity` string.
  *
- * @see https://dhoulb.github.io/shelving/util/entity/EntityType
+ * @see https://shelving.cc/util/entity/EntityType
  */
 export type EntityType<E extends Entity> = E extends Entity<infer T> ? T : never;
 
 /**
  * Tuple representing an empty (invalid) entity, with `undefined` type and ID.
  *
- * @see https://dhoulb.github.io/shelving/util/entity/EmptyEntity
+ * @see https://shelving.cc/util/entity/EmptyEntity
  */
 export type EmptyEntity = [type: undefined, id: undefined];
 
 /**
  * Shared `EmptyEntity` constant returned when an entity string is invalid.
  *
- * @see https://dhoulb.github.io/shelving/util/entity/EMPTY_ENTITY
+ * @see https://shelving.cc/util/entity/EMPTY_ENTITY
  */
 export const EMPTY_ENTITY: EmptyEntity = [undefined, undefined];
 
@@ -37,7 +37,7 @@ export const EMPTY_ENTITY: EmptyEntity = [undefined, undefined];
  * @returns A `[type, id]` tuple, or `EMPTY_ENTITY` if the entity was missing or invalid.
  * @example getEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
  * @example getEntity(undefined) // [undefined, undefined]
- * @see https://dhoulb.github.io/shelving/util/entity/getEntity
+ * @see https://shelving.cc/util/entity/getEntity
  */
 export function getEntity<T extends string>(entity: Entity<T>): [type: T, id: string];
 export function getEntity<T extends string>(entity: Nullish<Entity<T>>): [type: T, id: string] | EmptyEntity;
@@ -58,7 +58,7 @@ export function getEntity(entity: Nullish<string>): [type: string, id: string] |
  * @returns A `[type, id]` tuple.
  * @throws {RequiredError} If the entity string is missing or invalid.
  * @example requireEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
- * @see https://dhoulb.github.io/shelving/util/entity/requireEntity
+ * @see https://shelving.cc/util/entity/requireEntity
  */
 export function requireEntity<T extends string>(entity: Entity<T>, caller?: AnyCaller): [type: T, id: string];
 export function requireEntity(entity: string, caller?: AnyCaller): [type: string, id: string];

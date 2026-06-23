@@ -11,7 +11,7 @@ const HEADING_CLASS = getModuleClass(HEADING_CSS, "heading");
 /**
  * Props shared by `<Title>`, `Heading`, and `<Subheading>` — colour, space, and typography variants plus a heading-level override.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Heading/HeadingProps
+ * @see https://shelving.cc/ui/HeadingProps
  */
 export interface HeadingProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {
 	/**
@@ -28,7 +28,7 @@ export interface HeadingProps extends ColorVariants, SpaceVariants, TypographyVa
  * @kind component
  * @returns Rendered `<h2>` heading element.
  * @example <Heading>Section title</Heading>
- * @see https://dhoulb.github.io/shelving/ui/block/Heading/Heading
+ * @see https://shelving.cc/ui/Heading
  */
 export function Heading({ level = "2", children, ...props }: HeadingProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;

@@ -17,13 +17,13 @@ import { APIProvider } from "./APIProvider.js";
  * 	}
  * }
  *
- * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider
+ * @see https://shelving.cc/api/ThroughAPIProvider
  */
 export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourceable<APIProvider<P, R>> {
 	/**
 	 * The base URL, delegated to the wrapped `source` provider.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/url
+	 * @see https://shelving.cc/api/ThroughAPIProvider/url
 	 */
 	override get url(): URL {
 		return this.source.url;
@@ -32,7 +32,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	/**
 	 * The wrapped source provider that operations delegate to.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/source
+	 * @see https://shelving.cc/api/ThroughAPIProvider/source
 	 */
 	readonly source: APIProvider<P, R>;
 
@@ -41,7 +41,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 *
 	 * @param source The provider that every operation delegates to.
 	 * @example new ThroughAPIProvider(clientProvider)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider
+	 * @see https://shelving.cc/api/ThroughAPIProvider
 	 */
 	constructor(source: APIProvider<P, R>) {
 		super();
@@ -56,7 +56,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The fully resolved request `URL`.
 	 * @example provider.renderURL(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/renderURL
+	 * @see https://shelving.cc/api/ThroughAPIProvider/renderURL
 	 */
 	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		return this.source.renderURL(endpoint, payload, caller);
@@ -71,7 +71,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The created `Request`.
 	 * @example provider.createRequest(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/createRequest
+	 * @see https://shelving.cc/api/ThroughAPIProvider/createRequest
 	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -90,7 +90,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns A promise resolving to the parsed result.
 	 * @example await provider.parseResponse(getUser, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/ThroughAPIProvider/parseResponse
 	 */
 	override parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -106,7 +106,7 @@ export class ThroughAPIProvider<P, R> extends APIProvider<P, R> implements Sourc
 	 * @param request The `Request` to send.
 	 * @returns A promise resolving to the `Response`.
 	 * @example await provider.fetch(request)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ThroughAPIProvider/ThroughAPIProvider/fetch
+	 * @see https://shelving.cc/api/ThroughAPIProvider/fetch
 	 */
 	override fetch(request: Request): Promise<Response> {
 		return this.source.fetch(request);

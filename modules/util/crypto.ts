@@ -20,7 +20,7 @@ function _getKey(password: string): Promise<CryptoKey> {
  * @param length The number of random bytes to generate.
  * @returns A `Bytes` (`Uint8Array`) of the requested length filled with random values.
  * @example getRandomBytes(16) // Uint8Array(16) [ ... ]
- * @see https://dhoulb.github.io/shelving/util/crypto/getRandomBytes
+ * @see https://shelving.cc/util/crypto/getRandomBytes
  */
 export function getRandomBytes(length: number): Bytes {
 	const bytes: Bytes = new Uint8Array(length);
@@ -40,7 +40,7 @@ export function getRandomBytes(length: number): Bytes {
  * @throws {ValueError} If the password is shorter than the minimum length, or `iterations` is less than 1.
  *
  * @example const hash = await hashPassword("correct-horse"); // "abc…$500000$def…"
- * @see https://dhoulb.github.io/shelving/util/crypto/hashPassword
+ * @see https://shelving.cc/util/crypto/hashPassword
  */
 export async function hashPassword(password: string, iterations = ITERATIONS): Promise<string> {
 	// Checks.
@@ -71,7 +71,7 @@ export async function hashPassword(password: string, iterations = ITERATIONS): P
  * - Returns `false` (never throws) for malformed hash strings or invalid iteration counts.
  *
  * @example await verifyPassword("correct-horse", storedHash) // true
- * @see https://dhoulb.github.io/shelving/util/crypto/verifyPassword
+ * @see https://shelving.cc/util/crypto/verifyPassword
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
 	// Check salthash.

@@ -11,7 +11,7 @@ import { NULLABLE } from "./NullableSchema.js";
  * @example
  *  const schema = new TimeSchema({});
  *  schema.validate("23:59"); // "23:59:00.000"
- * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TimeSchema
+ * @see https://shelving.cc/schema/TimeSchema
  */
 export class TimeSchema extends DateSchema {
 	/**
@@ -26,7 +26,7 @@ export class TimeSchema extends DateSchema {
 	 * @param value The `Date` to convert.
 	 * @returns The time portion as a `hh:mm:ss.fff` string.
 	 * @example schema.stringify(new Date("2005-09-12T23:59:00Z")) // "23:59:00.000"
-	 * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TimeSchema/stringify
+	 * @see https://shelving.cc/schema/TimeSchema/stringify
 	 */
 	override stringify(value: Date): string {
 		return requireTimeString(value);
@@ -37,7 +37,7 @@ export class TimeSchema extends DateSchema {
 	 * @param value The validated time string to format.
 	 * @returns The time formatted for display.
 	 * @example schema.format("23:59") // "23:59"
-	 * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TimeSchema/format
+	 * @see https://shelving.cc/schema/TimeSchema/format
 	 */
 	override format(value: string): string {
 		return formatTime(value, undefined, this.format);
@@ -48,7 +48,7 @@ export class TimeSchema extends DateSchema {
  * Sugar instance of `TimeSchema` for a required abstract time. Equivalent to `new TimeSchema({})`.
  *
  * @example TIME.validate("23:59") // "23:59:00.000"
- * @see https://dhoulb.github.io/shelving/schema/TimeSchema/TIME
+ * @see https://shelving.cc/schema/TIME
  */
 export const TIME = new TimeSchema({});
 
@@ -56,6 +56,6 @@ export const TIME = new TimeSchema({});
  * Sugar instance allowing a `TIME` or `null`. Equivalent to `NULLABLE(TIME)`.
  *
  * @example NULLABLE_TIME.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/TimeSchema/NULLABLE_TIME
+ * @see https://shelving.cc/schema/NULLABLE_TIME
  */
 export const NULLABLE_TIME = NULLABLE(TIME);

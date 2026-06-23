@@ -11,7 +11,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  *
  * - `action` is the kind of write; `collection` is the collection name; `id`, `query`, `data`, and `updates` carry whichever fields apply to that write.
  *
- * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/DBChange
+ * @see https://shelving.cc/db/DBChange
  */
 export type DBChange<I extends Identifier> = {
 	readonly action: "add" | "set" | "update" | "delete";
@@ -33,13 +33,13 @@ export type DBChange<I extends Identifier> = {
  *  await provider.addItem(users, { name: "Dave" });
  *  provider.changes; // [{ action: "add", collection: "users", id: 123, data: { name: "Dave" } }]
  *
- * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider
+ * @see https://shelving.cc/db/ChangesDBProvider
  */
 export class ChangesDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
 	/**
 	 * The log of writes performed through this provider, in the order they happened.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/changes
+	 * @see https://shelving.cc/db/ChangesDBProvider/changes
 	 */
 	get changes(): ReadonlyArray<DBChange<I>> {
 		return this._changes;
@@ -53,7 +53,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/addItem
+	 * @see https://shelving.cc/db/ChangesDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const id = await super.addItem(collection, data);
@@ -68,7 +68,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/setItem
+	 * @see https://shelving.cc/db/ChangesDBProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await super.setItem(collection, id, data);
@@ -82,7 +82,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/updateItem
+	 * @see https://shelving.cc/db/ChangesDBProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -99,7 +99,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/deleteItem
+	 * @see https://shelving.cc/db/ChangesDBProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await super.deleteItem(collection, id);
@@ -113,7 +113,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/setQuery
+	 * @see https://shelving.cc/db/ChangesDBProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -131,7 +131,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/updateQuery
+	 * @see https://shelving.cc/db/ChangesDBProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -148,7 +148,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ChangesDBProvider/ChangesDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/ChangesDBProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,

@@ -11,7 +11,7 @@ import { DBProvider } from "./DBProvider.js";
 
 /**
  * SQL fragment made from template strings plus embedded expressions, ready to be composed into a query.
- * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLFragment
+ * @see https://shelving.cc/db/SQLFragment
  */
 export interface SQLFragment {
 	readonly strings: ImmutableArray<string>;
@@ -32,7 +32,7 @@ type CountRow = {
  * @example
  *  class MyProvider extends SQLProvider { async exec(strings, ...values) { ... } }
  *  const item = await new MyProvider().getItem(collection, "abc");
- * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider
+ * @see https://shelving.cc/db/SQLProvider
  */
 export abstract class SQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	/**
@@ -42,7 +42,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param values The interpolated values to bind into the query.
 	 * @returns Promise resolving to the array of rows returned by the database.
 	 * @example await provider.exec`SELECT * FROM ${table}`
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/exec
+	 * @see https://shelving.cc/db/SQLProvider/exec
 	 */
 	abstract exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>>;
 
@@ -53,7 +53,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param id The ID of the item to get.
 	 * @returns Promise resolving to the item, or `undefined` if it doesn't exist.
 	 * @example await provider.getItem(collection, "abc")
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/getItem
+	 * @see https://shelving.cc/db/SQLProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const rows = await this.exec<Item<II, TT>>`
@@ -72,7 +72,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns Never returns; always throws.
 	 * @throws {UnimplementedError} Always, because SQL providers don't support realtime subscriptions.
 	 * @example provider.getItemSequence(collection, "abc") // throws
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/getItemSequence
+	 * @see https://shelving.cc/db/SQLProvider/getItemSequence
 	 */
 	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
@@ -86,7 +86,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns Promise resolving to the ID of the inserted item.
 	 * @throws {RequiredError} If the `INSERT` didn't return an ID.
 	 * @example await provider.addItem(collection, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/addItem
+	 * @see https://shelving.cc/db/SQLProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const rows = await this.exec<{ id: II }>`
@@ -106,7 +106,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param data The full data to store for the item.
 	 * @returns Promise that resolves once the item has been set.
 	 * @example await provider.setItem(collection, "abc", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/setItem
+	 * @see https://shelving.cc/db/SQLProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this.exec`
@@ -123,7 +123,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param updates The updates to apply.
 	 * @returns Promise that resolves once the item has been updated.
 	 * @example await provider.updateItem(collection, "abc", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/updateItem
+	 * @see https://shelving.cc/db/SQLProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -144,7 +144,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param id The ID of the item to delete.
 	 * @returns Promise that resolves once the item has been deleted.
 	 * @example await provider.deleteItem(collection, "abc")
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/deleteItem
+	 * @see https://shelving.cc/db/SQLProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
@@ -157,7 +157,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query Optional query to filter the items to count.
 	 * @returns Promise resolving to the number of matching items.
 	 * @example await provider.countQuery(collection, query)
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/countQuery
+	 * @see https://shelving.cc/db/SQLProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -177,7 +177,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query Optional query to filter, sort, and limit the items.
 	 * @returns Promise resolving to the array of matching items.
 	 * @example await provider.getQuery(collection, query)
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/getQuery
+	 * @see https://shelving.cc/db/SQLProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -197,7 +197,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns Never returns; always throws.
 	 * @throws {UnimplementedError} Always, because SQL providers don't support realtime subscriptions.
 	 * @example provider.getQuerySequence(collection, query) // throws
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/getQuerySequence
+	 * @see https://shelving.cc/db/SQLProvider/getQuerySequence
 	 */
 	override getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
@@ -214,7 +214,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param data The full data to store for each matching item.
 	 * @returns Promise that resolves once the matching items have been set.
 	 * @example await provider.setQuery(collection, query, { active: true })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/setQuery
+	 * @see https://shelving.cc/db/SQLProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -232,7 +232,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param updates The updates to apply to each matching item.
 	 * @returns Promise that resolves once the matching items have been updated.
 	 * @example await provider.updateQuery(collection, query, { active: true })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/updateQuery
+	 * @see https://shelving.cc/db/SQLProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -249,7 +249,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query The query selecting the items to delete.
 	 * @returns Promise that resolves once the matching items have been deleted.
 	 * @example await provider.deleteQuery(collection, query)
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/deleteQuery
+	 * @see https://shelving.cc/db/SQLProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -265,7 +265,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param values The interpolated values to embed into the fragment.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sql`SELECT * FROM ${table}`; // SQLFragment
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sql
+	 * @see https://shelving.cc/db/SQLProvider/sql
 	 */
 	sql(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): SQLFragment {
 		return { strings, values };
@@ -277,7 +277,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param name The identifier (table or column name) to escape.
 	 * @returns An `SQLFragment` containing the quoted identifier.
 	 * @example this.sqlIdentifier("myTable"); // "myTable"
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlIdentifier
+	 * @see https://shelving.cc/db/SQLProvider/sqlIdentifier
 	 */
 	sqlIdentifier(name: string): SQLFragment {
 		return { strings: [_escapeIdentifier(name)], values: [] };
@@ -291,7 +291,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns An `SQLFragment` extracting the value.
 	 * @throws {UnimplementedError} If the key is nested (multi-segment).
 	 * @example this.sqlExtract(["name"]); // "name"
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlExtract
+	 * @see https://shelving.cc/db/SQLProvider/sqlExtract
 	 */
 	sqlExtract(key: Segments): SQLFragment {
 		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested filter keys");
@@ -307,7 +307,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param after Text placed after the last fragment.
 	 * @returns The joined `SQLFragment`.
 	 * @example this.sqlConcat([a, b], " AND "); // a AND b
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlConcat
+	 * @see https://shelving.cc/db/SQLProvider/sqlConcat
 	 */
 	sqlConcat(values: ImmutableArray<SQLFragment>, separator = ", ", before = "", after = ""): SQLFragment {
 		const strings = [before, ...new Array(Math.max(0, values.length - 1)).fill(separator), after];
@@ -320,7 +320,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param data The data whose entries become `column = value` assignments.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlSetters({ a: 1, b: 2 }); // "a" = 1, "b" = 2
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlSetters
+	 * @see https://shelving.cc/db/SQLProvider/sqlSetters
 	 */
 	sqlSetters<TT extends Data>(data: TT): SQLFragment {
 		const entries = Object.entries(data);
@@ -336,7 +336,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param updates The updates to convert into SQL assignments.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlUpdates({ a: 1 }); // "a" = 1
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlUpdates
+	 * @see https://shelving.cc/db/SQLProvider/sqlUpdates
 	 */
 	sqlUpdates<TT extends Data>(updates: Updates<TT>): SQLFragment {
 		return this.sqlConcat(
@@ -355,7 +355,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the key is nested or the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a"], value: 1 }); // "a" = 1
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlUpdate
+	 * @see https://shelving.cc/db/SQLProvider/sqlUpdate
 	 */
 	sqlUpdate({ action, key, value }: Update): SQLFragment {
 		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested update keys");
@@ -371,7 +371,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param data The data whose keys and values become the column list and values.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlValues({ a: 1, b: 2 }); // ("a", "b") VALUES (1, 2)
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlValues
+	 * @see https://shelving.cc/db/SQLProvider/sqlValues
 	 */
 	sqlValues(data: Data): SQLFragment {
 		const entries = Object.entries(data);
@@ -392,7 +392,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query The query to translate into clauses.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlClauses(query); // WHERE ... ORDER BY ... LIMIT ...
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlClauses
+	 * @see https://shelving.cc/db/SQLProvider/sqlClauses
 	 */
 	sqlClauses(query: Query<Item>) {
 		return this.sql`${this.sqlWhere(query)}${this.sqlOrder(query)}${this.sqlLimit(query)}`;
@@ -404,7 +404,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query The query whose filters become the `WHERE` clause.
 	 * @returns The composed `SQLFragment` (empty if there are no filters).
 	 * @example this.sqlWhere(query); // WHERE x = 1
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlWhere
+	 * @see https://shelving.cc/db/SQLProvider/sqlWhere
 	 */
 	sqlWhere(query: Query<Item>) {
 		const filters = getQueryFilters(query);
@@ -422,7 +422,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["x"], operator: "is", value: 1 }); // "x" = 1
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlFilter
+	 * @see https://shelving.cc/db/SQLProvider/sqlFilter
 	 */
 	sqlFilter({ key, operator, value }: QueryFilter): SQLFragment {
 		const path = this.sqlExtract(key);
@@ -451,7 +451,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @returns The composed `SQLFragment` (empty if there are no orders).
 	 * @throws {UnimplementedError} If an order key is nested (multi-segment).
 	 * @example this.sqlOrder(query); // ORDER BY "a" ASC
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlOrder
+	 * @see https://shelving.cc/db/SQLProvider/sqlOrder
 	 */
 	sqlOrder(query: Query<Item>) {
 		const orders = getQueryOrders(query);
@@ -468,7 +468,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param order The order (`key`, `direction`) to translate.
 	 * @returns The composed `SQLFragment`.
 	 * @example this.sqlSort({ key: ["a"], direction: "asc" }); // "a" ASC
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlSort
+	 * @see https://shelving.cc/db/SQLProvider/sqlSort
 	 */
 	sqlSort({ key, direction }: QueryOrder): SQLFragment {
 		const path = this.sqlExtract(key);
@@ -483,7 +483,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @param query The query whose limit becomes the `LIMIT` clause.
 	 * @returns The composed `SQLFragment` (empty if the query has no limit).
 	 * @example this.sqlLimit(query); // LIMIT 50
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLProvider/SQLProvider/sqlLimit
+	 * @see https://shelving.cc/db/SQLProvider/sqlLimit
 	 */
 	sqlLimit(query: Query<Item>) {
 		const limit = getQueryLimit(query);

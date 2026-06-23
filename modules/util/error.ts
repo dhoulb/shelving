@@ -9,7 +9,7 @@ import { isObject } from "./object.js";
  * @param reason The error (or any thrown value) to log.
  * @returns Nothing.
  * @example logError(new Error("Boom")) // logs to console.error
- * @see https://dhoulb.github.io/shelving/util/error/logError
+ * @see https://shelving.cc/util/error/logError
  */
 export function logError(reason: unknown): void {
 	console.error(reason);
@@ -21,7 +21,7 @@ export function logError(reason: unknown): void {
  *
  * @param v The value to check and narrow.
  * @returns `true` if `v` is an `Error` (narrowing it, with an optional `code` string).
- * @see https://dhoulb.github.io/shelving/util/error/isError
+ * @see https://shelving.cc/util/error/isError
  */
 export function isError(v: unknown): v is Error & { readonly code?: string | undefined } {
 	return typeof Error.isError === "function" ? Error.isError(v) : v instanceof Error;
@@ -30,7 +30,7 @@ export function isError(v: unknown): v is Error & { readonly code?: string | und
 /**
  * Things that can be a message: a string, or an object with a `message` string property.
  *
- * @see https://dhoulb.github.io/shelving/util/error/PossibleMessage
+ * @see https://shelving.cc/util/error/PossibleMessage
  */
 export type PossibleMessage = { message: string } | string;
 
@@ -41,7 +41,7 @@ export type PossibleMessage = { message: string } | string;
  * @returns The message string, or `undefined` if none could be found.
  * @example getMessage(new Error("Boom")) // "Boom"
  * @example getMessage(123) // undefined
- * @see https://dhoulb.github.io/shelving/util/error/getMessage
+ * @see https://shelving.cc/util/error/getMessage
  */
 export function getMessage(input: unknown): string | undefined {
 	return typeof input === "string" ? input : isObject(input) && typeof input.message === "string" ? input.message : undefined;
@@ -55,7 +55,7 @@ export function getMessage(input: unknown): string | undefined {
  * @returns The message string.
  * @throws `RequiredError` if no message could be found.
  * @example requireMessage(new Error("Boom")) // "Boom"
- * @see https://dhoulb.github.io/shelving/util/error/requireMessage
+ * @see https://shelving.cc/util/error/requireMessage
  */
 export function requireMessage(input: PossibleMessage, caller: AnyCaller = requireMessage): string {
 	const message = getMessage(input);
@@ -73,7 +73,7 @@ export function requireMessage(input: PossibleMessage, caller: AnyCaller = requi
  * @returns Dictionary mapping each name (or `""` for unnamed lines) to its combined message.
  * @throws `RequiredError` if no message could be found.
  * @example splitMessage("name: Bad\nUh oh") // { name: "Bad", "": "Uh oh" }
- * @see https://dhoulb.github.io/shelving/util/error/splitMessage
+ * @see https://shelving.cc/util/error/splitMessage
  */
 export function splitMessage(input: PossibleMessage): ImmutableDictionary<string> {
 	const messages = requireMessage(input, splitMessage).split("\n");
@@ -105,7 +105,7 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
  * @param input Dictionary mapping each name (or `""` for unnamed lines) to its message.
  * @returns The combined message string, with one line per message line.
  * @example joinMessage({ name: "Bad", "": "Uh oh" }) // "name: Bad\nUh oh"
- * @see https://dhoulb.github.io/shelving/util/error/joinMessage
+ * @see https://shelving.cc/util/error/joinMessage
  */
 export function joinMessage(input: ImmutableDictionary<string>): string {
 	const output: string[] = [];
@@ -127,7 +127,7 @@ export function joinMessage(input: ImmutableDictionary<string>): string {
  * @param message The message to prefix (may contain multiple `\n`-separated lines).
  * @returns The message with `name: ` prefixed to every line.
  * @example getNamedMessage("email", "Required\nInvalid") // "email: Required\nemail: Invalid"
- * @see https://dhoulb.github.io/shelving/util/error/getNamedMessage
+ * @see https://shelving.cc/util/error/getNamedMessage
  */
 export function getNamedMessage(name: string | number, message: string): string {
 	return `${name}: ${message.split("\n").join(`\n${name}: `)}`;

@@ -18,7 +18,7 @@ RetryContext.displayName = "RetryContext";
 /**
  * Props for `<RetryButton>` — `<Button>` variants plus optional `children` to override the default "Retry" label.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButtonProps
+ * @see https://shelving.cc/ui/RetryButtonProps
  */
 export interface RetryButtonProps extends ButtonVariants, OptionalChildProps {}
 
@@ -38,7 +38,7 @@ const RETRY_CHILDREN = (
  * @returns The retry button, or `null` when not inside a `<Catcher>`.
  * @kind component
  * @example <RetryButton small />
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/RetryButton
+ * @see https://shelving.cc/ui/RetryButton
  */
 export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButtonProps): ReactElement | null {
 	const retry = use(RetryContext);
@@ -53,7 +53,7 @@ export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButton
 /**
  * Props for a component that renders a caught error `reason`.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorComponentProps
+ * @see https://shelving.cc/ui/ErrorComponentProps
  */
 export interface ErrorComponentProps {
 	reason: unknown;
@@ -62,7 +62,7 @@ export interface ErrorComponentProps {
 /**
  * Props for `<Catcher>` — the `children` to guard plus the `as` component used to render any caught error.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/CatcherProps
+ * @see https://shelving.cc/ui/CatcherProps
  */
 export interface CatcherProps extends ChildProps {
 	/** Component to render an error (defaults to `<ErrorNotice />`) */
@@ -83,7 +83,7 @@ type CatcherState = {
  * @kind component
  * @example <Catcher><RiskyComponent /></Catcher>
  * @example <Catcher as={ErrorPage}><RiskyComponent /></Catcher>
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/Catcher
+ * @see https://shelving.cc/ui/Catcher
  */
 export class Catcher extends Component<CatcherProps, CatcherState> {
 	static defaultProps: Pick<CatcherProps, "as"> = {
@@ -114,7 +114,7 @@ export class Catcher extends Component<CatcherProps, CatcherState> {
 /**
  * Props for `<PageCatcher>` — the page `children` to guard.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/PageCatcherProps
+ * @see https://shelving.cc/ui/PageCatcherProps
  */
 export interface PageCatcherProps extends ChildProps {}
 
@@ -125,7 +125,7 @@ export interface PageCatcherProps extends ChildProps {}
  * @returns A `<Catcher>` configured to render `<ErrorPage>` on error.
  * @kind component
  * @example <PageCatcher><SettingsPage /></PageCatcher>
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/PageCatcher
+ * @see https://shelving.cc/ui/PageCatcher
  */
 export function PageCatcher({ children }: PageCatcherProps): ReactElement {
 	return <Catcher as={ErrorPage}>{children}</Catcher>;
@@ -134,7 +134,7 @@ export function PageCatcher({ children }: PageCatcherProps): ReactElement {
 /**
  * Props for `<ErrorNotice>` — the caught error `reason`.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorNoticeProps
+ * @see https://shelving.cc/ui/ErrorNoticeProps
  */
 export interface ErrorNoticeProps extends ErrorComponentProps {}
 
@@ -147,7 +147,7 @@ export interface ErrorNoticeProps extends ErrorComponentProps {}
  * @returns An error `<Notice>` containing the message and a `<RetryButton>`.
  * @kind component
  * @example <ErrorNotice reason={thrown} />
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorNotice
+ * @see https://shelving.cc/ui/ErrorNotice
  */
 export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
@@ -162,7 +162,7 @@ export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
 /**
  * Props for `<ErrorPage>` — the caught error `reason`.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorPageProps
+ * @see https://shelving.cc/ui/ErrorPageProps
  */
 export interface ErrorPageProps extends ErrorComponentProps {}
 
@@ -175,7 +175,7 @@ export interface ErrorPageProps extends ErrorComponentProps {}
  * @returns A centered error page containing the message and a `<RetryButton>`.
  * @kind component
  * @example <ErrorPage reason={thrown} />
- * @see https://dhoulb.github.io/shelving/ui/misc/Catcher/ErrorPage
+ * @see https://shelving.cc/ui/ErrorPage
  */
 export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";

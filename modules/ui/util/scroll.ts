@@ -12,7 +12,7 @@ import type { Nullish } from "../../util/null.js";
  * @param onLeave Called when the element stops being fully visible.
  * @returns A React `ref` to attach to the element to observe.
  * @example const ref = useScrollIntersect(loadMore); return <div ref={ref} />;
- * @see https://dhoulb.github.io/shelving/ui/util/scroll/useScrollIntersect
+ * @see https://shelving.cc/ui/useScrollIntersect
  */
 export function useScrollIntersect<T extends HTMLElement>(onEnter?: Nullish<Callback>, onLeave?: Nullish<Callback>): RefObject<T | null> {
 	const ref = useRef<T | null>(null);
@@ -43,7 +43,7 @@ export function useScrollIntersect<T extends HTMLElement>(onEnter?: Nullish<Call
  * @param entries The observer entries to compare (e.g. from an `IntersectionObserver` callback).
  * @returns The entry with the largest visible ratio, or `undefined` when `entries` is empty.
  * @example getMostVisibleObserverEntry(entries)?.target;
- * @see https://dhoulb.github.io/shelving/ui/util/scroll/getMostVisibleObserverEntry
+ * @see https://shelving.cc/ui/getMostVisibleObserverEntry
  */
 export function getMostVisibleObserverEntry(entries: IntersectionObserverEntry[]): IntersectionObserverEntry | undefined {
 	return entries.reduce<IntersectionObserverEntry | undefined>(_reduceMostVisibleObserverEntry, undefined);

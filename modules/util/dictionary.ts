@@ -8,7 +8,7 @@ import { deleteProps, isPlainObject, omitProps, pickProps, setProp, setProps, wi
  * Readonly dictionary object.
  * - A dictionary is a plain object whose keys are arbitrary strings, all sharing the same value type.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/ImmutableDictionary
+ * @see https://shelving.cc/util/dictionary/ImmutableDictionary
  */
 export type ImmutableDictionary<T = unknown> = { readonly [K in string]: T };
 
@@ -16,7 +16,7 @@ export type ImmutableDictionary<T = unknown> = { readonly [K in string]: T };
  * Writable dictionary object.
  * - A dictionary is a plain object whose keys are arbitrary strings, all sharing the same value type.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/MutableDictionary
+ * @see https://shelving.cc/util/dictionary/MutableDictionary
  */
 export type MutableDictionary<T = unknown> = { [K in string]: T };
 
@@ -24,14 +24,14 @@ export type MutableDictionary<T = unknown> = { [K in string]: T };
  * Single item for a dictionary object in entry format.
  * - A readonly key/value entry tuple.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/DictionaryItem
+ * @see https://shelving.cc/util/dictionary/DictionaryItem
  */
 export type DictionaryItem<T> = readonly [string, T];
 
 /**
  * Get the type of the _values_ of the items of a dictionary object.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/DictionaryValue
+ * @see https://shelving.cc/util/dictionary/DictionaryValue
  */
 export type DictionaryValue<T extends ImmutableDictionary> = T[string];
 
@@ -39,7 +39,7 @@ export type DictionaryValue<T extends ImmutableDictionary> = T[string];
  * Value that can be converted to a dictionary object.
  * - Either the dictionary itself, or an iterable set of key/value entry tuples.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/PossibleDictionary
+ * @see https://shelving.cc/util/dictionary/PossibleDictionary
  */
 export type PossibleDictionary<T> = ImmutableDictionary<T> | Iterable<DictionaryItem<T>>;
 
@@ -48,7 +48,7 @@ export type PossibleDictionary<T> = ImmutableDictionary<T> | Iterable<Dictionary
  *
  * @param value The value to test.
  * @returns `true` if `value` is a dictionary (plain) object, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/dictionary/isDictionary
+ * @see https://shelving.cc/util/dictionary/isDictionary
  */
 export function isDictionary(value: unknown): value is ImmutableDictionary {
 	return isPlainObject(value);
@@ -60,7 +60,7 @@ export function isDictionary(value: unknown): value is ImmutableDictionary {
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertDictionary` itself).
  * @throws {ValueError} If `value` is not a dictionary object.
- * @see https://dhoulb.github.io/shelving/util/dictionary/assertDictionary
+ * @see https://shelving.cc/util/dictionary/assertDictionary
  */
 export function assertDictionary(value: unknown, caller: AnyCaller = assertDictionary): asserts value is ImmutableDictionary {
 	if (!isDictionary(value)) throw new ValueError("Must be dictionary object", { received: value, caller });
@@ -74,7 +74,7 @@ export function assertDictionary(value: unknown, caller: AnyCaller = assertDicti
  * @returns The corresponding dictionary object.
  * @example
  * requireDictionary([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/requireDictionary
+ * @see https://shelving.cc/util/dictionary/requireDictionary
  */
 export function requireDictionary<T>(dict: PossibleDictionary<T>): ImmutableDictionary<T> {
 	return isDictionary(dict) ? dict : Object.fromEntries(dict as Iterable<DictionaryItem<T>>);
@@ -87,7 +87,7 @@ export function requireDictionary<T>(dict: PossibleDictionary<T>): ImmutableDict
  * @returns Iterable set of key/value entry tuples for the dictionary.
  * @example
  * getDictionaryItems({ a: 1, b: 2 }); // [["a", 1], ["b", 2]]
- * @see https://dhoulb.github.io/shelving/util/dictionary/getDictionaryItems
+ * @see https://shelving.cc/util/dictionary/getDictionaryItems
  */
 export function getDictionaryItems<T>(input: ImmutableDictionary<T>): readonly DictionaryItem<T>[];
 export function getDictionaryItems<T>(input: PossibleDictionary<T>): Iterable<DictionaryItem<T>>;
@@ -101,7 +101,7 @@ export function getDictionaryItems<T>(input: PossibleDictionary<T>): Iterable<Di
  * @param dict The dictionary to test against.
  * @param key The key to test for.
  * @returns `true` if `key` is a string and an own prop of `dict`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/dictionary/isDictionaryItem
+ * @see https://shelving.cc/util/dictionary/isDictionaryItem
  */
 export function isDictionaryItem<T>(dict: ImmutableDictionary<T>, key: unknown): key is string {
 	return typeof key === "string" && Object.hasOwn(dict, key);
@@ -114,7 +114,7 @@ export function isDictionaryItem<T>(dict: ImmutableDictionary<T>, key: unknown):
  * @param key The key to assert is an own prop.
  * @param caller Function to attribute a thrown error to (defaults to `assertDictionaryItem` itself).
  * @throws {RequiredError} If `key` is not an own prop of `dict`.
- * @see https://dhoulb.github.io/shelving/util/dictionary/assertDictionaryItem
+ * @see https://shelving.cc/util/dictionary/assertDictionaryItem
  */
 export function assertDictionaryItem<T>(
 	dict: ImmutableDictionary<T>,
@@ -134,7 +134,7 @@ export function assertDictionaryItem<T>(
  * @throws {RequiredError} If `key` is not an own prop of `dict`.
  * @example
  * requireDictionaryItem({ a: 1 }, "a"); // 1
- * @see https://dhoulb.github.io/shelving/util/dictionary/requireDictionaryItem
+ * @see https://shelving.cc/util/dictionary/requireDictionaryItem
  */
 export function requireDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string, caller: AnyCaller = requireDictionaryItem): T {
 	assertDictionaryItem(dict, key, caller);
@@ -149,7 +149,7 @@ export function requireDictionaryItem<T>(dict: ImmutableDictionary<T>, key: stri
  * @returns The value of the item, or `undefined` if `key` is not an own prop of `dict`.
  * @example
  * getDictionaryItem({ a: 1 }, "a"); // 1
- * @see https://dhoulb.github.io/shelving/util/dictionary/getDictionaryItem
+ * @see https://shelving.cc/util/dictionary/getDictionaryItem
  */
 export function getDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string): T | undefined {
 	return dict[key];
@@ -165,7 +165,7 @@ export function getDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string):
  * @returns A new dictionary including the set item, or the original dictionary if the value was unchanged.
  * @example
  * withDictionaryItem({ a: 1 }, "b", 2); // { a: 1, b: 2 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/withDictionaryItem
+ * @see https://shelving.cc/util/dictionary/withDictionaryItem
  */
 export const withDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string, value: T) => ImmutableDictionary<T> = withProp;
 
@@ -178,7 +178,7 @@ export const withDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string, 
  * @returns A new dictionary including the set items, or the original dictionary if all values were unchanged.
  * @example
  * withDictionaryItems({ a: 1 }, { b: 2, c: 3 }); // { a: 1, b: 2, c: 3 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/withDictionaryItems
+ * @see https://shelving.cc/util/dictionary/withDictionaryItems
  */
 export const withDictionaryItems: <T>(dict: ImmutableDictionary<T>, props: PossibleDictionary<T>) => ImmutableDictionary<T> = withProps;
 
@@ -191,7 +191,7 @@ export const withDictionaryItems: <T>(dict: ImmutableDictionary<T>, props: Possi
  * @returns A new dictionary without the removed items, or the original dictionary if no keys were present.
  * @example
  * omitDictionaryItems({ a: 1, b: 2, c: 3 }, "b", "c"); // { a: 1 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/omitDictionaryItems
+ * @see https://shelving.cc/util/dictionary/omitDictionaryItems
  */
 export const omitDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = omitProps;
 
@@ -204,7 +204,7 @@ export const omitDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: str
  * @returns A new dictionary without the removed item, or the original dictionary if the key was not present.
  * @example
  * omitDictionaryItem({ a: 1, b: 2 }, "b"); // { a: 1 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/omitDictionaryItem
+ * @see https://shelving.cc/util/dictionary/omitDictionaryItem
  */
 export const omitDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string) => ImmutableDictionary<T> = omitProps;
 
@@ -216,7 +216,7 @@ export const omitDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string) 
  * @returns A new dictionary containing only the picked items.
  * @example
  * pickDictionaryItems({ a: 1, b: 2, c: 3 }, "a", "b"); // { a: 1, b: 2 }
- * @see https://dhoulb.github.io/shelving/util/dictionary/pickDictionaryItems
+ * @see https://shelving.cc/util/dictionary/pickDictionaryItems
  */
 export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = pickProps;
 
@@ -229,7 +229,7 @@ export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: str
  * @returns The value that was set.
  * @example
  * setDictionaryItem(dict, "a", 1); // 1
- * @see https://dhoulb.github.io/shelving/util/dictionary/setDictionaryItem
+ * @see https://shelving.cc/util/dictionary/setDictionaryItem
  */
 export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, value: T) => T = setProp;
 
@@ -240,7 +240,7 @@ export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, val
  * @param entries The items to set, as a dictionary or iterable set of key/value entry tuples.
  * @example
  * setDictionaryItems(dict, { a: 1, b: 2 });
- * @see https://dhoulb.github.io/shelving/util/dictionary/setDictionaryItems
+ * @see https://shelving.cc/util/dictionary/setDictionaryItems
  */
 export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: PossibleDictionary<T>) => void = setProps;
 
@@ -251,7 +251,7 @@ export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: Possib
  * @param keys The keys of the items to remove.
  * @example
  * deleteDictionaryItems(dict, "a", "b");
- * @see https://dhoulb.github.io/shelving/util/dictionary/deleteDictionaryItems
+ * @see https://shelving.cc/util/dictionary/deleteDictionaryItems
  */
 export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...keys: string[]) => void = deleteProps;
 
@@ -262,20 +262,20 @@ export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...ke
  * @param key The key of the item to remove.
  * @example
  * deleteDictionaryItem(dict, "a");
- * @see https://dhoulb.github.io/shelving/util/dictionary/deleteDictionaryItem
+ * @see https://shelving.cc/util/dictionary/deleteDictionaryItem
  */
 export const deleteDictionaryItem: <T extends MutableDictionary>(dict: T, key: string) => void = deleteProps;
 
 /**
  * Type that represents an empty dictionary object.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/EmptyDictionary
+ * @see https://shelving.cc/util/dictionary/EmptyDictionary
  */
 export type EmptyDictionary = { readonly [K in never]: never };
 
 /**
  * An empty dictionary object.
  *
- * @see https://dhoulb.github.io/shelving/util/dictionary/EMPTY_DICTIONARY
+ * @see https://shelving.cc/util/dictionary/EMPTY_DICTIONARY
  */
 export const EMPTY_DICTIONARY: EmptyDictionary = { __proto__: null };

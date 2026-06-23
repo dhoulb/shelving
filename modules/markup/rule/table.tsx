@@ -19,7 +19,7 @@ const _SPLIT = /(?<!\\)\|/; // Splits a row into cells on unescaped pipes.
  * - Cell content is rendered as inline markup; write `\|` for a literal pipe inside a cell.
  *
  * @example new MarkupParser({ rules: [TABLE_RULE] }).parse("| A | B |\n|---|---|\n| 1 | 2 |")
- * @see https://dhoulb.github.io/shelving/markup/rule/table/TABLE_RULE
+ * @see https://shelving.cc/markup/TABLE_RULE
  */
 export const TABLE_RULE = createMarkupRule<{
 	table: string;

@@ -5,7 +5,7 @@ import { requireMeta } from "./MetaContext.js";
 /**
  * Props for `<Markup>` — extends `MarkupOptions` so callers can override `rules`, `rel`, `url`, `root`, or `schemes` directly.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Markup/MarkupProps
+ * @see https://shelving.cc/ui/MarkupProps
  */
 export interface MarkupProps extends Partial<MarkupOptions> {
 	/** The source string to parse and render. */
@@ -22,7 +22,7 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @kind component
  * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>
- * @see https://dhoulb.github.io/shelving/ui/misc/Markup/Markup
+ * @see https://shelving.cc/ui/Markup
  */
 export function Markup({ children, ...options }: MarkupProps): ReactNode {
 	if (!children) return null;

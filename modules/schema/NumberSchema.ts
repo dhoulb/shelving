@@ -7,7 +7,7 @@ import { Schema } from "./Schema.js";
 /**
  * Allowed options for `NumberSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchemaOptions
+ * @see https://shelving.cc/schema/NumberSchemaOptions
  */
 export interface NumberSchemaOptions extends SchemaOptions {
 	/** Default number value used when the input is `undefined`. */
@@ -41,7 +41,7 @@ export interface NumberSchemaOptions extends SchemaOptions {
  *  const schema = new NumberSchema({ min: 0, max: 100, step: 1 });
  *  schema.validate("42"); // Returns 42
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchema
+ * @see https://shelving.cc/schema/NumberSchema
  */
 export class NumberSchema extends Schema<number> {
 	declare readonly value: number | undefined;
@@ -76,7 +76,7 @@ export class NumberSchema extends Schema<number> {
 	 * @example
 	 *  NUMBER.validate("42"); // Returns 42
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchema/validate
+	 * @see https://shelving.cc/schema/NumberSchema/validate
 	 */
 	override validate(value: unknown = this.value): number {
 		const number = getNumber(value);
@@ -95,7 +95,7 @@ export class NumberSchema extends Schema<number> {
 	 * @example
 	 *  NUMBER.format(2048.5); // Returns "2,048.5"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NumberSchema/format
+	 * @see https://shelving.cc/schema/NumberSchema/format
 	 */
 	override format(value: number): string {
 		return formatNumber(value);
@@ -108,7 +108,7 @@ export class NumberSchema extends Schema<number> {
  * @example
  *  NUMBER.validate("42"); // Returns 42
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NUMBER
+ * @see https://shelving.cc/schema/NUMBER
  */
 export const NUMBER = new NumberSchema({ title: "Number" });
 
@@ -118,7 +118,7 @@ export const NUMBER = new NumberSchema({ title: "Number" });
  * @example
  *  NULLABLE_NUMBER.validate(null); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NULLABLE_NUMBER
+ * @see https://shelving.cc/schema/NULLABLE_NUMBER
  */
 export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 
@@ -128,7 +128,7 @@ export const NULLABLE_NUMBER = NULLABLE(NUMBER);
  * @example
  *  INTEGER.validate("42.7"); // Returns 43 (rounded to step)
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/INTEGER
+ * @see https://shelving.cc/schema/INTEGER
  */
 export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
 
@@ -138,7 +138,7 @@ export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER,
  * @example
  *  POSITIVE_INTEGER.validate(0); // Throws "Required"
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/POSITIVE_INTEGER
+ * @see https://shelving.cc/schema/POSITIVE_INTEGER
  */
 export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER });
 
@@ -148,7 +148,7 @@ export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.
  * @example
  *  NON_NEGATIVE_INTEGER.validate(0); // Returns 0
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NON_NEGATIVE_INTEGER
+ * @see https://shelving.cc/schema/NON_NEGATIVE_INTEGER
  */
 export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER });
 
@@ -158,7 +158,7 @@ export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Num
  * @example
  *  NEGATIVE_INTEGER.validate(-3); // Returns -3
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NEGATIVE_INTEGER
+ * @see https://shelving.cc/schema/NEGATIVE_INTEGER
  */
 export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 });
 
@@ -168,7 +168,7 @@ export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE
  * @example
  *  NON_POSITIVE_INTEGER.validate(0); // Returns 0
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NON_POSITIVE_INTEGER
+ * @see https://shelving.cc/schema/NON_POSITIVE_INTEGER
  */
 export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 });
 
@@ -178,7 +178,7 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
  * @example
  *  NULLABLE_INTEGER.validate(null); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NULLABLE_INTEGER
+ * @see https://shelving.cc/schema/NULLABLE_INTEGER
  */
 export const NULLABLE_INTEGER = NULLABLE(INTEGER);
 
@@ -188,7 +188,7 @@ export const NULLABLE_INTEGER = NULLABLE(INTEGER);
  * @example
  *  TIMESTAMP.validate(1700000000000); // Returns 1700000000000
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/TIMESTAMP
+ * @see https://shelving.cc/schema/TIMESTAMP
  */
 export const TIMESTAMP = new NumberSchema({
 	title: "Timestamp",
@@ -203,6 +203,6 @@ export const TIMESTAMP = new NumberSchema({
  * @example
  *  NULLABLE_TIMESTAMP.validate(null); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/NumberSchema/NULLABLE_TIMESTAMP
+ * @see https://shelving.cc/schema/NULLABLE_TIMESTAMP
  */
 export const NULLABLE_TIMESTAMP = NULLABLE_INTEGER;

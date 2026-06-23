@@ -7,7 +7,7 @@ import { TreeMarkup } from "../tree/TreeMarkup.js";
 /**
  * Props for `DocumentationDescription` — a description cell's resolved text, plus an optional default/optionality note.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationDescription/DocumentationDescriptionProps
+ * @see https://shelving.cc/ui/DocumentationDescriptionProps
  */
 export interface DocumentationDescriptionProps {
 	/** Already-resolved description text (hand-written, or fallen back to the referenced type's own description), rendered as inline markup. */
@@ -30,7 +30,7 @@ export interface DocumentationDescriptionProps {
  * @kind component
  * @returns The description and any trailing notes wrapped in a `<Prose>`, or `null` when all are empty.
  * @example <DocumentationDescription description="The `foo` value." optional={false} readonly />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationDescription/DocumentationDescription
+ * @see https://shelving.cc/ui/DocumentationDescription
  */
 export function DocumentationDescription({ description, default: def, optional, readonly }: DocumentationDescriptionProps): ReactNode {
 	const body = description ? <TreeMarkup context="inline">{description}</TreeMarkup> : null;

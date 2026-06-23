@@ -5,7 +5,7 @@ import { Transition, type TransitionProps } from "./Transition.js";
 /**
  * Props for the `HorizontalTransition` component — the shared transition variant props.
  *
- * @see https://dhoulb.github.io/shelving/ui/transition/HorizontalTransition/HorizontalTransitionProps
+ * @see https://shelving.cc/ui/HorizontalTransitionProps
  */
 export interface HorizontalTransitionProps extends TransitionProps {}
 
@@ -15,7 +15,7 @@ export interface HorizontalTransitionProps extends TransitionProps {}
  * @kind component
  * @returns A `<Transition>` element configured with the horizontal slide classes.
  * @example <HorizontalTransition>{currentStep}</HorizontalTransition>
- * @see https://dhoulb.github.io/shelving/ui/transition/HorizontalTransition/HorizontalTransition
+ * @see https://shelving.cc/ui/HorizontalTransition
  */
 export function HorizontalTransition(props: HorizontalTransitionProps): ReactElement {
 	return <Transition default="slideRight" forward="slideRight" back="slideLeft" {...props} />;

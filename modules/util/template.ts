@@ -30,21 +30,21 @@ type TemplateChunks = ImmutableArray<TemplateChunk>;
  * `ImmutableDictionary<PossibleString>` — Object containing named strings used for named placeholders, e.g. `{ val1: "Ellie", val2: 123 }`
  * `(placeholder: string) => string` — Function that returns the right string for a named `{placeholder}`.
  *
- * @see https://dhoulb.github.io/shelving/util/template/TemplateValues
+ * @see https://shelving.cc/util/template/TemplateValues
  */
 export type TemplateValues = PossibleString | ImmutableArray<unknown> | ImmutableDictionary<unknown> | ((placeholder: string) => string);
 
 /**
  * The output of matching a template is a dictionary in `{ myPlaceholder: "value" }` format.
  *
- * @see https://dhoulb.github.io/shelving/util/template/TemplateMatches
+ * @see https://shelving.cc/util/template/TemplateMatches
  */
 export type TemplateMatches = ImmutableDictionary<string>;
 
 /**
  * List of `{placeholders}` found in a template string.
  *
- * @see https://dhoulb.github.io/shelving/util/template/TemplatePlaceholders
+ * @see https://shelving.cc/util/template/TemplatePlaceholders
  */
 export type TemplatePlaceholders = ImmutableArray<string>;
 
@@ -106,7 +106,7 @@ function _splitTemplateCached(template: string, caller: AnyCaller): TemplateChun
  * @param template The template including template placeholders, e.g. `:name-${country}/{city}`
  * @returns Array of clean string names of found placeholders, e.g. `["name", "country", "city"]`
  * @example getPlaceholders(":name-${country}/{city}") // ["name", "country", "city"]
- * @see https://dhoulb.github.io/shelving/util/template/getPlaceholders
+ * @see https://shelving.cc/util/template/getPlaceholders
  */
 export function getPlaceholders(template: string): TemplatePlaceholders {
 	return _splitTemplateCached(template, getPlaceholders).map(_getPlaceholder);
@@ -126,7 +126,7 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  * @returns An object containing values (e.g. `{ name: "Dave", country: "UK", city: "Manchester" }`), or `undefined` if no match.
  * @throws {ValueError} If two template placeholders are not separated by at least one character.
  * @example matchTemplate(":name-${country}/{city}", "Dave-UK/Manchester") // { name: "Dave", country: "UK", city: "Manchester" }
- * @see https://dhoulb.github.io/shelving/util/template/matchTemplate
+ * @see https://shelving.cc/util/template/matchTemplate
  */
 export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateMatches | undefined {
 	return _matchTemplate(template, target, "", caller);
@@ -143,7 +143,7 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
  * @returns An object containing values (e.g. `{ name: "Dave" }`), or `undefined` if no match.
  * @throws {ValueError} If two template placeholders are not separated by at least one character.
  * @example matchPathTemplate("/users/{name}", "/users/Dave") // { name: "Dave" }
- * @see https://dhoulb.github.io/shelving/util/template/matchPathTemplate
+ * @see https://shelving.cc/util/template/matchPathTemplate
  */
 export function matchPathTemplate(
 	template: AbsolutePath,
@@ -201,7 +201,7 @@ function _matchTemplate(template: string, target: string, separator: string, cal
  * @param target The string containing values, e.g. `Dave-40`.
  * @returns An object of values for the first matching template, or `undefined` if none match.
  * @example matchTemplates([":name-:age", ":name"], "Dave-40") // { name: "Dave", age: "40" }
- * @see https://dhoulb.github.io/shelving/util/template/matchTemplates
+ * @see https://shelving.cc/util/template/matchTemplates
  */
 export function matchTemplates(templates: Iterable<string> & NotString, target: string): TemplateMatches | undefined {
 	for (const template of templates) {
@@ -217,7 +217,7 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * @param target The path containing values, e.g. `/users/Dave`.
  * @returns An object of values for the first matching template, or `undefined` if none match.
  * @example matchPathTemplates(["/users/{name}", "/users"], "/users/Dave") // { name: "Dave" }
- * @see https://dhoulb.github.io/shelving/util/template/matchPathTemplates
+ * @see https://shelving.cc/util/template/matchPathTemplates
  */
 export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString, target: AbsolutePath): TemplateMatches | undefined {
 	for (const template of templates) {
@@ -235,7 +235,7 @@ export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString
  * @returns The rendered string, e.g. `Dave-UK/Manchester`
  * @throws {RequiredError} If a placeholder in the template string is not specified in values.
  * @example renderTemplate(":name-${country}/{city}", { name: "Dave", country: "UK", city: "Manchester" }) // "Dave-UK/Manchester"
- * @see https://dhoulb.github.io/shelving/util/template/renderTemplate
+ * @see https://shelving.cc/util/template/renderTemplate
  */
 export function renderTemplate(template: string, values: TemplateValues, caller: AnyCaller = renderTemplate): string {
 	const chunks = _splitTemplateCached(template, caller);
@@ -273,7 +273,7 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
  * @returns The rendered path, e.g. `/users/Dave`.
  * @throws {RequiredError} If a placeholder in the template string is not specified in values.
  * @example renderPathTemplate("/users/{name}", { name: "Dave" }) // "/users/Dave"
- * @see https://dhoulb.github.io/shelving/util/template/renderPathTemplate
+ * @see https://shelving.cc/util/template/renderPathTemplate
  */
 export function renderPathTemplate(template: AbsolutePath, values: TemplateValues, caller: AnyCaller = renderPathTemplate): AbsolutePath {
 	return renderTemplate(template, values, caller) as AbsolutePath;

@@ -12,7 +12,7 @@ import { TreePage } from "./TreePage.js";
 /**
  * Mapping + Mapper pair for tree routers — wrap children in `<TreeRouterMapping>` to override the per-type page renderers.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouterMapping
+ * @see https://shelving.cc/ui/TreeRouterMapping
  */
 export const [TreeRouterMapping, TreeRouterMapper] = createMapper({
 	"tree-element": TreePage,
@@ -22,7 +22,7 @@ export const [TreeRouterMapping, TreeRouterMapper] = createMapper({
 /**
  * Props for the `TreeRouter` component — the tree to route plus an optional fallback and app meta.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouterProps
+ * @see https://shelving.cc/ui/TreeRouterProps
  */
 export interface TreeRouterProps extends PossibleMeta {
 	/** The tree of elements to match routes for. */
@@ -47,7 +47,7 @@ export interface TreeRouterProps extends PossibleMeta {
  * @throws `NotFoundError` When no element matches the URL and no `fallback` is given.
  * @kind component
  * @example <TreeRouter tree={tree} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeRouter/TreeRouter
+ * @see https://shelving.cc/ui/TreeRouter
  */
 export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactNode {
 	const { path, ...combined } = requireMetaURL(meta);

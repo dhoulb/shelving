@@ -6,7 +6,7 @@ import type { Arguments } from "./function.js";
  * Function that can compare two values for sorting.
  * - Returns a negative number if `left` sorts before `right`, positive if after, or `0` if equally ranked (like `Array.prototype.sort()`).
  *
- * @see https://dhoulb.github.io/shelving/util/sort/Compare
+ * @see https://shelving.cc/util/sort/Compare
  */
 export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: A) => number;
 
@@ -26,7 +26,7 @@ export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: 
  * @param right The second value to rank.
  * @returns Number below zero if `left` is higher, number above zero if `right` is higher, or `0` if they're equally sorted.
  * @example compareAscending(1, 2) // -1
- * @see https://dhoulb.github.io/shelving/util/sort/compareAscending
+ * @see https://shelving.cc/util/sort/compareAscending
  */
 export function compareAscending(left: unknown, right: unknown): number {
 	// Exactly equal is easy.
@@ -76,7 +76,7 @@ export function compareAscending(left: unknown, right: unknown): number {
  * @param right The second value to rank.
  * @returns Number below zero if `right` is higher, number above zero if `left` is higher, or `0` if they're equally sorted.
  * @example compareDescending(1, 2) // 1
- * @see https://dhoulb.github.io/shelving/util/sort/compareDescending
+ * @see https://shelving.cc/util/sort/compareDescending
  */
 export function compareDescending(left: unknown, right: unknown): number {
 	return 0 - compareAscending(left, right);
@@ -146,7 +146,7 @@ function _quicksort<T, A extends Arguments>(
  * @param args Extra arguments forwarded to `compare` on each call.
  * @returns A sorted array (the original reference if it was an already-sorted array).
  * @example sortArray([3, 1, 2]) // [1, 2, 3]
- * @see https://dhoulb.github.io/shelving/util/sort/sortArray
+ * @see https://shelving.cc/util/sort/sortArray
  */
 export function sortArray<T, A extends Arguments = []>(
 	input: ImmutableArray<T> | Iterable<T>,

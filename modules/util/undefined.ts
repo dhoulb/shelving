@@ -8,7 +8,7 @@ import type { AnyCaller } from "./function.js";
  *
  * @returns Always `undefined`.
  * @example getUndefined() // undefined
- * @see https://dhoulb.github.io/shelving/util/undefined/getUndefined
+ * @see https://shelving.cc/util/undefined/getUndefined
  */
 export function getUndefined(): undefined {
 	return undefined;
@@ -19,7 +19,7 @@ export function getUndefined(): undefined {
  *
  * @param value The value to test.
  * @returns `true` if the value is `undefined`, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/undefined/isUndefined
+ * @see https://shelving.cc/util/undefined/isUndefined
  */
 export function isUndefined(value: unknown): value is undefined {
 	return value === undefined;
@@ -30,7 +30,7 @@ export function isUndefined(value: unknown): value is undefined {
  *
  * @param value The value to test.
  * @returns `true` if the value is not `undefined`, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/undefined/isDefined
+ * @see https://shelving.cc/util/undefined/isDefined
  */
 export function isDefined<T>(value: T | undefined): value is T {
 	return value !== undefined;
@@ -39,7 +39,7 @@ export function isDefined<T>(value: T | undefined): value is T {
 /**
  * Is a value defined (i.e. not `undefined`)? Alias for `isDefined()`.
  *
- * @see https://dhoulb.github.io/shelving/util/undefined/notUndefined
+ * @see https://shelving.cc/util/undefined/notUndefined
  */
 export const notUndefined = isDefined;
 
@@ -50,7 +50,7 @@ export const notUndefined = isDefined;
  * @param caller Function to attribute the thrown error to (defaults to `assertDefined`).
  * @throws `RequiredError` if the value is `undefined`.
  * @example assertDefined(value) // throws `RequiredError` if `value` is `undefined`
- * @see https://dhoulb.github.io/shelving/util/undefined/assertDefined
+ * @see https://shelving.cc/util/undefined/assertDefined
  */
 export function assertDefined<T>(value: T | undefined, caller: AnyCaller = assertDefined): asserts value is T {
 	if (value === undefined) throw new RequiredError("Must be defined", { received: value, caller });
@@ -64,7 +64,7 @@ export function assertDefined<T>(value: T | undefined, caller: AnyCaller = asser
  * @returns The value, guaranteed not to be `undefined`.
  * @throws `RequiredError` if the value is `undefined`.
  * @example requireDefined(value) // value (or throws if `undefined`)
- * @see https://dhoulb.github.io/shelving/util/undefined/requireDefined
+ * @see https://shelving.cc/util/undefined/requireDefined
  */
 export function requireDefined<T>(value: T | undefined, caller: AnyCaller = requireDefined): T {
 	assertDefined(value, caller);

@@ -12,7 +12,7 @@ const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
 /**
  * Props for `<Notices>` — flex styling variants for the notices container.
  *
- * @see https://dhoulb.github.io/shelving/ui/notice/Notices/NoticesProps
+ * @see https://shelving.cc/ui/NoticesProps
  */
 export interface NoticesProps extends FlexVariants {}
 
@@ -24,7 +24,7 @@ export interface NoticesProps extends FlexVariants {}
  * @returns The notices container element.
  * @kind component
  * @example <Notices column />
- * @see https://dhoulb.github.io/shelving/ui/notice/Notices/Notices
+ * @see https://shelving.cc/ui/Notices
  */
 export function Notices(props: NoticesProps): ReactElement {
 	const notices = useStore(NOTICES).value;

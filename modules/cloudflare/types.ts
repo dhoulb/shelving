@@ -3,7 +3,7 @@
  *
  * Declares only the subset of methods `CloudflareKVProvider` uses, so the `@cloudflare/workers-types` package is not required as a dependency.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/KVNamespace
+ * @see https://shelving.cc/cloudflare/KVNamespace
  */
 export interface KVNamespace {
 	get(key: string, options: { type: "json" }): Promise<unknown>;
@@ -14,14 +14,14 @@ export interface KVNamespace {
 /**
  * Value that can be passed through the D1 Worker API as a bound parameter.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1Value
+ * @see https://shelving.cc/cloudflare/D1Value
  */
 export type D1Value = boolean | null | number | string;
 
 /**
  * Metadata returned by the D1 Worker API alongside a query result.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1Meta
+ * @see https://shelving.cc/cloudflare/D1Meta
  */
 export interface D1Meta {
 	readonly changed_db?: boolean | undefined;
@@ -34,7 +34,7 @@ export interface D1Meta {
 /**
  * Result object returned by `D1PreparedStatement.run()`.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1Result
+ * @see https://shelving.cc/cloudflare/D1Result
  */
 export interface D1Result<T extends Record<string, unknown> = Record<string, unknown>> {
 	readonly success: boolean;
@@ -45,7 +45,7 @@ export interface D1Result<T extends Record<string, unknown> = Record<string, unk
 /**
  * Result object returned by `D1Database.exec()`.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1ExecResult
+ * @see https://shelving.cc/cloudflare/D1ExecResult
  */
 export interface D1ExecResult {
 	readonly count: number;
@@ -57,7 +57,7 @@ export interface D1ExecResult {
  *
  * Declares only the subset of the D1 prepared-statement API used by `CloudflareD1Provider`.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1PreparedStatement
+ * @see https://shelving.cc/cloudflare/D1PreparedStatement
  */
 export interface D1PreparedStatement {
 	bind(...values: D1Value[]): D1PreparedStatement;
@@ -71,7 +71,7 @@ export interface D1PreparedStatement {
  *
  * Declares only the subset of the D1 binding API the provider needs, so the `@cloudflare/workers-types` package is not required as a dependency.
  *
- * @see https://dhoulb.github.io/shelving/cloudflare/types/D1Database
+ * @see https://shelving.cc/cloudflare/D1Database
  */
 export interface D1Database {
 	batch<T extends Record<string, unknown> = Record<string, unknown>>(

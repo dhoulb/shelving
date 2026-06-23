@@ -6,7 +6,7 @@ import { queryItems } from "./query.js";
 /**
  * Set of valid props for an element.
  *
- * @see https://dhoulb.github.io/shelving/util/element/ElementProps
+ * @see https://shelving.cc/util/element/ElementProps
  */
 export type ElementProps = {
 	readonly children?: Elements;
@@ -16,7 +16,7 @@ export type ElementProps = {
  * Element with a type, props, and optional key (compatible with `React.ReactElement`).
  * - Declared as a `type`, not an `interface`, so its implicit index signature lets it satisfy `Data` — `queryElements()` runs elements through `queryItems()`.
  *
- * @see https://dhoulb.github.io/shelving/util/element/Element
+ * @see https://shelving.cc/util/element/Element
  */
 export type Element<P extends ElementProps = ElementProps> = {
 	readonly type: string | ((props: P) => Elements | null);
@@ -28,7 +28,7 @@ export type Element<P extends ElementProps = ElementProps> = {
 /**
  * Collection of elements (compatible with `React.ReactNode`).
  *
- * @see https://dhoulb.github.io/shelving/util/element/Elements
+ * @see https://shelving.cc/util/element/Elements
  */
 export type Elements<T extends Element = Element> = undefined | null | string | T | Iterable<Elements<T>>;
 
@@ -38,7 +38,7 @@ export type Elements<T extends Element = Element> = undefined | null | string | 
  * @param value The value to test.
  * @returns `true` if `value` is an `Element`, narrowing its type.
  * @example isElement({ type: "div", props: {}, key: null }) // true
- * @see https://dhoulb.github.io/shelving/util/element/isElement
+ * @see https://shelving.cc/util/element/isElement
  */
 export function isElement(value: unknown): value is Element {
 	return typeof value === "object" && value !== null && "type" in value;
@@ -50,7 +50,7 @@ export function isElement(value: unknown): value is Element {
  * @param value The value to test.
  * @returns `true` if `value` is an `Elements` value, narrowing its type.
  * @example isElements("hello") // true
- * @see https://dhoulb.github.io/shelving/util/element/isElements
+ * @see https://shelving.cc/util/element/isElements
  */
 export function isElements(value: unknown): value is Elements {
 	return value === null || typeof value === "string" || isElement(value) || isArray(value);
@@ -64,7 +64,7 @@ export function isElements(value: unknown): value is Elements {
  * @returns The combined string made from the elements.
  *
  * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
- * @see https://dhoulb.github.io/shelving/util/element/getElementText
+ * @see https://shelving.cc/util/element/getElementText
  */
 export function getElementText(elements: Elements): string {
 	if (typeof elements === "string") return elements;
@@ -92,7 +92,7 @@ export function getElementText(elements: Elements): string {
  * @param elements An element, a (possibly nested) iterable of elements, `null`, `undefined`, or a string (strings are skipped).
  * @returns A flat iterable of `Element` objects.
  * @example [...walkElements([a, [b, c]])] // [a, b, c]
- * @see https://dhoulb.github.io/shelving/util/element/walkElements
+ * @see https://shelving.cc/util/element/walkElements
  */
 export function walkElements<T extends Element>(elements: Elements<T>): Iterable<T>;
 export function walkElements(elements: Elements): Iterable<Element>;
@@ -109,7 +109,7 @@ export function* walkElements(elements: Elements): Iterable<Element> {
  * @param query The `Query<Element>` object describing the filter, sort, and limit to apply.
  * @returns An iterable of the matching `Element` objects.
  * @example [...queryElements(elements, { type: "br" })] // all `<br>` elements
- * @see https://dhoulb.github.io/shelving/util/element/queryElements
+ * @see https://shelving.cc/util/element/queryElements
  */
 export function queryElements(elements: Elements, query: Query<Element>): Iterable<Element> {
 	return queryItems(walkElements(elements), query) as Iterable<Element>;
@@ -122,7 +122,7 @@ export function queryElements(elements: Elements, query: Query<Element>): Iterab
  * @param match Function called with each element; return `true` to keep the element.
  * @returns An iterable of the matching `Element` objects.
  * @example [...filterElements(elements, el => el.type === "br")] // all `<br>` elements
- * @see https://dhoulb.github.io/shelving/util/element/filterElements
+ * @see https://shelving.cc/util/element/filterElements
  */
 export function* filterElements(elements: Elements, match: (element: Element) => boolean): Iterable<Element> {
 	for (const element of walkElements(elements)) if (match(element)) yield element;
@@ -136,7 +136,7 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
  * @param b The second elements.
  * @returns The combined `Elements`, or whichever side is set if the other is falsy.
  * @example mergeElements("a", "b") // ["a", "b"]
- * @see https://dhoulb.github.io/shelving/util/element/mergeElements
+ * @see https://shelving.cc/util/element/mergeElements
  */
 export function mergeElements<T extends Element>(a: Elements<T>, b: Elements<T>): Elements<T>;
 export function mergeElements(a: Elements, b: Elements): Elements;

@@ -11,21 +11,21 @@ import { isBetween } from "./number.js";
  * - Using `Iterable<string> & NotString` allows an iterable containing strings but not `string` itself.
  * - This helps catch this category of subtle errors.
  *
- * @see https://dhoulb.github.io/shelving/util/string/NotString
+ * @see https://shelving.cc/util/string/NotString
  */
 export type NotString = { toUpperCase?: never; toLowerCase?: never };
 
 /**
  * Things that can be reliably converted to a string with no confusion.
  *
- * @see https://dhoulb.github.io/shelving/util/string/PossibleString
+ * @see https://shelving.cc/util/string/PossibleString
  */
 export type PossibleString = boolean | string | number | Date;
 
 /**
  * Series of string segments with at least one segment (this is what you _actually_ get back when you split a string).
  *
- * @see https://dhoulb.github.io/shelving/util/string/Segments
+ * @see https://shelving.cc/util/string/Segments
  */
 export type Segments = readonly [string, ...string[]];
 
@@ -34,7 +34,7 @@ export type Segments = readonly [string, ...string[]];
  *
  * @param value The value to check.
  * @returns `true` if `value` is a `string`, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isString
+ * @see https://shelving.cc/util/string/isString
  */
 export function isString(value: unknown): value is string {
 	return typeof value === "string";
@@ -47,7 +47,7 @@ export function isString(value: unknown): value is string {
  * @param caller Function to attribute a thrown error to (defaults to `assertString`).
  * @throws {RequiredError} If `value` is not a string.
  * @example assertString("a"); // Passes.
- * @see https://dhoulb.github.io/shelving/util/string/assertString
+ * @see https://shelving.cc/util/string/assertString
  */
 export function assertString(value: unknown, caller: AnyCaller = assertString): asserts value is string {
 	if (!isString(value)) throw new RequiredError(`Must be string`, { received: value, caller });
@@ -60,7 +60,7 @@ export function assertString(value: unknown, caller: AnyCaller = assertString): 
  * @param value The value to convert.
  * @returns The string representation of `value`, or `undefined` if it cannot be converted.
  * @example getString(123) // "123"
- * @see https://dhoulb.github.io/shelving/util/string/getString
+ * @see https://shelving.cc/util/string/getString
  */
 export function getString(value: unknown): string | undefined {
 	if (typeof value === "string") return value;
@@ -79,7 +79,7 @@ export function getString(value: unknown): string | undefined {
  * @returns The string representation of `value`.
  * @throws {RequiredError} If `value` cannot be converted to a string.
  * @example requireString(123) // "123"
- * @see https://dhoulb.github.io/shelving/util/string/requireString
+ * @see https://shelving.cc/util/string/requireString
  */
 export function requireString(value: PossibleString, caller: AnyCaller = requireString): string {
 	const str = getString(value);
@@ -94,7 +94,7 @@ export function requireString(value: PossibleString, caller: AnyCaller = require
  * @param min The minimum allowed length (defaults to `0`).
  * @param max The maximum allowed length (defaults to `Infinity`).
  * @returns `true` if `value` is a string within the length bounds, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isStringLength
+ * @see https://shelving.cc/util/string/isStringLength
  */
 export function isStringLength(value: unknown, min = 0, max = Number.POSITIVE_INFINITY): value is string {
 	return typeof value === "string" && value.length >= min && value.length <= max;
@@ -109,7 +109,7 @@ export function isStringLength(value: unknown, min = 0, max = Number.POSITIVE_IN
  * @param caller Function to attribute a thrown error to (defaults to `assertString`).
  * @throws {RequiredError} If `value` is not a string within the length bounds.
  * @example assertStringLength("abc", 1, 5); // Passes.
- * @see https://dhoulb.github.io/shelving/util/string/assertStringLength
+ * @see https://shelving.cc/util/string/assertStringLength
  */
 export function assertStringLength(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
 	if (!isStringLength(value, min, max))
@@ -126,7 +126,7 @@ export function assertStringLength(value: unknown, min?: number, max?: number, c
  * @returns The string representation of `value`.
  * @throws {RequiredError} If `value` cannot be converted to a string within the length bounds.
  * @example requireStringLength("abc", 1, 5) // "abc"
- * @see https://dhoulb.github.io/shelving/util/string/requireStringLength
+ * @see https://shelving.cc/util/string/requireStringLength
  */
 export function requireStringLength(value: PossibleString, min?: number, max?: number, caller: AnyCaller = requireString): string {
 	const str = getString(value);
@@ -141,7 +141,7 @@ export function requireStringLength(value: PossibleString, min?: number, max?: n
  * @param min The minimum allowed length (defaults to `0`).
  * @param max The maximum allowed length (defaults to `Infinity`).
  * @returns `true` if `str` is within the length bounds, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isStringBetween
+ * @see https://shelving.cc/util/string/isStringBetween
  */
 export function isStringBetween(str: string, min = 0, max = Number.POSITIVE_INFINITY): boolean {
 	return str.length >= min && str.length <= max;
@@ -155,7 +155,7 @@ export function isStringBetween(str: string, min = 0, max = Number.POSITIVE_INFI
  * @returns The joined string.
  * @throws {RequiredError} If `strs` is not a valid array of strings.
  * @example joinStrings(["a", "b"], "-") // "a-b"
- * @see https://dhoulb.github.io/shelving/util/string/joinStrings
+ * @see https://shelving.cc/util/string/joinStrings
  */
 export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): string {
 	return requireArray(strs, undefined, undefined, joinStrings).join(joiner);
@@ -171,7 +171,7 @@ export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): st
  * @param str The string to sanitize.
  * @returns The sanitized single-line string.
  * @example sanitizeText("\x00Nice!   ") // "Nice!"
- * @see https://dhoulb.github.io/shelving/util/string/sanitizeText
+ * @see https://shelving.cc/util/string/sanitizeText
  */
 export function sanitizeText(str: string): string {
 	return str
@@ -189,7 +189,7 @@ export function sanitizeText(str: string): string {
  * @param str The string to sanitize.
  * @returns The sanitized single-word string.
  * @example sanitizeWord("\x00 a b c "); // Returns `"abc"`
- * @see https://dhoulb.github.io/shelving/util/string/sanitizeWord
+ * @see https://shelving.cc/util/string/sanitizeWord
  */
 export function sanitizeWord(str: string): string {
 	return str
@@ -210,7 +210,7 @@ export function sanitizeWord(str: string): string {
  * @param str The string to sanitize.
  * @returns The sanitized multi-line string.
  * @example sanitizeMultilineText("\x00Line one\n\n\n\nLine two   ") // "Line one\n\nLine two"
- * @see https://dhoulb.github.io/shelving/util/string/sanitizeMultilineText
+ * @see https://shelving.cc/util/string/sanitizeMultilineText
  */
 export function sanitizeMultilineText(str: string): string {
 	return str
@@ -233,7 +233,7 @@ export function sanitizeMultilineText(str: string): string {
  * @param str The string to simplify.
  * @returns The simplified, lowercased string containing only numbers, letters, and single spaces.
  * @example simplifyString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
- * @see https://dhoulb.github.io/shelving/util/string/simplifyString
+ * @see https://shelving.cc/util/string/simplifyString
  *
  * @todo Convert confusables (e.g. `ℵ` alef symbol or `℮` estimate symbol) to their letterlike equivalent (e.g. `N` and `e`).
  */
@@ -252,7 +252,7 @@ export function simplifyString(str: string): string {
  * @param str The string to convert.
  * @returns The `kebab-case` slug, or `undefined` if conversion resulted in an empty string.
  * @example getSlug("Hello World!") // "hello-world"
- * @see https://dhoulb.github.io/shelving/util/string/getSlug
+ * @see https://shelving.cc/util/string/getSlug
  */
 export function getSlug(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "-") || undefined;
@@ -266,7 +266,7 @@ export function getSlug(str: string): string | undefined {
  * @returns The `kebab-case` slug.
  * @throws {RequiredError} If conversion resulted in an empty string.
  * @example requireSlug("Hello World!") // "hello-world"
- * @see https://dhoulb.github.io/shelving/util/string/requireSlug
+ * @see https://shelving.cc/util/string/requireSlug
  */
 export function requireSlug(str: string, caller: AnyCaller = requireSlug): string {
 	const slug = getSlug(str);
@@ -280,7 +280,7 @@ export function requireSlug(str: string, caller: AnyCaller = requireSlug): strin
  * @param str The string to convert.
  * @returns The ref, or `undefined` if conversion resulted in an empty string.
  * @example getRef("Hello World!") // "helloworld"
- * @see https://dhoulb.github.io/shelving/util/string/getRef
+ * @see https://shelving.cc/util/string/getRef
  */
 export function getRef(str: string): string | undefined {
 	return simplifyString(str).replaceAll(" ", "") || undefined;
@@ -294,7 +294,7 @@ export function getRef(str: string): string | undefined {
  * @returns The ref.
  * @throws {RequiredError} If conversion resulted in an empty string.
  * @example requireRef("Hello World!") // "helloworld"
- * @see https://dhoulb.github.io/shelving/util/string/requireRef
+ * @see https://shelving.cc/util/string/requireRef
  */
 export function requireRef(str: string, caller: AnyCaller = requireRef): string {
 	const ref = getRef(str);
@@ -312,7 +312,7 @@ export function requireRef(str: string, caller: AnyCaller = requireRef): string 
  * @param str The string to extract words from.
  * @returns Array of the separate words and quoted phrases found in `str`.
  * @example getWords(`a "b c" d`) // ["a", "b c", "d"]
- * @see https://dhoulb.github.io/shelving/util/string/getWords
+ * @see https://shelving.cc/util/string/getWords
  */
 export function getWords(str: string): ImmutableArray<string> {
 	return Array.from(_getWords(str));
@@ -331,7 +331,7 @@ const WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spa
  * @param str The string to read the first line from.
  * @returns The trimmed first line of `str` (everything before the first `\n` newline).
  * @example getFirstLine("first\nsecond") // "first"
- * @see https://dhoulb.github.io/shelving/util/string/getFirstLine
+ * @see https://shelving.cc/util/string/getFirstLine
  */
 export function getFirstLine(str: string): string {
 	const i = str.indexOf("\n");
@@ -343,7 +343,7 @@ export function getFirstLine(str: string): string {
  *
  * @param str The string whose first character is tested.
  * @returns `true` if the first character of `str` is an uppercase A–Z letter, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isUppercaseLetter
+ * @see https://shelving.cc/util/string/isUppercaseLetter
  */
 export function isUppercaseLetter(str: string): boolean {
 	return isBetween(str.charCodeAt(0), 65, 90);
@@ -354,7 +354,7 @@ export function isUppercaseLetter(str: string): boolean {
  *
  * @param str The string whose first character is tested.
  * @returns `true` if the first character of `str` is a lowercase a–z letter, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isLowercaseLetter
+ * @see https://shelving.cc/util/string/isLowercaseLetter
  */
 export function isLowercaseLetter(str: string): boolean {
 	return isBetween(str.charCodeAt(0), 97, 122);
@@ -370,7 +370,7 @@ export function isLowercaseLetter(str: string): boolean {
  * @param append The string to append when a limit is applied (defaults to `"…"`).
  * @returns `str` unchanged if it's shorter than `maxLength`, otherwise truncated with `append` added.
  * @example limitString("the quick brown fox", 9) // "the quick…"
- * @see https://dhoulb.github.io/shelving/util/string/limitString
+ * @see https://shelving.cc/util/string/limitString
  */
 export function limitString(str: string, maxLength: number, append = "…") {
 	if (str.length < maxLength) return str;
@@ -392,7 +392,7 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * @returns Array of the divided segments.
  * @throws {ValueError} If `min` isn't met, or if any of the segments are empty.
  * @example splitString("a-b-c", "-", 2, 2) // ["a", "b-c"]
- * @see https://dhoulb.github.io/shelving/util/string/splitString
+ * @see https://shelving.cc/util/string/splitString
  */
 export function splitString(str: string, separator: string, min: 1, max: 1, caller?: AnyCaller): readonly [string];
 export function splitString(str: string, separator: string, min: 2, max: 2, caller?: AnyCaller): readonly [string, string];
@@ -444,7 +444,7 @@ export function splitString(
  * @param str The string to trim.
  * @returns `str` with whitespace trimmed from both ends.
  * @example ["  a  ", " b "].map(trimString) // ["a", "b"]
- * @see https://dhoulb.github.io/shelving/util/string/trimString
+ * @see https://shelving.cc/util/string/trimString
  */
 export function trimString(str: string): string {
 	return str.trim();
@@ -455,7 +455,7 @@ export function trimString(str: string): string {
  *
  * @param str The string to test.
  * @returns `true` if `str` has a length greater than zero, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/string/isNonEmptyString
+ * @see https://shelving.cc/util/string/isNonEmptyString
  */
 export function isNonEmptyString(str: string): boolean {
 	return str.length > 0;

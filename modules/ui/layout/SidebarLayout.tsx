@@ -10,7 +10,7 @@ import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
 /**
  * Props for `<SidebarLayout>` — the `sidebar` column content, main `children`, and a `right` placement flag.
  *
- * @see https://dhoulb.github.io/shelving/ui/layout/SidebarLayout/SidebarLayoutProps
+ * @see https://shelving.cc/ui/SidebarLayoutProps
  */
 export interface SidebarLayoutProps extends OptionalChildProps {
 	/** Content rendered in the fixed-width side column. */
@@ -34,7 +34,7 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * @param right Render the sidebar on the right rather than the left (defaults to `false`).
  * @returns The sidebar layout element.
  * @example <SidebarLayout sidebar={<Menu />}><Page /></SidebarLayout>
- * @see https://dhoulb.github.io/shelving/ui/layout/SidebarLayout/SidebarLayout
+ * @see https://shelving.cc/ui/SidebarLayout
  */
 export function SidebarLayout({ sidebar, children, right = false }: SidebarLayoutProps): ReactElement {
 	const { path } = requireMetaURL();

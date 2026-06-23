@@ -24,7 +24,7 @@ interface PackageJson {
 /**
  * Options for a `PackageExtractor`.
  *
- * @see https://dhoulb.github.io/shelving/extract/PackageExtractor/PackageExtractorOptions
+ * @see https://shelving.cc/extract/PackageExtractorOptions
  */
 export interface PackageExtractorOptions {
 	/**
@@ -57,7 +57,7 @@ export interface PackageExtractorOptions {
  *
  * @example const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
  *
- * @see https://dhoulb.github.io/shelving/extract/PackageExtractor
+ * @see https://shelving.cc/extract/PackageExtractor
  */
 export class PackageExtractor extends Extractor<Path, TreeElement> {
 	private readonly _tree: TreeElement;
@@ -87,7 +87,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	 *
 	 * @example const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/PackageExtractor/extract
+	 * @see https://shelving.cc/extract/extract
 	 */
 	override async extract(packageJson: Path): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);

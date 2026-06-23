@@ -6,7 +6,7 @@ import { interleaveItems, isIterable, omitItems, pickItems } from "./iterate.js"
  * Mutable array: an array that can be changed.
  * - Consistency with `MutableObject<T>` and `ImmutableArray<T>`
  *
- * @see https://dhoulb.github.io/shelving/util/array/MutableArray
+ * @see https://shelving.cc/util/array/MutableArray
  */
 export type MutableArray<T = unknown> = T[];
 
@@ -14,21 +14,21 @@ export type MutableArray<T = unknown> = T[];
  * Immutable array: an array that cannot be changed.
  * - Consistency with `ImmutableObject<T>` and `MutableArray<T>`
  *
- * @see https://dhoulb.github.io/shelving/util/array/ImmutableArray
+ * @see https://shelving.cc/util/array/ImmutableArray
  */
 export type ImmutableArray<T = unknown> = readonly T[];
 
 /**
  * Get the type of the _items_ in an array.
  *
- * @see https://dhoulb.github.io/shelving/util/array/ArrayItem
+ * @see https://shelving.cc/util/array/ArrayItem
  */
 export type ArrayItem<T extends ImmutableArray> = T[number];
 
 /**
  * Things that can be converted to arrays.
  *
- * @see https://dhoulb.github.io/shelving/util/array/PossibleArray
+ * @see https://shelving.cc/util/array/PossibleArray
  */
 export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
 
@@ -43,7 +43,7 @@ export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
  * @example isArray([1, 2, 3]); // true
  * @example isArray([1], 2, 2); // false
  *
- * @see https://dhoulb.github.io/shelving/util/array/isArray
+ * @see https://shelving.cc/util/array/isArray
  */
 export function isArray<T>(arr: MutableArray<T>, min: 1, max: 1): arr is [T];
 export function isArray<T>(arr: MutableArray<T>, min: 2, max: 2): arr is [T, T];
@@ -75,7 +75,7 @@ export function isArray(value: unknown, min = 0, max = Number.POSITIVE_INFINITY)
  * @example assertArray([1, 2, 3]); // (passes)
  * @example assertArray("nope"); // throws RequiredError
  *
- * @see https://dhoulb.github.io/shelving/util/array/assertArray
+ * @see https://shelving.cc/util/array/assertArray
  */
 export function assertArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): asserts arr is [T];
 export function assertArray<T>(arr: MutableArray<T>, min: 2, max: 2, caller?: AnyCaller): asserts arr is [T, T];
@@ -108,7 +108,7 @@ export function assertArray(value: unknown, min?: number, max?: number, caller: 
  * @example getArray(new Set([1, 2])); // [1, 2]
  * @example getArray(123); // undefined
  *
- * @see https://dhoulb.github.io/shelving/util/array/getArray
+ * @see https://shelving.cc/util/array/getArray
  */
 export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
 	return Array.isArray(list) ? list : isIterable(list) ? Array.from(list) : undefined;
@@ -127,7 +127,7 @@ export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
  * @example requireArray(new Set([1, 2])); // [1, 2]
  * @example requireArray([], 1); // throws RequiredError
  *
- * @see https://dhoulb.github.io/shelving/util/array/requireArray
+ * @see https://shelving.cc/util/array/requireArray
  */
 export function requireArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): [T];
 export function requireArray<T>(arr: MutableArray<T>, min: 2, max: 2, caller?: AnyCaller): [T, T];
@@ -159,7 +159,7 @@ export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: numb
  * @example isArrayItem([1, 2, 3], 2); // true
  * @example isArrayItem([1, 2, 3], 9); // false
  *
- * @see https://dhoulb.github.io/shelving/util/array/isArrayItem
+ * @see https://shelving.cc/util/array/isArrayItem
  */
 export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T {
 	if (isArray(list)) list.includes(item as T);
@@ -178,7 +178,7 @@ export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T
  * @example assertArrayItem([1, 2, 3], 2); // (passes)
  * @example assertArrayItem([1, 2, 3], 9); // throws RequiredError
  *
- * @see https://dhoulb.github.io/shelving/util/array/assertArrayItem
+ * @see https://shelving.cc/util/array/assertArrayItem
  */
 export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller: AnyCaller = assertArrayItem): asserts item is T {
 	if (!isArrayItem(arr, item)) throw new RequiredError("Item must exist in array", { item, array: arr, caller });
@@ -193,7 +193,7 @@ export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller:
  *
  * @example withArrayItems([1, 2], 2, 3); // [1, 2, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/withArrayItems
+ * @see https://shelving.cc/util/array/withArrayItems
  */
 export function withArrayItems<T>(list: PossibleArray<T>, ...add: T[]): ImmutableArray<T> {
 	const arr = Array.from(list);
@@ -213,7 +213,7 @@ function _doesNotInclude<T>(this: T[], value: T) {
  *
  * @example withArrayItem([1, 2], 3); // [1, 2, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/withArrayItem
+ * @see https://shelving.cc/util/array/withArrayItem
  */
 export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArray<T> = withArrayItems;
 
@@ -226,7 +226,7 @@ export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArr
  *
  * @example pickArrayItems([1, 2, 3], 1, 3); // [1, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/pickArrayItems
+ * @see https://shelving.cc/util/array/pickArrayItems
  */
 export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): ImmutableArray<T> {
 	const arr = Array.from(pickItems(items, ...pick));
@@ -242,7 +242,7 @@ export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): Immuta
  *
  * @example pickArrayItem([1, 2, 3], 2); // [2]
  *
- * @see https://dhoulb.github.io/shelving/util/array/pickArrayItem
+ * @see https://shelving.cc/util/array/pickArrayItem
  */
 export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableArray<T> = pickArrayItems;
 
@@ -255,7 +255,7 @@ export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableAr
  *
  * @example omitArrayItems([1, 2, 3], 2); // [1, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/omitArrayItems
+ * @see https://shelving.cc/util/array/omitArrayItems
  */
 export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): ImmutableArray<T> {
 	const filtered = Array.from(omitItems(items, ...omit));
@@ -271,7 +271,7 @@ export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): Immuta
  *
  * @example omitArrayItem([1, 2, 3], 2); // [1, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/omitArrayItem
+ * @see https://shelving.cc/util/array/omitArrayItem
  */
 export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableArray<T> = omitArrayItems;
 
@@ -284,7 +284,7 @@ export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableAr
  *
  * @example toggleArrayItems([1, 2], 2, 3); // [1, 3]
  *
- * @see https://dhoulb.github.io/shelving/util/array/toggleArrayItems
+ * @see https://shelving.cc/util/array/toggleArrayItems
  */
 export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): ImmutableArray<T> {
 	const arr = Array.from(items);
@@ -302,7 +302,7 @@ export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): Im
  *
  * @example toggleArrayItem([1, 2], 2); // [1]
  *
- * @see https://dhoulb.github.io/shelving/util/array/toggleArrayItem
+ * @see https://shelving.cc/util/array/toggleArrayItem
  */
 export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => ImmutableArray<T> = toggleArrayItems;
 
@@ -314,7 +314,7 @@ export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => Immutab
  *
  * @example shuffleArray([1, 2, 3]); // e.g. [2, 3, 1]
  *
- * @see https://dhoulb.github.io/shelving/util/array/shuffleArray
+ * @see https://shelving.cc/util/array/shuffleArray
  */
 export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
 	const arr = Array.from(items);
@@ -335,7 +335,7 @@ export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
  *
  * @example addArrayItem(arr, 3); // 3 (and `arr` now contains `3`)
  *
- * @see https://dhoulb.github.io/shelving/util/array/addArrayItem
+ * @see https://shelving.cc/util/array/addArrayItem
  */
 export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
 	if (arr.indexOf(item) < 0) arr.push(item);
@@ -349,7 +349,7 @@ export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
  * @param arr The array to add to (modified in place).
  * @param items The items to add.
  * @example addArrayItems(arr, 3, 4); // (`arr` now contains `3` and `4`)
- * @see https://dhoulb.github.io/shelving/util/array/addArrayItems
+ * @see https://shelving.cc/util/array/addArrayItems
  */
 export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (const item of items) if (arr.indexOf(item) < 0) arr.push(item);
@@ -361,7 +361,7 @@ export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
  * @param arr The array to remove from (modified in place).
  * @param items The items to remove.
  * @example deleteArrayItems(arr, 2, 3); // (`arr` no longer contains `2` or `3`)
- * @see https://dhoulb.github.io/shelving/util/array/deleteArrayItems
+ * @see https://shelving.cc/util/array/deleteArrayItems
  */
 export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
 	for (let i = arr.length - 1; i >= 0; i--) if (i in arr && items.includes(arr[i] as T)) arr.splice(i, 1);
@@ -373,7 +373,7 @@ export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
  * @param arr The array to remove from (modified in place).
  * @param item The item to remove.
  * @example deleteArrayItem(arr, 2); // (`arr` no longer contains `2`)
- * @see https://dhoulb.github.io/shelving/util/array/deleteArrayItem
+ * @see https://shelving.cc/util/array/deleteArrayItem
  */
 export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = deleteArrayItems;
 
@@ -383,7 +383,7 @@ export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = delet
  * @param list The array or iterable to deduplicate.
  * @returns A new array with duplicate items removed, or the same array if all items were already unique.
  * @example getUniqueArray([1, 2, 2, 3]) // [1, 2, 3]
- * @see https://dhoulb.github.io/shelving/util/array/getUniqueArray
+ * @see https://shelving.cc/util/array/getUniqueArray
  */
 export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
 	const output: MutableArray<T> = [];
@@ -399,7 +399,7 @@ export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
  * @returns An array of at most `limit` items, or the same array if it was already within the limit.
  * @throws {RequiredError} If `list` cannot be converted to an array.
  * @example limitArray([1, 2, 3, 4], 2) // [1, 2]
- * @see https://dhoulb.github.io/shelving/util/array/limitArray
+ * @see https://shelving.cc/util/array/limitArray
  */
 export function limitArray<T>(list: PossibleArray<T>, limit: number): ImmutableArray<T> {
 	const arr = requireArray(list, undefined, undefined, limitArray);
@@ -412,7 +412,7 @@ export function limitArray<T>(list: PossibleArray<T>, limit: number): ImmutableA
  * @param arr The array to count.
  * @returns The number of items in `arr`.
  * @example countArray([1, 2, 3]) // 3
- * @see https://dhoulb.github.io/shelving/util/array/countArray
+ * @see https://shelving.cc/util/array/countArray
  */
 export function countArray<T>(arr: ImmutableArray<T>): number {
 	return arr.length;
@@ -425,7 +425,7 @@ export function countArray<T>(arr: ImmutableArray<T>): number {
  * @param separator The value to insert between each pair of items.
  * @returns A new array with `separator` inserted between items, or the same array if it had fewer than two items.
  * @example interleaveArray([1, 2, 3], 0) // [1, 0, 2, 0, 3]
- * @see https://dhoulb.github.io/shelving/util/array/interleaveArray
+ * @see https://shelving.cc/util/array/interleaveArray
  */
 export function interleaveArray<T>(items: PossibleArray<T>, separator: T): ImmutableArray<T>;
 export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): ImmutableArray<A | B>;
@@ -442,7 +442,7 @@ export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): Im
  * @param value The new value to set at `index`.
  * @returns A new array with `value` at `index`, or the same array if the value was unchanged.
  * @example withArrayIndex([1, 2, 3], 1, 9) // [1, 9, 3]
- * @see https://dhoulb.github.io/shelving/util/array/withArrayIndex
+ * @see https://shelving.cc/util/array/withArrayIndex
  */
 export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: T): ImmutableArray<T> {
 	if (arr[index] === value) return arr;
@@ -456,7 +456,7 @@ export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: 
  * @param index The index to remove.
  * @returns A new array without `index`, or the same array if nothing changed.
  * @example omitArrayIndex([1, 2, 3], 1) // [1, 3]
- * @see https://dhoulb.github.io/shelving/util/array/omitArrayIndex
+ * @see https://shelving.cc/util/array/omitArrayIndex
  */
 export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): ImmutableArray<T> {
 	const output = [...arr.slice(0, index), ...arr.slice(index + 1)];
@@ -469,7 +469,7 @@ export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): Immuta
  * @param items The array or iterable to read from.
  * @returns The first item, or `undefined` if `items` is empty.
  * @example getFirst([1, 2, 3]) // 1
- * @see https://dhoulb.github.io/shelving/util/array/getFirst
+ * @see https://shelving.cc/util/array/getFirst
  */
 export function getFirst<T>(items: PossibleArray<T>): T | undefined {
 	if (isArray(items)) return items[0];
@@ -484,7 +484,7 @@ export function getFirst<T>(items: PossibleArray<T>): T | undefined {
  * @returns The first item.
  * @throws {RequiredError} If `items` is empty.
  * @example requireFirst([1, 2, 3]) // 1
- * @see https://dhoulb.github.io/shelving/util/array/requireFirst
+ * @see https://shelving.cc/util/array/requireFirst
  */
 export function requireFirst<T>(items: PossibleArray<T>, caller: AnyCaller = requireFirst): T {
 	const item = getFirst(items);
@@ -498,7 +498,7 @@ export function requireFirst<T>(items: PossibleArray<T>, caller: AnyCaller = req
  * @param items The array or iterable to read from.
  * @returns The last item, or `undefined` if `items` is empty.
  * @example getLast([1, 2, 3]) // 3
- * @see https://dhoulb.github.io/shelving/util/array/getLast
+ * @see https://shelving.cc/util/array/getLast
  */
 export function getLast<T>(items: PossibleArray<T>): T | undefined {
 	if (isArray(items)) return items[items.length - 1];
@@ -517,7 +517,7 @@ export function getLast<T>(items: PossibleArray<T>): T | undefined {
  * @returns The last item.
  * @throws {RequiredError} If `items` is empty.
  * @example requireLast([1, 2, 3]) // 3
- * @see https://dhoulb.github.io/shelving/util/array/requireLast
+ * @see https://shelving.cc/util/array/requireLast
  */
 export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requireLast): T {
 	const item = getLast(items);
@@ -532,7 +532,7 @@ export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requ
  * @param item The item to find the successor of.
  * @returns The item following `item`, or `undefined` if `item` is missing or last.
  * @example getNext([1, 2, 3], 2) // 3
- * @see https://dhoulb.github.io/shelving/util/array/getNext
+ * @see https://shelving.cc/util/array/getNext
  */
 export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
 	let found = false;
@@ -551,7 +551,7 @@ export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
  * @returns The item following `item`.
  * @throws {RequiredError} If `item` is missing or has no successor.
  * @example requireNext([1, 2, 3], 2) // 3
- * @see https://dhoulb.github.io/shelving/util/array/requireNext
+ * @see https://shelving.cc/util/array/requireNext
  */
 export function requireNext<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requireNext): T {
 	const next = getNext(items, item);
@@ -566,7 +566,7 @@ export function requireNext<T>(items: PossibleArray<T>, item: T, caller: AnyCall
  * @param value The item to find the predecessor of.
  * @returns The item preceding `value`, or `undefined` if `value` is missing or first.
  * @example getPrev([1, 2, 3], 2) // 1
- * @see https://dhoulb.github.io/shelving/util/array/getPrev
+ * @see https://shelving.cc/util/array/getPrev
  */
 export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
 	let last: T | undefined;
@@ -585,7 +585,7 @@ export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
  * @returns The item preceding `item`.
  * @throws {RequiredError} If `item` is missing or has no predecessor.
  * @example requirePrev([1, 2, 3], 2) // 1
- * @see https://dhoulb.github.io/shelving/util/array/requirePrev
+ * @see https://shelving.cc/util/array/requirePrev
  */
 export function requirePrev<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requirePrev): T {
 	const prev = getPrev(items, item);

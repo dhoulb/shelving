@@ -6,7 +6,7 @@ import type { ChildProps } from "../util/props.js";
 /**
  * Props for `<App>` — the root `Meta` plus the application `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/app/App/AppProps
+ * @see https://shelving.cc/ui/AppProps
  */
 export interface AppProps extends PossibleMeta, ChildProps {}
 
@@ -20,7 +20,7 @@ export interface AppProps extends PossibleMeta, ChildProps {}
  * @returns The app root element wrapping `children`.
  * @kind component
  * @example <App app="My App" root="https://example.com/"><Navigation>…</Navigation></App>
- * @see https://dhoulb.github.io/shelving/ui/app/App/App
+ * @see https://shelving.cc/ui/App
  */
 export function App({ children, ...meta }: AppProps): ReactElement {
 	return <MetaContext value={requireMeta(meta)}>{children}</MetaContext>;

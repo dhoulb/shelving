@@ -5,7 +5,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new NetworkError("Connection lost");
- * @see https://dhoulb.github.io/shelving/error/NetworkError/NetworkError
+ * @see https://shelving.cc/error/NetworkError
  */
 export class NetworkError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

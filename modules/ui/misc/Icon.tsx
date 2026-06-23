@@ -18,9 +18,9 @@ const STATUS_ICONS: {
 };
 
 /**
- * Props for `<StatusIcon>` — the `status` to represent and optional icon `size`.
+ * Props for `<Icon>` — the `status` to represent and optional icon `size`.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/StatusIcon/StatusIconProps
+ * @see https://shelving.cc/ui/IconProps
  */
 export interface IconProps extends ColorVariants, StatusVariants {
 	/**
@@ -40,8 +40,8 @@ export interface IconProps extends ColorVariants, StatusVariants {
  * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @kind component
- * @example <StatusIcon status="error" size="large" />
- * @see https://dhoulb.github.io/shelving/ui/misc/StatusIcon/StatusIcon
+ * @example <Icon status="error" size="large" />
+ * @see https://shelving.cc/ui/Icon
  */
 export function Icon(props: IconProps): ReactElement {
 	const { status = "info", icon: Element = STATUS_ICONS[status] ?? InformationCircleIcon } = props;

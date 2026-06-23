@@ -4,7 +4,7 @@ import PADDING_CSS from "./Padding.module.css";
 /**
  * Allowed values for padding for components that support `PaddingVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Padding/PaddingVariant
+ * @see https://shelving.cc/ui/PaddingVariant
  */
 export type PaddingVariant =
 	| "none"
@@ -29,7 +29,7 @@ export type PaddingVariant =
 /**
  * Variant props for the block-padding (top + bottom) of a component, e.g. `padding="large"`.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Padding/PaddingVariants
+ * @see https://shelving.cc/ui/PaddingVariants
  */
 export interface PaddingVariants {
 	/** Block-padding (top + bottom) of the element. */
@@ -42,7 +42,7 @@ export interface PaddingVariants {
  * @param variants
  * @returns The padding class string, or `undefined` when no `padding` is set.
  * @example getPaddingClass({ padding: "large" }) // "large"
- * @see https://dhoulb.github.io/shelving/ui/style/Padding/getPaddingClass
+ * @see https://shelving.cc/ui/getPaddingClass
  */
 export function getPaddingClass({ padding }: PaddingVariants): string | undefined {
 	return padding && getModuleClass(PADDING_CSS, `padding-${padding}`);

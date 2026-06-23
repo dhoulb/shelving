@@ -10,7 +10,7 @@ import { getStarter, type PossibleStarter, type Starter, type StopCallback } fro
 /**
  * Any `Store` instance.
  *
- * @see https://dhoulb.github.io/shelving/store/Store/AnyStore
+ * @see https://shelving.cc/store/AnyStore
  */
 // biome-ignore lint/suspicious/noExplicitAny: `unknown` causes edge case matching issues.
 export type AnyStore = Store<any, any>;
@@ -19,7 +19,7 @@ export type AnyStore = Store<any, any>;
  * Synchronous values that a store natively knows how to process as inputs.
  * - A plain input value of type `I`, or the `SKIP` sentinel (ignore this write) or `NONE` sentinel (put the store into a loading state).
  *
- * @see https://dhoulb.github.io/shelving/store/Store/StoreInput
+ * @see https://shelving.cc/store/StoreInput
  */
 export type StoreInput<I> = I | typeof SKIP | typeof NONE;
 
@@ -27,7 +27,7 @@ export type StoreInput<I> = I | typeof SKIP | typeof NONE;
  * Synchronous or asynchronous values that a store natively knows how to process as inputs.
  * - A `StoreInput<I>` or a `PromiseLike` that resolves to one (which the store will await).
  *
- * @see https://dhoulb.github.io/shelving/store/Store/AsyncStoreInput
+ * @see https://shelving.cc/store/AsyncStoreInput
  */
 export type AsyncStoreInput<I> = StoreInput<I> | PromiseLike<StoreInput<I>>;
 
@@ -35,21 +35,21 @@ export type AsyncStoreInput<I> = StoreInput<I> | PromiseLike<StoreInput<I>>;
  * Internal storage value for a store.
  * - The stored output value of type `O`, or the `NONE` sentinel when the store is loading.
  *
- * @see https://dhoulb.github.io/shelving/store/Store/StoreInternal
+ * @see https://shelving.cc/store/StoreInternal
  */
 export type StoreInternal<O> = O | typeof NONE;
 
 /**
  * Callback that sets a store's value (possibly asynchronously).
  *
- * @see https://dhoulb.github.io/shelving/store/Store/StoreCallback
+ * @see https://shelving.cc/store/StoreCallback
  */
 export type StoreCallback<I, A extends Arguments = []> = (...args: A) => AsyncStoreInput<I>;
 
 /**
  * Reducer that receives a store's current value and returns the store's next value (possibly asynchronously).
  *
- * @see https://dhoulb.github.io/shelving/store/Store/StoreReducer
+ * @see https://shelving.cc/store/StoreReducer
  */
 export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A) => AsyncStoreInput<I>;
 
@@ -76,13 +76,13 @@ export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A
  * store.value = 456;
  * for await (const value of store) console.log(value); // 456, ...
  *
- * @see https://dhoulb.github.io/shelving/store/Store/Store
+ * @see https://shelving.cc/store/Store
  */
 export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisposable {
 	/**
 	 * Deferred sequence this store uses to issue values as they change.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/next
+	 * @see https://shelving.cc/store/Store/next
 	 */
 	public readonly next = new DeferredSequence<T>();
 
@@ -91,7 +91,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * - Unlike `this.value` this never throws, so it's safe for `useSyncExternalStore()`-style polling.
 	 *
 	 * @returns The current `reason`, or the current value, or `NONE` if neither is set.
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/snapshot
+	 * @see https://shelving.cc/store/Store/snapshot
 	 */
 	get snapshot(): unknown {
 		return this._reason !== undefined ? this._reason : this._value;
@@ -103,7 +103,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * - Calling `this.loading` is a way to check if this store has a value without triggering those throws.
 	 *
 	 * @returns `true` if the store has neither a value nor an error, otherwise `false`.
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/loading
+	 * @see https://shelving.cc/store/Store/loading
 	 */
 	get loading(): boolean {
 		return this._value === NONE && this.reason === undefined;
@@ -120,7 +120,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 *
 	 * @param input The new value, the `NONE` or `SKIP` sentinel, or a `PromiseLike` resolving to one of those.
 	 * @example store.value = 123;
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/value
+	 * @see https://shelving.cc/store/Store/value
 	 */
 	set value(input: AsyncStoreInput<TT>) {
 		if (isAsync(input)) void this.await(input);
@@ -135,7 +135,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * @param input The value to write, or the `SKIP` or `NONE` sentinel.
 	 * @returns Nothing.
 	 * @example store.write(123);
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/write
+	 * @see https://shelving.cc/store/Store/write
 	 */
 	write(input: StoreInput<TT>): void {
 		this.abort();
@@ -185,7 +185,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * @throws {Promise} If this store currently is in a "loading" state (resolves when a value is set).
 	 * @throws {unknown} If this store currently has an error `reason`.
 	 * @example store.value // 123
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/value
+	 * @see https://shelving.cc/store/Store/value
 	 */
 	get value(): T {
 		if (this._reason !== undefined) throw this._reason;
@@ -200,7 +200,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * - Note: doesn't throw `reason` if there is one!
 	 *
 	 * @returns The internal stored value, or the `NONE` sentinel while loading.
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/read
+	 * @see https://shelving.cc/store/Store/read
 	 */
 	read(): StoreInternal<T> {
 		return this._value;
@@ -211,7 +211,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 * - Will be `undefined` if the value is still loading.
 	 *
 	 * @returns The `Date.now()` timestamp of the last write, or `undefined` while loading.
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/time
+	 * @see https://shelving.cc/store/Store/time
 	 */
 	get time(): number | undefined {
 		return this._time;
@@ -224,7 +224,7 @@ export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisp
 	 *
 	 * @returns The number of milliseconds since the last write, or `Infinity` while loading.
 	 * @example if (store.age > MINUTE) refreshStore(store);
-	 * @see https://dhoulb.github.io/shelving/store/Store/Store/age
+	 * @see https://shelving.cc/store/Store/age
 	 */
 	get age(): number {
 		const time = this.time;

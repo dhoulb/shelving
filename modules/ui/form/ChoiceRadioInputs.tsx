@@ -11,7 +11,7 @@ const MAX_ROW_OPTIONS = 2;
 /**
  * Props for `ChoiceRadioInputs`, which renders a radio for each entry in a `ChoiceOptions` set.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/ChoiceRadioInputs/ChoiceRadioInputsProps
+ * @see https://shelving.cc/ui/ChoiceRadioInputsProps
  */
 export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProps<T> {
 	/** Options for the radios. */
@@ -30,7 +30,7 @@ export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProp
  * @returns Element rendering one radio per option plus an optional empty placeholder radio.
  * @kind component
  * @example <ChoiceRadioInputs name="role" options={{ admin: "Admin", user: "User" }} value={role} onValue={setRole} />
- * @see https://dhoulb.github.io/shelving/ui/form/ChoiceRadioInputs/ChoiceRadioInputs
+ * @see https://shelving.cc/ui/ChoiceRadioInputs
  */
 export function ChoiceRadioInputs<T extends string>(props: ChoiceRadioInputsProps<T>): ReactElement;
 export function ChoiceRadioInputs({

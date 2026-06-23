@@ -5,7 +5,7 @@ import type { Nullish } from "./null.js";
 /**
  * List of file types in `extension: mime` format.
  *
- * @see https://dhoulb.github.io/shelving/util/file/FileTypes
+ * @see https://shelving.cc/util/file/FileTypes
  */
 export type FileTypes = { [extension: string]: string };
 
@@ -20,7 +20,7 @@ export type FileTypes = { [extension: string]: string };
  * @example splitFileExtension("no-ext") // ["no-ext", undefined]
  * @example splitFileExtension(".gitignore") // [undefined, "gitignore"]
  * @example splitFileExtension(undefined) // [undefined, undefined]
- * @see https://dhoulb.github.io/shelving/util/file/splitFileExtension
+ * @see https://shelving.cc/util/file/splitFileExtension
  */
 export function splitFileExtension(file: Nullish<string> = ""): [base: string | undefined, extension: string | undefined] {
 	if (!file) return [undefined, undefined];
@@ -35,7 +35,7 @@ export function splitFileExtension(file: Nullish<string> = ""): [base: string | 
  * @param file The filename to read the extension from, or a nullish value.
  * @returns The extension (no leading dot), or `undefined` if the input has no extension.
  * @example getFileExtension("readme.md") // "md"
- * @see https://dhoulb.github.io/shelving/util/file/getFileExtension
+ * @see https://shelving.cc/util/file/getFileExtension
  */
 export function getFileExtension(file: Nullish<string>): string | undefined {
 	return splitFileExtension(file)[1];
@@ -49,7 +49,7 @@ export function getFileExtension(file: Nullish<string>): string | undefined {
  * @returns The extension (no leading dot).
  * @throws `RequiredError` if the input has no extension.
  * @example requireFileExtension("component.tsx") // "tsx"
- * @see https://dhoulb.github.io/shelving/util/file/requireFileExtension
+ * @see https://shelving.cc/util/file/requireFileExtension
  */
 export function requireFileExtension(file: string, caller: AnyCaller = requireFileExtension): string {
 	const extension = getFileExtension(file);

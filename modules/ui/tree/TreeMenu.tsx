@@ -14,7 +14,7 @@ import { createMapper } from "../misc/Mapper.js";
  * @param element The element to test.
  * @returns `true` when the element should appear in the menu, `false` otherwise.
  * @example matchMenuElement(element) // true
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/matchMenuElement
+ * @see https://shelving.cc/ui/matchMenuElement
  */
 export function matchMenuElement(element: Element): boolean {
 	const { type, props } = element;
@@ -39,7 +39,7 @@ interface TreeMenuExtras {
  * @returns A `<MenuItem>` for the element, with a nested `<Menu>` when it has menu-eligible children.
  * @kind component
  * @example <TreeMenuItem {...element.props} path="/" />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenuItem
+ * @see https://shelving.cc/ui/TreeMenuItem
  */
 export function TreeMenuItem({ path = "/", name, title, children }: TreeElementProps & TreeMenuExtras): ReactNode {
 	const href = joinPath(path, name);
@@ -59,7 +59,7 @@ export function TreeMenuItem({ path = "/", name, title, children }: TreeElementP
 /**
  * Mapping + Mapper pair for the menu — wrap children in `<TreeMenuMapping>` to override the per-type menu-item renderers.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenuMapping
+ * @see https://shelving.cc/ui/TreeMenuMapping
  */
 export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
 	"tree-element": TreeMenuItem,
@@ -69,7 +69,7 @@ export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
 /**
  * Props for the `TreeMenu` component — the root tree element plus its URL path.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenuProps
+ * @see https://shelving.cc/ui/TreeMenuProps
  */
 export interface TreeMenuProps {
 	/** Root element whose children become the navigation links. */
@@ -88,7 +88,7 @@ export interface TreeMenuProps {
  * @kind component
  * @returns A `<Menu>` of navigation links to the root's children.
  * @example <TreeMenu tree={tree} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMenu/TreeMenu
+ * @see https://shelving.cc/ui/TreeMenu
  */
 export function TreeMenu({ path = "/", tree }: TreeMenuProps): ReactNode {
 	return (

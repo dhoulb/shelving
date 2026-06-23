@@ -8,7 +8,7 @@ import { Popover, type PopoverChildren } from "./Popover.js";
 /**
  * Props for `ButtonPopover`, a button that toggles an adjacent popover.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/ButtonPopover/ButtonPopoverProps
+ * @see https://shelving.cc/ui/ButtonPopoverProps
  */
 export interface ButtonPopoverProps extends ButtonVariants {
 	children: PopoverChildren;
@@ -22,7 +22,7 @@ export interface ButtonPopoverProps extends ButtonVariants {
  *
  * @returns A `Popover` wrapping a `Button` that toggles it open and closed.
  * @example <ButtonPopover>{label}{panel}</ButtonPopover>
- * @see https://dhoulb.github.io/shelving/ui/form/ButtonPopover/ButtonPopover
+ * @see https://shelving.cc/ui/ButtonPopover
  */
 export function ButtonPopover({
 	children: [buttonChildren, ...popoverChildren], //

@@ -9,7 +9,7 @@ import { requireForm } from "./FormContext.js";
  *
  * @returns Nothing — this component only triggers a side effect.
  * @example <FormNotify />
- * @see https://dhoulb.github.io/shelving/ui/form/FormNotify/FormNotify
+ * @see https://shelving.cc/ui/FormNotify
  */
 export function FormNotify(): void {
 	const message = useStore(requireForm().messages).get("");

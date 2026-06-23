@@ -6,14 +6,14 @@ import { Schema } from "./Schema.js";
 /**
  * `type=""` prop for HTML `<input />` tags that are relevant for strings.
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringInputType
+ * @see https://shelving.cc/schema/StringInputType
  */
 export type StringInputType = "text" | "password" | "color" | "email" | "number" | "tel" | "search" | "url";
 
 /**
  * Options for `StringSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchemaOptions
+ * @see https://shelving.cc/schema/StringSchemaOptions
  */
 export interface StringSchemaOptions extends SchemaOptions {
 	/**
@@ -59,7 +59,7 @@ export interface StringSchemaOptions extends SchemaOptions {
  *  schema.validate(1234); // Returns "1234" (numbers are coerced)
  *  schema.validate("j"); // Throws "Minimum 2 characters"
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchema
+ * @see https://shelving.cc/schema/StringSchema
  */
 export class StringSchema extends Schema<string> {
 	declare readonly value: string;
@@ -103,7 +103,7 @@ export class StringSchema extends Schema<string> {
 	 * @example
 	 *  STRING.validate(123); // Returns "123"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchema/validate
+	 * @see https://shelving.cc/schema/StringSchema/validate
 	 */
 	override validate(value: unknown = this.value): string {
 		const str = typeof value === "number" ? value.toString() : value;
@@ -127,7 +127,7 @@ export class StringSchema extends Schema<string> {
 	 * @example
 	 *  STRING.sanitize("  hello  "); // Returns "hello"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchema/sanitize
+	 * @see https://shelving.cc/schema/StringSchema/sanitize
 	 */
 	sanitize(str: string): string {
 		const sane = this.rows > 1 ? sanitizeMultilineText(str) : sanitizeText(str);
@@ -145,7 +145,7 @@ export class StringSchema extends Schema<string> {
 	 * @example
 	 *  STRING.format("abc"); // Returns "abc"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/StringSchema/StringSchema/format
+	 * @see https://shelving.cc/schema/StringSchema/format
 	 */
 	override format(str: string): string {
 		return str;
@@ -158,7 +158,7 @@ export class StringSchema extends Schema<string> {
  * @example
  *  STRING.validate(123); // Returns "123"
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/STRING
+ * @see https://shelving.cc/schema/STRING
  */
 export const STRING = new StringSchema({});
 
@@ -168,7 +168,7 @@ export const STRING = new StringSchema({});
  * @example
  *  REQUIRED_STRING.validate(""); // Throws "Required"
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/REQUIRED_STRING
+ * @see https://shelving.cc/schema/REQUIRED_STRING
  */
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
 
@@ -178,7 +178,7 @@ export const REQUIRED_STRING = new StringSchema({ min: 1 });
  * @example
  *  TITLE.validate("My Title"); // Returns "My Title"
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/TITLE
+ * @see https://shelving.cc/schema/TITLE
  */
 export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, max: 100 });
 
@@ -188,7 +188,7 @@ export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, ma
  * @example
  *  NULLABLE_TITLE.validate(null); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/NULLABLE_TITLE
+ * @see https://shelving.cc/schema/NULLABLE_TITLE
  */
 export const NULLABLE_TITLE = NULLABLE(TITLE);
 
@@ -198,7 +198,7 @@ export const NULLABLE_TITLE = NULLABLE(TITLE);
  * @example
  *  NAME.validate("Dave"); // Returns "Dave"
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/NAME
+ * @see https://shelving.cc/schema/NAME
  */
 export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 100 });
 
@@ -208,6 +208,6 @@ export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 
  * @example
  *  NULLABLE_NAME.validate(null); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/StringSchema/NULLABLE_NAME
+ * @see https://shelving.cc/schema/NULLABLE_NAME
  */
 export const NULLABLE_NAME = NULLABLE(NAME);

@@ -8,7 +8,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /**
  * Record of a single mocked fetch, pairing the request with the response the handler returned.
- * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIFetchCall
+ * @see https://shelving.cc/api/MockAPIFetchCall
  */
 export type MockAPIFetchCall = {
 	readonly request: Request;
@@ -17,7 +17,7 @@ export type MockAPIFetchCall = {
 
 /**
  * Record of a single request build, capturing the endpoint, payload, options, and built request.
- * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIRequestCall
+ * @see https://shelving.cc/api/MockAPIRequestCall
  */
 export type MockAPIRequestCall = {
 	readonly endpoint: AnyEndpoint;
@@ -28,7 +28,7 @@ export type MockAPIRequestCall = {
 
 /**
  * Record of a single response parse, capturing the endpoint, response, and parsed result.
- * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIResponseCall
+ * @see https://shelving.cc/api/MockAPIResponseCall
  */
 export type MockAPIResponseCall = {
 	readonly endpoint: AnyEndpoint;
@@ -51,28 +51,28 @@ async function _mockHandler(request: Request): Promise<Response> {
  *  const api = new MockAPIProvider();
  *  const result = await api.call(endpoint, payload);
  *  expect(api.fetchCalls).toHaveLength(1);
- * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider
+ * @see https://shelving.cc/api/MockAPIProvider
  */
 export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvider<P, R> {
 	/**
 	 * Records of every request built by this provider.
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/requestCalls
+	 * @see https://shelving.cc/api/MockAPIProvider/requestCalls
 	 */
 	readonly requestCalls: MockAPIRequestCall[] = [];
 	/**
 	 * Records of every fetch handled by this provider.
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/fetchCalls
+	 * @see https://shelving.cc/api/MockAPIProvider/fetchCalls
 	 */
 	readonly fetchCalls: MockAPIFetchCall[] = [];
 	/**
 	 * Records of every response parsed by this provider.
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/responseCalls
+	 * @see https://shelving.cc/api/MockAPIProvider/responseCalls
 	 */
 	readonly responseCalls: MockAPIResponseCall[] = [];
 
 	/**
 	 * The request handler that serves fetches in place of the network.
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/handler
+	 * @see https://shelving.cc/api/MockAPIProvider/handler
 	 */
 	readonly handler: RequestHandler;
 
@@ -97,7 +97,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 	 * @param caller The calling function used for error stack traces.
 	 * @returns The built request.
 	 * @example api.createRequest(endpoint, payload)
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/createRequest
+	 * @see https://shelving.cc/api/MockAPIProvider/createRequest
 	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -118,7 +118,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 	 * @param caller The calling function used for error stack traces.
 	 * @returns Promise resolving to the parsed result.
 	 * @example await api.parseResponse(endpoint, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/MockAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -136,7 +136,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 	 * @param request The request to handle.
 	 * @returns Promise resolving to the handler's response.
 	 * @example await api.fetch(request)
-	 * @see https://dhoulb.github.io/shelving/api/provider/MockAPIProvider/MockAPIProvider/fetch
+	 * @see https://shelving.cc/api/MockAPIProvider/fetch
 	 */
 	override async fetch(request: Request): Promise<Response> {
 		const response = await this.handler(request);

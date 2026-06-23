@@ -18,14 +18,14 @@ import type { OptionalChildProps } from "../util/props.js";
  *
  * @param event The `MouseEvent` from the underlying `<button>`.
  * @returns A `ReactNode` (shown as a success notice), nothing, or a promise of either.
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ClickableCallback
+ * @see https://shelving.cc/ui/ClickableCallback
  */
 export type ClickableCallback = (event: MouseEvent<HTMLButtonElement>) => ReactNode | void | PromiseLike<ReactNode | void>;
 
 /**
  * Props for a thing that can be clicked — either has a string `href` link or an `onClick` callback handler.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ClickableProps
+ * @see https://shelving.cc/ui/ClickableProps
  */
 export interface ClickableProps extends OptionalChildProps {
 	/** Whether the clickable is currently disabled. */
@@ -45,7 +45,7 @@ export interface ClickableProps extends OptionalChildProps {
 /**
  * Props for a clickable that also accepts a `className` for styling.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/StylableClickableProps
+ * @see https://shelving.cc/ui/StylableClickableProps
  */
 export interface StylableClickableProps extends ClickableProps {
 	className?: string | undefined;
@@ -58,7 +58,7 @@ export interface StylableClickableProps extends ClickableProps {
  * @kind component
  * @example <Clickable href="/about">About</Clickable>
  * @example <Clickable onClick={save}>Save</Clickable>
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/Clickable
+ * @see https://shelving.cc/ui/Clickable
  */
 export function Clickable(props: StylableClickableProps): ReactElement {
 	return "href" in props ? (
@@ -76,7 +76,7 @@ export function Clickable(props: StylableClickableProps): ReactElement {
  * - Sets `aria-current="page"` when the link points at the current URL.
  *
  * @example <LinkClickable href="/about" className="link">About</LinkClickable>
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/LinkClickable
+ * @see https://shelving.cc/ui/LinkClickable
  */
 export function LinkClickable({
 	href,
@@ -114,7 +114,7 @@ export function LinkClickable({
  * - Disabled and ignores clicks while a previous click is still pending.
  *
  * @example <ButtonClickable onClick={save} className="btn">Save</ButtonClickable>
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/ButtonClickable
+ * @see https://shelving.cc/ui/ButtonClickable
  */
 export function ButtonClickable({
 	onClick,
@@ -155,7 +155,7 @@ export function ButtonClickable({
  * Render a non-interactive `<span>` element, used as the fallback when neither `href` nor `onClick` is provided.
  *
  * @example <SpanClickable className="label">Static</SpanClickable>
- * @see https://dhoulb.github.io/shelving/ui/form/Clickable/SpanClickable
+ * @see https://shelving.cc/ui/SpanClickable
  */
 export function SpanClickable({
 	title,

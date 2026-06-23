@@ -11,7 +11,7 @@ import { BLOCK_CONTENT_REGEXP } from "../util/regexp.js";
  * - Same as Markdown syntax.
  *
  * @example new MarkupParser({ rules: [CODE_RULE] }).parse("Some `inline code` here")
- * @see https://dhoulb.github.io/shelving/markup/rule/code/CODE_RULE
+ * @see https://shelving.cc/markup/CODE_RULE
  */
 // Priority 10: code is a higher-precedence tier, resolved and masked before links/emphasis, so a
 // code span that straddles a link delimiter wins and the link cannot form across it.

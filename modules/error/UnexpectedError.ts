@@ -6,7 +6,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new UnexpectedError("Should never reach here");
- * @see https://dhoulb.github.io/shelving/error/UnexpectedError/UnexpectedError
+ * @see https://shelving.cc/error/UnexpectedError
  */
 export class UnexpectedError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

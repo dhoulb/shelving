@@ -13,7 +13,7 @@ import CARD_CSS from "./Card.module.css";
 /**
  * Props for `Card` — combines `ClickableProps` (for navigable cards) with colour, status, padding, space, typography, and width variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Card/CardProps
+ * @see https://shelving.cc/ui/CardProps
  */
 export interface CardProps
 	extends ClickableProps,
@@ -41,7 +41,7 @@ export interface CardProps
  * @example <Card><Subheading>Static</Subheading></Card>
  * @example <Card href="/foo" title="Open foo"><Subheading>Clickable</Subheading></Card>
  * @example <Card status="error"><Subheading>Not found</Subheading></Card>
- * @see https://dhoulb.github.io/shelving/ui/block/Card/Card
+ * @see https://shelving.cc/ui/Card
  */
 export function Card({ as: Element = "article", children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {
 	const overlay = (href || onClick) && (

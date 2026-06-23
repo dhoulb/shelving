@@ -29,7 +29,7 @@ const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n`);
  * - Sparse lists are not supported.
  *
  * @example new MarkupParser({ rules: [ORDERED_RULE] }).parse("1. First\n2. Second")
- * @see https://dhoulb.github.io/shelving/markup/rule/ordered/ORDERED_RULE
+ * @see https://shelving.cc/markup/ORDERED_RULE
  */
 export const ORDERED_RULE = createMarkupRule<{
 	list: string;

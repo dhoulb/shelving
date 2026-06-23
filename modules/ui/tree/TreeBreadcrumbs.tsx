@@ -13,7 +13,7 @@ import { useTreeMap } from "./TreeContext.js";
 /**
  * Props for the `TreeBreadcrumbs` component — typography, space, and flex variant props.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeBreadcrumbs/TreeBreadcrumbsProps
+ * @see https://shelving.cc/ui/TreeBreadcrumbsProps
  */
 export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants, FlexVariants {}
 
@@ -29,7 +29,7 @@ export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants,
  * @returns A `<nav>` of breadcrumb links, or `null` at the tree root.
  * @kind component
  * @example <TreeBreadcrumbs />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeBreadcrumbs/TreeBreadcrumbs
+ * @see https://shelving.cc/ui/TreeBreadcrumbs
  */
 export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, ...variants }: TreeBreadcrumbsProps): ReactElement | null {
 	const map = useTreeMap();

@@ -7,63 +7,63 @@ import { getEnvBoolean } from "./env.js";
 /**
  * ANSI escape code that resets the foreground colour to the terminal default.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_DEFAULT
+ * @see https://shelving.cc/util/ansi/ANSI_DEFAULT
  */
 export const ANSI_DEFAULT = "\x1b[39m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to black.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_BLACK
+ * @see https://shelving.cc/util/ansi/ANSI_BLACK
  */
 export const ANSI_BLACK = "\x1b[30m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to red.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_RED
+ * @see https://shelving.cc/util/ansi/ANSI_RED
  */
 export const ANSI_RED = "\x1b[31m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to green.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_GREEN
+ * @see https://shelving.cc/util/ansi/ANSI_GREEN
  */
 export const ANSI_GREEN = "\x1b[32m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to yellow.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_YELLOW
+ * @see https://shelving.cc/util/ansi/ANSI_YELLOW
  */
 export const ANSI_YELLOW = "\x1b[33m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to blue.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_BLUE
+ * @see https://shelving.cc/util/ansi/ANSI_BLUE
  */
 export const ANSI_BLUE = "\x1b[34m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to magenta.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_MAGENTA
+ * @see https://shelving.cc/util/ansi/ANSI_MAGENTA
  */
 export const ANSI_MAGENTA = "\x1b[35m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to cyan.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_CYAN
+ * @see https://shelving.cc/util/ansi/ANSI_CYAN
  */
 export const ANSI_CYAN = "\x1b[36m" as const;
 
 /**
  * ANSI escape code that sets the foreground colour to white.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_WHITE
+ * @see https://shelving.cc/util/ansi/ANSI_WHITE
  */
 export const ANSI_WHITE = "\x1b[37m" as const;
 
@@ -72,35 +72,35 @@ export const ANSI_WHITE = "\x1b[37m" as const;
 /**
  * ANSI escape code that enables bold text.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_BOLD
+ * @see https://shelving.cc/util/ansi/ANSI_BOLD
  */
 export const ANSI_BOLD = "\x1b[1m" as const;
 
 /**
  * ANSI escape code that enables italic text.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_ITALIC
+ * @see https://shelving.cc/util/ansi/ANSI_ITALIC
  */
 export const ANSI_ITALIC = "\x1b[3m" as const;
 
 /**
  * ANSI escape code that enables underlined text.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_UNDERLINE
+ * @see https://shelving.cc/util/ansi/ANSI_UNDERLINE
  */
 export const ANSI_UNDERLINE = "\x1b[4m" as const;
 
 /**
  * ANSI escape code that enables strikethrough text.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_STRIKE
+ * @see https://shelving.cc/util/ansi/ANSI_STRIKE
  */
 export const ANSI_STRIKE = "\x1b[9m" as const;
 
 /**
  * ANSI escape code that enables inverse (swapped foreground/background) text.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_INVERSE
+ * @see https://shelving.cc/util/ansi/ANSI_INVERSE
  */
 export const ANSI_INVERSE = "\x1b[7m" as const;
 
@@ -109,7 +109,7 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
 /**
  * ANSI escape code that resets all colour and style attributes.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_RESET
+ * @see https://shelving.cc/util/ansi/ANSI_RESET
  */
 export const ANSI_RESET = "\x1b[0m";
 
@@ -122,7 +122,7 @@ export const ANSI_RESET = "\x1b[0m";
  * @param wrappers Any number of ANSI escape codes (e.g. `ANSI_RED`, `ANSI_BOLD`) to prepend before `input`.
  * @returns The wrapped string, or `input` unchanged when the `NO_COLOR` environment variable is set.
  * @example ansiWrap("hello", ANSI_RED, ANSI_BOLD) // "\x1b[31m\x1b[1mhello\x1b[0m"
- * @see https://dhoulb.github.io/shelving/util/ansi/ansiWrap
+ * @see https://shelving.cc/util/ansi/ansiWrap
  */
 export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
 	if (getEnvBoolean("NO_COLOR")) return input;
@@ -134,7 +134,7 @@ export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
  *
  * - Used directly inside template literals (`${ANSI_SUCCESS}`), where JavaScript invokes `toString()` automatically, so the icon is coloured at use-time, not at module-load time.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/AnsiIcon
+ * @see https://shelving.cc/util/ansi/AnsiIcon
  */
 export type AnsiIcon = { toString(): string };
 
@@ -152,48 +152,48 @@ function _createAnsiIcon(icon: string, ...wrappers: ImmutableArray<string>): Ans
 /**
  * Lazily blue-coloured waiting icon (`⋯`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_WAITING
+ * @see https://shelving.cc/util/ansi/ANSI_WAITING
  */
 export const ANSI_WAITING = _createAnsiIcon(WAITING, ANSI_BLUE);
 
 /**
  * Lazily green-coloured success icon (`✓`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_SUCCESS
+ * @see https://shelving.cc/util/ansi/ANSI_SUCCESS
  */
 export const ANSI_SUCCESS = _createAnsiIcon(SUCCESS, ANSI_GREEN);
 
 /**
  * Lazily red-coloured failure icon (`✗`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_FAILURE
+ * @see https://shelving.cc/util/ansi/ANSI_FAILURE
  */
 export const ANSI_FAILURE = _createAnsiIcon(FAILURE, ANSI_RED);
 
 /**
  * Lazily blue-coloured up arrow icon (`↑`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_UP
+ * @see https://shelving.cc/util/ansi/ANSI_UP
  */
 export const ANSI_UP = _createAnsiIcon(UP, ANSI_BLUE);
 
 /**
  * Lazily blue-coloured down arrow icon (`↓`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_DOWN
+ * @see https://shelving.cc/util/ansi/ANSI_DOWN
  */
 export const ANSI_DOWN = _createAnsiIcon(DOWN, ANSI_BLUE);
 
 /**
  * Lazily blue-coloured right arrow icon (`→`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_RIGHT
+ * @see https://shelving.cc/util/ansi/ANSI_RIGHT
  */
 export const ANSI_RIGHT = _createAnsiIcon(RIGHT, ANSI_BLUE);
 
 /**
  * Lazily blue-coloured left arrow icon (`←`) for use in template literals.
  *
- * @see https://dhoulb.github.io/shelving/util/ansi/ANSI_LEFT
+ * @see https://shelving.cc/util/ansi/ANSI_LEFT
  */
 export const ANSI_LEFT = _createAnsiIcon(LEFT, ANSI_BLUE);

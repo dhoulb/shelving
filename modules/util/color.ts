@@ -10,21 +10,21 @@ const DARK = 140; // Anything with a luminance > 140 is considered light.
 /**
  * Regular expression matching a three-digit hex color (e.g. `#F00`), capturing each channel.
  *
- * @see https://dhoulb.github.io/shelving/util/color/HEX3_REGEXP
+ * @see https://shelving.cc/util/color/HEX3_REGEXP
  */
 export const HEX3_REGEXP = /^#?([0-F])([0-F])([0-F])$/i;
 
 /**
  * Regular expression matching a six or eight digit hex color (e.g. `#FF0000` or `#FF0000FF`), capturing each channel.
  *
- * @see https://dhoulb.github.io/shelving/util/color/HEX6_REGEXP
+ * @see https://shelving.cc/util/color/HEX6_REGEXP
  */
 export const HEX6_REGEXP = /^#?([0-F]{2})([0-F]{2})([0-F]{2})([0-F]{2})?$/i;
 
 /**
  * Things that can be converted to a `Color` instance.
  *
- * @see https://dhoulb.github.io/shelving/util/color/PossibleColor
+ * @see https://shelving.cc/util/color/PossibleColor
  */
 export type PossibleColor = Color | string;
 
@@ -32,7 +32,7 @@ export type PossibleColor = Color | string;
  * Represents an RGBA color with red, green, blue, and alpha channels (each `0`–`255`).
  *
  * @example new Color(255, 0, 0).hex // "#FF0000"
- * @see https://dhoulb.github.io/shelving/util/color/Color
+ * @see https://shelving.cc/util/color/Color
  */
 export class Color {
 	/**
@@ -41,7 +41,7 @@ export class Color {
 	 * @param possible The value to parse, typically a `Color` instance or a three/six/eight digit hex string.
 	 * @returns The parsed `Color`, or `undefined` if `possible` cannot be converted.
 	 * @example Color.from("#F00") // Color(255, 0, 0)
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/from
+	 * @see https://shelving.cc/util/color/Color/from
 	 */
 	static from(possible: unknown): Color | undefined {
 		if (isColor(possible)) return possible;
@@ -59,28 +59,28 @@ export class Color {
 	/**
 	 * Red channel, bounded to `0`–`255`.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/r
+	 * @see https://shelving.cc/util/color/Color/r
 	 */
 	readonly r: number;
 
 	/**
 	 * Green channel, bounded to `0`–`255`.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/g
+	 * @see https://shelving.cc/util/color/Color/g
 	 */
 	readonly g: number;
 
 	/**
 	 * Blue channel, bounded to `0`–`255`.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/b
+	 * @see https://shelving.cc/util/color/Color/b
 	 */
 	readonly b: number;
 
 	/**
 	 * Alpha channel, bounded to `0`–`255`.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/a
+	 * @see https://shelving.cc/util/color/Color/a
 	 */
 	readonly a: number;
 
@@ -92,7 +92,7 @@ export class Color {
 	 * @param b Blue channel, bounded to `0`–`255` (defaults to `255`).
 	 * @param a Alpha channel, bounded to `0`–`255` (defaults to `255`).
 	 * @example new Color(255, 0, 0) // opaque red
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/constructor
+	 * @see https://shelving.cc/util/color/Color/constructor
 	 */
 	constructor(r = 255, g = 255, b = 255, a = 255) {
 		this.r = boundNumber(r, 0, 255);
@@ -104,7 +104,7 @@ export class Color {
 	/**
 	 * This color as a six or eight digit hex string (eight digits when the alpha channel is less than `255`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/hex
+	 * @see https://shelving.cc/util/color/Color/hex
 	 */
 	get hex(): string {
 		return `#${_hex(this.r)}${_hex(this.g)}${_hex(this.b)}${this.a < 255 ? _hex(this.a) : ""}`;
@@ -113,7 +113,7 @@ export class Color {
 	/**
 	 * This color as a CSS `rgb()` string.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/rgb
+	 * @see https://shelving.cc/util/color/Color/rgb
 	 */
 	get rgb(): string {
 		return `rgb(${this.r}, ${this.g}, ${this.b})`;
@@ -122,7 +122,7 @@ export class Color {
 	/**
 	 * This color as a CSS `rgba()` string.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/rgba
+	 * @see https://shelving.cc/util/color/Color/rgba
 	 */
 	get rgba(): string {
 		return `rgba(${this.r}, ${this.g}, ${this.b}, ${roundNumber(this.a / 256, 4)})`;
@@ -131,7 +131,7 @@ export class Color {
 	/**
 	 * The sRGB luminance of this color (`0`–`255`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/luminance
+	 * @see https://shelving.cc/util/color/Color/luminance
 	 */
 	get luminance(): number {
 		// Green is the largest component of the luminence, etc.
@@ -141,7 +141,7 @@ export class Color {
 	/**
 	 * Whether this color is light (its luminance is above the dark/light threshold).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/isLight
+	 * @see https://shelving.cc/util/color/Color/isLight
 	 */
 	get isLight(): boolean {
 		return this.luminance > DARK;
@@ -150,7 +150,7 @@ export class Color {
 	/**
 	 * Whether this color is dark (its luminance is at or below the dark/light threshold).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/isDark
+	 * @see https://shelving.cc/util/color/Color/isDark
 	 */
 	get isDark(): boolean {
 		return this.luminance <= DARK;
@@ -161,7 +161,7 @@ export class Color {
 	 *
 	 * @returns This color formatted as a CSS `rgba()` string.
 	 * @example String(new Color(255, 0, 0)) // "rgba(255, 0, 0, 1)"
-	 * @see https://dhoulb.github.io/shelving/util/color/Color/toString
+	 * @see https://shelving.cc/util/color/Color/toString
 	 */
 	toString() {
 		return this.rgba;
@@ -182,7 +182,7 @@ function _hex(channel: number) {
  * @param value The value to test.
  * @returns `true` if `value` is a `Color`, narrowing its type.
  * @example isColor(new Color()) // true
- * @see https://dhoulb.github.io/shelving/util/color/isColor
+ * @see https://shelving.cc/util/color/isColor
  */
 export function isColor(value: unknown): value is Color {
 	return value instanceof Color;
@@ -195,7 +195,7 @@ export function isColor(value: unknown): value is Color {
  * @param caller Function to attribute a thrown error to (defaults to `assertColor` itself).
  * @throws {RequiredError} If `value` is not a `Color` instance.
  * @example assertColor(new Color());
- * @see https://dhoulb.github.io/shelving/util/color/assertColor
+ * @see https://shelving.cc/util/color/assertColor
  */
 export function assertColor(value: unknown, caller: AnyCaller = assertColor): asserts value is Color {
 	if (!isColor(value)) throw new RequiredError("Must be color", { received: value, caller });
@@ -207,7 +207,7 @@ export function assertColor(value: unknown, caller: AnyCaller = assertColor): as
  * @param value The value to convert.
  * @returns The converted `Color`, or `undefined` if `value` cannot be converted.
  * @example getColor("#F00") // Color(255, 0, 0)
- * @see https://dhoulb.github.io/shelving/util/color/getColor
+ * @see https://shelving.cc/util/color/getColor
  */
 export function getColor(value: unknown): Color | undefined {
 	return Color.from(value);
@@ -220,7 +220,7 @@ export function getColor(value: unknown): Color | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireColor` itself).
  * @throws {RequiredError} If `value` cannot be converted to a `Color`.
  * @example requireColor("#F00") // Color(255, 0, 0)
- * @see https://dhoulb.github.io/shelving/util/color/requireColor
+ * @see https://shelving.cc/util/color/requireColor
  */
 export function requireColor(value: PossibleColor, caller: AnyCaller = requireColor): Color {
 	const color = getColor(value);

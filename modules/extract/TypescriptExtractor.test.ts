@@ -846,7 +846,7 @@ export function add(a: number, b: number): number { return a + b; }
 			file(`
 /**
  * Add two numbers.
- * @see https://dhoulb.github.io/shelving/math/add
+ * @see https://shelving.cc/math/add
  */
 export function add(a: number, b: number): number { return a + b; }
 `),
@@ -861,7 +861,7 @@ export function add(a: number, b: number): number { return a + b; }
 			file(`
 /**
  * Add two numbers.
- * @see https://dhoulb.github.io/shelving/math/add
+ * @see https://shelving.cc/math/add
  * @deprecated Use \`sum()\` instead.
  */
 export function add(a: number, b: number): number { return a + b; }

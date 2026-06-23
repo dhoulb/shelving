@@ -9,7 +9,7 @@ import styles from "./Dialog.module.css";
 /**
  * Props for `<Dialog>` — optional `children` content and an `onClose` callback.
  *
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogProps
+ * @see https://shelving.cc/ui/DialogProps
  */
 export interface DialogProps extends OptionalChildProps {
 	onClose?: Callback;
@@ -23,7 +23,7 @@ export interface DialogProps extends OptionalChildProps {
  *
  * @kind component
  * @example dialogs.show(<Dialog><p>Are you sure?</p></Dialog>);
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/Dialog
+ * @see https://shelving.cc/ui/Dialog
  */
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	const ref = useRef<HTMLDialogElement>(null);
@@ -57,7 +57,7 @@ function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogE
 /**
  * Props for `<DialogCloseButton>` — button styling variants and optional `children` to override the X icon.
  *
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogCloseButtonProps
+ * @see https://shelving.cc/ui/DialogCloseButtonProps
  */
 export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildProps {}
 
@@ -69,7 +69,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
  * @returns The close button element.
  * @kind component
  * @example <DialogCloseButton plain />
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialog/DialogCloseButton
+ * @see https://shelving.cc/ui/DialogCloseButton
  */
 export function DialogCloseButton({ children = <XMarkIcon />, ...variants }: DialogCloseButtonProps): ReactElement {
 	return (

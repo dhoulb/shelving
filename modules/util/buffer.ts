@@ -1,7 +1,7 @@
 /**
  * Union of the numeric `TypedArray` views over an `ArrayBufferLike` (excludes `DataView`).
  *
- * @see https://dhoulb.github.io/shelving/util/buffer/TypedArray
+ * @see https://shelving.cc/util/buffer/TypedArray
  */
 export type TypedArray<T extends ArrayBufferLike = ArrayBufferLike> =
 	| Uint8Array<T>
@@ -18,7 +18,7 @@ export type TypedArray<T extends ArrayBufferLike = ArrayBufferLike> =
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `ArrayBuffer`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/buffer/isBuffer
+ * @see https://shelving.cc/util/buffer/isBuffer
  */
 export function isBuffer(value: unknown): value is ArrayBuffer {
 	return value instanceof ArrayBuffer;
@@ -29,7 +29,7 @@ export function isBuffer(value: unknown): value is ArrayBuffer {
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `ArrayBufferView`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/buffer/isBufferView
+ * @see https://shelving.cc/util/buffer/isBufferView
  */
 export function isBufferView(value: unknown): value is ArrayBufferView {
 	return ArrayBuffer.isView(value);
@@ -40,7 +40,7 @@ export function isBufferView(value: unknown): value is ArrayBufferView {
  *
  * @param value The value to test.
  * @returns `true` if `value` is a numeric `TypedArray`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/buffer/isTypedArray
+ * @see https://shelving.cc/util/buffer/isTypedArray
  */
 export function isTypedArray(value: unknown): value is TypedArray {
 	return value instanceof Object.getPrototypeOf(Uint8Array);

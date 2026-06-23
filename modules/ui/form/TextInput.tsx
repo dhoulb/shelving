@@ -10,7 +10,7 @@ type TextFormatter = (str: string) => string;
 /**
  * Props for `TextInput`, a single- or multi-line text input bound to a `string` value.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInputProps
+ * @see https://shelving.cc/ui/TextInputProps
  */
 export interface TextInputProps extends ValueInputProps<string>, InputVariants {
 	rows?: number | undefined;
@@ -29,7 +29,7 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
  *
  * @returns A text `<input>` or `<textarea>` element.
  * @example <TextInput name="name" value={name} onValue={setName} />
- * @see https://dhoulb.github.io/shelving/ui/form/TextInput/TextInput
+ * @see https://shelving.cc/ui/TextInput
  */
 export function TextInput({
 	name,

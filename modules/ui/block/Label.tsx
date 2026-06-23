@@ -11,7 +11,7 @@ const LABEL_CLASS = getModuleClass(LABEL_CSS, "label");
 /**
  * Props for `Label` — identical to `SubheadingProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Label/LabelProps
+ * @see https://shelving.cc/ui/LabelProps
  */
 export interface LabelProps extends SubheadingProps {}
 
@@ -23,7 +23,7 @@ export interface LabelProps extends SubheadingProps {}
  * @returns Rendered `<h3>` label heading element.
  * @kind component
  * @example <Label>Email address</Label>
- * @see https://dhoulb.github.io/shelving/ui/block/Label/Label
+ * @see https://shelving.cc/ui/Label
  */
 export function Label({ level = "3", children, ...props }: LabelProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;

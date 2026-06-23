@@ -19,22 +19,22 @@ import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
  * @example
  *  const store = new ItemStore(collection, "abc", provider);
  *  const item = await store; // OptionalItem<I, T>
- * @see https://dhoulb.github.io/shelving/db/store/ItemStore/ItemStore
+ * @see https://shelving.cc/db/ItemStore
  */
 export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<OptionalItem<I, T>> {
 	/**
 	 * The database provider this store fetches its item from.
-	 * @see https://dhoulb.github.io/shelving/db/store/ItemStore/ItemStore/provider
+	 * @see https://shelving.cc/db/ItemStore/provider
 	 */
 	readonly provider: DBProvider<I>;
 	/**
 	 * The collection the item lives in.
-	 * @see https://dhoulb.github.io/shelving/db/store/ItemStore/ItemStore/collection
+	 * @see https://shelving.cc/db/ItemStore/collection
 	 */
 	readonly collection: Collection<string, I, T>;
 	/**
 	 * The ID of the item this store tracks.
-	 * @see https://dhoulb.github.io/shelving/db/store/ItemStore/ItemStore/id
+	 * @see https://shelving.cc/db/ItemStore/id
 	 */
 	readonly id: I;
 
@@ -45,7 +45,7 @@ export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<
 	 * @returns The item data including its ID.
 	 * @throws {RequiredError} If the item doesn't exist (i.e. if `this.value` is `undefined`).
 	 * @example store.item // Item<I, T>
-	 * @see https://dhoulb.github.io/shelving/db/store/ItemStore/ItemStore/item
+	 * @see https://shelving.cc/db/ItemStore/item
 	 */
 	get item(): Item<I, T> {
 		const item = this.value;

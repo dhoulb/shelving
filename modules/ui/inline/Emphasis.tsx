@@ -8,7 +8,7 @@ const EMPHASIS_CLASS = getModuleClass(EMPHASIS_CSS, "emphasis");
 /**
  * Props for `Emphasis` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Emphasis/EmphasisProps
+ * @see https://shelving.cc/ui/EmphasisProps
  */
 export interface EmphasisProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface EmphasisProps extends OptionalChildProps {}
  * @returns Rendered `<em>` element.
  * @kind component
  * @example <Emphasis>really</Emphasis>
- * @see https://dhoulb.github.io/shelving/ui/inline/Emphasis/Emphasis
+ * @see https://shelving.cc/ui/Emphasis
  */
 export function Emphasis({ children }: EmphasisProps): ReactElement {
 	return <em className={EMPHASIS_CLASS}>{children}</em>;

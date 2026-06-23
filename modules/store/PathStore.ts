@@ -14,13 +14,13 @@ import { BusyStore } from "./BusyStore.js";
  * const store = new PathStore("/a/b");
  * store.isActive("/a/b"); // true
  * store.getPath("c"); // "/a/b/c"
- * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore
+ * @see https://shelving.cc/store/PathStore
  */
 export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePath> {
 	/**
 	 * Base path that relative inputs are resolved against.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore/base
+	 * @see https://shelving.cc/store/PathStore/base
 	 */
 	readonly base: AbsolutePath;
 
@@ -46,7 +46,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @param path The absolute path to test.
 	 * @returns `true` if `path` matches the current path, otherwise `false`.
 	 * @example store.isActive("/a/b");
-	 * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore/isActive
+	 * @see https://shelving.cc/store/PathStore/isActive
 	 */
 	isActive(path: AbsolutePath): boolean {
 		return isPathActive(this.value, path);
@@ -58,7 +58,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @param path The absolute path to test.
 	 * @returns `true` if `path` is at or above the current path in the hierarchy, otherwise `false`.
 	 * @example store.isProud("/a"); // true when current path is "/a/b"
-	 * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore/isProud
+	 * @see https://shelving.cc/store/PathStore/isProud
 	 */
 	isProud(path: AbsolutePath): boolean {
 		return isPathProud(this.value, path);
@@ -70,7 +70,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @param path The absolute or relative path to resolve.
 	 * @returns The resolved absolute path.
 	 * @example store.getPath("c"); // "/a/b/c" when current path is "/a/b"
-	 * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore/getPath
+	 * @see https://shelving.cc/store/PathStore/getPath
 	 */
 	getPath(path: AbsolutePath | RelativePath): AbsolutePath {
 		return requirePath(path, this.value);
@@ -80,7 +80,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * Return the current path as a string.
 	 *
 	 * @returns The current absolute path.
-	 * @see https://dhoulb.github.io/shelving/store/PathStore/PathStore/toString
+	 * @see https://shelving.cc/store/PathStore/toString
 	 */
 	override toString(): string {
 		return this.value;

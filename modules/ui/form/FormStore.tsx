@@ -16,7 +16,7 @@ import { getRandomKey } from "../../util/random.js";
  * - Assigning a string `reason` splits it into per-field messages rather than a global failure.
  *
  * @example const store = new FormStore(USER_SCHEMA, { name: "Dave" });
- * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore
+ * @see https://shelving.cc/ui/FormStore
  */
 export class FormStore<T extends Data> extends DataStore<Partial<T>> implements AsyncDisposable {
 	/** Unique ID for the form. */
@@ -40,7 +40,7 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 * The current value validated against the schema, also written back to `this.value`.
 	 *
 	 * @throws A `string` validation message if the current value is invalid.
-	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/validated
+	 * @see https://shelving.cc/ui/FormStore/validated
 	 */
 	get validated(): T {
 		return (this.value = this.schema.validate(this.value));
@@ -65,7 +65,7 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 * @param partialData Initial (possibly partial) data for the form.
 	 * @param messages Initial messages as a dictionary, or a string with `fieldName:` style lines.
 	 * @example new FormStore(USER_SCHEMA, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/constructor
+	 * @see https://shelving.cc/ui/FormStore/constructor
 	 */
 	constructor(schema: DataSchema<T>, partialData: Partial<T> = {}, messages?: ImmutableDictionary<string> | string | undefined) {
 		super(partialData);
@@ -81,7 +81,7 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 * @returns The `Schema` for that field.
 	 * @throws `RequiredError` if no schema exists for the named field.
 	 * @example store.requireSchema("email")
-	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/requireSchema
+	 * @see https://shelving.cc/ui/FormStore/requireSchema
 	 */
 	requireSchema<K extends DataKey<T>>(name: K): Schema<T[K]> {
 		const schema = this.schema.props[name];
@@ -98,7 +98,7 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 * @param unsafeValue The unvalidated value to store for the field.
 	 * @returns Nothing.
 	 * @example store.publish("email", "dave@shax.com")
-	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/publish
+	 * @see https://shelving.cc/ui/FormStore/publish
 	 */
 	publish<K extends DataKey<T>>(name: K, unsafeValue: T[K]): void {
 		this.abort();
@@ -128,7 +128,7 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 * @param args Additional arguments forwarded to the callback.
 	 * @returns `true` on success, `false` on validation failure (or a `Promise` resolving to one).
 	 * @example store.submit(saveUser)
-	 * @see https://dhoulb.github.io/shelving/ui/form/FormStore/FormStore/submit
+	 * @see https://shelving.cc/ui/FormStore/submit
 	 */
 	submit<A extends Arguments>(callback?: ((value: T, ...args: A) => void) | undefined, ...args: A): boolean | Promise<boolean> {
 		try {

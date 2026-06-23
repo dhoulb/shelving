@@ -8,7 +8,7 @@ import { TreeCard } from "./TreeCard.js";
 /**
  * Mapping + Mapper pair for tree cards — wrap children in `<TreeCardMapping>` to override the per-type card renderers.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeCards/TreeCardMapping
+ * @see https://shelving.cc/ui/TreeCardMapping
  */
 export const [TreeCardMapping, TreeCardMapper] = createMapper({
 	"tree-element": TreeCard,
@@ -18,7 +18,7 @@ export const [TreeCardMapping, TreeCardMapper] = createMapper({
 /**
  * Props for the `TreeCards` component — the tree elements to render as cards.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeCards/TreeCardsProps
+ * @see https://shelving.cc/ui/TreeCardsProps
  */
 export interface TreeCardsProps {
 	/** The children to render as cards. */
@@ -34,7 +34,7 @@ export interface TreeCardsProps {
  * @returns A `<TreeCardMapper>` rendering each element as a card.
  * @kind component
  * @example <TreeCards>{element.props.children}</TreeCards>
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeCards/TreeCards
+ * @see https://shelving.cc/ui/TreeCards
  */
 export function TreeCards({ children }: TreeCardsProps): ReactNode {
 	return <TreeCardMapper>{walkElements(children)}</TreeCardMapper>;

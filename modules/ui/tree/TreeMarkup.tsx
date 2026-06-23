@@ -10,7 +10,7 @@ import { TreeLink } from "./TreeLink.js";
  * - Reuses `CODE_RULE`'s regexp, contexts, and priority — only the renderer changes — so it masks and matches identically to the default inline-code rule.
  * - The span's text becomes the link `name`: a hit links to the token's canonical page, a miss falls back to a plain code token (see `TreeLink`), so unknown spans (`bun run fix`, `string`, …) stay code.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMarkup/TREE_CODE_RULE
+ * @see https://shelving.cc/ui/TREE_CODE_RULE
  */
 export const TREE_CODE_RULE: MarkupRule = {
 	...CODE_RULE,
@@ -21,7 +21,7 @@ export const TREE_CODE_RULE: MarkupRule = {
  * Default markup rules with the inline-code rule swapped for `TREE_CODE_RULE` — every backtick span auto-links to its documented token.
  * - Identical to `MARKUP_RULES` with only `CODE_RULE` replaced, so any future change to the default rule set flows through.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMarkup/TREE_MARKUP_RULES
+ * @see https://shelving.cc/ui/TREE_MARKUP_RULES
  */
 export const TREE_MARKUP_RULES: MarkupRules = MARKUP_RULES.map(rule => (rule === CODE_RULE ? TREE_CODE_RULE : rule));
 
@@ -35,7 +35,7 @@ export const TREE_MARKUP_RULES: MarkupRules = MARKUP_RULES.map(rule => (rule ===
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @kind component
  * @example <Prose><TreeMarkup>{`Use \`BooleanSchema\` to validate.`}</TreeMarkup></Prose>
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeMarkup/TreeMarkup
+ * @see https://shelving.cc/ui/TreeMarkup
  */
 export function TreeMarkup({ rules = TREE_MARKUP_RULES, ...props }: MarkupProps): ReactNode {
 	return <Markup rules={rules} {...props} />;

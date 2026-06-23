@@ -21,7 +21,7 @@ import { isObject } from "./object.js";
  *
  * @throws {Errors} Error that aggregates all the disposal errors.
  * @example dispose(resource, () => clearTimeout(id)) // disposes both, even if one throws
- * @see https://dhoulb.github.io/shelving/util/dispose/dispose
+ * @see https://shelving.cc/util/dispose/dispose
  */
 export function dispose(...values: Nullish<Disposable | Callback>[]): void {
 	const errors: unknown[] = [];
@@ -48,7 +48,7 @@ export function dispose(...values: Nullish<Disposable | Callback>[]): void {
  * @throws {Errors} Error that aggregates all the disposal errors.
  *
  * @example await awaitDispose(asyncResource, promise, () => cleanup()) // disposes all in parallel
- * @see https://dhoulb.github.io/shelving/util/dispose/awaitDispose
+ * @see https://shelving.cc/util/dispose/awaitDispose
  *
  * @todo Potentially rewrite this to use `AsyncDisposableStack` internally.
  */
@@ -68,7 +68,7 @@ async function _disposeAsync(value: AsyncDisposable | Disposable | Callback | Pr
  *
  * @param v The value to test.
  * @returns `true` if `v` has a `[Symbol.dispose]` method, narrowing its type to `Disposable`.
- * @see https://dhoulb.github.io/shelving/util/dispose/isDisposable
+ * @see https://shelving.cc/util/dispose/isDisposable
  */
 export function isDisposable(v: unknown): v is Disposable {
 	return isObject(v) && typeof v[Symbol.dispose] === "function";
@@ -79,7 +79,7 @@ export function isDisposable(v: unknown): v is Disposable {
  *
  * @param v The value to test.
  * @returns `true` if `v` has a `[Symbol.asyncDispose]` method, narrowing its type to `AsyncDisposable`.
- * @see https://dhoulb.github.io/shelving/util/dispose/isAsyncDisposable
+ * @see https://shelving.cc/util/dispose/isAsyncDisposable
  */
 export function isAsyncDisposable(v: unknown): v is AsyncDisposable {
 	return isObject(v) && typeof v[Symbol.asyncDispose] === "function";
@@ -92,7 +92,7 @@ export function isAsyncDisposable(v: unknown): v is AsyncDisposable {
  * - Values are disposed when all items are cleared.
  * - All items are cleared and their values are disposed when this map itself is disposed.
  *
- * @see https://dhoulb.github.io/shelving/util/dispose/DisposableMap
+ * @see https://shelving.cc/util/dispose/DisposableMap
  */
 export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements Disposable {
 	/**
@@ -102,7 +102,7 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
 	 * @param value The disposable value to store.
 	 * @returns This map, for chaining.
 	 * @example map.set("a", resource) // disposes the old "a" value if it differs
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableMap/set
+	 * @see https://shelving.cc/util/dispose/DisposableMap/set
 	 */
 	override set(key: K, value: T): this {
 		const previous = this.get(key);
@@ -115,7 +115,7 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
 	 * @param key The key to delete.
 	 * @returns `true` if a value existed and was deleted, otherwise `false`.
 	 * @example map.delete("a") // disposes the "a" value
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableMap/delete
+	 * @see https://shelving.cc/util/dispose/DisposableMap/delete
 	 */
 	override delete(key: K): boolean {
 		const value = this.get(key);
@@ -127,7 +127,7 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
 	 *
 	 * @returns Nothing.
 	 * @example map.clear() // disposes every value
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableMap/clear
+	 * @see https://shelving.cc/util/dispose/DisposableMap/clear
 	 */
 	override clear(): void {
 		dispose(...this.values());
@@ -137,7 +137,7 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
 	 * Dispose this map by clearing all items and disposing their values.
 	 *
 	 * @returns Nothing.
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableMap/dispose
+	 * @see https://shelving.cc/util/dispose/DisposableMap/dispose
 	 */
 	[Symbol.dispose]() {
 		this.clear();
@@ -150,7 +150,7 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
  * - Values are disposed when all items are cleared.
  * - All items are cleared (and disposed) when this map itself is disposed.
  *
- * @see https://dhoulb.github.io/shelving/util/dispose/DisposableSet
+ * @see https://shelving.cc/util/dispose/DisposableSet
  */
 export class DisposableSet<T extends Disposable> extends Set<T> implements Disposable {
 	/**
@@ -159,7 +159,7 @@ export class DisposableSet<T extends Disposable> extends Set<T> implements Dispo
 	 * @param item The item to delete.
 	 * @returns `true` if the item existed and was deleted, otherwise `false`.
 	 * @example set.delete(resource) // disposes the item
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableSet/delete
+	 * @see https://shelving.cc/util/dispose/DisposableSet/delete
 	 */
 	override delete(item: T): boolean {
 		if (this.has(item)) dispose(item);
@@ -170,7 +170,7 @@ export class DisposableSet<T extends Disposable> extends Set<T> implements Dispo
 	 *
 	 * @returns Nothing.
 	 * @example set.clear() // disposes every item
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableSet/clear
+	 * @see https://shelving.cc/util/dispose/DisposableSet/clear
 	 */
 	override clear(): void {
 		dispose(...this);
@@ -180,7 +180,7 @@ export class DisposableSet<T extends Disposable> extends Set<T> implements Dispo
 	 * Dispose this set by clearing all items and disposing each one.
 	 *
 	 * @returns Nothing.
-	 * @see https://dhoulb.github.io/shelving/util/dispose/DisposableSet/dispose
+	 * @see https://shelving.cc/util/dispose/DisposableSet/dispose
 	 */
 	[Symbol.dispose]() {
 		this.clear();

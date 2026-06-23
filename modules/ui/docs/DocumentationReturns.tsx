@@ -14,7 +14,7 @@ const DEFAULT_TYPE = "unknown";
 /**
  * Props for `DocumentationReturns` — the `@returns` entries to render, one row each.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationReturns/DocumentationReturnsProps
+ * @see https://shelving.cc/ui/DocumentationReturnsProps
  */
 export interface DocumentationReturnsProps {
 	/** Return entries to render — one row per documented return type. */
@@ -30,7 +30,7 @@ export interface DocumentationReturnsProps {
  * @kind component
  * @returns A `<Section>` containing the returns table, or `null` when there are none.
  * @example <DocumentationReturns returns={returns} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationReturns/DocumentationReturns
+ * @see https://shelving.cc/ui/DocumentationReturns
  */
 export function DocumentationReturns({ returns }: DocumentationReturnsProps): ReactNode {
 	const map = useTreeMap();

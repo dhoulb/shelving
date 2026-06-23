@@ -10,7 +10,7 @@ import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
  * React context holding the current `Meta` object (page URL, site root, title, etc.).
  *
  * @example <MetaContext value={meta}>…</MetaContext>
- * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaContext
+ * @see https://shelving.cc/ui/MetaContext
  */
 export const MetaContext = createContext<Meta>({});
 MetaContext.displayName = "MetaContext";
@@ -23,7 +23,7 @@ MetaContext.displayName = "MetaContext";
  * @param meta A set of new possible meta data to combine into the current meta context.
  * @returns The current `Meta`, with `meta` merged in when provided.
  * @example const { title, url } = requireMeta();
- * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/requireMeta
+ * @see https://shelving.cc/ui/requireMeta
  */
 export function requireMeta(meta?: PossibleMeta): Meta {
 	const current = use(MetaContext);
@@ -33,7 +33,7 @@ export function requireMeta(meta?: PossibleMeta): Meta {
 /**
  * A `Meta` object with a guaranteed `url`, plus derived `path` and `params` properties.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/MetaURL
+ * @see https://shelving.cc/ui/MetaURL
  */
 export interface MetaURL extends Meta {
 	url: ImmutableURL;
@@ -52,7 +52,7 @@ export interface MetaURL extends Meta {
  * @throws RequiredError If the current meta has no `url`.
  * @throws RequiredError If the current meta `url` does not share an origin with the meta `root`.
  * @example const { path, params } = requireMetaURL();
- * @see https://dhoulb.github.io/shelving/ui/misc/MetaContext/requireMetaURL
+ * @see https://shelving.cc/ui/requireMetaURL
  */
 export function requireMetaURL(meta?: PossibleMeta, caller: AnyCaller = requireMetaURL): MetaURL {
 	const { url, root, ...combined } = requireMeta(meta);

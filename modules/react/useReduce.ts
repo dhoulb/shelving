@@ -16,7 +16,7 @@ import type { Arguments } from "../util/function.js";
  * // Keep the highest count ever seen.
  * const max = useReduce((previous = 0, next: number) => Math.max(previous, next), count);
  *
- * @see https://dhoulb.github.io/shelving/react/useReduce
+ * @see https://shelving.cc/react/useReduce
  */
 export function useReduce<T, A extends Arguments = []>(reduce: (previous: T | undefined, ...a: A) => T, ...args: A): T;
 export function useReduce<T, A extends Arguments = []>(

@@ -10,7 +10,7 @@ import { Store } from "./Store.js";
  * const store = new BooleanStore();
  * store.value = 1; // true (coerced)
  * store.toggle(); // now false
- * @see https://dhoulb.github.io/shelving/store/BooleanStore/BooleanStore
+ * @see https://shelving.cc/store/BooleanStore
  */
 export class BooleanStore extends Store<boolean, unknown> {
 	// Override to set default value to `false`
@@ -33,7 +33,7 @@ export class BooleanStore extends Store<boolean, unknown> {
 	 *
 	 * @returns Nothing.
 	 * @example store.toggle(); // `true` becomes `false`, `false` becomes `true`
-	 * @see https://dhoulb.github.io/shelving/store/BooleanStore/BooleanStore/toggle
+	 * @see https://shelving.cc/store/BooleanStore/toggle
 	 */
 	toggle(): void {
 		this.value = !this.value;

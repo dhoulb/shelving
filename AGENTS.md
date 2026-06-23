@@ -94,7 +94,7 @@ Before writing new code, find what already exists. The codebase deliberately exp
 ## Pull Requests
 
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
-- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://dhoulb.github.io/shelving/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
+- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
 
 ## Naming
 
@@ -426,6 +426,14 @@ Checklist:
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
 
+### Docs site
+
+The public docs live at **`https://shelving.cc/`** — every public token ships as a page, and each module / per-symbol `.md` is merged onto it (see below).
+
+- The site is built by the `docs.yaml` workflow (`bun run docs:build`) and published to the `docs` branch, which GitHub Pages serves from the `shelving.cc` custom domain. The workflow writes the `CNAME` file at publish time (the `cname:` option on the deploy step), so there is no `CNAME` committed in the repo.
+- A push to `main` publishes to the site root; each PR publishes a preview under `pr-<number>/`, so `https://shelving.cc/pr-<number>/` is the live preview for that PR (linked from the PR's `docs-preview` deployment — see [Pull Requests](#pull-requests)).
+- Page URLs are **package-relative**, not source-path-relative: a token's canonical page is `https://shelving.cc/<package>/<name>`, where `<package>` is its `package.json` export subpath. This is the same scheme the `@see` block tags use — see the [docblock standards](#docblock-standards) for the exact rule.
+
 ### Cross-references and token display
 
 Whenever a README, per-symbol `.md` page, or docblock names another module or token — a class, function, constant, type, method, property, or component — write it as a **backtick-quoted name in its display style and nothing more**. Do **not** wrap it in a markdown link:
@@ -459,7 +467,7 @@ This applies to **"See also" lists** and **inline references** alike. There's no
 - **Descriptive prose phrases** that point at a page but aren't a token name — e.g. linking the words "tint ladder" to a page.
 - **CSS custom properties** (`--tint-90`, `--space-paragraph`) are **not** tree tokens and never auto-link. Write them as plain backtick code (`` `--tint-90` ``); the Styling-table prose around them names the owning `get*Class` helper as an ordinary backtick reference, which does link.
 
-**`@see` block tags are unaffected** — they still carry the full `https://dhoulb.github.io/shelving/<path>/<name>` URL (see the docblock standards below), since IDE hover needs an absolute link, not a docs-site-relative one.
+**`@see` block tags are unaffected** — they still carry the full `https://shelving.cc/<package>/<name>` URL (see the docblock standards below), since IDE hover needs an absolute link, not a docs-site-relative one.
 
 ### UI component pages and CSS-variable documentation
 
@@ -490,7 +498,7 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
    * Sugar instance of `StringSchema` for an unconstrained string. Equivalent to `new StringSchema({})`.
    *
    * @example STRING.validate(123); // Returns "123"
-   * @see https://dhoulb.github.io/shelving/schema/StringSchema/STRING
+   * @see https://shelving.cc/schema/STRING
    */
   export const STRING = new StringSchema({});
   ```
@@ -528,10 +536,10 @@ Every public token now ships as a page on the docs site, so docblock quality dir
 - **`@see` docs-site link.** Every token published on the docs site gets a `@see` block tag pointing at its page, so VS Code hover reveals a clickable link. Prefer the `@see` block tag over inline `{@link}` — it renders better in the hover popup. The URL pattern mirrors the docs-site routing:
 
   ```
-  @see https://dhoulb.github.io/shelving/<path>/<name>
+  @see https://shelving.cc/<package>/<name>
   ```
 
-  where `<path>` is the source file's path relative to `modules/` with the extension dropped, and `<name>` is the exported symbol. So `modules/schema/BooleanSchema.ts`'s `BooleanSchema` class → `https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchema`; `modules/util/array.ts`'s `getArray` → `https://dhoulb.github.io/shelving/util/array/getArray`; a class member appends its own name → `.../schema/BooleanSchema/BooleanSchema/validate`.
+  where `<package>` is the symbol's **package export subpath** — the entry it's published under in `package.json` `exports`, which is the top-level module folder (`schema`, `db`, `store`, `ui`, …) for single-index packages, or `util/<file>` and `firestore/<client|lite|server>` for the wildcard / multi-entry exports — and `<name>` is the exported symbol. The deeper source-file path collapses to that package subpath. So `modules/schema/BooleanSchema.ts`'s `BooleanSchema` class → `https://shelving.cc/schema/BooleanSchema`; `modules/db/store/QueryStore.ts`'s `QueryStore` → `https://shelving.cc/db/QueryStore`; `modules/util/array.ts`'s `getArray` → `https://shelving.cc/util/array/getArray`; a class member appends its own name → `https://shelving.cc/schema/BooleanSchema/validate`.
 
 Example shape:
 
@@ -542,6 +550,6 @@ Example shape:
  * @param arr The array to read from.
  * @returns The first item, or `undefined` when the array is empty.
  * @example getArray(["a", "b"]) // "a"
- * @see https://dhoulb.github.io/shelving/util/array/getArray
+ * @see https://shelving.cc/util/array/getArray
  */
 ```

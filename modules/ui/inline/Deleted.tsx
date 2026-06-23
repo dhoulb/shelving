@@ -8,7 +8,7 @@ const DELETED_CLASS = getModuleClass(DELETED_CSS, "definitions");
 /**
  * Props for `Deleted` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Deleted/DeletedProps
+ * @see https://shelving.cc/ui/DeletedProps
  */
 export interface DeletedProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface DeletedProps extends OptionalChildProps {}
  * @returns Rendered `<del>` element.
  * @kind component
  * @example <Deleted>old price</Deleted>
- * @see https://dhoulb.github.io/shelving/ui/inline/Deleted/Deleted
+ * @see https://shelving.cc/ui/Deleted
  */
 export function Deleted({ children }: DeletedProps): ReactElement {
 	return <del className={DELETED_CLASS}>{children}</del>;

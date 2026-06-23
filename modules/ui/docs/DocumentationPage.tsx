@@ -77,7 +77,7 @@ function DocumentationChildren({ elements }: { readonly elements?: TreeElements 
  * @kind component
  * @returns A `<Page>` containing the symbol's full documentation.
  * @example <DocumentationPage {...element.props} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationPage/DocumentationPage
+ * @see https://shelving.cc/ui/DocumentationPage
  */
 export function DocumentationPage({
 	title,

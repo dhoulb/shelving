@@ -11,7 +11,7 @@ const SUBHEADING_CLASS = getModuleClass(SUBHEADING_CSS, "subheading");
 /**
  * Props for `Subheading` — identical to `HeadingProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Subheading/SubheadingProps
+ * @see https://shelving.cc/ui/SubheadingProps
  */
 export type SubheadingProps = HeadingProps;
 
@@ -22,7 +22,7 @@ export type SubheadingProps = HeadingProps;
  * @kind component
  * @returns Rendered `<h3>` heading element.
  * @example <Subheading>Details</Subheading>
- * @see https://dhoulb.github.io/shelving/ui/block/Subheading/Subheading
+ * @see https://shelving.cc/ui/Subheading
  */
 export function Subheading({ level = "3", children, ...props }: SubheadingProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;

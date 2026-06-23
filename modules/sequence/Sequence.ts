@@ -11,7 +11,7 @@
  * 	class NumberSequence extends Sequence<number, void, void> {
  * 		async next() { return { done: false, value: Math.random() }; }
  * 	}
- * @see https://dhoulb.github.io/shelving/sequence/Sequence/Sequence
+ * @see https://shelving.cc/sequence/Sequence
  */
 export abstract class Sequence<T, R, N>
 	implements AsyncIterable<T, R | undefined, N | undefined>, AsyncIterator<T, R | undefined, N | undefined>, AsyncDisposable
@@ -27,7 +27,7 @@ export abstract class Sequence<T, R, N>
 	 * - Will be the `N` next value on subsequent calls.
 	 *
 	 * @returns An incomplete iterator result with `done: false` and `value: T`.
-	 * @see https://dhoulb.github.io/shelving/sequence/Sequence/Sequence/next
+	 * @see https://shelving.cc/sequence/Sequence/next
 	 */
 	abstract next(value?: N | undefined): Promise<IteratorResult<T, R | undefined>>;
 
@@ -41,7 +41,7 @@ export abstract class Sequence<T, R, N>
 	 * - Will be `undefined` on the first call.
 	 *
 	 * @returns A completed iterator result with `done: true`.
-	 * @see https://dhoulb.github.io/shelving/sequence/Sequence/Sequence/return
+	 * @see https://shelving.cc/sequence/Sequence/return
 	 */
 	async return(value?: R | undefined | PromiseLike<R | undefined>): Promise<IteratorResult<T, R | undefined>> {
 		// Default behaviour for a generator is to return `done: true` and repeat back input value.
@@ -56,7 +56,7 @@ export abstract class Sequence<T, R, N>
 	 * @param reason Error or other thrown value to send into the iterator.
 	 * @returns A completed iterator result with `done: true` if a subclass recovers from the error.
 	 * @throws The `reason` value by default — subclasses may override to recover instead.
-	 * @see https://dhoulb.github.io/shelving/sequence/Sequence/Sequence/throw
+	 * @see https://shelving.cc/sequence/Sequence/throw
 	 */
 	async throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
 		// Default behaviour for a generator is to throw the error back out of the iterator and not continue.

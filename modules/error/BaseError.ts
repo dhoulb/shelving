@@ -4,7 +4,7 @@ import type { AnyCaller } from "../util/function.js";
  * Options for `BaseError` that provide additional helpful error functionality.
  * - Extends the built-in `ErrorOptions` (so `cause` is supported) and adds a `caller` plus arbitrary contextual fields.
  *
- * @see https://dhoulb.github.io/shelving/error/BaseError/BaseErrorOptions
+ * @see https://shelving.cc/error/BaseErrorOptions
  */
 export interface BaseErrorOptions extends globalThis.ErrorOptions {
 	/**
@@ -23,7 +23,7 @@ export interface BaseErrorOptions extends globalThis.ErrorOptions {
  * - Carries arbitrary named contextual data alongside the standard `Error` fields.
  * - All concrete error classes in this module (`ValueError`, `RequiredError`, etc.) implement this shape.
  *
- * @see https://dhoulb.github.io/shelving/error/BaseError/BaseError
+ * @see https://shelving.cc/error/BaseError
  */
 export interface BaseError extends Error {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
@@ -42,7 +42,7 @@ export interface BaseError extends Error {
  * @example
  * 	const error = new ValueError("Wrong");
  * 	setBaseErrorOptions(ValueError, error, { received: 123, caller: myFunction });
- * @see https://dhoulb.github.io/shelving/error/BaseError/setBaseErrorOptions
+ * @see https://shelving.cc/error/setBaseErrorOptions
  */
 export function setBaseErrorOptions(defaultCaller: AnyCaller, error: BaseError, options: BaseErrorOptions): void {
 	const { cause: _cause, caller = defaultCaller, ...rest } = options;

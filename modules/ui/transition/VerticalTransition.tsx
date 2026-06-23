@@ -5,7 +5,7 @@ import { Transition, type TransitionProps } from "./Transition.js";
 /**
  * Props for the `VerticalTransition` component — the shared transition variant props.
  *
- * @see https://dhoulb.github.io/shelving/ui/transition/VerticalTransition/VerticalTransitionProps
+ * @see https://shelving.cc/ui/VerticalTransitionProps
  */
 export interface VerticalTransitionProps extends TransitionProps {}
 
@@ -15,7 +15,7 @@ export interface VerticalTransitionProps extends TransitionProps {}
  * @kind component
  * @returns A `<Transition>` element configured with the vertical slide classes.
  * @example <VerticalTransition>{currentStep}</VerticalTransition>
- * @see https://dhoulb.github.io/shelving/ui/transition/VerticalTransition/VerticalTransition
+ * @see https://shelving.cc/ui/VerticalTransition
  */
 export function VerticalTransition(props: VerticalTransitionProps): ReactElement {
 	return <Transition default="slideDown" forward="slideDown" back="slideUp" {...props} />;

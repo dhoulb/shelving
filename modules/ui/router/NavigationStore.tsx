@@ -9,7 +9,7 @@ import { type PossibleURL, requireURL } from "../../util/url.js";
  * - TODO: switch to the browser Navigation API when broadly supported.
  *
  * @example const nav = new NavigationStore("/"); nav.forward("/home");
- * @see https://dhoulb.github.io/shelving/ui/router/NavigationStore/NavigationStore
+ * @see https://shelving.cc/ui/NavigationStore
  */
 export class NavigationStore extends URLStore {
 	/**
@@ -28,7 +28,7 @@ export class NavigationStore extends URLStore {
 	 * @param possible The destination URL, resolved against `base`.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.forward("/settings");
-	 * @see https://dhoulb.github.io/shelving/ui/router/NavigationStore/NavigationStore/forward
+	 * @see https://shelving.cc/ui/NavigationStore/forward
 	 */
 	forward(possible: PossibleURL): void {
 		this.value = requireURL(possible, this.base, this.forward);
@@ -41,7 +41,7 @@ export class NavigationStore extends URLStore {
 	 * @param possible The destination URL, resolved against `base`.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.redirect("/login");
-	 * @see https://dhoulb.github.io/shelving/ui/router/NavigationStore/NavigationStore/redirect
+	 * @see https://shelving.cc/ui/NavigationStore/redirect
 	 */
 	redirect(possible: PossibleURL): void {
 		this.value = requireURL(possible, this.base, this.redirect);

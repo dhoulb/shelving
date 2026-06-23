@@ -23,7 +23,7 @@ import { APIProvider } from "./APIProvider.js";
 /**
  * Options for constructing a `ClientAPIProvider`.
  *
- * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProviderOptions
+ * @see https://shelving.cc/api/ClientAPIProviderOptions
  */
 export interface ClientAPIProviderOptions {
 	/**
@@ -62,27 +62,27 @@ export interface ClientAPIProviderOptions {
  * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
  * const user = await provider.call(getUser, { id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider
+ * @see https://shelving.cc/api/ClientAPIProvider
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
 	/**
 	 * The common base URL for all rendered endpoint requests.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/url
+	 * @see https://shelving.cc/api/ClientAPIProvider/url
 	 */
 	override readonly url: URL;
 
 	/**
 	 * Default options used for HTTP requests created with `this.createRequest()` and `this.fetch()`
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/options
+	 * @see https://shelving.cc/api/ClientAPIProvider/options
 	 */
 	readonly options: RequestOptions;
 
 	/**
 	 * Timeout in milliseconds before the request is aborted, or `0` for no timeout.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/timeout
+	 * @see https://shelving.cc/api/ClientAPIProvider/timeout
 	 */
 	readonly timeout: number;
 
@@ -91,7 +91,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 *
 	 * @throws {RequiredError} if `url` cannot be resolved to a valid base URL.
 	 * @example new ClientAPIProvider({ url: "https://api.example.com" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider
+	 * @see https://shelving.cc/api/ClientAPIProvider
 	 */
 	constructor({ url, options = {}, timeout = 20_000 }: ClientAPIProviderOptions) {
 		super();
@@ -110,7 +110,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 * @example provider.renderURL(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/renderURL
+	 * @see https://shelving.cc/api/ClientAPIProvider/renderURL
 	 */
 	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		// Construct the full URL from `this.url` and the rendered path.
@@ -144,7 +144,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 * @example provider.createRequest(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/createRequest
+	 * @see https://shelving.cc/api/ClientAPIProvider/createRequest
 	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -196,7 +196,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 * @param request The `Request` to send.
 	 * @returns A promise resolving to the `Response`.
 	 * @example await provider.fetch(request)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/fetch
+	 * @see https://shelving.cc/api/ClientAPIProvider/fetch
 	 */
 	override async fetch(request: Request): Promise<Response> {
 		return fetch(request);
@@ -211,7 +211,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 * @returns A promise resolving to the parsed result.
 	 * @throws {ResponseError} if the response status is non-2xx.
 	 * @example await provider.parseResponse(getUser, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ClientAPIProvider/ClientAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/ClientAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,

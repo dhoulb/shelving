@@ -19,20 +19,20 @@ import { MemoryDBProvider } from "./MemoryDBProvider.js";
  *  const provider = new CacheDBProvider(new FirestoreProvider());
  *  await provider.getItem(users, 123); // Fetches from source, then caches in memory.
  *
- * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider
+ * @see https://shelving.cc/db/CacheDBProvider
  */
 export class CacheDBProvider<I extends Identifier, T extends Data> extends DBProvider<I, T> implements Sourceable<DBProvider<I, T>> {
 	/**
 	 * The wrapped source provider that data is fetched from and written to.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/source
+	 * @see https://shelving.cc/db/CacheDBProvider/source
 	 */
 	readonly source: DBProvider<I, T>;
 
 	/**
 	 * The in-memory provider holding the local synchronous cache of `source` data.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/memory
+	 * @see https://shelving.cc/db/CacheDBProvider/memory
 	 */
 	readonly memory: MemoryDBProvider<I, T>;
 
@@ -55,7 +55,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/getItem
+	 * @see https://shelving.cc/db/CacheDBProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const item = await this.source.getItem(collection, id);
@@ -71,7 +71,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/getItemSequence
+	 * @see https://shelving.cc/db/CacheDBProvider/getItemSequence
 	 */
 	override getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		return this.memory.getTable(collection).setItemSequence(id, this.source.getItemSequence(collection, id));
@@ -84,7 +84,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/addItem
+	 * @see https://shelving.cc/db/CacheDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const id = await this.source.addItem(collection, data);
@@ -99,7 +99,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/setItem
+	 * @see https://shelving.cc/db/CacheDBProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this.source.setItem(collection, id, data);
@@ -113,7 +113,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/updateItem
+	 * @see https://shelving.cc/db/CacheDBProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -130,7 +130,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/deleteItem
+	 * @see https://shelving.cc/db/CacheDBProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await this.source.deleteItem(collection, id);
@@ -144,7 +144,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/countQuery
+	 * @see https://shelving.cc/db/CacheDBProvider/countQuery
 	 */
 	override countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return this.source.countQuery(collection, query);
@@ -157,7 +157,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/getQuery
+	 * @see https://shelving.cc/db/CacheDBProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -175,7 +175,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/CacheDBProvider/getQuerySequence
 	 */
 	override getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -191,7 +191,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/setQuery
+	 * @see https://shelving.cc/db/CacheDBProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -209,7 +209,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/updateQuery
+	 * @see https://shelving.cc/db/CacheDBProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -226,7 +226,7 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/CacheDBProvider/CacheDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/CacheDBProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,

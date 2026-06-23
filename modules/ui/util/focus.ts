@@ -8,7 +8,7 @@ import type { Nullish } from "../../util/null.js";
  *
  * @param el The container element to focus the first focusable descendant of.
  * @example focusFirstFocusable(dialogRef.current);
- * @see https://dhoulb.github.io/shelving/ui/util/focus/focusFirstFocusable
+ * @see https://shelving.cc/ui/focusFirstFocusable
  */
 export function focusFirstFocusable(el: Nullish<Element>): void {
 	if (el instanceof HTMLElement) getFirstFocusable(el)?.focus();
@@ -22,7 +22,7 @@ export function focusFirstFocusable(el: Nullish<Element>): void {
  * @param element The container to keep focus within.
  * @param nextTarget The element focus is moving to.
  * @example loopFocus(dialog, document.activeElement);
- * @see https://dhoulb.github.io/shelving/ui/util/focus/loopFocus
+ * @see https://shelving.cc/ui/loopFocus
  */
 export function loopFocus(element: Nullish<Element>, nextTarget: Nullish<Element>): void {
 	if (element && nextTarget && !element.contains(nextTarget)) focusFirstFocusable(element);
@@ -35,7 +35,7 @@ export function loopFocus(element: Nullish<Element>, nextTarget: Nullish<Element
  *
  * @param event The `blur` event, providing `currentTarget` (the container) and `relatedTarget` (the new focus target).
  * @example <div onBlur={eventLoopFocus}>…</div>
- * @see https://dhoulb.github.io/shelving/ui/util/focus/eventLoopFocus
+ * @see https://shelving.cc/ui/eventLoopFocus
  */
 export function eventLoopFocus({ currentTarget, relatedTarget }: { currentTarget: Element; relatedTarget: Element | null }): void {
 	loopFocus(currentTarget, relatedTarget);

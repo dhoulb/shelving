@@ -6,7 +6,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new ValueError("Must be a positive number", { received: -1 });
- * @see https://dhoulb.github.io/shelving/error/ValueError/ValueError
+ * @see https://shelving.cc/error/ValueError
  */
 export class ValueError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

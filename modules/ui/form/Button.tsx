@@ -10,7 +10,7 @@ import { Clickable, type ClickableProps } from "./Clickable.js";
 /**
  * Styling variants for a `Button`, combining flex, color, status, and typography options with button-specific toggles.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Button/ButtonVariants
+ * @see https://shelving.cc/ui/ButtonVariants
  */
 export interface ButtonVariants extends FlexVariants, ColorVariants, StatusVariants, TypographyVariants {
 	/** This is the default button in a form and should be displayed stronger. */
@@ -31,7 +31,7 @@ export interface ButtonVariants extends FlexVariants, ColorVariants, StatusVaria
  * @param variants The button styling variants (flex, color, status, typography, plus button toggles).
  * @returns A space-separated `className` string combining all the resolved variant classes.
  * @example getButtonClass({ color: "primary", small: true }) // "button …"
- * @see https://dhoulb.github.io/shelving/ui/form/Button/getButtonClass
+ * @see https://shelving.cc/ui/getButtonClass
  */
 export function getButtonClass(variants: ButtonVariants): string {
 	return getClass(
@@ -53,7 +53,7 @@ interface ButtonProps extends ButtonVariants, ClickableProps {}
  * @kind component
  * @example <Button onClick={save} color="primary">Save</Button>
  * @example <Button href="/about">About</Button>
- * @see https://dhoulb.github.io/shelving/ui/form/Button/Button
+ * @see https://shelving.cc/ui/Button
  */
 export function Button(props: ButtonProps): ReactElement {
 	return <Clickable {...props} className={getButtonClass(props)} />;

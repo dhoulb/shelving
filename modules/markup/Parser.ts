@@ -7,7 +7,7 @@
  * class UppercaseParser extends Parser<string, string> {
  * 	parse(input: string): string { return input.toUpperCase(); }
  * }
- * @see https://dhoulb.github.io/shelving/markup/Parser/Parser
+ * @see https://shelving.cc/markup/Parser
  */
 export abstract class Parser<I, O> {
 	/**
@@ -15,7 +15,7 @@ export abstract class Parser<I, O> {
 	 *
 	 * @param input The input value to parse.
 	 * @returns The parsed output value.
-	 * @see https://dhoulb.github.io/shelving/markup/Parser/Parser/parse
+	 * @see https://shelving.cc/markup/Parser/parse
 	 */
 	abstract parse(input: I): O;
 }

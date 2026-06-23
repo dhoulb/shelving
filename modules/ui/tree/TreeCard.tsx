@@ -10,7 +10,7 @@ import { Subheading } from "../block/Subheading.js";
  * @returns A `<Card>` linking to the element's canonical `path`.
  * @kind component
  * @example <TreeCard {...element.props} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeCard/TreeCard
+ * @see https://shelving.cc/ui/TreeCard
  */
 export function TreeCard({ path, name, title, description }: TreeElementProps): ReactNode {
 	// `path` is the element's own canonical URL, stamped by `flattenTree()` — link straight to it.

@@ -23,7 +23,7 @@ import { BusyStore } from "./BusyStore.js";
  * const store = new ArrayStore([1, 2, 3]);
  * store.add(4); // [1, 2, 3, 4]
  * store.first; // 1
- * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore
+ * @see https://shelving.cc/store/ArrayStore
  */
 export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>> implements Iterable<T> {
 	// Override to set default value to `[]` and convert possible arrays.
@@ -39,7 +39,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Get the first item in this store, or `undefined` if it has no items.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/optionalFirst
+	 * @see https://shelving.cc/store/ArrayStore/optionalFirst
 	 */
 	get optionalFirst(): T | undefined {
 		return getFirst(this.value);
@@ -48,7 +48,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Get the last item in this store, or `undefined` if it has no items.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/optionalLast
+	 * @see https://shelving.cc/store/ArrayStore/optionalLast
 	 */
 	get optionalLast(): T | undefined {
 		return getLast(this.value);
@@ -57,7 +57,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Get the first item in this store, or throw `RequiredError` if it has no items.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/first
+	 * @see https://shelving.cc/store/ArrayStore/first
 	 */
 	get first(): T {
 		return requireFirst(this.value);
@@ -66,7 +66,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Get the last item in this store, or throw `RequiredError` if it has no items.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/last
+	 * @see https://shelving.cc/store/ArrayStore/last
 	 */
 	get last(): T {
 		return requireLast(this.value);
@@ -75,7 +75,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Whether this store has at least one item.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/exists
+	 * @see https://shelving.cc/store/ArrayStore/exists
 	 */
 	get exists(): boolean {
 		return !!this.value.length;
@@ -84,7 +84,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Get the number of items in the current value of this store.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/count
+	 * @see https://shelving.cc/store/ArrayStore/count
 	 */
 	get count(): number {
 		return this.value.length;
@@ -97,7 +97,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * @param items The items to add.
 	 * @returns Nothing.
 	 * @example store.add(4, 5);
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/add
+	 * @see https://shelving.cc/store/ArrayStore/add
 	 */
 	add(...items: T[]): void {
 		this.value = withArrayItems(this.value, ...items);
@@ -109,7 +109,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * @param items The items to remove.
 	 * @returns Nothing.
 	 * @example store.delete(2, 3);
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/delete
+	 * @see https://shelving.cc/store/ArrayStore/delete
 	 */
 	delete(...items: T[]): void {
 		this.value = omitArrayItems(this.value, ...items);
@@ -121,7 +121,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * @param items The items to toggle.
 	 * @returns Nothing.
 	 * @example store.toggle(1, 4);
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/toggle
+	 * @see https://shelving.cc/store/ArrayStore/toggle
 	 */
 	toggle(...items: T[]): void {
 		this.value = toggleArrayItems(this.value, ...items);
@@ -131,7 +131,7 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * Iterate over the items in this store's current array.
 	 *
 	 * @returns An iterator over the items.
-	 * @see https://dhoulb.github.io/shelving/store/ArrayStore/ArrayStore/[Symbol.iterator]
+	 * @see https://shelving.cc/store/ArrayStore/[Symbol.iterator]
 	 */
 	[Symbol.iterator](): Iterator<T, void> {
 		return this.value.values();

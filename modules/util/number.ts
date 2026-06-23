@@ -5,7 +5,7 @@ import type { AnyCaller } from "./function.js";
 /**
  * Values that can be converted to a number.
  *
- * @see https://dhoulb.github.io/shelving/util/number/PossibleNumber
+ * @see https://shelving.cc/util/number/PossibleNumber
  */
 export type PossibleNumber = number | string | Date;
 
@@ -17,7 +17,7 @@ export type PossibleNumber = number | string | Date;
  * @param max Maximum allowed value, inclusive (defaults to `+Infinity`).
  * @returns `true` if `value` is a finite number within range, otherwise `false`.
  * @example isNumber(17, 10, 20) // true
- * @see https://dhoulb.github.io/shelving/util/number/isNumber
+ * @see https://shelving.cc/util/number/isNumber
  */
 export function isNumber(value: unknown, min = Number.NEGATIVE_INFINITY, max = Number.POSITIVE_INFINITY): value is number {
 	return Number.isFinite(value) && (value as number) >= min && (value as number) <= max;
@@ -33,7 +33,7 @@ export function isNumber(value: unknown, min = Number.NEGATIVE_INFINITY, max = N
  * @returns Nothing; narrows `value` to `number`.
  * @throws `RequiredError` if `value` is not a finite number within range.
  * @example assertNumber(5, 0, 10); // passes
- * @see https://dhoulb.github.io/shelving/util/number/assertNumber
+ * @see https://shelving.cc/util/number/assertNumber
  */
 export function assertNumber(value: unknown, min?: number, max?: number, caller: AnyCaller = assertNumber): asserts value is number {
 	if (!isNumber(value, min, max))
@@ -57,7 +57,7 @@ export function assertNumber(value: unknown, min?: number, max?: number, caller:
  * @param value The value to convert.
  * @returns The finite number, or `undefined` if `value` cannot be converted.
  * @example getNumber("1.5kg") // 1.5
- * @see https://dhoulb.github.io/shelving/util/number/getNumber
+ * @see https://shelving.cc/util/number/getNumber
  */
 export function getNumber(value: unknown): number | undefined {
 	if (typeof value === "number" && Number.isFinite(value)) return value === 0 ? 0 : value;
@@ -76,7 +76,7 @@ const NOT_NUMERIC_REGEXP = /[^0-9-.]/g;
  * @returns The finite number.
  * @throws `RequiredError` if `value` cannot be converted to a finite number within range.
  * @example requireNumber("42") // 42
- * @see https://dhoulb.github.io/shelving/util/number/requireNumber
+ * @see https://shelving.cc/util/number/requireNumber
  */
 export function requireNumber(value: PossibleNumber, min?: number, max?: number, caller?: AnyCaller): number {
 	const num = getNumber(value);
@@ -92,7 +92,7 @@ export function requireNumber(value: PossibleNumber, min?: number, max?: number,
  * @param max Maximum allowed value, inclusive (defaults to `Number.MAX_SAFE_INTEGER`).
  * @returns `true` if `value` is an integer within range, otherwise `false`.
  * @example isInteger(5, 0, 10) // true
- * @see https://dhoulb.github.io/shelving/util/number/isInteger
+ * @see https://shelving.cc/util/number/isInteger
  */
 export function isInteger(value: unknown, min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER): value is number {
 	return Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
@@ -108,7 +108,7 @@ export function isInteger(value: unknown, min = Number.MIN_SAFE_INTEGER, max = N
  * @returns Nothing; narrows `value` to `number`.
  * @throws `RequiredError` if `value` is not an integer within range.
  * @example assertInteger(5, 0, 10); // passes
- * @see https://dhoulb.github.io/shelving/util/number/assertInteger
+ * @see https://shelving.cc/util/number/assertInteger
  */
 export function assertInteger(value: unknown, min?: number, max?: number, caller: AnyCaller = assertInteger): asserts value is number {
 	if (!isInteger(value, min, max))
@@ -131,7 +131,7 @@ export function assertInteger(value: unknown, min?: number, max?: number, caller
  * @param value The value to convert.
  * @returns The integer, or `undefined` if `value` cannot be converted.
  * @example getInteger("42px") // 42
- * @see https://dhoulb.github.io/shelving/util/number/getInteger
+ * @see https://shelving.cc/util/number/getInteger
  */
 export function getInteger(value: unknown): number | undefined {
 	if (typeof value === "number" && Number.isInteger(value)) return value === 0 ? 0 : value;
@@ -149,7 +149,7 @@ export function getInteger(value: unknown): number | undefined {
  * @returns The integer.
  * @throws `RequiredError` if `value` cannot be converted to an integer within range.
  * @example requireInteger("42") // 42
- * @see https://dhoulb.github.io/shelving/util/number/requireInteger
+ * @see https://shelving.cc/util/number/requireInteger
  */
 export function requireInteger(value: PossibleNumber, min?: number, max?: number, caller: AnyCaller = requireInteger): number {
 	const num = getNumber(value);
@@ -165,7 +165,7 @@ export function requireInteger(value: PossibleNumber, min?: number, max?: number
  * @param max The end of the range, e.g. `20`
  * @returns `true` if `num` is between `min` and `max` (inclusive), otherwise `false`.
  * @example isBetween(17, 10, 20) // true
- * @see https://dhoulb.github.io/shelving/util/number/isBetween
+ * @see https://shelving.cc/util/number/isBetween
  */
 export function isBetween(num: number, min: number, max: number): boolean {
 	return num >= min && num <= max;
@@ -179,7 +179,7 @@ export function isBetween(num: number, min: number, max: number): boolean {
  *
  * @returns The number rounded to the specified step.
  * @example roundStep(17, 5) // 15
- * @see https://dhoulb.github.io/shelving/util/number/roundStep
+ * @see https://shelving.cc/util/number/roundStep
  */
 export function roundStep(num: number, step = 1): number {
 	return Math.round(num / step) * step;
@@ -195,7 +195,7 @@ export function roundStep(num: number, step = 1): number {
  *
  * @returns The number rounded to the specified precision.
  * @example roundNumber(1.2345, 2) // 1.23
- * @see https://dhoulb.github.io/shelving/util/number/roundNumber
+ * @see https://shelving.cc/util/number/roundNumber
  */
 export function roundNumber(num: number, precision = 0): number {
 	return Math.round(num * 10 ** precision) / 10 ** precision;
@@ -209,7 +209,7 @@ export function roundNumber(num: number, precision = 0): number {
  * @param precision Maximum number of digits shown after the decimal point (defaults to 0).
  * @returns The number truncated to the specified precision.
  * @example truncateNumber(1.2999, 2) // 1.29
- * @see https://dhoulb.github.io/shelving/util/number/truncateNumber
+ * @see https://shelving.cc/util/number/truncateNumber
  */
 export function truncateNumber(num: number, precision = 0): number {
 	return Math.trunc(num * 10 ** precision) / 10 ** precision;
@@ -225,7 +225,7 @@ export function truncateNumber(num: number, precision = 0): number {
  * @returns `num` clamped to lie between `min` and `max`.
  * @throws `ValueError` if `max` is less than `min`.
  * @example boundNumber(12, 2, 8) // 8
- * @see https://dhoulb.github.io/shelving/util/number/boundNumber
+ * @see https://shelving.cc/util/number/boundNumber
  */
 export function boundNumber(num: number, min: number, max: number): number {
 	if (max < min) throw new ValueError("Max must be more than min", { min, max, caller: wrapNumber });
@@ -245,7 +245,7 @@ export function boundNumber(num: number, min: number, max: number): number {
  * @returns `num` wrapped to lie between `min` and `max`.
  * @throws `ValueError` if `max` is less than `min`.
  * @example wrapNumber(12, 2, 8) // 6
- * @see https://dhoulb.github.io/shelving/util/number/wrapNumber
+ * @see https://shelving.cc/util/number/wrapNumber
  */
 export function wrapNumber(num: number, min: number, max: number): number {
 	if (max < min) throw new ValueError("Max must be more than min", { min, max, caller: wrapNumber });
@@ -261,7 +261,7 @@ export function wrapNumber(num: number, min: number, max: number): number {
  * @param denumerator The number representing the whole amount (defaults to 100).
  * @returns `numerator` expressed as a percentage of `denumerator`.
  * @example getPercent(1, 4) // 25
- * @see https://dhoulb.github.io/shelving/util/number/getPercent
+ * @see https://shelving.cc/util/number/getPercent
  */
 export function getPercent(numerator: number, denumerator = 100) {
 	return denumerator === 100 ? numerator : (100 / denumerator) * numerator;
@@ -273,7 +273,7 @@ export function getPercent(numerator: number, denumerator = 100) {
  * @param nums The iterable of numbers to sum.
  * @returns The total of all the numbers (`0` if `nums` is empty).
  * @example sumNumbers([1, 2, 3]) // 6
- * @see https://dhoulb.github.io/shelving/util/number/sumNumbers
+ * @see https://shelving.cc/util/number/sumNumbers
  */
 export function sumNumbers(nums: Iterable<number>): number {
 	let sum = 0;
@@ -288,7 +288,7 @@ export function sumNumbers(nums: Iterable<number>): number {
  * @param target The target number to find the closest match for.
  * @returns The number closest to `target`, or `undefined` if `nums` is empty.
  * @example getClosestNumber([1, 5, 10], 6) // 5
- * @see https://dhoulb.github.io/shelving/util/number/getClosestNumber
+ * @see https://shelving.cc/util/number/getClosestNumber
  */
 export function getClosestNumber<T extends number>(nums: Iterable<T>, target: number): T | undefined {
 	let closest: T | undefined;

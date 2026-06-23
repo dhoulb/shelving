@@ -18,7 +18,7 @@ import type { Collection } from "../collection/Collection.js";
  *  const provider = new MemoryDBProvider();
  *  const id = await provider.addItem(users, { name: "Dave" });
  *
- * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider
+ * @see https://shelving.cc/db/DBProvider
  */
 export abstract class DBProvider<I extends Identifier = Identifier, T extends Data = Data> implements AsyncDisposable {
 	/**
@@ -28,7 +28,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/getItem
+	 * @see https://shelving.cc/db/DBProvider/getItem
 	 */
 	abstract getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>>;
 
@@ -40,7 +40,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @returns The item.
 	 * @throws `RequiredError` if no item exists with that id.
 	 * @example await provider.requireItem(users, 123) // Item (or throws).
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/requireItem
+	 * @see https://shelving.cc/db/DBProvider/requireItem
 	 */
 	async requireItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<Item<II, TT>> {
 		const item = await this.getItem(collection, id);
@@ -61,7 +61,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/getItemSequence
+	 * @see https://shelving.cc/db/DBProvider/getItemSequence
 	 */
 	abstract getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT>;
 
@@ -72,7 +72,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/addItem
+	 * @see https://shelving.cc/db/DBProvider/addItem
 	 */
 	abstract addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II>;
 
@@ -83,7 +83,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/setItem
+	 * @see https://shelving.cc/db/DBProvider/setItem
 	 */
 	abstract setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void>;
 
@@ -94,7 +94,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/updateItem
+	 * @see https://shelving.cc/db/DBProvider/updateItem
 	 */
 	abstract updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -108,7 +108,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/deleteItem
+	 * @see https://shelving.cc/db/DBProvider/deleteItem
 	 */
 	abstract deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void>;
 
@@ -119,7 +119,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/countQuery
+	 * @see https://shelving.cc/db/DBProvider/countQuery
 	 */
 	async countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return countArray(await this.getQuery(collection, query));
@@ -132,7 +132,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/getQuery
+	 * @see https://shelving.cc/db/DBProvider/getQuery
 	 */
 	abstract getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -146,7 +146,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/DBProvider/getQuerySequence
 	 */
 	abstract getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -160,7 +160,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/setQuery
+	 * @see https://shelving.cc/db/DBProvider/setQuery
 	 */
 	abstract setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -175,7 +175,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/updateQuery
+	 * @see https://shelving.cc/db/DBProvider/updateQuery
 	 */
 	abstract updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -189,7 +189,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/deleteQuery
+	 * @see https://shelving.cc/db/DBProvider/deleteQuery
 	 */
 	abstract deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void>;
 
@@ -200,7 +200,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @param query Query to filter and sort the items.
 	 * @returns The first matching item, or `undefined` if none match.
 	 * @example await provider.getFirst(users, { $order: "name" }) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/getFirst
+	 * @see https://shelving.cc/db/DBProvider/getFirst
 	 */
 	async getFirst<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -217,7 +217,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @returns The first matching item.
 	 * @throws `RequiredError` if no item matches the query.
 	 * @example await provider.requireFirst(users, { $order: "name" }) // Item (or throws).
-	 * @see https://dhoulb.github.io/shelving/db/provider/DBProvider/DBProvider/requireFirst
+	 * @see https://shelving.cc/db/DBProvider/requireFirst
 	 */
 	async requireFirst<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
