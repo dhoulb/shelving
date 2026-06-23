@@ -4,7 +4,7 @@ import THEME_CSS from "./Tint.module.css";
 /**
  * Shades of the currently selected tint color, from `"00"` (black) through `"50"` (the hue itself) to `"100"` (white).
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Tint/TintVariant
+ * @see https://shelving.cc/ui/TintVariant
  */
 export type TintVariant =
 	| "00"
@@ -34,6 +34,6 @@ export type TintVariant =
  *
  * - Applied by colour/status helpers so an element can compose shades like `--tint-20` and `--tint-95` of the selected hue.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Tint/TINT_CLASS
+ * @see https://shelving.cc/ui/TINT_CLASS
  */
 export const TINT_CLASS = getModuleClass(THEME_CSS, "tint");

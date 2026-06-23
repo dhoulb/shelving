@@ -18,7 +18,7 @@ const INLINE_CHARS = { "~": "del", "+": "ins", "*": "strong", _: "em", "=": "mar
  * - Different to Markdown: strong is always surrounded by `*asterisks*` and emphasis is always surrounded by `_underscores_` (strong isn't 'double emphasis').
  *
  * @example new MarkupParser({ rules: [INLINE_RULE] }).parse("This is *bold* and _italic_")
- * @see https://dhoulb.github.io/shelving/markup/rule/inline/INLINE_RULE
+ * @see https://shelving.cc/markup/INLINE_RULE
  */
 export const INLINE_RULE = createMarkupRule<{
 	char: keyof typeof INLINE_CHARS;

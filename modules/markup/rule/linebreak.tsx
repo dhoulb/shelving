@@ -11,7 +11,7 @@ import { createMarkupRule } from "../MarkupRule.js";
  *   - This works better with textareas that wrap text (since manually breaking up long lines is no longer necessary).
  *
  * @example new MarkupParser({ rules: [LINEBREAK_RULE] }).parse("Line one\nLine two")
- * @see https://dhoulb.github.io/shelving/markup/rule/linebreak/LINEBREAK_RULE
+ * @see https://shelving.cc/markup/LINEBREAK_RULE
  */
 export const LINEBREAK_RULE = createMarkupRule(
 	/[^\n\S]*\n[^\n\S]*/, //

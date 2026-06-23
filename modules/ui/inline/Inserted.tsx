@@ -8,7 +8,7 @@ const INSERTED_CLASS = getModuleClass(INSERTED_CSS, "inserted");
 /**
  * Props for `Inserted` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Inserted/InsertedProps
+ * @see https://shelving.cc/ui/InsertedProps
  */
 export interface InsertedProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface InsertedProps extends OptionalChildProps {}
  * @returns Rendered `<ins>` element.
  * @kind component
  * @example <Inserted>new price</Inserted>
- * @see https://dhoulb.github.io/shelving/ui/inline/Inserted/Inserted
+ * @see https://shelving.cc/ui/Inserted
  */
 export function Inserted({ children }: InsertedProps): ReactElement {
 	return <ins className={INSERTED_CLASS}>{children}</ins>;

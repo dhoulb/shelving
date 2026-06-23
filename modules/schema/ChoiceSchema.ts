@@ -6,7 +6,7 @@ import { Schema } from "./Schema.js";
 /**
  * Dictionary of allowed options for a `ChoiceSchema` in `{ key: title }` format.
  *
- * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceOptions
+ * @see https://shelving.cc/schema/ChoiceOptions
  */
 export type ChoiceOptions<K extends string> = { readonly [KK in K]: string };
 
@@ -16,7 +16,7 @@ export type ChoiceOptions<K extends string> = { readonly [KK in K]: string };
  * - Dictionary of string options in `{ key: title }` format.
  * - Array of string options in `[key]` format (`key` is used as the `title` too).
  *
- * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/PossibleChoiceOptions
+ * @see https://shelving.cc/schema/PossibleChoiceOptions
  */
 export type PossibleChoiceOptions<K extends string> = ImmutableArray<K> | ChoiceOptions<K>;
 
@@ -34,7 +34,7 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
  * - `options` — the allowed choices, as a `{ key: title }` dictionary or an array of keys.
  * - `value` — default option used when the input is `undefined`.
  *
- * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchemaOptions
+ * @see https://shelving.cc/schema/ChoiceSchemaOptions
  */
 export interface ChoiceSchemaOptions<O extends string, I = never> extends SchemaOptions {
 	/** Specify correct options using a dictionary of entries. */
@@ -53,7 +53,7 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
  *  const schema = new ChoiceSchema({ options: { yes: "Yes", no: "No" } });
  *  schema.validate("yes"); // "yes"
  *
- * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchema
+ * @see https://shelving.cc/schema/ChoiceSchema
  */
 export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	declare readonly value: O | I | undefined;
@@ -74,7 +74,7 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	 * @returns The valid choice key.
 	 * @throws `string` `"Required"` if the value is empty or missing, or `` `Unknown ${one}` `` if it is not one of the allowed choices.
 	 * @example schema.validate("yes") // "yes"
-	 * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchema/validate
+	 * @see https://shelving.cc/schema/ChoiceSchema/validate
 	 */
 	validate(unsafeValue: unknown = this.value): O {
 		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
@@ -87,7 +87,7 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	 * @param value The valid choice key to format.
 	 * @returns The choice's title from `options`.
 	 * @example schema.format("yes") // "Yes"
-	 * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/ChoiceSchema/format
+	 * @see https://shelving.cc/schema/ChoiceSchema/format
 	 */
 	override format(value: O): string {
 		return this.options[value];
@@ -101,7 +101,7 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
  *
  * @param options The allowed choices, as a `{ key: title }` dictionary or an array of keys.
  * @example CHOICE({ yes: "Yes", no: "No" }) // ChoiceSchema<"yes" | "no">
- * @see https://dhoulb.github.io/shelving/schema/ChoiceSchema/CHOICE
+ * @see https://shelving.cc/schema/CHOICE
  */
 export function CHOICE<K extends string>(options: PossibleChoiceOptions<K>): ChoiceSchema<K> {
 	return new ChoiceSchema({ options });

@@ -13,7 +13,7 @@ import { SchemaInput } from "./SchemaInput.js";
 /**
  * Props for `ArrayInput`, a repeating input that edits an array of schema-validated items.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInputProps
+ * @see https://shelving.cc/ui/ArrayInputProps
  */
 export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
 	one?: string;
@@ -32,7 +32,7 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
  * @returns Element rendering one input row per array item plus add/clear controls.
  * @kind component
  * @example <ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
- * @see https://dhoulb.github.io/shelving/ui/form/ArrayInput/ArrayInput
+ * @see https://shelving.cc/ui/ArrayInput
  */
 export function ArrayInput<T>(props: ArrayInputProps<T>): ReactElement;
 export function ArrayInput({

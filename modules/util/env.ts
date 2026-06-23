@@ -7,7 +7,7 @@ import type { AnyCaller } from "./function.js";
  * @param name Name of the environment variable to read.
  * @returns The variable's string value, or `undefined` if missing or unsupported.
  * @example getEnv("NODE_ENV") // "production"
- * @see https://dhoulb.github.io/shelving/util/env/getEnv
+ * @see https://shelving.cc/util/env/getEnv
  */
 export function getEnv(name: string): string | undefined {
 	if (typeof process === "object" && typeof process.env === "object") return process.env[name];
@@ -21,7 +21,7 @@ export function getEnv(name: string): string | undefined {
  * @returns The variable's string value.
  * @throws `RequiredError` if the variable is missing or `process.env` is unsupported.
  * @example requireEnv("DATABASE_URL") // "postgres://..."
- * @see https://dhoulb.github.io/shelving/util/env/requireEnv
+ * @see https://shelving.cc/util/env/requireEnv
  */
 export function requireEnv(name: string, caller: AnyCaller = requireEnv): string {
 	const env = getEnv(name);
@@ -37,7 +37,7 @@ export function requireEnv(name: string, caller: AnyCaller = requireEnv): string
  * @param name Name of the environment variable to read.
  * @returns `true` or `false` if the value is recognised, otherwise `undefined`.
  * @example getEnvBoolean("FEATURE_FLAG") // true
- * @see https://dhoulb.github.io/shelving/util/env/getEnvBoolean
+ * @see https://shelving.cc/util/env/getEnvBoolean
  */
 export function getEnvBoolean(name: string): boolean | undefined {
 	const env = getEnv(name)?.toLowerCase();
@@ -55,7 +55,7 @@ const _FALSES = [`0`, `off`, `no`, `false`];
  * @returns `false` if the environment variable is `0`, `off`, `no`, `false`; `true` if it is `1`, `on`, `yes`, `true`.
  * @throws `RequiredError` if the env variable is any other value.
  * @example requireEnvBoolean("FEATURE_FLAG") // true
- * @see https://dhoulb.github.io/shelving/util/env/requireEnvBoolean
+ * @see https://shelving.cc/util/env/requireEnvBoolean
  */
 export function requireEnvBoolean(name: string, caller: AnyCaller = requireEnvBoolean): boolean {
 	const env = getEnv(name);

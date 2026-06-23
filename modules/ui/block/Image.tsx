@@ -9,7 +9,7 @@ const IMAGE_CLASS = getModuleClass(styles, "image");
 /**
  * Props for `Image` — an `src`, optional `alt` text, plus space and width variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Image/ImageProps
+ * @see https://shelving.cc/ui/ImageProps
  */
 export interface ImageProps extends SpaceVariants, WidthVariants {
 	src: string;
@@ -22,7 +22,7 @@ export interface ImageProps extends SpaceVariants, WidthVariants {
  * @returns Rendered `<img>` element.
  * @kind component
  * @example <Image src="/logo.png" alt="Logo" width="narrow" />
- * @see https://dhoulb.github.io/shelving/ui/block/Image/Image
+ * @see https://shelving.cc/ui/Image
  */
 export function Image({ src, alt, ...variants }: ImageProps): ReactElement {
 	return <img src={src} alt={alt} className={getClass(IMAGE_CLASS, getSpaceClass(variants), getWidthClass(variants))} />;

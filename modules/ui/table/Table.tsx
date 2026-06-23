@@ -12,7 +12,7 @@ const TABLE_CLASS = getModuleClass(TABLE_CSS, "table");
 /**
  * Props for `Table` — colour, space, typography, and width variants plus `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Table/TableProps
+ * @see https://shelving.cc/ui/TableProps
  */
 export interface TableProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, ChildProps {}
 
@@ -24,7 +24,7 @@ export interface TableProps extends ColorVariants, SpaceVariants, TypographyVari
  * @kind component
  * @returns Rendered `<table>` element.
  * @example <Table><tbody><tr><td>Cell</td></tr></tbody></Table>
- * @see https://dhoulb.github.io/shelving/ui/block/Table/Table
+ * @see https://shelving.cc/ui/Table
  */
 export function Table({ children, ...props }: TableProps): ReactElement {
 	return (

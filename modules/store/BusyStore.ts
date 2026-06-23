@@ -11,13 +11,13 @@ import { Store, type StoreInput } from "./Store.js";
  * const store = new BusyStore(123);
  * store.value = fetchValue();
  * store.busy.value; // true while the promise is pending
- * @see https://dhoulb.github.io/shelving/store/BusyStore/BusyStore
+ * @see https://shelving.cc/store/BusyStore
  */
 export class BusyStore<T, TT = T> extends Store<T, TT> {
 	/**
 	 * Boolean store that is `true` while this store is awaiting a new value.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/BusyStore/BusyStore/busy
+	 * @see https://shelving.cc/store/BusyStore/busy
 	 */
 	readonly busy = new BooleanStore(false);
 

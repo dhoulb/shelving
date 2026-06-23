@@ -13,7 +13,7 @@ import type { Arguments } from "../util/function.js";
  *
  * @example const cache = useInstance(DBCache, provider);
  *
- * @see https://dhoulb.github.io/shelving/react/useInstance
+ * @see https://shelving.cc/react/useInstance
  */
 export function useInstance<T, A extends Arguments = []>(Constructor: new (...a: A) => T, ...args: A): T {
 	const _internals = (useRef<{ instance: T; args: A }>(undefined).current ??= {

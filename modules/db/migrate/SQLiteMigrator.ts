@@ -14,7 +14,7 @@ import { SQLMigrator, type SQLTable, type SQLTableColumn } from "./SQLMigrator.j
  * @example
  *  const migrator = new SQLiteMigrator(provider);
  *  await migrator.migrate(users, posts);
- * @see https://dhoulb.github.io/shelving/db/migrate/SQLiteMigrator/SQLiteMigrator
+ * @see https://shelving.cc/db/SQLiteMigrator
  */
 export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {

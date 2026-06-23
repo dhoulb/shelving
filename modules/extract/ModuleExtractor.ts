@@ -6,7 +6,7 @@ import { Extractor } from "./Extractor.js";
 /**
  * Input for a `ModuleExtractor`.
  *
- * @see https://dhoulb.github.io/shelving/extract/ModuleExtractor/ModuleExtractorInput
+ * @see https://shelving.cc/extract/ModuleExtractorInput
  */
 export interface ModuleExtractorInput {
 	/** Display name for the module, derived from the package.json export key (e.g. `"util/string"`, `"firestore/client"`). */
@@ -28,7 +28,7 @@ export interface ModuleExtractorInput {
  *
  * @example const module = new ModuleExtractor().extract({ name: "util/string", source });
  *
- * @see https://dhoulb.github.io/shelving/extract/ModuleExtractor
+ * @see https://shelving.cc/extract/ModuleExtractor
  */
 export class ModuleExtractor extends Extractor<ModuleExtractorInput, DocumentationElement> {
 	/**
@@ -39,7 +39,7 @@ export class ModuleExtractor extends Extractor<ModuleExtractorInput, Documentati
 	 *
 	 * @example const module = new ModuleExtractor().extract({ name: "util/string", source });
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/ModuleExtractor/extract
+	 * @see https://shelving.cc/extract/extract
 	 */
 	override extract({ name, source }: ModuleExtractorInput): DocumentationElement {
 		const children = _collectChildren(source);

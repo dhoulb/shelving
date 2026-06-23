@@ -10,7 +10,7 @@ import type { TreeElement } from "../util/tree.js";
  * class JSONExtractor extends Extractor<string, TreeElement> {
  * 	extract(input: string): TreeElement { return JSON.parse(input); }
  * }
- * @see https://dhoulb.github.io/shelving/extract/Extractor/Extractor
+ * @see https://shelving.cc/extract/Extractor
  */
 export abstract class Extractor<I, O extends TreeElement = TreeElement> {
 	/**
@@ -19,7 +19,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
 	 * @param input The input value to extract from.
 	 * @returns The extracted `TreeElement`, or a promise resolving to one.
 	 * @example await myExtractor.extract(input)
-	 * @see https://dhoulb.github.io/shelving/extract/Extractor/Extractor/extract
+	 * @see https://shelving.cc/extract/Extractor/extract
 	 */
 	abstract extract(input: I): O | Promise<O>;
 }
@@ -35,7 +35,7 @@ export abstract class Extractor<I, O extends TreeElement = TreeElement> {
  * @param secondary The element whose metadata fills any gaps in `primary`.
  * @returns A new `TreeElement` with `primary`'s identity and the merged metadata of both.
  * @example mergeTreeElements(tsElement, mdElement) // ts identity + md prose
- * @see https://dhoulb.github.io/shelving/extract/Extractor/mergeTreeElements
+ * @see https://shelving.cc/extract/mergeTreeElements
  */
 export function mergeTreeElements<T extends TreeElement>(primary: T, secondary: TreeElement): T;
 export function mergeTreeElements(primary: TreeElement, secondary: TreeElement): TreeElement {

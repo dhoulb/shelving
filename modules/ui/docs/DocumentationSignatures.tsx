@@ -5,7 +5,7 @@ import { Preformatted } from "../block/Preformatted.js";
 /**
  * Props for `DocumentationSignatures` — the type signatures to render, one block per overload.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignaturesProps
+ * @see https://shelving.cc/ui/DocumentationSignaturesProps
  */
 export interface DocumentationSignaturesProps {
 	/** Type signatures to render — one block per overload. */
@@ -21,7 +21,7 @@ export interface DocumentationSignaturesProps {
  * @returns One `<Preformatted>` block per signature, or `null` when there are none.
  * @kind component
  * @example <DocumentationSignatures signatures={["getArray<T>(arr: T[]): T"]} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationSignatures/DocumentationSignatures
+ * @see https://shelving.cc/ui/DocumentationSignatures
  */
 export function DocumentationSignatures({ signatures }: DocumentationSignaturesProps): ReactNode {
 	if (!signatures?.length) return null;

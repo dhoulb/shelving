@@ -82,7 +82,7 @@ function _lookup(base64: string, index: number, caller: AnyCaller): number {
  * @returns The Base64-encoded string.
  * @throws {RequiredError} If `input` cannot be converted to a byte sequence.
  * @example encodeBase64("abc") // "YWJj"
- * @see https://dhoulb.github.io/shelving/util/base64/encodeBase64
+ * @see https://shelving.cc/util/base64/encodeBase64
  */
 export function encodeBase64(input: PossibleBytes, pad = true): string {
 	return _encode(requireBytes(input), BASE64_CHARS, pad ? "=" : "");
@@ -95,7 +95,7 @@ export function encodeBase64(input: PossibleBytes, pad = true): string {
  * @returns The decoded UTF-8 string.
  * @throws {ValueError} If `base64` contains an invalid character.
  * @example decodeBase64String("YWJj") // "abc"
- * @see https://dhoulb.github.io/shelving/util/base64/decodeBase64String
+ * @see https://shelving.cc/util/base64/decodeBase64String
  */
 export function decodeBase64String(base64: string): string {
 	return new TextDecoder("utf-8").decode(_decode(base64, decodeBase64String));
@@ -108,7 +108,7 @@ export function decodeBase64String(base64: string): string {
  * @returns The decoded byte sequence.
  * @throws {ValueError} If `base64` contains an invalid character.
  * @example decodeBase64Bytes("YWJj") // Uint8Array([97, 98, 99])
- * @see https://dhoulb.github.io/shelving/util/base64/decodeBase64Bytes
+ * @see https://shelving.cc/util/base64/decodeBase64Bytes
  */
 export function decodeBase64Bytes(base64: string): Bytes {
 	return _decode(base64, decodeBase64Bytes);
@@ -122,7 +122,7 @@ export function decodeBase64Bytes(base64: string): Bytes {
  * @returns The Base64URL-encoded string.
  * @throws {RequiredError} If `input` cannot be converted to a byte sequence.
  * @example encodeBase64URL("abc") // "YWJj"
- * @see https://dhoulb.github.io/shelving/util/base64/encodeBase64URL
+ * @see https://shelving.cc/util/base64/encodeBase64URL
  */
 export function encodeBase64URL(input: PossibleBytes, pad = false): string {
 	return _encode(requireBytes(input), BASE64URL_CHARS, pad ? "=" : "");
@@ -135,7 +135,7 @@ export function encodeBase64URL(input: PossibleBytes, pad = false): string {
  * @returns The decoded UTF-8 string.
  * @throws {ValueError} If `base64` contains an invalid character.
  * @example decodeBase64URLString("YWJj") // "abc"
- * @see https://dhoulb.github.io/shelving/util/base64/decodeBase64URLString
+ * @see https://shelving.cc/util/base64/decodeBase64URLString
  */
 export function decodeBase64URLString(base64: string): string {
 	return new TextDecoder("utf-8").decode(_decode(base64, decodeBase64URLString));
@@ -148,7 +148,7 @@ export function decodeBase64URLString(base64: string): string {
  * @returns The decoded byte sequence.
  * @throws {ValueError} If `base64` contains an invalid character.
  * @example decodeBase64URLBytes("YWJj") // Uint8Array([97, 98, 99])
- * @see https://dhoulb.github.io/shelving/util/base64/decodeBase64URLBytes
+ * @see https://shelving.cc/util/base64/decodeBase64URLBytes
  */
 export function decodeBase64URLBytes(base64: string): Bytes {
 	return _decode(base64, decodeBase64URLBytes);

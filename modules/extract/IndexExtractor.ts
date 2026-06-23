@@ -15,7 +15,7 @@ const DEFAULT_INDEX: Matchables = [/^readme\.txt$/i, /^readme\.md$/i, /^index\.m
 /**
  * Options for an `IndexExtractor`.
  *
- * @see https://dhoulb.github.io/shelving/extract/IndexExtractor/IndexExtractorOptions
+ * @see https://shelving.cc/extract/IndexExtractorOptions
  */
 export interface IndexExtractorOptions {
 	/**
@@ -34,7 +34,7 @@ export interface IndexExtractorOptions {
  *
  * @example const extractor = new IndexExtractor(new DirectoryExtractor());
  *
- * @see https://dhoulb.github.io/shelving/extract/IndexExtractor
+ * @see https://shelving.cc/extract/IndexExtractor
  */
 export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _index: Matchables;
@@ -59,7 +59,7 @@ export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 *
 	 * @example const tree = await new IndexExtractor(source).extract(input);
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/IndexExtractor/extract
+	 * @see https://shelving.cc/extract/extract
 	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);

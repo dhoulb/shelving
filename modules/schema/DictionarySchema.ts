@@ -8,7 +8,7 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `DictionarySchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchemaOptions
+ * @see https://shelving.cc/schema/DictionarySchemaOptions
  */
 export interface DictionarySchemaOptions<T> extends SchemaOptions {
 	/** Schema every entry value in the dictionary must conform to. */
@@ -37,7 +37,7 @@ export interface DictionarySchemaOptions<T> extends SchemaOptions {
  *  const schema = new DictionarySchema({ items: NUMBER });
  *  schema.validate({ a: 1, b: 2 }); // { a: 1, b: 2 }
  *
- * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema
+ * @see https://shelving.cc/schema/DictionarySchema
  */
 export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	declare readonly value: ImmutableDictionary<T>;
@@ -72,7 +72,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	 * @returns The valid dictionary with each entry value validated by the `items` schema.
 	 * @throws `string` `"Must be object"` if not a dictionary, `"Required"` or `` `Minimum ${min} ${many}` `` if too few entries, or `` `Maximum ${max} ${many}` `` if too many.
 	 * @example schema.validate({ a: 1, b: 2 }) // { a: 1, b: 2 }
-	 * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema/validate
+	 * @see https://shelving.cc/schema/DictionarySchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): ImmutableDictionary<T> {
 		if (!isDictionary(unsafeValue)) throw "Must be object";
@@ -89,7 +89,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	 * @param dict The valid dictionary to format.
 	 * @returns The dictionary's values formatted as a human-readable string.
 	 * @example schema.format({ a: 1, b: 2 }) // "1, 2"
-	 * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DictionarySchema/format
+	 * @see https://shelving.cc/schema/DictionarySchema/format
 	 */
 	override format(dict: ImmutableDictionary<T>): string {
 		return formatArray(
@@ -107,7 +107,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
  *
  * @param items Schema every entry value in the dictionary must conform to.
  * @example DICTIONARY(NUMBER) // DictionarySchema<number>
- * @see https://dhoulb.github.io/shelving/schema/DictionarySchema/DICTIONARY
+ * @see https://shelving.cc/schema/DICTIONARY
  */
 export function DICTIONARY<T>(items: Schema<T>): DictionarySchema<T> {
 	return new DictionarySchema({ items });

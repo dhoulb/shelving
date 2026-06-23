@@ -7,7 +7,7 @@ import { Head } from "./Head.js";
 /**
  * Props for `<Page>` — per-page `Meta` (title, description, etc.) plus the page `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/page/Page/PageProps
+ * @see https://shelving.cc/ui/PageProps
  */
 export interface PageProps extends PossibleMeta, ChildProps {}
 
@@ -21,7 +21,7 @@ export interface PageProps extends PossibleMeta, ChildProps {}
  * @param meta Per-page meta (title, description, etc.) merged with the surrounding `<Meta>` context.
  * @returns The page element with its meta applied.
  * @example <Page title="Settings"><SettingsForm /></Page>
- * @see https://dhoulb.github.io/shelving/ui/page/Page/Page
+ * @see https://shelving.cc/ui/Page
  */
 export function Page({ children, ...meta }: PageProps): ReactElement {
 	const merged = requireMeta(meta);

@@ -12,7 +12,7 @@ import { MockAPIProvider } from "./MockAPIProvider.js";
  * 	const api = new MockEnpdointAPIProvider(handlers); // Create a new mock provider.
  *  const result = await api.fetch(endpoint, 4); // Mock a call to the endpoint through the provider.
  *  expect(result).toBe(16);
- * @see https://dhoulb.github.io/shelving/api/provider/MockEndpointAPIProvider/MockEndpointAPIProvider
+ * @see https://shelving.cc/api/MockEndpointAPIProvider
  */
 export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
 	/**

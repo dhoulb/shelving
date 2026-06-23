@@ -25,7 +25,7 @@ import { DBProvider } from "./DBProvider.js";
  *  const provider = new MemoryDBProvider();
  *  const id = await provider.addItem(users, { name: "Dave" });
  *
- * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider
+ * @see https://shelving.cc/db/MemoryDBProvider
  */
 export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	/** List of tables in `{ name: MemoryTable }` format. */
@@ -37,7 +37,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param collection Collection to get the table for.
 	 * @returns The `MemoryTable` holding that collection's items.
 	 * @example provider.getTable(users) // MemoryTable
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/getTable
+	 * @see https://shelving.cc/db/MemoryDBProvider/getTable
 	 */
 	getTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
 		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= new MemoryTable<II, TT>(collection));
@@ -50,7 +50,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/getItem
+	 * @see https://shelving.cc/db/MemoryDBProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return this.getTable(collection).getItem(id);
@@ -63,7 +63,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/getItemSequence
+	 * @see https://shelving.cc/db/MemoryDBProvider/getItemSequence
 	 */
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -79,7 +79,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/addItem
+	 * @see https://shelving.cc/db/MemoryDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return this.getTable(collection).addItem(data);
@@ -92,7 +92,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/setItem
+	 * @see https://shelving.cc/db/MemoryDBProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		this.getTable(collection).setItem(id, data);
@@ -105,7 +105,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/updateItem
+	 * @see https://shelving.cc/db/MemoryDBProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -121,7 +121,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/deleteItem
+	 * @see https://shelving.cc/db/MemoryDBProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		this.getTable(collection).deleteItem(id);
@@ -134,7 +134,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/countQuery
+	 * @see https://shelving.cc/db/MemoryDBProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -150,7 +150,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/getQuery
+	 * @see https://shelving.cc/db/MemoryDBProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -166,7 +166,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/MemoryDBProvider/getQuerySequence
 	 */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -182,7 +182,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/setQuery
+	 * @see https://shelving.cc/db/MemoryDBProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -199,7 +199,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/updateQuery
+	 * @see https://shelving.cc/db/MemoryDBProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -215,7 +215,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/MemoryDBProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -230,7 +230,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @param collection Collection to write to.
 	 * @param items Items (each with its own id) to store.
 	 * @example provider.setItems(users, [{ id: 123, name: "Dave" }]);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryDBProvider/setItems
+	 * @see https://shelving.cc/db/MemoryDBProvider/setItems
 	 */
 	setItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, items: Items<II, TT>): void {
 		this.getTable(collection).setItems(items);
@@ -247,7 +247,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  *  const table = provider.getTable(users);
  *  table.setItem(123, { name: "Dave" });
  *
- * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable
+ * @see https://shelving.cc/db/MemoryTable
  */
 export class MemoryTable<I extends Identifier, T extends Data> {
 	/** Actual data in this table. */
@@ -256,14 +256,14 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	/**
 	 * Deferred sequence that resolves on every change to this table.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/next
+	 * @see https://shelving.cc/db/MemoryTable/next
 	 */
 	public readonly next = new DeferredSequence();
 
 	/**
 	 * Collection this table stores the items of.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/collection
+	 * @see https://shelving.cc/db/MemoryTable/collection
 	 */
 	readonly collection: Collection<string, I, T>;
 
@@ -282,7 +282,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example table.getItem(123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/getItem
+	 * @see https://shelving.cc/db/MemoryTable/getItem
 	 */
 	getItem(id: I): OptionalItem<I, T> {
 		return this._data.get(id);
@@ -296,7 +296,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of table.getItemSequence(123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/getItemSequence
+	 * @see https://shelving.cc/db/MemoryTable/getItemSequence
 	 */
 	async *getItemSequence(id: I): AsyncIterable<OptionalItem<I, T>> {
 		let lastValue = this.getItem(id);
@@ -317,7 +317,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 *
 	 * @returns An id that no existing item in this table uses.
 	 * @example table.generateUniqueID() // 4827193 (or a random string)
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/generateUniqueID
+	 * @see https://shelving.cc/db/MemoryTable/generateUniqueID
 	 */
 	generateUniqueID(): I {
 		const gen = (this.collection.id instanceof StringSchema ? getRandomKey : getRandom) as () => I;
@@ -332,7 +332,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example table.addItem({ name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/addItem
+	 * @see https://shelving.cc/db/MemoryTable/addItem
 	 */
 	addItem(data: T): I {
 		const id = this.generateUniqueID();
@@ -347,7 +347,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param id Identifier of the item to set.
 	 * @param data Full item, or data to combine with `id` into an item.
 	 * @example table.setItem(123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/setItem
+	 * @see https://shelving.cc/db/MemoryTable/setItem
 	 */
 	setItem(id: I, data: Item<I, T> | T): void {
 		const item = getItem(id, data);
@@ -365,7 +365,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param sequence Source sequence of item values (or `undefined`) to mirror.
 	 * @returns Async sequence yielding each value after it has been mirrored.
 	 * @example for await (const item of table.setItemSequence(123, source)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/setItemSequence
+	 * @see https://shelving.cc/db/MemoryTable/setItemSequence
 	 */
 	async *setItemSequence(id: I, sequence: AsyncIterable<OptionalItem<I, T>>): AsyncIterable<OptionalItem<I, T>> {
 		for await (const item of sequence) {
@@ -381,7 +381,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example table.updateItem(123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/updateItem
+	 * @see https://shelving.cc/db/MemoryTable/updateItem
 	 */
 	updateItem(id: I, updates: Updates<Item<I, T>>): void {
 		const oldItem = this._data.get(id);
@@ -399,7 +399,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 *
 	 * @param id Identifier of the item to delete.
 	 * @example table.deleteItem(123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/deleteItem
+	 * @see https://shelving.cc/db/MemoryTable/deleteItem
 	 */
 	deleteItem(id: I): void {
 		if (this._data.has(id)) {
@@ -414,7 +414,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example table.countQuery({ age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/countQuery
+	 * @see https://shelving.cc/db/MemoryTable/countQuery
 	 */
 	countQuery(query?: Query<Item<I, T>>): number {
 		return query ? countItems(queryItems(this._data.values(), query)) : this._data.size;
@@ -426,7 +426,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example table.getQuery({ age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/getQuery
+	 * @see https://shelving.cc/db/MemoryTable/getQuery
 	 */
 	getQuery(query?: Query<Item<I, T>>): Items<I, T> {
 		return requireArray(query ? queryItems(this._data.values(), query) : this._data.values());
@@ -440,7 +440,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of table.getQuerySequence({ age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/getQuerySequence
+	 * @see https://shelving.cc/db/MemoryTable/getQuerySequence
 	 */
 	async *getQuerySequence(query?: Query<Item<I, T>>): AsyncIterable<Items<I, T>> {
 		let lastItems = this.getQuery(query);
@@ -461,7 +461,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example table.setQuery({ age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/setQuery
+	 * @see https://shelving.cc/db/MemoryTable/setQuery
 	 */
 	setQuery(query: Query<Item<I, T>>, data: T): void {
 		let changed = false;
@@ -481,7 +481,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example table.updateQuery({ age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MemoryDBProvider/MemoryTable/updateQuery
+	 * @see https://shelving.cc/db/MemoryTable/updateQuery
 	 */
 	updateQuery(query: Query<Item<I, T>>, updates: Updates<T>): void {
 		let changed = false;

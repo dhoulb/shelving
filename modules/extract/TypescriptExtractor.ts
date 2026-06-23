@@ -32,7 +32,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  *
  * @example const element = new TypescriptExtractor().extractProps("string.ts", sourceText);
  *
- * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor
+ * @see https://shelving.cc/extract/TypescriptExtractor
  */
 export class TypescriptExtractor extends FileExtractor {
 	/**
@@ -44,7 +44,7 @@ export class TypescriptExtractor extends FileExtractor {
 	 *
 	 * @example const props = new TypescriptExtractor().extractProps("string.ts", sourceText);
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/TypescriptExtractor/extractProps
+	 * @see https://shelving.cc/extract/extractProps
 	 */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);

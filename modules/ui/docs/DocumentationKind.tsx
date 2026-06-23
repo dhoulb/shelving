@@ -5,7 +5,7 @@ import type { ColorVariant } from "../style/Color.js";
 /**
  * Props for `DocumentationKind` — a `TagProps` plus the documented symbol's `kind`.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKindProps
+ * @see https://shelving.cc/ui/DocumentationKindProps
  */
 export interface DocumentationKindProps extends TagProps {
 	/** The documentation kind (e.g. `"component"`, `"function"`, `"class"`, `"interface"`, `"type"`, `"constant"`, `"method"`, `"static method"`, `"property"`, `"static property"`). */
@@ -38,7 +38,7 @@ const KIND_COLOR: { readonly [K in string]?: ColorVariant } = {
  * @param kind The documented symbol's kind (e.g. `"function"`, `"class"`, `"method"`).
  * @returns The matching `ColorVariant`, or `undefined` when the kind is unrecognised.
  * @example getDocumentationKindColor("class") // "pink"
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/getDocumentationKindColor
+ * @see https://shelving.cc/ui/getDocumentationKindColor
  */
 export function getDocumentationKindColor(kind: string): ColorVariant | undefined {
 	return KIND_COLOR[kind];
@@ -51,7 +51,7 @@ export function getDocumentationKindColor(kind: string): ColorVariant | undefine
  * @returns A `<Tag>` showing the kind, tinted by its colour.
  * @kind component
  * @example <DocumentationKind kind="function" />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationKind/DocumentationKind
+ * @see https://shelving.cc/ui/DocumentationKind
  */
 export function DocumentationKind({ kind = "unknown", ...props }: DocumentationKindProps): ReactElement {
 	return (

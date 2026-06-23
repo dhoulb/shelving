@@ -8,7 +8,7 @@ const STRONG_CLASS = getModuleClass(STRONG_CSS, "strong");
 /**
  * Props for `Strong` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Strong/StrongProps
+ * @see https://shelving.cc/ui/StrongProps
  */
 export interface StrongProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface StrongProps extends OptionalChildProps {}
  * @kind component
  * @returns Rendered `<strong>` element.
  * @example <Strong>Warning</Strong>
- * @see https://dhoulb.github.io/shelving/ui/inline/Strong/Strong
+ * @see https://shelving.cc/ui/Strong
  */
 export function Strong({ children }: StrongProps): ReactElement {
 	return <strong className={STRONG_CLASS}>{children}</strong>;

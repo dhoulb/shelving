@@ -8,7 +8,7 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
  *
  * - The length and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchemaOptions
+ * @see https://shelving.cc/schema/SlugSchemaOptions
  */
 export interface SlugSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
@@ -36,7 +36,7 @@ export interface SlugSchemaOptions extends SchemaOptions {
  * @example
  * 	const schema = new SlugSchema({});
  * 	schema.validate("This is a Slug!") // "this-is-a-slug"
- * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchema
+ * @see https://shelving.cc/schema/SlugSchema
  */
 export class SlugSchema extends StringSchema {
 	/**
@@ -57,7 +57,7 @@ export class SlugSchema extends StringSchema {
 	 * @param str The raw string to sanitize.
 	 * @returns The sanitized slug, or an empty string when nothing usable remains.
 	 * @example schema.sanitize("This is a Slug!") // "this-is-a-slug"
-	 * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SlugSchema/sanitize
+	 * @see https://shelving.cc/schema/SlugSchema/sanitize
 	 */
 	override sanitize(str: string): string {
 		return getSlug(str) || "";
@@ -68,7 +68,7 @@ export class SlugSchema extends StringSchema {
  * Sugar instance of `SlugSchema` for a valid slug. Equivalent to `new SlugSchema({})`.
  *
  * @example SLUG.validate("This is a Slug!") // "this-is-a-slug"
- * @see https://dhoulb.github.io/shelving/schema/SlugSchema/SLUG
+ * @see https://shelving.cc/schema/SLUG
  */
 export const SLUG = new SlugSchema({});
 
@@ -76,6 +76,6 @@ export const SLUG = new SlugSchema({});
  * Sugar instance allowing a `SLUG` or `null`. Equivalent to `NULLABLE(SLUG)`.
  *
  * @example NULLABLE_SLUG.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/SlugSchema/NULLABLE_SLUG
+ * @see https://shelving.cc/schema/NULLABLE_SLUG
  */
 export const NULLABLE_SLUG = NULLABLE(SLUG);

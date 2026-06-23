@@ -6,7 +6,7 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 /**
  * Options for `EntitySchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchemaOptions
+ * @see https://shelving.cc/schema/EntitySchemaOptions
  */
 export interface EntitySchemaOptions<T extends string> extends StringSchemaOptions {
 	/** Restrict the allowed entity types; any other type is rejected. */
@@ -23,7 +23,7 @@ export interface EntitySchemaOptions<T extends string> extends StringSchemaOptio
  *  const schema = new EntitySchema({ types: ["challenge"] });
  *  schema.validate("challenge:a1b2c3"); // "challenge:a1b2c3"
  *
- * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchema
+ * @see https://shelving.cc/schema/EntitySchema
  */
 export class EntitySchema<T extends string> extends StringSchema {
 	readonly types: ImmutableArray<T> | undefined;
@@ -43,7 +43,7 @@ export class EntitySchema<T extends string> extends StringSchema {
 	 * @returns The valid `Entity` string.
 	 * @throws `string` `"Must be entity"` if the value lacks a type and ID, or `"Invalid entity type"` if its type is not in the allowed `types`. Also throws any `string` from the underlying `StringSchema`.
 	 * @example schema.validate("challenge:a1b2c3") // "challenge:a1b2c3"
-	 * @see https://dhoulb.github.io/shelving/schema/EntitySchema/EntitySchema/validate
+	 * @see https://shelving.cc/schema/EntitySchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): Entity<T> {
 		const entity = super.validate(unsafeValue);
@@ -58,7 +58,7 @@ export class EntitySchema<T extends string> extends StringSchema {
  * Sugar instance of `EntitySchema` for an entity string, e.g. `challenge:a1b2c3`. Equivalent to `new EntitySchema({})`.
  *
  * @example ENTITY.validate("challenge:a1b2c3") // "challenge:a1b2c3"
- * @see https://dhoulb.github.io/shelving/schema/EntitySchema/ENTITY
+ * @see https://shelving.cc/schema/ENTITY
  */
 export const ENTITY = new EntitySchema({});
 
@@ -66,6 +66,6 @@ export const ENTITY = new EntitySchema({});
  * Sugar instance allowing an `ENTITY` or `null`. Equivalent to `NULLABLE(ENTITY)`.
  *
  * @example NULLABLE_ENTITY.validate("") // null
- * @see https://dhoulb.github.io/shelving/schema/EntitySchema/NULLABLE_ENTITY
+ * @see https://shelving.cc/schema/NULLABLE_ENTITY
  */
 export const NULLABLE_ENTITY = NULLABLE(ENTITY);

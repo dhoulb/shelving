@@ -20,7 +20,7 @@ const STATUS_ICONS: {
 /**
  * Props for `<StatusIcon>` — the `status` to represent and optional icon `size`.
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/StatusIcon/StatusIconProps
+ * @see https://shelving.cc/ui/StatusIconProps
  */
 export interface IconProps extends ColorVariants, StatusVariants {
 	/**
@@ -41,7 +41,7 @@ export interface IconProps extends ColorVariants, StatusVariants {
  *
  * @kind component
  * @example <StatusIcon status="error" size="large" />
- * @see https://dhoulb.github.io/shelving/ui/misc/StatusIcon/StatusIcon
+ * @see https://shelving.cc/ui/StatusIcon
  */
 export function Icon(props: IconProps): ReactElement {
 	const { status = "info", icon: Element = STATUS_ICONS[status] ?? InformationCircleIcon } = props;

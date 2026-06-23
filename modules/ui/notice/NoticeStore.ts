@@ -21,7 +21,7 @@ type NoticeData<S extends string> = {
  * - Adds itself to its parent `NoticesStore` on construction and removes itself on `close()` or disposal.
  *
  * @example const notice = notices.show("Saved", "success"); notice.close();
- * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore
+ * @see https://shelving.cc/ui/NoticeStore
  */
 export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	private _notices: NoticesStore<S>;
@@ -48,7 +48,7 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	 * @param children The new notice content.
 	 * @param status The new status (defaults to the current status).
 	 * @example notice.show("Updating…", "loading");
-	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore/show
+	 * @see https://shelving.cc/ui/NoticeStore/show
 	 */
 	show(children?: ReactNode | undefined, status: S | undefined = this.value.status): void {
 		this.value = { children, status };
@@ -58,7 +58,7 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 	 * Close this notice permanently, removing it from its parent `NoticesStore`.
 	 *
 	 * @example notice.close();
-	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticeStore/NoticeStore/close
+	 * @see https://shelving.cc/ui/NoticeStore/close
 	 */
 	close() {
 		this._notices.delete(this);

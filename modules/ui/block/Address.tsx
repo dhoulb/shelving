@@ -15,14 +15,14 @@ const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
 /**
  * Props for `Address` — colour, space, and typography variants plus required children.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Address/AddressProps
+ * @see https://shelving.cc/ui/AddressProps
  */
 export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
 
 /**
  * Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddressProps
+ * @see https://shelving.cc/ui/PhysicalAddressProps
  */
 export interface PhysicalAddressProps {
 	name?: Nullish<string>;
@@ -32,7 +32,7 @@ export interface PhysicalAddressProps {
 /**
  * Props for `EmailAddress` — an optional name and a nullable email string.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Address/EmailAddressProps
+ * @see https://shelving.cc/ui/EmailAddressProps
  */
 export interface EmailAddressProps {
 	name?: Nullish<string>;
@@ -43,7 +43,7 @@ export interface EmailAddressProps {
  * Show any kind of contact data, rendered as an `<address>`.
  *
  * @example <Address><Strong>Acme</Strong>{"\n"}1 Example St</Address>
- * @see https://dhoulb.github.io/shelving/ui/block/Address/Address
+ * @see https://shelving.cc/ui/Address
  */
 export function Address({ children, ...props }: AddressProps) {
 	return (
@@ -66,7 +66,7 @@ export function Address({ children, ...props }: AddressProps) {
  *
  * @kind component
  * @example <PhysicalAddress name="Acme" address={addressData} />
- * @see https://dhoulb.github.io/shelving/ui/block/Address/PhysicalAddress
+ * @see https://shelving.cc/ui/PhysicalAddress
  */
 export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactElement {
 	return (
@@ -84,7 +84,7 @@ export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactE
  *
  * @kind component
  * @example <EmailAddress name="Acme" email="hi@example.com" />
- * @see https://dhoulb.github.io/shelving/ui/block/Address/EmailAddress
+ * @see https://shelving.cc/ui/EmailAddress
  */
 export function EmailAddress({ name, email }: EmailAddressProps): ReactElement {
 	return (

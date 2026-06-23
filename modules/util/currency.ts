@@ -5,14 +5,14 @@ import type { AnyCaller } from "./function.js";
 /**
  * ISO 4217 currency code, e.g. `GBP` or `USD`.
  *
- * @see https://dhoulb.github.io/shelving/util/currency/CurrencyCode
+ * @see https://shelving.cc/util/currency/CurrencyCode
  */
 export type CurrencyCode = string;
 
 /**
  * Array of all ISO 4217 currency codes supported by the current runtime's `Intl` implementation.
  *
- * @see https://dhoulb.github.io/shelving/util/currency/CURRENCY_CODES
+ * @see https://shelving.cc/util/currency/CURRENCY_CODES
  */
 export const CURRENCY_CODES: ImmutableArray<CurrencyCode> = Intl.supportedValuesOf("currency");
 
@@ -24,7 +24,7 @@ export const CURRENCY_CODES: ImmutableArray<CurrencyCode> = Intl.supportedValues
  * @returns The normalised `CurrencyCode`, or `undefined` if the value isn't a supported currency.
  * @example getCurrencyCode("gbp") // "GBP"
  * @example getCurrencyCode("nope") // undefined
- * @see https://dhoulb.github.io/shelving/util/currency/getCurrencyCode
+ * @see https://shelving.cc/util/currency/getCurrencyCode
  */
 export function getCurrencyCode(value: string): CurrencyCode | undefined {
 	const currency = value.toUpperCase().trim();
@@ -39,7 +39,7 @@ export function getCurrencyCode(value: string): CurrencyCode | undefined {
  * @returns The normalised `CurrencyCode`.
  * @throws {RequiredError} If the value isn't a supported ISO 4217 currency code.
  * @example requireCurrencyCode("gbp") // "GBP"
- * @see https://dhoulb.github.io/shelving/util/currency/requireCurrencyCode
+ * @see https://shelving.cc/util/currency/requireCurrencyCode
  */
 export function requireCurrencyCode(value: string, caller: AnyCaller = requireCurrencyCode): CurrencyCode {
 	const currency = getCurrencyCode(value);
@@ -66,7 +66,7 @@ const _isCurrencyNumberPart = ({ type }: Intl.NumberFormatPart) => type === "cur
  * @throws {RequiredError} If the currency code is malformed or unsupported.
  *
  * @example getCurrencySymbol("GBP"); // "£"
- * @see https://dhoulb.github.io/shelving/util/currency/getCurrencySymbol
+ * @see https://shelving.cc/util/currency/getCurrencySymbol
  */
 export function getCurrencySymbol(currency: CurrencyCode, caller: AnyCaller = getCurrencySymbol): string {
 	return _formatter(currency, caller).formatToParts(0).find(_isCurrencyNumberPart)?.value as string;
@@ -83,7 +83,7 @@ export function getCurrencySymbol(currency: CurrencyCode, caller: AnyCaller = ge
  *
  * @example getCurrencyStep("USD") // 0.01
  * @example getCurrencyStep("JPY") // 1
- * @see https://dhoulb.github.io/shelving/util/currency/getCurrencyStep
+ * @see https://shelving.cc/util/currency/getCurrencyStep
  */
 export function getCurrencyStep(currency: CurrencyCode, caller: AnyCaller = getCurrencyStep): number {
 	const { minimumFractionDigits = 0 } = _formatter(currency, caller).resolvedOptions();

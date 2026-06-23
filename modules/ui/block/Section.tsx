@@ -13,7 +13,7 @@ const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
 /**
  * Props for `Section` and its semantic siblings — colour, space, typography, and width variants plus an optional `as` element override.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Section/SectionProps
+ * @see https://shelving.cc/ui/SectionProps
  */
 export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	/**
@@ -31,7 +31,7 @@ export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVa
  * @param variants Colour, space, typography, and width variants.
  * @returns A space-separated `className` string combining the section class and resolved variant classes.
  * @example getSectionClass({ space: "large" }) // "section …"
- * @see https://dhoulb.github.io/shelving/ui/block/Section/getSectionClass
+ * @see https://shelving.cc/ui/getSectionClass
  */
 export function getSectionClass(variants: SectionProps): string {
 	return getClass(
@@ -50,7 +50,7 @@ export function getSectionClass(variants: SectionProps): string {
  * @kind component
  * @returns Rendered `<section>` element.
  * @example <Section><Heading>About</Heading></Section>
- * @see https://dhoulb.github.io/shelving/ui/block/Section/Section
+ * @see https://shelving.cc/ui/Section
  */
 export function Section({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
 	return <Element className={getSectionClass(variants)}>{children}</Element>;
@@ -62,7 +62,7 @@ export function Section({ as: Element = "section", children, ...variants }: Sect
  * @kind component
  * @returns Rendered `<header>` element.
  * @example <Header><Title>Welcome</Title></Header>
- * @see https://dhoulb.github.io/shelving/ui/block/Section/Header
+ * @see https://shelving.cc/ui/Header
  */
 export function Header({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
 	return <Element className={getSectionClass(variants)}>{children}</Element>;
@@ -74,7 +74,7 @@ export function Header({ as: Element = "section", children, ...variants }: Secti
  * @kind component
  * @returns Rendered `<footer>` element.
  * @example <Footer><Small>© 2026</Small></Footer>
- * @see https://dhoulb.github.io/shelving/ui/block/Section/Footer
+ * @see https://shelving.cc/ui/Footer
  */
 export function Footer({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
 	return <Element className={getSectionClass(variants)}>{children}</Element>;
@@ -86,7 +86,7 @@ export function Footer({ as: Element = "section", children, ...variants }: Secti
  *
  * @kind component
  * @returns Rendered `<article>` element.
- * @see https://dhoulb.github.io/shelving/ui/block/Section/Article
+ * @see https://shelving.cc/ui/Article
  */
 export function Article({ as: Element = "article", children, ...variants }: SectionProps): ReactElement {
 	return <Element className={getSectionClass(variants)}>{children}</Element>;
@@ -99,7 +99,7 @@ export function Article({ as: Element = "article", children, ...variants }: Sect
  * @kind component
  * @returns Rendered `<figure>` element.
  * @example <Figure><Image src="/cat.jpg" /><Caption>A cat</Caption></Figure>
- * @see https://dhoulb.github.io/shelving/ui/block/Section/Figure
+ * @see https://shelving.cc/ui/Figure
  */
 export function Figure({ as: Element = "figure", children, ...variants }: SectionProps): ReactElement {
 	return <Element className={getSectionClass(variants)}>{children}</Element>;

@@ -6,7 +6,7 @@ TypeScript data toolkit — schema validation, database and API providers, obser
 
 ## Documentation
 
-Full documentation is published at **<https://dhoulb.github.io/shelving/>**.
+Full documentation is published at **<https://shelving.cc/>**.
 
 ```sh
 npm install shelving

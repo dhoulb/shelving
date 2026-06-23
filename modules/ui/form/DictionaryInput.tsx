@@ -16,7 +16,7 @@ import { TextInput } from "./TextInput.js";
 /**
  * Props for `DictionaryInput`, a repeating input that edits a dictionary of schema-validated items.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/DictionaryInput/DictionaryInputProps
+ * @see https://shelving.cc/ui/DictionaryInputProps
  */
 export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictionary<T>> {
 	one?: string;
@@ -35,7 +35,7 @@ export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictio
  * @returns Element rendering one key/value row per entry plus add/clear controls.
  * @kind component
  * @example <DictionaryInput name="meta" items={STRING} value={meta} onValue={setMeta} />
- * @see https://dhoulb.github.io/shelving/ui/form/DictionaryInput/DictionaryInput
+ * @see https://shelving.cc/ui/DictionaryInput
  */
 export function DictionaryInput<T>(props: DictionaryInputProps<T>): ReactElement;
 export function DictionaryInput({

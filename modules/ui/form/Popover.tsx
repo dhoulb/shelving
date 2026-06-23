@@ -13,7 +13,7 @@ import styles from "./Popover.module.css";
 /**
  * Children tuple for `Popover`: a leading trigger node followed by the popover's contents.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Popover/PopoverChildren
+ * @see https://shelving.cc/ui/PopoverChildren
  */
 export type PopoverChildren = [
 	/**
@@ -30,7 +30,7 @@ export type PopoverChildren = [
 /**
  * Props for `Popover`, a trigger element that reveals floating content.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Popover/PopoverProps
+ * @see https://shelving.cc/ui/PopoverProps
  */
 export interface PopoverProps {
 	/** Children for the popover. */
@@ -48,7 +48,7 @@ export interface PopoverProps {
  *
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
  * @example <Popover>{trigger}{panelContent}</Popover>
- * @see https://dhoulb.github.io/shelving/ui/form/Popover/Popover
+ * @see https://shelving.cc/ui/Popover
  *
  * @todo DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  */

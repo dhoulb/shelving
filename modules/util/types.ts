@@ -3,7 +3,7 @@
  *
  * - i.e. `A | B` becomes `A & B`
  *
- * @see https://dhoulb.github.io/shelving/util/types/UnionToIntersection
+ * @see https://shelving.cc/util/types/UnionToIntersection
  */
 export type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
@@ -12,6 +12,6 @@ export type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never
  *
  * - i.e. `{ a: string } & { b: number }` becomes `{ a: string, b: number }`
  *
- * @see https://dhoulb.github.io/shelving/util/types/Resolve
+ * @see https://shelving.cc/util/types/Resolve
  */
 export type Resolve<T> = { [K in keyof T]: T[K] };

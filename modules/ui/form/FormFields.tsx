@@ -11,7 +11,7 @@ import { SchemaInput } from "./SchemaInput.js";
  * @returns A `<Field>` wrapping a `SchemaInput` bound to the named field.
  * @kind component
  * @example <FormField name="email" />
- * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormField
+ * @see https://shelving.cc/ui/FormField
  */
 export function FormField({ name, ...props }: InputProps): ReactElement {
 	const field = useField(name);
@@ -30,7 +30,7 @@ export function FormField({ name, ...props }: InputProps): ReactElement {
  * @returns A fragment of `FormField` elements, one per schema property.
  * @kind component
  * @example <FormFields />
- * @see https://dhoulb.github.io/shelving/ui/form/FormFields/FormFields
+ * @see https://shelving.cc/ui/FormFields
  */
 export function FormFields(): ReactElement {
 	const form = useStore(requireForm());

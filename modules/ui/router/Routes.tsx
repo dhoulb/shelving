@@ -8,14 +8,14 @@ import type { URIParams } from "../../util/uri.js";
  * - Combines `?query` params from the URL and `{placeholder}` matches from the route template into one flat string dictionary.
  * - Template placeholder values take precedence over query params with the same name.
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Routes/RouteProps
+ * @see https://shelving.cc/ui/RouteProps
  */
 export type RouteProps = URIParams;
 
 /**
  * React component usable as a route value — a function or class component accepting `RouteProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Routes/RouteComponent
+ * @see https://shelving.cc/ui/RouteComponent
  */
 export type RouteComponent = FunctionComponent<RouteProps> | ComponentClass<RouteProps>;
 
@@ -25,7 +25,7 @@ export type RouteComponent = FunctionComponent<RouteProps> | ComponentClass<Rout
  * - `AbsolutePath` string — triggers a redirect to that path.
  * - `ReactElement` — rendered as-is (use for layout-wrapping a nested `<Router>` inside).
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Routes/Route
+ * @see https://shelving.cc/ui/Route
  */
 export type Route = RouteComponent | AbsolutePath | ReactElement;
 
@@ -35,7 +35,7 @@ export type Route = RouteComponent | AbsolutePath | ReactElement;
  * - Each key is a path starting with `/`, optionally containing `{named}` placeholders passed into the component.
  * - Each value is a `Route` (or a nullish/`false` value to disable that route).
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Routes/Routes
+ * @see https://shelving.cc/ui/Routes
  */
 export type Routes = {
 	[key: AbsolutePath]: Nullish<Route | false>;

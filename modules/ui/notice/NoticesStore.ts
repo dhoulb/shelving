@@ -10,7 +10,7 @@ import { NoticeStore } from "./NoticeStore.js";
  * - Disposing the store disposes (and closes) every notice it contains.
  *
  * @example const notices = new NoticesStore(); notices.show("Hello");
- * @see https://dhoulb.github.io/shelving/ui/notice/NoticesStore/NoticesStore
+ * @see https://shelving.cc/ui/NoticesStore
  */
 export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {
 	/**
@@ -20,7 +20,7 @@ export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {
 	 * @param status The notice status (optional).
 	 * @returns The newly created `NoticeStore`.
 	 * @example notices.show("Saved your changes", "success");
-	 * @see https://dhoulb.github.io/shelving/ui/notice/NoticesStore/NoticesStore/show
+	 * @see https://shelving.cc/ui/NoticesStore/show
 	 */
 	show(children?: ReactNode | undefined, status?: S | undefined): NoticeStore<S> {
 		return new NoticeStore(this, children, status);
@@ -38,6 +38,6 @@ export class NoticesStore<S extends string> extends ArrayStore<NoticeStore<S>> {
  * Global `NoticesStore` shown by `<Notices>`, accepting any of the default statuses.
  *
  * @example NOTICES.show("Saved your changes", "success");
- * @see https://dhoulb.github.io/shelving/ui/notice/NoticesStore/NOTICES
+ * @see https://shelving.cc/ui/NOTICES
  */
 export const NOTICES = new NoticesStore<Status>();

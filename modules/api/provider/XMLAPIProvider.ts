@@ -14,7 +14,7 @@ import { ClientAPIProvider } from "./ClientAPIProvider.js";
  * const provider = new XMLAPIProvider({ url: "https://api.example.com" });
  * const xml = await provider.call(getFeed, { id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/provider/XMLAPIProvider/XMLAPIProvider
+ * @see https://shelving.cc/api/XMLAPIProvider
  */
 export class XMLAPIProvider<P extends Data = Data, R extends string = string> extends ClientAPIProvider<P, R> {
 	protected override _createBodyRequest(
@@ -38,7 +38,7 @@ export class XMLAPIProvider<P extends Data = Data, R extends string = string> ex
 	 * @returns A promise resolving to the raw text result.
 	 * @throws {ResponseError} if the response status is non-2xx.
 	 * @example await provider.parseResponse(getFeed, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/XMLAPIProvider/XMLAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/XMLAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,

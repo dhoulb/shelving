@@ -16,7 +16,7 @@ import { SchemaInput } from "./SchemaInput.js";
 /**
  * Props for `QueryInput`, a combo box that queries items of type `O` from an input of type `I`.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/QueryInput/QueryInputProps
+ * @see https://shelving.cc/ui/QueryInputProps
  */
 export interface QueryInputProps<I, O> extends ValueInputProps<O> {
 	/** Schema input */
@@ -49,7 +49,7 @@ export interface QueryInputProps<I, O> extends ValueInputProps<O> {
  *
  * @returns A combo box element wrapping the input and results popover.
  * @example <QueryInput schema={SEARCH} onQuery={search} value={user} onValue={setUser} />
- * @see https://dhoulb.github.io/shelving/ui/form/QueryInput/QueryInput
+ * @see https://shelving.cc/ui/QueryInput
  */
 export function QueryInput<I, O>({
 	empty = "No results",

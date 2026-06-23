@@ -11,7 +11,7 @@ const R_MATCH =
  *
  * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EmailSchemaOptions
+ * @see https://shelving.cc/schema/EmailSchemaOptions
  */
 export interface EmailSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
@@ -48,7 +48,7 @@ export interface EmailSchemaOptions extends SchemaOptions {
  *     - TLD is a segment of 2-63 characters, possibly in `xn--` international format.
  *
  * @example EMAIL.validate("Test@Test.com"); // Returns "test@test.com"
- * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EmailSchema
+ * @see https://shelving.cc/schema/EmailSchema
  */
 export class EmailSchema extends StringSchema {
 	/**
@@ -75,7 +75,7 @@ export class EmailSchema extends StringSchema {
 	 * @param str String to sanitize.
 	 * @returns The sanitized, lowercased email address.
 	 * @example EMAIL.sanitize(" Test@Test.com "); // Returns "test@test.com"
-	 * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EmailSchema/sanitize
+	 * @see https://shelving.cc/schema/EmailSchema/sanitize
 	 */
 	override sanitize(str: string): string {
 		// Email addresses never contain whitespace, so strip it entirely, then lowercase (RFC says addresses should be case-insensitive).
@@ -87,7 +87,7 @@ export class EmailSchema extends StringSchema {
  * Sugar instance of `EmailSchema` for a valid email address. Equivalent to `new EmailSchema({})`.
  *
  * @example EMAIL.validate("test@test.com"); // Returns "test@test.com"
- * @see https://dhoulb.github.io/shelving/schema/EmailSchema/EMAIL
+ * @see https://shelving.cc/schema/EMAIL
  */
 export const EMAIL = new EmailSchema({});
 
@@ -95,6 +95,6 @@ export const EMAIL = new EmailSchema({});
  * Sugar instance allowing an `EMAIL` or `null`. Equivalent to `NULLABLE(EMAIL)`.
  *
  * @example NULLABLE_EMAIL.validate(null); // Returns null
- * @see https://dhoulb.github.io/shelving/schema/EmailSchema/NULLABLE_EMAIL
+ * @see https://shelving.cc/schema/NULLABLE_EMAIL
  */
 export const NULLABLE_EMAIL = NULLABLE(EMAIL);

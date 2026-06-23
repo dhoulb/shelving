@@ -7,7 +7,7 @@ import { NumberSchema, type NumberSchemaOptions } from "./NumberSchema.js";
 /**
  * Options for `CurrencyAmountSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchemaOptions
+ * @see https://shelving.cc/schema/CurrencyAmountSchemaOptions
  */
 export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
 	/** Override the currency symbol used when formatting. */
@@ -26,25 +26,25 @@ export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
  * const PRICE = new CurrencyAmountSchema({ currency: "GBP", min: 0 });
  * PRICE.validate("12.345"); // 12.35
  * PRICE.format(12.3); // "£12.30"
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchema
+ * @see https://shelving.cc/schema/CurrencyAmountSchema
  */
 export class CurrencyAmountSchema extends NumberSchema {
 	/**
 	 * Rounding step, always defined and inferred from the currency's minor units.
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchema/step
+	 * @see https://shelving.cc/schema/CurrencyAmountSchema/step
 	 */
 	declare readonly step: number; // Step is always defined for `CurrencyAmountSchema`, as it's inferred from the currency.
 	/**
 	 * ISO 4217 currency code this schema validates amounts for.
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchema/currency
+	 * @see https://shelving.cc/schema/CurrencyAmountSchema/currency
 	 */
 	readonly currency: CurrencyCode;
 	/**
 	 * Currency symbol used when formatting amounts.
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchema/symbol
+	 * @see https://shelving.cc/schema/CurrencyAmountSchema/symbol
 	 */
 	readonly symbol: string;
 
@@ -73,7 +73,7 @@ export class CurrencyAmountSchema extends NumberSchema {
 	 * @param value The validated amount to format.
 	 * @returns The amount formatted using the schema's currency and symbol.
 	 * @example schema.format(12.3) // "£12.30"
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CurrencyAmountSchema/format
+	 * @see https://shelving.cc/schema/CurrencyAmountSchema/format
 	 */
 	override format(value: number): string {
 		const options = this.step >= 1 ? { maximumFractionDigits: 0 } : {}; // Skip showing decimal places if step is 1 or more.
@@ -89,7 +89,7 @@ export class CurrencyAmountSchema extends NumberSchema {
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @throws `string` if `currency` is not a valid ISO 4217 currency code.
  * @example CURRENCY_AMOUNT("GBP").validate("12.345") // 12.35
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/CURRENCY_AMOUNT
+ * @see https://shelving.cc/schema/CURRENCY_AMOUNT
  */
 export function CURRENCY_AMOUNT(currency: CurrencyCode): CurrencyAmountSchema {
 	return new CurrencyAmountSchema({ currency });
@@ -99,7 +99,7 @@ export function CURRENCY_AMOUNT(currency: CurrencyCode): CurrencyAmountSchema {
  * Sugar instance of `CurrencyAmountSchema` for a US dollar amount. Equivalent to `new CurrencyAmountSchema({ currency: "USD" })`.
  *
  * @example USD_AMOUNT.validate("12.345") // 12.35
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/USD_AMOUNT
+ * @see https://shelving.cc/schema/USD_AMOUNT
  */
 export const USD_AMOUNT = new CurrencyAmountSchema({ currency: "USD" });
 
@@ -107,7 +107,7 @@ export const USD_AMOUNT = new CurrencyAmountSchema({ currency: "USD" });
  * Sugar instance of `CurrencyAmountSchema` for a pound sterling amount. Equivalent to `new CurrencyAmountSchema({ currency: "GBP" })`.
  *
  * @example GBP_AMOUNT.validate("12.345") // 12.35
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/GBP_AMOUNT
+ * @see https://shelving.cc/schema/GBP_AMOUNT
  */
 export const GBP_AMOUNT = new CurrencyAmountSchema({ currency: "GBP" });
 
@@ -115,7 +115,7 @@ export const GBP_AMOUNT = new CurrencyAmountSchema({ currency: "GBP" });
  * Sugar instance of `CurrencyAmountSchema` for a euro amount. Equivalent to `new CurrencyAmountSchema({ currency: "EUR" })`.
  *
  * @example EUR_AMOUNT.validate("12.345") // 12.35
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/EUR_AMOUNT
+ * @see https://shelving.cc/schema/EUR_AMOUNT
  */
 export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
 
@@ -127,7 +127,7 @@ export const EUR_AMOUNT = new CurrencyAmountSchema({ currency: "EUR" });
  * @param currency ISO 4217 currency code that determines the step and symbol.
  * @throws `string` if `currency` is not a valid ISO 4217 currency code.
  * @example NULLABLE_CURRENCY_AMOUNT("GBP").validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_CURRENCY_AMOUNT
+ * @see https://shelving.cc/schema/NULLABLE_CURRENCY_AMOUNT
  */
 export function NULLABLE_CURRENCY_AMOUNT(currency: CurrencyCode): NullableSchema<number> {
 	return NULLABLE(CURRENCY_AMOUNT(currency));
@@ -137,7 +137,7 @@ export function NULLABLE_CURRENCY_AMOUNT(currency: CurrencyCode): NullableSchema
  * Sugar instance allowing a `USD_AMOUNT` or `null`. Equivalent to `NULLABLE(USD_AMOUNT)`.
  *
  * @example NULLABLE_USD_AMOUNT.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_USD_AMOUNT
+ * @see https://shelving.cc/schema/NULLABLE_USD_AMOUNT
  */
 export const NULLABLE_USD_AMOUNT = NULLABLE(USD_AMOUNT);
 
@@ -145,7 +145,7 @@ export const NULLABLE_USD_AMOUNT = NULLABLE(USD_AMOUNT);
  * Sugar instance allowing a `GBP_AMOUNT` or `null`. Equivalent to `NULLABLE(GBP_AMOUNT)`.
  *
  * @example NULLABLE_GBP_AMOUNT.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_GBP_AMOUNT
+ * @see https://shelving.cc/schema/NULLABLE_GBP_AMOUNT
  */
 export const NULLABLE_GBP_AMOUNT = NULLABLE(GBP_AMOUNT);
 
@@ -153,6 +153,6 @@ export const NULLABLE_GBP_AMOUNT = NULLABLE(GBP_AMOUNT);
  * Sugar instance allowing an `EUR_AMOUNT` or `null`. Equivalent to `NULLABLE(EUR_AMOUNT)`.
  *
  * @example NULLABLE_EUR_AMOUNT.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CurrencyAmountSchema/NULLABLE_EUR_AMOUNT
+ * @see https://shelving.cc/schema/NULLABLE_EUR_AMOUNT
  */
 export const NULLABLE_EUR_AMOUNT = NULLABLE(EUR_AMOUNT);

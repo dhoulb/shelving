@@ -10,7 +10,7 @@ import { requireDefined } from "./undefined.js";
  *
  * @example const dice = getRandom(1, 6); // e.g. `4`
  *
- * @see https://dhoulb.github.io/shelving/util/random/getRandom
+ * @see https://shelving.cc/util/random/getRandom
  */
 export function getRandom(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER): number {
 	return Math.round(Math.random() * (max - min) + min);
@@ -27,7 +27,7 @@ export function getRandom(min: number = Number.MIN_SAFE_INTEGER, max: number = N
  *
  * @example const next = getRandomExcept(current, 1, 6); // any of `1`–`6` except `current`
  *
- * @see https://dhoulb.github.io/shelving/util/random/getRandomExcept
+ * @see https://shelving.cc/util/random/getRandomExcept
  */
 export function getRandomExcept(existing: number, min?: number, max?: number) {
 	let num: number;
@@ -47,7 +47,7 @@ export function getRandomExcept(existing: number, min?: number, max?: number) {
  *
  * @example const id = getRandomKey(); // e.g. `xs23r34hhsdx`
  *
- * @see https://dhoulb.github.io/shelving/util/random/getRandomKey
+ * @see https://shelving.cc/util/random/getRandomKey
  */
 export function getRandomKey(length = 12): string {
 	return Array.from({ length }, getRandomKeyCharacter).join("");
@@ -65,7 +65,7 @@ function getRandomKeyCharacter() {
  *
  * @example const letter = getRandomCharacter("abcde"); // e.g. `"c"`
  *
- * @see https://dhoulb.github.io/shelving/util/random/getRandomCharacter
+ * @see https://shelving.cc/util/random/getRandomCharacter
  */
 export function getRandomCharacter(str: string): string {
 	return str[getRandom(0, str.length - 1)] as string;
@@ -80,7 +80,7 @@ export function getRandomCharacter(str: string): string {
  *
  * @example const item = getRandomItem(["a", "b", "c"]); // e.g. `"b"`
  *
- * @see https://dhoulb.github.io/shelving/util/random/getRandomItem
+ * @see https://shelving.cc/util/random/getRandomItem
  */
 export function getRandomItem<T>(arr: ImmutableArray<T>): T {
 	return requireDefined<T>(arr[getRandom(0, arr.length - 1)]);

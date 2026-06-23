@@ -8,7 +8,7 @@ import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
 /**
  * Anything that can be turned into an `<a href>`.
  *
- * @see https://dhoulb.github.io/shelving/util/link/PossibleLink
+ * @see https://shelving.cc/util/link/PossibleLink
  */
 export type PossibleLink = PossibleURI;
 
@@ -34,7 +34,7 @@ export type PossibleLink = PossibleURI;
  * @example getLink("/schema", pageURL, siteRoot) // → "https://x.com/app/schema" when siteRoot is "https://x.com/app/"
  * @example getLink("./db", new URL("https://x.com/app/schema/")) // → "https://x.com/app/schema/db"
  * @example getLink("mailto:a@b") // → "mailto:a@b"
- * @see https://dhoulb.github.io/shelving/util/link/getLink
+ * @see https://shelving.cc/util/link/getLink
  */
 export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
 	if (!href) return;
@@ -57,7 +57,7 @@ export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: I
  * @returns An absolute URI string.
  * @throws {RequiredError} If `href` cannot be resolved.
  * @example requireLink("mailto:a@b") // → "mailto:a@b"
- * @see https://dhoulb.github.io/shelving/util/link/requireLink
+ * @see https://shelving.cc/util/link/requireLink
  */
 export function requireLink(href: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): ImmutableURI {
 	const uri = getLink(href, url, root);

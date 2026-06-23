@@ -7,7 +7,7 @@ declare const _componentProps: unique symbol;
 /**
  * Props for `<Loading>` — takes no props (branded empty interface).
  *
- * @see https://dhoulb.github.io/shelving/ui/misc/Loading/LoadingProps
+ * @see https://shelving.cc/ui/LoadingProps
  */
 export interface LoadingProps {
 	readonly [_componentProps]?: never;
@@ -21,7 +21,7 @@ export interface LoadingProps {
  * @returns The spinner element.
  * @kind component
  * @example <Loading />
- * @see https://dhoulb.github.io/shelving/ui/misc/Loading/Loading
+ * @see https://shelving.cc/ui/Loading
  */
 export function Loading(): ReactElement {
 	return (
@@ -54,6 +54,6 @@ export function Loading(): ReactElement {
  * Shared `<Loading>` element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
  *
  * @example <Suspense fallback={LOADING}>…</Suspense>
- * @see https://dhoulb.github.io/shelving/ui/misc/Loading/LOADING
+ * @see https://shelving.cc/ui/LOADING
  */
 export const LOADING = <Loading key="loading" />;

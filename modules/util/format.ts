@@ -10,13 +10,13 @@ import { type PossibleURL, requireURL } from "./url.js";
 /**
  * Options that are shared across all formatters.
  *
- * @see https://dhoulb.github.io/shelving/util/format/FormatOptions
+ * @see https://shelving.cc/util/format/FormatOptions
  */
 export interface FormatOptions {
 	/**
 	 * Override the locale for formatting (defaults to detected locale).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/format/FormatOptions/locale
+	 * @see https://shelving.cc/util/format/FormatOptions/locale
 	 */
 	readonly locale?: Intl.Locale | undefined;
 }
@@ -27,7 +27,7 @@ export interface FormatOptions {
  * @param value Boolean value to format.
  * @returns `"Yes"` if `value` is `true`, otherwise `"No"`.
  * @example formatBoolean(true) // "Yes"
- * @see https://dhoulb.github.io/shelving/util/format/formatBoolean
+ * @see https://shelving.cc/util/format/formatBoolean
  */
 export function formatBoolean(value: boolean): string {
 	return value ? "Yes" : "No";
@@ -36,7 +36,7 @@ export function formatBoolean(value: boolean): string {
 /**
  * Options we use for number formatting.
  *
- * @see https://dhoulb.github.io/shelving/util/format/NumberFormatOptions
+ * @see https://shelving.cc/util/format/NumberFormatOptions
  */
 export interface NumberFormatOptions
 	extends FormatOptions,
@@ -49,7 +49,7 @@ export interface NumberFormatOptions
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted number string.
  * @example formatNumber(1234.5) // "1,234.5"
- * @see https://dhoulb.github.io/shelving/util/format/formatNumber
+ * @see https://shelving.cc/util/format/formatNumber
  */
 export function formatNumber(num: number, options?: NumberFormatOptions): string {
 	return Intl.NumberFormat(options?.locale, options).format(num);
@@ -63,7 +63,7 @@ export function formatNumber(num: number, options?: NumberFormatOptions): string
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted number range string.
  * @example formatRange(1, 10) // "1–10"
- * @see https://dhoulb.github.io/shelving/util/format/formatRange
+ * @see https://shelving.cc/util/format/formatRange
  */
 export function formatRange(from: number, to: number, options?: NumberFormatOptions): string {
 	return Intl.NumberFormat(options?.locale, options).formatRange(from, to);
@@ -72,7 +72,7 @@ export function formatRange(from: number, to: number, options?: NumberFormatOpti
 /**
  * Options for quantity formatting.
  *
- * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions
+ * @see https://shelving.cc/util/format/UnitFormatOptions
  */
 export interface UnitFormatOptions
 	extends FormatOptions,
@@ -82,7 +82,7 @@ export interface UnitFormatOptions
 	 * - Used for `unitDisplay: "long"` formatting.
 	 * - Defaults to unit reference, e.g. "minute"
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/one
+	 * @see https://shelving.cc/util/format/UnitFormatOptions/one
 	 */
 	readonly one?: string | undefined;
 	/**
@@ -90,7 +90,7 @@ export interface UnitFormatOptions
 	 * - Used for `unitDisplay: "long"` formatting.
 	 * - Defaults to `one + "s"`
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/many
+	 * @see https://shelving.cc/util/format/UnitFormatOptions/many
 	 */
 	readonly many?: string | undefined;
 	/**
@@ -98,7 +98,7 @@ export interface UnitFormatOptions
 	 * - Used for `unitDisplay: "narrow"` formatting.
 	 * - Defaults to unit reference, e.g. "minute"
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/format/UnitFormatOptions/abbr
+	 * @see https://shelving.cc/util/format/UnitFormatOptions/abbr
 	 */
 	readonly abbr?: string | undefined;
 }
@@ -116,7 +116,7 @@ export interface UnitFormatOptions
  * @param options Formatting options including custom `one`/`many`/`abbr` strings for unsupported units.
  * @returns Formatted quantity string, e.g. `"5 minutes"` or `"5 products"`.
  * @example formatUnit(5, "minute", { unitDisplay: "long" }) // "5 minutes"
- * @see https://dhoulb.github.io/shelving/util/format/formatUnit
+ * @see https://shelving.cc/util/format/formatUnit
  */
 export function formatUnit(num: number, unit: string, options?: UnitFormatOptions): string {
 	// Check if the unit is supported by the browser.
@@ -133,7 +133,7 @@ export function formatUnit(num: number, unit: string, options?: UnitFormatOption
 /**
  * Options we use for currency formatting.
  *
- * @see https://dhoulb.github.io/shelving/util/format/CurrencyFormatOptions
+ * @see https://shelving.cc/util/format/CurrencyFormatOptions
  */
 export interface CurrencyFormatOptions
 	extends FormatOptions,
@@ -149,7 +149,7 @@ export interface CurrencyFormatOptions
  * @returns Locale-formatted currency string.
  * @throws {RequiredError} If `currency` is not a valid currency code.
  * @example formatCurrency(1234.5, "USD") // "$1,234.50"
- * @see https://dhoulb.github.io/shelving/util/format/formatCurrency
+ * @see https://shelving.cc/util/format/formatCurrency
  */
 export function formatCurrency(
 	amount: number,
@@ -167,7 +167,7 @@ export function formatCurrency(
 /**
  * Options we use for percent formatting.
  *
- * @see https://dhoulb.github.io/shelving/util/format/PercentFormatOptions
+ * @see https://shelving.cc/util/format/PercentFormatOptions
  */
 export interface PercentFormatOptions
 	extends FormatOptions,
@@ -184,7 +184,7 @@ export interface PercentFormatOptions
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted percentage string.
  * @example formatPercent(50) // "50%"
- * @see https://dhoulb.github.io/shelving/util/format/formatPercent
+ * @see https://shelving.cc/util/format/formatPercent
  */
 export function formatPercent(numerator: number, denumerator?: number, options?: PercentFormatOptions): string {
 	return Intl.NumberFormat(options?.locale, {
@@ -204,7 +204,7 @@ export function formatPercent(numerator: number, denumerator?: number, options?:
  * @param obj Object to format.
  * @returns Best-available string representation of `obj`, or `"Object"` as a fallback.
  * @example formatObject({ name: "Dave" }) // "Dave"
- * @see https://dhoulb.github.io/shelving/util/format/formatObject
+ * @see https://shelving.cc/util/format/formatObject
  */
 export function formatObject(obj: ImmutableObject): string {
 	if (typeof obj.toString === "function" && obj.toString !== Object.prototype.toString) return obj.toString();
@@ -220,7 +220,7 @@ export function formatObject(obj: ImmutableObject): string {
 /**
  * Options for formatting an array as a string with `formatArray()`.
  *
- * @see https://dhoulb.github.io/shelving/util/format/ArrayFormatOptions
+ * @see https://shelving.cc/util/format/ArrayFormatOptions
  */
 export interface ArrayFormatOptions extends FormatOptions, Intl.ListFormatOptions {}
 
@@ -232,7 +232,7 @@ export interface ArrayFormatOptions extends FormatOptions, Intl.ListFormatOption
  * @param caller Function to attribute a thrown error to (defaults to `formatArray` itself).
  * @returns Locale-formatted list string with each item converted via `formatValue()`.
  * @example formatArray(["a", "b", "c"]) // "a, b, and c"
- * @see https://dhoulb.github.io/shelving/util/format/formatArray
+ * @see https://shelving.cc/util/format/formatArray
  */
 export function formatArray(arr: ImmutableArray<unknown>, options?: ArrayFormatOptions, caller: AnyCaller = formatArray): string {
 	return new Intl.ListFormat(undefined, { style: "long", type: "unit", ...options }).format(formatValues(arr, options, caller));
@@ -241,13 +241,13 @@ export function formatArray(arr: ImmutableArray<unknown>, options?: ArrayFormatO
 /**
  * Options we use for date, time, and datetime formatting.
  *
- * @see https://dhoulb.github.io/shelving/util/format/DateFormatOptions
+ * @see https://shelving.cc/util/format/DateFormatOptions
  */
 export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
 	/**
 	 * Override the locale for formatting (defaults to detected locale).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/format/DateFormatOptions/locale
+	 * @see https://shelving.cc/util/format/DateFormatOptions/locale
 	 */
 	readonly locale?: Intl.Locale | undefined;
 }
@@ -261,7 +261,7 @@ export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
  * @returns Locale-formatted date string.
  * @throws {RequiredError} If `date` cannot be converted to a valid date.
  * @example formatDate("2025-01-01") // "1/1/2025"
- * @see https://dhoulb.github.io/shelving/util/format/formatDate
+ * @see https://shelving.cc/util/format/formatDate
  */
 export function formatDate(date: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatDate): string {
 	return requireDate(date, caller).toLocaleDateString(options?.locale, options);
@@ -276,7 +276,7 @@ export function formatDate(date: PossibleDate, options?: DateFormatOptions, call
  * @returns Locale-formatted time string.
  * @throws {RequiredError} If `time` cannot be converted to a valid date.
  * @example formatTime("2025-01-01T13:30") // "01:30 PM"
- * @see https://dhoulb.github.io/shelving/util/format/formatTime
+ * @see https://shelving.cc/util/format/formatTime
  */
 export function formatTime(time?: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatTime): string {
 	return requireDate(time, caller).toLocaleTimeString(options?.locale, {
@@ -296,7 +296,7 @@ export function formatTime(time?: PossibleDate, options?: DateFormatOptions, cal
  * @returns Locale-formatted datetime string.
  * @throws {RequiredError} If `date` cannot be converted to a valid date.
  * @example formatDateTime("2025-01-01T13:30") // "1/1/2025, 01:30 PM"
- * @see https://dhoulb.github.io/shelving/util/format/formatDateTime
+ * @see https://shelving.cc/util/format/formatDateTime
  */
 export function formatDateTime(date: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatDateTime): string {
 	return requireDate(date, caller).toLocaleString(options?.locale, {
@@ -320,7 +320,7 @@ export function formatDateTime(date: PossibleDate, options?: DateFormatOptions, 
  * @returns Friendly string showing the host and path with any trailing slash removed.
  * @throws {RequiredError} If `url` cannot be converted to a valid URI.
  * @example formatURI("http://shax.com/test?uid=129483") // "shax.com/test"
- * @see https://dhoulb.github.io/shelving/util/format/formatURI
+ * @see https://shelving.cc/util/format/formatURI
  */
 export function formatURI(url: PossibleURI, caller: AnyCaller = formatURI): string {
 	return _formatURI(requireURI(url, caller));
@@ -339,7 +339,7 @@ function _formatURI({ host, pathname }: URL): string {
  * @returns Friendly string showing the host and path with any trailing slash removed.
  * @throws {RequiredError} If `url` cannot be converted to a valid URL.
  * @example formatURL("http://shax.com/test?uid=129483") // "shax.com/test"
- * @see https://dhoulb.github.io/shelving/util/format/formatURL
+ * @see https://shelving.cc/util/format/formatURL
  */
 export function formatURL(url: PossibleURL, base?: PossibleURL, caller: AnyCaller = formatURL): string {
 	return _formatURI(requireURL(url, base, caller));
@@ -363,7 +363,7 @@ export function formatURL(url: PossibleURL, base?: PossibleURL, caller: AnyCalle
  * @param caller Function to attribute a thrown error to (defaults to `formatValue` itself).
  * @returns User-facing string representation of `value`.
  * @example formatValue(1234) // "1,234"
- * @see https://dhoulb.github.io/shelving/util/format/formatValue
+ * @see https://shelving.cc/util/format/formatValue
  */
 export function formatValue(value: unknown, options?: FormatOptions, caller: AnyCaller = formatValue): string {
 	if (value === null || value === undefined) return "None";
@@ -387,7 +387,7 @@ export function formatValue(value: unknown, options?: FormatOptions, caller: Any
  * @param caller Function to attribute a thrown error to (defaults to `formatValues` itself).
  * @returns Iterable yielding the user-facing string for each value.
  * @example [...formatValues([1234, true])] // ["1,234", "Yes"]
- * @see https://dhoulb.github.io/shelving/util/format/formatValues
+ * @see https://shelving.cc/util/format/formatValues
  */
 export function* formatValues(values: Iterable<unknown>, options?: FormatOptions, caller: AnyCaller = formatValues): Iterable<string> {
 	for (const v of values) yield formatValue(v, options, caller);

@@ -38,7 +38,7 @@ import { TextInput } from "./TextInput.js";
  * @param schema The schema to test.
  * @returns `true` if the schema is required, `false` if it is optional or nullable.
  * @example isSchemaRequired(STRING) // true
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/isSchemaRequired
+ * @see https://shelving.cc/ui/isSchemaRequired
  */
 export function isSchemaRequired(schema: Schema): boolean {
 	return !(schema instanceof OptionalSchema || schema instanceof NullableSchema);
@@ -47,7 +47,7 @@ export function isSchemaRequired(schema: Schema): boolean {
 /**
  * Props for `SchemaInput` and its variants: a `schema` plus the value input props it drives.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaInputProps
+ * @see https://shelving.cc/ui/SchemaInputProps
  */
 export interface SchemaInputProps<T extends Schema, I = never> extends ValueInputProps<ValidatorType<T>, I> {
 	schema: T;
@@ -63,7 +63,7 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
  * @kind component
  * @example <SchemaInput name="email" schema={EMAIL} /> // Outputs a `<TextInput>` for the "email" property.
  * @example <SchemaInput name="age" schema={AGE} /> // Outputs a `<NumberInput>` for the "age" property.
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaInput
+ * @see https://shelving.cc/ui/SchemaInput
  */
 export function SchemaInput<T extends Schema>(props: SchemaInputProps<T>): ReactElement;
 export function SchemaInput({
@@ -107,7 +107,7 @@ export function SchemaInput({
 /**
  * Props for `DateSchemaInput`, the `DateSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DateSchemaInputProps
+ * @see https://shelving.cc/ui/DateSchemaInputProps
  */
 export interface DateSchemaInputProps extends SchemaInputProps<DateSchema, unknown> {}
 
@@ -117,7 +117,7 @@ export interface DateSchemaInputProps extends SchemaInputProps<DateSchema, unkno
  * @returns A `DateInput` element bound to the schema.
  * @kind component
  * @example <DateSchemaInput name="dob" schema={DATE} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DateSchemaInput
+ * @see https://shelving.cc/ui/DateSchemaInput
  */
 export function DateSchemaInput({ schema, value, ...props }: DateSchemaInputProps): ReactElement {
 	return <DateInput {...schema} value={getString(value)} {...props} />;
@@ -126,7 +126,7 @@ export function DateSchemaInput({ schema, value, ...props }: DateSchemaInputProp
 /**
  * Props for `NumberSchemaInput`, the `NumberSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/NumberSchemaInputProps
+ * @see https://shelving.cc/ui/NumberSchemaInputProps
  */
 export interface NumberSchemaInputProps extends SchemaInputProps<NumberSchema, unknown> {}
 
@@ -136,7 +136,7 @@ export interface NumberSchemaInputProps extends SchemaInputProps<NumberSchema, u
  * @returns A `NumberInput` element bound to the schema.
  * @kind component
  * @example <NumberSchemaInput name="age" schema={NUMBER} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/NumberSchemaInput
+ * @see https://shelving.cc/ui/NumberSchemaInput
  */
 export function NumberSchemaInput({ schema, value, ...props }: NumberSchemaInputProps): ReactElement {
 	return <NumberInput {...schema} value={getNumber(value)} formatter={num => schema.format(num)} {...props} />;
@@ -145,7 +145,7 @@ export function NumberSchemaInput({ schema, value, ...props }: NumberSchemaInput
 /**
  * Props for `ChoiceSchemaInput`, the `ChoiceSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInputProps
+ * @see https://shelving.cc/ui/ChoiceSchemaInputProps
  */
 export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<string>, unknown> {}
 
@@ -155,7 +155,7 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
  * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
  * @kind component
  * @example <ChoiceSchemaInput name="role" schema={ROLE} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ChoiceSchemaInput
+ * @see https://shelving.cc/ui/ChoiceSchemaInput
  */
 export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInputProps): ReactElement {
 	const { options } = requireSource(ChoiceSchema, schema);
@@ -166,7 +166,7 @@ export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInput
 /**
  * Props for `BooleanSchemaInput`, the `BooleanSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/BooleanSchemaInputProps
+ * @see https://shelving.cc/ui/BooleanSchemaInputProps
  */
 export interface BooleanSchemaInputProps extends SchemaInputProps<BooleanSchema, unknown> {}
 
@@ -176,7 +176,7 @@ export interface BooleanSchemaInputProps extends SchemaInputProps<BooleanSchema,
  * @returns A `CheckboxInput` element bound to the schema.
  * @kind component
  * @example <BooleanSchemaInput name="agree" schema={BOOLEAN} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/BooleanSchemaInput
+ * @see https://shelving.cc/ui/BooleanSchemaInput
  */
 export function BooleanSchemaInput({ schema, value, ...props }: BooleanSchemaInputProps): ReactElement {
 	return <CheckboxInput {...schema} value={!!value} {...props} />;
@@ -185,7 +185,7 @@ export function BooleanSchemaInput({ schema, value, ...props }: BooleanSchemaInp
 /**
  * Props for `StringSchemaInput`, the `StringSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/StringSchemaInputProps
+ * @see https://shelving.cc/ui/StringSchemaInputProps
  */
 export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, unknown> {}
 
@@ -195,7 +195,7 @@ export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, u
  * @returns A `TextInput` element bound to the schema.
  * @kind component
  * @example <StringSchemaInput name="email" schema={EMAIL} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/StringSchemaInput
+ * @see https://shelving.cc/ui/StringSchemaInput
  */
 export function StringSchemaInput({ schema, value, ...props }: StringSchemaInputProps): ReactElement {
 	return <TextInput {...schema} value={getString(value)} formatter={str => schema.format(schema.sanitize(str))} {...props} />;
@@ -204,7 +204,7 @@ export function StringSchemaInput({ schema, value, ...props }: StringSchemaInput
 /**
  * Props for `ArraySchemaInput`, the `ArraySchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ArraySchemaInputProps
+ * @see https://shelving.cc/ui/ArraySchemaInputProps
  */
 export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unknown>, unknown> {}
 
@@ -214,7 +214,7 @@ export interface ArraySchemaInputProps extends SchemaInputProps<ArraySchema<unkn
  * @returns An `ArrayInput` element bound to the schema.
  * @kind component
  * @example <ArraySchemaInput name="tags" schema={TAGS} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/ArraySchemaInput
+ * @see https://shelving.cc/ui/ArraySchemaInput
  */
 export function ArraySchemaInput({ schema, value, ...props }: ArraySchemaInputProps): ReactElement {
 	return <ArrayInput {...schema} value={isArray(value) ? value : undefined} {...props} />;
@@ -223,7 +223,7 @@ export function ArraySchemaInput({ schema, value, ...props }: ArraySchemaInputPr
 /**
  * Props for `DictionarySchemaInput`, the `DictionarySchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DictionarySchemaInputProps
+ * @see https://shelving.cc/ui/DictionarySchemaInputProps
  */
 export interface DictionarySchemaInputProps extends SchemaInputProps<DictionarySchema<unknown>, unknown> {}
 
@@ -233,7 +233,7 @@ export interface DictionarySchemaInputProps extends SchemaInputProps<DictionaryS
  * @returns A `DictionaryInput` element bound to the schema.
  * @kind component
  * @example <DictionarySchemaInput name="meta" schema={META} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DictionarySchemaInput
+ * @see https://shelving.cc/ui/DictionarySchemaInput
  */
 export function DictionarySchemaInput({ schema, value, ...props }: DictionarySchemaInputProps): ReactElement {
 	return <DictionaryInput {...schema} value={isDictionary(value) ? value : undefined} {...props} />;
@@ -242,7 +242,7 @@ export function DictionarySchemaInput({ schema, value, ...props }: DictionarySch
 /**
  * Props for `DataSchemaInput`, the `DataSchema` input variant.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DataSchemaInputProps
+ * @see https://shelving.cc/ui/DataSchemaInputProps
  */
 export interface DataSchemaInputProps extends SchemaInputProps<DataSchema<Data>, unknown> {}
 
@@ -252,7 +252,7 @@ export interface DataSchemaInputProps extends SchemaInputProps<DataSchema<Data>,
  * @returns A `DataInput` element bound to the schema.
  * @kind component
  * @example <DataSchemaInput name="address" schema={ADDRESS} />
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/DataSchemaInput
+ * @see https://shelving.cc/ui/DataSchemaInput
  */
 export function DataSchemaInput({ schema, value, ...props }: DataSchemaInputProps): ReactElement {
 	return <DataInput {...schema} value={isData(value) ? value : undefined} {...props} />;
@@ -261,7 +261,7 @@ export function DataSchemaInput({ schema, value, ...props }: DataSchemaInputProp
 /**
  * Props for `SchemaField`: `SchemaInput` props plus optional `children` to override the input.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaFieldProps
+ * @see https://shelving.cc/ui/SchemaFieldProps
  */
 export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, OptionalChildProps {}
 
@@ -273,7 +273,7 @@ export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, Opt
  * @kind component
  * @example <SchemaField name="email" schema={EMAIL} /> // Outputs a `<Field>` wrapping a `<TextInput>`.
  * @example <SchemaField name="age" schema={AGE} /> // Outputs a `<Field>` wrapping a `<NumberInput>`.
- * @see https://dhoulb.github.io/shelving/ui/form/SchemaInput/SchemaField
+ * @see https://shelving.cc/ui/SchemaField
  */
 export function SchemaField({ schema, children, ...props }: SchemaFieldProps): ReactElement {
 	return (

@@ -41,7 +41,7 @@ const INDEX_LIMIT = 100;
  * @kind component
  * @returns A `<Page>` with a search input, kind checkboxes, and a flat card listing of results.
  * @example <Router routes={{ [TREE_INDEX_PATH]: TreeIndexPage }} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeIndexPage/TreeIndexPage
+ * @see https://shelving.cc/ui/TreeIndexPage
  */
 export function TreeIndexPage(): ReactNode {
 	const [query, setQuery] = useState("");

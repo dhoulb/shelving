@@ -6,7 +6,7 @@ import { isObject } from "./object.js";
 /**
  * Something that has a source of a specified type.
  *
- * @see https://dhoulb.github.io/shelving/util/source/Sourceable
+ * @see https://shelving.cc/util/source/Sourceable
  */
 export interface Sourceable<T> {
 	/** The wrapped source object this object delegates to. */
@@ -21,7 +21,7 @@ export interface Sourceable<T> {
  * @param value The object to start searching from.
  * @returns The first matching source instance, or `undefined` if none matches.
  * @example getSource(CacheProvider, provider) // CacheProvider instance or undefined
- * @see https://dhoulb.github.io/shelving/util/source/getSource
+ * @see https://shelving.cc/util/source/getSource
  */
 export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
 	if (isObject(value)) {
@@ -40,7 +40,7 @@ export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
  * @returns The first matching source instance.
  * @throws {RequiredError} If no source object is an instance of `type`.
  * @example requireSource(CacheProvider, provider) // CacheProvider instance
- * @see https://dhoulb.github.io/shelving/util/source/requireSource
+ * @see https://shelving.cc/util/source/requireSource
  */
 export function requireSource<T>(type: Class<T>, data: unknown, caller: AnyCaller = requireSource): T {
 	const source = getSource(type, data);

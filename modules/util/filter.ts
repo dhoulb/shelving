@@ -4,7 +4,7 @@ import type { Arguments } from "./function.js";
 /**
  * Function that can match an item against a target.
  *
- * @see https://dhoulb.github.io/shelving/util/filter/Match
+ * @see https://shelving.cc/util/filter/Match
  */
 export type Match<A extends Arguments = unknown[]> = (...args: A) => boolean;
 
@@ -16,7 +16,7 @@ export type Match<A extends Arguments = unknown[]> = (...args: A) => boolean;
  * @param args Extra arguments passed to `match` after each item.
  * @returns Iterable yielding only the items the matcher returned `true` for.
  * @example Array.from(filterItems([1, 2, 3], n => n > 1)) // [2, 3]
- * @see https://dhoulb.github.io/shelving/util/filter/filterItems
+ * @see https://shelving.cc/util/filter/filterItems
  */
 export function* filterItems<T, A extends Arguments = []>(items: Iterable<T>, match: Match<[T, ...A]>, ...args: A): Iterable<T> {
 	for (const item of items) if (match(item, ...args)) yield item;
@@ -31,7 +31,7 @@ export function* filterItems<T, A extends Arguments = []>(items: Iterable<T>, ma
  * @param args Extra arguments passed to `match` after each item.
  * @returns A filtered array, or the same `input` instance if nothing was removed.
  * @example filterArray([1, 2, 3], n => n > 1) // [2, 3]
- * @see https://dhoulb.github.io/shelving/util/filter/filterArray
+ * @see https://shelving.cc/util/filter/filterArray
  */
 export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T>, match: Match<[T, ...A]>, ...args: A): ImmutableArray<T> {
 	if (!input.length) return input;
@@ -47,7 +47,7 @@ export function filterArray<T, A extends Arguments = []>(input: ImmutableArray<T
  * @param args Extra arguments passed to `match` after each item.
  * @returns Async iterable yielding only the items the matcher returned `true` for.
  * @example for await (const n of filterSequence(stream, n => n > 1)) { ... }
- * @see https://dhoulb.github.io/shelving/util/filter/filterSequence
+ * @see https://shelving.cc/util/filter/filterSequence
  */
 export async function* filterSequence<T, A extends Arguments = []>(sequence: AsyncIterable<T>, match: Match, ...args: A): AsyncIterable<T> {
 	for await (const item of sequence) if (match(item, ...args)) yield item;

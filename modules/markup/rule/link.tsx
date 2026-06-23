@@ -28,7 +28,7 @@ function _renderLink(key: string, { title, href }: LinkData, parser: MarkupParse
  * - For security only schemes that appear in `MarkupOptions.schemes` will match (defaults to `http:` and `https:`).
  *
  * @example new MarkupParser({ rules: [LINK_RULE] }).parse("[Google Maps](http://google.com/maps)")
- * @see https://dhoulb.github.io/shelving/markup/rule/link/LINK_RULE
+ * @see https://shelving.cc/markup/LINK_RULE
  */
 export const LINK_RULE = createMarkupRule<LinkData>(
 	getRegExp(/\[(?<title>[^\]\n]*?)\]\((?<href>[^)\n]*?)\)/), //
@@ -44,7 +44,7 @@ export const LINK_RULE = createMarkupRule<LinkData>(
  * - For security only schemes that appear in `MarkupOptions.schemes` will match (defaults to `http:` and `https:`).
  *
  * @example new MarkupParser({ rules: [AUTOLINK_RULE] }).parse("http://google.com/maps (Google Maps)")
- * @see https://dhoulb.github.io/shelving/markup/rule/link/AUTOLINK_RULE
+ * @see https://shelving.cc/markup/AUTOLINK_RULE
  */
 export const AUTOLINK_RULE = createMarkupRule<LinkData>(
 	getRegExp(/(?<href>[a-z]{3,}?:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/), //

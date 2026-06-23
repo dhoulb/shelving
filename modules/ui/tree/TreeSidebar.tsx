@@ -11,7 +11,7 @@ import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 /**
  * Props for the `TreeSidebar` component — the root tree element plus its URL path.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeSidebar/TreeSidebarProps
+ * @see https://shelving.cc/ui/TreeSidebarProps
  */
 export interface TreeSidebarProps {
 	/** Root element of the tree. */
@@ -32,7 +32,7 @@ export interface TreeSidebarProps {
  * @kind component
  * @returns The sectioned sidebar — home/index links, a search input, and either the tree menu or search results.
  * @example <TreeSidebar tree={tree} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeSidebar/TreeSidebar
+ * @see https://shelving.cc/ui/TreeSidebar
  */
 export function TreeSidebar({ tree, path = "/" as AbsolutePath }: TreeSidebarProps): ReactNode {
 	const [query, setQuery] = useState("");

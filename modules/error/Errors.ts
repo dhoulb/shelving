@@ -6,7 +6,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new Errors([new ValueError("Bad name"), new ValueError("Bad age")], "Validation failed");
- * @see https://dhoulb.github.io/shelving/error/Errors/Errors
+ * @see https://shelving.cc/error/Errors
  */
 export class Errors extends AggregateError implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

@@ -10,7 +10,7 @@ const NOT_HEX_REGEXP = /[^0-9A-F]/g;
  *
  * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchemaOptions
+ * @see https://shelving.cc/schema/ColorSchemaOptions
  */
 export interface ColorSchemaOptions extends SchemaOptions {
 	/**
@@ -39,7 +39,7 @@ export interface ColorSchemaOptions extends SchemaOptions {
  * - Rejects anything that isn't a valid hex color (use `NULLABLE_COLOR` to also allow `null`).
  *
  * @example COLOR.validate("00ccff"); // Returns "#00CCFF"
- * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchema
+ * @see https://shelving.cc/schema/ColorSchema
  */
 export class ColorSchema extends StringSchema {
 	/**
@@ -67,7 +67,7 @@ export class ColorSchema extends StringSchema {
 	 * @param insaneString String to sanitize.
 	 * @returns The sanitized hex color, or `""` if no hex digits are present.
 	 * @example COLOR.sanitize("00ccff"); // Returns "#00CCFF"
-	 * @see https://dhoulb.github.io/shelving/schema/ColorSchema/ColorSchema/sanitize
+	 * @see https://shelving.cc/schema/ColorSchema/sanitize
 	 */
 	override sanitize(insaneString: string): string {
 		const saneString = insaneString.toUpperCase().replace(NOT_HEX_REGEXP, "");
@@ -79,7 +79,7 @@ export class ColorSchema extends StringSchema {
  * Sugar instance of `ColorSchema` for a required hex color string, e.g. `#00CCFF`. Equivalent to `new ColorSchema({})`.
  *
  * @example COLOR.validate("#00CCFF"); // Returns "#00CCFF"
- * @see https://dhoulb.github.io/shelving/schema/ColorSchema/COLOR
+ * @see https://shelving.cc/schema/COLOR
  */
 export const COLOR = new ColorSchema({});
 
@@ -87,6 +87,6 @@ export const COLOR = new ColorSchema({});
  * Sugar instance allowing a `COLOR` or `null`. Equivalent to `NULLABLE(COLOR)`.
  *
  * @example NULLABLE_COLOR.validate(null); // Returns null
- * @see https://dhoulb.github.io/shelving/schema/ColorSchema/NULLABLE_COLOR
+ * @see https://shelving.cc/schema/NULLABLE_COLOR
  */
 export const NULLABLE_COLOR = NULLABLE(COLOR);

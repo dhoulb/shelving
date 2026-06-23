@@ -6,7 +6,7 @@ import type { SchemaOptions } from "./Schema.js";
 /**
  * Options for `CountrySchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchemaOptions
+ * @see https://shelving.cc/schema/CountrySchemaOptions
  */
 export interface CountrySchemaOptions extends SchemaOptions {
 	/** Country value, or `"detect"` to resolve from browser language. */
@@ -22,14 +22,14 @@ export interface CountrySchemaOptions extends SchemaOptions {
  * @example
  *  const schema = new CountrySchema({});
  *  schema.validate("GB"); // "GB"
- * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchema
+ * @see https://shelving.cc/schema/CountrySchema
  */
 export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 	/**
 	 * Create a new `CountrySchema`.
 	 *
 	 * @example new CountrySchema({ value: "GB" })
-	 * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchema
+	 * @see https://shelving.cc/schema/CountrySchema
 	 */
 	constructor({ one = "country", title = "Country", value = "detect", ...options }: CountrySchemaOptions = {}) {
 		super({ one, title, options: COUNTRIES, value, ...options });
@@ -42,7 +42,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
 	 * @returns The validated ISO 3166 country code.
 	 * @throws `string` `"Required"` if the value is empty, or `` `Unknown ${one}` `` if it is not a known country.
 	 * @example schema.validate("GB") // "GB"
-	 * @see https://dhoulb.github.io/shelving/schema/CountrySchema/CountrySchema/validate
+	 * @see https://shelving.cc/schema/CountrySchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): Country {
 		const country = getCountry(unsafeValue);
@@ -55,7 +55,7 @@ export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
  * Sugar instance of `CountrySchema` for a required ISO 3166 country code, e.g. `GB`. Equivalent to `new CountrySchema({})`.
  *
  * @example COUNTRY.validate("GB") // "GB"
- * @see https://dhoulb.github.io/shelving/schema/CountrySchema/COUNTRY
+ * @see https://shelving.cc/schema/COUNTRY
  */
 export const COUNTRY = new CountrySchema({});
 
@@ -63,6 +63,6 @@ export const COUNTRY = new CountrySchema({});
  * Sugar instance allowing a `COUNTRY` or `null`. Equivalent to `NULLABLE(COUNTRY)`.
  *
  * @example NULLABLE_COUNTRY.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CountrySchema/NULLABLE_COUNTRY
+ * @see https://shelving.cc/schema/NULLABLE_COUNTRY
  */
 export const NULLABLE_COUNTRY = NULLABLE(COUNTRY);

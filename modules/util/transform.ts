@@ -9,7 +9,7 @@ import { getProps } from "./object.js";
 /**
  * Set of named transforms for a data object, keyed by prop name (or `undefined` to skip the transform for that prop).
  *
- * @see https://dhoulb.github.io/shelving/util/transform/Transforms
+ * @see https://shelving.cc/util/transform/Transforms
  */
 export type Transforms<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []> = {
 	readonly [K in keyof I]?: (input: I[K], ...args: A) => O[K];
@@ -23,7 +23,7 @@ export type Transforms<I extends ImmutableObject, O extends ImmutableObject, A e
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable yielding each transformed item.
  * @example [...mapItems([1, 2], n => n * 2)] // [2, 4]
- * @see https://dhoulb.github.io/shelving/util/transform/mapItems
+ * @see https://shelving.cc/util/transform/mapItems
  */
 export function* mapItems<I, O, A extends Arguments = []>(items: Iterable<I>, transform: (v: I, ...args: A) => O, ...args: A): Iterable<O> {
 	for (const item of items) yield transform(item, ...args);
@@ -37,7 +37,7 @@ export function* mapItems<I, O, A extends Arguments = []>(items: Iterable<I>, tr
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new array containing each transformed item.
  * @example mapArray([1, 2], n => n * 2) // [2, 4]
- * @see https://dhoulb.github.io/shelving/util/transform/mapArray
+ * @see https://shelving.cc/util/transform/mapArray
  */
 export function mapArray<I, O, A extends Arguments = []>(
 	arr: Iterable<I>,
@@ -56,7 +56,7 @@ export function mapArray<I, O, A extends Arguments = []>(
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new object with the same keys and transformed values.
  * @example mapProps({ a: 1, b: 2 }, ([, v]) => v * 2) // { a: 2, b: 4 }
- * @see https://dhoulb.github.io/shelving/util/transform/mapProps
+ * @see https://shelving.cc/util/transform/mapProps
  */
 export function mapProps<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(
 	obj: I,
@@ -75,7 +75,7 @@ export function mapProps<I extends ImmutableObject, O extends ImmutableObject, A
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new dictionary with the same keys and transformed values.
  * @example mapDictionary({ a: 1, b: 2 }, v => v * 2) // { a: 2, b: 4 }
- * @see https://dhoulb.github.io/shelving/util/transform/mapDictionary
+ * @see https://shelving.cc/util/transform/mapDictionary
  */
 export function mapDictionary<I, O, A extends Arguments = []>(
 	dictionary: ImmutableDictionary<I>,
@@ -94,7 +94,7 @@ export function mapDictionary<I, O, A extends Arguments = []>(
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable of `[key, transformedValue]` entries.
  * @example [...mapEntries([["a", 1]], ([, v]) => v * 2)] // [["a", 2]]
- * @see https://dhoulb.github.io/shelving/util/transform/mapEntries
+ * @see https://shelving.cc/util/transform/mapEntries
  */
 export function* mapEntries<K, I, O, A extends Arguments = []>(
 	entries: Iterable<Entry<K, I>>,
@@ -113,7 +113,7 @@ export function* mapEntries<K, I, O, A extends Arguments = []>(
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable of `[key, transformedValue]` entries.
  * @example [...mapEntryValues([["a", 1]], v => v * 2)] // [["a", 2]]
- * @see https://dhoulb.github.io/shelving/util/transform/mapEntryValues
+ * @see https://shelving.cc/util/transform/mapEntryValues
  */
 export function* mapEntryValues<K, I, O, A extends Arguments = []>(
 	entries: Iterable<Entry<K, I>>,
@@ -133,7 +133,7 @@ export function* mapEntryValues<K, I, O, A extends Arguments = []>(
  * @param args Additional arguments passed through to each transform.
  * @returns Transformed object (or same object if no changes were made).
  * @example transformObject({ a: 1, b: 2 }, { a: n => n + 10 }) // { a: 11, b: 2 }
- * @see https://dhoulb.github.io/shelving/util/transform/transformObject
+ * @see https://shelving.cc/util/transform/transformObject
  */
 export function transformObject<T extends ImmutableObject, A extends Arguments = []>(
 	obj: T,
@@ -186,7 +186,7 @@ export function transformObject<A extends Arguments = []>(
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An async iterable yielding each transformed item.
  * @example for await (const n of mapSequence(source, x => x * 2)) use(n);
- * @see https://dhoulb.github.io/shelving/util/transform/mapSequence
+ * @see https://shelving.cc/util/transform/mapSequence
  */
 export async function* mapSequence<I, O, A extends Arguments = []>(
 	sequence: AsyncIterable<I>,

@@ -7,7 +7,7 @@ import type { OptionalChildProps } from "../util/index.js";
 /**
  * Props for `Cell` — width and typography variants plus `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Cell/CellProps
+ * @see https://shelving.cc/ui/CellProps
  */
 export interface CellProps extends WidthVariants, TypographyVariants, OptionalChildProps {
 	header?: boolean | undefined;
@@ -22,7 +22,7 @@ export interface CellProps extends WidthVariants, TypographyVariants, OptionalCh
  * @kind component
  * @returns Rendered `<td>` element.
  * @example <Cell width="12x" grow>A longer description that wants a sensible minimum width.</Cell>
- * @see https://dhoulb.github.io/shelving/ui/block/Cell/Cell
+ * @see https://shelving.cc/ui/Cell
  */
 export function Cell({ header = false, children, ...props }: CellProps): ReactElement {
 	const Component = header ? "th" : "td";

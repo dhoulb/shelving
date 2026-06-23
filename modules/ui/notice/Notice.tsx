@@ -11,7 +11,7 @@ import NOTICE_CSS from "./Notice.module.css";
 /**
  * Props for `<Notice>` — flex/colour/status styling variants, optional `children`, and an optional `icon`.
  *
- * @see https://dhoulb.github.io/shelving/ui/notice/Notice/NoticeProps
+ * @see https://shelving.cc/ui/NoticeProps
  */
 export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants, OptionalChildProps {
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
@@ -29,7 +29,7 @@ export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants
  * @returns The notice callout element.
  * @kind component
  * @example <Notice status="success">Saved your changes</Notice>
- * @see https://dhoulb.github.io/shelving/ui/notice/Notice/Notice
+ * @see https://shelving.cc/ui/Notice
  */
 export function Notice({
 	children, //
@@ -52,6 +52,6 @@ export function Notice({
  * Shared loading `<Notice>` element showing the loading spinner.
  *
  * @example <Suspense fallback={LOADING_NOTICE}>…</Suspense>
- * @see https://dhoulb.github.io/shelving/ui/notice/Notice/LOADING_NOTICE
+ * @see https://shelving.cc/ui/LOADING_NOTICE
  */
 export const LOADING_NOTICE = <Notice status="loading" />;

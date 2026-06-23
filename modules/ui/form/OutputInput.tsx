@@ -9,7 +9,7 @@ import INPUT_CSS from "./Input.module.css";
 /**
  * Props for `OutputInput`, a read-only `<output>` styled to match form inputs.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/OutputInput/OutputInputProps
+ * @see https://shelving.cc/ui/OutputInputProps
  */
 export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVariants, InputVariants {}
 
@@ -19,7 +19,7 @@ export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVa
  * @returns An `<output>` element styled like an input.
  * @kind component
  * @example <OutputInput title="Status">Active</OutputInput>
- * @see https://dhoulb.github.io/shelving/ui/form/OutputInput/OutputInput
+ * @see https://shelving.cc/ui/OutputInput
  */
 export function OutputInput({ title, placeholder, children = title, ...props }: OutputInputProps): ReactElement {
 	const hasChildren = notNullish(children);

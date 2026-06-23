@@ -13,7 +13,7 @@ const FENCE = "`{3,}|~{3,}";
  * - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
  *
  * @example new MarkupParser({ rules: [FENCED_RULE] }).parse("```\ncode block\n```")
- * @see https://dhoulb.github.io/shelving/markup/rule/fenced/FENCED_RULE
+ * @see https://shelving.cc/markup/FENCED_RULE
  */
 export const FENCED_RULE = createMarkupRule<{
 	fence: string;

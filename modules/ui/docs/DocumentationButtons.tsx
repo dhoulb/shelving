@@ -9,7 +9,7 @@ import { getClass } from "../util/css.js";
 /**
  * Props for `DocumentationButtons` — the relational metadata of a documented symbol (`class`, `extends`, `implements`), plus block-space and flex overrides.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationButtons/DocumentationButtonsProps
+ * @see https://shelving.cc/ui/DocumentationButtonsProps
  */
 export interface DocumentationButtonsProps
 	extends Pick<DocumentationElementProps, "class" | "extends" | "implements">,

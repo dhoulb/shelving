@@ -15,14 +15,14 @@ import { BusyStore } from "./BusyStore.js";
  * const store = new DataStore({ name: "Dave", age: 40 });
  * store.set("age", 41);
  * store.get("name"); // "Dave"
- * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore
+ * @see https://shelving.cc/store/DataStore
  */
 export class DataStore<T extends Data> extends BusyStore<T> {
 	/**
 	 * Get the current data of this store.
 	 * - Supports suspense-like reads: throws a `Promise` while loading or the error `reason` on failure (inherited from `Store.value`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore/data
+	 * @see https://shelving.cc/store/DataStore/data
 	 */
 	get data(): T {
 		return this.value;
@@ -31,7 +31,7 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	/**
 	 * Set the data of this store.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore/data
+	 * @see https://shelving.cc/store/DataStore/data
 	 */
 	set data(data: T) {
 		this.value = data;
@@ -43,7 +43,7 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 * @param updates The set of prop updates to apply.
 	 * @returns Nothing.
 	 * @example store.update({ age: 41, "name": "Dave" });
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore/update
+	 * @see https://shelving.cc/store/DataStore/update
 	 */
 	update(updates: Updates<T>): void {
 		this.value = updateData(this.data, updates);
@@ -55,7 +55,7 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 * @param name The name of the prop to read.
 	 * @returns The current value of the named prop.
 	 * @example store.get("name"); // "Dave"
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore/get
+	 * @see https://shelving.cc/store/DataStore/get
 	 */
 	get<K extends DataKey<T>>(name: K): T[K] {
 		return this.data[name];
@@ -68,7 +68,7 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 * @param value The new value for the prop.
 	 * @returns Nothing.
 	 * @example store.set("age", 41);
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/DataStore/set
+	 * @see https://shelving.cc/store/DataStore/set
 	 */
 	set<K extends DataKey<T>>(name: K, value: T[K]): void {
 		this.value = withProp(this.data, name, value);
@@ -85,14 +85,14 @@ export class DataStore<T extends Data> extends BusyStore<T> {
  * store.exists; // false
  * store.data = { name: "Dave" };
  * store.delete(); // back to undefined
- * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore
+ * @see https://shelving.cc/store/OptionalDataStore
  */
 export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> {
 	/**
 	 * Get the current data of this store, or throw if it is not set.
 	 * - Supports suspense-like reads: throws a `Promise` while loading or the error `reason` on failure (inherited from `Store.value`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/data
+	 * @see https://shelving.cc/store/OptionalDataStore/data
 	 */
 	get data(): T {
 		return this.require(getGetter(this, "data"));
@@ -101,7 +101,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	/**
 	 * Set the data of this store.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/data
+	 * @see https://shelving.cc/store/OptionalDataStore/data
 	 */
 	set data(data: T) {
 		this.value = data;
@@ -110,7 +110,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	/**
 	 * Whether the data currently exists (is not `undefined`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/exists
+	 * @see https://shelving.cc/store/OptionalDataStore/exists
 	 */
 	get exists(): boolean {
 		return !!this.value;
@@ -123,7 +123,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * @returns The current data.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.require(); // throws if no data is set
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/require
+	 * @see https://shelving.cc/store/OptionalDataStore/require
 	 */
 	require(caller: AnyCaller = this.require): T {
 		const data = this.value;
@@ -138,7 +138,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * @returns Nothing.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.update({ name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/update
+	 * @see https://shelving.cc/store/OptionalDataStore/update
 	 */
 	update(updates: Updates<T>): void {
 		this.value = updateData(this.require(this.update), updates);
@@ -151,7 +151,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * @returns The current value of the named prop.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.get("name");
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/get
+	 * @see https://shelving.cc/store/OptionalDataStore/get
 	 */
 	get<K extends DataKey<T>>(name: K): T[K] {
 		return this.require(this.get)[name];
@@ -165,7 +165,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * @returns Nothing.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.set("name", "Dave");
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/set
+	 * @see https://shelving.cc/store/OptionalDataStore/set
 	 */
 	set<K extends DataKey<T>>(name: K, value: T[K]): void {
 		this.value = withProp(this.require(this.set), name, value);
@@ -176,7 +176,7 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 *
 	 * @returns Nothing.
 	 * @example store.delete();
-	 * @see https://dhoulb.github.io/shelving/store/DataStore/OptionalDataStore/delete
+	 * @see https://shelving.cc/store/OptionalDataStore/delete
 	 */
 	delete(): void {
 		this.value = undefined;

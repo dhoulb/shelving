@@ -12,7 +12,7 @@ import { isDefined } from "./undefined.js";
  * @param value The raw string value.
  * @returns The escaped XML-safe string.
  * @example escapeXML(`Tom & "Jerry"`) // "Tom &amp; &quot;Jerry&quot;"
- * @see https://dhoulb.github.io/shelving/util/xml/escapeXML
+ * @see https://shelving.cc/util/xml/escapeXML
  */
 export function escapeXML(value: string): string {
 	return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
@@ -31,7 +31,7 @@ export function escapeXML(value: string): string {
  * @throws `RequiredError` if a key is not a valid XML element name.
  * @throws `RequiredError` if a value cannot be converted to XML.
  * @example getXML({ user: { name: "Alice", age: 30 } }) // "<user><name>Alice</name><age>30</age></user>"
- * @see https://dhoulb.github.io/shelving/util/xml/getXML
+ * @see https://shelving.cc/util/xml/getXML
  */
 export function getXML(data: Data, caller: AnyCaller = getXML): string {
 	return Array.from(_yieldXML(data, caller)).join("");

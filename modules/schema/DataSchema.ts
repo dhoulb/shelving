@@ -14,7 +14,7 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `DataSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchemaOptions
+ * @see https://shelving.cc/schema/DataSchemaOptions
  */
 export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
 	/** A named schema for each property the data object must have. */
@@ -33,7 +33,7 @@ export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
  *  const schema = new DataSchema({ props: { name: STRING, age: NUMBER } });
  *  schema.validate({ name: "Dave", age: 40 }); // { name: "Dave", age: 40 }
  *
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema
+ * @see https://shelving.cc/schema/DataSchema
  */
 export class DataSchema<T extends Data> extends Schema<unknown> {
 	declare readonly value: T;
@@ -56,7 +56,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 * @returns The valid data object with each property validated by its schema.
 	 * @throws `string` `"Must be object"` if the value is not a data object, or a `"key: message"` line per invalid property.
 	 * @example schema.validate({ name: "Dave" }) // { name: "Dave" }
-	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/validate
+	 * @see https://shelving.cc/schema/DataSchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): T {
 		if (!isData(unsafeValue)) throw "Must be object";
@@ -68,7 +68,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 *
 	 * @param keys The property keys to keep.
 	 * @example schema.pick("name", "age") // DataSchema<Pick<T, "name" | "age">>
-	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/pick
+	 * @see https://shelving.cc/schema/DataSchema/pick
 	 */
 	pick<K extends Key<T>>(...keys: K[]): DataSchema<Pick<T, K>> {
 		return new DataSchema<Pick<T, K>>({ ...this, props: pickProps<Schemas<T>, K>(this.props, ...keys) });
@@ -79,7 +79,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 *
 	 * @param keys The property keys to remove.
 	 * @example schema.omit("age") // DataSchema<Omit<T, "age">>
-	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/omit
+	 * @see https://shelving.cc/schema/DataSchema/omit
 	 */
 	omit<K extends Key<T>>(...keys: K[]): DataSchema<Omit<T, K>> {
 		return new DataSchema<Omit<T, K>>({ ...this, props: omitProps<Schemas<T>, K>(this.props, ...keys) });
@@ -91,7 +91,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 	 * @param value The valid data object to format.
 	 * @returns The data object formatted as a human-readable string.
 	 * @example schema.format({ name: "Dave" }) // "name: Dave"
-	 * @see https://dhoulb.github.io/shelving/schema/DataSchema/DataSchema/format
+	 * @see https://shelving.cc/schema/DataSchema/format
 	 */
 	override format(value: T): string {
 		return formatObject(value);
@@ -109,7 +109,7 @@ function _getSchemaValue<T extends Data>([, { value }]: Prop<Schemas<T>>): Value
  *
  * @param props A named schema for each property of the data object.
  * @example DATA({ name: STRING, age: NUMBER }) // DataSchema<{ name: string; age: number }>
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/DATA
+ * @see https://shelving.cc/schema/DATA
  */
 export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
 	return new DataSchema({ props });
@@ -122,7 +122,7 @@ export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
  *
  * @param props A named schema for each property of the data object.
  * @example NULLABLE_DATA({ name: STRING }) // NullableSchema<{ name: string }>
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/NULLABLE_DATA
+ * @see https://shelving.cc/schema/NULLABLE_DATA
  */
 export function NULLABLE_DATA<T extends Data>(props: Schemas<T>): NullableSchema<T> {
 	return NULLABLE(new DataSchema({ props }));
@@ -136,7 +136,7 @@ export function NULLABLE_DATA<T extends Data>(props: Schemas<T>): NullableSchema
  * @param source The props schemas or an existing `DataSchema` to make partial.
  * @returns A `DataSchema` whose every property is optional.
  * @example PARTIAL({ name: STRING, age: NUMBER }) // DataSchema<{ name?: string; age?: number }>
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/PARTIAL
+ * @see https://shelving.cc/schema/PARTIAL
  */
 export function PARTIAL<T extends Data>(source: Schemas<T> | DataSchema<T>): DataSchema<PartialData<T>>;
 export function PARTIAL(source: Schemas<Data> | DataSchema<Data>): DataSchema<PartialData<Data>> {
@@ -158,7 +158,7 @@ function _optionalProp([, v]: Prop<Schemas<Data>>): Schema<unknown> {
  * @param schemas The props schemas or an existing `DataSchema` for the rest of the item.
  * @returns A `DataSchema` validating an item with an `id` property plus the given props.
  * @example ITEM(NUMBER, { name: STRING }) // DataSchema<{ id: number; name: string }>
- * @see https://dhoulb.github.io/shelving/schema/DataSchema/ITEM
+ * @see https://shelving.cc/schema/ITEM
  */
 export function ITEM<I extends Identifier, T extends Data>(id: Schema<I>, schemas: Schemas<T> | DataSchema<T>): DataSchema<Item<I, T>> {
 	const props: Schemas<T> = schemas instanceof DataSchema ? schemas.props : schemas;

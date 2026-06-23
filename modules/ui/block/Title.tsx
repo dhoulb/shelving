@@ -11,7 +11,7 @@ const TITLE_CLASS = getModuleClass(TITLE_CSS, "title");
 /**
  * Props for `Title` — identical to `HeadingProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Title/TitleProps
+ * @see https://shelving.cc/ui/TitleProps
  */
 export type TitleProps = HeadingProps;
 
@@ -22,7 +22,7 @@ export type TitleProps = HeadingProps;
  * @kind component
  * @returns Rendered `<h1>` heading element.
  * @example <Title>Welcome</Title>
- * @see https://dhoulb.github.io/shelving/ui/block/Title/Title
+ * @see https://shelving.cc/ui/Title
  */
 export function Title({ level = "1", children, ...props }: TitleProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;

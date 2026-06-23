@@ -4,14 +4,14 @@ import { type Arguments, BLACKHOLE } from "./function.js";
 /**
  * Callback function that starts something with multiple values and returns an optional stop callback.
  *
- * @see https://dhoulb.github.io/shelving/util/start/StartCallback
+ * @see https://shelving.cc/util/start/StartCallback
  */
 export type StartCallback<T extends Arguments = []> = (...values: T) => StopCallback | void;
 
 /**
  * Callback function that stops something.
  *
- * @see https://dhoulb.github.io/shelving/util/start/StopCallback
+ * @see https://shelving.cc/util/start/StopCallback
  */
 export type StopCallback = () => void;
 
@@ -20,7 +20,7 @@ export type StopCallback = () => void;
  * - Useful as a no-op default where a `StartCallback` is expected.
  *
  * @example STOPHOLE() // BLACKHOLE
- * @see https://dhoulb.github.io/shelving/util/start/STOPHOLE
+ * @see https://shelving.cc/util/start/STOPHOLE
  */
 export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
 
@@ -33,7 +33,7 @@ export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
  * const starter = new Starter(() => { console.log("start"); return () => console.log("stop"); });
  * starter.start();
  * starter.stop();
- * @see https://dhoulb.github.io/shelving/util/start/Starter
+ * @see https://shelving.cc/util/start/Starter
  */
 export class Starter<T extends Arguments = []> implements Disposable {
 	private readonly _start: StartCallback<T>;
@@ -55,7 +55,7 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	 * @returns Nothing.
 	 * @throws {UnexpectedError} If the start callback throws.
 	 * @example starter.start();
-	 * @see https://dhoulb.github.io/shelving/util/start/Starter/start
+	 * @see https://shelving.cc/util/start/Starter/start
 	 */
 	start(...values: T): void {
 		if (this._started) return;
@@ -73,7 +73,7 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	 * @returns Nothing.
 	 * @throws {UnexpectedError} If the stop callback throws.
 	 * @example starter.stop();
-	 * @see https://dhoulb.github.io/shelving/util/start/Starter/stop
+	 * @see https://shelving.cc/util/start/Starter/stop
 	 */
 	stop(): void {
 		if (!this._started) return;
@@ -94,7 +94,7 @@ export class Starter<T extends Arguments = []> implements Disposable {
 /**
  * Something that can be made into a `Starter`.
  *
- * @see https://dhoulb.github.io/shelving/util/start/PossibleStarter
+ * @see https://shelving.cc/util/start/PossibleStarter
  */
 export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>;
 
@@ -104,7 +104,7 @@ export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>
  *
  * @param start A `StartCallback` or an existing `Starter`.
  * @example getStarter(() => () => {}) // Starter instance
- * @see https://dhoulb.github.io/shelving/util/start/getStarter
+ * @see https://shelving.cc/util/start/getStarter
  */
 export function getStarter<T extends Arguments>(start: StartCallback<T> | Starter<T>): Starter<T> {
 	return typeof start === "function" ? new Starter(start) : start;

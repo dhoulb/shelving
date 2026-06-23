@@ -7,7 +7,7 @@ import styles from "./Field.module.css";
 /**
  * Props for `Field`, a labelled wrapper around a form control.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Field/FieldProps
+ * @see https://shelving.cc/ui/FieldProps
  */
 export interface FieldProps extends ChildProps {
 	title?: ReactNode | undefined;
@@ -22,7 +22,7 @@ export interface FieldProps extends ChildProps {
  * A `<Field>` wraps around a form control/input, to shows a small `<label>` above it.
  *
  * @kind component
- * @see https://dhoulb.github.io/shelving/ui/form/Field/Field
+ * @see https://shelving.cc/ui/Field
  */
 export function Field({ title, description, message, half, children }: FieldProps): ReactElement {
 	return (

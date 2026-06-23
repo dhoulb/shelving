@@ -33,7 +33,7 @@ interface UnitProps<T extends string> extends UnitFormatOptions {
  * @param key String key for this unit, e.g. `kilometer`.
  * @param props Props to configure this unit (conversions and formatting options).
  * @example LENGTH_UNITS.require("kilometer").to(5, "meter") // 5000
- * @see https://dhoulb.github.io/shelving/util/units/Unit
+ * @see https://shelving.cc/util/units/Unit
  */
 export class Unit<K extends string> {
 	private readonly _to: Conversions<K> | undefined;
@@ -41,19 +41,19 @@ export class Unit<K extends string> {
 	/**
 	 * `UnitList` this unit belongs to.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/list
+	 * @see https://shelving.cc/util/units/Unit/list
 	 */
 	public readonly list: UnitList<K>;
 	/**
 	 * String key for this unit, e.g. `kilometer`
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/key
+	 * @see https://shelving.cc/util/units/Unit/key
 	 */
 	public readonly key: K;
 	/**
 	 * Possible options for formatting these units.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/options
+	 * @see https://shelving.cc/util/units/Unit/options
 	 */
 	public readonly options: Readonly<UnitFormatOptions> | undefined;
 
@@ -80,7 +80,7 @@ export class Unit<K extends string> {
 	 * @throws `RequiredError` if `targetKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists to the target unit.
 	 * @example LENGTH_UNITS.require("kilometer").to(1, "meter") // 1000
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/to
+	 * @see https://shelving.cc/util/units/Unit/to
 	 */
 	to(amount: number, targetKey?: K): number {
 		const target = targetKey ? _requireUnit(this.to, this.list, targetKey) : this.list.base;
@@ -96,7 +96,7 @@ export class Unit<K extends string> {
 	 * @throws `RequiredError` if `sourceKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists from the source unit.
 	 * @example LENGTH_UNITS.require("kilometer").from(1000, "meter") // 1
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/from
+	 * @see https://shelving.cc/util/units/Unit/from
 	 */
 	from(amount: number, sourceKey?: K): number {
 		const source = sourceKey ? _requireUnit(this.from, this.list, sourceKey) : this.list.base;
@@ -138,7 +138,7 @@ export class Unit<K extends string> {
 	 * @param options Formatting options merged over this unit's own `options`.
 	 * @returns The formatted unit string.
 	 * @example MASS_UNITS.require("kilogram").format(12) // "12 kg"
-	 * @see https://dhoulb.github.io/shelving/util/units/Unit/format
+	 * @see https://shelving.cc/util/units/Unit/format
 	 */
 	format(amount: number, options?: UnitFormatOptions): string {
 		return formatUnit(amount, this.key, { ...this.options, ...options });
@@ -153,13 +153,13 @@ export class Unit<K extends string> {
  *
  * @param units Set of units keyed by their string key — the first entry becomes the base unit.
  * @example new UnitList({ meter: {}, kilometer: { to: { meter: 1000 } } }).convert(1, "kilometer", "meter") // 1000
- * @see https://dhoulb.github.io/shelving/util/units/UnitList
+ * @see https://shelving.cc/util/units/UnitList
  */
 export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	/**
 	 * Base unit for this list (the first unit added).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/base
+	 * @see https://shelving.cc/util/units/UnitList/base
 	 */
 	public readonly base!: Unit<K>;
 	constructor(units: ImmutableObject<K, UnitProps<K>>) {
@@ -181,7 +181,7 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * @throws `RequiredError` if `sourceKey` or `targetKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists between the units.
 	 * @example LENGTH_UNITS.convert(1, "kilometer", "meter") // 1000
-	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/convert
+	 * @see https://shelving.cc/util/units/UnitList/convert
 	 */
 	convert(amount: number, sourceKey: K, targetKey: K): number {
 		return _requireUnit(this.convert, this, sourceKey).to(amount, targetKey);
@@ -193,7 +193,7 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * @param key Key of the unit to retrieve.
 	 * @throws `RequiredError` if the unit key is not found.
 	 * @example LENGTH_UNITS.require("kilometer") // Unit instance
-	 * @see https://dhoulb.github.io/shelving/util/units/UnitList/require
+	 * @see https://shelving.cc/util/units/UnitList/require
 	 */
 	require(key: K): Unit<K> {
 		return _requireUnit(this.require, this, key);
@@ -239,7 +239,7 @@ const IMP_ML_PER_GAL = 4546090 / 1000;
 /**
  * Percentage units.
  *
- * @see https://dhoulb.github.io/shelving/util/units/PERCENT_UNITS
+ * @see https://shelving.cc/util/units/PERCENT_UNITS
  */
 export const PERCENT_UNITS = new UnitList({
 	percent: { abbr: "%", many: "percent" },
@@ -247,14 +247,14 @@ export const PERCENT_UNITS = new UnitList({
 /**
  * String key for a percentage unit.
  *
- * @see https://dhoulb.github.io/shelving/util/units/PercentUnitKey
+ * @see https://shelving.cc/util/units/PercentUnitKey
  */
 export type PercentUnitKey = MapKey<typeof PERCENT_UNITS>;
 
 /**
  * Point units.
  *
- * @see https://dhoulb.github.io/shelving/util/units/POINT_UNITS
+ * @see https://shelving.cc/util/units/POINT_UNITS
  */
 export const POINT_UNITS = new UnitList({
 	"basis-point": { abbr: "bp" },
@@ -263,14 +263,14 @@ export const POINT_UNITS = new UnitList({
 /**
  * String key for a point unit.
  *
- * @see https://dhoulb.github.io/shelving/util/units/PointUnitKey
+ * @see https://shelving.cc/util/units/PointUnitKey
  */
 export type PointUnitKey = MapKey<typeof POINT_UNITS>;
 
 /**
  * Angle units.
  *
- * @see https://dhoulb.github.io/shelving/util/units/ANGLE_UNITS
+ * @see https://shelving.cc/util/units/ANGLE_UNITS
  */
 export const ANGLE_UNITS = new UnitList({
 	degree: { abbr: "deg" },

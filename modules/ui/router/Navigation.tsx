@@ -10,7 +10,7 @@ import { NavigationStore } from "./NavigationStore.js";
 /**
  * Props for `<Navigation>` — initial `Meta` (url/base) plus optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Navigation/NavigationProps
+ * @see https://shelving.cc/ui/NavigationProps
  */
 export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 
@@ -30,7 +30,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  * @param meta Initial meta (url/base) merged with the surrounding `<Meta>` context.
  * @returns The navigation provider wrapping `children`.
  * @example <Navigation><App /></Navigation>
- * @see https://dhoulb.github.io/shelving/ui/router/Navigation/Navigation
+ * @see https://shelving.cc/ui/Navigation
  */
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {
 	const { url, root, ...merged } = requireMeta(meta);

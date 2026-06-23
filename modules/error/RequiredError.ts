@@ -6,7 +6,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new RequiredError("Name is required");
- * @see https://dhoulb.github.io/shelving/error/RequiredError/RequiredError
+ * @see https://shelving.cc/error/RequiredError
  */
 export class RequiredError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

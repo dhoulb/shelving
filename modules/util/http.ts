@@ -13,21 +13,21 @@ import { getXML } from "./xml.js";
 /**
  * A handler function takes a `Request` and optional extra arguments and returns a `Response` (possibly asynchronously).
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestHandler
+ * @see https://shelving.cc/util/http/RequestHandler
  */
 export type RequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response>;
 
 /**
  * An optional request handler that may return `undefined` to indicate no match.
  *
- * @see https://dhoulb.github.io/shelving/util/http/OptionalRequestHandler
+ * @see https://shelving.cc/util/http/OptionalRequestHandler
  */
 export type OptionalRequestHandler<A extends Arguments = []> = (request: Request, ...args: A) => Response | Promise<Response> | undefined;
 
 /**
  * A list of optional request handlers.
  *
- * @see https://dhoulb.github.io/shelving/util/http/OptionalRequestHandlers
+ * @see https://shelving.cc/util/http/OptionalRequestHandlers
  */
 export type OptionalRequestHandlers<A extends Arguments = []> = Iterable<OptionalRequestHandler<A>>;
 
@@ -84,7 +84,7 @@ function _parseMessageBody(
  *
  * @throws {RequestError} If the content is not `text/plain`, or `application/json` with valid JSON.
  * @example const body = await parseRequestBody(request);
- * @see https://dhoulb.github.io/shelving/util/http/parseRequestBody
+ * @see https://shelving.cc/util/http/parseRequestBody
  */
 export function parseRequestBody(request: Request, caller: AnyCaller = parseRequestBody): Promise<unknown> {
 	return _parseMessageBody(request, RequestError, caller);
@@ -98,7 +98,7 @@ export function parseRequestBody(request: Request, caller: AnyCaller = parseRequ
  * @returns The parsed JSON value, or `undefined` if the body is empty.
  * @throws {RequestError} If the request body is not valid JSON.
  * @example const data = await parseRequestJSON(request);
- * @see https://dhoulb.github.io/shelving/util/http/parseRequestJSON
+ * @see https://shelving.cc/util/http/parseRequestJSON
  */
 export function parseRequestJSON(request: Request, caller: AnyCaller = parseRequestJSON): Promise<unknown> {
 	return _parseMessageJSON(request, RequestError, caller);
@@ -112,7 +112,7 @@ export function parseRequestJSON(request: Request, caller: AnyCaller = parseRequ
  * @returns The parsed `FormData`.
  * @throws {RequestError} If the request body is not valid multipart form-data.
  * @example const form = await parseRequestFormData(request);
- * @see https://dhoulb.github.io/shelving/util/http/parseRequestFormData
+ * @see https://shelving.cc/util/http/parseRequestFormData
  */
 export function parseRequestFormData(request: Request, caller: AnyCaller = parseRequestFormData): Promise<FormData | undefined> {
 	return _parseMessageFormData(request, RequestError, caller);
@@ -129,7 +129,7 @@ export function parseRequestFormData(request: Request, caller: AnyCaller = parse
  *
  * @throws {ResponseError} If the content is not `text/plain` or `application/json` with valid JSON.
  * @example const body = await parseResponseBody(response);
- * @see https://dhoulb.github.io/shelving/util/http/parseResponseBody
+ * @see https://shelving.cc/util/http/parseResponseBody
  */
 export function parseResponseBody(response: Response, caller: AnyCaller = parseResponseBody): Promise<unknown> {
 	return _parseMessageBody(response, ResponseError, caller);
@@ -143,7 +143,7 @@ export function parseResponseBody(response: Response, caller: AnyCaller = parseR
  * @returns The parsed JSON value, or `undefined` if the body is empty.
  * @throws {ResponseError} If the response body is not valid JSON.
  * @example const data = await parseResponseJSON(response);
- * @see https://dhoulb.github.io/shelving/util/http/parseResponseJSON
+ * @see https://shelving.cc/util/http/parseResponseJSON
  */
 export function parseResponseJSON(response: Response, caller: AnyCaller = parseResponseJSON): Promise<unknown> {
 	return _parseMessageJSON(response, ResponseError, caller);
@@ -157,7 +157,7 @@ export function parseResponseJSON(response: Response, caller: AnyCaller = parseR
  * @returns The parsed `FormData`.
  * @throws {ResponseError} If the response body is not valid multipart form-data.
  * @example const form = await parseResponseFormData(response);
- * @see https://dhoulb.github.io/shelving/util/http/parseResponseFormData
+ * @see https://shelving.cc/util/http/parseResponseFormData
  */
 export function parseResponseFormData(response: Response, caller: AnyCaller = parseResponseFormData): Promise<FormData> {
 	return _parseMessageFormData(response, ResponseError, caller);
@@ -172,7 +172,7 @@ export function parseResponseFormData(response: Response, caller: AnyCaller = pa
  * @param value The value to convert to a `Response`.
  * @returns A `Response` with a 2xx status, and response body as JSON (if it was set), or no body if `value` is `undefined`
  * @example getResponse({ name: "abc" }) // 200 JSON Response
- * @see https://dhoulb.github.io/shelving/util/http/getResponse
+ * @see https://shelving.cc/util/http/getResponse
  */
 export function getResponse(value: unknown): Response {
 	// If it's already a `Response`, return it directly.
@@ -199,7 +199,7 @@ export function getResponse(value: unknown): Response {
  * @param debug If `true` include the error message in the response (for debugging), or `false` to return generic error codes (for security). Defaults to `false`.
  * @returns A `Response` with a status code and (optionally) body derived from the error.
  * @example getErrorResponse("Invalid input") // 422 Response
- * @see https://dhoulb.github.io/shelving/util/http/getErrorResponse
+ * @see https://shelving.cc/util/http/getErrorResponse
  */
 export function getErrorResponse(reason: unknown, debug = false): Response {
 	// If it's already a `Response`, return it directly.
@@ -225,21 +225,21 @@ export function getErrorResponse(reason: unknown, debug = false): Response {
 /**
  * HTTP request methods that have no body.
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestHeadMethod
+ * @see https://shelving.cc/util/http/RequestHeadMethod
  */
 export type RequestHeadMethod = "HEAD" | "GET";
 
 /**
  * HTTP request methods that have a body.
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestBodyMethod
+ * @see https://shelving.cc/util/http/RequestBodyMethod
  */
 export type RequestBodyMethod = "POST" | "PUT" | "PATCH" | "DELETE";
 
 /**
  * HTTP request methods.
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestMethod
+ * @see https://shelving.cc/util/http/RequestMethod
  */
 export type RequestMethod = RequestHeadMethod | RequestBodyMethod;
 
@@ -254,7 +254,7 @@ const _REQUEST_METHODS = [..._REQUEST_HEAD_METHODS, ..._REQUEST_BODY_METHODS];
  * @param method The method string to test.
  * @returns `true` if `method` is a supported `RequestMethod`, narrowing its type.
  * @example isRequestMethod("GET") // true
- * @see https://dhoulb.github.io/shelving/util/http/isRequestMethod
+ * @see https://shelving.cc/util/http/isRequestMethod
  */
 export function isRequestMethod(method: string): method is RequestMethod {
 	return _REQUEST_METHODS.includes(method);
@@ -266,7 +266,7 @@ export function isRequestMethod(method: string): method is RequestMethod {
  * @param method The method string to test.
  * @returns `true` if `method` is a supported `RequestHeadMethod`, narrowing its type.
  * @example isRequestHeadMethod("GET") // true
- * @see https://dhoulb.github.io/shelving/util/http/isRequestHeadMethod
+ * @see https://shelving.cc/util/http/isRequestHeadMethod
  */
 export function isRequestHeadMethod(method: string): method is RequestHeadMethod {
 	return _REQUEST_HEAD_METHODS.includes(method);
@@ -275,14 +275,14 @@ export function isRequestHeadMethod(method: string): method is RequestHeadMethod
 /**
  * Params in requests are a dictionary of strings.
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestParams
+ * @see https://shelving.cc/util/http/RequestParams
  */
 export type RequestParams = ImmutableDictionary<string>;
 
 /**
  * Configurable options for endpoint requests.
  *
- * @see https://dhoulb.github.io/shelving/util/http/RequestOptions
+ * @see https://shelving.cc/util/http/RequestOptions
  */
 export type RequestOptions = Pick<
 	RequestInit,
@@ -299,7 +299,7 @@ export type RequestOptions = Pick<
  * @param b The call-level request options whose values override `a`.
  * @returns A merged `RequestOptions` with combined headers and abort signals.
  * @example mergeRequestOptions({ cache: "no-store" }, { mode: "cors" }) // { cache: "no-store", mode: "cors", ... }
- * @see https://dhoulb.github.io/shelving/util/http/mergeRequestOptions
+ * @see https://shelving.cc/util/http/mergeRequestOptions
  */
 export function mergeRequestOptions(
 	{ headers: aHeaders, signal: aSignal, ...a }: RequestOptions = {},
@@ -322,7 +322,7 @@ export function mergeRequestOptions(
  * @returns A `Request` with no body content.
  *
  * @example createHeadRequest("POST", "https://api.example.com/items", { name: "abc" })
- * @see https://dhoulb.github.io/shelving/util/http/createHeadRequest
+ * @see https://shelving.cc/util/http/createHeadRequest
  */
 export function createHeadRequest(
 	method: RequestHeadMethod,
@@ -347,7 +347,7 @@ export function createHeadRequest(
  * @returns A `Request` with `text/plain` content type.
  *
  * @example createTextRequest("POST", "https://api.example.com/items", "hello")
- * @see https://dhoulb.github.io/shelving/util/http/createTextRequest
+ * @see https://shelving.cc/util/http/createTextRequest
  */
 export function createTextRequest(
 	method: RequestMethod,
@@ -373,7 +373,7 @@ const _REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
  * @returns A `Request` with `application/json` content type.
  *
  * @example createJSONRequest("POST", "https://api.example.com/items", { name: "abc" })
- * @see https://dhoulb.github.io/shelving/util/http/createJSONRequest
+ * @see https://shelving.cc/util/http/createJSONRequest
  */
 export function createJSONRequest(
 	method: RequestBodyMethod,
@@ -402,7 +402,7 @@ const _REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } 
  * @returns A `Request` with a multipart body.
  *
  * @example createFormDataRequest("POST", "https://api.example.com/upload", new FormData())
- * @see https://dhoulb.github.io/shelving/util/http/createFormDataRequest
+ * @see https://shelving.cc/util/http/createFormDataRequest
  */
 export function createFormDataRequest(
 	method: RequestBodyMethod,
@@ -429,7 +429,7 @@ export function createFormDataRequest(
  * @throws {RequiredError} If the XML data contains invalid element names or values.
  *
  * @example createXMLRequest("POST", "https://api.example.com/items", { item: { name: "abc" } })
- * @see https://dhoulb.github.io/shelving/util/http/createXMLRequest
+ * @see https://shelving.cc/util/http/createXMLRequest
  */
 export function createXMLRequest(
 	method: RequestBodyMethod,
@@ -465,7 +465,7 @@ const _REQUEST_XML_OPTIONS = { headers: { "Content-Type": "application/xml; char
  * @throws {RequiredError} if this is a `HEAD` or `GET` request but `body` is not a data object.
  *
  * @example createRequest("POST", "https://api.example.com/items", { name: "abc" }) // JSON Request
- * @see https://dhoulb.github.io/shelving/util/http/createRequest
+ * @see https://shelving.cc/util/http/createRequest
  */
 export function createRequest(
 	method: RequestMethod,
@@ -503,7 +503,7 @@ export function createRequest(
  * @param caller Function to attribute a thrown error to (defaults to `assertRequestHeadPayload`).
  * @throws {RequiredError} If `payload` is not a data object, `null`, or `undefined`.
  * @example assertRequestHeadPayload({ q: "abc" }, "GET"); // passes
- * @see https://dhoulb.github.io/shelving/util/http/assertRequestHeadPayload
+ * @see https://shelving.cc/util/http/assertRequestHeadPayload
  */
 export function assertRequestHeadPayload(
 	payload: unknown,

@@ -16,7 +16,7 @@ import { DBMigrator } from "./DBMigrator.js";
 
 /**
  * Column definition in a live SQL table, pairing a column name with its raw definition statement.
- * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLTableColumn
+ * @see https://shelving.cc/db/SQLTableColumn
  */
 export type SQLTableColumn = {
 	readonly name: string;
@@ -25,7 +25,7 @@ export type SQLTableColumn = {
 
 /**
  * Existing SQL table schema keyed by column name, as read back from the database.
- * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLTable
+ * @see https://shelving.cc/db/SQLTable
  */
 export type SQLTable = {
 	readonly columns: Readonly<Record<string, SQLTableColumn>>;
@@ -35,7 +35,7 @@ export type SQLTable = {
 
 /**
  * Generated SQL column mapped from a collection schema path, holding its column name, key, and JSON path.
- * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLColumn
+ * @see https://shelving.cc/db/SQLColumn
  */
 export type SQLColumn = {
 	readonly column: string;
@@ -51,7 +51,7 @@ export type SQLColumn = {
  * @example
  *  const migrator = new SQLiteMigrator(provider);
  *  await migrator.migrate(users, posts);
- * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator
+ * @see https://shelving.cc/db/SQLMigrator
  */
 export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends DBMigrator<T> {
 	/**
@@ -61,7 +61,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @returns Promise that resolves once every migration has been executed.
 	 * @throws {UnimplementedError} If a schema feature can't be represented as a SQL column.
 	 * @example await migrator.migrate(users, posts)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/migrate
+	 * @see https://shelving.cc/db/SQLMigrator/migrate
 	 */
 	async migrate(...collections: Collections<number>): Promise<void> {
 		for (const migration of await this.getMigrations(...collections)) await this.provider.exec(_getTemplateStrings(migration));
@@ -73,7 +73,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @param collections The collections whose schemas the tables should match.
 	 * @returns Promise resolving to the ordered list of SQL migration statements.
 	 * @example const sql = await migrator.getMigrations(users)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getMigrations
+	 * @see https://shelving.cc/db/SQLMigrator/getMigrations
 	 */
 	async getMigrations(...collections: Collections<number>): Promise<readonly string[]> {
 		const tables = await this.getTables();
@@ -93,7 +93,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @param collection The collection to create a table for.
 	 * @returns The `CREATE TABLE` SQL statement.
 	 * @example migrator.getCreateTableQuery(users) // CREATE TABLE "users" (...)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getCreateTableQuery
+	 * @see https://shelving.cc/db/SQLMigrator/getCreateTableQuery
 	 */
 	getCreateTableQuery<T extends Data>(collection: Collection<string, number, T>): string {
 		const suffix = this.getCreateTableSuffix(collection);
@@ -108,7 +108,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @param collection The collection to get columns for.
 	 * @returns The ordered list of table columns.
 	 * @example migrator.getCreateTableColumns(users)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getCreateTableColumns
+	 * @see https://shelving.cc/db/SQLMigrator/getCreateTableColumns
 	 */
 	getCreateTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
 		return [this.getIDColumn(collection), this.getDataColumn(), ...this.getGeneratedTableColumns(collection)];
@@ -120,7 +120,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @param collection The collection to get generated columns for.
 	 * @returns The list of generated table columns.
 	 * @example migrator.getGeneratedTableColumns(users)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/SQLMigrator/SQLMigrator/getGeneratedTableColumns
+	 * @see https://shelving.cc/db/SQLMigrator/getGeneratedTableColumns
 	 */
 	getGeneratedTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
 		return this.getGeneratedColumns(collection).map(column => this.getGeneratedColumn(column, collection));

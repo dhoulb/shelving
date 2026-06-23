@@ -11,7 +11,7 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
  * @example
  *  class MyProvider extends PostgreSQLProvider { async exec(strings, ...values) { ... } }
  *  const item = await new MyProvider().getItem(collection, "abc");
- * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider
+ * @see https://shelving.cc/db/PostgreSQLProvider
  */
 export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
 	/** Get the Postgres JSONB path for the nested segments of a key, e.g. `{"b","c"}`. */
@@ -30,7 +30,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * @param key The key segments identifying the column and any nested JSONB path.
 	 * @returns An `SQLFragment` extracting the value.
 	 * @example this.sqlExtract(["a", "b"]); // "a" #>> {"b"}
-	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlExtract
+	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlExtract
 	 */
 	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
@@ -48,7 +48,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a", "b"], value: 1 })
-	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlUpdate
+	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlUpdate
 	 */
 	override sqlUpdate(update: Update): SQLFragment {
 		const { action, key, value } = update;
@@ -107,7 +107,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["tags"], operator: "contains", value: "x" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/PostgreSQLProvider/PostgreSQLProvider/sqlFilter
+	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlFilter
 	 */
 	override sqlFilter(filter: QueryFilter): SQLFragment {
 		const { key, operator, value } = filter;

@@ -12,7 +12,7 @@ const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
 /**
  * Props for `List` — colour, gap, space, and typography variants plus its list items and an `ordered` toggle.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/List/ListProps
+ * @see https://shelving.cc/ui/ListProps
  */
 export interface ListProps extends ColorVariants, GapVariants, SpaceVariants, TypographyVariants {
 	children: ReactNode[];
@@ -27,7 +27,7 @@ export interface ListProps extends ColorVariants, GapVariants, SpaceVariants, Ty
  * @returns Rendered `<ul>` or `<ol>` list element.
  * @example <List>{["One", "Two", "Three"]}</List>
  * @example <List ordered>{["First", "Second"]}</List>
- * @see https://dhoulb.github.io/shelving/ui/block/List/List
+ * @see https://shelving.cc/ui/List
  */
 export function List({ children, ordered = false, ...props }: ListProps): ReactElement {
 	const items = children.map((v, i) => <li key={i.toString()}>{v}</li>);

@@ -8,7 +8,7 @@ import { getDictionaryItems, type ImmutableDictionary, isDictionary } from "../.
  * - `null` or `undefined` — ignored.
  * - Array of classnames — recursively parsed.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/css/Classes
+ * @see https://shelving.cc/ui/Classes
  */
 export type Classes = string | null | undefined | readonly Classes[] | Variants;
 
@@ -21,7 +21,7 @@ export type Classes = string | null | undefined | readonly Classes[] | Variants;
  * Typed as `object` (not `Data`/`Record<string, unknown>`) so plain `interface` types are accepted —
  * interfaces lack an implicit string index signature, so they don't satisfy index-signature types.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/css/Variants
+ * @see https://shelving.cc/ui/Variants
  */
 export interface Variants {
 	readonly [key: string]: boolean;
@@ -30,7 +30,7 @@ export interface Variants {
 /**
  * CSS modules mapping of local class names to hashed runtime class names.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/css/CSSModule
+ * @see https://shelving.cc/ui/CSSModule
  */
 export type CSSModule = ImmutableDictionary<string | undefined>;
 
@@ -41,7 +41,7 @@ export type CSSModule = ImmutableDictionary<string | undefined>;
  * @param classes The input set of classes to merge.
  * @returns The merged string classname.
  * @example getClass("button", { active: true, disabled: false }) // "button active"
- * @see https://dhoulb.github.io/shelving/ui/util/css/getClass
+ * @see https://shelving.cc/ui/getClass
  */
 export function getClass(...classes: unknown[]): string {
 	return Array.from(getClasses(classes)).join(" ");
@@ -80,7 +80,7 @@ function* getClasses(classes: unknown): Iterable<string> {
  * @param classes Class keys/values to merge.
  * @returns The merged string classname, or `undefined` when `module` is a string (unprocessed CSS module).
  * @example getModuleClass(styles, "base", { active: true }) // "base_x7q active_p2k"
- * @see https://dhoulb.github.io/shelving/ui/util/css/getModuleClass
+ * @see https://shelving.cc/ui/getModuleClass
  */
 export function getModuleClass(module: CSSModule | string, ...classes: unknown[]): string | undefined {
 	if (isDictionary(module)) return Array.from(getModuleClasses(module, classes)).join(" ");

@@ -6,7 +6,7 @@ import { flattenTree, type TreeElement } from "../../util/tree.js";
  *
  * - Keyed by flat name (`"BooleanSchema"`, `"Class.member"`) and canonical path (`"/schema/BooleanSchema"`) for fast cross-reference lookup.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/TreeContext
+ * @see https://shelving.cc/ui/TreeContext
  */
 export const TreeContext = createContext<ReadonlyMap<string, TreeElement>>(new Map());
 TreeContext.displayName = "TreeContext";
@@ -21,7 +21,7 @@ TreeContext.displayName = "TreeContext";
  * @returns A `<TreeContext>` provider wrapping the children with the flattened map.
  * @kind component
  * @example <TreeProvider tree={tree}>{children}</TreeProvider>
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/TreeProvider
+ * @see https://shelving.cc/ui/TreeProvider
  */
 export function TreeProvider({ tree, children }: { readonly tree: TreeElement; readonly children: ReactNode }): ReactNode {
 	const parent = use(TreeContext);
@@ -36,7 +36,7 @@ export function TreeProvider({ tree, children }: { readonly tree: TreeElement; r
  *
  * @returns The flattened `key` → `element` map, or an empty map when no `<TreeProvider>` is present.
  * @example const element = useTreeMap().get("Store.get");
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/useTreeMap
+ * @see https://shelving.cc/ui/useTreeMap
  */
 export function useTreeMap(): ReadonlyMap<string, TreeElement> {
 	return use(TreeContext);
@@ -54,7 +54,7 @@ export function useTreeMap(): ReadonlyMap<string, TreeElement> {
  * @param ref The reference string — a flat key, canonical path, or token written in its display form.
  * @returns The resolved element, or `undefined` on a miss.
  * @example getTreeElement(useTreeMap(), "formatDate()") // the `formatDate` element
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeContext/getTreeElement
+ * @see https://shelving.cc/ui/getTreeElement
  */
 export function getTreeElement(map: ReadonlyMap<string, TreeElement>, ref: string): TreeElement | undefined {
 	const exact = map.get(ref);

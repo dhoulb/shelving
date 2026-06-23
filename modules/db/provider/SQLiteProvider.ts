@@ -17,7 +17,7 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
  * @example
  *  class MyProvider extends SQLiteProvider { async exec(strings, ...values) { ... } }
  *  const item = await new MyProvider().getItem(collection, "abc");
- * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider
+ * @see https://shelving.cc/db/SQLiteProvider
  */
 export abstract class SQLiteProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
 	/**
@@ -28,7 +28,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	 * @param data The data of the item to insert.
 	 * @returns Promise resolving to the ID of the inserted item.
 	 * @example await provider.addItem(collection, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/addItem
+	 * @see https://shelving.cc/db/SQLiteProvider/addItem
 	 */
 	// SQLite has no native UUID generation, so when the collection uses a `StringSchema` ID
 	// we generate the UUID client-side and delegate to `setItem`.
@@ -57,7 +57,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	 * @param key The key segments identifying the column and any nested JSON path.
 	 * @returns An `SQLFragment` extracting the value.
 	 * @example this.sqlExtract(["a", "b"]); // json_extract("a", $.b)
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlExtract
+	 * @see https://shelving.cc/db/SQLiteProvider/sqlExtract
 	 */
 	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
@@ -75,7 +75,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a", "b"], value: 1 })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlUpdate
+	 * @see https://shelving.cc/db/SQLiteProvider/sqlUpdate
 	 */
 	override sqlUpdate(update: Update): SQLFragment {
 		const { action, key, value } = update;
@@ -148,7 +148,7 @@ export abstract class SQLiteProvider<I extends Identifier = Identifier, T extend
 	 * @returns The composed `SQLFragment`.
 	 * @throws {UnimplementedError} If the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["tags"], operator: "contains", value: "x" })
-	 * @see https://dhoulb.github.io/shelving/db/provider/SQLiteProvider/SQLiteProvider/sqlFilter
+	 * @see https://shelving.cc/db/SQLiteProvider/sqlFilter
 	 */
 	override sqlFilter(filter: QueryFilter): SQLFragment {
 		const { key, operator, value } = filter;

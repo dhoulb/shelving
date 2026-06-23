@@ -6,7 +6,7 @@ import { getTreeElement, useTreeMap } from "./TreeContext.js";
 /**
  * Props for the `TreeLink` component — the element reference plus an optional label.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeLink/TreeLinkProps
+ * @see https://shelving.cc/ui/TreeLinkProps
  */
 export interface TreeLinkProps extends CodeProps {
 	/** Reference to an element in the tree — a flat key (`"BooleanSchema"`, `"Store.get"`) or a canonical path (`"/schema/BooleanSchema"`). */
@@ -23,7 +23,7 @@ export interface TreeLinkProps extends CodeProps {
  * @kind component
  * @returns A `<Code>` token, wrapped in a `<Link>` when the reference resolves.
  * @example <TreeLink name="BooleanSchema" />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeLink/TreeLink
+ * @see https://shelving.cc/ui/TreeLink
  */
 export function TreeLink({ name, children, ...props }: TreeLinkProps): ReactElement {
 	const href = getTreeElement(useTreeMap(), name)?.props.path;

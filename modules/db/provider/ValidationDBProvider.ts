@@ -21,7 +21,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  *  const provider = new ValidationDBProvider(new FirestoreProvider());
  *  await provider.setItem(users, 123, { name: "Dave", age: 40 }); // Validates before writing.
  *
- * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider
+ * @see https://shelving.cc/db/ValidationDBProvider
  */
 export class ValidationDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
 	/**
@@ -32,7 +32,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @returns The validated item, or `undefined` if no item exists with that id.
 	 * @throws `ValueError` if the stored item does not validate against the collection schema.
 	 * @example await provider.getItem(users, 123) // Validated item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getItem
+	 * @see https://shelving.cc/db/ValidationDBProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return _validateItem(collection, await super.getItem(collection, id), this.getItem);
@@ -46,7 +46,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @returns Async sequence yielding the validated item (or `undefined`) on every change.
 	 * @throws `ValueError` if an emitted item does not validate against the collection schema.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getItemSequence
+	 * @see https://shelving.cc/db/ValidationDBProvider/getItemSequence
 	 */
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -63,7 +63,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @returns The validated generated identifier for the new item.
 	 * @throws `ValueError` if the data or returned id does not validate against the collection schema.
 	 * @example await provider.addItem(users, { name: "Dave", age: 40 }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/addItem
+	 * @see https://shelving.cc/db/ValidationDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return _validateIdentifier(collection, await super.addItem(collection, collection.validate(data)), this.addItem);
@@ -77,7 +77,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param data Full data to store for the item (validated before writing).
 	 * @throws `ValueError` if the data does not validate against the collection schema.
 	 * @example await provider.setItem(users, 123, { name: "Dave", age: 40 });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/setItem
+	 * @see https://shelving.cc/db/ValidationDBProvider/setItem
 	 */
 	override setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		return super.setItem(collection, id, collection.validate(data));
@@ -91,7 +91,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param updates Updates to apply (validated before writing).
 	 * @throws `ValueError` if the updates do not validate against the collection schema.
 	 * @example await provider.updateItem(users, 123, { age: 41 });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/updateItem
+	 * @see https://shelving.cc/db/ValidationDBProvider/updateItem
 	 */
 	override updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -108,7 +108,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/countQuery
+	 * @see https://shelving.cc/db/ValidationDBProvider/countQuery
 	 */
 	override countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return super.countQuery(collection, query);
@@ -122,7 +122,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @returns An array of validated matching items.
 	 * @throws `ValueError` if one or more stored items do not validate against the collection schema.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Validated items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getQuery
+	 * @see https://shelving.cc/db/ValidationDBProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -139,7 +139,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @returns Async sequence yielding the validated matching items on every change.
 	 * @throws `ValueError` if one or more emitted items do not validate against the collection schema.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/ValidationDBProvider/getQuerySequence
 	 */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -156,7 +156,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param data Full data to store for each matching item (validated before writing).
 	 * @throws `ValueError` if the data does not validate against the collection schema.
 	 * @example await provider.setQuery(users, { age: 40 }, { name: "Dave", age: 41 });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/setQuery
+	 * @see https://shelving.cc/db/ValidationDBProvider/setQuery
 	 */
 	override setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -174,7 +174,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param updates Updates to apply to each matching item (validated before writing).
 	 * @throws `ValueError` if the updates do not validate against the collection schema.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/updateQuery
+	 * @see https://shelving.cc/db/ValidationDBProvider/updateQuery
 	 */
 	override updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -190,7 +190,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/ValidationDBProvider/ValidationDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/ValidationDBProvider/deleteQuery
 	 */
 	override deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
 		return super.deleteQuery(collection, query);

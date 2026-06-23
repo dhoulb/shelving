@@ -8,7 +8,7 @@ import { isObject } from "./object.js";
  * The `SAME` symbol indicates sameness.
  * - Returned by the diff functions when two values are deeply equal and no transformation is needed.
  *
- * @see https://dhoulb.github.io/shelving/util/diff/SAME
+ * @see https://shelving.cc/util/diff/SAME
  */
 export const SAME: unique symbol = Symbol("shelving/SAME");
 
@@ -26,7 +26,7 @@ export const SAME: unique symbol = Symbol("shelving/SAME");
  *
  * @example deepDiff({ a: 1 }, { a: 1 }) // SAME
  * @example deepDiff({ a: 1 }, { a: 2 }) // { a: 2 }
- * @see https://dhoulb.github.io/shelving/util/diff/deepDiff
+ * @see https://shelving.cc/util/diff/deepDiff
  */
 export function deepDiff<R extends ImmutableObject>(left: unknown, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiff<R>(left: unknown, right: R): R | typeof SAME;
@@ -47,7 +47,7 @@ export function deepDiff(left: unknown, right: unknown): unknown {
  * - If the two values are deeply equal the `SAME` constant is returned.
  * @example deepDiffArray([1, 2], [1, 2]) // SAME
  * @example deepDiffArray([1, 2], [1, 3]) // [1, 3]
- * @see https://dhoulb.github.io/shelving/util/diff/deepDiffArray
+ * @see https://shelving.cc/util/diff/deepDiffArray
  */
 export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, right: R): R | typeof SAME {
 	if (left === right) return SAME;
@@ -68,7 +68,7 @@ export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, ri
  * - If `left` isn't an object then the result can't be diffed so entire `right` is returned.
  * @example deepDiffObject({ a: 1 }, { a: 1 }) // SAME
  * @example deepDiffObject({ a: 1, b: 2 }, { a: 1 }) // { b: undefined }
- * @see https://dhoulb.github.io/shelving/util/diff/deepDiffObject
+ * @see https://shelving.cc/util/diff/deepDiffObject
  */
 export function deepDiffObject<R extends ImmutableObject>(left: ImmutableObject, right: R): R | DeepPartial<R> | typeof SAME;
 export function deepDiffObject(left: ImmutableObject, right: ImmutableObject): ImmutableObject | typeof SAME {

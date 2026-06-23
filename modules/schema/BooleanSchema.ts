@@ -5,7 +5,7 @@ import { Schema } from "./Schema.js";
 /**
  * Allowed options for `BooleanSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchemaOptions
+ * @see https://shelving.cc/schema/BooleanSchemaOptions
  */
 export interface BooleanSchemaOptions extends SchemaOptions {
 	/**
@@ -33,7 +33,7 @@ const NEGATIVE = ["", "false", "0", "no", "n", "off"];
  *  schema.validate("yes"); // Returns true
  *  schema.validate(""); // Throws "Required"
  *
- * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchema
+ * @see https://shelving.cc/schema/BooleanSchema
  */
 export class BooleanSchema extends Schema<boolean> {
 	declare readonly value: boolean;
@@ -55,7 +55,7 @@ export class BooleanSchema extends Schema<boolean> {
 	 * @example
 	 *  BOOLEAN.validate("yes"); // Returns true
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchema/validate
+	 * @see https://shelving.cc/schema/BooleanSchema/validate
 	 */
 	validate(unsafeValue: unknown = this.value): boolean {
 		const value: boolean = typeof unsafeValue === "string" ? !NEGATIVE.includes(unsafeValue.toLowerCase().trim()) : !!unsafeValue;
@@ -71,7 +71,7 @@ export class BooleanSchema extends Schema<boolean> {
 	 * @example
 	 *  BOOLEAN.format(true); // Returns "Yes"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BooleanSchema/format
+	 * @see https://shelving.cc/schema/BooleanSchema/format
 	 */
 	override format(value: boolean): string {
 		return formatBoolean(value);
@@ -84,6 +84,6 @@ export class BooleanSchema extends Schema<boolean> {
  * @example
  *  BOOLEAN.validate("yes"); // Returns true
  *
- * @see https://dhoulb.github.io/shelving/schema/BooleanSchema/BOOLEAN
+ * @see https://shelving.cc/schema/BOOLEAN
  */
 export const BOOLEAN = new BooleanSchema({});

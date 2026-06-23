@@ -16,7 +16,7 @@ const MENU_ACTIVE_CLASS = getModuleClass(MENU_CSS, "active");
 /**
  * Props for `<Menu>` — optional `<MenuItem>` `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/menu/Menu/MenuProps
+ * @see https://shelving.cc/ui/MenuProps
  */
 export interface MenuProps extends OptionalChildProps {}
 
@@ -29,7 +29,7 @@ export interface MenuProps extends OptionalChildProps {}
  * @param children The `<MenuItem>` entries to list.
  * @returns The menu element.
  * @example <Menu><MenuItem href="/home">Home</MenuItem></Menu>
- * @see https://dhoulb.github.io/shelving/ui/menu/Menu/Menu
+ * @see https://shelving.cc/ui/Menu
  */
 export function Menu({ children }: MenuProps): ReactNode {
 	return <menu className={MENU_CLASS}>{children}</menu>;
@@ -38,7 +38,7 @@ export function Menu({ children }: MenuProps): ReactNode {
 /**
  * Props for `<MenuItem>` — `<Clickable>` props plus `children` whose first node is the label and the rest the submenu.
  *
- * @see https://dhoulb.github.io/shelving/ui/menu/Menu/MenuItemProps
+ * @see https://shelving.cc/ui/MenuItemProps
  */
 export interface MenuItemProps extends ClickableProps {
 	/**
@@ -58,7 +58,7 @@ export interface MenuItemProps extends ClickableProps {
  * @param children The label (first node) and optional submenu (remaining nodes).
  * @returns The menu item element.
  * @example <MenuItem href="/settings">Settings</MenuItem>
- * @see https://dhoulb.github.io/shelving/ui/menu/Menu/MenuItem
+ * @see https://shelving.cc/ui/MenuItem
  */
 export function MenuItem({ href, children, ...props }: MenuItemProps): ReactNode {
 	const { url, root } = requireMeta();

@@ -6,56 +6,56 @@ import { isIterable, limitItems } from "./iterate.js";
 /**
  * `Map` that cannot be changed.
  *
- * @see https://dhoulb.github.io/shelving/util/map/ImmutableMap
+ * @see https://shelving.cc/util/map/ImmutableMap
  */
 export type ImmutableMap<K = unknown, T = unknown> = ReadonlyMap<K, T>;
 
 /**
  * Class for a `Map` that cannot be changed (so you can extend `Map` while implementing `ImmutableMap`).
  *
- * @see https://dhoulb.github.io/shelving/util/map/ImmutableMap
+ * @see https://shelving.cc/util/map/ImmutableMap
  */
 export const ImmutableMap: { new <K, T>(...params: ConstructorParameters<typeof Map<K, T>>): ImmutableMap<K, T> } = Map;
 
 /**
  * `Map` that can be changed.
  *
- * @see https://dhoulb.github.io/shelving/util/map/MutableMap
+ * @see https://shelving.cc/util/map/MutableMap
  */
 export type MutableMap<K = unknown, T = unknown> = Map<K, T>;
 
 /**
  * Extract the type for the key of a map.
  *
- * @see https://dhoulb.github.io/shelving/util/map/MapKey
+ * @see https://shelving.cc/util/map/MapKey
  */
 export type MapKey<X> = X extends ReadonlyMap<infer Y, unknown> ? Y : never;
 
 /**
  * Extract the type for the value of a map.
  *
- * @see https://dhoulb.github.io/shelving/util/map/MapValue
+ * @see https://shelving.cc/util/map/MapValue
  */
 export type MapValue<X> = X extends ReadonlyMap<unknown, infer Y> ? Y : never;
 
 /**
  * Get the type for an item of a map in entry format.
  *
- * @see https://dhoulb.github.io/shelving/util/map/MapItem
+ * @see https://shelving.cc/util/map/MapItem
  */
 export type MapItem<T extends ImmutableMap> = readonly [MapKey<T>, MapValue<T>];
 
 /**
  * Things that can be converted to maps.
  *
- * @see https://dhoulb.github.io/shelving/util/map/PossibleMap
+ * @see https://shelving.cc/util/map/PossibleMap
  */
 export type PossibleMap<K, T> = ImmutableMap<K, T> | Iterable<Entry<K, T>>;
 
 /**
  * Things that can be converted to maps with string keys.
  *
- * @see https://dhoulb.github.io/shelving/util/map/PossibleStringMap
+ * @see https://shelving.cc/util/map/PossibleStringMap
  */
 export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { readonly [KK in K]: T };
 
@@ -65,7 +65,7 @@ export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { reado
  * @param value The value to test.
  * @returns `true` if `value` is a `Map` instance, otherwise `false`.
  * @example isMap(new Map()) // true
- * @see https://dhoulb.github.io/shelving/util/map/isMap
+ * @see https://shelving.cc/util/map/isMap
  */
 export function isMap(value: unknown): value is ImmutableMap {
 	return value instanceof Map;
@@ -79,7 +79,7 @@ export function isMap(value: unknown): value is ImmutableMap {
  * @returns Nothing; narrows `value` to `ImmutableMap`.
  * @throws {RequiredError} If `value` is not a `Map` instance.
  * @example assertMap(new Map()); // passes
- * @see https://dhoulb.github.io/shelving/util/map/assertMap
+ * @see https://shelving.cc/util/map/assertMap
  */
 export function assertMap(value: unknown, caller: AnyCaller = assertMap): asserts value is ImmutableMap {
 	if (!isMap(value)) throw new RequiredError("Must be map", { received: value, caller });
@@ -91,7 +91,7 @@ export function assertMap(value: unknown, caller: AnyCaller = assertMap): assert
  * @param input The map, object, or iterable of entries to convert.
  * @returns An `ImmutableMap` — the input unchanged if it's already a `Map`, otherwise a new `Map`.
  * @example getMap({ a: 1, b: 2 }) // Map { "a" => 1, "b" => 2 }
- * @see https://dhoulb.github.io/shelving/util/map/getMap
+ * @see https://shelving.cc/util/map/getMap
  */
 export function getMap<K extends string, T>(input: PossibleStringMap<K, T>): ImmutableMap<K, T>;
 export function getMap<K, T>(input: PossibleMap<K, T>): ImmutableMap<K, T>;
@@ -107,7 +107,7 @@ export function getMap(input: PossibleMap<unknown, unknown> | { readonly [key: s
  * @param limit The maximum number of items to keep.
  * @returns An `ImmutableMap` with at most `limit` items (the input map unchanged if it already fits).
  * @example limitMap(new Map([["a", 1], ["b", 2]]), 1) // Map { "a" => 1 }
- * @see https://dhoulb.github.io/shelving/util/map/limitMap
+ * @see https://shelving.cc/util/map/limitMap
  */
 export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T> {
 	return limit > map.size ? map : new Map(limitItems(map, limit));
@@ -120,7 +120,7 @@ export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T
  * @param key The candidate key to test.
  * @returns `true` if `key` exists in `map`, otherwise `false`.
  * @example isMapItem(new Map([["a", 1]]), "a") // true
- * @see https://dhoulb.github.io/shelving/util/map/isMapItem
+ * @see https://shelving.cc/util/map/isMapItem
  */
 export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K {
 	return map.has(key as K);
@@ -135,7 +135,7 @@ export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
  * @returns Nothing; narrows `key` to the map's key type.
  * @throws {RequiredError} If `key` does not exist in `map`.
  * @example assertMapItem(new Map([["a", 1]]), "a"); // passes
- * @see https://dhoulb.github.io/shelving/util/map/assertMapItem
+ * @see https://shelving.cc/util/map/assertMapItem
  */
 export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown, caller: AnyCaller = assertMapItem): asserts key is K {
 	if (!isMapItem(map, key)) throw new RequiredError("Key must exist in map", { key, map, caller });
@@ -149,7 +149,7 @@ export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown, calle
  * @param value The value to set.
  * @returns The `value` that was set.
  * @example setMapItem(map, "a", 1) // 1
- * @see https://dhoulb.github.io/shelving/util/map/setMapItem
+ * @see https://shelving.cc/util/map/setMapItem
  */
 export function setMapItem<K, T>(map: MutableMap<K, T>, key: K, value: T): T {
 	map.set(key, value);
@@ -163,7 +163,7 @@ export function setMapItem<K, T>(map: MutableMap<K, T>, key: K, value: T): T {
  * @param items Iterable of key/value entries to set.
  * @returns Nothing; mutates `map` in place.
  * @example setMapItems(map, [["a", 1], ["b", 2]]);
- * @see https://dhoulb.github.io/shelving/util/map/setMapItems
+ * @see https://shelving.cc/util/map/setMapItems
  */
 export function setMapItems<K, T>(map: MutableMap<K, T>, items: Iterable<MapItem<ImmutableMap<K, T>>>): void {
 	for (const [k, v] of items) map.set(k, v);
@@ -176,7 +176,7 @@ export function setMapItems<K, T>(map: MutableMap<K, T>, items: Iterable<MapItem
  * @param keys The keys to delete.
  * @returns Nothing; mutates `map` in place.
  * @example removeMapItems(map, "a", "b");
- * @see https://dhoulb.github.io/shelving/util/map/removeMapItems
+ * @see https://shelving.cc/util/map/removeMapItems
  */
 export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void {
 	for (const key of keys) map.delete(key);
@@ -189,7 +189,7 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
  * @param key The key to look up.
  * @returns The value for `key`, or `undefined` if it doesn't exist.
  * @example getMapItem(new Map([["a", 1]]), "a") // 1
- * @see https://dhoulb.github.io/shelving/util/map/getMapItem
+ * @see https://shelving.cc/util/map/getMapItem
  */
 export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
 	return map.get(key);
@@ -204,7 +204,7 @@ export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined
  * @returns The value for `key`.
  * @throws {RequiredError} If `key` does not exist in `map`.
  * @example requireMapItem(new Map([["a", 1]]), "a") // 1
- * @see https://dhoulb.github.io/shelving/util/map/requireMapItem
+ * @see https://shelving.cc/util/map/requireMapItem
  */
 export function requireMapItem<K, T>(map: ImmutableMap<K, T>, key: K, caller: AnyCaller = requireMapItem): T {
 	if (!map.has(key)) throw new RequiredError("Key must exist in map", { key, map, caller });

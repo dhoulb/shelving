@@ -8,7 +8,7 @@ import { Schema } from "./Schema.js";
 /**
  * Options for `ArraySchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchemaOptions
+ * @see https://shelving.cc/schema/ArraySchemaOptions
  */
 export interface ArraySchemaOptions<T> extends SchemaOptions {
 	/**
@@ -60,7 +60,7 @@ export interface ArraySchemaOptions<T> extends SchemaOptions {
  *  schema.validate(["a", "a"], schema); // Returns ["a", "a"]
  *  schema.validate(["a", null], schema); // Throws Invalids({ "1": Invalid('Must be a string') });
  *
- * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema
+ * @see https://shelving.cc/schema/ArraySchema
  */
 export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	declare readonly value: ImmutableArray<T>;
@@ -100,7 +100,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	 * @returns The valid array with each item validated by the `items` schema.
 	 * @throws `string` `"Must be array"` if not an array, `"Required"` or `` `Minimum ${min} ${many}` `` if too few items, or `` `Maximum ${max} ${many}` `` if too many.
 	 * @example schema.validate([1, 2, 3]) // [1, 2, 3]
-	 * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema/validate
+	 * @see https://shelving.cc/schema/ArraySchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): ImmutableArray<T> {
 		const unsafeArray = typeof unsafeValue === "string" ? unsafeValue.split(this.separator).filter(Boolean) : unsafeValue;
@@ -118,7 +118,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
 	 * @param arr The valid array to format.
 	 * @returns The array's items formatted as a human-readable string.
 	 * @example schema.format([1, 2, 3]) // "1, 2, 3"
-	 * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ArraySchema/format
+	 * @see https://shelving.cc/schema/ArraySchema/format
 	 */
 	override format(arr: ImmutableArray<T>): string {
 		return formatArray(
@@ -136,7 +136,7 @@ export class ArraySchema<T> extends Schema<ImmutableArray<T>> {
  *
  * @param items Schema every item in the array must conform to.
  * @example ARRAY(NUMBER) // ArraySchema<number>
- * @see https://dhoulb.github.io/shelving/schema/ArraySchema/ARRAY
+ * @see https://shelving.cc/schema/ARRAY
  */
 export function ARRAY<T>(items: Schema<T>): ArraySchema<T> {
 	return new ArraySchema({ items });

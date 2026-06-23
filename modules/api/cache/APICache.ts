@@ -15,7 +15,7 @@ import { EndpointCache } from "./EndpointCache.js";
  * const cache = new APICache(provider);
  * const user = await cache.call(getUser, { id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache
+ * @see https://shelving.cc/api/APICache
  */
 export class APICache<P, R> implements AsyncDisposable {
 	private readonly _endpoints = new Map<Endpoint, EndpointCache>();
@@ -23,7 +23,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	/**
 	 * The underlying `APIProvider` that backs every cached endpoint.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/provider
+	 * @see https://shelving.cc/api/APICache/provider
 	 */
 	readonly provider: APIProvider<P, R>;
 
@@ -32,7 +32,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 *
 	 * @param provider The `APIProvider` used to fetch results for every cached endpoint.
 	 * @example new APICache(provider)
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache
+	 * @see https://shelving.cc/api/APICache
 	 */
 	constructor(provider: APIProvider<P, R>) {
 		this.provider = provider;
@@ -49,7 +49,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @param endpoint The endpoint whose `EndpointCache` should be returned.
 	 * @returns The existing `EndpointCache` for `endpoint`, or a newly created one.
 	 * @example cache.get(getUser).get({ id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/get
+	 * @see https://shelving.cc/api/APICache/get
 	 */
 	get<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): EndpointCache<PP, RR>;
 	get(endpoint: Endpoint): EndpointCache {
@@ -69,7 +69,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @returns The cached or freshly fetched result.
 	 * @throws Whatever `APIProvider.call` throws if the fetch fails.
 	 * @example await cache.call(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/call
+	 * @see https://shelving.cc/api/APICache/call
 	 */
 	async call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -86,7 +86,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @param endpoint The endpoint whose cached payload should be invalidated.
 	 * @param payload The payload identifying the specific store to invalidate.
 	 * @example cache.invalidate(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/invalidate
+	 * @see https://shelving.cc/api/APICache/invalidate
 	 */
 	invalidate<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
 		this._get(endpoint)?.invalidate(payload);
@@ -97,7 +97,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 *
 	 * @param endpoint The endpoint whose stores should all be invalidated.
 	 * @example cache.invalidateAll(getUser)
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/invalidateAll
+	 * @see https://shelving.cc/api/APICache/invalidateAll
 	 */
 	invalidateAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
 		this._get(endpoint)?.invalidateAll();
@@ -110,7 +110,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @param payload The payload identifying the specific store to refresh.
 	 * @param maxAge The maximum age in milliseconds before a refetch is triggered.
 	 * @example cache.refresh(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/refresh
+	 * @see https://shelving.cc/api/APICache/refresh
 	 */
 	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, maxAge?: number): void {
 		this._get(endpoint)?.refresh(payload, maxAge);
@@ -122,7 +122,7 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @param endpoint The endpoint whose stores should all be refreshed.
 	 * @param maxAge The maximum age in milliseconds before a refetch is triggered.
 	 * @example cache.refreshAll(getUser)
-	 * @see https://dhoulb.github.io/shelving/api/cache/APICache/APICache/refreshAll
+	 * @see https://shelving.cc/api/APICache/refreshAll
 	 */
 	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, maxAge?: number): void {
 		this._get(endpoint)?.refreshAll(maxAge);

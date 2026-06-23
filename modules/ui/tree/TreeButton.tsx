@@ -5,7 +5,7 @@ import { getTreeElement, useTreeMap } from "./TreeContext.js";
 /**
  * Props for the `TreeButton` component — the element reference plus button variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeButton/TreeButtonProps
+ * @see https://shelving.cc/ui/TreeButtonProps
  */
 export interface TreeButtonProps extends ButtonVariants {
 	/** Reference to an element in the tree — a flat key (`"Store"`, `"Store.get"`) or a canonical path (`"/schema/BooleanSchema"`). */
@@ -24,7 +24,7 @@ export interface TreeButtonProps extends ButtonVariants {
  * @returns A `<Button>` element linking to the resolved element, or a plain label on a miss.
  * @kind component
  * @example <TreeButton name="Store.get">Store.get()</TreeButton>
- * @see https://dhoulb.github.io/shelving/ui/tree/TreeButton/TreeButton
+ * @see https://shelving.cc/ui/TreeButton
  */
 export function TreeButton({ name, children, small = true, plain = true, ...variants }: TreeButtonProps): ReactElement {
 	const element = getTreeElement(useTreeMap(), name);

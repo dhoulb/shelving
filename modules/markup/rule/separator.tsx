@@ -9,7 +9,7 @@ import { createLineRegExp } from "../util/regexp.js";
  * - Might have infinite number of spaces between the characters.
  *
  * @example new MarkupParser({ rules: [SEPARATOR_RULE] }).parse("---")
- * @see https://dhoulb.github.io/shelving/markup/rule/separator/SEPARATOR_RULE
+ * @see https://shelving.cc/markup/SEPARATOR_RULE
  */
 export const SEPARATOR_RULE = createMarkupRule(
 	createLineRegExp("([-*•+_=])(?: *\\1){2,}"), //

@@ -10,7 +10,7 @@ type NumberFormatter = (num: number) => string;
 /**
  * Props for `NumberInput`, a text-based numeric input bound to a `number` value.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInputProps
+ * @see https://shelving.cc/ui/NumberInputProps
  */
 export interface NumberInputProps extends ValueInputProps<number>, InputVariants {
 	min?: number | undefined;
@@ -25,7 +25,7 @@ export interface NumberInputProps extends ValueInputProps<number>, InputVariants
  *
  * @returns A numeric `<input>` element.
  * @example <NumberInput name="age" value={age} onValue={setAge} />
- * @see https://dhoulb.github.io/shelving/ui/form/NumberInput/NumberInput
+ * @see https://shelving.cc/ui/NumberInput
  */
 export function NumberInput({
 	name,

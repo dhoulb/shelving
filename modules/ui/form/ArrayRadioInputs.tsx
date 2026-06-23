@@ -8,7 +8,7 @@ import { RadioInput } from "./RadioInput.js";
 /**
  * Props for `ArrayRadioInputs`, which renders a radio for each item in an array of values.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/ArrayRadioInputs/ArrayRadioInputsProps
+ * @see https://shelving.cc/ui/ArrayRadioInputsProps
  */
 export interface ArrayRadioInputsProps<T> extends ValueInputProps<T> {
 	/** Array of values to show in the list of radios. */
@@ -24,7 +24,7 @@ export interface ArrayRadioInputsProps<T> extends ValueInputProps<T> {
  *
  * @returns Element rendering one radio per item plus an optional empty placeholder radio.
  * @example <ArrayRadioInputs name="size" items={["s", "m", "l"]} value={size} onValue={setSize} />
- * @see https://dhoulb.github.io/shelving/ui/form/ArrayRadioInputs/ArrayRadioInputs
+ * @see https://shelving.cc/ui/ArrayRadioInputs
  */
 export function ArrayRadioInputs<T>({
 	value,

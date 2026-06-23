@@ -21,19 +21,19 @@ import { CollectionCache } from "./CollectionCache.js";
  * @example
  *  const cache = new DBCache(provider);
  *  const store = cache.getItem(collection, "abc");
- * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache
+ * @see https://shelving.cc/db/DBCache
  */
 export class DBCache<I extends Identifier = Identifier, T extends Data = Data> implements AsyncDisposable {
 	private readonly _collections = new Map<Collection<string, I, T>, CollectionCache<I, T>>();
 
 	/**
 	 * The database provider the cached stores fetch from.
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/provider
+	 * @see https://shelving.cc/db/DBCache/provider
 	 */
 	readonly provider: DBProvider<I, T>;
 	/**
 	 * Memory provider reused from the provider chain to seed stores synchronously, if available.
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/memory
+	 * @see https://shelving.cc/db/DBCache/memory
 	 */
 	readonly memory: MemoryDBProvider<I, T> | undefined;
 
@@ -60,7 +60,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param collection The collection to get a cache for.
 	 * @returns The cached (or newly created) `CollectionCache` for the collection.
 	 * @example cache.get(collection)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/get
+	 * @see https://shelving.cc/db/DBCache/get
 	 */
 	get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT>;
 	get(collection: Collection<string, I, T>): CollectionCache<I, T> {
@@ -74,7 +74,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param id The ID of the item to get a store for.
 	 * @returns The cached (or newly created) `ItemStore`.
 	 * @example cache.getItem(collection, "abc")
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/getItem
+	 * @see https://shelving.cc/db/DBCache/getItem
 	 */
 	getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): ItemStore<II, TT> {
 		return this.get(collection).getItem(id);
@@ -87,7 +87,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param query The query to get a store for.
 	 * @returns The cached (or newly created) `QueryStore`.
 	 * @example cache.getQuery(collection, query)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/getQuery
+	 * @see https://shelving.cc/db/DBCache/getQuery
 	 */
 	getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): QueryStore<II, TT> {
 		return this.get(collection).getQuery(query);
@@ -101,7 +101,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
 	 * @returns Promise that resolves once the refresh has completed.
 	 * @example await cache.refreshItem(collection, "abc")
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshItem
+	 * @see https://shelving.cc/db/DBCache/refreshItem
 	 */
 	async refreshItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshItem(id, maxAge);
@@ -114,7 +114,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
 	 * @returns Promise that resolves once every item store has refreshed.
 	 * @example await cache.refreshItems(collection)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshItems
+	 * @see https://shelving.cc/db/DBCache/refreshItems
 	 */
 	async refreshItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshItems(maxAge);
@@ -128,7 +128,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
 	 * @returns Promise that resolves once the refresh has completed.
 	 * @example await cache.refreshQuery(collection, query)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshQuery
+	 * @see https://shelving.cc/db/DBCache/refreshQuery
 	 */
 	async refreshQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -145,7 +145,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
 	 * @returns Promise that resolves once every query store has refreshed.
 	 * @example await cache.refreshQueries(collection)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshQueries
+	 * @see https://shelving.cc/db/DBCache/refreshQueries
 	 */
 	async refreshQueries<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshQueries(maxAge);
@@ -158,7 +158,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @param maxAge Maximum age in milliseconds of cached data that may be reused instead of refetching.
 	 * @returns Promise that resolves once every store has refreshed.
 	 * @example await cache.refreshAll(collection)
-	 * @see https://dhoulb.github.io/shelving/db/cache/DBCache/DBCache/refreshAll
+	 * @see https://shelving.cc/db/DBCache/refreshAll
 	 */
 	async refreshAll<II extends I, TT extends T>(collection: Collection<string, II, TT>, maxAge?: number): Promise<void> {
 		await this._get(collection)?.refreshAll(maxAge);

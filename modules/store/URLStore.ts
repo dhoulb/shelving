@@ -27,13 +27,13 @@ import { BusyStore } from "./BusyStore.js";
  * const store = new URLStore("https://top.com/a/b/c");
  * store.setParam("page", 2); // https://top.com/a/b/c?page=2
  * store.isActive("https://top.com/a/b/c?page=2"); // true
- * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore
+ * @see https://shelving.cc/store/URLStore
  */
 export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Base URL that relative URL inputs are resolved against, or `undefined` if none was set.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/base
+	 * @see https://shelving.cc/store/URLStore/base
 	 */
 	readonly base: ImmutableURL | undefined;
 
@@ -57,7 +57,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get or set the full URL string (e.g. `https://top.com/a/b/c?x=1`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/href
+	 * @see https://shelving.cc/store/URLStore/href
 	 */
 	get href(): URLString {
 		return this.value.href;
@@ -69,7 +69,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the origin of the URL (e.g. `https://top.com`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/origin
+	 * @see https://shelving.cc/store/URLStore/origin
 	 */
 	get origin(): URLString {
 		return this.value.origin;
@@ -78,7 +78,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the protocol/scheme of the URL (e.g. `https:`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/protocol
+	 * @see https://shelving.cc/store/URLStore/protocol
 	 */
 	get protocol(): URIScheme {
 		return this.value.protocol;
@@ -87,7 +87,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the username component of the URL.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/username
+	 * @see https://shelving.cc/store/URLStore/username
 	 */
 	get username(): string {
 		return this.value.username;
@@ -96,7 +96,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the password component of the URL.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/password
+	 * @see https://shelving.cc/store/URLStore/password
 	 */
 	get password(): string {
 		return this.value.password;
@@ -105,7 +105,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the hostname of the URL (e.g. `top.com`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/hostname
+	 * @see https://shelving.cc/store/URLStore/hostname
 	 */
 	get hostname(): string {
 		return this.value.hostname;
@@ -114,7 +114,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the host of the URL including port (e.g. `top.com:8080`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/host
+	 * @see https://shelving.cc/store/URLStore/host
 	 */
 	get host(): string {
 		return this.value.host;
@@ -123,7 +123,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the port of the URL, or an empty string if none is set.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/port
+	 * @see https://shelving.cc/store/URLStore/port
 	 */
 	get port(): string {
 		return this.value.port;
@@ -132,7 +132,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the absolute pathname of the URL (e.g. `/a/b/c`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/pathname
+	 * @see https://shelving.cc/store/URLStore/pathname
 	 */
 	get pathname(): AbsolutePath {
 		return this.value.pathname;
@@ -141,7 +141,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the URL params as a query string (e.g. `?x=1&y=2`).
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/search
+	 * @see https://shelving.cc/store/URLStore/search
 	 */
 	get search(): string {
 		return this.value.search;
@@ -150,7 +150,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Get the URL params as a dictionary of key/value pairs.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/params
+	 * @see https://shelving.cc/store/URLStore/params
 	 */
 	get params(): URIParams {
 		return getURIParams(this.value.searchParams, getGetter(this, "params"));
@@ -162,7 +162,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param key The name of the param to read.
 	 * @returns The param value, or `undefined` if it is not present.
 	 * @example store.getParam("page"); // "2"
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/getParam
+	 * @see https://shelving.cc/store/URLStore/getParam
 	 */
 	getParam(key: string): string | undefined {
 		return getURIParam(this.value.searchParams, key);
@@ -175,7 +175,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @returns The param value.
 	 * @throws {RequiredError} If the param is not present.
 	 * @example store.requireParam("page");
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/requireParam
+	 * @see https://shelving.cc/store/URLStore/requireParam
 	 */
 	requireParam(key: string): string | undefined {
 		return requireURIParam(this.value.searchParams, key, getSetter(this, "requireParam"));
@@ -187,7 +187,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param params The complete set of params to set.
 	 * @returns Nothing.
 	 * @example store.setParams({ page: 2, sort: "name" });
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/setParams
+	 * @see https://shelving.cc/store/URLStore/setParams
 	 */
 	setParams(params: PossibleURIParams): void {
 		this.value = withURIParams(clearURIParams(this.value, this.setParams), params, this.setParams);
@@ -200,7 +200,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param value The new value for the param.
 	 * @returns Nothing.
 	 * @example store.setParam("page", 2);
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/setParam
+	 * @see https://shelving.cc/store/URLStore/setParam
 	 */
 	setParam(key: string, value: unknown): void {
 		this.value = withURIParam(this.value, key, value, this.setParam);
@@ -212,7 +212,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param params The set of params to merge in.
 	 * @returns Nothing.
 	 * @example store.updateParams({ sort: "name" });
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/updateParams
+	 * @see https://shelving.cc/store/URLStore/updateParams
 	 */
 	updateParams(params: PossibleURIParams): void {
 		this.value = withURIParams(this.value, params, this.updateParams);
@@ -225,7 +225,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param keys Additional param names to delete.
 	 * @returns Nothing.
 	 * @example store.deleteParam("page", "sort");
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/deleteParam
+	 * @see https://shelving.cc/store/URLStore/deleteParam
 	 */
 	deleteParam(key: string, ...keys: string[]): void {
 		this.value = omitURIParams(this.value, key, ...keys);
@@ -238,7 +238,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param keys Additional param names to delete.
 	 * @returns Nothing.
 	 * @example store.deleteParams("page", "sort");
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/deleteParams
+	 * @see https://shelving.cc/store/URLStore/deleteParams
 	 */
 	deleteParams(key: string, ...keys: string[]): void {
 		this.value = omitURIParams(this.value, key, ...keys);
@@ -249,7 +249,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @returns Nothing.
 	 * @example store.clearParams();
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/clearParams
+	 * @see https://shelving.cc/store/URLStore/clearParams
 	 */
 	clearParams(): void {
 		this.value = clearURIParams(this.value, this.clearParams);
@@ -262,7 +262,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param value The value for the param.
 	 * @returns A new `ImmutableURL` with the param applied.
 	 * @example store.withParam("page", 2);
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/withParam
+	 * @see https://shelving.cc/store/URLStore/withParam
 	 */
 	withParam(key: string, value: unknown): ImmutableURL {
 		return withURIParam(this.value, key, value, this.withParam);
@@ -274,7 +274,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param params The params to add.
 	 * @returns A new `ImmutableURL` with the params applied.
 	 * @example store.withParams({ page: 2, sort: "name" });
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/withParams
+	 * @see https://shelving.cc/store/URLStore/withParams
 	 */
 	withParams(params: PossibleURIParams): ImmutableURL {
 		return withURIParams(this.value, params, this.withParams);
@@ -286,7 +286,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param keys The param names to remove.
 	 * @returns A new `ImmutableURL` with the params removed.
 	 * @example store.omitParams("page", "sort");
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/omitParams
+	 * @see https://shelving.cc/store/URLStore/omitParams
 	 */
 	omitParams(...keys: string[]): ImmutableURL {
 		return omitURIParams(this.value, ...keys);
@@ -298,7 +298,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @param key The param name to remove.
 	 * @returns A new `ImmutableURL` with the param removed.
 	 * @example store.omitParam("page");
-	 * @see https://dhoulb.github.io/shelving/store/URLStore/URLStore/omitParam
+	 * @see https://shelving.cc/store/URLStore/omitParam
 	 */
 	omitParam(key: string): ImmutableURL {
 		return omitURIParams(this.value, key);

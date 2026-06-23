@@ -11,7 +11,7 @@ import PREFORMATTED_CSS from "./Preformatted.module.css";
 /**
  * Props for `Preformatted` — space, colour, typography, width, and padding variants plus a `wrap` toggle.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/PreformattedProps
+ * @see https://shelving.cc/ui/PreformattedProps
  */
 export interface PreformattedProps
 	extends SpaceVariants,
@@ -32,7 +32,7 @@ export interface PreformattedProps
  * @returns Rendered `<pre>` element.
  * @kind component
  * @example <Preformatted>{"line one\nline two"}</Preformatted>
- * @see https://dhoulb.github.io/shelving/ui/block/Preformatted/Preformatted
+ * @see https://shelving.cc/ui/Preformatted
  */
 export function Preformatted({ children, ...variants }: PreformattedProps): ReactElement {
 	return (

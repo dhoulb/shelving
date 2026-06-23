@@ -11,7 +11,7 @@ import { useStore } from "./useStore.js";
 /**
  * Bundle of hooks and a provider component returned by `createAPIContext()`.
  *
- * @see https://dhoulb.github.io/shelving/react/createAPIContext/APIContext
+ * @see https://shelving.cc/react/APIContext
  */
 export interface APIContext<P, R> {
 	/** Get an `EndpointStore` for the specified endpoint/payload in the current `APIProvider` context. */
@@ -34,7 +34,7 @@ export interface APIContext<P, R> {
  *
  * @example const { useAPI, APIContext } = createAPIContext(provider);
  *
- * @see https://dhoulb.github.io/shelving/react/createAPIContext
+ * @see https://shelving.cc/react/createAPIContext
  */
 export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<P, R> {
 	const CacheContext = createContext<APICache<P, R> | undefined>(undefined);

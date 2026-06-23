@@ -8,7 +8,7 @@ import { TreeLink } from "../tree/TreeLink.js";
  *
  * @param type The type expression to split (e.g. `"Schemas<T> | DataSchema<T>"`).
  * @returns The non-`undefined` members, plus whether an `undefined` member was dropped.
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationType/splitType
+ * @see https://shelving.cc/ui/splitType
  */
 export function splitType(type: string): { readonly members: readonly string[]; readonly optional: boolean } {
 	const parts = type
@@ -22,7 +22,7 @@ export function splitType(type: string): { readonly members: readonly string[]; 
 /**
  * Props for `DocumentationType` — the union members to render (see [`splitType`](/ui/splitType)).
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationType/DocumentationTypeProps
+ * @see https://shelving.cc/ui/DocumentationTypeProps
  */
 export interface DocumentationTypeProps {
 	/** Union members to render — one linked token each, stacked on their own line. */
@@ -36,7 +36,7 @@ export interface DocumentationTypeProps {
  * @kind component
  * @returns One [`TreeLink`](/ui/TreeLink) per member, separated by line breaks.
  * @example <DocumentationType members={["Schemas<T>", "DataSchema<T>"]} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationType/DocumentationType
+ * @see https://shelving.cc/ui/DocumentationType
  */
 export function DocumentationType({ members }: DocumentationTypeProps): ReactNode {
 	return members.map((member, index) => (

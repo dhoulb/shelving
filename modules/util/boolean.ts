@@ -6,7 +6,7 @@ import type { AnyCaller } from "./function.js";
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `boolean`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/boolean/isBoolean
+ * @see https://shelving.cc/util/boolean/isBoolean
  */
 export function isBoolean(value: unknown): value is boolean {
 	return typeof value === "boolean";
@@ -17,7 +17,7 @@ export function isBoolean(value: unknown): value is boolean {
  *
  * @param value The value to test.
  * @returns `true` if `value` is the literal `true`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/boolean/isTrue
+ * @see https://shelving.cc/util/boolean/isTrue
  */
 export function isTrue(value: unknown): value is true {
 	return value === true;
@@ -28,7 +28,7 @@ export function isTrue(value: unknown): value is true {
  *
  * @param value The value to test.
  * @returns `true` if `value` is the literal `false`, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/boolean/isFalse
+ * @see https://shelving.cc/util/boolean/isFalse
  */
 export function isFalse(value: unknown): value is false {
 	return value === false;
@@ -39,7 +39,7 @@ export function isFalse(value: unknown): value is false {
  *
  * @param value The value to test.
  * @returns `true` if `value` coerces to `true`.
- * @see https://dhoulb.github.io/shelving/util/boolean/isTruthy
+ * @see https://shelving.cc/util/boolean/isTruthy
  */
 export function isTruthy(value: unknown): boolean {
 	return !!value;
@@ -50,7 +50,7 @@ export function isTruthy(value: unknown): boolean {
  *
  * @param value The value to test.
  * @returns `true` if `value` coerces to `false`.
- * @see https://dhoulb.github.io/shelving/util/boolean/isFalsey
+ * @see https://shelving.cc/util/boolean/isFalsey
  */
 export function isFalsey(value: unknown): boolean {
 	return !value;
@@ -62,7 +62,7 @@ export function isFalsey(value: unknown): boolean {
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertBoolean` itself).
  * @throws {RequiredError} If `value` is not a `boolean`.
- * @see https://dhoulb.github.io/shelving/util/boolean/assertBoolean
+ * @see https://shelving.cc/util/boolean/assertBoolean
  */
 export function assertBoolean(value: unknown, caller: AnyCaller = assertBoolean): asserts value is boolean {
 	if (typeof value !== "boolean") throw new RequiredError("Must be boolean", { received: value, caller });
@@ -74,7 +74,7 @@ export function assertBoolean(value: unknown, caller: AnyCaller = assertBoolean)
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertTrue` itself).
  * @throws {RequiredError} If `value` is not the literal `true`.
- * @see https://dhoulb.github.io/shelving/util/boolean/assertTrue
+ * @see https://shelving.cc/util/boolean/assertTrue
  */
 export function assertTrue(value: unknown, caller: AnyCaller = assertTrue): asserts value is true {
 	if (value !== true) throw new RequiredError("Must be true", { received: value, caller });
@@ -86,7 +86,7 @@ export function assertTrue(value: unknown, caller: AnyCaller = assertTrue): asse
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertFalse` itself).
  * @throws {RequiredError} If `value` is not the literal `false`.
- * @see https://dhoulb.github.io/shelving/util/boolean/assertFalse
+ * @see https://shelving.cc/util/boolean/assertFalse
  */
 export function assertFalse(value: unknown, caller: AnyCaller = assertFalse): asserts value is false {
 	if (value !== false) throw new RequiredError("Must be false", { received: value, caller });
@@ -98,7 +98,7 @@ export function assertFalse(value: unknown, caller: AnyCaller = assertFalse): as
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertTruthy` itself).
  * @throws {RequiredError} If `value` is falsey.
- * @see https://dhoulb.github.io/shelving/util/boolean/assertTruthy
+ * @see https://shelving.cc/util/boolean/assertTruthy
  */
 export function assertTruthy(value: unknown, caller: AnyCaller = assertTruthy): asserts value is true {
 	if (!value) throw new RequiredError("Must be truthy", { received: value, caller });
@@ -110,7 +110,7 @@ export function assertTruthy(value: unknown, caller: AnyCaller = assertTruthy): 
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertFalsy` itself).
  * @throws {RequiredError} If `value` is truthy.
- * @see https://dhoulb.github.io/shelving/util/boolean/assertFalsy
+ * @see https://shelving.cc/util/boolean/assertFalsy
  */
 export function assertFalsy(value: unknown, caller: AnyCaller = assertFalsy): asserts value is false {
 	if (value) throw new RequiredError("Must be falsy", { received: value, caller });

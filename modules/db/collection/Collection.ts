@@ -8,7 +8,7 @@ import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
 /**
  * Default identifier schema (integer) used when a collection doesn't supply its own.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/ID
+ * @see https://shelving.cc/db/ID
  */
 export const ID = new NumberSchema({
 	step: 1,
@@ -29,27 +29,27 @@ export const ID = new NumberSchema({
  *  const users = new Collection("users", ID, { name: STRING, age: NUMBER });
  *  users.validate({ name: "Dave", age: 40 }); // Validates item data.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collection
+ * @see https://shelving.cc/db/Collection
  */
 export class Collection<N extends string = string, I extends Identifier = Identifier, T extends Data = Data> extends DataSchema<T> {
 	/**
 	 * Collection name (used as the table/collection key).
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collection/name
+	 * @see https://shelving.cc/db/Collection/name
 	 */
 	readonly name: N;
 
 	/**
 	 * Schema for the identifier type.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collection/id
+	 * @see https://shelving.cc/db/Collection/id
 	 */
 	readonly id: Schema<I>;
 
 	/**
 	 * Schema for a complete item (id + data).
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collection/item
+	 * @see https://shelving.cc/db/Collection/item
 	 */
 	readonly item: DataSchema<Item<I, T>>;
 
@@ -73,7 +73,7 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 	 *
 	 * @returns The collection name.
 	 * @example `${users}` // "users"
-	 * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collection/toString
+	 * @see https://shelving.cc/db/Collection/toString
 	 */
 	override toString(): string {
 		return this.name;
@@ -89,7 +89,7 @@ export class Collection<N extends string = string, I extends Identifier = Identi
  * @param id Schema for the identifier type.
  * @param data Data schema, or the `Schemas` props used to construct one.
  * @example COLLECTION("users", ID, { name: STRING, age: NUMBER }) // Collection<"users", number, { name: string; age: number }>
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/COLLECTION
+ * @see https://shelving.cc/db/COLLECTION
  */
 export function COLLECTION<K extends string, I extends Identifier, T extends Data>(
 	name: K,
@@ -102,63 +102,63 @@ export function COLLECTION<K extends string, I extends Identifier, T extends Dat
 /**
  * Extract the string name from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionName
+ * @see https://shelving.cc/db/CollectionName
  */
 export type CollectionName<C extends Collection> = C extends Collection<infer N, infer _I, infer _T> ? N : never;
 
 /**
  * Extract the `Identifier` type from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionIdentifier
+ * @see https://shelving.cc/db/CollectionIdentifier
  */
 export type CollectionIdentifier<C extends Collection> = C extends Collection<infer _N, infer I, infer _T> ? I : never;
 
 /**
  * Extract the `Data` type from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionData
+ * @see https://shelving.cc/db/CollectionData
  */
 export type CollectionData<C extends Collection> = C extends Collection<infer _N, infer _I, infer T> ? T : never;
 
 /**
  * Extract the `Item` type from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionItem
+ * @see https://shelving.cc/db/CollectionItem
  */
 export type CollectionItem<C extends Collection> = Item<CollectionIdentifier<C>, CollectionData<C>>;
 
 /**
  * Extract the optional (possibly undefined) `Item` type from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/OptionalCollectionItem
+ * @see https://shelving.cc/db/OptionalCollectionItem
  */
 export type OptionalCollectionItem<C extends Collection> = OptionalItem<CollectionIdentifier<C>, CollectionData<C>>;
 
 /**
  * Extract the array of `Item` types from a `Collection` instance.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionItems
+ * @see https://shelving.cc/db/CollectionItems
  */
 export type CollectionItems<C extends Collection> = Items<CollectionIdentifier<C>, CollectionData<C>>;
 
 /**
  * A readonly array of `Collection` instances, optionally narrowed to a standardised `Identifier` and `Data` type.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/Collections
+ * @see https://shelving.cc/db/Collections
  */
 export type Collections<I extends Identifier = Identifier, D extends Data = Data> = ImmutableArray<Collection<string, I, D>>;
 
 /**
  * Extract the union of string collection names from a `Collections` type.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionNames
+ * @see https://shelving.cc/db/CollectionNames
  */
 export type CollectionNames<C extends Collections> = C[number]["name"];
 
 /**
  * Convert a `Collections` array type to a database-style object mapping in `{ name: data }` format.
  *
- * @see https://dhoulb.github.io/shelving/db/collection/Collection/CollectionsDatabase
+ * @see https://shelving.cc/db/CollectionsDatabase
  */
 export type CollectionsDatabase<C extends Collections> = {
 	[E in C[number] as E extends Collection<infer N, Identifier, Data> ? N : never]: E extends Collection<string, Identifier, infer T>

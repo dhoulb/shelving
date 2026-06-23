@@ -8,7 +8,7 @@ import "./Transition.css";
 /**
  * Variant props shared by every transition component.
  *
- * @see https://dhoulb.github.io/shelving/ui/transition/Transition/TransitionProps
+ * @see https://shelving.cc/ui/TransitionProps
  */
 export interface TransitionProps extends ChildProps {
 	/** Render this transition above other transitions (z-index: 100 on the group). */
@@ -26,7 +26,7 @@ export interface TransitionProps extends ChildProps {
  * @param props Transition class overrides (`default`/`forward`/`back`) plus `children` and variant props.
  * @returns A `<ViewTransition>` element wrapping the children.
  * @example <Transition default="fade">{content}</Transition>
- * @see https://dhoulb.github.io/shelving/ui/transition/Transition/Transition
+ * @see https://shelving.cc/ui/Transition
  */
 export function Transition({
 	children,

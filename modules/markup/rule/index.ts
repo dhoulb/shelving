@@ -16,7 +16,7 @@ import { UNORDERED_RULE } from "./unordered.js";
  * Default markup rules that render in a block context — fenced code, headings, separators, lists, blockquotes, tables, and paragraphs.
  *
  * @example new MarkupParser({ rules: MARKUP_RULES_BLOCK })
- * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES_BLOCK
+ * @see https://shelving.cc/markup/MARKUP_RULES_BLOCK
  */
 export const MARKUP_RULES_BLOCK: MarkupRules = [
 	FENCED_RULE,
@@ -33,7 +33,7 @@ export const MARKUP_RULES_BLOCK: MarkupRules = [
  * Default markup rules that render in an inline context — inline code, links, autolinks, emphasis, and hard linebreaks.
  *
  * @example new MarkupParser({ rules: MARKUP_RULES_INLINE })
- * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES_INLINE
+ * @see https://shelving.cc/markup/MARKUP_RULES_INLINE
  */
 export const MARKUP_RULES_INLINE: MarkupRules = [
 	CODE_RULE, //
@@ -52,7 +52,7 @@ export const MARKUP_RULES_INLINE: MarkupRules = [
  * 3. Don't support fussy fragile syntax that lets users make mistakes (e.g. literal HTML tags or `&amp;` character entities).
  *
  * @example new MarkupParser({ rules: MARKUP_RULES }).parse("This is a *bold* string.")
- * @see https://dhoulb.github.io/shelving/markup/rule/MARKUP_RULES
+ * @see https://shelving.cc/markup/MARKUP_RULES
  */
 export const MARKUP_RULES: MarkupRules = [
 	...MARKUP_RULES_BLOCK, //

@@ -15,7 +15,7 @@ import { isDefined } from "./undefined.js";
  * Note: string templates infer best when you have fixed character(s) at the start,
  *   so our `Update` syntax always
  *
- * @see https://dhoulb.github.io/shelving/util/update/Updates
+ * @see https://shelving.cc/util/update/Updates
  */
 export type Updates<T extends Data = Data> = {
 	/**
@@ -53,7 +53,7 @@ export type Updates<T extends Data = Data> = {
  *
  * - Discriminated by `action`: `"set"`, `"with"` (add array items), `"omit"` (remove array items), or `"sum"` (add to a number).
  *
- * @see https://dhoulb.github.io/shelving/util/update/Update
+ * @see https://shelving.cc/util/update/Update
  */
 export type Update =
 	| { action: "set"; key: Segments; value: unknown } //
@@ -70,7 +70,7 @@ export type Update =
  * @returns Array of decoded `Update` objects.
  * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
  * @example getUpdates({ "+=count": 1 }) // [{ action: "sum", key: ["count"], value: 1 }]
- * @see https://dhoulb.github.io/shelving/util/update/getUpdates
+ * @see https://shelving.cc/util/update/getUpdates
  */
 export function getUpdates<T extends Data>(data: Updates<T>): ImmutableArray<Update> {
 	return getProps(data).map(_getUpdate).filter(isDefined);
@@ -103,7 +103,7 @@ function _getUpdate([key, value]: DataProp<Updates>): Update | undefined {
  * @returns The updated data object (or the original reference if nothing changed).
  * @throws `RequiredError` if a `+=`/`-=` sum update has a non-number value.
  * @example updateData({ count: 1 }, { "+=count": 2 }) // { count: 3 }
- * @see https://dhoulb.github.io/shelving/util/update/updateData
+ * @see https://shelving.cc/util/update/updateData
  */
 export function updateData<T extends Data>(data: T, updates: Updates<T>): T {
 	return reduceItems(getUpdates(updates), _updateProp, data);

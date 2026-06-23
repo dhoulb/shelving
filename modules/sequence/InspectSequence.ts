@@ -14,13 +14,13 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectSequence.NOVALUE");
  * 	for await (const next of capture) console.log("YIELDED", next);
  * 	console.log("FIRST", watch.first);
  * 	console.log("RETURNED", watch.returned);
- * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence
+ * @see https://shelving.cc/sequence/InspectSequence
  */
 export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	/**
 	 * The number of values yielded by the source sequence so far.
 	 *
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/count
+	 * @see https://shelving.cc/sequence/InspectSequence/count
 	 */
 	get count() {
 		return this._count;
@@ -30,7 +30,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	/**
 	 * Whether the source sequence has finished iterating (i.e. it has returned).
 	 *
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/done
+	 * @see https://shelving.cc/sequence/InspectSequence/done
 	 */
 	get done() {
 		return this._done;
@@ -43,7 +43,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * - Throws if the iteration yielded no values yet, i.e. `this.count === 0`.
 	 *
 	 * @throws {UnexpectedError} If iteration has not yielded any value yet.
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/first
+	 * @see https://shelving.cc/sequence/InspectSequence/first
 	 */
 	get first(): T {
 		if (this._first === _NOVALUE)
@@ -61,7 +61,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * - Throws if the iteration yielded no values yet, i.e. `this.count === 0`.
 	 *
 	 * @throws {UnexpectedError} If iteration has not yielded any value yet.
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/last
+	 * @see https://shelving.cc/sequence/InspectSequence/last
 	 */
 	get last(): T {
 		if (this._last === _NOVALUE)
@@ -79,7 +79,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * - Throws if the iteration is not done yet, i.e. `this.done === false`.
 	 *
 	 * @throws {UnexpectedError} If iteration is not done yet.
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/returned
+	 * @see https://shelving.cc/sequence/InspectSequence/returned
 	 */
 	get returned(): R | undefined {
 		if (this._returned === _NOVALUE)
@@ -99,7 +99,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * @param value Optional value passed into the source sequence's `next()`.
 	 * @returns Promise resolving to the next `IteratorResult` from the source sequence.
 	 * @example const { value, done } = await watch.next()
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/next
+	 * @see https://shelving.cc/sequence/InspectSequence/next
 	 */
 	override async next(value?: N | undefined): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.next(value));
@@ -110,7 +110,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * @param value Optional value to return from the source sequence.
 	 * @returns Promise resolving to the final `IteratorResult` from the source sequence.
 	 * @example await watch.return()
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/return
+	 * @see https://shelving.cc/sequence/InspectSequence/return
 	 */
 	override async return(value?: R | undefined | PromiseLike<R | undefined>): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.return(value));
@@ -121,7 +121,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	 * @param reason The reason to throw into the source sequence.
 	 * @returns Promise resolving to the `IteratorResult` produced after throwing.
 	 * @example await watch.throw(new Error("stop"))
-	 * @see https://dhoulb.github.io/shelving/sequence/InspectSequence/InspectSequence/throw
+	 * @see https://shelving.cc/sequence/InspectSequence/throw
 	 */
 	override async throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.throw(reason));

@@ -14,7 +14,7 @@ import { ClientAPIProvider } from "./ClientAPIProvider.js";
  * const provider = new JSONAPIProvider({ url: "https://api.example.com" });
  * const user = await provider.call(getUser, { id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/provider/JSONAPIProvider/JSONAPIProvider
+ * @see https://shelving.cc/api/JSONAPIProvider
  */
 export class JSONAPIProvider<P = unknown, R = unknown> extends ClientAPIProvider<P, R> {
 	protected override _createBodyRequest(
@@ -38,7 +38,7 @@ export class JSONAPIProvider<P = unknown, R = unknown> extends ClientAPIProvider
 	 * @returns A promise resolving to the parsed JSON result.
 	 * @throws {ResponseError} if the response status is non-2xx.
 	 * @example await provider.parseResponse(getUser, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/JSONAPIProvider/JSONAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/JSONAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,

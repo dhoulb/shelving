@@ -6,7 +6,7 @@ import { isProp } from "./object.js";
  * List of countries by two-letter ISO 3166-1 alpha-2 code.
  * - Keys are uppercase two-letter codes; values are the full English country name.
  *
- * @see https://dhoulb.github.io/shelving/util/geo/COUNTRIES
+ * @see https://shelving.cc/util/geo/COUNTRIES
  */
 export const COUNTRIES = {
 	AF: "Afghanistan",
@@ -260,14 +260,14 @@ export const COUNTRIES = {
 /**
  * Two-letter ISO 3166-1 alpha-2 country code string (a key of `COUNTRIES`).
  *
- * @see https://dhoulb.github.io/shelving/util/geo/Country
+ * @see https://shelving.cc/util/geo/Country
  */
 export type Country = keyof typeof COUNTRIES;
 
 /**
  * A value that can possibly be resolved to a `Country` — either a country code or the literal `"detect"`.
  *
- * @see https://dhoulb.github.io/shelving/util/geo/PossibleCountry
+ * @see https://shelving.cc/util/geo/PossibleCountry
  */
 export type PossibleCountry = Country | "detect";
 
@@ -279,7 +279,7 @@ export type PossibleCountry = Country | "detect";
  * @param value The country code to parse, or `"detect"` to read it from the browser. Defaults to `"detect"`.
  * @returns The matching `Country` code, or `undefined` if it could not be resolved.
  * @example getCountry("gb") // "GB"
- * @see https://dhoulb.github.io/shelving/util/geo/getCountry
+ * @see https://shelving.cc/util/geo/getCountry
  */
 export function getCountry(value: unknown = "detect"): Country | undefined {
 	if (value === "detect") {
@@ -301,7 +301,7 @@ export function getCountry(value: unknown = "detect"): Country | undefined {
  * @returns The matching `Country` code.
  * @throws RequiredError If a country could not be resolved.
  * @example requireCountry("gb") // "GB"
- * @see https://dhoulb.github.io/shelving/util/geo/requireCountry
+ * @see https://shelving.cc/util/geo/requireCountry
  */
 export function requireCountry(value?: unknown, caller: AnyCaller = requireCountry): Country {
 	const country = getCountry(value);
@@ -316,7 +316,7 @@ export function requireCountry(value?: unknown, caller: AnyCaller = requireCount
  * @param country The country code to format.
  * @returns The full English country name, or the input unchanged if it is not a known code.
  * @example formatCountry("GB") // "United Kingdom"
- * @see https://dhoulb.github.io/shelving/util/geo/formatCountry
+ * @see https://shelving.cc/util/geo/formatCountry
  */
 export function formatCountry(country: string): string {
 	const code = country.toUpperCase();
@@ -326,7 +326,7 @@ export function formatCountry(country: string): string {
 /**
  * Valid shape for physical address data.
  *
- * @see https://dhoulb.github.io/shelving/util/geo/AddressData
+ * @see https://shelving.cc/util/geo/AddressData
  */
 export type AddressData = {
 	readonly address1: string;
@@ -345,7 +345,7 @@ export type AddressData = {
  * @param address The address data to format.
  * @returns A newline-separated address string.
  * @example formatAddress({ address1: "1 High St", address2: "", city: "London", state: "", postcode: "SW1", country: "GB" })
- * @see https://dhoulb.github.io/shelving/util/geo/formatAddress
+ * @see https://shelving.cc/util/geo/formatAddress
  */
 export function formatAddress({ address1, address2, city, state, postcode, country }: AddressData): string {
 	return `${address1}\n${address2 ? `${address2}\n` : ""}${city}\n${state}\n${postcode}\n${formatCountry(country)}`;

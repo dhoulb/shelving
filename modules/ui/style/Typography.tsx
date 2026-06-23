@@ -5,35 +5,35 @@ import TYPOGRAPHY_CSS from "./Typography.module.css";
 /**
  * Allowed values for font size for components that support `TypographyVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/SizeVariant
+ * @see https://shelving.cc/ui/SizeVariant
  */
 export type SizeVariant = "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 /**
  * Allowed values for font weight for components that support `TypographyVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/WeightVariant
+ * @see https://shelving.cc/ui/WeightVariant
  */
 export type WeightVariant = "title" | "body" | "label" | "code" | "normal" | "strong";
 
 /**
  * Allowed values for text case for components that support `TypographyVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/CaseVariant
+ * @see https://shelving.cc/ui/CaseVariant
  */
 export type CaseVariant = "title" | "body" | "label" | "code" | "upper" | "lower" | "normal";
 
 /**
  * Allowed values for font family for components that support `TypographyVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/FontVariant
+ * @see https://shelving.cc/ui/FontVariant
  */
 export type FontVariant = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
 
 /**
  * Typographic variant props — font-family, weight, case, size, tint, alignment, and wrap, applied via `getTypographyClass()`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/TypographyVariants
+ * @see https://shelving.cc/ui/TypographyVariants
  */
 export interface TypographyVariants {
 	/** Font size of the element. */
@@ -65,7 +65,7 @@ export interface TypographyVariants {
  *
  * @returns The combined typography class string, or `undefined` when no variants apply.
  * @example getTypographyClass({ font: "title", size: "large", center: true })
- * @see https://dhoulb.github.io/shelving/ui/style/Typography/getTypographyClass
+ * @see https://shelving.cc/ui/getTypographyClass
  */
 export function getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: TypographyVariants): string | undefined {
 	return getModuleClass(
