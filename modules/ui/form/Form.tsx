@@ -9,11 +9,14 @@ import type { Arguments } from "../../util/function.js";
 import { getModuleClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { OptionalChildProps } from "../util/props.js";
-import styles from "./Form.module.css";
+import FORM_CSS from "./Form.module.css";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
 import { FormFooter } from "./FormFooter.js";
 import { FormStore } from "./FormStore.js";
+
+const FORM_CLASS = getModuleClass(FORM_CSS, "form");
+const FORM_FIELDSET_CLASS = getModuleClass(FORM_CSS, "fieldset");
 
 /**
  * Callback invoked when a `Form` is submitted with its validated data.
@@ -91,10 +94,10 @@ export function Form({
 				// Close the parent dialog on successful submit.
 				if (result) dialog?.close();
 			}}
-			className={getModuleClass(styles, "form")}
+			className={FORM_CLASS}
 			noValidate={true}
 		>
-			<fieldset className={getModuleClass(styles, "fieldset")} disabled={busy}>
+			<fieldset className={FORM_FIELDSET_CLASS} disabled={busy}>
 				<FormContext value={store}>{children}</FormContext>
 			</fieldset>
 		</form>
