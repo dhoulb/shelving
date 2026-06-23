@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { getBlockClass } from "../block/Block.js";
-import { StatusIcon } from "../misc/StatusIcon.js";
+import { Icon } from "../misc/Icon.js";
 import type { ColorVariants } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
@@ -42,7 +42,7 @@ export function Notice({
 			role={status === "danger" || status === "error" ? "alert" : "status"}
 			className={getClass(getBlockClass(props), getModuleClass(NOTICE_CSS, "notice", props), getFlexClass(props), getStatusClass(props))}
 		>
-			{icon !== undefined ? icon : status && <StatusIcon status={status} />}
+			{icon !== undefined ? icon : status && <Icon status={status} />}
 			{children}
 		</aside>
 	);

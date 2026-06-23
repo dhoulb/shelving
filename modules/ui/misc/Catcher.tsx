@@ -10,7 +10,7 @@ import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
 import { Row } from "../style/Flex.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
-import { StatusIcon } from "./StatusIcon.js";
+import { Icon } from "./Icon.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);
 RetryContext.displayName = "RetryContext";
@@ -185,7 +185,7 @@ export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
 				<Card status="error">
 					<Subheading>
 						<Row left>
-							<StatusIcon status="error" size="xlarge" /> {message}
+							<Icon status="error" /> {message}
 						</Row>
 					</Subheading>
 					<RetryButton />
