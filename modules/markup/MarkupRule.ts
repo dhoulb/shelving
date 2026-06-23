@@ -6,7 +6,7 @@ import type { MarkupParser } from "./MarkupParser.js";
 /**
  * One or more named contexts a markup rule renders in (e.g. `["block"]`, `["inline", "list", "link"]`).
  *
- * @see https://dhoulb.github.io/shelving/markup/MarkupRule/MarkupContexts
+ * @see https://shelving.cc/markup/MarkupContexts
  */
 export type MarkupContexts = [string, ...string[]];
 
@@ -15,7 +15,7 @@ export type MarkupContexts = [string, ...string[]];
  * - Rules are grouped into priority tiers and resolved highest tier first by `MarkupParser`.
  * - A rule renders only in the contexts it lists, letting the same syntax behave differently in block vs inline vs list context.
  *
- * @see https://dhoulb.github.io/shelving/markup/MarkupRule/MarkupRule
+ * @see https://shelving.cc/markup/MarkupRule
  */
 export interface MarkupRule {
 	/** Regular expression used for matching the rule. */
@@ -31,7 +31,7 @@ export interface MarkupRule {
 /**
  * An immutable list of `MarkupRule` instances applied by a `MarkupParser`.
  *
- * @see https://dhoulb.github.io/shelving/markup/MarkupRule/MarkupRules
+ * @see https://shelving.cc/markup/MarkupRules
  */
 export type MarkupRules = readonly MarkupRule[];
 
@@ -50,7 +50,7 @@ export type MarkupRules = readonly MarkupRule[];
  * @returns A `MarkupRule` ready to add to a `MarkupRules` list.
  * @example
  * const HR_RULE = createMarkupRule(/^---$/m, key => <hr key={key} />, ["block"]);
- * @see https://dhoulb.github.io/shelving/markup/MarkupRule/createMarkupRule
+ * @see https://shelving.cc/markup/createMarkupRule
  */
 export function createMarkupRule<T extends NamedRegExpData>(
 	regexp: NamedRegExp<T>,

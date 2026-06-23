@@ -10,7 +10,7 @@ import { getWords } from "./string.js";
 /**
  * Props for a tree element — must have a `tree-` prefixed type.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/TreeElementProps
+ * @see https://shelving.cc/util/tree/TreeElementProps
  */
 export interface TreeElementProps extends ElementProps {
 	/**
@@ -60,7 +60,7 @@ export interface TreeElementProps extends ElementProps {
  * - Requires a string `key` prop (can be resolved to a path).
  * - Props can include `title`, `description`, and/or `content` to be useful.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/TreeElement
+ * @see https://shelving.cc/util/tree/TreeElement
  */
 export interface TreeElement<P extends TreeElementProps = TreeElementProps> extends Element<P> {
 	readonly key: string;
@@ -70,14 +70,14 @@ export interface TreeElement<P extends TreeElementProps = TreeElementProps> exte
 /**
  * Collection of tree elements.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/TreeElements
+ * @see https://shelving.cc/util/tree/TreeElements
  */
 export type TreeElements = Elements<TreeElement>;
 
 /**
  * A single parameter for a documented code symbol.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationParam
+ * @see https://shelving.cc/util/tree/DocumentationParam
  */
 export interface DocumentationParam {
 	readonly name: string;
@@ -94,7 +94,7 @@ export interface DocumentationParam {
 /**
  * A single `@returns` entry — multiple allowed to document union return types separately.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationReturn
+ * @see https://shelving.cc/util/tree/DocumentationReturn
  */
 export interface DocumentationReturn {
 	/** Type expression for the return value; renderers default to `"unknown"` when missing. */
@@ -105,7 +105,7 @@ export interface DocumentationReturn {
 /**
  * A single `@throws` entry — multiple allowed to document distinct error types.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationThrow
+ * @see https://shelving.cc/util/tree/DocumentationThrow
  */
 export interface DocumentationThrow {
 	/** Type expression for the thrown value; renderers default to `"unknown"` when missing. */
@@ -116,7 +116,7 @@ export interface DocumentationThrow {
 /**
  * A single `@example` entry — the example text/code block.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationExample
+ * @see https://shelving.cc/util/tree/DocumentationExample
  */
 export interface DocumentationExample {
 	readonly description?: string | undefined;
@@ -128,7 +128,7 @@ export interface DocumentationExample {
  * - All props are optional — not every kind uses every prop (e.g. `returns` only makes sense for functions).
  * - `signatures` is an array so overloaded function/method declarations can each contribute their own signature to the same documentation element.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationElementProps
+ * @see https://shelving.cc/util/tree/DocumentationElementProps
  */
 export interface DocumentationElementProps extends TreeElementProps {
 	// `name` is inherited from `TreeElementProps` — the declared symbol name (e.g. `"getFirst"`).
@@ -163,7 +163,7 @@ export interface DocumentationElementProps extends TreeElementProps {
  * Element representing a documented code symbol.
  * - The `kind` prop distinguishes specific symbol types (function, class, property, etc.) without baking the list in.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/DocumentationElement
+ * @see https://shelving.cc/util/tree/DocumentationElement
  */
 export interface DocumentationElement extends TreeElement<DocumentationElementProps> {
 	readonly type: "tree-documentation";
@@ -196,7 +196,7 @@ declare module "react" {
  * @param base An existing map to merge onto (copied, not mutated). Useful to combine several trees into one lookup.
  * @returns A new `Map` keyed by both flat key and canonical path, whose values are copies of every element stamped with its canonical `path`.
  * @example flattenTree(root).get("/schema/BooleanSchema") // the stamped `BooleanSchema` element
- * @see https://dhoulb.github.io/shelving/util/tree/flattenTree
+ * @see https://shelving.cc/util/tree/flattenTree
  */
 export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeElement>): Map<string, TreeElement> {
 	const map = new Map<string, TreeElement>(base);
@@ -226,7 +226,7 @@ function _flatKey(element: TreeElement): string {
 /**
  * Options for `searchTree()`.
  *
- * @see https://dhoulb.github.io/shelving/util/tree/SearchTreeOptions
+ * @see https://shelving.cc/util/tree/SearchTreeOptions
  */
 export interface SearchTreeOptions {
 	/** Maximum number of results to return (defaults to `20`). */
@@ -251,7 +251,7 @@ export interface SearchTreeOptions {
  * @param query The search string — bare words plus `"quoted phrases"`.
  * @returns The matching descendants, best first, capped at `limit`.
  * @example searchTree(root, "store", { limit: 10, filter: { kind: "class" } }) // up to 10 classes ranked for "store"
- * @see https://dhoulb.github.io/shelving/util/tree/searchTree
+ * @see https://shelving.cc/util/tree/searchTree
  */
 export function searchTree(scope: TreeElement, query: string, options?: SearchTreeOptions): TreeElement[] {
 	const { limit = 20, filter } = options ?? {};

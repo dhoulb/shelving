@@ -10,7 +10,7 @@ import { useRef } from "react";
  * const cache = useMap<string, number>();
  * cache.set("a", 1);
  *
- * @see https://dhoulb.github.io/shelving/react/useMap
+ * @see https://shelving.cc/react/useMap
  */
 export function useMap<K, V>(): Map<K, V> {
 	return (useRef<Map<K, V>>(undefined).current ??= new Map());

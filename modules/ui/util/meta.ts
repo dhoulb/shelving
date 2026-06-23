@@ -9,49 +9,49 @@ import { type ImmutableURL, type PossibleURL, requireURL } from "../../util/url.
 /**
  * Set of named meta `<meta />` tags in `{ name: content }` format.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaTags
+ * @see https://shelving.cc/ui/MetaTags
  */
 export type MetaTags = ImmutableDictionary<string | boolean | null | undefined>;
 
 /**
  * Set of resolved meta `<link />` tags in `{ rel: href }` format (hrefs already absolutified to `ImmutableURI`).
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaLinks
+ * @see https://shelving.cc/ui/MetaLinks
  */
 export type MetaLinks = ImmutableDictionary<ImmutableURI>;
 
 /**
  * Set of input meta `<link />` tags in `{ rel: href }` format, before hrefs are resolved.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/PossibleMetaLinks
+ * @see https://shelving.cc/ui/PossibleMetaLinks
  */
 export type PossibleMetaLinks = ImmutableDictionary<Nullish<PossibleLink>>;
 
 /**
  * Set of resolved linked assets in `(href)[]` format (hrefs already absolutified to `ImmutableURI`).
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaAssets
+ * @see https://shelving.cc/ui/MetaAssets
  */
 export type MetaAssets = ImmutableArray<ImmutableURI>;
 
 /**
  * Set of input linked assets in `(href)[]` format, before hrefs are resolved.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/PossibleMetaAssets
+ * @see https://shelving.cc/ui/PossibleMetaAssets
  */
 export type PossibleMetaAssets = ImmutableArray<Nullish<PossibleLink>>;
 
 /**
  * Type for a meta `Content-Security-Policy` tag in `{ resource: string[] }` format.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/MetaCSP
+ * @see https://shelving.cc/ui/MetaCSP
  */
 export type MetaCSP = { readonly [resource: string]: string[] };
 
 /**
  * Combined meta data for a website page — title, URLs, description, CSP, tags, links, and assets.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/Meta
+ * @see https://shelving.cc/ui/Meta
  */
 export interface Meta {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
@@ -82,7 +82,7 @@ export interface Meta {
 /**
  * Input metadata that can be parsed and converted to a fully-resolved `Meta`.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/meta/PossibleMeta
+ * @see https://shelving.cc/ui/PossibleMeta
  */
 export interface PossibleMeta extends Omit<Meta, "root" | "url" | "links" | "scripts" | "modules" | "stylesheets"> {
 	/** Base URL for the app — accepts a string or `URL`, resolved with `requireURL()`. */
@@ -114,7 +114,7 @@ export interface PossibleMeta extends Omit<Meta, "root" | "url" | "links" | "scr
  * @param csp The CSP to join, as a `{ resource: string[] }` object or a ready-made string.
  * @returns The joined CSP string, or `undefined` if `csp` was nullish.
  * @example joinMetaCSP({ "default-src": ["'self'"], "img-src": ["*"] }) // "default-src 'self'; img-src *"
- * @see https://dhoulb.github.io/shelving/ui/util/meta/joinMetaCSP
+ * @see https://shelving.cc/ui/joinMetaCSP
  */
 export function joinMetaCSP(csp: Nullish<MetaCSP>): string | undefined {
 	if (typeof csp === "string") return csp;
@@ -128,7 +128,7 @@ const _mapCSP = ([key, content]: [string, string[]]) => `${key} ${content.join("
  * @param titles Title segments to join, most-specific first.
  * @returns The joined title string.
  * @example joinTitles("Messages", "Manchester Runners") // "Messages - Manchester Runners"
- * @see https://dhoulb.github.io/shelving/ui/util/meta/joinTitles
+ * @see https://shelving.cc/ui/joinTitles
  */
 export function joinTitles(...titles: (string | undefined)[]): string {
 	return titles.filter(Boolean).join(" - ");
@@ -146,7 +146,7 @@ export function joinTitles(...titles: (string | undefined)[]): string {
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `mergeMeta`).
  * @returns A new fully-resolved `Meta` combining both inputs.
  * @example mergeMeta(currentMeta, { title: "Messages", url: "./messages" })
- * @see https://dhoulb.github.io/shelving/ui/util/meta/mergeMeta
+ * @see https://shelving.cc/ui/mergeMeta
  */
 export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta {
 	const title = joinTitles(meta2.title, meta1.title);
@@ -177,7 +177,7 @@ export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = 
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `createMeta`).
  * @returns A new fully-resolved `Meta`.
  * @example createMeta({ app: "Manchester Runners", url: "https://run.com" })
- * @see https://dhoulb.github.io/shelving/ui/util/meta/createMeta
+ * @see https://shelving.cc/ui/createMeta
  */
 export function createMeta(meta: PossibleMeta, caller: AnyCaller = createMeta): Meta {
 	return mergeMeta({}, meta, caller);
@@ -194,7 +194,7 @@ export function createMeta(meta: PossibleMeta, caller: AnyCaller = createMeta): 
  * @param params URI params to set on the resolved URL (replaces existing params).
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `mergeMetaURL`).
  * @returns The resolved URL, or `undefined` if neither `next` nor `current` was set.
- * @see https://dhoulb.github.io/shelving/ui/util/meta/mergeMetaURL
+ * @see https://shelving.cc/ui/mergeMetaURL
  */
 export function mergeMetaURL(
 	base: ImmutableURL | undefined,
@@ -213,7 +213,7 @@ export function mergeMetaURL(
  * @param current The existing tags.
  * @param next The new tags to merge on top.
  * @returns The merged tags, or `undefined` if both inputs were unset.
- * @see https://dhoulb.github.io/shelving/ui/util/meta/mergeMetaTags
+ * @see https://shelving.cc/ui/mergeMetaTags
  */
 export function mergeMetaTags(current: MetaTags | undefined, next: MetaTags | undefined): MetaTags | undefined {
 	return current && next ? { ...current, ...next } : current || next;
@@ -230,7 +230,7 @@ export function mergeMetaTags(current: MetaTags | undefined, next: MetaTags | un
  * @param root The root URL, used to resolve absolute hrefs.
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `mergeMetaLinks`).
  * @returns The merged resolved links, or `undefined` if there was nothing to merge.
- * @see https://dhoulb.github.io/shelving/ui/util/meta/mergeMetaLinks
+ * @see https://shelving.cc/ui/mergeMetaLinks
  */
 export function mergeMetaLinks(
 	current: MetaLinks | undefined,
@@ -261,7 +261,7 @@ function* _yieldMetaLinkEntries(
  * @param root The root URL, used to resolve absolute hrefs.
  * @param caller Function to attribute thrown URL-resolution errors to (defaults to `mergeMetaAssets`).
  * @returns The combined resolved asset list, or `undefined` if there was nothing to merge.
- * @see https://dhoulb.github.io/shelving/ui/util/meta/mergeMetaAssets
+ * @see https://shelving.cc/ui/mergeMetaAssets
  */
 export function mergeMetaAssets(
 	current: MetaAssets | undefined,

@@ -8,7 +8,7 @@ const DIVIDER_CLASS = getModuleClass(DIVIDER_CSS, "divider");
 /**
  * Props for `Divider` — space and colour variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Divider/DividerProps
+ * @see https://shelving.cc/ui/DividerProps
  */
 export interface DividerProps extends SpaceVariants, ColorVariants {}
 
@@ -16,7 +16,7 @@ export interface DividerProps extends SpaceVariants, ColorVariants {}
  * Horizontal rule separating blocks of content — rendered as `<hr>`.
  *
  * @example <Divider />
- * @see https://dhoulb.github.io/shelving/ui/block/Divider/Divider
+ * @see https://shelving.cc/ui/Divider
  */
 export function Divider(props: DividerProps) {
 	return (

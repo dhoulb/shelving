@@ -10,7 +10,7 @@ import { MemoryDBProvider } from "./MemoryDBProvider.js";
  *
  * - `type` is the operation name; `collection` is the collection name; `id`, `query`, `data`, `updates`, and `result` carry whichever fields apply to that operation.
  *
- * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBCall
+ * @see https://shelving.cc/db/MockDBCall
  */
 export type MockDBCall = {
 	readonly type:
@@ -43,13 +43,13 @@ export type MockDBCall = {
  *  await provider.addItem(users, { name: "Dave" });
  *  provider.calls; // [{ type: "addItem", collection: "users", data: { name: "Dave" }, result: 123 }]
  *
- * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider
+ * @see https://shelving.cc/db/MockDBProvider
  */
 export class MockDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends MemoryDBProvider<I, T> {
 	/**
 	 * The log of operations performed through this provider, in the order they happened.
 	 *
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/calls
+	 * @see https://shelving.cc/db/MockDBProvider/calls
 	 */
 	readonly calls: MockDBCall[] = [];
 
@@ -60,7 +60,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/getItem
+	 * @see https://shelving.cc/db/MockDBProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const result = await super.getItem(collection, id);
@@ -75,7 +75,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/addItem
+	 * @see https://shelving.cc/db/MockDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		const result = await super.addItem(collection, data);
@@ -90,7 +90,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/setItem
+	 * @see https://shelving.cc/db/MockDBProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await super.setItem(collection, id, data);
@@ -104,7 +104,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/updateItem
+	 * @see https://shelving.cc/db/MockDBProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -121,7 +121,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/deleteItem
+	 * @see https://shelving.cc/db/MockDBProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		await super.deleteItem(collection, id);
@@ -135,7 +135,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/countQuery
+	 * @see https://shelving.cc/db/MockDBProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -153,7 +153,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/getQuery
+	 * @see https://shelving.cc/db/MockDBProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -171,7 +171,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/setQuery
+	 * @see https://shelving.cc/db/MockDBProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -189,7 +189,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/updateQuery
+	 * @see https://shelving.cc/db/MockDBProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -206,7 +206,7 @@ export class MockDBProvider<I extends Identifier = Identifier, T extends Data = 
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/MockDBProvider/MockDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/MockDBProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,

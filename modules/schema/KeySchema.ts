@@ -15,7 +15,7 @@ const R_NOT_CHAR = /[^a-zA-Z0-9]/g;
  *  const schema = new KeySchema({});
  *  schema.validate("a1b2-c3d4"); // "a1b2c3d4"
  *
- * @see https://dhoulb.github.io/shelving/schema/KeySchema/KeySchema
+ * @see https://shelving.cc/schema/KeySchema
  */
 export class KeySchema extends StringSchema {
 	/**
@@ -31,7 +31,7 @@ export class KeySchema extends StringSchema {
 	 * @param str String to sanitize.
 	 * @returns The sanitized key with non-alphanumeric characters removed.
 	 * @example schema.sanitize("a1b2-c3d4") // "a1b2c3d4"
-	 * @see https://dhoulb.github.io/shelving/schema/KeySchema/KeySchema/sanitize
+	 * @see https://shelving.cc/schema/KeySchema/sanitize
 	 */
 	override sanitize(str: string): string {
 		return str.replace(R_NOT_CHAR, "");
@@ -42,7 +42,7 @@ export class KeySchema extends StringSchema {
  * Sugar instance of `KeySchema` for a database key. Equivalent to `new KeySchema({ title: "ID" })`.
  *
  * @example KEY.validate("a1b2c3") // "a1b2c3"
- * @see https://dhoulb.github.io/shelving/schema/KeySchema/KEY
+ * @see https://shelving.cc/schema/KEY
  */
 export const KEY = new KeySchema({ title: "ID" });
 
@@ -50,6 +50,6 @@ export const KEY = new KeySchema({ title: "ID" });
  * Sugar instance allowing a `KEY` or `null`. Equivalent to `NULLABLE(KEY)`.
  *
  * @example NULLABLE_KEY.validate("") // null
- * @see https://dhoulb.github.io/shelving/schema/KeySchema/NULLABLE_KEY
+ * @see https://shelving.cc/schema/NULLABLE_KEY
  */
 export const NULLABLE_KEY = NULLABLE(KEY);

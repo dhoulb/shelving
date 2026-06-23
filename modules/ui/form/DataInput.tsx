@@ -10,7 +10,7 @@ import { SchemaInput } from "./SchemaInput.js";
 /**
  * Props for `DataInput`, a composite input that edits an object of schema-validated sub-fields.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/DataInput/DataInputProps
+ * @see https://shelving.cc/ui/DataInputProps
  */
 export interface DataInputProps<T extends Data> extends ValueInputProps<T> {
 	/** Schema for the sub-fields of this input. */
@@ -24,7 +24,7 @@ export interface DataInputProps<T extends Data> extends ValueInputProps<T> {
  * @returns Element rendering one input per property, laid out in a row or column.
  * @kind component
  * @example <DataInput name="address" props={addressSchemas} value={address} onValue={setAddress} />
- * @see https://dhoulb.github.io/shelving/ui/form/DataInput/DataInput
+ * @see https://shelving.cc/ui/DataInput
  */
 export function DataInput<T extends Data>(props: DataInputProps<T>): ReactElement;
 export function DataInput({

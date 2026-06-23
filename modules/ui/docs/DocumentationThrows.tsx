@@ -14,7 +14,7 @@ const DEFAULT_TYPE = "unknown";
 /**
  * Props for `DocumentationThrows` — the `@throws` entries to render, one row each.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationThrows/DocumentationThrowsProps
+ * @see https://shelving.cc/ui/DocumentationThrowsProps
  */
 export interface DocumentationThrowsProps {
 	/** Throw entries to render — one row per documented thrown type. */
@@ -30,7 +30,7 @@ export interface DocumentationThrowsProps {
  * @kind component
  * @returns A `<Section>` containing the throws table, or `null` when there are none.
  * @example <DocumentationThrows throws={throws} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationThrows/DocumentationThrows
+ * @see https://shelving.cc/ui/DocumentationThrows
  */
 export function DocumentationThrows({ throws }: DocumentationThrowsProps): ReactNode {
 	const map = useTreeMap();

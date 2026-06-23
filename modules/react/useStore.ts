@@ -27,7 +27,7 @@ const EXTERNAL_BLACKHOLE: ExternalStore = {
  * const store = useStore(myStore);
  * return <>{store.value}</>;
  *
- * @see https://dhoulb.github.io/shelving/react/useStore
+ * @see https://shelving.cc/react/useStore
  */
 export function useStore<T extends AnyStore>(store: T): T;
 export function useStore<T extends AnyStore>(store?: T | undefined): T | undefined;

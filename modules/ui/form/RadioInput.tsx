@@ -9,7 +9,7 @@ import INPUT_CSS from "./Input.module.css";
 /**
  * Props for `RadioInput`, a single labelled radio button styled as an input.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/RadioInput/RadioInputProps
+ * @see https://shelving.cc/ui/RadioInputProps
  */
 export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants, InputVariants {}
 
@@ -19,7 +19,7 @@ export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChild
  *
  * @returns A `<label>` wrapping the radio button and its label content.
  * @example <RadioInput name="plan" value={isPro} onValue={selectPro}>Pro</RadioInput>
- * @see https://dhoulb.github.io/shelving/ui/form/RadioInput/RadioInput
+ * @see https://shelving.cc/ui/RadioInput
  */
 export function RadioInput({
 	name,

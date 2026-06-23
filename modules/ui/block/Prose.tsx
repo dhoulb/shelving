@@ -57,7 +57,7 @@ const PROSE_STYLES = getClass(
 /**
  * Props for `Prose` — just the longform `children` to style.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Prose/ProseProps
+ * @see https://shelving.cc/ui/ProseProps
  */
 export interface ProseProps extends OptionalChildProps {}
 
@@ -68,7 +68,7 @@ export interface ProseProps extends OptionalChildProps {}
  * @kind component
  * @returns Rendered `<div>` wrapping the prose content.
  * @example <Prose><Paragraph>First.</Paragraph><Paragraph>Second.</Paragraph></Prose>
- * @see https://dhoulb.github.io/shelving/ui/block/Prose/Prose
+ * @see https://shelving.cc/ui/Prose
  */
 export function Prose({ children }: ProseProps): ReactElement {
 	return <div className={PROSE_STYLES}>{children}</div>;

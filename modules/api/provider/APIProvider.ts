@@ -11,13 +11,13 @@ import type { Endpoint } from "../endpoint/Endpoint.js";
  * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
  * const user = await provider.call(getUser, { id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider
+ * @see https://shelving.cc/api/APIProvider
  */
 export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisposable {
 	/**
 	 * The common base URL that every endpoint request is resolved against.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/url
+	 * @see https://shelving.cc/api/APIProvider/url
 	 */
 	abstract readonly url: URL;
 
@@ -32,7 +32,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 * @example provider.renderURL(getUser, { id: "abc" }) // URL("https://api.example.com/users/abc")
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/renderURL
+	 * @see https://shelving.cc/api/APIProvider/renderURL
 	 */
 	abstract renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller?: AnyCaller): URL;
 
@@ -50,7 +50,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
 	 * @example provider.createRequest(getUser, { id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/createRequest
+	 * @see https://shelving.cc/api/APIProvider/createRequest
 	 */
 	abstract createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -65,7 +65,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @param request The `Request` to send.
 	 * @returns A promise resolving to the `Response`.
 	 * @example const response = await provider.fetch(request);
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/fetch
+	 * @see https://shelving.cc/api/APIProvider/fetch
 	 */
 	abstract fetch(request: Request): Promise<Response>;
 
@@ -80,7 +80,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @returns A promise resolving to the parsed result.
 	 * @throws {ResponseError} if the response status is non-2xx.
 	 * @example const result = await provider.parseResponse(getUser, response);
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/parseResponse
+	 * @see https://shelving.cc/api/APIProvider/parseResponse
 	 */
 	abstract parseResponse<PP extends P, RR extends R>(_endpoint: Endpoint<PP, RR>, response: Response, caller?: AnyCaller): Promise<RR>;
 
@@ -95,7 +95,7 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @returns A promise resolving to the parsed result.
 	 * @throws {ResponseError} if the response status is non-2xx.
 	 * @example const user = await provider.call(getUser, { id: "abc" });
-	 * @see https://dhoulb.github.io/shelving/api/provider/APIProvider/APIProvider/call
+	 * @see https://shelving.cc/api/APIProvider/call
 	 */
 	async call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,

@@ -10,7 +10,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  * @example
  *  const api = new LoggingAPIProvider(source);
  *  await api.fetch(request); // logs request and response
- * @see https://dhoulb.github.io/shelving/api/provider/LoggingAPIProvider/LoggingAPIProvider
+ * @see https://shelving.cc/api/LoggingAPIProvider
  */
 export class LoggingAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	protected _logRequest: Callback<[Request]>;
@@ -48,7 +48,7 @@ export class LoggingAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns Promise resolving to the response.
 	 * @throws Rethrows any error thrown by the source provider (after logging it).
 	 * @example await api.fetch(request)
-	 * @see https://dhoulb.github.io/shelving/api/provider/LoggingAPIProvider/LoggingAPIProvider/fetch
+	 * @see https://shelving.cc/api/LoggingAPIProvider/fetch
 	 */
 	override async fetch(request: Request): Promise<Response> {
 		try {

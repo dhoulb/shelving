@@ -9,13 +9,13 @@ import { Sequence } from "./Sequence.js";
  * @example
  * 	const seq = new ThroughSequence(someAsyncIterator);
  * 	for await (const value of seq) console.log(value);
- * @see https://dhoulb.github.io/shelving/sequence/ThroughSequence/ThroughSequence
+ * @see https://shelving.cc/sequence/ThroughSequence
  */
 export class ThroughSequence<T, R, N> extends Sequence<T, R | undefined, N | undefined> {
 	/**
 	 * Source async iterator that this sequence pulls values from.
 	 *
-	 * @see https://dhoulb.github.io/shelving/sequence/ThroughSequence/ThroughSequence/source
+	 * @see https://shelving.cc/sequence/ThroughSequence/source
 	 */
 	readonly source: AsyncIterator<T, R | undefined, N | undefined>;
 

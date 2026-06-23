@@ -5,7 +5,7 @@ import { Schema } from "./Schema.js";
 /**
  * Allowed options for `ThroughSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchemaOptions
+ * @see https://shelving.cc/schema/ThroughSchemaOptions
  */
 export interface ThroughSchemaOptions<T> extends SchemaOptions {
 	/** The source schema this schema passes through to. */
@@ -17,7 +17,7 @@ export interface ThroughSchemaOptions<T> extends SchemaOptions {
  *
  * @example
  *  class WrapSchema<T> extends ThroughSchema<T> {} // Delegates `validate()` to `this.source`.
- * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchema
+ * @see https://shelving.cc/schema/ThroughSchema
  */
 export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<Schema<T>> {
 	/** The source schema this schema passes through to. */
@@ -36,7 +36,7 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 	 * @returns The valid value of type `T`.
 	 * @throws `string` error message if the value is invalid.
 	 * @example schema.validate(input) // Delegates to source schema.
-	 * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchema/validate
+	 * @see https://shelving.cc/schema/ThroughSchema/validate
 	 */
 	validate(unsafeValue: unknown): T {
 		return this.source.validate(unsafeValue);
@@ -47,7 +47,7 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 	 * @param value The valid value to format.
 	 * @returns The value formatted as a human-readable string.
 	 * @example schema.format(value) // Delegates to source schema.
-	 * @see https://dhoulb.github.io/shelving/schema/ThroughSchema/ThroughSchema/format
+	 * @see https://shelving.cc/schema/ThroughSchema/format
 	 */
 	override format(value: T): string {
 		return this.source.format(value);

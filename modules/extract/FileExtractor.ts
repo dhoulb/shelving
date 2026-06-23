@@ -16,7 +16,7 @@ import { Extractor } from "./Extractor.js";
  * - Subclasses (e.g. `MarkupExtractor`, `TypescriptExtractor`) override `extractProps()` to parse the content into richer elements.
  *
  * @example new FileExtractor().extract(Bun.file("/abs/path/notes.txt"))
- * @see https://dhoulb.github.io/shelving/extract/FileExtractor/FileExtractor
+ * @see https://shelving.cc/extract/FileExtractor
  */
 export class FileExtractor extends Extractor<BunFile, TreeElement> {
 	/**
@@ -26,7 +26,7 @@ export class FileExtractor extends Extractor<BunFile, TreeElement> {
 	 * @returns A promise resolving to the file's `tree-element`, keyed by its verbatim filename.
 	 * @throws `RequiredError` If the file has no name or its path is not absolute.
 	 * @example await new FileExtractor().extract(Bun.file("/abs/path/notes.txt"))
-	 * @see https://dhoulb.github.io/shelving/extract/FileExtractor/FileExtractor/extract
+	 * @see https://shelving.cc/extract/FileExtractor/extract
 	 */
 	async extract(file: BunFile): Promise<TreeElement> {
 		const source = file.name;
@@ -53,7 +53,7 @@ export class FileExtractor extends Extractor<BunFile, TreeElement> {
 	 * @param content The raw text content of the file.
 	 * @returns The element props, always including a `name`; the base implementation stores `content` verbatim.
 	 * @example extractProps("notes", "Some text") // { name: "notes", content: "Some text" }
-	 * @see https://dhoulb.github.io/shelving/extract/FileExtractor/FileExtractor/extractProps
+	 * @see https://shelving.cc/extract/FileExtractor/extractProps
 	 */
 	extractProps(name: string, content: string): Partial<TreeElementProps> & { name: string } {
 		return { name, content };

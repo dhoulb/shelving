@@ -20,27 +20,27 @@ import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
  * @example
  *  const store = new QueryStore(collection, query, provider);
  *  for (const item of store) console.log(item);
- * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore
+ * @see https://shelving.cc/db/QueryStore
  */
 export class QueryStore<I extends Identifier, T extends Data> extends FetchStore<Items<I, T>> implements Iterable<Item<I, T>> {
 	/**
 	 * The database provider this store fetches its items from.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/provider
+	 * @see https://shelving.cc/db/QueryStore/provider
 	 */
 	readonly provider: DBProvider<I>;
 	/**
 	 * The collection the query runs against.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/collection
+	 * @see https://shelving.cc/db/QueryStore/collection
 	 */
 	readonly collection: Collection<string, I, T>;
 	/**
 	 * The query that selects the items tracked by this store.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/query
+	 * @see https://shelving.cc/db/QueryStore/query
 	 */
 	readonly query: Query<Item<I, T>>;
 	/**
 	 * The maximum number of items the query can return, or `Infinity` if unlimited.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/limit
+	 * @see https://shelving.cc/db/QueryStore/limit
 	 */
 	get limit(): number {
 		return getQueryLimit(this.query) ?? Number.POSITIVE_INFINITY;
@@ -48,7 +48,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 
 	/**
 	 * Whether more items can be loaded after the current result.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/hasMore
+	 * @see https://shelving.cc/db/QueryStore/hasMore
 	 */
 	get hasMore(): boolean {
 		return this._hasMore;
@@ -57,7 +57,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 
 	/**
 	 * The first item in this store, or `undefined` if the query has no items.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/optionalFirst
+	 * @see https://shelving.cc/db/QueryStore/optionalFirst
 	 */
 	get optionalFirst(): Item<I, T> | undefined {
 		return getFirst(this.value);
@@ -65,7 +65,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 
 	/**
 	 * The last item in this store, or `undefined` if the query has no items.
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/optionalLast
+	 * @see https://shelving.cc/db/QueryStore/optionalLast
 	 */
 	get optionalLast(): Item<I, T> | undefined {
 		return getLast(this.value);
@@ -77,7 +77,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	 * @returns The first matching item including its ID.
 	 * @throws {RequiredError} If the query has no items.
 	 * @example store.first // Item<I, T>
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/first
+	 * @see https://shelving.cc/db/QueryStore/first
 	 */
 	get first(): Item<I, T> {
 		const first = this.optionalFirst;
@@ -98,7 +98,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	 * @returns The last matching item including its ID.
 	 * @throws {RequiredError} If the query has no items.
 	 * @example store.last // Item<I, T>
-	 * @see https://dhoulb.github.io/shelving/db/store/QueryStore/QueryStore/last
+	 * @see https://shelving.cc/db/QueryStore/last
 	 */
 	get last(): Item<I, T> {
 		const last = this.optionalLast;

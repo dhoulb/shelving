@@ -3,7 +3,7 @@
  *
  * @param value The value to test.
  * @returns `true` if `value` is an object with a `Symbol.iterator` method, otherwise `false`.
- * @see https://dhoulb.github.io/shelving/util/iterate/isIterable
+ * @see https://shelving.cc/util/iterate/isIterable
  */
 export function isIterable(value: unknown): value is Iterable<unknown> {
 	return typeof value === "object" && !!value && Symbol.iterator in value;
@@ -12,7 +12,7 @@ export function isIterable(value: unknown): value is Iterable<unknown> {
 /**
  * An iterable containing items or nested iterables of items.
  *
- * @see https://dhoulb.github.io/shelving/util/iterate/DeepIterable
+ * @see https://shelving.cc/util/iterate/DeepIterable
  */
 export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;
 
@@ -22,7 +22,7 @@ export type DeepIterable<T> = T | Iterable<DeepIterable<T>>;
  * @param items The item or deeply-nested iterable of items to flatten.
  * @returns An iterable yielding every leaf item in order.
  * @example Array.from(flattenItems([1, [2, [3, 4]]])) // [1, 2, 3, 4]
- * @see https://dhoulb.github.io/shelving/util/iterate/flattenItems
+ * @see https://shelving.cc/util/iterate/flattenItems
  */
 export function* flattenItems<T>(items: DeepIterable<T>): Iterable<T> {
 	if (isIterable(items)) for (const item of items) yield* flattenItems(item);
@@ -36,7 +36,7 @@ export function* flattenItems<T>(items: DeepIterable<T>): Iterable<T> {
  * @param items The iterable to test.
  * @returns `true` if the iterable yields at least one item, otherwise `false`.
  * @example hasItems([1, 2, 3]) // true
- * @see https://dhoulb.github.io/shelving/util/iterate/hasItems
+ * @see https://shelving.cc/util/iterate/hasItems
  */
 export function hasItems(items: Iterable<unknown>): boolean {
 	for (const _unused of items) return true;
@@ -50,7 +50,7 @@ export function hasItems(items: Iterable<unknown>): boolean {
  * @param items The iterable to count.
  * @returns The number of items yielded by the iterable.
  * @example countItems([1, 2, 3]) // 3
- * @see https://dhoulb.github.io/shelving/util/iterate/countItems
+ * @see https://shelving.cc/util/iterate/countItems
  */
 export function countItems(items: Iterable<unknown>): number {
 	let count = 0;
@@ -67,7 +67,7 @@ export function countItems(items: Iterable<unknown>): number {
  * @param end The last number to yield (inclusive).
  * @returns An iterable yielding the numbers between `start` and `end`.
  * @example Array.from(getRange(1, 4)) // [1, 2, 3, 4]
- * @see https://dhoulb.github.io/shelving/util/iterate/getRange
+ * @see https://shelving.cc/util/iterate/getRange
  */
 export function* getRange(start: number, end: number): Iterable<number> {
 	if (start <= end) for (let num = start; num <= end; num++) yield num;
@@ -82,7 +82,7 @@ export function* getRange(start: number, end: number): Iterable<number> {
  * @param limit The maximum number of items to yield.
  * @returns An iterable yielding at most `limit` items.
  * @example Array.from(limitItems([1, 2, 3, 4], 2)) // [1, 2]
- * @see https://dhoulb.github.io/shelving/util/iterate/limitItems
+ * @see https://shelving.cc/util/iterate/limitItems
  */
 export function* limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
 	let count = 0;
@@ -102,7 +102,7 @@ export function* limitItems<T>(items: Iterable<T>, limit: number): Iterable<T> {
  * @param pick The items to keep.
  * @returns An iterable yielding only the items found in `pick`.
  * @example Array.from(pickItems([1, 2, 3], 1, 3)) // [1, 3]
- * @see https://dhoulb.github.io/shelving/util/iterate/pickItems
+ * @see https://shelving.cc/util/iterate/pickItems
  */
 export function* pickItems<T>(items: Iterable<T>, ...pick: T[]): Iterable<T> {
 	for (const item of items) if (pick.includes(item)) yield item;
@@ -116,7 +116,7 @@ export function* pickItems<T>(items: Iterable<T>, ...pick: T[]): Iterable<T> {
  * @param omit The items to remove.
  * @returns An iterable yielding every item not found in `omit`.
  * @example Array.from(omitItems([1, 2, 3], 2)) // [1, 3]
- * @see https://dhoulb.github.io/shelving/util/iterate/omitItems
+ * @see https://shelving.cc/util/iterate/omitItems
  */
 export function* omitItems<T>(items: Iterable<T>, ...omit: T[]): Iterable<T> {
 	for (const item of items) if (!omit.includes(item)) yield item;
@@ -131,7 +131,7 @@ export function* omitItems<T>(items: Iterable<T>, ...omit: T[]): Iterable<T> {
  * @param initial The initial accumulated value.
  * @returns The final accumulated value, or `undefined` if the iterable is empty and no `initial` was given.
  * @example reduceItems([1, 2, 3], (a, b) => a + b, 0) // 6
- * @see https://dhoulb.github.io/shelving/util/iterate/reduceItems
+ * @see https://shelving.cc/util/iterate/reduceItems
  */
 export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T, item: T) => T, initial: T): T;
 export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undefined, item: T) => T, initial?: T): T | undefined;
@@ -151,7 +151,7 @@ export function reduceItems<T>(items: Iterable<T>, reducer: (previous: T | undef
  * @param size The maximum number of items per chunk.
  * @returns An iterable yielding arrays of up to `size` items.
  * @example Array.from(getChunks([1, 2, 3, 4, 5], 2)) // [[1, 2], [3, 4], [5]]
- * @see https://dhoulb.github.io/shelving/util/iterate/getChunks
+ * @see https://shelving.cc/util/iterate/getChunks
  */
 export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readonly T[]> {
 	let chunk: T[] = [];
@@ -172,7 +172,7 @@ export function* getChunks<T>(items: Iterable<T>, size: number): Iterable<readon
  * @param inputs Two or more iterables to merge.
  * @returns An iterable yielding every item from each input in sequence.
  * @example Array.from(mergeItems([1, 2], [3, 4])) // [1, 2, 3, 4]
- * @see https://dhoulb.github.io/shelving/util/iterate/mergeItems
+ * @see https://shelving.cc/util/iterate/mergeItems
  */
 export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable<T>[]]): Iterable<T> {
 	for (const input of inputs) yield* input;
@@ -185,7 +185,7 @@ export function* mergeItems<T>(...inputs: [Iterable<T>, Iterable<T>, ...Iterable
  * @param separator The value to insert between each pair of items.
  * @returns An iterable yielding the items with `separator` between them.
  * @example Array.from(interleaveItems([1, 2, 3], 0)) // [1, 0, 2, 0, 3]
- * @see https://dhoulb.github.io/shelving/util/iterate/interleaveItems
+ * @see https://shelving.cc/util/iterate/interleaveItems
  */
 export function interleaveItems<T>(items: Iterable<T>, separator: T): Iterable<T>;
 export function interleaveItems<A, B>(items: Iterable<A>, separator: B): Iterable<A | B>;

@@ -15,7 +15,7 @@ const DEFAULT_TYPE = "unknown";
 /**
  * Props for `DocumentationProperties` — the data members of a class/interface/object-literal type to render, one row each.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationProperties/DocumentationPropertiesProps
+ * @see https://shelving.cc/ui/DocumentationPropertiesProps
  */
 export interface DocumentationPropertiesProps {
 	/** Properties to render — one row each. */
@@ -33,7 +33,7 @@ export interface DocumentationPropertiesProps {
  * @kind component
  * @returns A [`<Section>`](/ui/Section) containing the properties table, or `null` when there are none.
  * @example <DocumentationProperties properties={properties} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationProperties/DocumentationProperties
+ * @see https://shelving.cc/ui/DocumentationProperties
  */
 export function DocumentationProperties({ properties }: DocumentationPropertiesProps): ReactNode {
 	const map = useTreeMap();

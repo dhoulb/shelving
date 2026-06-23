@@ -16,7 +16,7 @@ import type { Segments } from "./string.js";
  * - Keys encode filters: `key` (is), `!key` (not), arrays for in/out, `key<`/`key<=`/`key>`/`key>=` for ranges, and `key[]` for array contains.
  * - `$order` sets the sort order (prefix `!` for descending) and `$limit` caps the number of results.
  *
- * @see https://dhoulb.github.io/shelving/util/query/Query
+ * @see https://shelving.cc/util/query/Query
  */
 export type Query<T extends Data = Data> = {
 	readonly [K in LeafDataPath<T> as `${K}` | `!${K}`]?: LeafData<T>[K] | ImmutableArray<LeafData<T>[K]> | undefined; // is/not/in/out
@@ -38,7 +38,7 @@ export type Query<T extends Data = Data> = {
  *
  * - Discriminated by `operator`: `"is"`, `"not"`, `"in"`, `"out"`, `"contains"`, `"lt"`, `"lte"`, `"gt"`, or `"gte"`.
  *
- * @see https://dhoulb.github.io/shelving/util/query/QueryFilter
+ * @see https://shelving.cc/util/query/QueryFilter
  */
 export type QueryFilter =
 	| { key: Segments; operator: "is"; value: unknown }
@@ -54,7 +54,7 @@ export type QueryFilter =
 /**
  * A single sort order that can be applied to a list of data objects.
  *
- * @see https://dhoulb.github.io/shelving/util/query/QueryOrder
+ * @see https://shelving.cc/util/query/QueryOrder
  */
 export type QueryOrder = {
 	key: Segments;
@@ -82,7 +82,7 @@ const MATCHERS: {
  * @param query The query to extract filters from.
  * @returns Array of decoded `QueryFilter` objects (excludes `$order` and `$limit` and any `undefined` values).
  * @example getQueryFilters({ name: "Alice" }) // [{ key: ["name"], operator: "is", value: "Alice" }]
- * @see https://dhoulb.github.io/shelving/util/query/getQueryFilters
+ * @see https://shelving.cc/util/query/getQueryFilters
  */
 export function getQueryFilters<T extends Data>(query: Query<T>): ImmutableArray<QueryFilter> {
 	return Array.from(yieldQueryFilters(query));
@@ -109,7 +109,7 @@ function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilt
  * @param query The query to extract sort orders from (reads its `$order` prop).
  * @returns Array of decoded `QueryOrder` objects (`!`-prefixed keys are descending, others ascending).
  * @example getQueryOrders({ $order: "!date" }) // [{ key: ["date"], direction: "desc" }]
- * @see https://dhoulb.github.io/shelving/util/query/getQueryOrders
+ * @see https://shelving.cc/util/query/getQueryOrders
  */
 export function getQueryOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<QueryOrder> {
 	return Array.from(yieldQueryOrders($order));
@@ -128,7 +128,7 @@ function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | 
  * @param query The query to read the limit from (reads its `$limit` prop).
  * @returns The maximum number of results, or `undefined` if the query is unlimited.
  * @example getQueryLimit({ $limit: 10 }) // 10
- * @see https://dhoulb.github.io/shelving/util/query/getQueryLimit
+ * @see https://shelving.cc/util/query/getQueryLimit
  */
 export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
 	return $limit;
@@ -142,7 +142,7 @@ export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | un
  * @param query The query to apply (filters, sort order, and limit).
  * @returns Iterable of items matching the query, in sorted and limited order.
  * @example Array.from(queryItems(items, { name: "Alice", $limit: 1 })) // matching items
- * @see https://dhoulb.github.io/shelving/util/query/queryItems
+ * @see https://shelving.cc/util/query/queryItems
  */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
 	return limitQueryItems(sortQueryItems(filterQueryItems(items, getQueryFilters(query)), getQueryOrders(query)), getQueryLimit(query));
@@ -156,7 +156,7 @@ export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>):
  * @param query The query to apply (filters, sort order, and limit).
  * @returns Iterable of matching items (skips sorting when the query has no limit).
  * @example Array.from(queryWritableItems(items, { name: "Alice" })) // matching items (unsorted)
- * @see https://dhoulb.github.io/shelving/util/query/queryWritableItems
+ * @see https://shelving.cc/util/query/queryWritableItems
  */
 export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
 	return getQueryLimit(query) === undefined ? filterQueryItems(items, getQueryFilters(query)) : queryItems(items, query);
@@ -169,7 +169,7 @@ export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Qu
  * @param filters The set of filters that the item must satisfy.
  * @returns `true` if the item matches every filter, `false` otherwise.
  * @example matchQueryItem({ name: "Alice" }, [{ key: ["name"], operator: "is", value: "Alice" }]) // true
- * @see https://dhoulb.github.io/shelving/util/query/matchQueryItem
+ * @see https://shelving.cc/util/query/matchQueryItem
  */
 export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<QueryFilter>): boolean {
 	for (const { key, operator, value } of filters) {
@@ -186,7 +186,7 @@ export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<
  * @param filters The set of filters that each yielded item must satisfy.
  * @yields Items that match every filter (yields all items when `filters` is empty).
  * @example Array.from(filterQueryItems(items, filters)) // matching items
- * @see https://dhoulb.github.io/shelving/util/query/filterQueryItems
+ * @see https://shelving.cc/util/query/filterQueryItems
  */
 export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: ImmutableArray<QueryFilter>): Iterable<T> {
 	if (filters.length) {

@@ -21,41 +21,41 @@ import type { EndpointCallback, EndpointHandler } from "./util.js";
  * @example
  * const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint
+ * @see https://shelving.cc/api/Endpoint
  */
 export class Endpoint<P = unknown, R = unknown> {
 	/**
 	 * The HTTP method this endpoint responds to, e.g. `GET`
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/method
+	 * @see https://shelving.cc/api/Endpoint/method
 	 */
 	readonly method: RequestMethod;
 
 	/**
 	 * Endpoint path, possibly including placeholders e.g. `/users/{id}`
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/path
+	 * @see https://shelving.cc/api/Endpoint/path
 	 */
 	readonly path: AbsolutePath;
 
 	/**
 	 * The `{placeholder}` segments extracted from `path`, used to render and match URLs.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/placeholders
+	 * @see https://shelving.cc/api/Endpoint/placeholders
 	 */
 	readonly placeholders: TemplatePlaceholders;
 
 	/**
 	 * The `Schema` that request payloads are validated against.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/payload
+	 * @see https://shelving.cc/api/Endpoint/payload
 	 */
 	readonly payload: Schema<P>;
 
 	/**
 	 * The `Schema` that response results are validated against.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/result
+	 * @see https://shelving.cc/api/Endpoint/result
 	 */
 	readonly result: Schema<R>;
 
@@ -76,7 +76,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * @returns The rendered absolute path, with any `{placeholders}` filled from `payload`.
 	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
 	 * @example endpoint.renderPath({ id: "abc" }) // "/users/abc"
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/renderPath
+	 * @see https://shelving.cc/api/Endpoint/renderPath
 	 */
 	renderPath(payload: P, caller: AnyCaller = this.renderPath): AbsolutePath {
 		// Placeholders.
@@ -97,7 +97,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns A dictionary of matched `{placeholder}` params, or `undefined` if the method or path doesn't match.
 	 * @example endpoint.match("GET", "/users/abc") // { id: "abc" }
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/match
+	 * @see https://shelving.cc/api/Endpoint/match
 	 */
 	match(method: RequestMethod, path: AbsolutePath, caller: AnyCaller = this.match): RequestParams | undefined {
 		if (method !== this.method) return undefined;
@@ -110,7 +110,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * @param callback The callback function that implements the logic for this endpoint by receiving the payload and returning the response.
 	 * @returns An `EndpointHandler` object combining this endpoint and the callback into a single typed object.
 	 * @example endpoint.handler((payload, request) => ({ ...payload }))
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/handler
+	 * @see https://shelving.cc/api/Endpoint/handler
 	 */
 	handler<C>(callback: EndpointCallback<P, R, C>): EndpointHandler<P, R, C> {
 		return { endpoint: this, callback };
@@ -121,7 +121,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 *
 	 * @returns The method and path joined with a space, e.g. `GET /user/{id}`
 	 * @example endpoint.toString() // "GET /users/{id}"
-	 * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoint/toString
+	 * @see https://shelving.cc/api/Endpoint/toString
 	 */
 	toString(): string {
 		return `${this.method} ${this.path}`;
@@ -131,7 +131,7 @@ export class Endpoint<P = unknown, R = unknown> {
 /**
  * An `Endpoint` with any payload and result type, for use where the specific types don't matter.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/AnyEndpoint
+ * @see https://shelving.cc/api/AnyEndpoint
  */
 // biome-ignore lint/suspicious/noExplicitAny: Intentional.
 export type AnyEndpoint = Endpoint<any, any>;
@@ -139,21 +139,21 @@ export type AnyEndpoint = Endpoint<any, any>;
 /**
  * An immutable list of endpoints.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/Endpoints
+ * @see https://shelving.cc/api/Endpoints
  */
 export type Endpoints = ImmutableArray<AnyEndpoint>;
 
 /**
  * Extract the payload type from an `Endpoint`.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/PayloadType
+ * @see https://shelving.cc/api/PayloadType
  */
 export type PayloadType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<infer Y, unknown> ? Y : never;
 
 /**
  * Extract the result type from an `Endpoint`.
  *
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/EndpointType
+ * @see https://shelving.cc/api/EndpointType
  */
 export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpoint<unknown, infer Y> ? Y : never;
 
@@ -168,7 +168,7 @@ export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpo
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `HEAD` method.
  * @example HEAD("/users/{id}")
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/HEAD
+ * @see https://shelving.cc/api/HEAD
  */
 export function HEAD<P extends Data, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function HEAD<P extends Data>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
@@ -188,7 +188,7 @@ export function HEAD(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `GET` method.
  * @example GET("/users/{id}", undefined, USER)
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/GET
+ * @see https://shelving.cc/api/GET
  */
 export function GET<P extends Data, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function GET<P extends Data>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
@@ -208,7 +208,7 @@ export function GET(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `POST` method.
  * @example POST("/users", USER, USER_RESULT)
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/POST
+ * @see https://shelving.cc/api/POST
  */
 export function POST<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function POST<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
@@ -228,7 +228,7 @@ export function POST(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `PUT` method.
  * @example PUT("/users/{id}", USER)
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/PUT
+ * @see https://shelving.cc/api/PUT
  */
 export function PUT<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function PUT<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
@@ -248,7 +248,7 @@ export function PUT(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `PATCH` method.
  * @example PATCH("/users/{id}", PARTIAL_USER)
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/PATCH
+ * @see https://shelving.cc/api/PATCH
  */
 export function PATCH<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function PATCH<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
@@ -268,7 +268,7 @@ export function PATCH(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINE
  * @param result An optional `Schema` validating the response result.
  * @returns An `Endpoint` configured for the `DELETE` method.
  * @example DELETE("/users/{id}")
- * @see https://dhoulb.github.io/shelving/api/endpoint/Endpoint/DELETE
+ * @see https://shelving.cc/api/DELETE
  */
 export function DELETE<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
 export function DELETE<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;

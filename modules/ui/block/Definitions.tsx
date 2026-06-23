@@ -12,7 +12,7 @@ const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
 /**
  * Props for `Definitions` — colour, gap, space, and typography variants plus optional children.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Definitions/DefinitionsProps
+ * @see https://shelving.cc/ui/DefinitionsProps
  */
 export interface DefinitionsProps extends ColorVariants, GapVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
 
@@ -23,7 +23,7 @@ export interface DefinitionsProps extends ColorVariants, GapVariants, SpaceVaria
  *
  * @kind component
  * @example <Definitions><dt>Name</dt><dd>Acme</dd></Definitions>
- * @see https://dhoulb.github.io/shelving/ui/block/Definitions/Definitions
+ * @see https://shelving.cc/ui/Definitions
  */
 export function Definitions({ children, ...props }: DefinitionsProps): ReactElement {
 	return (

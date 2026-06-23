@@ -11,7 +11,7 @@ const CAPTION_CLASS = getModuleClass(CAPTION_CSS, "divider");
 /**
  * Props for `Caption` — colour, space, and typography variants plus optional children.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Caption/CaptionProps
+ * @see https://shelving.cc/ui/CaptionProps
  */
 export interface CaptionProps extends ColorVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
 
@@ -20,7 +20,7 @@ export interface CaptionProps extends ColorVariants, SpaceVariants, TypographyVa
  *
  * @kind component
  * @example <Figure><Image src="/cat.jpg" /><Caption>A cat</Caption></Figure>
- * @see https://dhoulb.github.io/shelving/ui/block/Caption/Caption
+ * @see https://shelving.cc/ui/Caption
  */
 export function Caption({ children, ...props }: CaptionProps): ReactElement {
 	return (

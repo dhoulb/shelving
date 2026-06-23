@@ -11,7 +11,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  * @example
  *  const api = new ValidationAPIProvider(source);
  *  const result = await api.call(endpoint, payload); // validated payload and result
- * @see https://dhoulb.github.io/shelving/api/provider/ValidationAPIProvider/ValidationAPIProvider
+ * @see https://shelving.cc/api/ValidationAPIProvider
  */
 export class ValidationAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	/**
@@ -24,7 +24,7 @@ export class ValidationAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns The built request.
 	 * @throws {string} A user-readable validation message if the payload is invalid.
 	 * @example api.createRequest(endpoint, payload)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ValidationAPIProvider/ValidationAPIProvider/createRequest
+	 * @see https://shelving.cc/api/ValidationAPIProvider/createRequest
 	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -45,7 +45,7 @@ export class ValidationAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns Promise resolving to the validated result.
 	 * @throws {ResponseError} If the result fails validation (treated as a server/transport problem).
 	 * @example await api.parseResponse(endpoint, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/ValidationAPIProvider/ValidationAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/ValidationAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,

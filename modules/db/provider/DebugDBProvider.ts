@@ -16,7 +16,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  *  const provider = new DebugDBProvider(new MemoryDBProvider());
  *  await provider.getItem(users, 123); // Logs the call and its result.
  *
- * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider
+ * @see https://shelving.cc/db/DebugDBProvider
  */
 export class DebugDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
 	/**
@@ -26,7 +26,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param id Identifier of the item to get.
 	 * @returns The item, or `undefined` if no item exists with that id.
 	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/getItem
+	 * @see https://shelving.cc/db/DebugDBProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		try {
@@ -47,7 +47,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param id Identifier of the item to subscribe to.
 	 * @returns Async sequence yielding the item (or `undefined`) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/getItemSequence
+	 * @see https://shelving.cc/db/DebugDBProvider/getItemSequence
 	 */
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -72,7 +72,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param data Data for the new item.
 	 * @returns The generated identifier for the new item.
 	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/addItem
+	 * @see https://shelving.cc/db/DebugDBProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		try {
@@ -93,7 +93,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param id Identifier of the item to set.
 	 * @param data Full data to store for the item.
 	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/setItem
+	 * @see https://shelving.cc/db/DebugDBProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		try {
@@ -113,7 +113,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param id Identifier of the item to update.
 	 * @param updates Updates to apply to the item.
 	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/updateItem
+	 * @see https://shelving.cc/db/DebugDBProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -136,7 +136,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param collection Collection the item belongs to.
 	 * @param id Identifier of the item to delete.
 	 * @example await provider.deleteItem(users, 123);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/deleteItem
+	 * @see https://shelving.cc/db/DebugDBProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		try {
@@ -156,7 +156,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param query Query to filter the counted items (counts all items when omitted).
 	 * @returns The number of matching items.
 	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/countQuery
+	 * @see https://shelving.cc/db/DebugDBProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -180,7 +180,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
 	 * @returns An array of matching items.
 	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/getQuery
+	 * @see https://shelving.cc/db/DebugDBProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -204,7 +204,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/getQuerySequence
+	 * @see https://shelving.cc/db/DebugDBProvider/getQuerySequence
 	 */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -229,7 +229,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param query Query selecting the items to set.
 	 * @param data Full data to store for each matching item.
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/setQuery
+	 * @see https://shelving.cc/db/DebugDBProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -253,7 +253,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param query Query selecting the items to update.
 	 * @param updates Updates to apply to each matching item.
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/updateQuery
+	 * @see https://shelving.cc/db/DebugDBProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
@@ -276,7 +276,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://dhoulb.github.io/shelving/db/provider/DebugDBProvider/DebugDBProvider/deleteQuery
+	 * @see https://shelving.cc/db/DebugDBProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,

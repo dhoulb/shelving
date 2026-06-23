@@ -8,7 +8,7 @@ import INPUT_CSS from "./Input.module.css";
 /**
  * Props for `SelectInput`, a dropdown `<select>` bound to a string value.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectProps
+ * @see https://shelving.cc/ui/SelectProps
  */
 export interface SelectProps<T extends string> extends ValueInputProps<T>, InputVariants {
 	/** The options for the select. */
@@ -22,7 +22,7 @@ export interface SelectProps<T extends string> extends ValueInputProps<T>, Input
  * @returns A `<select>` element.
  * @kind component
  * @example <SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
- * @see https://dhoulb.github.io/shelving/ui/form/SelectInput/SelectInput
+ * @see https://shelving.cc/ui/SelectInput
  */
 export function SelectInput<T extends string>(props: SelectProps<T>): ReactElement;
 export function SelectInput({

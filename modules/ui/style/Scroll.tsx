@@ -9,7 +9,7 @@ const SCROLL_VERTICAL_CLASS = getModuleClass(SCROLLABLE_CSS, "vertical");
 /**
  * Variant props selecting which scroll axes are enabled on an element.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/ScrollProps
+ * @see https://shelving.cc/ui/ScrollProps
  */
 export interface ScrollVariants {
 	/** Vertical scrolling (defaults to `false`). */
@@ -24,7 +24,7 @@ export interface ScrollVariants {
  * @param variants
  * @returns The combined scroll class string (empty when neither axis is enabled).
  * @example getScrollClass({ horizontal: true }) // "horizontal"
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/getScrollClass
+ * @see https://shelving.cc/ui/getScrollClass
  */
 export function getScrollClass({ horizontal, vertical }: ScrollVariants): string {
 	return getClass(
@@ -36,7 +36,7 @@ export function getScrollClass({ horizontal, vertical }: ScrollVariants): string
 /**
  * Props for the `Scroll` component — children plus scroll-axis variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/ScrollComponentProps
+ * @see https://shelving.cc/ui/ScrollComponentProps
  */
 export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
 
@@ -46,7 +46,7 @@ export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
  * @returns A `<div>` element with the computed scroll class.
  * @kind component
  * @example <Scroll horizontal>{wideContent}</Scroll>
- * @see https://dhoulb.github.io/shelving/ui/style/Scroll/Scroll
+ * @see https://shelving.cc/ui/Scroll
  */
 export function Scroll({ children, ...props }: ScrollComponentProps): ReactElement {
 	return <div className={getScrollClass(props)}>{children}</div>;

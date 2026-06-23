@@ -16,7 +16,7 @@ import { BusyStore } from "./BusyStore.js";
  * const store = new DictionaryStore<number>({ a: 1, b: 2 });
  * store.set("c", 3);
  * store.get("a"); // 1
- * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore
+ * @see https://shelving.cc/store/DictionaryStore
  */
 export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, PossibleDictionary<T>> implements Iterable<DictionaryItem<T>> {
 	// Override to set default value to empty dictionary.
@@ -32,7 +32,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	/**
 	 * Get the number of entries in the current value of this store.
 	 *
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/count
+	 * @see https://shelving.cc/store/DictionaryStore/count
 	 */
 	get count(): number {
 		return Object.keys(this.value).length;
@@ -44,7 +44,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * @param updates The set of entry updates to apply.
 	 * @returns Nothing.
 	 * @example store.update({ a: 10, b: 20 });
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/update
+	 * @see https://shelving.cc/store/DictionaryStore/update
 	 */
 	update(updates: Updates<ImmutableDictionary<T>>): void {
 		this.value = updateData(this.value, updates);
@@ -56,7 +56,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * @param keys The keys of the entries to remove.
 	 * @returns Nothing.
 	 * @example store.deleteItems("a", "b");
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/deleteItems
+	 * @see https://shelving.cc/store/DictionaryStore/deleteItems
 	 */
 	deleteItems(...keys: string[]): void {
 		this.value = omitDictionaryItems(this.value, ...keys);
@@ -68,7 +68,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * @param name The key of the item to read.
 	 * @returns The item value, or `undefined` if it is not present.
 	 * @example store.get("a"); // 1
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/get
+	 * @see https://shelving.cc/store/DictionaryStore/get
 	 */
 	get(name: string): T | undefined {
 		return this.value[name];
@@ -81,7 +81,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * @param value The new value for the item.
 	 * @returns Nothing.
 	 * @example store.set("a", 10);
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/set
+	 * @see https://shelving.cc/store/DictionaryStore/set
 	 */
 	set(name: string, value: T): void {
 		this.value = withProp(this.value, name, value);
@@ -94,7 +94,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * @param names Additional keys to delete.
 	 * @returns Nothing.
 	 * @example store.delete("a", "b");
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/delete
+	 * @see https://shelving.cc/store/DictionaryStore/delete
 	 */
 	delete(name: string, ...names: string[]): void {
 		this.value = omitProps(this.value, name, ...names);
@@ -104,7 +104,7 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * Iterate over the `[key, value]` entries of this dictionary.
 	 *
 	 * @returns An iterator over the dictionary's entry tuples.
-	 * @see https://dhoulb.github.io/shelving/store/DictionaryStore/DictionaryStore/[Symbol.iterator]
+	 * @see https://shelving.cc/store/DictionaryStore/[Symbol.iterator]
 	 */
 	[Symbol.iterator](): Iterator<DictionaryItem<T>> {
 		return getDictionaryItems(this.value)[Symbol.iterator]();

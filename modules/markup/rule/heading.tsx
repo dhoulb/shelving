@@ -8,7 +8,7 @@ import { createLineRegExp, LINE_CONTENT_REGEXP, LINE_SPACE_REGEXP } from "../uti
  * - Markdown's underline syntax is not supported (for simplification).
  *
  * @example new MarkupParser({ rules: [HEADING_RULE] }).parse("# Title")
- * @see https://dhoulb.github.io/shelving/markup/rule/heading/HEADING_RULE
+ * @see https://shelving.cc/markup/HEADING_RULE
  */
 export const HEADING_RULE = createMarkupRule<{
 	prefix: string;

@@ -9,7 +9,7 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
  *
  * - The length, format, and single-line constraints are fixed internally, so only the presentation-level string options plus `currencies` are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchemaOptions
+ * @see https://shelving.cc/schema/CurrencyCodeSchemaOptions
  */
 export interface CurrencyCodeSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
@@ -38,13 +38,13 @@ export interface CurrencyCodeSchemaOptions extends SchemaOptions {
  * @example
  *  const schema = new CurrencyCodeSchema({});
  *  schema.validate("gbp"); // "GBP"
- * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema
+ * @see https://shelving.cc/schema/CurrencyCodeSchema
  */
 export class CurrencyCodeSchema extends StringSchema {
 	/**
 	 * Set of allowed ISO 4217 currency codes.
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema/currencies
+	 * @see https://shelving.cc/schema/CurrencyCodeSchema/currencies
 	 */
 	readonly currencies: ImmutableArray<CurrencyCode>;
 
@@ -52,7 +52,7 @@ export class CurrencyCodeSchema extends StringSchema {
 	 * Create a new `CurrencyCodeSchema`.
 	 *
 	 * @example new CurrencyCodeSchema({ currencies: ["GBP", "USD"] })
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema
+	 * @see https://shelving.cc/schema/CurrencyCodeSchema
 	 */
 	constructor({ one = "currency", title = "Currency", currencies = CURRENCY_CODES, max = 3, ...options }: CurrencyCodeSchemaOptions) {
 		super({
@@ -74,7 +74,7 @@ export class CurrencyCodeSchema extends StringSchema {
 	 * @param insaneString The raw input string to sanitize.
 	 * @returns The sanitized string with all non-`A-Z` characters stripped.
 	 * @example schema.sanitize(" gb p ") // "GBP"
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema/sanitize
+	 * @see https://shelving.cc/schema/CurrencyCodeSchema/sanitize
 	 */
 	override sanitize(insaneString: string): string {
 		// Strip characters that aren't A-Z (including whitespace).
@@ -88,7 +88,7 @@ export class CurrencyCodeSchema extends StringSchema {
 	 * @returns The validated three-letter uppercase currency code.
 	 * @throws `string` if the value is not a valid string, or `"Unknown currency code"` if it is not in `currencies`.
 	 * @example schema.validate("gbp") // "GBP"
-	 * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CurrencyCodeSchema/validate
+	 * @see https://shelving.cc/schema/CurrencyCodeSchema/validate
 	 */
 	override validate(value?: unknown): string {
 		const currency = super.validate(value);
@@ -101,7 +101,7 @@ export class CurrencyCodeSchema extends StringSchema {
  * Sugar instance of `CurrencyCodeSchema` for a required ISO 4217 currency code, e.g. `GBP`. Equivalent to `new CurrencyCodeSchema({})`.
  *
  * @example CURRENCY_CODE.validate("gbp") // "GBP"
- * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/CURRENCY_CODE
+ * @see https://shelving.cc/schema/CURRENCY_CODE
  */
 export const CURRENCY_CODE = new CurrencyCodeSchema({});
 
@@ -109,6 +109,6 @@ export const CURRENCY_CODE = new CurrencyCodeSchema({});
  * Sugar instance allowing a `CURRENCY_CODE` or `null`. Equivalent to `NULLABLE(CURRENCY_CODE)`.
  *
  * @example NULLABLE_CURRENCY_CODE.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/CurrencyCodeSchema/NULLABLE_CURRENCY_CODE
+ * @see https://shelving.cc/schema/NULLABLE_CURRENCY_CODE
  */
 export const NULLABLE_CURRENCY_CODE = NULLABLE(CURRENCY_CODE);

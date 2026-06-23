@@ -9,7 +9,7 @@ import { debug, debugFullRequest, debugFullResponse, debugRequest } from "./debu
  * @param request The `Request` to log.
  * @returns A promise that resolves once the request has been logged.
  * @example await logRequest(request)
- * @see https://dhoulb.github.io/shelving/util/log/logRequest
+ * @see https://shelving.cc/util/log/logRequest
  */
 export async function logRequest(request: Request) {
 	console.log(`${ANSI_RIGHT} ${await debugFullRequest(request)}`);
@@ -22,7 +22,7 @@ export async function logRequest(request: Request) {
  * @param request The originating `Request`, included in the log for context.
  * @returns A promise that resolves once the response has been logged.
  * @example await logRequestResponse(response, request)
- * @see https://dhoulb.github.io/shelving/util/log/logRequestResponse
+ * @see https://shelving.cc/util/log/logRequestResponse
  */
 export async function logRequestResponse(response: Response, request: Request): Promise<void> {
 	console.log(`${ANSI_LEFT} ${debugRequest(request)}\n\n${await debugFullResponse(response)}`);
@@ -35,7 +35,7 @@ export async function logRequestResponse(response: Response, request: Request): 
  * @param request The originating `Request`, included in the log for context.
  * @returns Nothing.
  * @example logRequestError(error, request)
- * @see https://dhoulb.github.io/shelving/util/log/logRequestError
+ * @see https://shelving.cc/util/log/logRequestError
  */
 export function logRequestError(reason: unknown, request: Request): void {
 	console.error(`${ANSI_FAILURE} ${debugRequest(request)}\n\n${debug(reason)}`);

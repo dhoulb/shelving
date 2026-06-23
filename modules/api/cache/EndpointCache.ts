@@ -16,7 +16,7 @@ import { EndpointStore } from "../store/EndpointStore.js";
  * const cache = new EndpointCache(getUser, provider);
  * const user = await cache.call({ id: "abc" });
  *
- * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache
+ * @see https://shelving.cc/api/EndpointCache
  */
 export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable {
 	private readonly _endpoints = new Map<string, EndpointStore<P, R>>();
@@ -24,14 +24,14 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	/**
 	 * The endpoint that every store in this cache fetches from.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/endpoint
+	 * @see https://shelving.cc/api/EndpointCache/endpoint
 	 */
 	readonly endpoint: Endpoint<P, R>;
 
 	/**
 	 * The `APIProvider` used to render URLs and fetch results for this endpoint.
 	 *
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/provider
+	 * @see https://shelving.cc/api/EndpointCache/provider
 	 */
 	readonly provider: APIProvider<P, R>;
 
@@ -41,7 +41,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @param endpoint The endpoint that every cached store fetches from.
 	 * @param provider The `APIProvider` used to render URLs and fetch results.
 	 * @example new EndpointCache(getUser, provider)
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache
+	 * @see https://shelving.cc/api/EndpointCache
 	 */
 	constructor(endpoint: Endpoint<P, R>, provider: APIProvider<P, R>) {
 		this.endpoint = endpoint;
@@ -56,7 +56,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The existing `EndpointStore` for `payload`, or a newly created one.
 	 * @example cache.get({ id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/get
+	 * @see https://shelving.cc/api/EndpointCache/get
 	 */
 	get(payload: P, caller: AnyCaller = this.get): EndpointStore<P, R> {
 		const url = this.provider.renderURL(this.endpoint, payload, caller).href;
@@ -75,7 +75,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @returns The cached or freshly fetched result.
 	 * @throws Whatever `APIProvider.call` throws if the fetch fails.
 	 * @example await cache.call({ id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/call
+	 * @see https://shelving.cc/api/EndpointCache/call
 	 */
 	async call(payload: P, maxAge: number = AVOID_REFRESH, caller: AnyCaller = this.call): Promise<R> {
 		const store = this.get(payload, caller);
@@ -89,7 +89,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @param payload The payload identifying the store to invalidate.
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @example cache.invalidate({ id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/invalidate
+	 * @see https://shelving.cc/api/EndpointCache/invalidate
 	 */
 	invalidate(payload: P, caller: AnyCaller = this.invalidate): void {
 		this.get(payload, caller)?.invalidate();
@@ -99,7 +99,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * Invalidate all stores so the next read of any payload refetches.
 	 *
 	 * @example cache.invalidateAll()
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/invalidateAll
+	 * @see https://shelving.cc/api/EndpointCache/invalidateAll
 	 */
 	invalidateAll(): void {
 		for (const store of this._endpoints.values()) store.invalidate();
@@ -113,7 +113,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns A promise that resolves when the refetch settles.
 	 * @example await cache.refresh({ id: "abc" })
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/refresh
+	 * @see https://shelving.cc/api/EndpointCache/refresh
 	 */
 	async refresh(payload: P, maxAge?: number, caller: AnyCaller = this.invalidate): Promise<void> {
 		await this.get(payload, caller)?.refresh(maxAge);
@@ -125,7 +125,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @param maxAge The maximum age in milliseconds before a refetch is triggered.
 	 * @returns A promise that resolves when every refetch settles.
 	 * @example await cache.refreshAll()
-	 * @see https://dhoulb.github.io/shelving/api/cache/EndpointCache/EndpointCache/refreshAll
+	 * @see https://shelving.cc/api/EndpointCache/refreshAll
 	 */
 	async refreshAll(maxAge?: number): Promise<void> {
 		await awaitValues(...this._endpoints.values().map(store => store.refresh(maxAge)));

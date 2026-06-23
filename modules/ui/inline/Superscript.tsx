@@ -8,7 +8,7 @@ const SUPERSCRIPT_CLASS = getModuleClass(SUPERSCRIPT_CSS, "superscript");
 /**
  * Props for `Superscript` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Superscript/SuperscriptProps
+ * @see https://shelving.cc/ui/SuperscriptProps
  */
 export interface SuperscriptProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface SuperscriptProps extends OptionalChildProps {}
  * @returns Rendered `<sup>` element.
  * @kind component
  * @example <>E = mc<Superscript>2</Superscript></>
- * @see https://dhoulb.github.io/shelving/ui/inline/Superscript/Superscript
+ * @see https://shelving.cc/ui/Superscript
  */
 export function Superscript({ children }: SuperscriptProps): ReactElement {
 	return <sup className={SUPERSCRIPT_CLASS}>{children}</sup>;

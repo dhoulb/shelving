@@ -21,7 +21,7 @@ const FLATTEN_KINDS = new Set(["interface", "type"]);
 /**
  * Props for `DocumentationParams` — the parameter list to render, one row per parameter.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationParams/DocumentationParamsProps
+ * @see https://shelving.cc/ui/DocumentationParamsProps
  */
 export interface DocumentationParamsProps {
 	/** Parameters to render — one row each, with options-bag params flattened into indented child rows. */
@@ -39,7 +39,7 @@ export interface DocumentationParamsProps {
  * @kind component
  * @returns A `<Section>` containing the parameters table, or `null` when there are none.
  * @example <DocumentationParams params={params} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationParams/DocumentationParams
+ * @see https://shelving.cc/ui/DocumentationParams
  */
 export function DocumentationParams({ params }: DocumentationParamsProps): ReactNode {
 	const map = useTreeMap();

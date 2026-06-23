@@ -11,7 +11,7 @@ const PARAGRAPH_CLASS = getModuleClass(PARAGRAPH_CSS, "paragraph");
 /**
  * Props for `Paragraph` — colour, space, and typography variants.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Paragraph/ParagraphProps
+ * @see https://shelving.cc/ui/ParagraphProps
  */
 export interface ParagraphProps extends ColorVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
 
@@ -23,7 +23,7 @@ export interface ParagraphProps extends ColorVariants, SpaceVariants, Typography
  * @param variants Colour, space, and typography variants.
  * @returns A space-separated `className` string combining the paragraph class and resolved variant classes.
  * @example getParagraphClass({ space: "large" }) // "paragraph …"
- * @see https://dhoulb.github.io/shelving/ui/block/Paragraph/getParagraphClass
+ * @see https://shelving.cc/ui/getParagraphClass
  */
 export function getParagraphClass(variants: ParagraphProps): string {
 	return getClass(
@@ -40,7 +40,7 @@ export function getParagraphClass(variants: ParagraphProps): string {
  * @kind component
  * @returns Rendered `<p>` paragraph element.
  * @example <Paragraph>Hello world.</Paragraph>
- * @see https://dhoulb.github.io/shelving/ui/block/Paragraph/Paragraph
+ * @see https://shelving.cc/ui/Paragraph
  */
 export function Paragraph({ children, ...props }: ParagraphProps): ReactElement {
 	return <p className={getParagraphClass(props)}>{children}</p>;

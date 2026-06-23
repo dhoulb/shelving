@@ -7,7 +7,7 @@ import { type GapVariants, getGapClass } from "./Gap.js";
 /**
  * Variant props for flex layout — opt-in modifiers any component can mix in via `getFlexClass()`.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/FlexVariants
+ * @see https://shelving.cc/ui/FlexVariants
  */
 export interface FlexVariants extends GapVariants {
 	/** Wrap overflowing elements onto the next line. */
@@ -78,7 +78,7 @@ export interface FlexVariants extends GapVariants {
  * @param variants
  * @returns The combined flex + gap class string.
  * @example getFlexClass({ column: true, center: true, gap: "large" })
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/getFlexClass
+ * @see https://shelving.cc/ui/getFlexClass
  */
 export function getFlexClass(variants: FlexVariants): string {
 	return getClass(
@@ -90,7 +90,7 @@ export function getFlexClass(variants: FlexVariants): string {
 /**
  * Props for the `Row` component — flex variants plus optional children.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/RowProps
+ * @see https://shelving.cc/ui/RowProps
  */
 export interface RowProps extends FlexVariants, OptionalChildProps {}
 
@@ -101,7 +101,7 @@ export interface RowProps extends FlexVariants, OptionalChildProps {}
  * @returns A `<div>` element with the computed flex class.
  * @kind component
  * @example <Row gap="small" center>{items}</Row>
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/Row
+ * @see https://shelving.cc/ui/Row
  */
 export function Row({ children, ...props }: RowProps): ReactElement {
 	return <div className={getFlexClass(props)}>{children}</div>;
@@ -110,7 +110,7 @@ export function Row({ children, ...props }: RowProps): ReactElement {
 /**
  * Props for the `Column` component — flex variants plus optional children.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/ColumnProps
+ * @see https://shelving.cc/ui/ColumnProps
  */
 export interface ColumnProps extends FlexVariants, OptionalChildProps {}
 
@@ -121,7 +121,7 @@ export interface ColumnProps extends FlexVariants, OptionalChildProps {}
  * @returns A `<div>` element with the computed flex class.
  * @kind component
  * @example <Column gap="small">{items}</Column>
- * @see https://dhoulb.github.io/shelving/ui/style/Flex/Column
+ * @see https://shelving.cc/ui/Column
  */
 export function Column({ children, column = true, ...props }: ColumnProps): ReactElement {
 	return <div className={getFlexClass({ column, ...props })}>{children}</div>;

@@ -11,7 +11,7 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
  *
  * - The length and single-line constraints are fixed internally, so only the presentation-level string options plus `base` and `schemes` are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchemaOptions
+ * @see https://shelving.cc/schema/URLSchemaOptions
  */
 export interface URLSchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
@@ -48,7 +48,7 @@ export interface URLSchemaOptions extends SchemaOptions {
  * @example
  * 	const schema = new URLSchema({ base: "https://example.com" });
  * 	schema.validate("/page") // "https://example.com/page"
- * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchema
+ * @see https://shelving.cc/schema/URLSchema
  */
 export class URLSchema extends StringSchema {
 	/** Base URL that relative URLs are resolved against, or `undefined` when not set. */
@@ -81,7 +81,7 @@ export class URLSchema extends StringSchema {
 	 * @returns The valid, fully-resolved URL string.
 	 * @throws `string` error message if the value is empty, malformed, or uses a disallowed scheme.
 	 * @example schema.validate("https://www.google.com") // "https://www.google.com/"
-	 * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchema/validate
+	 * @see https://shelving.cc/schema/URLSchema/validate
 	 */
 	override validate(unsafeValue: unknown): URLString {
 		const str = super.validate(unsafeValue);
@@ -99,7 +99,7 @@ export class URLSchema extends StringSchema {
 	 * @param str The raw string to sanitize.
 	 * @returns The sanitized string with all whitespace removed.
 	 * @example schema.sanitize(" https://a.com ") // "https://a.com"
-	 * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchema/sanitize
+	 * @see https://shelving.cc/schema/URLSchema/sanitize
 	 */
 	override sanitize(str: string): string {
 		// URLs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
@@ -112,7 +112,7 @@ export class URLSchema extends StringSchema {
 	 * @param value The valid URL string to format.
 	 * @returns The URL formatted as a human-readable string.
 	 * @example schema.format("https://www.google.com/") // "www.google.com"
-	 * @see https://dhoulb.github.io/shelving/schema/URLSchema/URLSchema/format
+	 * @see https://shelving.cc/schema/URLSchema/format
 	 */
 	override format(value: string): string {
 		return formatURL(value, this.base, this.format);
@@ -123,7 +123,7 @@ export class URLSchema extends StringSchema {
  * Sugar instance of `URLSchema` for an absolute or relative URL string. Equivalent to `new URLSchema({})`.
  *
  * @example URL_SCHEMA.validate("https://www.google.com") // "https://www.google.com/"
- * @see https://dhoulb.github.io/shelving/schema/URLSchema/URL_SCHEMA
+ * @see https://shelving.cc/schema/URL_SCHEMA
  */
 export const URL_SCHEMA = new URLSchema({});
 
@@ -131,6 +131,6 @@ export const URL_SCHEMA = new URLSchema({});
  * Sugar instance allowing a `URL_SCHEMA` or `null`. Equivalent to `NULLABLE(URL_SCHEMA)`.
  *
  * @example NULLABLE_URL_SCHEMA.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/URLSchema/NULLABLE_URL_SCHEMA
+ * @see https://shelving.cc/schema/NULLABLE_URL_SCHEMA
  */
 export const NULLABLE_URL_SCHEMA = NULLABLE(URL_SCHEMA);

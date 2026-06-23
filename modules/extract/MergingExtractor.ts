@@ -20,7 +20,7 @@ const DEFAULT_MERGES: ImmutableDictionary<readonly string[]> = {
 /**
  * Options for a `MergingExtractor`.
  *
- * @see https://dhoulb.github.io/shelving/extract/MergingExtractor/MergingExtractorOptions
+ * @see https://shelving.cc/extract/MergingExtractorOptions
  */
 export interface MergingExtractorOptions {
 	/**
@@ -44,7 +44,7 @@ export interface MergingExtractorOptions {
  *
  * @example const extractor = new MergingExtractor(new DirectoryExtractor());
  *
- * @see https://dhoulb.github.io/shelving/extract/MergingExtractor
+ * @see https://shelving.cc/extract/MergingExtractor
  */
 export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _merges: ImmutableDictionary<readonly string[]>;
@@ -69,7 +69,7 @@ export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	 *
 	 * @example const tree = await new MergingExtractor(source).extract(input);
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/MergingExtractor/extract
+	 * @see https://shelving.cc/extract/extract
 	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);

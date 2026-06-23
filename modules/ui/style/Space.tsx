@@ -4,7 +4,7 @@ import SPACE_CSS from "./Space.module.css";
 /**
  * Allowed values for block spacing for components that support `SpaceVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceValue
+ * @see https://shelving.cc/ui/SpaceValue
  */
 export type SpaceValue =
 	| "section"
@@ -31,7 +31,7 @@ export type SpaceValue =
 /**
  * Variants to control block spacing on components, e.g. `space="large"`.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Space/SpaceVariants
+ * @see https://shelving.cc/ui/SpaceVariants
  */
 export interface SpaceVariants {
 	/** Block spacing for this component. */
@@ -44,7 +44,7 @@ export interface SpaceVariants {
  * @param variants
  * @returns The space class string, or `undefined` when no `space` is set.
  * @example getSpaceClass({ space: "large" }) // "large"
- * @see https://dhoulb.github.io/shelving/ui/style/Space/getSpaceClass
+ * @see https://shelving.cc/ui/getSpaceClass
  */
 export function getSpaceClass({ space }: SpaceVariants): string | undefined {
 	return space && getModuleClass(SPACE_CSS, `space-${space}`);

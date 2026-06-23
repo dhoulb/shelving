@@ -22,7 +22,7 @@ const ADDRESS_PROPS: Schemas<AddressData> = {
  *
  * - The `props` are fixed to the postal-address fields internally, so only the default `value` and base schema options are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchemaOptions
+ * @see https://shelving.cc/schema/AddressSchemaOptions
  */
 export interface AddressSchemaOptions extends SchemaOptions {
 	/** Partial default value merged over the per-field defaults. */
@@ -36,7 +36,7 @@ export interface AddressSchemaOptions extends SchemaOptions {
  * - Formats validated values into a human-readable address string via `formatAddress()`.
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
- * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchema
+ * @see https://shelving.cc/schema/AddressSchema
  */
 export class AddressSchema extends DataSchema<AddressData> {
 	/**
@@ -52,7 +52,7 @@ export class AddressSchema extends DataSchema<AddressData> {
 	 * @param value The valid address data to format.
 	 * @returns The address formatted as a single display string.
 	 * @example ADDRESS.format({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
-	 * @see https://dhoulb.github.io/shelving/schema/AddressSchema/AddressSchema/format
+	 * @see https://shelving.cc/schema/AddressSchema/format
 	 */
 	override format(value: AddressData) {
 		return formatAddress(value);
@@ -63,7 +63,7 @@ export class AddressSchema extends DataSchema<AddressData> {
  * Sugar instance of `AddressSchema` for postal address data. Equivalent to `new AddressSchema({})`.
  *
  * @example ADDRESS.validate({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
- * @see https://dhoulb.github.io/shelving/schema/AddressSchema/ADDRESS
+ * @see https://shelving.cc/schema/ADDRESS
  */
 export const ADDRESS = new AddressSchema({});
 
@@ -71,6 +71,6 @@ export const ADDRESS = new AddressSchema({});
  * Sugar instance allowing an `ADDRESS` or `null`. Equivalent to `NULLABLE(ADDRESS)`.
  *
  * @example NULLABLE_ADDRESS.validate(null); // Returns null
- * @see https://dhoulb.github.io/shelving/schema/AddressSchema/NULLABLE_ADDRESS
+ * @see https://shelving.cc/schema/NULLABLE_ADDRESS
  */
 export const NULLABLE_ADDRESS = NULLABLE(ADDRESS);

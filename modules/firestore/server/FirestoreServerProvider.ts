@@ -76,7 +76,7 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * import { Firestore } from "@google-cloud/firestore";
  * const provider = new FirestoreServerProvider(new Firestore());
  *
- * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider
+ * @see https://shelving.cc/firestore/server/FirestoreServerProvider
  */
 export class FirestoreServerProvider<I extends string = string, T extends Data = Data> extends DBProvider<I, T> {
 	private readonly _firestore: Firestore;
@@ -85,7 +85,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * Create a provider wrapping a Firestore Admin SDK instance.
 	 *
 	 * @param firestore The `Firestore` instance to read and write through; defaults to a new `Firestore()`.
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider
 	 */
 	constructor(firestore = new Firestore()) {
 		super();
@@ -140,7 +140,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param id The ID of the item to read.
 	 * @returns Promise resolving to the item, or `undefined` if the document does not exist.
 	 * @example await provider.getItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getItem
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return _getOptionalItem<II, TT>(await this._getCollection(collection).doc(id).get());
@@ -153,7 +153,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param id The ID of the item to subscribe to.
 	 * @returns An async sequence yielding the item (or `undefined` when absent) on every change.
 	 * @example for await (const item of provider.getItemSequence(users, "abc123")) console.log(item)
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getItemSequence
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/getItemSequence
 	 */
 	override getItemSequence<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		const ref = this._getCollection(c).doc(id);
@@ -173,7 +173,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param data The data for the new item.
 	 * @returns Promise resolving to the generated ID of the new item.
 	 * @example const id = await provider.addItem(users, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/addItem
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
 		return (await this._getCollection(c).add(data)).id as II; // `as II` needed: Firestore returns string, not II.
@@ -187,7 +187,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param data The data to store for the item.
 	 * @returns Promise resolving once the write completes.
 	 * @example await provider.setItem(users, "abc123", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/setItem
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await this._getCollection(c).doc(id).set(data);
@@ -201,7 +201,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param updates The updates to apply to the item.
 	 * @returns Promise resolving once the update completes.
 	 * @example await provider.updateItem(users, "abc123", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/updateItem
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
@@ -218,7 +218,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param id The ID of the item to delete.
 	 * @returns Promise resolving once the deletion completes.
 	 * @example await provider.deleteItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/deleteItem
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<void> {
 		await this._getCollection(c).doc(id).delete();
@@ -231,7 +231,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param q The query selecting which items to count; counts the whole collection when omitted.
 	 * @returns Promise resolving to the number of matching items.
 	 * @example const total = await provider.countQuery(users)
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/countQuery
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<number> {
 		const snapshot = await this._getQuery(c, q).count().get();
@@ -245,7 +245,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param q The query selecting which items to read; reads the whole collection when omitted.
 	 * @returns Promise resolving to the array of matching items.
 	 * @example const items = await provider.getQuery(users, { "name": "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getQuery
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return _getItems<II, TT>(await this._getQuery(c, q).get());
@@ -258,7 +258,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param q The query selecting which items to subscribe to; subscribes to the whole collection when omitted.
 	 * @returns An async sequence yielding the matching items on every change.
 	 * @example for await (const items of provider.getQuerySequence(users)) console.log(items)
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/getQuerySequence
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/getQuerySequence
 	 */
 	override getQuerySequence<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		const ref = this._getQuery(c, q);
@@ -279,7 +279,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param data The data to write to each matching item.
 	 * @returns Promise resolving once all writes complete.
 	 * @example await provider.setQuery(users, { "name": "Dave" }, { active: false })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/setQuery
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
 		return await this._bulkWrite(c, q, (w, s) => void w.set(s.ref, data));
@@ -293,7 +293,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param updates The updates to apply to each matching item.
 	 * @returns Promise resolving once all updates complete.
 	 * @example await provider.updateQuery(users, { "active": true }, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/updateQuery
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
@@ -311,7 +311,7 @@ export class FirestoreServerProvider<I extends string = string, T extends Data =
 	 * @param q The query selecting which items to delete.
 	 * @returns Promise resolving once all deletions complete.
 	 * @example await provider.deleteQuery(users, { "active": false })
-	 * @see https://dhoulb.github.io/shelving/firestore/server/FirestoreServerProvider/FirestoreServerProvider/deleteQuery
+	 * @see https://shelving.cc/firestore/server/FirestoreServerProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>): Promise<void> {
 		return await this._bulkWrite(c, q, (w, s) => void w.delete(s.ref));

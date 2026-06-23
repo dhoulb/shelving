@@ -16,7 +16,7 @@ import { TreeMarkup } from "./TreeMarkup.js";
  * @returns A `<Page>` with the title, prose content, and a stack of child cards.
  * @kind component
  * @example <TreePage {...element.props} />
- * @see https://dhoulb.github.io/shelving/ui/tree/TreePage/TreePage
+ * @see https://shelving.cc/ui/TreePage
  */
 export function TreePage({ title, name, description, content, children }: TreeElementProps): ReactNode {
 	return (

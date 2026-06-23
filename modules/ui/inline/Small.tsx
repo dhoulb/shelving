@@ -8,7 +8,7 @@ const SMALL_CLASS = getModuleClass(SMALL_CSS, "small");
 /**
  * Props for `Small` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Small/SmallProps
+ * @see https://shelving.cc/ui/SmallProps
  */
 export interface SmallProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface SmallProps extends OptionalChildProps {}
  * @returns Rendered `<small>` element.
  * @kind component
  * @example <Small>Terms apply.</Small>
- * @see https://dhoulb.github.io/shelving/ui/inline/Small/Small
+ * @see https://shelving.cc/ui/Small
  */
 export function Small({ children }: SmallProps): ReactElement {
 	return <small className={SMALL_CLASS}>{children}</small>;

@@ -8,7 +8,7 @@ import type { NotString } from "../util/string.js";
  * Asymmetric matcher that expects an object matching `PromiseLike` (i.e. has a `.then()` method).
  *
  * @example expect(value).toEqual(EXPECT_PROMISELIKE)
- * @see https://dhoulb.github.io/shelving/test/util/EXPECT_PROMISELIKE
+ * @see https://shelving.cc/test/EXPECT_PROMISELIKE
  */
 export const EXPECT_PROMISELIKE = expect.objectContaining({
 	then: expect.any(Function),
@@ -24,7 +24,7 @@ export const EXPECT_PROMISELIKE = expect.objectContaining({
  * @param keys The exact set of `.id` values expected (order ignored).
  * @throws {Error} If the items' ids don't match `keys`.
  * @example expectUnorderedItems(results, ["person1", "person2"])
- * @see https://dhoulb.github.io/shelving/test/util/expectUnorderedItems
+ * @see https://shelving.cc/test/expectUnorderedItems
  */
 export function expectUnorderedItems<I extends Identifier, T extends Data>(
 	items: Iterable<Item<I, T>>,
@@ -49,7 +49,7 @@ export function expectUnorderedItems<I extends Identifier, T extends Data>(
  * @param keys The exact ordered sequence of `.id` values expected.
  * @throws {Error} If the items' ids don't match `keys` in order.
  * @example expectOrderedItems(results, ["person1", "person2"])
- * @see https://dhoulb.github.io/shelving/test/util/expectOrderedItems
+ * @see https://shelving.cc/test/expectOrderedItems
  */
 export function expectOrderedItems<I extends Identifier, T extends Data>(
 	items: Iterable<Item<I, T>>,

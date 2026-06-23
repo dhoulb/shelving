@@ -7,12 +7,12 @@ import { Extractor } from "./Extractor.js";
  * - Composes the same way `Through*Provider` chains do — chain multiple `ThroughExtractor`s to build up behaviour.
  *
  * @example new MergingExtractor(new DirectoryExtractor()) // a ThroughExtractor wrapping a source extractor
- * @see https://dhoulb.github.io/shelving/extract/ThroughExtractor/ThroughExtractor
+ * @see https://shelving.cc/extract/ThroughExtractor
  */
 export abstract class ThroughExtractor<I, O extends TreeElement = TreeElement> extends Extractor<I, O> {
 	/**
 	 * The wrapped source extractor this through extractor delegates to.
-	 * @see https://dhoulb.github.io/shelving/extract/ThroughExtractor/ThroughExtractor/source
+	 * @see https://shelving.cc/extract/ThroughExtractor/source
 	 */
 	readonly source: Extractor<I, O>;
 
@@ -20,7 +20,7 @@ export abstract class ThroughExtractor<I, O extends TreeElement = TreeElement> e
 	 * Create a `ThroughExtractor` wrapping a source extractor.
 	 *
 	 * @param source The inner extractor to delegate to.
-	 * @see https://dhoulb.github.io/shelving/extract/ThroughExtractor/ThroughExtractor
+	 * @see https://shelving.cc/extract/ThroughExtractor
 	 */
 	constructor(source: Extractor<I, O>) {
 		super();
@@ -34,7 +34,7 @@ export abstract class ThroughExtractor<I, O extends TreeElement = TreeElement> e
 	 * @param input The input value to extract from.
 	 * @returns The extracted `TreeElement`, or a promise resolving to one.
 	 * @example await myThroughExtractor.extract(input)
-	 * @see https://dhoulb.github.io/shelving/extract/ThroughExtractor/ThroughExtractor/extract
+	 * @see https://shelving.cc/extract/ThroughExtractor/extract
 	 */
 	extract(input: I): O | Promise<O> {
 		return this.source.extract(input);

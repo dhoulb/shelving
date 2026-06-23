@@ -8,7 +8,7 @@ import type { Validator } from "../util/validate.js";
 /**
  * Options allowed by a `Schema` instance.
  *
- * @see https://dhoulb.github.io/shelving/schema/Schema/SchemaOptions
+ * @see https://shelving.cc/schema/SchemaOptions
  */
 export type SchemaOptions = {
 	/** String for one of this thing, e.g. `product` or `item` or `sheep` */
@@ -37,7 +37,7 @@ export type SchemaOptions = {
  *  		return unsafeValue;
  *  	}
  *  }
- * @see https://dhoulb.github.io/shelving/schema/Schema/Schema
+ * @see https://shelving.cc/schema/Schema
  */
 export abstract class Schema<T = unknown> implements Validator<T> {
 	/** String for one of this thing, e.g. `product` or `item` or `sheep` */
@@ -72,7 +72,7 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	 * @returns The valid value of type `T`.
 	 * @throws `string` error message if the value is invalid.
 	 * @example schema.validate("abc") // "abc"
-	 * @see https://dhoulb.github.io/shelving/schema/Schema/Schema/validate
+	 * @see https://shelving.cc/schema/Schema/validate
 	 */
 	abstract validate(unsafeValue: unknown): T;
 
@@ -82,7 +82,7 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	 * @param value The valid value to format.
 	 * @returns The value formatted as a human-readable string.
 	 * @example schema.format(value) // "Hello!"
-	 * @see https://dhoulb.github.io/shelving/schema/Schema/Schema/format
+	 * @see https://shelving.cc/schema/Schema/format
 	 */
 	format(value: T): string {
 		return formatValue(value, undefined, this.format);
@@ -93,14 +93,14 @@ export abstract class Schema<T = unknown> implements Validator<T> {
  * Extract the validated value type `T` from a `Schema<T>`.
  *
  * @example type V = SchemaType<typeof STRING> // string
- * @see https://dhoulb.github.io/shelving/schema/Schema/SchemaType
+ * @see https://shelving.cc/schema/SchemaType
  */
 export type SchemaType<X> = X extends Schema<infer Y> ? Y : never;
 
 /**
  * A set of named schemas in `{ name: schema }` format.
  *
- * @see https://dhoulb.github.io/shelving/schema/Schema/Schemas
+ * @see https://shelving.cc/schema/Schemas
  */
 export type Schemas<T extends Data = Data> = { readonly [K in keyof T]: Schema<T[K]> };
 
@@ -108,7 +108,7 @@ export type Schemas<T extends Data = Data> = { readonly [K in keyof T]: Schema<T
  * Unknown validator that always passes through its input value as `unknown`.
  *
  * @example UNKNOWN.validate(anything) // anything
- * @see https://dhoulb.github.io/shelving/schema/Schema/UNKNOWN
+ * @see https://shelving.cc/schema/UNKNOWN
  */
 export const UNKNOWN: Schema<unknown> = {
 	one: "value",
@@ -125,7 +125,7 @@ export const UNKNOWN: Schema<unknown> = {
  * Undefined validator that always returns `undefined`.
  *
  * @example UNDEFINED.validate(anything) // undefined
- * @see https://dhoulb.github.io/shelving/schema/Schema/UNDEFINED
+ * @see https://shelving.cc/schema/UNDEFINED
  */
 export const UNDEFINED: Schema<undefined> = {
 	one: "none",
@@ -142,7 +142,7 @@ export const UNDEFINED: Schema<undefined> = {
  * Null validator that always returns `null`.
  *
  * @example NULL.validate(anything) // null
- * @see https://dhoulb.github.io/shelving/schema/Schema/NULL
+ * @see https://shelving.cc/schema/NULL
  */
 export const NULL: Schema<null> = {
 	one: "none",

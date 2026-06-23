@@ -28,7 +28,7 @@ const DEFAULT_IGNORE: Matchables = [/\.test\.tsx?$/i, /\.spec\.tsx?$/i, /^node_m
 /**
  * Options for a directory extractor.
  *
- * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor/DirectoryExtractorOptions
+ * @see https://shelving.cc/extract/DirectoryExtractorOptions
  */
 export interface DirectoryExtractorOptions {
 	/**
@@ -57,7 +57,7 @@ export interface DirectoryExtractorOptions {
  *
  * @example const tree = await new DirectoryExtractor().extract("modules/util");
  *
- * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor
+ * @see https://shelving.cc/extract/DirectoryExtractor
  */
 export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;
@@ -84,7 +84,7 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	 *
 	 * @example const tree = await new DirectoryExtractor().extract("modules/util");
 	 *
-	 * @see https://dhoulb.github.io/shelving/extract/DirectoryExtractor/extract
+	 * @see https://shelving.cc/extract/extract
 	 */
 	override extract(source: Path): Promise<TreeElement> {
 		return this._extractDirectory(requirePath(source, this._base, this.extract));

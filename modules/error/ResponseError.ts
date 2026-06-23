@@ -11,7 +11,7 @@ interface ResponseErrorOptions extends BaseErrorOptions {
  *
  * @example
  * 	throw new ResponseError("Unexpected response body", { code: 422 });
- * @see https://dhoulb.github.io/shelving/error/ResponseError/ResponseError
+ * @see https://shelving.cc/error/ResponseError
  */
 export class ResponseError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
@@ -20,7 +20,7 @@ export class ResponseError extends Error implements BaseError {
 	/**
 	 * HTTP status code for the response.
 	 *
-	 * @see https://dhoulb.github.io/shelving/error/ResponseError/ResponseError/code
+	 * @see https://shelving.cc/error/ResponseError/code
 	 */
 	readonly code: number;
 

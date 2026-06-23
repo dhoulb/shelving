@@ -14,7 +14,7 @@ import { type Nullish, notNullish } from "../../util/null.js";
  * @returns The current context value, guaranteed non-nullish.
  * @throws RequiredError If the context value is `null` or `undefined` (i.e. used outside its provider).
  * @example const theme = requireContext(ThemeContext);
- * @see https://dhoulb.github.io/shelving/ui/util/context/requireContext
+ * @see https://shelving.cc/ui/requireContext
  */
 export function requireContext<T>(context: Context<T | null>, caller?: AnyCaller): T;
 export function requireContext<T>(context: Context<T | undefined>, caller?: AnyCaller): T;

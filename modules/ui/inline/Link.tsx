@@ -8,7 +8,7 @@ const LINK_CLASS = getModuleClass(LINK_CSS, "link");
 /**
  * Props for `Link` — identical to `ClickableProps` (`href` for navigation or `onClick` for actions).
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Link/LinkProps
+ * @see https://shelving.cc/ui/LinkProps
  */
 export interface LinkProps extends ClickableProps {}
 
@@ -18,7 +18,7 @@ export interface LinkProps extends ClickableProps {}
  * @kind component
  * @returns Rendered inline `<a>` or `<button>` element.
  * @example <Link href="/about">About us</Link>
- * @see https://dhoulb.github.io/shelving/ui/inline/Link/Link
+ * @see https://shelving.cc/ui/Link
  */
 export function Link(props: LinkProps): ReactElement {
 	return <Clickable {...props} className={LINK_CLASS} />;

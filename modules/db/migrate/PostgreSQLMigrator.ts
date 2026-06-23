@@ -38,7 +38,7 @@ type PostgreSQLColumnRow = {
  * @example
  *  const migrator = new PostgreSQLMigrator(provider);
  *  await migrator.migrate(users, posts);
- * @see https://dhoulb.github.io/shelving/db/migrate/PostgreSQLMigrator/PostgreSQLMigrator
+ * @see https://shelving.cc/db/PostgreSQLMigrator
  */
 export class PostgreSQLMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {

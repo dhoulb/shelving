@@ -4,7 +4,7 @@ import { isFunction } from "./function.js";
 /**
  * Lazy value: a plain value, or an initialiser function that returns that value.
  *
- * @see https://dhoulb.github.io/shelving/util/lazy/Lazy
+ * @see https://shelving.cc/util/lazy/Lazy
  */
 export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | T;
 
@@ -18,7 +18,7 @@ export type Lazy<T, A extends Arguments = []> = ((...args: A) => T) | T;
  * @returns The resolved value.
  * @example getLazy(() => 123) // 123
  * @example getLazy(123) // 123
- * @see https://dhoulb.github.io/shelving/util/lazy/getLazy
+ * @see https://shelving.cc/util/lazy/getLazy
  */
 export function getLazy<T, A extends Arguments>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function getLazy<T, A extends Arguments>(value: Lazy<T, A>, ...args: A): T;

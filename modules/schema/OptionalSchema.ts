@@ -4,7 +4,7 @@ import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 /**
  * Allowed options for `OptionalSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchemaOptions
+ * @see https://shelving.cc/schema/OptionalSchemaOptions
  */
 export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undefined> {
 	/** Default value is always `undefined` (the default is only used when the input is `undefined`, so otherwise `undefined` could never be returned). */
@@ -23,7 +23,7 @@ export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undef
  *  schema.validate(undefined); // Returns undefined
  *  schema.validate("abc"); // Returns "abc"
  *
- * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchema
+ * @see https://shelving.cc/schema/OptionalSchema
  */
 export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	/** Default value for an `OptionalSchema` is always `undefined` (default value is only used when a value is `undefined`, so otherwise `undefined` could never be returned as a value). */
@@ -44,7 +44,7 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	 * @example
 	 *  OPTIONAL(STRING).validate(undefined); // Returns undefined
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchema/validate
+	 * @see https://shelving.cc/schema/OptionalSchema/validate
 	 */
 	override validate(unsafeValue: unknown): T | undefined {
 		if (unsafeValue === undefined) return undefined;
@@ -59,7 +59,7 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	 * @example
 	 *  OPTIONAL(STRING).format(undefined); // Returns "No string"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OptionalSchema/format
+	 * @see https://shelving.cc/schema/OptionalSchema/format
 	 */
 	override format(value: T | undefined): string {
 		return value === undefined ? `No ${this.source.one}` : super.format(value);
@@ -77,7 +77,7 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
  *  const schema = OPTIONAL(STRING);
  *  schema.validate(undefined); // Returns undefined
  *
- * @see https://dhoulb.github.io/shelving/schema/OptionalSchema/OPTIONAL
+ * @see https://shelving.cc/schema/OPTIONAL
  */
 export function OPTIONAL<T>(source: Schema<T>): OptionalSchema<T> {
 	return new OptionalSchema({ source });

@@ -10,7 +10,7 @@ import { type StringInputType, StringSchema } from "./StringSchema.js";
  *
  * - The length and single-line constraints are fixed internally, so only the presentation-level string options plus `schemes` are exposed.
  *
- * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchemaOptions
+ * @see https://shelving.cc/schema/URISchemaOptions
  */
 export interface URISchemaOptions extends SchemaOptions {
 	/** Default string value used when the input is `undefined`. */
@@ -45,7 +45,7 @@ export interface URISchemaOptions extends SchemaOptions {
  * @example
  * 	const schema = new URISchema({});
  * 	schema.validate("https://www.google.com") // "https://www.google.com/"
- * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchema
+ * @see https://shelving.cc/schema/URISchema
  */
 export class URISchema extends StringSchema {
 	/** Whitelist of allowed URI schemes, e.g. `["https:", "http:"]`. */
@@ -75,7 +75,7 @@ export class URISchema extends StringSchema {
 	 * @returns The valid, normalised URI string.
 	 * @throws `string` error message if the value is empty, malformed, or uses a disallowed scheme.
 	 * @example schema.validate("https://www.google.com") // "https://www.google.com/"
-	 * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchema/validate
+	 * @see https://shelving.cc/schema/URISchema/validate
 	 */
 	override validate(unsafeValue: unknown): URIString {
 		const str = super.validate(unsafeValue);
@@ -93,7 +93,7 @@ export class URISchema extends StringSchema {
 	 * @param str The raw string to sanitize.
 	 * @returns The sanitized string with all whitespace removed.
 	 * @example schema.sanitize(" https://a.com ") // "https://a.com"
-	 * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchema/sanitize
+	 * @see https://shelving.cc/schema/URISchema/sanitize
 	 */
 	override sanitize(str: string): string {
 		// URIs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
@@ -106,7 +106,7 @@ export class URISchema extends StringSchema {
 	 * @param value The valid URI string to format.
 	 * @returns The URI formatted as a human-readable string.
 	 * @example schema.format("https://www.google.com/") // "www.google.com"
-	 * @see https://dhoulb.github.io/shelving/schema/URISchema/URISchema/format
+	 * @see https://shelving.cc/schema/URISchema/format
 	 */
 	override format(value: string): string {
 		return formatURI(value, this.format);
@@ -117,7 +117,7 @@ export class URISchema extends StringSchema {
  * Sugar instance of `URISchema` for an absolute URI string. Equivalent to `new URISchema({})`.
  *
  * @example URI_SCHEMA.validate("https://www.google.com") // "https://www.google.com/"
- * @see https://dhoulb.github.io/shelving/schema/URISchema/URI_SCHEMA
+ * @see https://shelving.cc/schema/URI_SCHEMA
  */
 export const URI_SCHEMA = new URISchema({});
 
@@ -125,6 +125,6 @@ export const URI_SCHEMA = new URISchema({});
  * Sugar instance allowing a `URI_SCHEMA` or `null`. Equivalent to `NULLABLE(URI_SCHEMA)`.
  *
  * @example NULLABLE_URI_SCHEMA.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/URISchema/NULLABLE_URI_SCHEMA
+ * @see https://shelving.cc/schema/NULLABLE_URI_SCHEMA
  */
 export const NULLABLE_URI_SCHEMA = NULLABLE(URI_SCHEMA);

@@ -15,7 +15,7 @@ const _DATE_TO_STRING: { [K in DateInputType]: (d: PossibleDate | undefined) => 
 /**
  * Props for `DateInput`, a date/time `<input>` that emits an ISO string value.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/DateInput/DateInputProps
+ * @see https://shelving.cc/ui/DateInputProps
  */
 export interface DateInputProps extends ValueInputProps<string, PossibleDate>, InputVariants {
 	min?: PossibleDate | undefined;
@@ -30,7 +30,7 @@ export interface DateInputProps extends ValueInputProps<string, PossibleDate>, I
  *
  * @returns A native date/time `<input>` element.
  * @example <DateInput name="dob" input="date" value={dob} onValue={setDob} />
- * @see https://dhoulb.github.io/shelving/ui/form/DateInput/DateInput
+ * @see https://shelving.cc/ui/DateInput
  */
 export function DateInput({
 	name,

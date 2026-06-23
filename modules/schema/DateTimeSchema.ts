@@ -12,7 +12,7 @@ import { NULLABLE } from "./NullableSchema.js";
  * @example
  *  const schema = new DateTimeSchema({});
  *  schema.validate("2005-09-12T18:15:00Z"); // "2005-09-12T18:15:00.000Z"
- * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/DateTimeSchema
+ * @see https://shelving.cc/schema/DateTimeSchema
  */
 export class DateTimeSchema extends DateSchema {
 	/**
@@ -27,7 +27,7 @@ export class DateTimeSchema extends DateSchema {
 	 * @param value The `Date` to convert.
 	 * @returns The datetime as an ISO 8601 string with `Z` suffix.
 	 * @example schema.stringify(new Date("2005-09-12T18:15:00Z")) // "2005-09-12T18:15:00.000Z"
-	 * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/DateTimeSchema/stringify
+	 * @see https://shelving.cc/schema/DateTimeSchema/stringify
 	 */
 	override stringify(value: Date): string {
 		return value.toISOString();
@@ -38,7 +38,7 @@ export class DateTimeSchema extends DateSchema {
 	 * @param value The validated datetime string to format.
 	 * @returns The datetime formatted for display.
 	 * @example schema.format("2005-09-12T18:15:00Z") // "12 Sep 2005, 18:15"
-	 * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/DateTimeSchema/format
+	 * @see https://shelving.cc/schema/DateTimeSchema/format
 	 */
 	override format(value: string): string {
 		return formatDateTime(value, undefined, this.format);
@@ -49,7 +49,7 @@ export class DateTimeSchema extends DateSchema {
  * Sugar instance of `DateTimeSchema` for a required UTC datetime. Equivalent to `new DateTimeSchema({})`.
  *
  * @example DATETIME.validate("2005-09-12T08:00:00Z") // "2005-09-12T08:00:00.000Z"
- * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/DATETIME
+ * @see https://shelving.cc/schema/DATETIME
  */
 export const DATETIME = new DateTimeSchema({});
 
@@ -57,6 +57,6 @@ export const DATETIME = new DateTimeSchema({});
  * Sugar instance allowing a `DATETIME` or `null`. Equivalent to `NULLABLE(DATETIME)`.
  *
  * @example NULLABLE_DATETIME.validate(null) // null
- * @see https://dhoulb.github.io/shelving/schema/DateTimeSchema/NULLABLE_DATETIME
+ * @see https://shelving.cc/schema/NULLABLE_DATETIME
  */
 export const NULLABLE_DATETIME = NULLABLE(DATETIME);

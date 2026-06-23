@@ -8,7 +8,7 @@ const MARK_CLASS = getModuleClass(MARK_CSS, "mark");
 /**
  * Props for `Mark` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Mark/MarkProps
+ * @see https://shelving.cc/ui/MarkProps
  */
 export interface MarkProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface MarkProps extends OptionalChildProps {}
  * @kind component
  * @returns Rendered `<mark>` element.
  * @example <Mark>search term</Mark>
- * @see https://dhoulb.github.io/shelving/ui/inline/Mark/Mark
+ * @see https://shelving.cc/ui/Mark
  */
 export function Mark({ children }: MarkProps): ReactElement {
 	return <mark className={MARK_CLASS}>{children}</mark>;

@@ -8,28 +8,28 @@ import type { NotString } from "./string.js";
  * A thing that a string can be matched against.
  * - Either a `RegExp` instance, or a `string` that is matched using `===` equality.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/Matchable
+ * @see https://shelving.cc/util/regexp/Matchable
  */
 export type Matchable = string | RegExp;
 
 /**
  * A list of things that strings can be matched against.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/Matchables
+ * @see https://shelving.cc/util/regexp/Matchables
  */
 export type Matchables = ImmutableArray<Nullish<Matchable>>;
 
 /**
  * Regular expression that always matches everything.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/ALWAYS_REGEXP
+ * @see https://shelving.cc/util/regexp/ALWAYS_REGEXP
  */
 export const ALWAYS_REGEXP = /^.*$/;
 
 /**
  * Regular expression that never matches anything.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/NEVER_REGEXP
+ * @see https://shelving.cc/util/regexp/NEVER_REGEXP
  */
 export const NEVER_REGEXP = /^(?=a)a/;
 
@@ -37,7 +37,7 @@ export const NEVER_REGEXP = /^(?=a)a/;
  * Things that can be converted to a regular expression.
  * - Either a `RegExp` instance, or a `string` source for a regular expression.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/PossibleRegExp
+ * @see https://shelving.cc/util/regexp/PossibleRegExp
  */
 export type PossibleRegExp = string | RegExp;
 
@@ -46,7 +46,7 @@ export type PossibleRegExp = string | RegExp;
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `RegExp` instance, narrowing its type.
- * @see https://dhoulb.github.io/shelving/util/regexp/isRegExp
+ * @see https://shelving.cc/util/regexp/isRegExp
  */
 export function isRegExp(value: unknown): value is RegExp {
 	return value instanceof RegExp;
@@ -57,7 +57,7 @@ export function isRegExp(value: unknown): value is RegExp {
  *
  * @param value The value to assert.
  * @throws {RequiredError} If `value` is not a `RegExp` instance.
- * @see https://dhoulb.github.io/shelving/util/regexp/assertRegExp
+ * @see https://shelving.cc/util/regexp/assertRegExp
  */
 export function assertRegExp(value: unknown): asserts value is RegExp {
 	if (!(value instanceof RegExp)) throw new RequiredError("Must be regular expression", { received: value, caller: assertRegExp });
@@ -72,7 +72,7 @@ export function assertRegExp(value: unknown): asserts value is RegExp {
  * @returns The corresponding `RegExp` instance.
  * @example
  * getRegExp("abc", "i"); // /abc/i
- * @see https://dhoulb.github.io/shelving/util/regexp/getRegExp
+ * @see https://shelving.cc/util/regexp/getRegExp
  */
 export function getRegExp<T extends NamedRegExpData>(
 	pattern: NamedRegExp<T>,
@@ -94,7 +94,7 @@ export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp {
  * @returns The string source of the regular expression.
  * @example
  * getRegExpSource(/abc/); // "abc"
- * @see https://dhoulb.github.io/shelving/util/regexp/getRegExpSource
+ * @see https://shelving.cc/util/regexp/getRegExpSource
  */
 export function getRegExpSource(regexp: PossibleRegExp): string {
 	return typeof regexp === "string" ? regexp : regexp.source;
@@ -108,7 +108,7 @@ export function getRegExpSource(regexp: PossibleRegExp): string {
  * @returns The escaped string, safe to use as a literal regular expression source.
  * @example
  * escapeRegExp("a.b"); // "a\\.b"
- * @see https://dhoulb.github.io/shelving/util/regexp/escapeRegExp
+ * @see https://shelving.cc/util/regexp/escapeRegExp
  */
 export function escapeRegExp(pattern: string): string {
 	return pattern.replace(REPLACE_ESCAPED, "\\$&");
@@ -124,7 +124,7 @@ const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
  * @returns A `RegExp` that matches if any of the provided expressions match.
  * @example
  * createRegExpAny(["abc", "def"]); // /(?:abc)|(?:def)/
- * @see https://dhoulb.github.io/shelving/util/regexp/createRegExpAny
+ * @see https://shelving.cc/util/regexp/createRegExpAny
  */
 export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = requireArray(patterns).filter(Boolean);
@@ -143,7 +143,7 @@ export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, 
  * @returns A `RegExp` that matches only if all of the provided expressions match.
  * @example
  * createRegExpAll(["abc", "def"]); // /^(?=.*?(?:abc))(?=.*?(?:def))/
- * @see https://dhoulb.github.io/shelving/util/regexp/createRegExpAll
+ * @see https://shelving.cc/util/regexp/createRegExpAll
  */
 export function createRegExpAll(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
 	const arr = requireArray(patterns).filter(Boolean);
@@ -156,7 +156,7 @@ export function createRegExpAll(patterns: Iterable<PossibleRegExp> & NotString, 
 /**
  * Regular expression match array whose full match is a specific string format.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/TypedRegExpExecArray
+ * @see https://shelving.cc/util/regexp/TypedRegExpExecArray
  */
 export interface TypedRegExpExecArray<T extends string = string> extends RegExpExecArray {
 	0: T;
@@ -165,7 +165,7 @@ export interface TypedRegExpExecArray<T extends string = string> extends RegExpE
 /**
  * Regular expression that matches a specific string format.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/TypedRegExp
+ * @see https://shelving.cc/util/regexp/TypedRegExp
  */
 export interface TypedRegExp<T extends string = string> extends RegExp {
 	exec(input: string): TypedRegExpExecArray<T> | null;
@@ -174,14 +174,14 @@ export interface TypedRegExp<T extends string = string> extends RegExp {
 /**
  * Set of named match groups from a regular expression.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/NamedRegExpData
+ * @see https://shelving.cc/util/regexp/NamedRegExpData
  */
 export type NamedRegExpData = { [named: string]: string };
 
 /**
  * Regular expression match array that contains the specified named groups.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/NamedRegExpExecArray
+ * @see https://shelving.cc/util/regexp/NamedRegExpExecArray
  */
 export interface NamedRegExpExecArray<T extends NamedRegExpData = NamedRegExpData> extends RegExpExecArray {
 	groups: T; // Groups is always set if a single `(?<named> placeholder)` appears in the RegExp.
@@ -190,7 +190,7 @@ export interface NamedRegExpExecArray<T extends NamedRegExpData = NamedRegExpDat
 /**
  * Regular expression that contains the specified named capture groups.
  *
- * @see https://dhoulb.github.io/shelving/util/regexp/NamedRegExp
+ * @see https://shelving.cc/util/regexp/NamedRegExp
  */
 export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extends RegExp {
 	exec(input: string): NamedRegExpExecArray<T> | null;
@@ -207,7 +207,7 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
  * @returns `true` if the string matches the regular expression, otherwise `false`.
  * @example
  * isMatch("abc", /b/); // true
- * @see https://dhoulb.github.io/shelving/util/regexp/isMatch
+ * @see https://shelving.cc/util/regexp/isMatch
  */
 export function isMatch(str: string, regexp: Matchable): boolean {
 	return typeof regexp === "string" ? regexp === str : regexp.test(str);
@@ -224,7 +224,7 @@ export function isMatch(str: string, regexp: Matchable): boolean {
  * @returns `true` if the string does not match the regular expression, otherwise `false`.
  * @example
  * notMatch("abc", /z/); // true
- * @see https://dhoulb.github.io/shelving/util/regexp/notMatch
+ * @see https://shelving.cc/util/regexp/notMatch
  */
 export function notMatch(str: string, regexp: Matchable): boolean {
 	return !isMatch(str, regexp);
@@ -242,7 +242,7 @@ export function notMatch(str: string, regexp: Matchable): boolean {
  * @returns `true` if every provided regular expression matches the string, otherwise `false`.
  * @example
  * allMatch("abc", /a/, /b/); // true
- * @see https://dhoulb.github.io/shelving/util/regexp/allMatch
+ * @see https://shelving.cc/util/regexp/allMatch
  */
 export function allMatch(str: string, ...regexps: Matchables): boolean {
 	for (const x of regexps) {
@@ -264,7 +264,7 @@ export function allMatch(str: string, ...regexps: Matchables): boolean {
  * @returns `true` if at least one provided regular expression matches the string, otherwise `false`.
  * @example
  * anyMatch("abc", /z/, /b/); // true
- * @see https://dhoulb.github.io/shelving/util/regexp/anyMatch
+ * @see https://shelving.cc/util/regexp/anyMatch
  */
 export function anyMatch(str: string, ...regexps: Matchables): boolean {
 	for (const x of regexps) {
@@ -286,7 +286,7 @@ export function anyMatch(str: string, ...regexps: Matchables): boolean {
  * @returns `true` if none of the provided regular expressions match the string, otherwise `false`.
  * @example
  * noneMatch("abc", /x/, /y/); // true
- * @see https://dhoulb.github.io/shelving/util/regexp/noneMatch
+ * @see https://shelving.cc/util/regexp/noneMatch
  */
 export function noneMatch(str: string, ...regexps: Matchables): boolean {
 	return !allMatch(str, ...regexps);
@@ -300,7 +300,7 @@ export function noneMatch(str: string, ...regexps: Matchables): boolean {
  * @returns The match array, or `undefined` if the string did not match.
  * @example
  * getMatch("abc", /b/); // ["b"]
- * @see https://dhoulb.github.io/shelving/util/regexp/getMatch
+ * @see https://shelving.cc/util/regexp/getMatch
  */
 export function getMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T> | undefined;
 export function getMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T> | undefined;
@@ -318,7 +318,7 @@ export function getMatch(str: string, regexp: RegExp): RegExpExecArray | undefin
  * @throws {ValueError} If the string did not match the regular expression.
  * @example
  * requireMatch("abc", /b/); // ["b"]
- * @see https://dhoulb.github.io/shelving/util/regexp/requireMatch
+ * @see https://shelving.cc/util/regexp/requireMatch
  */
 export function requireMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T>;
 export function requireMatch<T extends string>(str: string, regexp: TypedRegExp<T>): TypedRegExpExecArray<T>;
@@ -337,7 +337,7 @@ export function requireMatch(str: string, regexp: RegExp): RegExpExecArray {
  * @returns The set of named match groups, or `undefined` if the string did not match.
  * @example
  * getMatchGroups("abc", /(?<first>a)/); // { first: "a" }
- * @see https://dhoulb.github.io/shelving/util/regexp/getMatchGroups
+ * @see https://shelving.cc/util/regexp/getMatchGroups
  */
 export function getMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T | undefined;
 export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | undefined;
@@ -354,7 +354,7 @@ export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | u
  * @throws {ValueError} If the string did not match the regular expression.
  * @example
  * requireMatchGroups("abc", /(?<first>a)/); // { first: "a" }
- * @see https://dhoulb.github.io/shelving/util/regexp/requireMatchGroups
+ * @see https://shelving.cc/util/regexp/requireMatchGroups
  */
 export function requireMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T;
 export function requireMatchGroups(str: string, regexp: RegExp): NamedRegExpData;

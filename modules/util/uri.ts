@@ -17,21 +17,21 @@ import type { ImmutableURL, URLString } from "./url.js";
  * - URLs can be considered as "hierarchical URIs".
  * - All URLs are also URIs, but not all URIs are URLs.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/URIString
+ * @see https://shelving.cc/util/uri/URIString
  */
 export type URIString = `${string}:${string}`;
 
 /**
  * String for the search component of a URI, including the leading `?`
  *
- * @see https://dhoulb.github.io/shelving/util/uri/URISearch
+ * @see https://shelving.cc/util/uri/URISearch
  */
 export type URISearch = `?${string}`;
 
 /**
  * String for the hash component of a URI, including the leading `#`
  *
- * @see https://dhoulb.github.io/shelving/util/uri/URIHash
+ * @see https://shelving.cc/util/uri/URIHash
  */
 export type URIHash = `#${string}`;
 
@@ -41,7 +41,7 @@ export type URIHash = `#${string}`;
  * - Takes a URI string or URI object that already encodes a complete URI — no base parameter, so relative inputs are not accepted.
  * - To resolve a relative input against a base, use `getBasedURI()` from `url.ts`.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURIConstructor
+ * @see https://shelving.cc/util/uri/ImmutableURIConstructor
  */
 export interface ImmutableURIConstructor {
 	/**
@@ -50,7 +50,7 @@ export interface ImmutableURIConstructor {
 	 * @param input URI string or URI object that already encodes a complete URI.
 	 * @returns New `ImmutableURI` instance.
 	 * @throws {TypeError} If `input` is not a valid complete URI.
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURIConstructor/new
+	 * @see https://shelving.cc/util/uri/ImmutableURIConstructor/new
 	 */
 	new (input: URIString | ImmutableURI): ImmutableURI;
 }
@@ -66,87 +66,87 @@ export interface ImmutableURIConstructor {
  * - URLs can be considered as "hierarchical URIs".
  * - All URLs are also URIs, but not all URIs are URLs.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI
+ * @see https://shelving.cc/util/uri/ImmutableURI
  */
 export interface ImmutableURI extends URL {
 	/**
 	 * Hash component of the URI, including the leading `#` (empty string if absent).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/hash
+	 * @see https://shelving.cc/util/uri/ImmutableURI/hash
 	 */
 	readonly hash: URIHash | ``;
 	/**
 	 * Host component of the URI (hostname and port), or empty string for non-hierarchical URIs.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/host
+	 * @see https://shelving.cc/util/uri/ImmutableURI/host
 	 */
 	readonly host: string;
 	/**
 	 * Hostname component of the URI, or empty string for non-hierarchical URIs.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/hostname
+	 * @see https://shelving.cc/util/uri/ImmutableURI/hostname
 	 */
 	readonly hostname: string;
 	/**
 	 * Full URI string.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/href
+	 * @see https://shelving.cc/util/uri/ImmutableURI/href
 	 */
 	readonly href: URIString;
 	/**
 	 * Origin of the URI, or the string `"null"` for origins that cannot be serialised.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/origin
+	 * @see https://shelving.cc/util/uri/ImmutableURI/origin
 	 */
 	readonly origin: URIString | `null`;
 	/**
 	 * Password component of the URI (empty string if absent).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/password
+	 * @see https://shelving.cc/util/uri/ImmutableURI/password
 	 */
 	readonly password: string;
 	/**
 	 * Pathname component of the URI.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/pathname
+	 * @see https://shelving.cc/util/uri/ImmutableURI/pathname
 	 */
 	readonly pathname: string;
 	/**
 	 * Port component of the URI (empty string if absent).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/port
+	 * @see https://shelving.cc/util/uri/ImmutableURI/port
 	 */
 	readonly port: string;
 	/**
 	 * Protocol scheme of the URI, including the trailing `:`
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/protocol
+	 * @see https://shelving.cc/util/uri/ImmutableURI/protocol
 	 */
 	readonly protocol: URIScheme;
 	/**
 	 * Search component of the URI, including the leading `?` (empty string if absent).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/search
+	 * @see https://shelving.cc/util/uri/ImmutableURI/search
 	 */
 	readonly search: URISearch | ``;
 	/**
 	 * Username component of the URI (empty string if absent).
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI/username
+	 * @see https://shelving.cc/util/uri/ImmutableURI/username
 	 */
 	readonly username: string;
 }
 /**
  * Correctly-typed `URI` constructor (the builtin `URL` class typed as `ImmutableURIConstructor`).
  *
- * @see https://dhoulb.github.io/shelving/util/uri/ImmutableURI
+ * @see https://shelving.cc/util/uri/ImmutableURI
  */
 export const ImmutableURI = URL as ImmutableURIConstructor;
 
 /**
  * Values that can be converted to an `ImmutableURI` instance.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/PossibleURI
+ * @see https://shelving.cc/util/uri/PossibleURI
  */
 export type PossibleURI = string | URL;
 
@@ -156,7 +156,7 @@ export type PossibleURI = string | URL;
  * @param value The value to test.
  * @returns `true` if `value` is an `ImmutableURI`, narrowing its type.
  * @example isURI(new URL("http://x.com")) // true
- * @see https://dhoulb.github.io/shelving/util/uri/isURI
+ * @see https://shelving.cc/util/uri/isURI
  */
 export function isURI(value: unknown): value is ImmutableURI {
 	return value instanceof ImmutableURI;
@@ -168,7 +168,7 @@ export function isURI(value: unknown): value is ImmutableURI {
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertURI` itself).
  * @throws {RequiredError} If `value` is not a URI object.
- * @see https://dhoulb.github.io/shelving/util/uri/assertURI
+ * @see https://shelving.cc/util/uri/assertURI
  */
 export function assertURI(value: unknown, caller: AnyCaller = assertURI): asserts value is ImmutableURI {
 	if (!isURI(value)) throw new RequiredError("Invalid URI", { received: value, caller });
@@ -182,7 +182,7 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
  * @param possible Possible URI value to convert (a nullish value returns `undefined`).
  * @returns Converted `ImmutableURI`, or `undefined` if conversion fails.
  * @example getURI("http://shax.com") // URL { … }
- * @see https://dhoulb.github.io/shelving/util/uri/getURI
+ * @see https://shelving.cc/util/uri/getURI
  */
 export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined {
 	if (!possible) return;
@@ -202,7 +202,7 @@ export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined
  * @returns Converted `ImmutableURI`.
  * @throws {RequiredError} If `possible` cannot be converted to a valid URI.
  * @example requireURI("http://shax.com") // URL { … }
- * @see https://dhoulb.github.io/shelving/util/uri/requireURI
+ * @see https://shelving.cc/util/uri/requireURI
  */
 export function requireURI(possible: PossibleURI, caller: AnyCaller = requireURI): ImmutableURI {
 	const url = getURI(possible);
@@ -213,14 +213,14 @@ export function requireURI(possible: PossibleURI, caller: AnyCaller = requireURI
 /**
  * Type for a set of named URI parameters.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/URIParams
+ * @see https://shelving.cc/util/uri/URIParams
  */
 export type URIParams = ImmutableDictionary<string>;
 
 /**
  * Type for things that can be converted to named URI parameters.
  *
- * @see https://dhoulb.github.io/shelving/util/uri/PossibleURIParams
+ * @see https://shelving.cc/util/uri/PossibleURIParams
  */
 export type PossibleURIParams = PossibleURI | URLSearchParams | ImmutableDictionary<unknown>;
 
@@ -261,7 +261,7 @@ function* getURIEntries(params: PossibleURIParams, caller: AnyCaller = getURIPar
  * @throws {RequiredError} If `params` is a string or URL that cannot be converted to a valid URI.
  * @throws {ValueError} If any param value cannot be converted to a string.
  * @example getURIParams("http://x.com?a=1&b=2") // { a: "1", b: "2" }
- * @see https://dhoulb.github.io/shelving/util/uri/getURIParams
+ * @see https://shelving.cc/util/uri/getURIParams
  */
 export function getURIParams(params: PossibleURIParams, caller: AnyCaller = getURIParams): URIParams {
 	const output: MutableDictionary<string> = {};

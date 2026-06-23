@@ -6,7 +6,7 @@ import styles from "./Modal.module.css";
 /**
  * Props for `<Modal>` — optional `children` content.
  *
- * @see https://dhoulb.github.io/shelving/ui/dialog/Modal/ModalProps
+ * @see https://shelving.cc/ui/ModalProps
  */
 export interface ModalProps extends OptionalChildProps {}
 
@@ -17,7 +17,7 @@ export interface ModalProps extends OptionalChildProps {}
  * @param children The modal content.
  * @returns The modal container element.
  * @example <Modal><p>Modal content</p></Modal>
- * @see https://dhoulb.github.io/shelving/ui/dialog/Modal/Modal
+ * @see https://shelving.cc/ui/Modal
  */
 export function Modal({ children }: ModalProps): ReactElement {
 	return <aside className={getModuleClass(styles, "modal")}>{children}</aside>;

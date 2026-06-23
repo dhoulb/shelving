@@ -10,7 +10,7 @@ import type { ValidatorType } from "../util/validate.js";
 /**
  * Schema for a test "basic" fixture, exercising string, number, choice, array, boolean, and nested-data props.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/BASIC_SCHEMA
+ * @see https://shelving.cc/test/BASIC_SCHEMA
  */
 export const BASIC_SCHEMA = DATA({
 	str: STRING,
@@ -25,21 +25,21 @@ export const BASIC_SCHEMA = DATA({
 /**
  * Validated data shape of a test basic, inferred from `BASIC_SCHEMA`.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/BasicData
+ * @see https://shelving.cc/test/BasicData
  */
 export type BasicData = ValidatorType<typeof BASIC_SCHEMA>;
 
 /**
  * A test basic as a stored `Item` — `BasicData` plus a string `id`.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/BasicItem
+ * @see https://shelving.cc/test/BasicItem
  */
 export type BasicItem = Item<string, BasicData>;
 
 /**
  * Test basic fixture: `str: "aaa"`, `num: 100`, group `a`, odd.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic1
+ * @see https://shelving.cc/test/basic1
  */
 export const basic1: BasicItem = {
 	id: "basic1",
@@ -54,7 +54,7 @@ export const basic1: BasicItem = {
 /**
  * Test basic fixture: `str: "bbb"`, `num: 200`, group `a`, even.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic2
+ * @see https://shelving.cc/test/basic2
  */
 export const basic2: BasicItem = {
 	id: "basic2",
@@ -69,7 +69,7 @@ export const basic2: BasicItem = {
 /**
  * Test basic fixture: `str: "ccc"`, `num: 300`, group `a`, odd.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic3
+ * @see https://shelving.cc/test/basic3
  */
 export const basic3: BasicItem = {
 	id: "basic3",
@@ -84,7 +84,7 @@ export const basic3: BasicItem = {
 /**
  * Test basic fixture: `str: "ddd"`, `num: 400`, group `b`, even.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic4
+ * @see https://shelving.cc/test/basic4
  */
 export const basic4: BasicItem = {
 	id: "basic4",
@@ -99,7 +99,7 @@ export const basic4: BasicItem = {
 /**
  * Test basic fixture: `str: "eee"`, `num: 500`, group `b`, odd.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic5
+ * @see https://shelving.cc/test/basic5
  */
 export const basic5: BasicItem = {
 	id: "basic5",
@@ -114,7 +114,7 @@ export const basic5: BasicItem = {
 /**
  * Test basic fixture: `str: "fff"`, `num: 600`, group `b`, even.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic6
+ * @see https://shelving.cc/test/basic6
  */
 export const basic6: BasicItem = {
 	id: "basic6",
@@ -129,7 +129,7 @@ export const basic6: BasicItem = {
 /**
  * Test basic fixture: `str: "ggg"`, `num: 700`, group `c`, odd.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic7
+ * @see https://shelving.cc/test/basic7
  */
 export const basic7: BasicItem = {
 	id: "basic7",
@@ -144,7 +144,7 @@ export const basic7: BasicItem = {
 /**
  * Test basic fixture: `str: "hhh"`, `num: 800`, group `c`, even.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic8
+ * @see https://shelving.cc/test/basic8
  */
 export const basic8: BasicItem = {
 	id: "basic8",
@@ -159,7 +159,7 @@ export const basic8: BasicItem = {
 /**
  * Test basic fixture: `str: "iii"`, `num: 900`, group `c`, odd.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic9
+ * @see https://shelving.cc/test/basic9
  */
 export const basic9: BasicItem = {
 	id: "basic9",
@@ -175,14 +175,14 @@ export const basic9: BasicItem = {
 /**
  * Array of all nine test basic fixtures in a deliberately shuffled order, for exercising sort/query behaviour.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basics
+ * @see https://shelving.cc/test/basics
  */
 export const basics: ReadonlyArray<BasicItem> = [basic3, basic5, basic7, basic4, basic1, basic2, basic8, basic6, basic9];
 
 /**
  * Standalone test basic data (no `id`): `str: "zzz"`, `num: 999`, for use as new/unsaved data.
  *
- * @see https://dhoulb.github.io/shelving/test/basics/basic999
+ * @see https://shelving.cc/test/basic999
  */
 export const basic999: BasicData = {
 	str: "zzz",

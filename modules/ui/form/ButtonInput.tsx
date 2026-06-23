@@ -9,7 +9,7 @@ import INPUT_CSS from "./Input.module.css";
 /**
  * Props for `ButtonInput`, a clickable element styled to match form inputs.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/ButtonInput/ButtonInputProps
+ * @see https://shelving.cc/ui/ButtonInputProps
  */
 export interface ButtonInputProps extends InputProps, ClickableProps, FlexVariants, InputVariants {}
 
@@ -20,7 +20,7 @@ export interface ButtonInputProps extends InputProps, ClickableProps, FlexVarian
  * @returns A `Clickable` element styled with the button-input class.
  * @kind component
  * @example <ButtonInput name="choose" onClick={open}>Choose…</ButtonInput>
- * @see https://dhoulb.github.io/shelving/ui/form/ButtonInput/ButtonInput
+ * @see https://shelving.cc/ui/ButtonInput
  */
 export function ButtonInput({ title, placeholder, children = title, ...props }: ButtonInputProps): ReactElement {
 	const hasChildren = notNullish(children);

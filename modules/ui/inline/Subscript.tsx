@@ -8,7 +8,7 @@ const SUBSCRIPT_CLASS = getModuleClass(SUBSCRIPT_CSS, "subscript");
 /**
  * Props for `Subscript` — optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Subscript/SubscriptProps
+ * @see https://shelving.cc/ui/SubscriptProps
  */
 export interface SubscriptProps extends OptionalChildProps {}
 
@@ -18,7 +18,7 @@ export interface SubscriptProps extends OptionalChildProps {}
  * @returns Rendered `<sub>` element.
  * @kind component
  * @example <>H<Subscript>2</Subscript>O</>
- * @see https://dhoulb.github.io/shelving/ui/inline/Subscript/Subscript
+ * @see https://shelving.cc/ui/Subscript
  */
 export function Subscript({ children }: SubscriptProps): ReactElement {
 	return <sub className={SUBSCRIPT_CLASS}>{children}</sub>;

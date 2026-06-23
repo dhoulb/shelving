@@ -9,7 +9,7 @@ import INPUT_CSS from "./Input.module.css";
 /**
  * Props for `CheckboxInput`, a boolean-valued checkbox input.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxProps
+ * @see https://shelving.cc/ui/CheckboxProps
  */
 export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildProps, FlexVariants, InputVariants {}
 
@@ -19,7 +19,7 @@ export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildPr
  *
  * @returns A `<label>` wrapping the checkbox and its label content.
  * @example <CheckboxInput name="agree" value={agree} onValue={setAgree}>I agree</CheckboxInput>
- * @see https://dhoulb.github.io/shelving/ui/form/CheckboxInput/CheckboxInput
+ * @see https://shelving.cc/ui/CheckboxInput
  */
 export function CheckboxInput({
 	name,

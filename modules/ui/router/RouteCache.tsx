@@ -11,7 +11,7 @@ interface CacheEntry {
 /**
  * Props for `<RouteCache>` — the `maxCached` size and the content `children` to keep alive per URL.
  *
- * @see https://dhoulb.github.io/shelving/ui/router/RouteCache/RouteCacheProps
+ * @see https://shelving.cc/ui/RouteCacheProps
  */
 export interface RouteCacheProps {
 	/**
@@ -47,7 +47,7 @@ export interface RouteCacheProps {
  * @param children The content region to render and cache (typically a layout's scrollable column).
  * @returns The visible current page plus any cached pages kept alive but hidden.
  * @example <SidebarLayout sidebar={<Menu />}><RouteCache><Router … /></RouteCache></SidebarLayout>
- * @see https://dhoulb.github.io/shelving/ui/router/RouteCache/RouteCache
+ * @see https://shelving.cc/ui/RouteCache
  */
 export function RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode {
 	// Read the live URL from context; each navigation re-renders this with the new path.

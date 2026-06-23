@@ -23,7 +23,7 @@ const FORM_FIELDSET_CLASS = getModuleClass(FORM_CSS, "fieldset");
  * - Returned value (if defined) is notified to the user using `notifySuccess()`.
  * - Thrown value is notified to the user using `notifyError()`.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Form/FormCallback
+ * @see https://shelving.cc/ui/FormCallback
  */
 export type FormCallback<T extends Data> = (
 	data: T,
@@ -33,7 +33,7 @@ export type FormCallback<T extends Data> = (
 /**
  * Props for `Form`, the schema-driven form wrapper component.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/Form/FormProps
+ * @see https://shelving.cc/ui/FormProps
  */
 export interface FormProps<T extends Data> extends OptionalChildProps {
 	/** Schema for the form. */
@@ -56,7 +56,7 @@ export interface FormProps<T extends Data> extends OptionalChildProps {
  * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
  * @kind component
  * @example <Form schema={USER_SCHEMA} onSubmit={save} />
- * @see https://dhoulb.github.io/shelving/ui/form/Form/Form
+ * @see https://shelving.cc/ui/Form
  */
 export function Form<T extends Data>(props: FormProps<T>): ReactElement;
 export function Form({
@@ -116,7 +116,7 @@ export function Form({
  * @param args Additional arguments forwarded to the callback.
  * @returns `true` on success, `false` on failure (or a `Promise` resolving to one).
  * @example callNotifiedForm(data, store, formEl, onSubmit, event)
- * @see https://dhoulb.github.io/shelving/ui/form/Form/callNotifiedForm
+ * @see https://shelving.cc/ui/callNotifiedForm
  */
 export function callNotifiedForm<T extends Data, A extends Arguments>(
 	value: T,
@@ -143,7 +143,7 @@ export function callNotifiedForm<T extends Data, A extends Arguments>(
  * @param pending The pending result to await.
  * @returns A `Promise` resolving to `true` on success or `false` on failure.
  * @example await awaitNotifiedForm(store, formEl, pending)
- * @see https://dhoulb.github.io/shelving/ui/form/Form/awaitNotifiedForm
+ * @see https://shelving.cc/ui/awaitNotifiedForm
  */
 export async function awaitNotifiedForm<T extends Data>(
 	store: FormStore<T>,
@@ -168,7 +168,7 @@ export async function awaitNotifiedForm<T extends Data>(
  * @param thrown The value thrown during submit.
  * @returns Always `false`, signalling the submit failed.
  * @example notifyThrownForm(store, formEl, thrown)
- * @see https://dhoulb.github.io/shelving/ui/form/Form/notifyThrownForm
+ * @see https://shelving.cc/ui/notifyThrownForm
  */
 export function notifyThrownForm<T extends Data>(store: FormStore<T>, form: HTMLFormElement, thrown: unknown): false {
 	store.reason = thrown;

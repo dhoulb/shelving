@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
  *
  * @param interval The refresh period in milliseconds.
  * @example useRefresh(1000); // re-renders once per second, e.g. for a live clock
- * @see https://dhoulb.github.io/shelving/ui/util/refresh/useRefresh
+ * @see https://shelving.cc/ui/useRefresh
  */
 export function useRefresh(interval: number): void {
 	const [_currentTime, setCurrentTime] = useState<number>(() => Date.now());

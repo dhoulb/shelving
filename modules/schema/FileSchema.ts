@@ -7,7 +7,7 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
 /**
  * Allowed options for `FileSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchemaOptions
+ * @see https://shelving.cc/schema/FileSchemaOptions
  */
 export interface FileSchemaOptions extends StringSchemaOptions {
 	/** Set of allowed file extensions; when set, the file name's extension must be one of these. */
@@ -21,7 +21,7 @@ export interface FileSchemaOptions extends StringSchemaOptions {
  * - When `types` is set, the extension must be one of the allowed `FileTypes`.
  *
  * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
- * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema
+ * @see https://shelving.cc/schema/FileSchema
  */
 export class FileSchema extends StringSchema {
 	/** Set of allowed file extensions; when set, the file name's extension must be one of these. */
@@ -42,7 +42,7 @@ export class FileSchema extends StringSchema {
 	 * @returns The validated file name.
 	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from `StringSchema.validate()`.
 	 * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
-	 * @see https://dhoulb.github.io/shelving/schema/FileSchema/FileSchema/validate
+	 * @see https://shelving.cc/schema/FileSchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): string {
 		const path = super.validate(unsafeValue);
@@ -57,7 +57,7 @@ export class FileSchema extends StringSchema {
  * Sugar instance of `FileSchema` for a file name, e.g. `file.txt`. Equivalent to `new FileSchema({})`.
  *
  * @example FILE.validate("file.txt"); // Returns "file.txt"
- * @see https://dhoulb.github.io/shelving/schema/FileSchema/FILE
+ * @see https://shelving.cc/schema/FILE
  */
 export const FILE = new FileSchema({});
 
@@ -65,6 +65,6 @@ export const FILE = new FileSchema({});
  * Sugar instance allowing a `FILE` or `null`. Equivalent to `NULLABLE(FILE)`.
  *
  * @example NULLABLE_FILE.validate(null); // Returns null
- * @see https://dhoulb.github.io/shelving/schema/FileSchema/NULLABLE_FILE
+ * @see https://shelving.cc/schema/NULLABLE_FILE
  */
 export const NULLABLE_FILE = NULLABLE(FILE);

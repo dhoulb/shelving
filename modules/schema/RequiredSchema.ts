@@ -11,7 +11,7 @@ import { ThroughSchema } from "./ThroughSchema.js";
  *  schema.validate("abc"); // Returns "abc"
  *  schema.validate(""); // Throws "Required"
  *
- * @see https://dhoulb.github.io/shelving/schema/RequiredSchema/RequiredSchema
+ * @see https://shelving.cc/schema/RequiredSchema
  */
 export class RequiredSchema<T> extends ThroughSchema<T> {
 	/**
@@ -24,7 +24,7 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
 	 * @example
 	 *  REQUIRED(STRING).validate(""); // Throws "Required"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/RequiredSchema/RequiredSchema/validate
+	 * @see https://shelving.cc/schema/RequiredSchema/validate
 	 */
 	override validate(unsafeValue: unknown): T {
 		const safeValue = super.validate(unsafeValue);
@@ -44,7 +44,7 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
  *  const schema = REQUIRED(STRING);
  *  schema.validate(""); // Throws "Required"
  *
- * @see https://dhoulb.github.io/shelving/schema/RequiredSchema/REQUIRED
+ * @see https://shelving.cc/schema/REQUIRED
  */
 export function REQUIRED<T>(source: Schema<T>): RequiredSchema<T> {
 	return new RequiredSchema({ source });

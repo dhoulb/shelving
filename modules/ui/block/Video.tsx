@@ -11,14 +11,14 @@ const VIDEO_CLASS = getModuleClass(styles, "video");
 /**
  * Props for `Video` — space and width variants plus optional `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoProps
+ * @see https://shelving.cc/ui/VideoProps
  */
 export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildProps {}
 
 /**
  * Props for `VideoButtons` — `children` plus an optional `left` alignment flag.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButtonsProps
+ * @see https://shelving.cc/ui/VideoButtonsProps
  */
 export interface VideoButtonsProps extends ChildProps {
 	left?: boolean;
@@ -27,7 +27,7 @@ export interface VideoButtonsProps extends ChildProps {
 /**
  * Props for `VideoButton` — `children` plus optional `title`, `onClick`, `danger`, and `disabled`.
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButtonProps
+ * @see https://shelving.cc/ui/VideoButtonProps
  */
 export interface VideoButtonProps extends ChildProps {
 	title?: string | undefined;
@@ -44,7 +44,7 @@ export interface VideoButtonProps extends ChildProps {
  * @returns Rendered `<figure>` video container.
  * @kind component
  * @example <Video><video src="/clip.mp4" /></Video>
- * @see https://dhoulb.github.io/shelving/ui/block/Video/Video
+ * @see https://shelving.cc/ui/Video
  */
 export function Video({ children, ...variants }: VideoProps): ReactElement {
 	const ref = useRef<HTMLElement | null>(null);
@@ -68,7 +68,7 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
  *
  * @returns Rendered overlay container for video buttons.
  * @example <VideoButtons><FullscreenVideoButton /></VideoButtons>
- * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButtons
+ * @see https://shelving.cc/ui/VideoButtons
  */
 export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
 	return <div className={getModuleClass(styles, "buttons", variants)}>{children}</div>;
@@ -80,7 +80,7 @@ export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
  * @returns Rendered `<button>` element overlaid on the video.
  * @kind component
  * @example <VideoButton title="Play" onClick={play}><PlayIcon /></VideoButton>
- * @see https://dhoulb.github.io/shelving/ui/block/Video/VideoButton
+ * @see https://shelving.cc/ui/VideoButton
  */
 export function VideoButton({ children, title, onClick, disabled, ...variants }: VideoButtonProps): ReactElement {
 	return (
@@ -95,7 +95,7 @@ declare const _fullscreenVideoButtonProps: unique symbol;
 /**
  * Props for `FullscreenVideoButton` — an empty marker interface (the component takes no props).
  *
- * @see https://dhoulb.github.io/shelving/ui/block/Video/FullscreenVideoButtonProps
+ * @see https://shelving.cc/ui/FullscreenVideoButtonProps
  */
 export interface FullscreenVideoButtonProps {
 	readonly [_fullscreenVideoButtonProps]?: never;
@@ -109,7 +109,7 @@ export interface FullscreenVideoButtonProps {
  * @returns Rendered fullscreen toggle button, or `null` when fullscreen is unavailable.
  * @kind component
  * @example <Video><video src="/clip.mp4" /><VideoButtons><FullscreenVideoButton /></VideoButtons></Video>
- * @see https://dhoulb.github.io/shelving/ui/block/Video/FullscreenVideoButton
+ * @see https://shelving.cc/ui/FullscreenVideoButton
  */
 export function FullscreenVideoButton(): ReactElement | null {
 	const [isFull, setFull] = useState(() => typeof document !== "undefined" && !!document.fullscreenElement);

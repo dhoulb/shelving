@@ -17,7 +17,7 @@ import { compareAscending } from "./sort.js";
  * @param caller Function to attribute a thrown error to (defaults to `assertEqual`).
  * @throws {RequiredError} If the values are not equal.
  * @example assertEqual(1, 1); // passes
- * @see https://dhoulb.github.io/shelving/util/equal/assertEqual
+ * @see https://shelving.cc/util/equal/assertEqual
  */
 export function assertEqual<T>(left: unknown, right: T, caller: AnyCaller = assertEqual): asserts left is T {
 	if (left !== right) new RequiredError("Must be equal", { left, right, caller });
@@ -31,7 +31,7 @@ export function assertEqual<T>(left: unknown, right: T, caller: AnyCaller = asse
  * @param caller Function to attribute a thrown error to (defaults to `assertNot`).
  * @throws {RequiredError} If the values are equal.
  * @example assertNot(1, 2); // passes
- * @see https://dhoulb.github.io/shelving/util/equal/assertNot
+ * @see https://shelving.cc/util/equal/assertNot
  */
 export function assertNot<T, N>(left: T | N, right: N, caller: AnyCaller = assertNot): asserts left is T {
 	if (left === right) new RequiredError("Must not be equal", { left, right, caller });
@@ -44,7 +44,7 @@ export function assertNot<T, N>(left: T | N, right: N, caller: AnyCaller = asser
  * @param right The value to compare against.
  * @returns `true` if the values are strictly equal.
  * @example isEqual(1, 1) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isEqual
+ * @see https://shelving.cc/util/equal/isEqual
  */
 export function isEqual<T>(left: unknown, right: T): left is T {
 	return left === right;
@@ -57,7 +57,7 @@ export function isEqual<T>(left: unknown, right: T): left is T {
  * @param right The value to compare against.
  * @returns `true` if the values are not strictly equal.
  * @example notEqual(1, 2) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notEqual
+ * @see https://shelving.cc/util/equal/notEqual
  */
 export function notEqual<T, N>(left: T | N, right: N): left is T {
 	return left !== right;
@@ -70,7 +70,7 @@ export function notEqual<T, N>(left: T | N, right: N): left is T {
  * @param right The value to compare against.
  * @returns `true` if `left` sorts before `right`.
  * @example isLess(1, 2) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isLess
+ * @see https://shelving.cc/util/equal/isLess
  */
 export function isLess(left: unknown, right: unknown) {
 	return compareAscending(left, right) < 0;
@@ -83,7 +83,7 @@ export function isLess(left: unknown, right: unknown) {
  * @param right The value to compare against.
  * @returns `true` if `left` sorts before or equal to `right`.
  * @example isEqualLess(2, 2) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isEqualLess
+ * @see https://shelving.cc/util/equal/isEqualLess
  */
 export function isEqualLess(left: unknown, right: unknown) {
 	return compareAscending(left, right) <= 0;
@@ -96,7 +96,7 @@ export function isEqualLess(left: unknown, right: unknown) {
  * @param right The value to compare against.
  * @returns `true` if `left` sorts after `right`.
  * @example isGreater(2, 1) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isGreater
+ * @see https://shelving.cc/util/equal/isGreater
  */
 export function isGreater(left: unknown, right: unknown) {
 	return compareAscending(left, right) > 0;
@@ -109,7 +109,7 @@ export function isGreater(left: unknown, right: unknown) {
  * @param right The value to compare against.
  * @returns `true` if `left` sorts after or equal to `right`.
  * @example isEqualGreater(2, 2) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isEqualGreater
+ * @see https://shelving.cc/util/equal/isEqualGreater
  */
 export function isEqualGreater(left: unknown, right: unknown) {
 	return compareAscending(left, right) >= 0;
@@ -134,7 +134,7 @@ function _isEqualRecursively(left: unknown, right: unknown, recursor: Match): bo
  * @param right The value to compare against.
  * @returns `true` if the values are shallowly equal.
  * @example isShallowEqual({ a: 1 }, { a: 1 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isShallowEqual
+ * @see https://shelving.cc/util/equal/isShallowEqual
  */
 export function isShallowEqual<T>(left: unknown, right: T): left is T {
 	return _isEqualRecursively(left, right, isEqual);
@@ -147,7 +147,7 @@ export function isShallowEqual<T>(left: unknown, right: T): left is T {
  * @param right The value to compare against.
  * @returns `true` if the values are not shallowly equal.
  * @example notShallowEqual({ a: 1 }, { a: 2 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notShallowEqual
+ * @see https://shelving.cc/util/equal/notShallowEqual
  */
 export function notShallowEqual<T>(left: unknown, right: T): left is T {
 	return !isShallowEqual(left, right);
@@ -161,7 +161,7 @@ export function notShallowEqual<T>(left: unknown, right: T): left is T {
  * @param right The value to compare against.
  * @returns `true` if the values are deeply equal.
  * @example isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isDeepEqual
+ * @see https://shelving.cc/util/equal/isDeepEqual
  */
 export function isDeepEqual<T>(left: unknown, right: T): left is T {
 	return _isEqualRecursively(left, right, isDeepEqual);
@@ -174,7 +174,7 @@ export function isDeepEqual<T>(left: unknown, right: T): left is T {
  * @param right The value to compare against.
  * @returns `true` if the values are not deeply equal.
  * @example notDeepEqual({ a: { b: 1 } }, { a: { b: 2 } }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notDeepEqual
+ * @see https://shelving.cc/util/equal/notDeepEqual
  */
 export function notDeepEqual<T>(left: unknown, right: T): left is T {
 	return !isShallowEqual(left, right);
@@ -188,7 +188,7 @@ export function notDeepEqual<T>(left: unknown, right: T): left is T {
  * @param recursor Function that checks each value of the map (defaults to `isEqual()` for strict equality; pass `isDeepEqual()` for deep equality).
  * @returns `true` if both maps have the same keys and matching values.
  * @example isMapEqual(new Map([["a", 1]]), new Map([["a", 1]])) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isMapEqual
+ * @see https://shelving.cc/util/equal/isMapEqual
  */
 export function isMapEqual<T extends ImmutableMap>(left: ImmutableMap, right: T, recursor: Match = isEqual): left is T {
 	if (left === right) return true; // Referentially equal.
@@ -212,7 +212,7 @@ export function isMapEqual<T extends ImmutableMap>(left: ImmutableMap, right: T,
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the items.
  * @returns `true` if both arrays have the same length and matching items.
  * @example isArrayEqual([1, 2], [1, 2]) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isArrayEqual
+ * @see https://shelving.cc/util/equal/isArrayEqual
  */
 export function isArrayEqual<T extends ImmutableArray>(left: ImmutableArray, right: T, recursor: Match = isEqual): left is T {
 	if (left === right) return true; // Referentially equal.
@@ -228,7 +228,7 @@ export function isArrayEqual<T extends ImmutableArray>(left: ImmutableArray, rig
  * @param right The array to search within.
  * @returns `true` if `left` is an item of `right`.
  * @example isInArray(2, [1, 2, 3]) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isInArray
+ * @see https://shelving.cc/util/equal/isInArray
  */
 export function isInArray<R>(left: unknown, right: ImmutableArray<R>): left is R {
 	return right.includes(left as R);
@@ -241,7 +241,7 @@ export function isInArray<R>(left: unknown, right: ImmutableArray<R>): left is R
  * @param right The array to search within.
  * @returns `true` if `left` is not an item of `right`.
  * @example notInArray(9, [1, 2, 3]) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notInArray
+ * @see https://shelving.cc/util/equal/notInArray
  */
 export function notInArray(left: unknown, right: ImmutableArray): boolean {
 	return !isInArray(left, right);
@@ -254,7 +254,7 @@ export function notInArray(left: unknown, right: ImmutableArray): boolean {
  * @param right The item the array must include.
  * @returns `true` if `left` is an array containing `right`.
  * @example isArrayWith([1, 2, 3], 2) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isArrayWith
+ * @see https://shelving.cc/util/equal/isArrayWith
  */
 export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<T> {
 	return isArray(left) && left.includes(right);
@@ -267,7 +267,7 @@ export function isArrayWith<T>(left: unknown, right: T): left is ImmutableArray<
  * @param right The item the array must include.
  * @returns `true` if `left` is not an array or does not include `right`.
  * @example notArrayWith([1, 2, 3], 9) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notArrayWith
+ * @see https://shelving.cc/util/equal/notArrayWith
  */
 export function notArrayWith(left: unknown, right: unknown): boolean {
 	return !isArrayWith(left, right);
@@ -285,7 +285,7 @@ export function notArrayWith(left: unknown, right: unknown): boolean {
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  * @returns `true` if both objects have exactly the same own props and matching values.
  * @example isObjectEqual({ a: 1 }, { a: 1 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isObjectEqual
+ * @see https://shelving.cc/util/equal/isObjectEqual
  */
 export function isObjectEqual<T extends ImmutableObject>(left: ImmutableObject, right: T, recursor: Match = isEqual): left is T {
 	if (left === right) return true; // Referentially equal.
@@ -308,7 +308,7 @@ export function isObjectEqual<T extends ImmutableObject>(left: ImmutableObject, 
  * - Use `isDeepEqual()` as the recursor to check to check deep equality of the properties.
  * @returns `true` if `left` contains every prop of `right` with matching values.
  * @example isObjectMatch({ a: 1, b: 2 }, { a: 1 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isObjectMatch
+ * @see https://shelving.cc/util/equal/isObjectMatch
  */
 export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObject>(
 	left: L | R,
@@ -328,7 +328,7 @@ export function isObjectMatch<L extends ImmutableObject, R extends ImmutableObje
  * @param right The object whose props `left` must contain.
  * @returns `true` if `left` is an object containing every prop of `right`.
  * @example isObjectWith({ a: 1, b: 2 }, { a: 1 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/isObjectWith
+ * @see https://shelving.cc/util/equal/isObjectWith
  */
 export function isObjectWith(left: unknown, right: ImmutableObject): boolean {
 	return isObject(left) && isObjectMatch(left, right);
@@ -341,7 +341,7 @@ export function isObjectWith(left: unknown, right: ImmutableObject): boolean {
  * @param right The object whose props `left` must contain.
  * @returns `true` if `left` is not an object or is missing one or more props of `right`.
  * @example notObjectWith({ a: 1 }, { b: 2 }) // true
- * @see https://dhoulb.github.io/shelving/util/equal/notObjectWith
+ * @see https://shelving.cc/util/equal/notObjectWith
  */
 export function notObjectWith(left: unknown, right: ImmutableObject): boolean {
 	return !isObjectWith(left, right);

@@ -13,7 +13,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * - Sets `description` to the first prose paragraph as a plain-text summary (used for card listings and `<meta>`).
  *
  * @example new MarkupExtractor().extract(Bun.file("/abs/path/README.md"))
- * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/MarkupExtractor
+ * @see https://shelving.cc/extract/MarkupExtractor
  */
 export class MarkupExtractor extends FileExtractor {
 	/**
@@ -24,7 +24,7 @@ export class MarkupExtractor extends FileExtractor {
 	 * @param text The raw Markdown source.
 	 * @returns The element props with `name`, `content`, and (when present) `title` and `description`.
 	 * @example new MarkupExtractor().extractProps("guide", "# Guide\n\nIntro text.")
-	 * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/MarkupExtractor/extractProps
+	 * @see https://shelving.cc/extract/MarkupExtractor/extractProps
 	 */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
@@ -42,7 +42,7 @@ export class MarkupExtractor extends FileExtractor {
  * @param text The markdown source string (a markdown file's text, or a JSDoc description).
  * @returns An object whose `title` and `description` are each a plain string, or `undefined` when absent.
  * @example extractMarkdownProps("# Title\n\nSome intro.") // { title: "Title", description: "Some intro." }
- * @see https://dhoulb.github.io/shelving/extract/MarkupExtractor/extractMarkdownProps
+ * @see https://shelving.cc/extract/extractMarkdownProps
  */
 export function extractMarkdownProps(text: string): { title: string | undefined; description: string | undefined } {
 	let title: string | undefined;

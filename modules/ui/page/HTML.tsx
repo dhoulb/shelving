@@ -6,7 +6,7 @@ import type { ChildProps } from "../util/props.js";
 /**
  * Props for `<HTML>` — initial `Meta` (language/root/app) plus the page `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/page/HTML/HTMLProps
+ * @see https://shelving.cc/ui/HTMLProps
  */
 export interface HTMLProps extends PossibleMeta, ChildProps {}
 
@@ -19,7 +19,7 @@ export interface HTMLProps extends PossibleMeta, ChildProps {}
  * @param meta Initial meta (language/root/app) merged with the surrounding `<Meta>` context.
  * @returns The `<html>` document element.
  * @example <HTML app="My App" root="https://example.com/"><App /></HTML>
- * @see https://dhoulb.github.io/shelving/ui/page/HTML/HTML
+ * @see https://shelving.cc/ui/HTML
  */
 export function HTML({ children, ...meta }: HTMLProps): ReactElement {
 	const merged = requireMeta(meta);

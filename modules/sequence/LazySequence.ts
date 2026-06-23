@@ -11,7 +11,7 @@ import { ThroughSequence } from "./ThroughSequence.js";
  * 		const timer = setInterval(tick, 1000);
  * 		return () => clearInterval(timer); // Stop callback.
  * 	});
- * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence
+ * @see https://shelving.cc/sequence/LazySequence
  */
 export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<T, R, N> implements AsyncDisposable {
 	private _iterators = new Set<LazyIterator<T, R, N>>(); // Keep track of the iterators that are iterating.
@@ -20,7 +20,7 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 	/**
 	 * Number of iterators currently registered as iterating.
 	 *
-	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/iterators
+	 * @see https://shelving.cc/sequence/LazySequence/iterators
 	 */
 	get iterators(): number {
 		return this._iterators.size;
@@ -58,7 +58,7 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 	 *
 	 * @param iterator The iterator that has started iterating.
 	 * @example sequence.start(iterator);
-	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/start
+	 * @see https://shelving.cc/sequence/LazySequence/start
 	 */
 	start(iterator: LazyIterator<T, R, N>) {
 		const before = this._iterators.size;
@@ -73,7 +73,7 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 	 *
 	 * @param iterator The iterator that has stopped iterating.
 	 * @example sequence.stop(iterator);
-	 * @see https://dhoulb.github.io/shelving/sequence/LazySequence/LazySequence/stop
+	 * @see https://shelving.cc/sequence/LazySequence/stop
 	 */
 	stop(iterator: LazyIterator<T, R, N>) {
 		const before = this._iterators.size;

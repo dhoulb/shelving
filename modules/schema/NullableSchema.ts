@@ -4,7 +4,7 @@ import { ThroughSchema, type ThroughSchemaOptions } from "./ThroughSchema.js";
 /**
  * Allowed options for `NullableSchema`.
  *
- * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchemaOptions
+ * @see https://shelving.cc/schema/NullableSchemaOptions
  */
 export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null> {
 	/**
@@ -25,7 +25,7 @@ export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null>
  *  schema.validate(""); // Returns null
  *  schema.validate("abc"); // Returns "abc"
  *
- * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchema
+ * @see https://shelving.cc/schema/NullableSchema
  */
 export class NullableSchema<T> extends ThroughSchema<T | null> {
 	declare readonly value: T | null;
@@ -45,7 +45,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 	 * @example
 	 *  NULLABLE(STRING).validate(""); // Returns null
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchema/validate
+	 * @see https://shelving.cc/schema/NullableSchema/validate
 	 */
 	override validate(unsafeValue: unknown = this.value): T | null {
 		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;
@@ -60,7 +60,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
 	 * @example
 	 *  NULLABLE(STRING).format(null); // Returns "No string"
 	 *
-	 * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NullableSchema/format
+	 * @see https://shelving.cc/schema/NullableSchema/format
 	 */
 	override format(value: T | null): string {
 		return value === null ? `No ${this.source.one}` : super.format(value);
@@ -78,7 +78,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
  *  const schema = NULLABLE(STRING);
  *  schema.validate(""); // Returns null
  *
- * @see https://dhoulb.github.io/shelving/schema/NullableSchema/NULLABLE
+ * @see https://shelving.cc/schema/NULLABLE
  */
 export function NULLABLE<T>(source: Schema<T>): NullableSchema<T> {
 	return new NullableSchema({ source });

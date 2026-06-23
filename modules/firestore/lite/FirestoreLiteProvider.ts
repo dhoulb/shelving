@@ -107,7 +107,7 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  * import { getFirestore } from "firebase/firestore/lite";
  * const provider = new FirestoreLiteProvider(getFirestore());
  *
- * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider
+ * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider
  */
 export class FirestoreLiteProvider<I extends string = string, T extends Data = Data> extends DBProvider<I, T> {
 	private readonly _firestore: Firestore;
@@ -116,7 +116,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * Create a provider wrapping a Firebase Lite `Firestore` instance.
 	 *
 	 * @param firestore The `Firestore` instance to read and write through.
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider
 	 */
 	constructor(firestore: Firestore) {
 		super();
@@ -145,7 +145,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param id The ID of the item to read.
 	 * @returns Promise resolving to the item, or `undefined` if the document does not exist.
 	 * @example await provider.getItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/getItem
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/getItem
 	 */
 	override async getItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const snapshot = await getDoc(this._doc(c, id));
@@ -158,7 +158,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param _id The ID of the item to subscribe to.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because Firestore Lite does not support realtime subscriptions.
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/getItemSequence
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/getItemSequence
 	 */
 	override getItemSequence<II extends I, TT extends T>(_c: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
 		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
@@ -170,7 +170,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param data The data for the new item.
 	 * @returns Promise resolving to the generated ID of the new item.
 	 * @example const id = await provider.addItem(users, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/addItem
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/addItem
 	 */
 	override async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
 		const reference = await addDoc(this._collection(c), data);
@@ -184,7 +184,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param data The data to store for the item.
 	 * @returns Promise resolving once the write completes.
 	 * @example await provider.setItem(users, "abc123", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/setItem
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/setItem
 	 */
 	override async setItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		await setDoc(this._doc(c, id), data);
@@ -197,7 +197,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param updates The updates to apply to the item.
 	 * @returns Promise resolving once the update completes.
 	 * @example await provider.updateItem(users, "abc123", { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/updateItem
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/updateItem
 	 */
 	override async updateItem<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
@@ -213,7 +213,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param id The ID of the item to delete.
 	 * @returns Promise resolving once the deletion completes.
 	 * @example await provider.deleteItem(users, "abc123")
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/deleteItem
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/deleteItem
 	 */
 	override async deleteItem<II extends I, TT extends T>(c: Collection<string, II, TT>, id: II): Promise<void> {
 		await deleteDoc(this._doc(c, id));
@@ -225,7 +225,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param q The query selecting which items to count; counts the whole collection when omitted.
 	 * @returns Promise resolving to the number of matching items.
 	 * @example const total = await provider.countQuery(users)
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/countQuery
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/countQuery
 	 */
 	override async countQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<number> {
 		const snapshot = await getCount(this._query(c, q));
@@ -238,7 +238,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param q The query selecting which items to read; reads the whole collection when omitted.
 	 * @returns Promise resolving to the array of matching items.
 	 * @example const items = await provider.getQuery(users, { "name": "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/getQuery
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/getQuery
 	 */
 	override async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return _getItems<II, TT>(await getDocs(this._query(c, q)));
@@ -250,7 +250,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param _q The query to subscribe to.
 	 * @returns Never returns normally.
 	 * @throws {UnimplementedError} Always, because Firestore Lite does not support realtime subscriptions.
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/getQuerySequence
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/getQuerySequence
 	 */
 	override getQuerySequence<II extends I, TT extends T>(_c: Collection<string, II, TT>, _q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
 		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
@@ -263,7 +263,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param data The data to write to each matching item.
 	 * @returns Promise resolving once all writes complete.
 	 * @example await provider.setQuery(users, { "name": "Dave" }, { active: false })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/setQuery
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/setQuery
 	 */
 	override async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
@@ -277,7 +277,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param updates The updates to apply to each matching item.
 	 * @returns Promise resolving once all updates complete.
 	 * @example await provider.updateQuery(users, { "active": true }, { name: "Dave" })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/updateQuery
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/updateQuery
 	 */
 	override async updateQuery<II extends I, TT extends T>(
 		c: Collection<string, II, TT>,
@@ -295,7 +295,7 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	 * @param q The query selecting which items to delete.
 	 * @returns Promise resolving once all deletions complete.
 	 * @example await provider.deleteQuery(users, { "active": false })
-	 * @see https://dhoulb.github.io/shelving/firestore/lite/FirestoreLiteProvider/FirestoreLiteProvider/deleteQuery
+	 * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider/deleteQuery
 	 */
 	override async deleteQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));

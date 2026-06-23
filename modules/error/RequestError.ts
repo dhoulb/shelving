@@ -12,7 +12,7 @@ interface RequestErrorOptions extends BaseErrorOptions {
  *
  * @example
  * 	throw new RequestError("Bad request", { code: 400 });
- * @see https://dhoulb.github.io/shelving/error/RequestError/RequestError
+ * @see https://shelving.cc/error/RequestError
  */
 export class RequestError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */
@@ -21,7 +21,7 @@ export class RequestError extends Error implements BaseError {
 	/**
 	 * HTTP status code for this error in the range `400-499`, defaults to `400`.
 	 *
-	 * @see https://dhoulb.github.io/shelving/error/RequestError/RequestError/code
+	 * @see https://shelving.cc/error/RequestError/code
 	 */
 	readonly code: number;
 
@@ -45,7 +45,7 @@ RequestError.prototype.name = "RequestError";
  *
  * @example
  * 	throw new UnauthorizedError("Please log in");
- * @see https://dhoulb.github.io/shelving/error/RequestError/UnauthorizedError
+ * @see https://shelving.cc/error/UnauthorizedError
  */
 export class UnauthorizedError extends RequestError {
 	/**
@@ -66,7 +66,7 @@ UnauthorizedError.prototype.name = "UnauthorizedError";
  *
  * @example
  * 	throw new NotFoundError("User does not exist");
- * @see https://dhoulb.github.io/shelving/error/RequestError/NotFoundError
+ * @see https://shelving.cc/error/NotFoundError
  */
 export class NotFoundError extends RequestError {
 	/**
@@ -87,7 +87,7 @@ NotFoundError.prototype.name = "NotFoundError";
  *
  * @example
  * 	throw new UnprocessableError("Email address is invalid");
- * @see https://dhoulb.github.io/shelving/error/RequestError/UnprocessableError
+ * @see https://shelving.cc/error/UnprocessableError
  */
 export class UnprocessableError extends RequestError {
 	/**
@@ -108,7 +108,7 @@ UnprocessableError.prototype.name = "UnprocessableError";
  *
  * @example
  * 	throw new ForbiddenError("Admins only");
- * @see https://dhoulb.github.io/shelving/error/RequestError/ForbiddenError
+ * @see https://shelving.cc/error/ForbiddenError
  */
 export class ForbiddenError extends RequestError {
 	/**
@@ -129,7 +129,7 @@ ForbiddenError.prototype.name = "ForbiddenError";
  *
  * @example
  * 	throw new MethodNotAllowedError("Use POST not GET");
- * @see https://dhoulb.github.io/shelving/error/RequestError/MethodNotAllowedError
+ * @see https://shelving.cc/error/MethodNotAllowedError
  */
 export class MethodNotAllowedError extends RequestError {
 	/**

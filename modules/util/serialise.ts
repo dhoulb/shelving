@@ -16,7 +16,7 @@ const R_QUOTE = /"/g;
  * @returns A consistent string representation of `value`, suitable for fingerprinting or equality comparison.
  * @throws {ValueError} If `value` cannot be serialised.
  * @example serialise({ b: 2, a: 1 }) // `{"a":1,"b":2}`
- * @see https://dhoulb.github.io/shelving/util/serialise/serialise
+ * @see https://shelving.cc/util/serialise/serialise
  */
 export function serialise(value: unknown): string {
 	if (value === true) return "true";

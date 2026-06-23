@@ -7,7 +7,7 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * - Never formats the value for display (`format()` always returns `""`).
  *
  * @example new PasswordSchema({}).validate("hunter2"); // Returns "hunter2"
- * @see https://dhoulb.github.io/shelving/schema/PasswordSchema/PasswordSchema
+ * @see https://shelving.cc/schema/PasswordSchema
  */
 export class PasswordSchema extends StringSchema {
 	/**
@@ -24,7 +24,7 @@ export class PasswordSchema extends StringSchema {
 	 *
 	 * @returns An empty string.
 	 * @example new PasswordSchema({}).format("hunter2"); // Returns ""
-	 * @see https://dhoulb.github.io/shelving/schema/PasswordSchema/PasswordSchema/format
+	 * @see https://shelving.cc/schema/PasswordSchema/format
 	 */
 	override format(): string {
 		return ""; // Never format a password for display.
@@ -35,6 +35,6 @@ export class PasswordSchema extends StringSchema {
  * Sugar instance of `PasswordSchema` for a password string. Equivalent to `new PasswordSchema({})`.
  *
  * @example PASSWORD.validate("hunter2"); // Returns "hunter2"
- * @see https://dhoulb.github.io/shelving/schema/PasswordSchema/PASSWORD
+ * @see https://shelving.cc/schema/PASSWORD
  */
 export const PASSWORD = new PasswordSchema({});

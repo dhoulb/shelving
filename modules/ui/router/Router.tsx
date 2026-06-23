@@ -10,7 +10,7 @@ import type { Routes } from "./Routes.js";
 /**
  * Props for `<Router>` — the `routes` to match against plus an optional `fallback`.
  *
- * @see https://dhoulb.github.io/shelving/ui/router/Router/RouterProps
+ * @see https://shelving.cc/ui/RouterProps
  */
 export interface RouterProps extends PossibleMeta {
 	/** List of routes for the router to match against. */
@@ -38,7 +38,7 @@ export interface RouterProps extends PossibleMeta {
  * @returns The matched route element, or `null`/`fallback` when nothing matches.
  * @throws NotFoundError If no route matches and `fallback` is `undefined`.
  * @example <Router routes={{ "/": HomePage, "/about": AboutPage }} />
- * @see https://dhoulb.github.io/shelving/ui/router/Router/Router
+ * @see https://shelving.cc/ui/Router
  */
 export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement | null {
 	const combined = requireMetaURL(meta);

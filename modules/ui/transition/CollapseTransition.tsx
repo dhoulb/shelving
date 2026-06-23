@@ -5,7 +5,7 @@ import { Transition, type TransitionProps } from "./Transition.js";
 /**
  * Props for the `CollapseTransition` component — the shared transition variant props.
  *
- * @see https://dhoulb.github.io/shelving/ui/transition/CollapseTransition/CollapseTransitionProps
+ * @see https://shelving.cc/ui/CollapseTransitionProps
  */
 export interface CollapseTransitionProps extends TransitionProps {}
 
@@ -15,7 +15,7 @@ export interface CollapseTransitionProps extends TransitionProps {}
  * @kind component
  * @returns A `<Transition>` element configured with the `collapse` class.
  * @example <CollapseTransition>{visible && <Panel />}</CollapseTransition>
- * @see https://dhoulb.github.io/shelving/ui/transition/CollapseTransition/CollapseTransition
+ * @see https://shelving.cc/ui/CollapseTransition
  */
 export function CollapseTransition(props: CollapseTransitionProps): ReactElement {
 	return <Transition default="collapse" {...props} />;

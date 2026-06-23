@@ -9,12 +9,12 @@ import type { DBProvider } from "../provider/DBProvider.js";
  * @example
  *  class MyMigrator extends DBMigrator { async migrate(...collections) { ... } }
  *  await new MyMigrator(provider).migrate(users, posts);
- * @see https://dhoulb.github.io/shelving/db/migrate/DBMigrator/DBMigrator
+ * @see https://shelving.cc/db/DBMigrator
  */
 export abstract class DBMigrator<T extends DBProvider = DBProvider> {
 	/**
 	 * The database provider whose storage this migrator updates.
-	 * @see https://dhoulb.github.io/shelving/db/migrate/DBMigrator/DBMigrator/provider
+	 * @see https://shelving.cc/db/DBMigrator/provider
 	 */
 	readonly provider: T;
 
@@ -35,7 +35,7 @@ export abstract class DBMigrator<T extends DBProvider = DBProvider> {
 	 * @returns Promise that resolves once migration has completed.
 	 * @throws {UnimplementedError} If a schema feature can't be represented by the backend.
 	 * @example await migrator.migrate(users, posts)
-	 * @see https://dhoulb.github.io/shelving/db/migrate/DBMigrator/DBMigrator/migrate
+	 * @see https://shelving.cc/db/DBMigrator/migrate
 	 */
 	abstract migrate(...collections: Collections): Promise<void>;
 }

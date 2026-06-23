@@ -12,7 +12,7 @@ import { requireForm } from "./FormContext.js";
  *
  * @returns A `<button type="submit">` element bound to the current form.
  * @example <SubmitButton>Save changes</SubmitButton>
- * @see https://dhoulb.github.io/shelving/ui/form/SubmitButton/SubmitButton
+ * @see https://shelving.cc/ui/SubmitButton
  */
 export function SubmitButton({
 	children = SUBMIT_CHILDREN,
@@ -33,7 +33,7 @@ export function SubmitButton({
 /**
  * Props for `SubmitButton`, a form submit button.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/SubmitButton/SubmitButtonProps
+ * @see https://shelving.cc/ui/SubmitButtonProps
  */
 export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps {}
 

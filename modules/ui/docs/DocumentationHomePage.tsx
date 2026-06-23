@@ -18,7 +18,7 @@ import { TreeMarkup } from "../tree/TreeMarkup.js";
  * @kind component
  * @returns A `<Page>` with a coloured hero panel followed by the module listing.
  * @example <DocumentationHomePage {...root.props} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationHomePage/DocumentationHomePage
+ * @see https://shelving.cc/ui/DocumentationHomePage
  */
 export function DocumentationHomePage({ title, name, description, content, children }: TreeElementProps): ReactNode {
 	return (

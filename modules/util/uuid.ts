@@ -7,7 +7,7 @@ const R_NOT_LOWERCHAR = /[^0-9a-f]/g;
  *
  * @returns A random 32-character lowercase hex UUID string.
  * @example randomUUID() // "1b4e28ba2fa14931918f4c9bf9f12b3a"
- * @see https://dhoulb.github.io/shelving/util/uuid/randomUUID
+ * @see https://shelving.cc/util/uuid/randomUUID
  */
 export function randomUUID(): string {
 	return crypto.randomUUID().replace(R_NOT_LOWERCHAR, "");
@@ -23,7 +23,7 @@ export function randomUUID(): string {
  * @param value The value to convert/validate as a UUID.
  * @returns The normalised UUID string, or `undefined` if the value is not a valid UUID.
  * @example getUUID("1b4e28ba-2fa1-4931-918f-4c9bf9f12b3a") // "1b4e28ba2fa14931918f4c9bf9f12b3a"
- * @see https://dhoulb.github.io/shelving/util/uuid/getUUID
+ * @see https://shelving.cc/util/uuid/getUUID
  */
 export function getUUID(value: string): string | undefined {
 	if (typeof value !== "string" || !value) return;
@@ -40,7 +40,7 @@ export function getUUID(value: string): string | undefined {
  * @returns The normalised UUID string.
  * @throws `RequiredError` if the value is not a valid UUID.
  * @example requireUUID("1b4e28ba-2fa1-4931-918f-4c9bf9f12b3a") // "1b4e28ba2fa14931918f4c9bf9f12b3a"
- * @see https://dhoulb.github.io/shelving/util/uuid/requireUUID
+ * @see https://shelving.cc/util/uuid/requireUUID
  */
 export function requireUUID(value: string): string {
 	const uuid = getUUID(value);

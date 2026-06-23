@@ -14,7 +14,7 @@ import { getLazy, type Lazy } from "../util/lazy.js";
  *
  * @example const config = useLazy(() => expensiveConfig(id), id);
  *
- * @see https://dhoulb.github.io/shelving/react/useLazy
+ * @see https://shelving.cc/react/useLazy
  */
 export function useLazy<T, A extends Arguments = []>(value: (...args: A) => T, ...args: A): T; // Generics flow through this overload better than using `Lazy`
 export function useLazy<T>(value: T, ...args: Arguments): T;

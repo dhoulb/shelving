@@ -15,7 +15,7 @@ const REMOVE_DELAY = 500;
  * - `show()` opens a new dialog; closed dialogs are removed after an animation delay.
  *
  * @example const dialogs = new DialogsStore(); dialogs.show(<p>Hello</p>);
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsStore
+ * @see https://shelving.cc/ui/DialogsStore
  */
 export class DialogsStore extends ArrayStore<ReactElement> {
 	/**
@@ -23,7 +23,7 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 	 *
 	 * @param children The content to show inside the dialog.
 	 * @example dialogs.show(<ConfirmForm />);
-	 * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsStore/show
+	 * @see https://shelving.cc/ui/DialogsStore/show
 	 */
 	show(children: ReactNode) {
 		const dialog = (
@@ -45,7 +45,7 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 	 * Hide all currently visible dialogs.
 	 *
 	 * @example dialogs.hideAll();
-	 * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsStore/hideAll
+	 * @see https://shelving.cc/ui/DialogsStore/hideAll
 	 */
 	hideAll() {
 		this.delete(...this.value);
@@ -61,7 +61,7 @@ _DialogsContext.displayName = "DialogsContext";
  *
  * @returns The current `DialogsStore`.
  * @example requireDialogs().show(<ConfirmForm />);
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/requireDialogs
+ * @see https://shelving.cc/ui/requireDialogs
  */
 export function requireDialogs(): DialogsStore {
 	return use(_DialogsContext);
@@ -72,14 +72,14 @@ declare const _componentProps: unique symbol;
 /**
  * Props for `<DialogsContext>` — the `children` subtree the dialogs store is provided to.
  *
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsContextProps
+ * @see https://shelving.cc/ui/DialogsContextProps
  */
 export interface DialogsContextProps extends ChildProps {}
 
 /**
  * Props for `<Dialogs>` — takes no props (branded empty interface).
  *
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsProps
+ * @see https://shelving.cc/ui/DialogsProps
  */
 export interface DialogsProps {
 	readonly [_componentProps]?: never;
@@ -92,7 +92,7 @@ export interface DialogsProps {
  * @returns The dialogs context provider wrapping `children`.
  * @kind component
  * @example <DialogsContext><App /></DialogsContext>
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/DialogsContext
+ * @see https://shelving.cc/ui/DialogsContext
  */
 export function DialogsContext({ children }: DialogsContextProps): ReactElement {
 	return <_DialogsContext value={useInstance(DialogsStore)}>{children}</_DialogsContext>;
@@ -104,7 +104,7 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
  * @returns The list of open dialog elements, or `null` when there are none.
  * @kind component
  * @example <DialogsContext><App /><Dialogs /></DialogsContext>
- * @see https://dhoulb.github.io/shelving/ui/dialog/Dialogs/Dialogs
+ * @see https://shelving.cc/ui/Dialogs
  */
 export function Dialogs(): ReactNode | null {
 	const dialogs = useStore(requireDialogs());

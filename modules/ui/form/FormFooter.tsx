@@ -8,7 +8,7 @@ import { SubmitButton } from "./SubmitButton.js";
 /**
  * Props for `FormFooter`, the submit-button-and-message footer for a form.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/FormFooter/FormFooterProps
+ * @see https://shelving.cc/ui/FormFooterProps
  */
 export interface FormFooterProps extends OptionalChildProps {
 	submit?: ReactNode | undefined;
@@ -22,7 +22,7 @@ export interface FormFooterProps extends OptionalChildProps {
  * @returns A footer element with the submit row and form message.
  * @kind component
  * @example <FormFooter submit="Save" />
- * @see https://dhoulb.github.io/shelving/ui/form/FormFooter/FormFooter
+ * @see https://shelving.cc/ui/FormFooter
  */
 export function FormFooter({ children, submit }: FormFooterProps): ReactElement {
 	return (

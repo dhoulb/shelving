@@ -11,7 +11,7 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  * @example
  *  const api = new DebugAPIProvider(source);
  *  await api.call(endpoint, payload); // logs request, response, and result
- * @see https://dhoulb.github.io/shelving/api/provider/DebugAPIProvider/DebugAPIProvider
+ * @see https://shelving.cc/api/DebugAPIProvider
  */
 export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	/**
@@ -24,7 +24,7 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns The built request.
 	 * @throws Rethrows any error thrown while building the request (after logging it).
 	 * @example api.createRequest(endpoint, payload)
-	 * @see https://dhoulb.github.io/shelving/api/provider/DebugAPIProvider/DebugAPIProvider/createRequest
+	 * @see https://shelving.cc/api/DebugAPIProvider/createRequest
 	 */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
@@ -49,7 +49,7 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns Promise resolving to the response.
 	 * @throws Rethrows any error thrown by the source provider (after logging it).
 	 * @example await api.fetch(request)
-	 * @see https://dhoulb.github.io/shelving/api/provider/DebugAPIProvider/DebugAPIProvider/fetch
+	 * @see https://shelving.cc/api/DebugAPIProvider/fetch
 	 */
 	override async fetch(request: Request): Promise<Response> {
 		try {
@@ -72,7 +72,7 @@ export class DebugAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 	 * @returns Promise resolving to the parsed result.
 	 * @throws Rethrows any error thrown while parsing (after logging it).
 	 * @example await api.parseResponse(endpoint, response)
-	 * @see https://dhoulb.github.io/shelving/api/provider/DebugAPIProvider/DebugAPIProvider/parseResponse
+	 * @see https://shelving.cc/api/DebugAPIProvider/parseResponse
 	 */
 	override async parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,

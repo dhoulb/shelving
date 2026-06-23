@@ -10,7 +10,7 @@ import { isSchemaRequired, type SchemaInputProps } from "./SchemaInput.js";
 /**
  * React context holding the current `FormStore`, provided by the `Form` component.
  *
- * @see https://dhoulb.github.io/shelving/ui/form/FormContext/FormContext
+ * @see https://shelving.cc/ui/FormContext
  */
 export const FormContext = createContext<FormStore<Data> | undefined>(undefined);
 FormContext.displayName = "FormContext";
@@ -22,7 +22,7 @@ FormContext.displayName = "FormContext";
  * @returns The current `FormStore` instance.
  * @throws `RequiredError` if called outside a `Form` component.
  * @example const form = requireForm();
- * @see https://dhoulb.github.io/shelving/ui/form/FormContext/requireForm
+ * @see https://shelving.cc/ui/requireForm
  */
 export function requireForm<T extends Data = Data>(caller?: AnyCaller): FormStore<T>;
 export function requireForm(): FormStore<Data> {
@@ -37,7 +37,7 @@ export function requireForm(): FormStore<Data> {
  * @param form Form store to read from, defaulting to the current form context.
  * @returns Props (`name`, `schema`, `value`, `onValue`, `message`, `required`) ready to spread onto an input.
  * @example const field = useField("email");
- * @see https://dhoulb.github.io/shelving/ui/form/FormContext/useField
+ * @see https://shelving.cc/ui/useField
  */
 export function useField<T, I = never>(name: string, form?: FormStore<{ [name: string]: T }>): SchemaInputProps<Schema<T>, I>;
 export function useField(name: string, form: FormStore<Data> = requireForm(useField)): SchemaInputProps<Schema<unknown>> {

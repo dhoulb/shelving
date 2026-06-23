@@ -12,7 +12,7 @@ const CODE_PLAIN_CLASS = getModuleClass(CODE_CSS, "plain");
 /**
  * Props for `Code` — colour and typography variants, optional `children`, plus a `plain` toggle.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/Code/CodeProps
+ * @see https://shelving.cc/ui/CodeProps
  */
 export interface CodeProps extends ColorVariants, TypographyVariants, OptionalChildProps {
 	plain?: boolean | undefined;
@@ -25,7 +25,7 @@ export interface CodeProps extends ColorVariants, TypographyVariants, OptionalCh
  * @kind component
  * @returns Rendered `<code>` element.
  * @example <Code>npm install</Code>
- * @see https://dhoulb.github.io/shelving/ui/inline/Code/Code
+ * @see https://shelving.cc/ui/Code
  */
 export function Code({ children, plain, ...props }: CodeProps): ReactElement {
 	return (

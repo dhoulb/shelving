@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 /**
  * Props for a component that requires `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/props/ChildProps
+ * @see https://shelving.cc/ui/ChildProps
  */
 export interface ChildProps {
 	readonly children: ReactNode;
@@ -12,7 +12,7 @@ export interface ChildProps {
 /**
  * Props for a component that optionally accepts `children`.
  *
- * @see https://dhoulb.github.io/shelving/ui/util/props/OptionalChildProps
+ * @see https://shelving.cc/ui/OptionalChildProps
  */
 export interface OptionalChildProps {
 	readonly children?: ReactNode | undefined;

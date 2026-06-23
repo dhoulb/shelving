@@ -11,7 +11,7 @@ import { DocumentationDescription } from "./DocumentationDescription.js";
 /**
  * Props for `DocumentationReferences` — the referenced type names to render, one row each.
  *
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationReferences/DocumentationReferencesProps
+ * @see https://shelving.cc/ui/DocumentationReferencesProps
  */
 export interface DocumentationReferencesProps {
 	/** Type names referenced by a `type` alias's body — one row each, resolved to links at render time. */
@@ -26,7 +26,7 @@ export interface DocumentationReferencesProps {
  * @kind component
  * @returns A `<Section>` containing the references table, or `null` when there are none.
  * @example <DocumentationReferences types={types} />
- * @see https://dhoulb.github.io/shelving/ui/docs/DocumentationReferences/DocumentationReferences
+ * @see https://shelving.cc/ui/DocumentationReferences
  */
 export function DocumentationReferences({ types }: DocumentationReferencesProps): ReactNode {
 	const map = useTreeMap();

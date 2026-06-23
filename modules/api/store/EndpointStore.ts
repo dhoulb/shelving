@@ -9,17 +9,17 @@ import type { APIProvider } from "../provider/APIProvider.js";
  * @example
  *  const store = new EndpointStore(endpoint, payload, provider);
  *  const result = await store; // R
- * @see https://dhoulb.github.io/shelving/api/store/EndpointStore/EndpointStore
+ * @see https://shelving.cc/api/EndpointStore
  */
 export class EndpointStore<P, R> extends PayloadFetchStore<P, R> {
 	/**
 	 * The API provider this store calls the endpoint through.
-	 * @see https://dhoulb.github.io/shelving/api/store/EndpointStore/EndpointStore/provider
+	 * @see https://shelving.cc/api/EndpointStore/provider
 	 */
 	readonly provider: APIProvider<P, R>;
 	/**
 	 * The endpoint this store calls to fetch its result.
-	 * @see https://dhoulb.github.io/shelving/api/store/EndpointStore/EndpointStore/endpoint
+	 * @see https://shelving.cc/api/EndpointStore/endpoint
 	 */
 	readonly endpoint: Endpoint<P, R>;
 

@@ -5,7 +5,7 @@ import { type BaseError, type BaseErrorOptions, setBaseErrorOptions } from "./Ba
  *
  * @example
  * 	throw new UnimplementedError("Not supported by this provider");
- * @see https://dhoulb.github.io/shelving/error/UnimplementedError/UnimplementedError
+ * @see https://shelving.cc/error/UnimplementedError
  */
 export class UnimplementedError extends Error implements BaseError {
 	/** Provide additional named contextual data that is relevant to the `Error` instance. */

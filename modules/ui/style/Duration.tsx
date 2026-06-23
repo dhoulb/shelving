@@ -4,14 +4,14 @@ import DURATION_CSS from "./Duration.module.css";
 /**
  * Allowed values for transition timing for components that support `DurationVariants`
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Duration/DurationValue
+ * @see https://shelving.cc/ui/DurationValue
  */
 export type DurationValue = "fast" | "normal" | "slow";
 
 /**
  * Variant props for the transition duration of an element, e.g. `duration="fast"`.
  *
- * @see https://dhoulb.github.io/shelving/ui/style/Duration/DurationVariants
+ * @see https://shelving.cc/ui/DurationVariants
  */
 export interface DurationVariants {
 	/** Transition duration of the element. */
@@ -24,7 +24,7 @@ export interface DurationVariants {
  * @param variants
  * @returns The duration class string, or `undefined` when no `duration` is set.
  * @example getDurationClass({ duration: "fast" }) // "duration-fast"
- * @see https://dhoulb.github.io/shelving/ui/style/Duration/getDurationClass
+ * @see https://shelving.cc/ui/getDurationClass
  */
 export function getDurationClass({ duration }: DurationVariants): string | undefined {
 	return duration && getModuleClass(DURATION_CSS, `duration-${duration}`);

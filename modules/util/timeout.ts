@@ -10,7 +10,7 @@ import type { Callback } from "./function.js";
  * const timeout = new Timeout(() => console.log("fired"), 1000);
  * timeout.set(); // Fires the callback after 1000ms.
  * timeout.clear(); // Cancels it before it fires.
- * @see https://dhoulb.github.io/shelving/util/timeout/Timeout
+ * @see https://shelving.cc/util/timeout/Timeout
  */
 export class Timeout {
 	private _callback: Callback | undefined;
@@ -23,7 +23,7 @@ export class Timeout {
 	 * @param callback The default callback to run when a timeout fires (used by `set()` when no callback is passed).
 	 * @param ms The default delay for any created timeouts (in ms).
 	 * @example new Timeout(() => console.log("fired"), 1000)
-	 * @see https://dhoulb.github.io/shelving/util/timeout/Timeout
+	 * @see https://shelving.cc/util/timeout/Timeout
 	 */
 	constructor(callback: Callback | undefined = undefined, ms = 0) {
 		this._callback = callback;
@@ -33,7 +33,7 @@ export class Timeout {
 	/**
 	 * Whether a timeout is currently pending.
 	 *
-	 * @see https://dhoulb.github.io/shelving/util/timeout/Timeout/exists
+	 * @see https://shelving.cc/util/timeout/Timeout/exists
 	 */
 	get exists(): boolean {
 		return !!this._timeout;
@@ -46,7 +46,7 @@ export class Timeout {
 	 * @param ms The delay for this timeout (in ms, defaults to the delay passed to the constructor).
 	 * @returns Nothing.
 	 * @example timeout.set(() => console.log("fired"), 500);
-	 * @see https://dhoulb.github.io/shelving/util/timeout/Timeout/set
+	 * @see https://shelving.cc/util/timeout/Timeout/set
 	 */
 	set(callback: Callback | undefined = this._callback, ms: number = this._ms): void {
 		this.clear();
@@ -58,7 +58,7 @@ export class Timeout {
 	 *
 	 * @returns Nothing.
 	 * @example timeout.clear();
-	 * @see https://dhoulb.github.io/shelving/util/timeout/Timeout/clear
+	 * @see https://shelving.cc/util/timeout/Timeout/clear
 	 */
 	clear(): void {
 		const timeout = this._timeout;

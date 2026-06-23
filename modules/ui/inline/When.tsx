@@ -26,7 +26,7 @@ function _getWhen(
 /**
  * Props for `When`, `Ago`, and `Until` — a `target` date plus an optional `current` reference date and `full` toggle.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/When/WhenProps
+ * @see https://shelving.cc/ui/WhenProps
  */
 export interface WhenProps extends OptionalChildProps {
 	target: PossibleDate | undefined;
@@ -43,7 +43,7 @@ export interface WhenProps extends OptionalChildProps {
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @kind component
  * @example <When target="2030-01-01" />
- * @see https://dhoulb.github.io/shelving/ui/inline/When/When
+ * @see https://shelving.cc/ui/When
  */
 export function When(props: WhenProps): ReactElement {
 	return _getWhen(formatWhen, props, When);
@@ -52,7 +52,7 @@ export function When(props: WhenProps): ReactElement {
 /**
  * Props for `Ago` — identical to `WhenProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/When/AgoProps
+ * @see https://shelving.cc/ui/AgoProps
  */
 export interface AgoProps extends WhenProps {}
 
@@ -63,7 +63,7 @@ export interface AgoProps extends WhenProps {}
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @kind component
  * @example <Ago target="2020-01-01" />
- * @see https://dhoulb.github.io/shelving/ui/inline/When/Ago
+ * @see https://shelving.cc/ui/Ago
  */
 export function Ago(props: AgoProps): ReactElement {
 	return _getWhen(formatAgo, props, Ago);
@@ -72,7 +72,7 @@ export function Ago(props: AgoProps): ReactElement {
 /**
  * Props for `Until` — identical to `WhenProps`.
  *
- * @see https://dhoulb.github.io/shelving/ui/inline/When/UntilProps
+ * @see https://shelving.cc/ui/UntilProps
  */
 export interface UntilProps extends WhenProps {}
 
@@ -83,7 +83,7 @@ export interface UntilProps extends WhenProps {}
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @kind component
  * @example <Until target="2030-01-01" />
- * @see https://dhoulb.github.io/shelving/ui/inline/When/Until
+ * @see https://shelving.cc/ui/Until
  */
 export function Until(props: UntilProps): ReactElement {
 	return _getWhen(formatUntil, props, Until);
