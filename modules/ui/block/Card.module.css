@@ -41,6 +41,7 @@
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
 			background: var(--card-hover-background, var(--tint-95));
+			border: var(--card-hover-border, var(--card-stroke, var(--stroke-normal)) solid var(--tint-90));
 		}
 	}
 

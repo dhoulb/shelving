@@ -55,6 +55,7 @@
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
+			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-90));
 			background: var(--button-hover-background, var(--tint-95));
 		}
 
