@@ -110,32 +110,34 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
-					<Section>
-						<DocumentationSignatures signatures={signatures} />
-						<DocumentationParams params={params} />
-						<DocumentationReturns returns={returns} />
-						<DocumentationThrows throws={throws} />
-						<DocumentationProperties properties={properties} />
-						<DocumentationReferences types={types} />
-					</Section>
-				) : null}
-				{content && (
-					<Section>
-						<Prose>
-							<TreeMarkup>{content}</TreeMarkup>
-						</Prose>
-					</Section>
-				)}
-				{examples?.length && (
-					<Section>
-						<Heading>Examples</Heading>
-						{examples.map(({ description }) => (
-							<Preformatted key={description}>{description}</Preformatted>
-						))}
-					</Section>
-				)}
-				<DocumentationChildren elements={children} />
+				<Block indent="normal">
+					{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
+						<Section>
+							<DocumentationSignatures signatures={signatures} />
+							<DocumentationParams params={params} />
+							<DocumentationReturns returns={returns} />
+							<DocumentationThrows throws={throws} />
+							<DocumentationProperties properties={properties} />
+							<DocumentationReferences types={types} />
+						</Section>
+					) : null}
+					{content && (
+						<Section>
+							<Prose>
+								<TreeMarkup>{content}</TreeMarkup>
+							</Prose>
+						</Section>
+					)}
+					{examples?.length && (
+						<Section>
+							<Heading>Examples</Heading>
+							{examples.map(({ description }) => (
+								<Preformatted key={description}>{description}</Preformatted>
+							))}
+						</Section>
+					)}
+					<DocumentationChildren elements={children} />
+				</Block>
 			</Block>
 		</Page>
 	);

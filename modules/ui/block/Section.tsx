@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
@@ -15,7 +16,7 @@ const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
  *
  * @see https://shelving.cc/ui/SectionProps
  */
-export interface SectionProps extends ColorVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+export interface SectionProps extends ColorVariants, IndentVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
 	/**
 	 * Element this `<Section>` renders as, e.g. "header" to output a "<header>"
 	 * @default "section"
@@ -37,6 +38,7 @@ export function getSectionClass(variants: SectionProps): string {
 	return getClass(
 		SECTION_CLASS, //
 		getColorClass(variants),
+		getIndentClass(variants),
 		getSpaceClass(variants),
 		getTypographyClass(variants),
 		getWidthClass(variants),

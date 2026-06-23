@@ -2,9 +2,9 @@
 
 The `space` variant prop sets a block-level element's `margin-block` (top + bottom) from the spacing scale — `<Section space="large">`, `<Paragraph space="none">`. It's an **override** for one-off spacing; for an app-wide change, retune the spacing variables below in a theme file.
 
-`getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` and `getGapClass()`, so all three move together when you change `--space-normal`.
+`getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` (block padding), `getIndentClass()` (inline padding), and `getGapClass()`, so they all move together when you change `--space-normal`.
 
-Alongside the named scale, `space` and `padding` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
+Alongside the named scale, `space`, `padding`, and `indent` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
 
 ## Theme variables
 

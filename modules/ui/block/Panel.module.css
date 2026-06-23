@@ -3,14 +3,18 @@
 @import "../style/Typography.module.css";
 @import "../style/Status.module.css";
 @import "../style/Color.module.css";
+@import "../style/Indent.module.css";
 @import "../style/Padding.module.css";
+@import "../style/Space.module.css";
 
 /*
  * Full-width vertical region that paints the current surface. Panels always have zero block-space
  * (they butt up against each other vertically to create stacked page sections). Vertical breathing
  * room comes from the shared `padding` variant (`.large`, `.xxlarge`, etc. from `style/Padding`);
  * with no `padding` the block padding is zero and the inner `<Section>` margins provide the spacing.
- * For narrower content inside a wide panel, compose a `<Block narrow>` (or `<Block wide>`) inside it.
+ * Inline padding ("indent") keeps content off the edges by default (`--panel-indent`); override it
+ * with the shared `indent` variant. For narrower content inside a wide panel, compose a
+ * `<Block narrow>` (or `<Block wide>`) inside it.
  */
 @layer components {
 	.panel {
@@ -20,9 +24,11 @@
 		/* Box */
 		position: relative;
 		display: flow-root;
+		box-sizing: border-box;
 		inline-size: 100%;
 		margin-inline: 0;
 		margin-block: 0;
+		padding-inline: var(--panel-indent, var(--space-normal));
 		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
 		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
 
