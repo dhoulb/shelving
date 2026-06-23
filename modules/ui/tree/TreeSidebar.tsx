@@ -5,7 +5,7 @@ import { flattenTree, searchTree, type TreeElement } from "../../util/tree.js";
 import { Divider } from "../block/Divider.js";
 import { TextInput } from "../form/TextInput.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
-import { TREE_INDEX_PATH } from "./TreeIndexPage.js";
+import type { OptionalChildProps } from "../util/index.js";
 import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 
 /**
@@ -13,7 +13,7 @@ import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
  *
  * @see https://shelving.cc/ui/TreeSidebarProps
  */
-export interface TreeSidebarProps {
+export interface TreeSidebarProps extends OptionalChildProps {
 	/** Root element of the tree. */
 	readonly tree: TreeElement;
 	/** URL path of the root — defaults to `/`. Children are rendered with `path + their.name`. */
@@ -23,7 +23,6 @@ export interface TreeSidebarProps {
 /**
  * Sidebar built from a tree element, in three sections separated by dividers.
  *
- * - **Top:** a "Home" link to the root and an "All elements" link to the `<TreeIndexPage>` (`/all`).
  * - **Middle:** a `<TextInput>` search-as-you-type filter.
  * - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
  *
@@ -34,7 +33,7 @@ export interface TreeSidebarProps {
  * @example <TreeSidebar tree={tree} />
  * @see https://shelving.cc/ui/TreeSidebar
  */
-export function TreeSidebar({ tree, path = "/" as AbsolutePath }: TreeSidebarProps): ReactNode {
+export function TreeSidebar({ tree, path = "/", children }: TreeSidebarProps): ReactNode {
 	const [query, setQuery] = useState("");
 	const trimmed = query.trim();
 
@@ -46,8 +45,8 @@ export function TreeSidebar({ tree, path = "/" as AbsolutePath }: TreeSidebarPro
 		<>
 			<Menu>
 				<MenuItem href={path}>Home</MenuItem>
-				<MenuItem href={TREE_INDEX_PATH}>All elements</MenuItem>
 			</Menu>
+			{children}
 			<Divider />
 			<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
 			<Divider />

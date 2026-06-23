@@ -10,10 +10,10 @@
  */
 
 import { hydrateRoot } from "react-dom/client";
+import { DocumentationApp } from "../modules/ui/docs/DocumentationApp.js";
 import type { PossibleMeta } from "../modules/ui/util/meta.js";
 import { requireURL } from "../modules/util/index.js";
 import type { TreeElement } from "../modules/util/tree.js";
-import { App } from "./App.js";
 
 async function hydrate(): Promise<void> {
 	const data = document.getElementById("docs-data")?.textContent;
@@ -23,7 +23,7 @@ async function hydrate(): Promise<void> {
 	const tree = (await fetch(requireURL("tree.json", meta.root).href).then(r => r.json())) as TreeElement;
 
 	// Hydrate `<body>` directly — React 19 tolerates the trailing nodes outside its tree.
-	hydrateRoot(document.body, <App tree={tree} meta={meta} />);
+	hydrateRoot(document.body, <DocumentationApp tree={tree} {...meta} />);
 }
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => void hydrate());

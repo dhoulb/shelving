@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { walkElements } from "../../util/element.js";
-import type { DocumentationElementProps, TreeElement, TreeElements } from "../../util/tree.js";
+import type { DocumentationElementProps, TreeElement } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
 import { Heading } from "../block/Heading.js";
 import { Panel } from "../block/Panel.js";
@@ -23,7 +23,8 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
 import { DocumentationThrows } from "./DocumentationThrows.js";
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. Data members (properties) are not child elements — they render as the Properties table instead. */
-const KIND_SECTIONS = {
+const KINDS = {
+	module: "Modules",
 	component: "Components",
 	function: "Functions",
 	class: "Classes",
@@ -33,37 +34,6 @@ const KIND_SECTIONS = {
 	"static method": "Static methods",
 	method: "Methods",
 };
-
-/** Render a list of tree elements grouped into kind-based card sections, in `KIND_SECTIONS` order. */
-function _renderSections(elements: readonly TreeElement[]): ReactNode {
-	return Object.entries(KIND_SECTIONS).map(([kind, label]) => {
-		const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
-		return group.length ? (
-			<Section key={kind}>
-				<Heading>{label}</Heading>
-				<TreeCards>{group}</TreeCards>
-			</Section>
-		) : null;
-	});
-}
-
-/**
- * Children listing for a documentation page — this page's child symbols grouped into kind-based card sections.
- *
- * - Renders nothing when the page has no children (e.g. a leaf symbol).
- * - Cross-tree search and kind filtering live on the index page (`TreeIndexPage`), not here.
- *
- * @param props The page's child elements.
- * @returns The grouped card sections, or `null` when there are no children.
- */
-function DocumentationChildren({ elements }: { readonly elements?: TreeElements }): ReactNode {
-	const childElements = Array.from(walkElements<TreeElement>(elements));
-
-	// No children → nothing to list.
-	if (!childElements.length) return null;
-
-	return _renderSections(childElements);
-}
 
 /**
  * Page renderer for a `tree-documentation` element — the full detail page for a documented symbol.
@@ -95,6 +65,7 @@ export function DocumentationPage({
 	children,
 	...props
 }: DocumentationElementProps): ReactNode {
+	const elements = Array.from(walkElements<TreeElement>(children));
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
@@ -110,7 +81,7 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				<Block indent="normal">
+				<Block indent="normal" padding="section">
 					{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
 						<Section>
 							<DocumentationSignatures signatures={signatures} />
@@ -136,7 +107,17 @@ export function DocumentationPage({
 							))}
 						</Section>
 					)}
-					<DocumentationChildren elements={children} />
+					{elements.length
+						? Object.entries(KINDS).map(([kind, label]) => {
+								const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
+								return group.length ? (
+									<Section key={kind}>
+										<Heading>{label}</Heading>
+										<TreeCards>{group}</TreeCards>
+									</Section>
+								) : null;
+							})
+						: null}
 				</Block>
 			</Block>
 		</Page>
