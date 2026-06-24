@@ -33,7 +33,7 @@ export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script:
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.
 		// `path` is site-absolute (`/util`); the `.` prefix resolves it *under* `APP_URL`'s subfolder, not its origin.
 		const meta = createMeta({
-			url: path,
+			url: `.${path}`,
 			root: APP_URL,
 			app: APP_TITLE,
 			description: APP_DESCRIPTION,
