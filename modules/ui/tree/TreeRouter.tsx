@@ -1,12 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import type { AbsolutePath } from "../../util/path.js";
-import type { TreeElement } from "../../util/tree.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
 import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/index.js";
-import { TreeProvider, useTreeMap } from "./TreeContext.js";
+import { useTreeMap } from "./TreeContext.js";
 import { TreePage } from "./TreePage.js";
 
 /**
@@ -25,9 +24,6 @@ export const [TreeRouterMapping, TreeRouterMapper] = createMapper({
  * @see https://shelving.cc/ui/TreeRouterProps
  */
 export interface TreeRouterProps extends PossibleMeta {
-	/** The tree of elements to match routes for. */
-	readonly tree: TreeElement;
-
 	/**
 	 * Optional fallback element.
 	 * - Explicit `null` means fallback to nothing (router will not throw `NotFoundError`).
@@ -38,7 +34,7 @@ export interface TreeRouterProps extends PossibleMeta {
 /**
  * Resolve a URL path to a tree element and render it as a full page.
  *
- * - Flattens the tree once (via `<TreeProvider>`) into a `path` → element map, then resolves the current URL with a single `map.get(path)`.
+ * - Reads the flattened `path` → element map from the surrounding `<TreeProvider>` (`useTreeMap()`), then resolves the current URL with a single `map.get(path)`.
  * - `/` renders the root itself; deeper paths render the matching descendant (composite module names like `/util/string` resolve for free — they're whole keys in the map).
  * - The resolved element is already stamped with its canonical `path`, so the page and its cards link straight to their own paths — nothing needs threading.
  * - To override the renderer for a specific element type, wrap in `<TreeRouterMapping mapping={…}>`.
@@ -46,17 +42,14 @@ export interface TreeRouterProps extends PossibleMeta {
  * @returns The resolved element rendered as a page, or the `fallback`.
  * @throws `NotFoundError` When no element matches the URL and no `fallback` is given.
  * @kind component
- * @example <TreeRouter tree={tree} />
+ * @example <TreeProvider tree={tree}><TreeRouter /></TreeProvider>
  * @see https://shelving.cc/ui/TreeRouter
  */
-export function TreeRouter({ tree, fallback, ...meta }: TreeRouterProps): ReactNode {
+export function TreeRouter({ fallback, ...meta }: TreeRouterProps): ReactNode {
 	const { path, ...combined } = requireMetaURL(meta);
-	// `<TreeProvider>` flattens the tree (memoised) and exposes it as a lookup map so descendants — the route resolver below, plus `<TreeButton>` / breadcrumbs — all resolve against the one map.
 	return (
 		<MetaContext value={combined}>
-			<TreeProvider tree={tree}>
-				<TreeRoute path={path} fallback={fallback} />
-			</TreeProvider>
+			<TreeRoute path={path} fallback={fallback} />
 		</MetaContext>
 	);
 }
