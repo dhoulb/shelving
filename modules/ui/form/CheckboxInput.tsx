@@ -6,6 +6,9 @@ import type { OptionalChildProps } from "../util/props.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
+const INPUT_LABEL_CLASS = getModuleClass(INPUT_CSS, "label");
+const INPUT_PLACEHOLDER_CLASS = getModuleClass(INPUT_CSS, "placeholder");
+
 /**
  * Props for `CheckboxInput`, a boolean-valued checkbox input.
  *
@@ -24,23 +27,23 @@ export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildPr
 export function CheckboxInput({
 	name,
 	title,
-	placeholder = title || "Yes",
+	placeholder = "Yes",
 	required = false,
 	disabled = false,
 	message = "",
 	value = false,
 	onValue,
-	children,
+	children = title,
 	...variants
 }: CheckboxProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
 		<label
 			className={getClass(
-				getInputClass(variants),
-				getModuleClass(INPUT_CSS, "label"),
+				getInputClass(variants), //
 				getFlexClass(variants),
-				hasChildren && getModuleClass(INPUT_CSS, "placeholder"),
+				INPUT_LABEL_CLASS,
+				!hasChildren && INPUT_PLACEHOLDER_CLASS,
 			)}
 			aria-invalid={!!message}
 		>

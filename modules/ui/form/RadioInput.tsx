@@ -6,6 +6,9 @@ import type { OptionalChildProps } from "../util/props.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
+const INPUT_LABEL_CLASS = getModuleClass(INPUT_CSS, "label");
+const INPUT_PLACEHOLDER_CLASS = getModuleClass(INPUT_CSS, "placeholder");
+
 /**
  * Props for `RadioInput`, a single labelled radio button styled as an input.
  *
@@ -24,23 +27,23 @@ export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChild
 export function RadioInput({
 	name,
 	title,
-	placeholder = title || "Choose",
+	placeholder = "Choose",
 	required = false,
 	disabled = false,
 	message = "",
 	value = false,
 	onValue,
-	children,
+	children = title,
 	...props
 }: RadioInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
 		<label
 			className={getClass(
-				getInputClass(props),
-				getModuleClass(INPUT_CSS, "label"),
+				getInputClass(props), //
 				getFlexClass(props),
-				hasChildren && getModuleClass(INPUT_CSS, "placeholder"),
+				INPUT_LABEL_CLASS,
+				!hasChildren && INPUT_PLACEHOLDER_CLASS,
 			)}
 		>
 			<input
