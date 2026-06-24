@@ -30,8 +30,8 @@ import VIDEO_CSS from "./Video.module.css";
 
 // Combine the `.prose` class from every block and inline component's CSS module into a single string.
 const PROSE_STYLES = getClass(
-	getModuleClass(BLOCK_CSS, "block"),
-	getModuleClass(VIDEO_CSS, "video"),
+	getModuleClass(BLOCK_CSS, "prose"),
+	getModuleClass(VIDEO_CSS, "prose"),
 	getModuleClass(PARAGRAPH_CSS, "prose"),
 	getModuleClass(HEADING_CSS, "prose"),
 	getModuleClass(SUBHEADING_CSS, "prose"),
