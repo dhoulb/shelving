@@ -114,7 +114,7 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
 export const ANSI_RESET = "\x1b[0m" as const;
 
 /**
- * Resolve whether ANSI colour should be emitted, the way the broader CLI ecosystem does.
+ * Whether ANSI colour should be emitted, resolved once at module load the way the broader CLI ecosystem does.
  *
  * Precedence, highest first (mirrors the `supports-color` resolution order):
  * 1. `FORCE_COLOR` — override on for any value except `0` / `false` (which forces off). An empty value counts as on.
@@ -122,9 +122,9 @@ export const ANSI_RESET = "\x1b[0m" as const;
  * 3. TTY detection — on only when `process.stdout` is an interactive TTY and `TERM` is not `dumb`.
  * 4. Otherwise off — non-interactive sinks (files, log aggregators, serverless platforms like Cloudflare Workers) get no escape codes by default.
  *
- * Every input is read live on each call so runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in module-load-time values.
+ * Resolved once at import rather than on every `ansiWrap()` call: TTY detection makes the load-time value correct in every sink, and the worst case (e.g. `process.env` populated after load) simply falls back to the no-colour default.
  */
-function _isColorSupported(): boolean {
+const _USES_COLOR: boolean = (() => {
 	// `FORCE_COLOR` overrides everything: "0"/"false" forces off, any other value (including empty) forces on.
 	const force = getEnv("FORCE_COLOR");
 	if (force !== undefined) return force !== "0" && force.toLowerCase() !== "false";
@@ -132,12 +132,12 @@ function _isColorSupported(): boolean {
 	if (getEnv("NO_COLOR")) return false;
 	// Otherwise enable colour only for an interactive TTY that isn't a dumb terminal.
 	return typeof process === "object" && !!process.stdout?.isTTY && getEnv("TERM") !== "dumb";
-}
+})();
 
 /**
  * Wrap a string in the ANSI color/style codes (at the start), and `ANSI_RESET` at the end.
  *
- * - Colour is only emitted when the runtime supports it, resolved live on every call by `_isColorSupported()` — `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off. Reading live means runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in module-load-time values.
+ * - Colour is only emitted when the runtime supports it, resolved once at module load into `_USES_COLOR` — `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off.
  * - The default is *off* for non-interactive sinks (files, log aggregators, Workers), so escape codes never pollute non-TTY output unless `FORCE_COLOR` opts back in.
  *
  * @param input The string to wrap in ANSI codes.
@@ -147,7 +147,7 @@ function _isColorSupported(): boolean {
  * @see https://shelving.cc/util/ansi/ansiWrap
  */
 export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
-	if (!_isColorSupported()) return input;
+	if (!_USES_COLOR) return input;
 	return `${wrappers.join("")}${input}${ANSI_RESET}`;
 }
 

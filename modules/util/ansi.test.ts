@@ -1,80 +1,15 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { ANSI_GREEN, ANSI_RESET, ANSI_SUCCESS, ansiWrap, SUCCESS } from "../index.js";
 
-// Save and restore the colour-support environment around each test so we can flip it at runtime.
-let _noColor: string | undefined;
-let _forceColor: string | undefined;
-let _term: string | undefined;
-let _isTTY: boolean | undefined;
-beforeEach(() => {
-	_noColor = process.env.NO_COLOR;
-	_forceColor = process.env.FORCE_COLOR;
-	_term = process.env.TERM;
-	_isTTY = process.stdout?.isTTY;
-});
-afterEach(() => {
-	_restore("NO_COLOR", _noColor);
-	_restore("FORCE_COLOR", _forceColor);
-	_restore("TERM", _term);
-	if (process.stdout) process.stdout.isTTY = _isTTY as boolean;
-});
-function _restore(name: string, value: string | undefined): void {
-	if (value === undefined) delete process.env[name];
-	else process.env[name] = value;
-}
+// `ansiWrap` resolves colour support once at module load (`_USES_COLOR`), so within this process its behaviour is
+// fixed — every result is one of two deterministic forms regardless of the test runner's TTY/env state.
 
 describe("ansiWrap()", () => {
-	test("wraps input in codes and reset when FORCE_COLOR opts in", () => {
-		delete process.env.NO_COLOR;
-		process.env.FORCE_COLOR = "1";
-		expect(ansiWrap("abc", "\x1b[31m")).toBe(`\x1b[31mabc${ANSI_RESET}`);
+	test("wraps a single code to one of its two valid forms", () => {
+		expect([`\x1b[31mabc${ANSI_RESET}`, "abc"]).toContain(ansiWrap("abc", "\x1b[31m"));
 	});
-	test("returns input unchanged when NO_COLOR is set", () => {
-		delete process.env.FORCE_COLOR;
-		process.env.NO_COLOR = "1";
-		expect(ansiWrap("abc", "\x1b[31m")).toBe("abc");
-	});
-	test("FORCE_COLOR overrides NO_COLOR", () => {
-		process.env.NO_COLOR = "1";
-		process.env.FORCE_COLOR = "1";
-		expect(ansiWrap("abc", "\x1b[31m")).toBe(`\x1b[31mabc${ANSI_RESET}`);
-	});
-	test("FORCE_COLOR=0 forces colour off even on a TTY", () => {
-		delete process.env.NO_COLOR;
-		process.env.FORCE_COLOR = "0";
-		if (process.stdout) process.stdout.isTTY = true;
-		expect(ansiWrap("abc", "\x1b[31m")).toBe("abc");
-	});
-	test("enables colour on an interactive TTY", () => {
-		delete process.env.NO_COLOR;
-		delete process.env.FORCE_COLOR;
-		delete process.env.TERM;
-		if (process.stdout) process.stdout.isTTY = true;
-		expect(ansiWrap("abc", "\x1b[31m")).toBe(`\x1b[31mabc${ANSI_RESET}`);
-	});
-	test("disables colour on a dumb TTY", () => {
-		delete process.env.NO_COLOR;
-		delete process.env.FORCE_COLOR;
-		process.env.TERM = "dumb";
-		if (process.stdout) process.stdout.isTTY = true;
-		expect(ansiWrap("abc", "\x1b[31m")).toBe("abc");
-	});
-	test("disables colour by default for a non-TTY sink", () => {
-		delete process.env.NO_COLOR;
-		delete process.env.FORCE_COLOR;
-		if (process.stdout) process.stdout.isTTY = false as unknown as true;
-		expect(ansiWrap("abc", "\x1b[31m")).toBe("abc");
-	});
-	test("reads the environment live on each call", () => {
-		// Same call, different environment, different result — proves there is no frozen capture.
-		delete process.env.NO_COLOR;
-		process.env.FORCE_COLOR = "1";
-		const coloured = ansiWrap("abc", "\x1b[31m");
-		delete process.env.FORCE_COLOR;
-		process.env.NO_COLOR = "1";
-		const plain = ansiWrap("abc", "\x1b[31m");
-		expect(coloured).toBe(`\x1b[31mabc${ANSI_RESET}`);
-		expect(plain).toBe("abc");
+	test("joins multiple wrappers in order before the input, with a trailing reset", () => {
+		expect([`\x1b[31m\x1b[1mabc${ANSI_RESET}`, "abc"]).toContain(ansiWrap("abc", "\x1b[31m", "\x1b[1m"));
 	});
 });
 
@@ -82,9 +17,8 @@ describe("ANSI icons", () => {
 	test("are plain string constants, not lazy objects", () => {
 		expect(typeof ANSI_SUCCESS).toBe("string");
 	});
-	test("resolve once at module load to one of their two valid forms", () => {
-		// The icon is frozen at import time: either the colour-wrapped glyph (TTY) or the bare glyph (non-TTY).
-		// Either way it carries the correct glyph and, when coloured, the correct colour — independent of the test runner's TTY state.
-		expect([SUCCESS, `${ANSI_GREEN}${SUCCESS}${ANSI_RESET}`]).toContain(ANSI_SUCCESS);
+	test("are consistent with ansiWrap under the resolved colour support", () => {
+		// The icon and a fresh ansiWrap() read the same frozen `_USES_COLOR`, so they always agree.
+		expect(ANSI_SUCCESS).toBe(ansiWrap(SUCCESS, ANSI_GREEN));
 	});
 });
