@@ -43,11 +43,9 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-gap` | Gap between label, control, and message | `var(--space-xsmall)` |
 | `--field-title-size` | Title font size | `var(--size-normal)` |
 | `--field-title-weight` | Title font weight | `var(--weight-strong)` |
-| `--field-color-title` | Title colour | `var(--tint-00)` |
+| `--field-title-color` | Title colour | `var(--tint-00)` |
 | `--field-description-size` | Description font size | `var(--size-normal)` |
 | `--field-description-weight` | Description font weight | `var(--weight-normal)` |
-| `--field-color-description` | Description colour | `var(--shade-dark)` |
-| `--field-message-weight` | Message font weight | `var(--weight-strong)` |
-| `--field-color-message` | Message colour | `var(--color-red)` |
+| `--field-description-color` | Description colour | `var(--tint-70)` |
 
-**Global tokens it reads:** the tint ladder `--tint-00`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`, `--shade-dark`, and `--color-red`.
+**Global tokens it reads:** the tint ladder `--tint-00` and `--tint-70`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`,

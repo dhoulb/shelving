@@ -11,13 +11,13 @@
 
 	.track {
 		fill: none;
-		stroke: var(--loading-color, var(--tint-90));
+		stroke: var(--loading-color, var(--tint-70));
 		stroke-width: var(--loading-stroke-width, 2.5);
 	}
 
 	.indicator {
 		fill: none;
-		stroke: var(--loading-fill, var(--shade-dark));
+		stroke: var(--loading-fill, var(--tint-80));
 		stroke-width: var(--loading-stroke-width, 2.5);
 		stroke-linecap: round;
 		stroke-dasharray: var(--loading-indicator-length, 28 100);
