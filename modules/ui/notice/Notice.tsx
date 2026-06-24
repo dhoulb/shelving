@@ -1,19 +1,20 @@
 import type { ReactElement } from "react";
-import { getBlockClass } from "../block/Block.js";
 import { Icon } from "../misc/Icon.js";
-import type { ColorVariants } from "../style/Color.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import NOTICE_CSS from "./Notice.module.css";
 
+const NOTICE_CLASS = getModuleClass(NOTICE_CSS, "notice");
+
 /**
  * Props for `<Notice>` — flex/colour/status styling variants, optional `children`, and an optional `icon`.
  *
  * @see https://shelving.cc/ui/NoticeProps
  */
-export interface NoticeProps extends FlexVariants, ColorVariants, StatusVariants, OptionalChildProps {
+export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants, OptionalChildProps {
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
 }
@@ -40,7 +41,12 @@ export function Notice({
 	return (
 		<aside
 			role={status === "danger" || status === "error" ? "alert" : "status"}
-			className={getClass(getBlockClass(props), getModuleClass(NOTICE_CSS, "notice", props), getFlexClass(props), getStatusClass(props))}
+			className={getClass(
+				NOTICE_CLASS, //
+				getBlockClass(props),
+				getFlexClass(props),
+				getStatusClass(props),
+			)}
 		>
 			{icon !== undefined ? icon : status && <Icon status={status} />}
 			{children}

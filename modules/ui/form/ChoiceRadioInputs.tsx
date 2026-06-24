@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import type { ChoiceOptions } from "../../schema/ChoiceSchema.js";
 import { getProps } from "../../util/object.js";
-import { Row } from "../style/Flex.js";
+import { Row } from "../block/Row.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
 

@@ -1,12 +1,13 @@
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, type ReactElement, useEffect, useRef, useState } from "react";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
+import { getBlockClass } from "../style/Block.js";
+import type { SpaceVariants } from "../style/Space.js";
+import type { WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
-import styles from "./Video.module.css";
+import VIDEO_CSS from "./Video.module.css";
 
-const VIDEO_CLASS = getModuleClass(styles, "video");
+const VIDEO_CLASS = getModuleClass(VIDEO_CSS, "video");
 
 /**
  * Props for `Video` — space and width variants plus optional `children`.
@@ -46,7 +47,7 @@ export interface VideoButtonProps extends ChildProps {
  * @example <Video><video src="/clip.mp4" /></Video>
  * @see https://shelving.cc/ui/Video
  */
-export function Video({ children, ...variants }: VideoProps): ReactElement {
+export function Video({ children, ...props }: VideoProps): ReactElement {
 	const ref = useRef<HTMLElement | null>(null);
 
 	return (
@@ -54,8 +55,7 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
 			ref={ref}
 			className={getClass(
 				VIDEO_CLASS, //
-				getSpaceClass(variants),
-				getWidthClass(variants),
+				getBlockClass(props),
 			)}
 		>
 			{children}
@@ -71,7 +71,7 @@ export function Video({ children, ...variants }: VideoProps): ReactElement {
  * @see https://shelving.cc/ui/VideoButtons
  */
 export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
-	return <div className={getModuleClass(styles, "buttons", variants)}>{children}</div>;
+	return <div className={getModuleClass(VIDEO_CSS, "buttons", variants)}>{children}</div>;
 }
 
 /**
@@ -84,7 +84,7 @@ export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
  */
 export function VideoButton({ children, title, onClick, disabled, ...variants }: VideoButtonProps): ReactElement {
 	return (
-		<button type="button" onClick={onClick} className={getModuleClass(styles, "button", variants)} title={title} disabled={disabled}>
+		<button type="button" onClick={onClick} className={getModuleClass(VIDEO_CSS, "button", variants)} title={title} disabled={disabled}>
 			{children}
 		</button>
 	);

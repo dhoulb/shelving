@@ -1,6 +1,6 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
-@import "../style/Color.module.css";
+@import "../style/Tint.module.css";
 @import "../style/Typography.module.css";
 
 @layer components {
@@ -9,8 +9,6 @@
 		--tint-50: var(--label-tint, inherit);
 
 		/* Box */
-		display: block;
-		margin-inline: 0;
 		margin-block: var(--label-space, var(--space-paragraph));
 
 		/* Text */
@@ -20,16 +18,5 @@
 		line-height: var(--label-leading, var(--leading));
 		text-transform: var(--definitions-label-case, var(--case-label));
 		color: var(--label-color, var(--tint-70));
-	}
-}
-
-@layer overrides {
-	.label {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
 	}
 }

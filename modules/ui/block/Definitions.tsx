@@ -1,8 +1,9 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { type GapVariants, getGapClass } from "../style/Gap.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getBlockClass } from "../style/Block.js";
+import type { ColorVariants } from "../style/Color.js";
+import type { GapVariants } from "../style/Gap.js";
+import type { SpaceVariants } from "../style/Space.js";
+import type { TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import DEFINITIONS_CSS from "./Definitions.module.css";
@@ -30,10 +31,7 @@ export function Definitions({ children, ...props }: DefinitionsProps): ReactElem
 		<dl
 			className={getClass(
 				DEFINITIONS_CLASS, //
-				getColorClass(props),
-				getGapClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

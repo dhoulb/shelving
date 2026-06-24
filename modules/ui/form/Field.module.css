@@ -1,20 +1,12 @@
 @import "../style/layers.css";
-@import "../style/Color.module.css";
 @import "../style/Typography.module.css";
 @import "../style/Space.module.css";
 @import "../style/Tint.module.css";
 
 @layer components {
 	.field {
-		/* Box — full width by default (one field per row); `half` opts into 50% for two-up layouts. */
-		position: relative;
-		inline-size: 100%;
-		margin-inline: 0;
+		/* Box. */
 		margin-block: var(--field-space, var(--space-paragraph));
-
-		&.half {
-			inline-size: 50%;
-		}
 
 		/* Contents */
 		display: flex;
@@ -27,34 +19,19 @@
 		/* Children */
 		.title {
 			font-size: var(--field-title-size, var(--size-normal));
+			line-height: var(--field-title-leading, var(--leading));
 			font-weight: var(--field-title-weight, var(--weight-strong));
-			color: var(--field-color-title, var(--tint-00));
+			color: var(--field-title-color, var(--tint-00));
 		}
 		.description {
 			font-size: var(--field-description-size, var(--size-normal));
+			line-height: var(--field-description-leading, var(--leading));
 			font-weight: var(--field-description-weight, var(--weight-normal));
-			color: var(--field-color-description, var(--shade-dark));
+			color: var(--field-description-color, var(--tint-70));
 		}
+
 		&& > * {
 			margin: 0;
-		}
-	}
-
-	.message {
-		display: block;
-		text-align: end;
-		font-weight: var(--field-message-weight, var(--weight-strong));
-		color: var(--field-color-message, var(--color-red));
-	}
-}
-
-@layer overrides {
-	.field {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
 		}
 	}
 }

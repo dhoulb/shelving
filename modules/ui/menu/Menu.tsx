@@ -3,6 +3,7 @@ import { isArray } from "../../util/array.js";
 import { getLink, isURLActive, isURLProud } from "../../util/index.js";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
 import { requireMeta } from "../misc/MetaContext.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import MENU_CSS from "./Menu.module.css";
@@ -18,7 +19,7 @@ const MENU_ACTIVE_CLASS = getModuleClass(MENU_CSS, "active");
  *
  * @see https://shelving.cc/ui/MenuProps
  */
-export interface MenuProps extends OptionalChildProps {}
+export interface MenuProps extends BlockVariants, OptionalChildProps {}
 
 /**
  * A `<menu>` list of `<MenuItem>` children.
@@ -31,8 +32,17 @@ export interface MenuProps extends OptionalChildProps {}
  * @example <Menu><MenuItem href="/home">Home</MenuItem></Menu>
  * @see https://shelving.cc/ui/Menu
  */
-export function Menu({ children }: MenuProps): ReactNode {
-	return <menu className={MENU_CLASS}>{children}</menu>;
+export function Menu({ children, ...props }: MenuProps): ReactNode {
+	return (
+		<menu
+			className={getClass(
+				MENU_CLASS, //
+				getBlockClass(props),
+			)}
+		>
+			{children}
+		</menu>
+	);
 }
 
 /**

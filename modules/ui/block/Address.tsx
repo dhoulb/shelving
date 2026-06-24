@@ -3,9 +3,7 @@ import { type AddressData, formatAddress } from "../../schema/AddressSchema.js";
 import type { Nullish } from "../../util/null.js";
 import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
@@ -17,7 +15,7 @@ const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
  *
  * @see https://shelving.cc/ui/AddressProps
  */
-export interface AddressProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {}
+export interface AddressProps extends BlockVariants, ChildProps {}
 
 /**
  * Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
@@ -50,9 +48,7 @@ export function Address({ children, ...props }: AddressProps) {
 		<address
 			className={getClass(
 				ADDRESS_CLASS, //
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

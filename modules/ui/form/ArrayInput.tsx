@@ -4,7 +4,8 @@ import type { Schema } from "../../schema/Schema.js";
 import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
 import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
-import { Row } from "../style/Flex.js";
+import { Column } from "../block/Column.js";
+import { Row } from "../block/Row.js";
 import { Button } from "./Button.js";
 import { ButtonInput } from "./ButtonInput.js";
 import type { ValueInputProps } from "./Input.js";
@@ -55,7 +56,7 @@ export function ArrayInput({
 	const disableRemove = disabled || length <= min;
 	const addNewItem = () => onValue([...value, items.value]);
 	return (
-		<Row column>
+		<Column>
 			{length ? (
 				value.map((v, i) => {
 					const k = i.toString();
@@ -101,6 +102,6 @@ export function ArrayInput({
 					</Button>
 				) : null}
 			</Row>
-		</Row>
+		</Column>
 	);
 }

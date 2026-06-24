@@ -9,10 +9,7 @@
 	.prose table {
 		/* Box */
 		display: table;
-		inline-size: 100%;
-		margin-inline: 0;
 		margin-block: var(--table-space, var(--space-paragraph));
-		text-indent: 0;
 
 		/* Style */
 		border-collapse: collapse;
@@ -57,18 +54,6 @@
 			font-size: var(--table-label-size, var(--size-label));
 			text-transform: var(--table-label-case, var(--case-label));
 			color: var(--table-label-color, var(--tint-70));
-		}
-	}
-}
-
-@layer overrides {
-	.table,
-	.prose table {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
 		}
 	}
 }

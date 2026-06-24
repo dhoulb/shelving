@@ -1,8 +1,8 @@
-import { getParagraphClass, type ParagraphProps } from "../block/Paragraph.js";
 import { LOADING } from "../misc/Loading.js";
-import type { ColorVariants } from "../style/Color.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ChildProps } from "../util/index.js";
 import MESSAGE_CSS from "./Message.module.css";
 
 const MESSAGE_CLASS = getModuleClass(MESSAGE_CSS, "message");
@@ -12,7 +12,7 @@ const MESSAGE_CLASS = getModuleClass(MESSAGE_CSS, "message");
  *
  * @see https://shelving.cc/ui/MessageProps
  */
-export interface MessageProps extends ParagraphProps, ColorVariants, StatusVariants {}
+export interface MessageProps extends BlockVariants, StatusVariants, ChildProps {}
 
 /**
  * Status-coloured paragraph used for inline feedback messages.
@@ -30,8 +30,8 @@ export function Message({ children, ...props }: MessageProps) {
 		<p
 			role={status === "error" || status === "danger" ? "alert" : "status"}
 			className={getClass(
-				getParagraphClass(props), //
-				MESSAGE_CLASS,
+				MESSAGE_CLASS, //
+				getBlockClass(props),
 				getStatusClass(props),
 			)}
 		>

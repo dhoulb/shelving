@@ -1,8 +1,8 @@
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Fragment, type ReactElement } from "react";
 import { joinPath, splitPath } from "../../util/path.js";
-import { getBlockClass } from "../block/Block.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
+import { getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { TypographyVariants } from "../style/Typography.js";
@@ -31,17 +31,18 @@ export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants,
  * @example <TreeBreadcrumbs />
  * @see https://shelving.cc/ui/TreeBreadcrumbs
  */
-export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, ...variants }: TreeBreadcrumbsProps): ReactElement | null {
+export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, ...props }: TreeBreadcrumbsProps): ReactElement | null {
 	const map = useTreeMap();
 	const segments = splitPath(requireMetaURL().path).slice(0, -1); // Don't include the element itself.
 	// Cumulative ancestor paths (`/util`, `/util/string`, …); skip prefixes with no element (e.g. the partial `/util` half of a `"util/string"` module name).
 	const ancestors = segments.map((_, i) => joinPath("/", segments.slice(0, i + 1))).filter(path => map.has(path));
+	const variants = { tint, left, wrap, ...props };
 	return (
 		<nav
 			aria-label="Breadcrumb"
 			className={getClass(
-				getBlockClass({ tint, ...variants }), //
-				getFlexClass({ left, wrap, ...variants }),
+				getBlockClass(variants), //
+				getFlexClass(variants),
 			)}
 		>
 			<TreeButton small plain name="/" />

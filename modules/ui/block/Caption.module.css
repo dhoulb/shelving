@@ -7,9 +7,6 @@
 	.caption,
 	.prose figcaption {
 		/* Box */
-		display: block;
-		padding: 0;
-		margin-inline: 0;
 		margin-block: var(--caption-gap, var(--space-xxsmall));
 
 		/* Text */
@@ -21,16 +18,6 @@
 }
 
 @layer overrides {
-	.caption,
-	.prose figcaption {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
-	}
-
 	/* Captions have tighter margins than most block elements so zero the abutting margin of any neighbouring sibling — otherwise margin collapse would let the bigger neighbour margin win. */
 	.prose figcaption + * {
 		margin-block-start: 0;

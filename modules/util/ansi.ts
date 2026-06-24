@@ -111,7 +111,7 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
  *
  * @see https://shelving.cc/util/ansi/ANSI_RESET
  */
-export const ANSI_RESET = "\x1b[0m";
+export const ANSI_RESET = "\x1b[0m" as const;
 
 /**
  * Resolve whether ANSI colour should be emitted, the way the broader CLI ecosystem does.

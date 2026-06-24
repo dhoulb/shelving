@@ -7,10 +7,10 @@
 @import "../style/Stroke.module.css";
 
 @layer components {
+	.prose video,
 	.video {
 		/* Box */
 		aspect-ratio: 16 / 9;
-		margin-inline: 0;
 		margin-block: var(--video-space, var(--space-paragraph));
 		border: var(--video-border, var(--stroke-normal) solid black);
 		border-radius: var(--video-radius, var(--radius-normal));
@@ -80,15 +80,6 @@
 }
 
 @layer overrides {
-	.video {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
-	}
-
 	.button {
 		&:not(:focus-visible) {
 			outline-color: transparent;

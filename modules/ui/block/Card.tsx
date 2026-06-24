@@ -1,11 +1,7 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { BlockElement } from "./Block.js";
 import CARD_CSS from "./Card.module.css";
@@ -15,14 +11,7 @@ import CARD_CSS from "./Card.module.css";
  *
  * @see https://shelving.cc/ui/CardProps
  */
-export interface CardProps
-	extends ClickableProps,
-		ColorVariants,
-		StatusVariants,
-		PaddingVariants,
-		SpaceVariants,
-		TypographyVariants,
-		WidthVariants {
+export interface CardProps extends ClickableProps, StatusVariants, BlockVariants {
 	/**
 	 * Element this `<Card>` renders as, e.g. "header" to output a "<header>"
 	 * @default "article"
@@ -50,13 +39,9 @@ export function Card({ as: Element = "article", children, href, onClick, title =
 	return (
 		<Element
 			className={getClass(
-				getModuleClass(CARD_CSS, "card"),
+				getModuleClass(CARD_CSS, "card"), //
 				getStatusClass(props),
-				getColorClass(props),
-				getPaddingClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
-				getWidthClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{overlay}

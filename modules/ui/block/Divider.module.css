@@ -1,29 +1,13 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
 @import "../style/Stroke.module.css";
-@import "../style/Color.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.divider,
 	.prose hr {
 		/* Box */
-		display: block;
-		padding: 0;
-		border: 0;
 		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--tint-80));
-		margin-inline: 0;
 		margin-block: var(--divider-space, var(--space-paragraph));
-	}
-}
-
-@layer overrides {
-	.divider,
-	.prose hr {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
 	}
 }

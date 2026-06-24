@@ -1,5 +1,4 @@
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import DIVIDER_CSS from "./Divider.module.css";
 
@@ -10,7 +9,7 @@ const DIVIDER_CLASS = getModuleClass(DIVIDER_CSS, "divider");
  *
  * @see https://shelving.cc/ui/DividerProps
  */
-export interface DividerProps extends SpaceVariants, ColorVariants {}
+export interface DividerProps extends BlockVariants {}
 
 /**
  * Horizontal rule separating blocks of content — rendered as `<hr>`.
@@ -23,8 +22,7 @@ export function Divider(props: DividerProps) {
 		<hr
 			className={getClass(
 				DIVIDER_CLASS, //
-				getSpaceClass(props),
-				getColorClass(props),
+				getBlockClass(props),
 			)}
 		/>
 	);
