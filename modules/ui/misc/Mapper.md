@@ -6,7 +6,6 @@ Creates a `[Mapping, Mapper]` component pair backed by a private React context. 
 
 - Each call to `createMapper()` creates its own context — independent mappers don't interfere with each other.
 - Unmapped element types fall through and render as themselves (e.g. an unmapped `<tree-foo>` appears as a raw `<tree-foo>` element).
-- Each dispatched child is rendered with its own `props` only — the mapper threads no extra props, so any context a renderer needs (URL paths, etc.) must already live on the element (e.g. the canonical `path` stamped by `flattenTree()`).
 
 ## Usage
 
