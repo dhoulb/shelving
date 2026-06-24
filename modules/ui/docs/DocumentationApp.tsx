@@ -14,7 +14,7 @@ export function DocumentationApp({
 		"/search": DocumentationSearchPage,
 	},
 	sidebar = (
-		<TreeSidebar tree={tree}>
+		<TreeSidebar>
 			<Menu>
 				<MenuItem href="/search">Search</MenuItem>
 			</Menu>

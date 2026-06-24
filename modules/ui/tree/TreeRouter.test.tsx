@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { TreeElement } from "../../util/tree.js";
 import { MetaContext } from "../misc/MetaContext.js";
 import { createMeta } from "../util/meta.js";
+import { TreeProvider } from "./TreeContext.js";
 import { TreeRouter } from "./TreeRouter.js";
 
 /** Minimal tree: root → `util` directory → `array` file. */
@@ -26,7 +27,9 @@ describe("TreeRouter", () => {
 	test("card links include an APP_URL subfolder exactly once", () => {
 		const html = renderToStaticMarkup(
 			<MetaContext value={createMeta({ root: "http://x.com/sub/", url: "./util" })}>
-				<TreeRouter tree={tree} />
+				<TreeProvider tree={tree}>
+					<TreeRouter />
+				</TreeProvider>
 			</MetaContext>,
 		);
 		expect(html).toContain('href="http://x.com/sub/util/array"');
@@ -36,7 +39,9 @@ describe("TreeRouter", () => {
 	test("root page card links include an APP_URL subfolder exactly once", () => {
 		const html = renderToStaticMarkup(
 			<MetaContext value={createMeta({ root: "http://x.com/sub/", url: "./" })}>
-				<TreeRouter tree={tree} />
+				<TreeProvider tree={tree}>
+					<TreeRouter />
+				</TreeProvider>
 			</MetaContext>,
 		);
 		expect(html).toContain('href="http://x.com/sub/util"');
