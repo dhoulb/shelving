@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import { DOWN, FAILURE, LEFT, RIGHT, SUCCESS, UP, WAITING } from "./constants.js";
-import { getEnvBoolean } from "./env.js";
+import { getEnv } from "./env.js";
 
 // Colors.
 
@@ -114,23 +114,45 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
 export const ANSI_RESET = "\x1b[0m";
 
 /**
+ * Resolve whether ANSI colour should be emitted, the way the broader CLI ecosystem does.
+ *
+ * Precedence, highest first (mirrors the `supports-color` resolution order):
+ * 1. `FORCE_COLOR` — override on for any value except `0` / `false` (which forces off). An empty value counts as on.
+ * 2. `NO_COLOR` — override off for any non-empty value, per [no-color.org](https://no-color.org).
+ * 3. TTY detection — on only when `process.stdout` is an interactive TTY and `TERM` is not `dumb`.
+ * 4. Otherwise off — non-interactive sinks (files, log aggregators, serverless platforms like Cloudflare Workers) get no escape codes by default.
+ *
+ * Every input is read live on each call so runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in module-load-time values.
+ */
+function _isColorSupported(): boolean {
+	// `FORCE_COLOR` overrides everything: "0"/"false" forces off, any other value (including empty) forces on.
+	const force = getEnv("FORCE_COLOR");
+	if (force !== undefined) return force !== "0" && force.toLowerCase() !== "false";
+	// `NO_COLOR` with any non-empty value disables colour.
+	if (getEnv("NO_COLOR")) return false;
+	// Otherwise enable colour only for an interactive TTY that isn't a dumb terminal.
+	return typeof process === "object" && !!process.stdout?.isTTY && getEnv("TERM") !== "dumb";
+}
+
+/**
  * Wrap a string in the ANSI color/style codes (at the start), and `ANSI_RESET` at the end.
  *
- * - The `NO_COLOR` environment variable is read live on every call, so runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in whatever `NO_COLOR` was at module-load time.
+ * - Colour is only emitted when the runtime supports it, resolved live on every call by `_isColorSupported()` — `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off. Reading live means runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in module-load-time values.
+ * - The default is *off* for non-interactive sinks (files, log aggregators, Workers), so escape codes never pollute non-TTY output unless `FORCE_COLOR` opts back in.
  *
  * @param input The string to wrap in ANSI codes.
  * @param wrappers Any number of ANSI escape codes (e.g. `ANSI_RED`, `ANSI_BOLD`) to prepend before `input`.
- * @returns The wrapped string, or `input` unchanged when the `NO_COLOR` environment variable is set.
+ * @returns The wrapped string, or `input` unchanged when colour is not supported (see precedence above).
  * @example ansiWrap("hello", ANSI_RED, ANSI_BOLD) // "\x1b[31m\x1b[1mhello\x1b[0m"
  * @see https://shelving.cc/util/ansi/ansiWrap
  */
 export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
-	if (getEnvBoolean("NO_COLOR")) return input;
+	if (!_isColorSupported()) return input;
 	return `${wrappers.join("")}${input}${ANSI_RESET}`;
 }
 
 /**
- * A lazily-coloured icon that re-evaluates its ANSI colouring against the live `NO_COLOR` environment variable every time it is converted to a string.
+ * A lazily-coloured icon that re-evaluates its ANSI colouring against the live colour-support resolution (`FORCE_COLOR` > `NO_COLOR` > TTY detection) every time it is converted to a string.
  *
  * - Used directly inside template literals (`${ANSI_SUCCESS}`), where JavaScript invokes `toString()` automatically, so the icon is coloured at use-time, not at module-load time.
  *
