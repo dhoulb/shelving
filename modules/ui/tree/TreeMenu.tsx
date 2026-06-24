@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { type Element, filterElements } from "../../util/element.js";
-import { type AbsolutePath, joinPath } from "../../util/path.js";
 import type { TreeElement, TreeElementProps } from "../../util/tree.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
 import { createMapper } from "../misc/Mapper.js";
@@ -23,33 +22,26 @@ export function matchMenuElement(element: Element): boolean {
 	return false;
 }
 
-/** Extras threaded through `TreeMenuMapper` to every menu item — the parent's URL path. */
-interface TreeMenuExtras {
-	/** URL path of the parent element. Each item appends its own `name` to compute its own path. Defaults to `/`. */
-	readonly path: AbsolutePath;
-}
-
 /**
  * Default menu item renderer for any `tree-*` element.
  *
- * - Computes its own URL path by appending its `name` to the parent's `path`.
+ * - Links straight to the element's own canonical `path` (stamped by `flattenTree()`), so the menu must be fed the flattened tree's elements.
  * - Passes both the label and the nested `<TreeMenuMapper>` to `<MenuItem>`; `<MenuItem>` itself decides whether to reveal the nested submenu based on the current URL.
  *
- * @param props The tree element props plus the parent's `path`.
+ * @param props The tree element props — `path` is the canonical URL to link to.
  * @returns A `<MenuItem>` for the element, with a nested `<Menu>` when it has menu-eligible children.
  * @kind component
- * @example <TreeMenuItem {...element.props} path="/" />
+ * @example <TreeMenuItem {...element.props} />
  * @see https://shelving.cc/ui/TreeMenuItem
  */
-export function TreeMenuItem({ path = "/", name, title, children }: TreeElementProps & TreeMenuExtras): ReactNode {
-	const href = joinPath(path, name);
+export function TreeMenuItem({ path, name, title, children }: TreeElementProps): ReactNode {
 	const submenu = Array.from(filterElements(children, matchMenuElement));
 	return (
-		<MenuItem href={href}>
+		<MenuItem href={path}>
 			{title ?? name}
 			{submenu.length ? (
 				<Menu>
-					<TreeMenuMapper path={href}>{submenu}</TreeMenuMapper>
+					<TreeMenuMapper>{submenu}</TreeMenuMapper>
 				</Menu>
 			) : null}
 		</MenuItem>
@@ -61,7 +53,7 @@ export function TreeMenuItem({ path = "/", name, title, children }: TreeElementP
  *
  * @see https://shelving.cc/ui/TreeMenuMapping
  */
-export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
+export const [TreeMenuMapping, TreeMenuMapper] = createMapper({
 	"tree-element": TreeMenuItem,
 	"tree-documentation": TreeMenuItem,
 });
@@ -72,28 +64,27 @@ export const [TreeMenuMapping, TreeMenuMapper] = createMapper<TreeMenuExtras>({
  * @see https://shelving.cc/ui/TreeMenuProps
  */
 export interface TreeMenuProps {
-	/** Root element whose children become the navigation links. */
+	/** Root element whose children become the navigation links. Must be a flattened element (from `useTreeMap()`) so each child carries its canonical `path`. */
 	readonly tree: TreeElement;
-	/** URL path of the root — children get `path + their.name`. Defaults to `/`. */
-	readonly path?: AbsolutePath | undefined;
 }
 
 /**
  * Sidebar navigation menu built from the children of a root tree element.
  *
- * - Renders each child via `<TreeMenuItem>` (the default mapping for `tree-element`).
+ * - Renders each child via `<TreeMenuItem>` (the default mapping for `tree-element`), linking to each child's stamped `path`.
+ * - Pass a flattened element (e.g. `useTreeMap().get("/")`) so its children carry their canonical `path`.
  * - To customise renderers for specific types, wrap in `<TreeMenuMapping mapping={…}>`.
  * - Only directories and files appear — code symbols are kept off the navigation.
  *
  * @kind component
  * @returns A `<Menu>` of navigation links to the root's children.
- * @example <TreeMenu tree={tree} />
+ * @example <TreeMenu tree={useTreeMap().get("/")} />
  * @see https://shelving.cc/ui/TreeMenu
  */
-export function TreeMenu({ path = "/", tree }: TreeMenuProps): ReactNode {
+export function TreeMenu({ tree }: TreeMenuProps): ReactNode {
 	return (
 		<Menu>
-			<TreeMenuMapper path={path}>{filterElements(tree.props.children, matchMenuElement)}</TreeMenuMapper>
+			<TreeMenuMapper>{filterElements(tree.props.children, matchMenuElement)}</TreeMenuMapper>
 		</Menu>
 	);
 }
