@@ -151,71 +151,58 @@ export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
 	return `${wrappers.join("")}${input}${ANSI_RESET}`;
 }
 
-/**
- * A lazily-coloured icon that re-evaluates its ANSI colouring against the live colour-support resolution (`FORCE_COLOR` > `NO_COLOR` > TTY detection) every time it is converted to a string.
- *
- * - Used directly inside template literals (`${ANSI_SUCCESS}`), where JavaScript invokes `toString()` automatically, so the icon is coloured at use-time, not at module-load time.
- *
- * @see https://shelving.cc/util/ansi/AnsiIcon
- */
-export type AnsiIcon = { toString(): string };
-
-/** Create a lazily-coloured {@link AnsiIcon} that wraps `icon` in `wrappers` on each `toString()`. */
-function _createAnsiIcon(icon: string, ...wrappers: ImmutableArray<string>): AnsiIcon {
-	return {
-		toString() {
-			return ansiWrap(icon, ...wrappers);
-		},
-	};
-}
-
 // Coloured icons.
+//
+// Each icon is resolved once at module load by `ansiWrap()`, so colour support is detected at import time
+// (a TTY yields a coloured icon; a non-interactive sink like a file or Cloudflare Worker yields the bare
+// glyph). This trades the previous lazy re-evaluation — which honoured `process.env` mutated after load —
+// for plain string constants, since TTY detection means the worst case simply falls back to the no-colour default.
 
 /**
- * Lazily blue-coloured waiting icon (`⋯`) for use in template literals.
+ * Blue-coloured waiting icon (`⋯`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_WAITING
  */
-export const ANSI_WAITING = _createAnsiIcon(WAITING, ANSI_BLUE);
+export const ANSI_WAITING = ansiWrap(WAITING, ANSI_BLUE);
 
 /**
- * Lazily green-coloured success icon (`✓`) for use in template literals.
+ * Green-coloured success icon (`✓`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_SUCCESS
  */
-export const ANSI_SUCCESS = _createAnsiIcon(SUCCESS, ANSI_GREEN);
+export const ANSI_SUCCESS = ansiWrap(SUCCESS, ANSI_GREEN);
 
 /**
- * Lazily red-coloured failure icon (`✗`) for use in template literals.
+ * Red-coloured failure icon (`✗`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_FAILURE
  */
-export const ANSI_FAILURE = _createAnsiIcon(FAILURE, ANSI_RED);
+export const ANSI_FAILURE = ansiWrap(FAILURE, ANSI_RED);
 
 /**
- * Lazily blue-coloured up arrow icon (`↑`) for use in template literals.
+ * Blue-coloured up arrow icon (`↑`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_UP
  */
-export const ANSI_UP = _createAnsiIcon(UP, ANSI_BLUE);
+export const ANSI_UP = ansiWrap(UP, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured down arrow icon (`↓`) for use in template literals.
+ * Blue-coloured down arrow icon (`↓`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_DOWN
  */
-export const ANSI_DOWN = _createAnsiIcon(DOWN, ANSI_BLUE);
+export const ANSI_DOWN = ansiWrap(DOWN, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured right arrow icon (`→`) for use in template literals.
+ * Blue-coloured right arrow icon (`→`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_RIGHT
  */
-export const ANSI_RIGHT = _createAnsiIcon(RIGHT, ANSI_BLUE);
+export const ANSI_RIGHT = ansiWrap(RIGHT, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured left arrow icon (`←`) for use in template literals.
+ * Blue-coloured left arrow icon (`←`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_LEFT
  */
-export const ANSI_LEFT = _createAnsiIcon(LEFT, ANSI_BLUE);
+export const ANSI_LEFT = ansiWrap(LEFT, ANSI_BLUE);

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { ANSI_RESET, ANSI_SUCCESS, ansiWrap } from "../index.js";
+import { ANSI_GREEN, ANSI_RESET, ANSI_SUCCESS, ansiWrap, SUCCESS } from "../index.js";
 
 // Save and restore the colour-support environment around each test so we can flip it at runtime.
 let _noColor: string | undefined;
@@ -79,18 +79,12 @@ describe("ansiWrap()", () => {
 });
 
 describe("ANSI icons", () => {
-	test("colour seamlessly inside template literals when colour is supported", () => {
-		delete process.env.NO_COLOR;
-		process.env.FORCE_COLOR = "1";
-		expect(`${ANSI_SUCCESS}`).toBe(`\x1b[32m✓${ANSI_RESET}`);
+	test("are plain string constants, not lazy objects", () => {
+		expect(typeof ANSI_SUCCESS).toBe("string");
 	});
-	test("re-evaluate against the live environment (late-populated env)", () => {
-		// Simulates a runtime that populates env vars after module-load: the icon must reflect the new value.
-		delete process.env.NO_COLOR;
-		process.env.FORCE_COLOR = "1";
-		expect(`${ANSI_SUCCESS}`).toBe(`\x1b[32m✓${ANSI_RESET}`);
-		delete process.env.FORCE_COLOR;
-		process.env.NO_COLOR = "yes";
-		expect(`${ANSI_SUCCESS}`).toBe("✓");
+	test("resolve once at module load to one of their two valid forms", () => {
+		// The icon is frozen at import time: either the colour-wrapped glyph (TTY) or the bare glyph (non-TTY).
+		// Either way it carries the correct glyph and, when coloured, the correct colour — independent of the test runner's TTY state.
+		expect([SUCCESS, `${ANSI_GREEN}${SUCCESS}${ANSI_RESET}`]).toContain(ANSI_SUCCESS);
 	});
 });

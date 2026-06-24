@@ -29,6 +29,8 @@ console.log(ANSI_WAITING); // ⋯ in blue
 
 Arrow icons (`ANSI_UP`, `ANSI_DOWN`, `ANSI_LEFT`, `ANSI_RIGHT`) are also available in blue.
 
+Each icon is a plain string constant resolved once at module load via `ansiWrap()`, so colour is detected at import time — a TTY yields the coloured glyph, a non-interactive sink (file, log aggregator, Cloudflare Worker) yields the bare glyph.
+
 ### Using raw escape constants
 
 ```ts
