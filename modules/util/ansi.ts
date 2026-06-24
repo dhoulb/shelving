@@ -1,6 +1,6 @@
 import type { ImmutableArray } from "./array.js";
 import { DOWN, FAILURE, LEFT, RIGHT, SUCCESS, UP, WAITING } from "./constants.js";
-import { getEnvBoolean } from "./env.js";
+import { getEnv } from "./env.js";
 
 // Colors.
 
@@ -114,86 +114,95 @@ export const ANSI_INVERSE = "\x1b[7m" as const;
 export const ANSI_RESET = "\x1b[0m" as const;
 
 /**
+ * Whether ANSI colour should be emitted, resolved once at module load the way the broader CLI ecosystem does.
+ *
+ * Precedence, highest first (mirrors the `supports-color` resolution order):
+ * 1. `FORCE_COLOR` — override on for any value except `0` / `false` (which forces off). An empty value counts as on.
+ * 2. `NO_COLOR` — override off for any non-empty value, per [no-color.org](https://no-color.org).
+ * 3. TTY detection — on only when `process.stdout` is an interactive TTY and `TERM` is not `dumb`.
+ * 4. Otherwise off — non-interactive sinks (files, log aggregators, serverless platforms like Cloudflare Workers) get no escape codes by default.
+ *
+ * Resolved once at import rather than on every `ansiWrap()` call: TTY detection makes the load-time value correct in every sink, and the worst case (e.g. `process.env` populated after load) simply falls back to the no-colour default.
+ */
+const _USES_COLOR: boolean = (() => {
+	// `FORCE_COLOR` overrides everything: "0"/"false" forces off, any other value (including empty) forces on.
+	const force = getEnv("FORCE_COLOR");
+	if (force !== undefined) return force !== "0" && force.toLowerCase() !== "false";
+	// `NO_COLOR` with any non-empty value disables colour.
+	if (getEnv("NO_COLOR")) return false;
+	// Otherwise enable colour only for an interactive TTY that isn't a dumb terminal.
+	return typeof process === "object" && !!process.stdout?.isTTY && getEnv("TERM") !== "dumb";
+})();
+
+/**
  * Wrap a string in the ANSI color/style codes (at the start), and `ANSI_RESET` at the end.
  *
- * - The `NO_COLOR` environment variable is read live on every call, so runtimes that populate `process.env` late (e.g. Cloudflare Workers, where `[vars]` bindings are only reliably available within the request scope) are honoured rather than baking in whatever `NO_COLOR` was at module-load time.
+ * - Colour is only emitted when the runtime supports it, resolved once at module load into `_USES_COLOR` — `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off.
+ * - The default is *off* for non-interactive sinks (files, log aggregators, Workers), so escape codes never pollute non-TTY output unless `FORCE_COLOR` opts back in.
  *
  * @param input The string to wrap in ANSI codes.
  * @param wrappers Any number of ANSI escape codes (e.g. `ANSI_RED`, `ANSI_BOLD`) to prepend before `input`.
- * @returns The wrapped string, or `input` unchanged when the `NO_COLOR` environment variable is set.
+ * @returns The wrapped string, or `input` unchanged when colour is not supported (see precedence above).
  * @example ansiWrap("hello", ANSI_RED, ANSI_BOLD) // "\x1b[31m\x1b[1mhello\x1b[0m"
  * @see https://shelving.cc/util/ansi/ansiWrap
  */
 export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {
-	if (getEnvBoolean("NO_COLOR")) return input;
+	if (!_USES_COLOR) return input;
 	return `${wrappers.join("")}${input}${ANSI_RESET}`;
 }
 
-/**
- * A lazily-coloured icon that re-evaluates its ANSI colouring against the live `NO_COLOR` environment variable every time it is converted to a string.
- *
- * - Used directly inside template literals (`${ANSI_SUCCESS}`), where JavaScript invokes `toString()` automatically, so the icon is coloured at use-time, not at module-load time.
- *
- * @see https://shelving.cc/util/ansi/AnsiIcon
- */
-export type AnsiIcon = { toString(): string };
-
-/** Create a lazily-coloured {@link AnsiIcon} that wraps `icon` in `wrappers` on each `toString()`. */
-function _createAnsiIcon(icon: string, ...wrappers: ImmutableArray<string>): AnsiIcon {
-	return {
-		toString() {
-			return ansiWrap(icon, ...wrappers);
-		},
-	};
-}
-
 // Coloured icons.
+//
+// Each icon is resolved once at module load by `ansiWrap()`, so colour support is detected at import time
+// (a TTY yields a coloured icon; a non-interactive sink like a file or Cloudflare Worker yields the bare
+// glyph). This trades the previous lazy re-evaluation — which honoured `process.env` mutated after load —
+// for plain string constants, since TTY detection means the worst case simply falls back to the no-colour default.
 
 /**
- * Lazily blue-coloured waiting icon (`⋯`) for use in template literals.
+ * Blue-coloured waiting icon (`⋯`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_WAITING
  */
-export const ANSI_WAITING = _createAnsiIcon(WAITING, ANSI_BLUE);
+export const ANSI_WAITING = ansiWrap(WAITING, ANSI_BLUE);
 
 /**
- * Lazily green-coloured success icon (`✓`) for use in template literals.
+ * Green-coloured success icon (`✓`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_SUCCESS
  */
-export const ANSI_SUCCESS = _createAnsiIcon(SUCCESS, ANSI_GREEN);
+export const ANSI_SUCCESS = ansiWrap(SUCCESS, ANSI_GREEN);
 
 /**
- * Lazily red-coloured failure icon (`✗`) for use in template literals.
+ * Red-coloured failure icon (`✗`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_FAILURE
  */
-export const ANSI_FAILURE = _createAnsiIcon(FAILURE, ANSI_RED);
+export const ANSI_FAILURE = ansiWrap(FAILURE, ANSI_RED);
 
 /**
- * Lazily blue-coloured up arrow icon (`↑`) for use in template literals.
+ * Blue-coloured up arrow icon (`↑`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_UP
  */
-export const ANSI_UP = _createAnsiIcon(UP, ANSI_BLUE);
+export const ANSI_UP = ansiWrap(UP, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured down arrow icon (`↓`) for use in template literals.
+ * Blue-coloured down arrow icon (`↓`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_DOWN
  */
-export const ANSI_DOWN = _createAnsiIcon(DOWN, ANSI_BLUE);
+export const ANSI_DOWN = ansiWrap(DOWN, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured right arrow icon (`→`) for use in template literals.
+ * Blue-coloured right arrow icon (`→`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_RIGHT
  */
-export const ANSI_RIGHT = _createAnsiIcon(RIGHT, ANSI_BLUE);
+export const ANSI_RIGHT = ansiWrap(RIGHT, ANSI_BLUE);
 
 /**
- * Lazily blue-coloured left arrow icon (`←`) for use in template literals.
+ * Blue-coloured left arrow icon (`←`) for use in template literals, resolved once at module load.
  *
  * @see https://shelving.cc/util/ansi/ANSI_LEFT
  */
-export const ANSI_LEFT = _createAnsiIcon(LEFT, ANSI_BLUE);
+export const ANSI_LEFT = ansiWrap(LEFT, ANSI_BLUE);
