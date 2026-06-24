@@ -70,7 +70,6 @@
 		}
 		&.strong {
 			background: var(--button-strong-background, var(--tint-50));
-			border: var(--button-strong-border, var(--button-stroke, var(--stroke-normal) solid transparent));
 			color: var(--button-strong-text, var(--tint-100));
 
 			&:enabled:hover,
@@ -97,6 +96,9 @@
 		}
 
 		/* Variants */
+		&.strong {
+			border-color: transparent;
+		}
 		&.plain:not(:enabled:hover, :any-link:hover, :focus) {
 			border-color: transparent;
 			background: transparent;
