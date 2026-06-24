@@ -1,19 +1,17 @@
 import type { ReactElement } from "react";
-import { getColorClass } from "../style/Color.js";
-import { getSpaceClass } from "../style/Space.js";
-import { getTypographyClass } from "../style/Typography.js";
+import { getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { HeadingProps } from "./Heading.js";
 import LABEL_CSS from "./Label.module.css";
-import type { SubheadingProps } from "./Subheading.js";
 
 const LABEL_CLASS = getModuleClass(LABEL_CSS, "label");
 
 /**
- * Props for `Label` — identical to `SubheadingProps`.
+ * Props for `Label` — identical to `HeadingProps`.
  *
  * @see https://shelving.cc/ui/LabelProps
  */
-export interface LabelProps extends SubheadingProps {}
+export interface LabelProps extends HeadingProps {}
 
 /**
  * Label heading, a `<h3>` with a labelly appearance (UPPERCASE but with a smaller text size).
@@ -31,9 +29,7 @@ export function Label({ level = "3", children, ...props }: LabelProps): ReactEle
 		<Element
 			className={getClass(
 				LABEL_CLASS, //
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

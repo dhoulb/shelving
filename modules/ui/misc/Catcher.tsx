@@ -3,12 +3,12 @@ import { Component, createContext, type ReactElement, type ReactNode, use } from
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
 import { Card } from "../block/Card.js";
+import { Row } from "../block/Row.js";
 import { Subheading } from "../block/Subheading.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
-import { Row } from "../style/Flex.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
 import { Icon } from "./Icon.js";
 

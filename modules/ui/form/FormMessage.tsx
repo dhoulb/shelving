@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
-import { Message, type MessageProps } from "../notice/Message.js";
+import { Message } from "../notice/Message.js";
+import type { BlockVariants } from "../style/Block.js";
 import { requireForm } from "./FormContext.js";
 
 /**
@@ -12,7 +13,7 @@ import { requireForm } from "./FormContext.js";
  * @example <FormMessage />
  * @see https://shelving.cc/ui/FormMessage
  */
-export function FormMessage(props: Omit<MessageProps, "children">): ReactElement | null {
+export function FormMessage(props: BlockVariants): ReactElement | null {
 	const message = useStore(requireForm().messages).get("");
 	if (!message) return null;
 	return (

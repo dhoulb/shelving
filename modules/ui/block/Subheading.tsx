@@ -1,7 +1,5 @@
 import type { ReactElement } from "react";
-import { getColorClass } from "../style/Color.js";
-import { getSpaceClass } from "../style/Space.js";
-import { getTypographyClass } from "../style/Typography.js";
+import { getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { HeadingProps } from "./Heading.js";
 import SUBHEADING_CSS from "./Subheading.module.css";
@@ -30,9 +28,7 @@ export function Subheading({ level = "3", children, ...props }: SubheadingProps)
 		<Element
 			className={getClass(
 				SUBHEADING_CLASS, //
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

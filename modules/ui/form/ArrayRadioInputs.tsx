@@ -1,10 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
 import type { ImmutableArray } from "../../util/array.js";
 import { formatValue } from "../../util/format.js";
-import { Row } from "../style/Flex.js";
+import { Column } from "../block/Column.js";
 import type { ValueInputProps } from "./Input.js";
 import { RadioInput } from "./RadioInput.js";
-
 /**
  * Props for `ArrayRadioInputs`, which renders a radio for each item in an array of values.
  *
@@ -35,7 +34,7 @@ export function ArrayRadioInputs<T>({
 	...props
 }: ArrayRadioInputsProps<T>): ReactElement {
 	return (
-		<Row column>
+		<Column>
 			{items.map((v, i) => {
 				return (
 					<RadioInput //
@@ -57,6 +56,6 @@ export function ArrayRadioInputs<T>({
 					{...props}
 				/>
 			) : null}
-		</Row>
+		</Column>
 	);
 }

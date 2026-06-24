@@ -1,8 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import LIST_CSS from "./List.module.css";
 
@@ -14,7 +12,7 @@ const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
  *
  * @see https://shelving.cc/ui/ListProps
  */
-export interface ListProps extends ColorVariants, GapVariants, SpaceVariants, TypographyVariants {
+export interface ListProps extends GapVariants, BlockVariants {
 	children: ReactNode[];
 	ordered?: boolean;
 }
@@ -32,11 +30,9 @@ export interface ListProps extends ColorVariants, GapVariants, SpaceVariants, Ty
 export function List({ children, ordered = false, ...props }: ListProps): ReactElement {
 	const items = children.map((v, i) => <li key={i.toString()}>{v}</li>);
 	const className = getClass(
-		ordered ? LIST_ORDERED_CLASS : LIST_UNORDERED_CLASS,
-		getColorClass(props),
+		ordered ? LIST_ORDERED_CLASS : LIST_UNORDERED_CLASS, //
+		getBlockClass(props),
 		getGapClass(props),
-		getSpaceClass(props),
-		getTypographyClass(props),
 	);
 	return ordered ? <ol className={className}>{items}</ol> : <ul className={className}>{items}</ul>;
 }

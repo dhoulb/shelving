@@ -1,15 +1,11 @@
 @import "../style/layers.css";
-@import "../style/Color.module.css";
 @import "../style/Typography.module.css";
 @import "../style/Space.module.css";
 @import "../style/Tint.module.css";
 
 @layer components {
 	.field {
-		/* Box — full width by default (one field per row); `half` opts into 50% for two-up layouts. */
-		position: relative;
-		inline-size: 100%;
-		margin-inline: 0;
+		/* Box. */
 		margin-block: var(--field-space, var(--space-paragraph));
 
 		/* Contents */
@@ -33,19 +29,9 @@
 			font-weight: var(--field-description-weight, var(--weight-normal));
 			color: var(--field-description-color, var(--tint-70));
 		}
+
 		&& > * {
 			margin: 0;
-		}
-	}
-}
-
-@layer overrides {
-	.field {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
 		}
 	}
 }

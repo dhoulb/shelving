@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
+import { Row } from "../block/Row.js";
 import { Footer } from "../block/Section.js";
-import { Row } from "../style/Flex.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { FormMessage } from "./FormMessage.js";
 import { SubmitButton } from "./SubmitButton.js";

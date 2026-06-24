@@ -7,23 +7,9 @@
 	.address,
 	.prose address {
 		/* Box */
-		display: block;
-		margin-inline: 0;
 		margin-block: var(--address-space, var(--space-paragraph));
 
 		/* Text */
 		white-space: preserve wrap;
-	}
-}
-
-@layer overrides {
-	.address,
-	.prose address {
-		&:first-child {
-			margin-block-start: 0;
-		}
-		&:last-child {
-			margin-block-end: 0;
-		}
 	}
 }

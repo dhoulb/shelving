@@ -6,18 +6,13 @@ import { isAsync } from "../../util/async.js";
 import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
-import { getIndentClass, type IndentVariants } from "../style/Indent.js";
-import { getClass, getModuleClass } from "../util/css.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { OptionalChildProps } from "../util/props.js";
-import FORM_CSS from "./Form.module.css";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
 import { FormFooter } from "./FormFooter.js";
 import { FormStore } from "./FormStore.js";
-
-const FORM_CLASS = getModuleClass(FORM_CSS, "form");
-const FORM_FIELDSET_CLASS = getModuleClass(FORM_CSS, "fieldset");
 
 /**
  * Callback invoked when a `Form` is submitted with its validated data.
@@ -36,7 +31,7 @@ export type FormCallback<T extends Data> = (
  *
  * @see https://shelving.cc/ui/FormProps
  */
-export interface FormProps<T extends Data> extends IndentVariants, OptionalChildProps {
+export interface FormProps<T extends Data> extends BlockVariants, OptionalChildProps {
 	/** Schema for the form. */
 	schema: DataSchema<T>;
 	/** Initial data for the form. */
@@ -96,10 +91,10 @@ export function Form({
 				// Close the parent dialog on successful submit.
 				if (result) dialog?.close();
 			}}
-			className={getClass(FORM_CLASS, getIndentClass(props))}
+			className={getBlockClass(props)}
 			noValidate={true}
 		>
-			<fieldset className={FORM_FIELDSET_CLASS} disabled={busy}>
+			<fieldset className={getBlockClass({})} disabled={busy}>
 				<FormContext value={store}>{children}</FormContext>
 			</fieldset>
 		</form>

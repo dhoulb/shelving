@@ -1,10 +1,6 @@
 @import "../style/layers.css";
 @import "../style/Stroke.module.css";
-@import "../style/Typography.module.css";
-@import "../style/Status.module.css";
-@import "../style/Color.module.css";
-@import "../style/Indent.module.css";
-@import "../style/Padding.module.css";
+@import "../style/Tint.module.css";
 @import "../style/Space.module.css";
 
 /*
@@ -23,11 +19,6 @@
 
 		/* Box */
 		position: relative;
-		display: flow-root;
-		box-sizing: border-box;
-		inline-size: 100%;
-		margin-inline: 0;
-		margin-block: 0;
 		padding-block: var(--panel-padding, var(--space-section));
 		padding-inline: var(--panel-indent, var(--space-normal));
 		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));

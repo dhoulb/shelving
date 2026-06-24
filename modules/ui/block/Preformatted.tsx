@@ -1,9 +1,6 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
+import type { SpaceVariants } from "../style/Space.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import PREFORMATTED_CSS from "./Preformatted.module.css";
@@ -13,13 +10,7 @@ import PREFORMATTED_CSS from "./Preformatted.module.css";
  *
  * @see https://shelving.cc/ui/PreformattedProps
  */
-export interface PreformattedProps
-	extends SpaceVariants,
-		ColorVariants,
-		TypographyVariants,
-		WidthVariants,
-		PaddingVariants,
-		OptionalChildProps {
+export interface PreformattedProps extends SpaceVariants, BlockVariants, OptionalChildProps {
 	/** Enable line wrapping (default is nowrap). */
 	wrap?: boolean | undefined;
 }
@@ -39,11 +30,7 @@ export function Preformatted({ children, ...variants }: PreformattedProps): Reac
 		<pre
 			className={getClass(
 				getModuleClass(PREFORMATTED_CSS, "preformatted", variants), //
-				getSpaceClass(variants),
-				getColorClass(variants),
-				getTypographyClass(variants),
-				getPaddingClass(variants),
-				getWidthClass(variants),
+				getBlockClass(variants),
 			)}
 		>
 			{children}

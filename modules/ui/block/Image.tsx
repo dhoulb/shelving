@@ -2,9 +2,9 @@ import type { ReactElement } from "react";
 import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import styles from "./Image.module.css";
+import IMAGE_CSS from "./Image.module.css";
 
-const IMAGE_CLASS = getModuleClass(styles, "image");
+const IMAGE_CLASS = getModuleClass(IMAGE_CSS, "image");
 
 /**
  * Props for `Image` — an `src`, optional `alt` text, plus space and width variants.

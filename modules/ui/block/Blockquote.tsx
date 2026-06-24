@@ -1,7 +1,5 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import BLOCKQUOTE_CSS from "./Blockquote.module.css";
@@ -13,7 +11,7 @@ const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
  *
  * @see https://shelving.cc/ui/BlockquoteProps
  */
-export interface BlockquoteProps extends ColorVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
+export interface BlockquoteProps extends BlockVariants, OptionalChildProps {}
 
 /**
  * Quoted block of text — rendered as `<blockquote>`.
@@ -27,9 +25,7 @@ export function Blockquote({ children, ...props }: BlockquoteProps): ReactElemen
 		<blockquote
 			className={getClass(
 				BLOCKQUOTE_CLASS, //
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

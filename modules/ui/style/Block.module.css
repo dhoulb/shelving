@@ -1,0 +1,78 @@
+@import "../style/layers.css";
+
+@layer defaults {
+	.prose
+		:is(
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6,
+			p,
+			ul,
+			ol,
+			blockquote,
+			dl,
+			pre,
+			section,
+			article,
+			aside,
+			nav,
+			header,
+			footer,
+			figure,
+			figcaption,
+			video,
+			img
+		),
+	.block {
+		/* Box */
+		display: block;
+		box-sizing: border-box;
+		margin-inline: auto;
+		margin-block: 0;
+		padding: 0;
+		border: none;
+		inline-size: 100%;
+
+		/* Chrome sets a default min-inline-size on some elements like `<fieldset>` that we override. */
+		min-inline-size: auto;
+	}
+}
+
+@layer overrides {
+	.prose
+		:is(
+			h1,
+			h2,
+			h3,
+			h4,
+			h5,
+			h6,
+			p,
+			ul,
+			ol,
+			blockquote,
+			dl,
+			pre,
+			section,
+			article,
+			aside,
+			nav,
+			header,
+			footer,
+			figure,
+			figcaption,
+			video,
+			img
+		),
+	.block {
+		&:first-child {
+			margin-block-start: 0;
+		}
+		&:last-child {
+			margin-block-end: 0;
+		}
+	}
+}

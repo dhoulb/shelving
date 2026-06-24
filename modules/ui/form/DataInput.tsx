@@ -3,7 +3,7 @@ import type { Schemas } from "../../schema/Schema.js";
 import type { Data } from "../../util/data.js";
 import { splitMessage } from "../../util/error.js";
 import { getProps, withProp } from "../../util/object.js";
-import { Row } from "../style/Flex.js";
+import { Row } from "../block/Row.js";
 import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";
 

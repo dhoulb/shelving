@@ -1,6 +1,4 @@
-import type { ReactElement } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
 import FLEX_CSS from "./Flex.module.css";
 import { type GapVariants, getGapClass } from "./Gap.js";
 
@@ -73,8 +71,6 @@ export interface FlexVariants extends GapVariants {
 /**
  * Get the flex layout class for a component from its flex variant props.
  *
- * - Composes the `gap` prop so `<Flex gap="large">` etc. just works.
- *
  * @param variants
  * @returns The combined flex + gap class string.
  * @example getFlexClass({ column: true, center: true, gap: "large" })
@@ -85,44 +81,4 @@ export function getFlexClass(variants: FlexVariants): string {
 		getModuleClass(FLEX_CSS, "flex", variants), //
 		getGapClass(variants),
 	);
-}
-
-/**
- * Props for the `Row` component — flex variants plus optional children.
- *
- * @see https://shelving.cc/ui/RowProps
- */
-export interface RowProps extends FlexVariants, OptionalChildProps {}
-
-/**
- * Flex container that arranges its children as a row by default.
- *
- * @param variants
- * @returns A `<div>` element with the computed flex class.
- * @kind component
- * @example <Row gap="small" center>{items}</Row>
- * @see https://shelving.cc/ui/Row
- */
-export function Row({ children, ...props }: RowProps): ReactElement {
-	return <div className={getFlexClass(props)}>{children}</div>;
-}
-
-/**
- * Props for the `Column` component — flex variants plus optional children.
- *
- * @see https://shelving.cc/ui/ColumnProps
- */
-export interface ColumnProps extends FlexVariants, OptionalChildProps {}
-
-/**
- * Flex container that stacks its children as a column by default.
- *
- * @param variants
- * @returns A `<div>` element with the computed flex class.
- * @kind component
- * @example <Column gap="small">{items}</Column>
- * @see https://shelving.cc/ui/Column
- */
-export function Column({ children, column = true, ...props }: ColumnProps): ReactElement {
-	return <div className={getFlexClass({ column, ...props })}>{children}</div>;
 }

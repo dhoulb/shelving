@@ -1,7 +1,5 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
 import HEADING_CSS from "./Heading.module.css";
@@ -13,7 +11,7 @@ const HEADING_CLASS = getModuleClass(HEADING_CSS, "heading");
  *
  * @see https://shelving.cc/ui/HeadingProps
  */
-export interface HeadingProps extends ColorVariants, SpaceVariants, TypographyVariants, ChildProps {
+export interface HeadingProps extends BlockVariants, ChildProps {
 	/**
 	 * Heading level (`1`–`6`) — sets the rendered `<h1>`–`<h6>` tag.
 	 * Avoid overriding this in practice: pick the component that matches the level — `<Title>` (`<h1>`), `Heading` (`<h2>`), or `<Subheading>` (`<h3>`) — so the visual size and the document outline stay in step.
@@ -36,9 +34,7 @@ export function Heading({ level = "2", children, ...props }: HeadingProps): Reac
 		<Element
 			className={getClass(
 				HEADING_CLASS, //
-				getColorClass(props),
-				getSpaceClass(props),
-				getTypographyClass(props),
+				getBlockClass(props),
 			)}
 		>
 			{children}

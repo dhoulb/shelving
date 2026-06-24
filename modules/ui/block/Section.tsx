@@ -1,12 +1,8 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
-import { getIndentClass, type IndentVariants } from "../style/Indent.js";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
+import { getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import type { BlockElement } from "./Block.js";
+import type { BlockElement, BlockProps } from "./Block.js";
 import SECTION_CSS from "./Section.module.css";
 
 const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
@@ -16,7 +12,7 @@ const SECTION_CLASS = getModuleClass(SECTION_CSS, "section");
  *
  * @see https://shelving.cc/ui/SectionProps
  */
-export interface SectionProps extends ColorVariants, IndentVariants, SpaceVariants, TypographyVariants, WidthVariants, OptionalChildProps {
+export interface SectionProps extends BlockProps, OptionalChildProps {
 	/**
 	 * Element this `<Section>` renders as, e.g. "header" to output a "<header>"
 	 * @default "section"
@@ -24,24 +20,10 @@ export interface SectionProps extends ColorVariants, IndentVariants, SpaceVarian
 	as?: BlockElement | undefined;
 }
 
-/**
- * Get the combined `className` string for a section from its styling variants.
- *
- * Composes the base section class with the colour, space, typography, and width variant helpers, so anything that wants section-level styling can apply it.
- *
- * @param variants Colour, space, typography, and width variants.
- * @returns A space-separated `className` string combining the section class and resolved variant classes.
- * @example getSectionClass({ space: "large" }) // "section …"
- * @see https://shelving.cc/ui/getSectionClass
- */
-export function getSectionClass(variants: SectionProps): string {
+function _getSectionClass(props: SectionProps): string {
 	return getClass(
 		SECTION_CLASS, //
-		getColorClass(variants),
-		getIndentClass(variants),
-		getSpaceClass(variants),
-		getTypographyClass(variants),
-		getWidthClass(variants),
+		getBlockClass(props),
 	);
 }
 
@@ -55,7 +37,7 @@ export function getSectionClass(variants: SectionProps): string {
  * @see https://shelving.cc/ui/Section
  */
 export function Section({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
-	return <Element className={getSectionClass(variants)}>{children}</Element>;
+	return <Element className={_getSectionClass(variants)}>{children}</Element>;
 }
 
 /**
@@ -67,7 +49,7 @@ export function Section({ as: Element = "section", children, ...variants }: Sect
  * @see https://shelving.cc/ui/Header
  */
 export function Header({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
-	return <Element className={getSectionClass(variants)}>{children}</Element>;
+	return <Element className={_getSectionClass(variants)}>{children}</Element>;
 }
 
 /**
@@ -79,7 +61,7 @@ export function Header({ as: Element = "section", children, ...variants }: Secti
  * @see https://shelving.cc/ui/Footer
  */
 export function Footer({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
-	return <Element className={getSectionClass(variants)}>{children}</Element>;
+	return <Element className={_getSectionClass(variants)}>{children}</Element>;
 }
 
 /**
@@ -91,7 +73,7 @@ export function Footer({ as: Element = "section", children, ...variants }: Secti
  * @see https://shelving.cc/ui/Article
  */
 export function Article({ as: Element = "article", children, ...variants }: SectionProps): ReactElement {
-	return <Element className={getSectionClass(variants)}>{children}</Element>;
+	return <Element className={_getSectionClass(variants)}>{children}</Element>;
 }
 
 /**
@@ -104,5 +86,5 @@ export function Article({ as: Element = "article", children, ...variants }: Sect
  * @see https://shelving.cc/ui/Figure
  */
 export function Figure({ as: Element = "figure", children, ...variants }: SectionProps): ReactElement {
-	return <Element className={getSectionClass(variants)}>{children}</Element>;
+	return <Element className={_getSectionClass(variants)}>{children}</Element>;
 }

@@ -12,8 +12,7 @@
 		/* Theme */
 		--tint-50: var(--list-tint, inherit);
 
-		display: block;
-		margin-inline: 0;
+		/* Box */
 		margin-block: var(--list-space, var(--space-paragraph));
 
 		/* Text */
