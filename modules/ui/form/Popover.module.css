@@ -6,15 +6,6 @@
 @import "../style/Tint.module.css";
 
 @layer components {
-	.wrap {
-		position: relative;
-
-		/* Children */
-		&& > * {
-			margin: 0;
-		}
-	}
-
 	.panel {
 		/* Box */
 		display: block;
@@ -23,7 +14,7 @@
 		right: 0;
 		top: calc(100% + var(--popover-offset-y, var(--space-xsmall)));
 		z-index: 1000;
-		max-height: var(--popover-max-height, 30vh);
+		max-height: var(--popover-height, 30vh);
 		border-radius: var(--popover-radius, var(--radius-xsmall));
 		border: var(--popover-border, var(--popover-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding: var(--popover-padding, var(--space-small));
@@ -35,7 +26,18 @@
 		overscroll-behavior-y: contain;
 
 		/* Style */
-		background: var(--popover-color-bg, var(--tint-100));
+		background: var(--popover-background, var(--tint-100));
 		box-shadow: var(--popover-shadow, var(--shadow-small));
+	}
+}
+
+@layer overrides {
+	.wrap {
+		position: relative;
+
+		/* Children */
+		&& > * {
+			margin: 0;
+		}
 	}
 }
