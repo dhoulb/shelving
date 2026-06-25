@@ -42,7 +42,6 @@ export type EntryObject<T extends Entry<PropertyKey, unknown>> = { readonly [E i
  *
  * @param entry The `[key, value]` entry to read from.
  * @returns The key (first element) of the entry.
- * @example getEntryKey(["a", 1]) // "a"
  * @see https://shelving.cc/util/entry/getEntryKey
  */
 export function getEntryKey<K, T>([k]: Entry<K, T>): K {
@@ -54,7 +53,6 @@ export function getEntryKey<K, T>([k]: Entry<K, T>): K {
  *
  * @param entry The `[key, value]` entry to read from.
  * @returns The value (second element) of the entry.
- * @example getEntryValue(["a", 1]) // 1
  * @see https://shelving.cc/util/entry/getEntryValue
  */
 export function getEntryValue<K, T>([, v]: Entry<K, T>): T {
@@ -66,7 +64,6 @@ export function getEntryValue<K, T>([, v]: Entry<K, T>): T {
  *
  * @param input Iterable of `[key, value]` entries.
  * @returns Iterable yielding each entry's key.
- * @example Array.from(getEntryKeys([["a", 1], ["b", 2]])) // ["a", "b"]
  * @see https://shelving.cc/util/entry/getEntryKeys
  */
 export function* getEntryKeys<K, T>(input: Iterable<Entry<K, T>>): Iterable<K> {
@@ -78,7 +75,6 @@ export function* getEntryKeys<K, T>(input: Iterable<Entry<K, T>>): Iterable<K> {
  *
  * @param input Iterable of `[key, value]` entries.
  * @returns Iterable yielding each entry's value.
- * @example Array.from(getEntryValues([["a", 1], ["b", 2]])) // [1, 2]
  * @see https://shelving.cc/util/entry/getEntryValues
  */
 export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T> {
@@ -90,7 +86,6 @@ export function* getEntryValues<K, T>(input: Iterable<Entry<K, T>>): Iterable<T>
  *
  * @param input One or more sources that can yield `[key, value]` entries.
  * @returns Iterable yielding the combined entries from every input.
- * @example Array.from(getEntries({ a: 1, b: 2 })) // [["a", 1], ["b", 2]]
  * @see https://shelving.cc/util/entry/getEntries
  */
 export function getEntries<K extends string, T = K>(

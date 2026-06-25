@@ -165,7 +165,6 @@ export type FlatData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof
  *
  * @param value The value to check.
  * @returns `true` if the value is a plain data object, narrowing it to `Data`.
- * @example isData({ a: 1 }) // true
  * @see https://shelving.cc/util/data/isData
  */
 export function isData(value: unknown): value is Data {
@@ -178,7 +177,6 @@ export function isData(value: unknown): value is Data {
  * @param value The value to check.
  * @param caller The function to attribute a thrown error to (defaults to `assertData`).
  * @throws {RequiredError} If the value is not a plain data object.
- * @example assertData(value); // throws unless `value` is a `Data` object
  * @see https://shelving.cc/util/data/assertData
  */
 export function assertData(value: unknown, caller: AnyCaller = assertData): asserts value is Data {
@@ -191,7 +189,6 @@ export function assertData(value: unknown, caller: AnyCaller = assertData): asse
  * @param data The data object to check against.
  * @param key The value to check as a key.
  * @returns `true` if `key` is an own string key of `data`, narrowing it to `DataKey<T>`.
- * @example isDataProp({ a: 1 }, "a") // true
  * @see https://shelving.cc/util/data/isDataProp
  */
 export function isDataProp<T extends Data>(data: T, key: unknown): key is DataKey<T> {
@@ -205,7 +202,6 @@ export function isDataProp<T extends Data>(data: T, key: unknown): key is DataKe
  * @param key The value to check as a key.
  * @param caller The function to attribute a thrown error to (defaults to `assertDataProp`).
  * @throws {RequiredError} If `key` is not an own key of `data`.
- * @example assertDataProp(data, key); // throws unless `key` exists in `data`
  * @see https://shelving.cc/util/data/assertDataProp
  */
 export function assertDataProp<T extends Data>(data: T, key: unknown, caller: AnyCaller = assertDataProp): asserts key is DataKey<T> {
@@ -217,7 +213,6 @@ export function assertDataProp<T extends Data>(data: T, key: unknown, caller: An
  *
  * @param data The data object to read.
  * @returns An immutable array of `[key, value]` prop tuples.
- * @example getDataProps({ a: 1, b: 2 }) // [["a", 1], ["b", 2]]
  * @see https://shelving.cc/util/data/getDataProps
  */
 export function getDataProps<T extends Data>(data: T): ImmutableArray<DataProp<T>>;
@@ -231,7 +226,6 @@ export function getDataProps(data: Data | Partial<Data>): ImmutableArray<DataPro
  *
  * @param data The data object to read.
  * @returns An immutable array of the object's string keys.
- * @example getDataKeys({ a: 1, b: 2 }) // ["a", "b"]
  * @see https://shelving.cc/util/data/getDataKeys
  */
 export function getDataKeys<T extends Data>(data: T): ImmutableArray<DataKey<T>>;
@@ -246,7 +240,6 @@ export function getDataKeys(data: Data | Partial<Data>): ImmutableArray<DataKey<
  *
  * @param path The dotted path string (e.g. `"a.b"`) or an array of segments.
  * @returns The path as an array of segments.
- * @example splitDataPath<{ a: { b: number } }>("a.b"); // ["a", "b"]
  * @see https://shelving.cc/util/data/splitDataPath
  */
 export function splitDataPath<T extends Data>(path: BranchDataPath<T> | BranchDataSegments<T>): BranchDataSegments<T>;
@@ -262,7 +255,6 @@ export function splitDataPath(path: string | Segments): ImmutableArray<string> {
  *
  * @param path An array of path segments, or an already-joined dotted path string.
  * @returns The path as a dotted string (e.g. `"a.b"`).
- * @example joinDataPath<{ a: { b: number } }>(["a", "b"]); // "a.b"
  * @see https://shelving.cc/util/data/joinDataPath
  */
 export function joinDataPath<T extends Data>(path: BranchDataSegments<T> | BranchDataPath<T>): BranchDataPath<T>;
@@ -278,9 +270,6 @@ export function joinDataPath(path: Segments | string): string {
  * @param data The data object to read from.
  * @param path The dotted path string (e.g. `"a.b"`) or an array of segments pointing at the prop.
  * @returns The value at the path, or `undefined` if any segment along the path doesn't exist.
- * @example getDataProp<{ a: { b: number } }>({ a: { b: 123 } }, ["a", "b"]); // 123
- * @example getDataProp<{ a: { b: number } }>({ a: { b: 123 } }, "a.b"); // 123
- * @example getDataProp({ a: { b: 123 } } as Data, "x.y.z"); // undefined
  * @see https://shelving.cc/util/data/getDataProp
  */
 export function getDataProp<T extends Data, K extends BranchDataPath<T>>(data: T, path: K): BranchData<T>[K];

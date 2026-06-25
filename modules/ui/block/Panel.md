@@ -40,6 +40,7 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 | `--panel-color` | Text colour | `var(--tint-00)` |
 | `--panel-border` | Top/bottom border shorthand | `var(--panel-stroke) solid var(--tint-80)` |
 | `--panel-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
+| `--panel-padding` | Block padding (top + bottom) | `var(--space-section)` (2rem) |
 | `--panel-indent` | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px) |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal` and `--space-normal`. Vertical padding comes from the shared `padding` variant; inline padding from the shared `indent` variant.
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal`, `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.

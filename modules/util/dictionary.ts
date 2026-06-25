@@ -72,8 +72,6 @@ export function assertDictionary(value: unknown, caller: AnyCaller = assertDicti
  *
  * @param dict The dictionary or iterable set of key/value entry tuples to convert.
  * @returns The corresponding dictionary object.
- * @example
- * requireDictionary([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/dictionary/requireDictionary
  */
 export function requireDictionary<T>(dict: PossibleDictionary<T>): ImmutableDictionary<T> {
@@ -85,8 +83,6 @@ export function requireDictionary<T>(dict: PossibleDictionary<T>): ImmutableDict
  *
  * @param input The dictionary or iterable set of key/value entry tuples to read.
  * @returns Iterable set of key/value entry tuples for the dictionary.
- * @example
- * getDictionaryItems({ a: 1, b: 2 }); // [["a", 1], ["b", 2]]
  * @see https://shelving.cc/util/dictionary/getDictionaryItems
  */
 export function getDictionaryItems<T>(input: ImmutableDictionary<T>): readonly DictionaryItem<T>[];
@@ -132,8 +128,6 @@ export function assertDictionaryItem<T>(
  * @param caller Function to attribute a thrown error to (defaults to `requireDictionaryItem` itself).
  * @returns The value of the item.
  * @throws {RequiredError} If `key` is not an own prop of `dict`.
- * @example
- * requireDictionaryItem({ a: 1 }, "a"); // 1
  * @see https://shelving.cc/util/dictionary/requireDictionaryItem
  */
 export function requireDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string, caller: AnyCaller = requireDictionaryItem): T {
@@ -147,8 +141,6 @@ export function requireDictionaryItem<T>(dict: ImmutableDictionary<T>, key: stri
  * @param dict The dictionary to read the item from.
  * @param key The key of the item to read.
  * @returns The value of the item, or `undefined` if `key` is not an own prop of `dict`.
- * @example
- * getDictionaryItem({ a: 1 }, "a"); // 1
  * @see https://shelving.cc/util/dictionary/getDictionaryItem
  */
 export function getDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string): T | undefined {
@@ -163,8 +155,6 @@ export function getDictionaryItem<T>(dict: ImmutableDictionary<T>, key: string):
  * @param key The key of the item to set.
  * @param value The value of the item to set.
  * @returns A new dictionary including the set item, or the original dictionary if the value was unchanged.
- * @example
- * withDictionaryItem({ a: 1 }, "b", 2); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/dictionary/withDictionaryItem
  */
 export const withDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string, value: T) => ImmutableDictionary<T> = withProp;
@@ -176,8 +166,6 @@ export const withDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string, 
  * @param dict The dictionary to set the items on.
  * @param props The items to set, as a dictionary or iterable set of key/value entry tuples.
  * @returns A new dictionary including the set items, or the original dictionary if all values were unchanged.
- * @example
- * withDictionaryItems({ a: 1 }, { b: 2, c: 3 }); // { a: 1, b: 2, c: 3 }
  * @see https://shelving.cc/util/dictionary/withDictionaryItems
  */
 export const withDictionaryItems: <T>(dict: ImmutableDictionary<T>, props: PossibleDictionary<T>) => ImmutableDictionary<T> = withProps;
@@ -189,8 +177,6 @@ export const withDictionaryItems: <T>(dict: ImmutableDictionary<T>, props: Possi
  * @param dict The dictionary to remove the items from.
  * @param keys The keys of the items to remove.
  * @returns A new dictionary without the removed items, or the original dictionary if no keys were present.
- * @example
- * omitDictionaryItems({ a: 1, b: 2, c: 3 }, "b", "c"); // { a: 1 }
  * @see https://shelving.cc/util/dictionary/omitDictionaryItems
  */
 export const omitDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = omitProps;
@@ -202,8 +188,6 @@ export const omitDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: str
  * @param dict The dictionary to remove the item from.
  * @param key The key of the item to remove.
  * @returns A new dictionary without the removed item, or the original dictionary if the key was not present.
- * @example
- * omitDictionaryItem({ a: 1, b: 2 }, "b"); // { a: 1 }
  * @see https://shelving.cc/util/dictionary/omitDictionaryItem
  */
 export const omitDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string) => ImmutableDictionary<T> = omitProps;
@@ -214,8 +198,6 @@ export const omitDictionaryItem: <T>(dict: ImmutableDictionary<T>, key: string) 
  * @param dict The dictionary to pick the items from.
  * @param keys The keys of the items to pick.
  * @returns A new dictionary containing only the picked items.
- * @example
- * pickDictionaryItems({ a: 1, b: 2, c: 3 }, "a", "b"); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/dictionary/pickDictionaryItems
  */
 export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: string[]) => ImmutableDictionary<T> = pickProps;
@@ -227,8 +209,6 @@ export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: str
  * @param key The key of the item to set.
  * @param value The value of the item to set.
  * @returns The value that was set.
- * @example
- * setDictionaryItem(dict, "a", 1); // 1
  * @see https://shelving.cc/util/dictionary/setDictionaryItem
  */
 export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, value: T) => T = setProp;
@@ -238,8 +218,6 @@ export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, val
  *
  * @param dict The dictionary to set the items on (modified by reference).
  * @param entries The items to set, as a dictionary or iterable set of key/value entry tuples.
- * @example
- * setDictionaryItems(dict, { a: 1, b: 2 });
  * @see https://shelving.cc/util/dictionary/setDictionaryItems
  */
 export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: PossibleDictionary<T>) => void = setProps;
@@ -249,8 +227,6 @@ export const setDictionaryItems: <T>(dict: MutableDictionary<T>, entries: Possib
  *
  * @param dict The dictionary to remove the items from (modified by reference).
  * @param keys The keys of the items to remove.
- * @example
- * deleteDictionaryItems(dict, "a", "b");
  * @see https://shelving.cc/util/dictionary/deleteDictionaryItems
  */
 export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...keys: string[]) => void = deleteProps;
@@ -260,8 +236,6 @@ export const deleteDictionaryItems: <T extends MutableDictionary>(dict: T, ...ke
  *
  * @param dict The dictionary to remove the item from (modified by reference).
  * @param key The key of the item to remove.
- * @example
- * deleteDictionaryItem(dict, "a");
  * @see https://shelving.cc/util/dictionary/deleteDictionaryItem
  */
 export const deleteDictionaryItem: <T extends MutableDictionary>(dict: T, key: string) => void = deleteProps;

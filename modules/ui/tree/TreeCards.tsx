@@ -31,7 +31,6 @@ export interface TreeCardsProps {
  * - Each element is dispatched via `<TreeCardMapper>` to its registered renderer; each card links to its own stamped `path`.
  * - To override the renderer for a specific element type, wrap in `<TreeCardMapping mapping={…}>`.
  *
- * @returns A `<TreeCardMapper>` rendering each element as a card.
  * @kind component
  * @example <TreeCards>{element.props.children}</TreeCards>
  * @see https://shelving.cc/ui/TreeCards

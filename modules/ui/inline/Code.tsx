@@ -23,8 +23,6 @@ export interface CodeProps extends ColorVariants, TypographyVariants, OptionalCh
  * - Pass `plain` to drop the default background and padding.
  *
  * @kind component
- * @returns Rendered `<code>` element.
- * @example <Code>npm install</Code>
  * @see https://shelving.cc/ui/Code
  */
 export function Code({ children, plain, ...props }: CodeProps): ReactElement {

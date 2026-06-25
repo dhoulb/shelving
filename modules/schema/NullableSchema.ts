@@ -20,48 +20,19 @@ export interface NullableSchemaOptions<T> extends ThroughSchemaOptions<T | null>
  * - Empty-ish inputs (`null`, `undefined`, `""`, `NaN`) validate to `null` instead of being passed to the source schema.
  * - Any other value is delegated to the source schema for validation.
  *
- * @example
- *  const schema = new NullableSchema({ source: STRING });
- *  schema.validate(""); // Returns null
- *  schema.validate("abc"); // Returns "abc"
- *
  * @see https://shelving.cc/schema/NullableSchema
  */
 export class NullableSchema<T> extends ThroughSchema<T | null> {
 	declare readonly value: T | null;
-	/**
-	 * Create a new `NullableSchema`.
-	 */
 	constructor({ value = null, ...options }: NullableSchemaOptions<T>) {
 		super({ value, ...options });
 	}
-	/**
-	 * Validate an unknown value, returning `null` for empty-ish input or delegating to the source schema.
-	 *
-	 * @param unsafeValue Value to validate (defaults to this schema's `value`).
-	 * @returns The valid value of type `T`, or `null` for empty-ish input.
-	 * @throws `string` error message if the source schema rejects the value.
-	 *
-	 * @example
-	 *  NULLABLE(STRING).validate(""); // Returns null
-	 *
-	 * @see https://shelving.cc/schema/NullableSchema/validate
-	 */
+	/** Returns `null` for empty-ish input (`null`, `undefined`, `""`, `NaN`); otherwise delegates to the source schema. */
 	override validate(unsafeValue: unknown = this.value): T | null {
 		if (unsafeValue === null || unsafeValue === undefined || unsafeValue === "" || Number.isNaN(unsafeValue)) return null;
 		return super.validate(unsafeValue);
 	}
-	/**
-	 * Format a nullable value as a human-readable string for display.
-	 *
-	 * @param value Value to format, or `null`.
-	 * @returns The formatted string, or `` `No ${one}` `` when the value is `null`.
-	 *
-	 * @example
-	 *  NULLABLE(STRING).format(null); // Returns "No string"
-	 *
-	 * @see https://shelving.cc/schema/NullableSchema/format
-	 */
+	/** Formats `null` as `` `No ${one}` ``; otherwise delegates to the source schema. */
 	override format(value: T | null): string {
 		return value === null ? `No ${this.source.one}` : super.format(value);
 	}
@@ -73,11 +44,7 @@ export class NullableSchema<T> extends ThroughSchema<T | null> {
  * Sugar factory for `NullableSchema`.
  *
  * @param source Source schema to wrap.
- *
- * @example
- *  const schema = NULLABLE(STRING);
- *  schema.validate(""); // Returns null
- *
+ * @example NULLABLE(STRING).validate(""); // Returns null
  * @see https://shelving.cc/schema/NULLABLE
  */
 export function NULLABLE<T>(source: Schema<T>): NullableSchema<T> {

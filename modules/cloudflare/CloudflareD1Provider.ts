@@ -21,38 +21,17 @@ type D1Query = {
  * - Array and plain-object values are JSON-encoded before binding; other non-primitive values throw `ValueError`.
  * - The `D1Database` binding is provided by the Cloudflare Workers runtime environment.
  *
- * @example
- * // `env.DB` is the D1 binding from the Worker environment.
- * const provider = new CloudflareD1Provider(env.DB);
- *
  * @see https://shelving.cc/cloudflare/CloudflareD1Provider
  */
 export class CloudflareD1Provider<I extends Identifier = Identifier, T extends Data = Data> extends SQLiteProvider<I, T> {
 	private readonly _db: D1Database;
 
-	/**
-	 * Create a provider wrapping a Cloudflare D1 database binding.
-	 *
-	 * @param db The `D1Database` binding from the Worker environment.
-	 * @see https://shelving.cc/cloudflare/CloudflareD1Provider
-	 */
 	constructor(db: D1Database) {
 		super();
 		this._db = db;
 	}
 
-	/**
-	 * Execute an SQL query through the Cloudflare D1 Worker API.
-	 *
-	 * Converts the tagged-template query into a parameterised statement, binds its values, and runs it via `prepare().bind().run()`.
-	 *
-	 * @param strings The tagged-template string parts of the query.
-	 * @param values The interpolated values, bound as positional parameters or inlined `SQLFragment` instances.
-	 * @returns Promise resolving to the array of result rows (empty if D1 returns no results).
-	 * @throws {ValueError} If a value cannot be converted to a D1 binding.
-	 * @example provider.exec`SELECT * FROM ${provider.sqlIdentifier("items")}`
-	 * @see https://shelving.cc/cloudflare/CloudflareD1Provider/exec
-	 */
+	/** Throws `ValueError` if a bound value cannot be converted to a D1 binding. */
 	override async exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<readonly X[]> {
 		const { query, values: bindings } = _getD1Query(strings, values, this.exec);
 		const result = await this._db

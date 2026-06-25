@@ -5,11 +5,6 @@ import { Store } from "./Store.js";
  * - Any input is coerced to a boolean via `!!input`, so truthy/falsy values are accepted.
  * - Defaults to `false`.
  *
- * @param value The initial boolean value (defaults to `false`).
- * @example
- * const store = new BooleanStore();
- * store.value = 1; // true (coerced)
- * store.toggle(); // now false
  * @see https://shelving.cc/store/BooleanStore
  */
 export class BooleanStore extends Store<boolean, unknown> {
@@ -31,7 +26,6 @@ export class BooleanStore extends Store<boolean, unknown> {
 	/**
 	 * Toggle the current boolean value.
 	 *
-	 * @returns Nothing.
 	 * @example store.toggle(); // `true` becomes `false`, `false` becomes `true`
 	 * @see https://shelving.cc/store/BooleanStore/toggle
 	 */

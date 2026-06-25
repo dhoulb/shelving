@@ -95,40 +95,19 @@ export function isAsyncDisposable(v: unknown): v is AsyncDisposable {
  * @see https://shelving.cc/util/dispose/DisposableMap
  */
 export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements Disposable {
-	/**
-	 * Set a key to a value, disposing any previous value stored under that key.
-	 *
-	 * @param key The key to set.
-	 * @param value The disposable value to store.
-	 * @returns This map, for chaining.
-	 * @example map.set("a", resource) // disposes the old "a" value if it differs
-	 * @see https://shelving.cc/util/dispose/DisposableMap/set
-	 */
+	/** Set a key to a value, disposing any previous value stored under that key. */
 	override set(key: K, value: T): this {
 		const previous = this.get(key);
 		if (previous && previous !== value) dispose(previous);
 		return super.set(key, value);
 	}
-	/**
-	 * Delete a key, disposing its value.
-	 *
-	 * @param key The key to delete.
-	 * @returns `true` if a value existed and was deleted, otherwise `false`.
-	 * @example map.delete("a") // disposes the "a" value
-	 * @see https://shelving.cc/util/dispose/DisposableMap/delete
-	 */
+	/** Delete a key, disposing its value. */
 	override delete(key: K): boolean {
 		const value = this.get(key);
 		if (value) dispose(value);
 		return super.delete(key);
 	}
-	/**
-	 * Clear all items, disposing every value.
-	 *
-	 * @returns Nothing.
-	 * @example map.clear() // disposes every value
-	 * @see https://shelving.cc/util/dispose/DisposableMap/clear
-	 */
+	/** Clear all items, disposing every value. */
 	override clear(): void {
 		dispose(...this.values());
 		super.clear();
@@ -136,7 +115,6 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
 	/**
 	 * Dispose this map by clearing all items and disposing their values.
 	 *
-	 * @returns Nothing.
 	 * @see https://shelving.cc/util/dispose/DisposableMap/dispose
 	 */
 	[Symbol.dispose]() {
@@ -153,25 +131,12 @@ export class DisposableMap<K, T extends Disposable> extends Map<K, T> implements
  * @see https://shelving.cc/util/dispose/DisposableSet
  */
 export class DisposableSet<T extends Disposable> extends Set<T> implements Disposable {
-	/**
-	 * Delete an item, disposing it.
-	 *
-	 * @param item The item to delete.
-	 * @returns `true` if the item existed and was deleted, otherwise `false`.
-	 * @example set.delete(resource) // disposes the item
-	 * @see https://shelving.cc/util/dispose/DisposableSet/delete
-	 */
+	/** Delete an item, disposing it. */
 	override delete(item: T): boolean {
 		if (this.has(item)) dispose(item);
 		return super.delete(item);
 	}
-	/**
-	 * Clear all items, disposing each one.
-	 *
-	 * @returns Nothing.
-	 * @example set.clear() // disposes every item
-	 * @see https://shelving.cc/util/dispose/DisposableSet/clear
-	 */
+	/** Clear all items, disposing each one. */
 	override clear(): void {
 		dispose(...this);
 		super.clear();
@@ -179,7 +144,6 @@ export class DisposableSet<T extends Disposable> extends Set<T> implements Dispo
 	/**
 	 * Dispose this set by clearing all items and disposing each one.
 	 *
-	 * @returns Nothing.
 	 * @see https://shelving.cc/util/dispose/DisposableSet/dispose
 	 */
 	[Symbol.dispose]() {

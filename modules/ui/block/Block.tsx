@@ -27,7 +27,6 @@ export interface BlockProps extends BlockVariants, OptionalChildProps {
  * - Pass `as` to render a different semantic element (`section`, `header`, `footer`, `nav`, `aside`, `figure`).
  *
  * @kind component
- * @example <Block><Paragraph>Hello</Paragraph></Block>
  * @example <Block as="aside" width="narrow"><Paragraph>Sidebar</Paragraph></Block>
  * @see https://shelving.cc/ui/Block
  */

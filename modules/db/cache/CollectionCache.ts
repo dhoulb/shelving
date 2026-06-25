@@ -40,14 +40,6 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 */
 	readonly memory: MemoryDBProvider<I> | undefined;
 
-	/**
-	 * Create a cache of stores for a single collection.
-	 *
-	 * @param collection The collection to cache stores for.
-	 * @param provider The database provider the stores fetch from.
-	 * @param memory Optional memory provider used to seed stores and drive realtime updates.
-	 * @example new CollectionCache(collection, provider)
-	 */
 	constructor(collection: Collection<string, I, T>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		this.collection = collection;
 		this.provider = provider;

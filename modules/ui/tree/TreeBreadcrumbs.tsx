@@ -26,7 +26,6 @@ export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants,
  * - Block spacing defaults to section spacing (via `getBlockClass()`); pass `space` to override.
  * - Renders nothing at the tree root (no ancestors) or when there's no `<TreeProvider>` to resolve labels from.
  *
- * @returns A `<nav>` of breadcrumb links, or `null` at the tree root.
  * @kind component
  * @example <TreeBreadcrumbs />
  * @see https://shelving.cc/ui/TreeBreadcrumbs

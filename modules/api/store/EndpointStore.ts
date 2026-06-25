@@ -23,14 +23,6 @@ export class EndpointStore<P, R> extends PayloadFetchStore<P, R> {
 	 */
 	readonly endpoint: Endpoint<P, R>;
 
-	/**
-	 * Create a store that tracks the result of an endpoint call.
-	 *
-	 * @param endpoint The endpoint to call.
-	 * @param payload The payload to call the endpoint with.
-	 * @param provider The API provider to call the endpoint through.
-	 * @example new EndpointStore(endpoint, payload, provider)
-	 */
 	constructor(endpoint: Endpoint<P, R>, payload: P, provider: APIProvider<P, R>) {
 		super(payload, NONE);
 		this.endpoint = endpoint;

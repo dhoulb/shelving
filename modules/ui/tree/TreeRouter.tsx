@@ -39,7 +39,6 @@ export interface TreeRouterProps extends PossibleMeta {
  * - The resolved element is already stamped with its canonical `path`, so the page and its cards link straight to their own paths — nothing needs threading.
  * - To override the renderer for a specific element type, wrap in `<TreeRouterMapping mapping={…}>`.
  *
- * @returns The resolved element rendered as a page, or the `fallback`.
  * @throws `NotFoundError` When no element matches the URL and no `fallback` is given.
  * @kind component
  * @example <TreeProvider tree={tree}><TreeRouter /></TreeProvider>

@@ -35,17 +35,7 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
  * @see https://shelving.cc/extract/TypescriptExtractor
  */
 export class TypescriptExtractor extends FileExtractor {
-	/**
-	 * Parse a TypeScript source file into the props of a `tree-element`.
-	 *
-	 * @param name Filename of the source (used as the source file name and the element `name`).
-	 * @param text Full TypeScript source text to parse.
-	 * @returns Partial `tree-element` props with `name`, `description`, `content`, and `children`.
-	 *
-	 * @example const props = new TypescriptExtractor().extractProps("string.ts", sourceText);
-	 *
-	 * @see https://shelving.cc/extract/extractProps
-	 */
+	/** Parses the TypeScript source into one `tree-documentation` child per exported public declaration. */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const source = ts.createSourceFile(name, text, ts.ScriptTarget.Latest, true);
 

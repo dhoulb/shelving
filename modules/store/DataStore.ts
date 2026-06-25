@@ -11,10 +11,6 @@ import { BusyStore } from "./BusyStore.js";
  * Store a data object, with helpers to read and update individual props.
  * - `update()`, `set()` replace the stored object with an immutable updated copy.
  *
- * @example
- * const store = new DataStore({ name: "Dave", age: 40 });
- * store.set("age", 41);
- * store.get("name"); // "Dave"
  * @see https://shelving.cc/store/DataStore
  */
 export class DataStore<T extends Data> extends BusyStore<T> {
@@ -41,7 +37,6 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 * Update several props in this data.
 	 *
 	 * @param updates The set of prop updates to apply.
-	 * @returns Nothing.
 	 * @example store.update({ age: 41, "name": "Dave" });
 	 * @see https://shelving.cc/store/DataStore/update
 	 */
@@ -53,7 +48,6 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 * Get a single named prop from this data.
 	 *
 	 * @param name The name of the prop to read.
-	 * @returns The current value of the named prop.
 	 * @example store.get("name"); // "Dave"
 	 * @see https://shelving.cc/store/DataStore/get
 	 */
@@ -66,7 +60,6 @@ export class DataStore<T extends Data> extends BusyStore<T> {
 	 *
 	 * @param name The name of the prop to set.
 	 * @param value The new value for the prop.
-	 * @returns Nothing.
 	 * @example store.set("age", 41);
 	 * @see https://shelving.cc/store/DataStore/set
 	 */
@@ -80,11 +73,6 @@ export class DataStore<T extends Data> extends BusyStore<T> {
  * - Reading `data` or calling `require()` throws `RequiredError` when the value is `undefined`.
  * - `delete()` sets the value back to `undefined`.
  *
- * @example
- * const store = new OptionalDataStore<{ name: string }>(undefined);
- * store.exists; // false
- * store.data = { name: "Dave" };
- * store.delete(); // back to undefined
  * @see https://shelving.cc/store/OptionalDataStore
  */
 export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> {
@@ -120,7 +108,6 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * Require the data of this store, or throw `RequiredError` if it is not set.
 	 *
 	 * @param caller The function to attribute a thrown `RequiredError` to (defaults to `this.require`).
-	 * @returns The current data.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.require(); // throws if no data is set
 	 * @see https://shelving.cc/store/OptionalDataStore/require
@@ -135,7 +122,6 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * Update several props in this data.
 	 *
 	 * @param updates The set of prop updates to apply.
-	 * @returns Nothing.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.update({ name: "Dave" });
 	 * @see https://shelving.cc/store/OptionalDataStore/update
@@ -148,7 +134,6 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 * Get a single named prop from this data.
 	 *
 	 * @param name The name of the prop to read.
-	 * @returns The current value of the named prop.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.get("name");
 	 * @see https://shelving.cc/store/OptionalDataStore/get
@@ -162,7 +147,6 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	 *
 	 * @param name The name of the prop to set.
 	 * @param value The new value for the prop.
-	 * @returns Nothing.
 	 * @throws {RequiredError} If the data is `undefined`.
 	 * @example store.set("name", "Dave");
 	 * @see https://shelving.cc/store/OptionalDataStore/set
@@ -174,7 +158,6 @@ export class OptionalDataStore<T extends Data> extends BusyStore<T | undefined> 
 	/**
 	 * Set the data to `undefined`.
 	 *
-	 * @returns Nothing.
 	 * @example store.delete();
 	 * @see https://shelving.cc/store/OptionalDataStore/delete
 	 */

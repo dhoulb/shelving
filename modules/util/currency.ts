@@ -22,8 +22,6 @@ export const CURRENCY_CODES: ImmutableArray<CurrencyCode> = Intl.supportedValues
  *
  * @param value The string to normalise and check.
  * @returns The normalised `CurrencyCode`, or `undefined` if the value isn't a supported currency.
- * @example getCurrencyCode("gbp") // "GBP"
- * @example getCurrencyCode("nope") // undefined
  * @see https://shelving.cc/util/currency/getCurrencyCode
  */
 export function getCurrencyCode(value: string): CurrencyCode | undefined {
@@ -38,7 +36,6 @@ export function getCurrencyCode(value: string): CurrencyCode | undefined {
  * @param caller The function to attribute a thrown error to (defaults to `requireCurrencyCode`).
  * @returns The normalised `CurrencyCode`.
  * @throws {RequiredError} If the value isn't a supported ISO 4217 currency code.
- * @example requireCurrencyCode("gbp") // "GBP"
  * @see https://shelving.cc/util/currency/requireCurrencyCode
  */
 export function requireCurrencyCode(value: string, caller: AnyCaller = requireCurrencyCode): CurrencyCode {
@@ -64,8 +61,6 @@ const _isCurrencyNumberPart = ({ type }: Intl.NumberFormatPart) => type === "cur
  * @param caller The function to attribute a thrown error to (defaults to `getCurrencySymbol`).
  * @returns The narrow display symbol for the currency, e.g. `"£"` for `"GBP"`.
  * @throws {RequiredError} If the currency code is malformed or unsupported.
- *
- * @example getCurrencySymbol("GBP"); // "£"
  * @see https://shelving.cc/util/currency/getCurrencySymbol
  */
 export function getCurrencySymbol(currency: CurrencyCode, caller: AnyCaller = getCurrencySymbol): string {
@@ -80,9 +75,6 @@ export function getCurrencySymbol(currency: CurrencyCode, caller: AnyCaller = ge
  * @param caller The function to attribute a thrown error to (defaults to `getCurrencyStep`).
  * @returns The smallest fractional unit used for the currency.
  * @throws {RequiredError} If the currency code is malformed or unsupported.
- *
- * @example getCurrencyStep("USD") // 0.01
- * @example getCurrencyStep("JPY") // 1
  * @see https://shelving.cc/util/currency/getCurrencyStep
  */
 export function getCurrencyStep(currency: CurrencyCode, caller: AnyCaller = getCurrencyStep): number {

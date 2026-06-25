@@ -17,10 +17,6 @@ export interface PageProps extends PossibleMeta, ChildProps {}
  * - Also updates `window.history` to match the page URL.
  *
  * @kind component
- * @param children The page content.
- * @param meta Per-page meta (title, description, etc.) merged with the surrounding `<Meta>` context.
- * @returns The page element with its meta applied.
- * @example <Page title="Settings"><SettingsForm /></Page>
  * @see https://shelving.cc/ui/Page
  */
 export function Page({ children, ...meta }: PageProps): ReactElement {

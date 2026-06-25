@@ -15,7 +15,6 @@ import { getRandomKey } from "../../util/random.js";
  * - Extends `DataStore` with the form's `schema`, per-field error `messages`, and validate/submit helpers.
  * - Assigning a string `reason` splits it into per-field messages rather than a global failure.
  *
- * @example const store = new FormStore(USER_SCHEMA, { name: "Dave" });
  * @see https://shelving.cc/ui/FormStore
  */
 export class FormStore<T extends Data> extends DataStore<Partial<T>> implements AsyncDisposable {
@@ -58,15 +57,6 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 		}
 	}
 
-	/**
-	 * Create a new `FormStore` for a schema, with optional initial data and messages.
-	 *
-	 * @param schema Schema describing the form's fields.
-	 * @param partialData Initial (possibly partial) data for the form.
-	 * @param messages Initial messages as a dictionary, or a string with `fieldName:` style lines.
-	 * @example new FormStore(USER_SCHEMA, { name: "Dave" })
-	 * @see https://shelving.cc/ui/FormStore/constructor
-	 */
 	constructor(schema: DataSchema<T>, partialData: Partial<T> = {}, messages?: ImmutableDictionary<string> | string | undefined) {
 		super(partialData);
 		this.key = `${this.id}:${JSON.stringify(partialData)}`;
@@ -96,7 +86,6 @@ export class FormStore<T extends Data> extends DataStore<Partial<T>> implements 
 	 *
 	 * @param name Name of the field to update.
 	 * @param unsafeValue The unvalidated value to store for the field.
-	 * @returns Nothing.
 	 * @example store.publish("email", "dave@shax.com")
 	 * @see https://shelving.cc/ui/FormStore/publish
 	 */

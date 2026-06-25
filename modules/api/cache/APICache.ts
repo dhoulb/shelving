@@ -27,13 +27,6 @@ export class APICache<P, R> implements AsyncDisposable {
 	 */
 	readonly provider: APIProvider<P, R>;
 
-	/**
-	 * Create a new `APICache` backed by an `APIProvider`.
-	 *
-	 * @param provider The `APIProvider` used to fetch results for every cached endpoint.
-	 * @example new APICache(provider)
-	 * @see https://shelving.cc/api/APICache
-	 */
 	constructor(provider: APIProvider<P, R>) {
 		this.provider = provider;
 	}

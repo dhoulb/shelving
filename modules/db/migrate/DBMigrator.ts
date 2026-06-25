@@ -6,9 +6,6 @@ import type { DBProvider } from "../provider/DBProvider.js";
  *
  * - Subclasses implement `migrate()` for a specific backend (e.g. SQL via `SQLMigrator`).
  *
- * @example
- *  class MyMigrator extends DBMigrator { async migrate(...collections) { ... } }
- *  await new MyMigrator(provider).migrate(users, posts);
  * @see https://shelving.cc/db/DBMigrator
  */
 export abstract class DBMigrator<T extends DBProvider = DBProvider> {
@@ -18,12 +15,6 @@ export abstract class DBMigrator<T extends DBProvider = DBProvider> {
 	 */
 	readonly provider: T;
 
-	/**
-	 * Create a migrator bound to a database provider.
-	 *
-	 * @param provider The database provider whose storage this migrator updates.
-	 * @example new DBMigrator(provider)
-	 */
 	constructor(provider: T) {
 		this.provider = provider;
 	}
@@ -32,8 +23,7 @@ export abstract class DBMigrator<T extends DBProvider = DBProvider> {
 	 * Bring the provider's storage into line with the given collection schemas.
 	 *
 	 * @param collections The collections whose schemas the storage should match.
-	 * @returns Promise that resolves once migration has completed.
-	 * @throws {UnimplementedError} If a schema feature can't be represented by the backend.
+	 * @throws `UnimplementedError` if a schema feature can't be represented by the backend.
 	 * @example await migrator.migrate(users, posts)
 	 * @see https://shelving.cc/db/DBMigrator/migrate
 	 */

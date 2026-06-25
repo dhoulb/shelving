@@ -16,8 +16,6 @@ export interface MarkProps extends OptionalChildProps {}
  * Highlighted text — renders a `<mark>` element to call attention to a run of text.
  *
  * @kind component
- * @returns Rendered `<mark>` element.
- * @example <Mark>search term</Mark>
  * @see https://shelving.cc/ui/Mark
  */
 export function Mark({ children }: MarkProps): ReactElement {

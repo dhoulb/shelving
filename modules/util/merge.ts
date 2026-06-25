@@ -20,7 +20,6 @@ function _merge(left: unknown, right: unknown, recursor: MergeRecursor) {
  * @param _left The left value (ignored).
  * @param right The right value.
  * @returns The `right` value, always.
- * @example exactMerge(1, 2) // 2
  * @see https://shelving.cc/util/merge/exactMerge
  */
 export function exactMerge(_left: unknown, right: unknown): unknown {
@@ -39,7 +38,6 @@ export function exactMerge(_left: unknown, right: unknown): unknown {
  * @returns Merged value.
  * - Will be `left` instance if no properties/items changed.
  * - Will be merged instance otherwise.
- * @example shallowMerge({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
  * @see https://shelving.cc/util/merge/shallowMerge
  */
 export function shallowMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
@@ -61,7 +59,6 @@ export function shallowMerge(left: unknown, right: unknown): unknown {
  * @returns Merged value.
  * - Will be `left` instance if no properties/items changed.
  * - Will be a new merged instance otherwise.
- * @example deepMerge({ a: { b: 1 } }, { a: { c: 2 } }) // { a: { b: 1, c: 2 } }
  * @see https://shelving.cc/util/merge/deepMerge
  */
 export function deepMerge<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R): L & R;
@@ -83,7 +80,6 @@ export function deepMerge(left: unknown, right: unknown): unknown {
  * - Values that appear in both arrays will not be added twice.
  * - Will be `left` instance if no items were added.
  * - Will be a new merged array otherwise.
- * @example mergeArray([1, 2], [2, 3]) // [1, 2, 3]
  * @see https://shelving.cc/util/merge/mergeArray
  */
 export function mergeArray<L, R>(left: ImmutableArray<L>, right: ImmutableArray<R> | ImmutableArray<L>): ImmutableArray<L | R>;
@@ -112,7 +108,6 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * - Returned instances will be the same if no changes were made.
  * - Will be `left` instance if no properties changed.
  * - Will be a new merged object otherwise.
- * @example mergeObject({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
  * @see https://shelving.cc/util/merge/mergeObject
  */
 export function mergeObject<L extends ImmutableObject, R extends ImmutableObject>(left: L, right: R, recursor?: MergeRecursor): L & R;

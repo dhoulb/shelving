@@ -42,10 +42,12 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 | `--field-gap` | Gap between label, control, and message | `var(--space-xsmall)` |
 | `--field-title-size` | Title font size | `var(--size-normal)` |
+| `--field-title-leading` | Title line height | `var(--leading)` |
 | `--field-title-weight` | Title font weight | `var(--weight-strong)` |
 | `--field-title-color` | Title colour | `var(--tint-00)` |
 | `--field-description-size` | Description font size | `var(--size-normal)` |
+| `--field-description-leading` | Description line height | `var(--leading)` |
 | `--field-description-weight` | Description font weight | `var(--weight-normal)` |
 | `--field-description-color` | Description colour | `var(--tint-70)` |
 
-**Global tokens it reads:** the tint ladder `--tint-00` and `--tint-70`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`,
+**Global tokens it reads:** the tint ladder `--tint-00` and `--tint-70`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`, and `--leading`.

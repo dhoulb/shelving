@@ -24,8 +24,6 @@ export interface HeadingProps extends BlockVariants, ChildProps {
  * - Sits between `<Title>` (`<h1>`) and `<Subheading>` (`<h3>`) in the heading hierarchy.
  *
  * @kind component
- * @returns Rendered `<h2>` heading element.
- * @example <Heading>Section title</Heading>
  * @see https://shelving.cc/ui/Heading
  */
 export function Heading({ level = "2", children, ...props }: HeadingProps): ReactElement {

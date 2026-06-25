@@ -35,9 +35,7 @@ const RETRY_CHILDREN = (
  * - Reads the retry callback from `<Catcher>`'s private context, so it renders `null` when there is no boundary above it to retry.
  * - Defaults to an "Retry" label with a refresh icon; pass `children` to override.
  *
- * @returns The retry button, or `null` when not inside a `<Catcher>`.
  * @kind component
- * @example <RetryButton small />
  * @see https://shelving.cc/ui/RetryButton
  */
 export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButtonProps): ReactElement | null {
@@ -81,8 +79,6 @@ type CatcherState = {
  * - Provides a retry callback to descendant `<RetryButton>`s that clears the error and re-renders `children`.
  *
  * @kind component
- * @example <Catcher><RiskyComponent /></Catcher>
- * @example <Catcher as={ErrorPage}><RiskyComponent /></Catcher>
  * @see https://shelving.cc/ui/Catcher
  */
 export class Catcher extends Component<CatcherProps, CatcherState> {
@@ -121,10 +117,7 @@ export interface PageCatcherProps extends ChildProps {}
 /**
  * Error boundary for a whole page that renders a full `<ErrorPage>` fallback on error.
  *
- * @param children The page content to guard.
- * @returns A `<Catcher>` configured to render `<ErrorPage>` on error.
  * @kind component
- * @example <PageCatcher><SettingsPage /></PageCatcher>
  * @see https://shelving.cc/ui/PageCatcher
  */
 export function PageCatcher({ children }: PageCatcherProps): ReactElement {
@@ -143,10 +136,7 @@ export interface ErrorNoticeProps extends ErrorComponentProps {}
  *
  * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
  *
- * @param reason The caught error to display.
- * @returns An error `<Notice>` containing the message and a `<RetryButton>`.
  * @kind component
- * @example <ErrorNotice reason={thrown} />
  * @see https://shelving.cc/ui/ErrorNotice
  */
 export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
@@ -171,10 +161,7 @@ export interface ErrorPageProps extends ErrorComponentProps {}
  *
  * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
  *
- * @param reason The caught error to display.
- * @returns A centered error page containing the message and a `<RetryButton>`.
  * @kind component
- * @example <ErrorPage reason={thrown} />
  * @see https://shelving.cc/ui/ErrorPage
  */
 export function ErrorPage({ reason }: ErrorPageProps): ReactElement {

@@ -8,10 +8,7 @@ import { runSequence } from "../util/sequence.js";
  * @param sequence An object implementing the `AsyncIterable` interface.
  * - Subscription is recreated every time this value changes.
  * - Memoise this value to persist the subscription for the lifetime of the component.
- * @returns The most recent value yielded by `sequence`, or `undefined` before the first value arrives.
  * @throws unknown Re-throws (during render) any error thrown by the sequence, for an error boundary to catch.
- *
- * @example const value = useSequence(myAsyncIterable);
  *
  * @see https://shelving.cc/react/useSequence
  */

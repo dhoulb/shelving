@@ -7,10 +7,6 @@ import { Store, type StoreInput } from "./Store.js";
  * - "busy" means the store is awaiting a new (async) value.
  * - `this.busy` becomes `true` when `await()` starts and `false` when `abort()` is called (which also happens whenever a value or `reason` is set).
  *
- * @example
- * const store = new BusyStore(123);
- * store.value = fetchValue();
- * store.busy.value; // true while the promise is pending
  * @see https://shelving.cc/store/BusyStore
  */
 export class BusyStore<T, TT = T> extends Store<T, TT> {
@@ -29,7 +25,7 @@ export class BusyStore<T, TT = T> extends Store<T, TT> {
 	}
 
 	// Override to set busy to false on abort.
-	// This also happens whenever a value or reaosn is set.
+	// This also happens whenever a value or reason is set.
 	override abort(): void {
 		this.busy.value = false;
 		super.abort();

@@ -35,9 +35,6 @@ type PostgreSQLColumnRow = {
 /**
  * PostgreSQL migrator that inspects the live schema via `pg_catalog` tables to diff and migrate columns.
  *
- * @example
- *  const migrator = new PostgreSQLMigrator(provider);
- *  await migrator.migrate(users, posts);
  * @see https://shelving.cc/db/PostgreSQLMigrator
  */
 export class PostgreSQLMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {

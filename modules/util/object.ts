@@ -124,8 +124,6 @@ export function assertProp<T extends ImmutableObject>(obj: T, key: PropertyKey):
  *
  * @param obj The object or iterable set of key/value entry tuples to convert.
  * @returns The corresponding object.
- * @example
- * getObject([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/object/getObject
  */
 export function getObject<T extends ImmutableObject>(obj: PossibleObject<T>): T {
@@ -187,8 +185,6 @@ export type OmitProps<T, TT> = Omit<T, { [K in keyof T]: T[K] extends TT ? K : n
  *
  * @param obj The object to read the props from.
  * @returns Iterable set of key/value entry tuples for the object.
- * @example
- * getProps({ a: 1, b: 2 }); // [["a", 1], ["b", 2]]
  * @see https://shelving.cc/util/object/getProps
  */
 export function getProps<T>(obj: T): ImmutableArray<Prop<T>>;
@@ -205,8 +201,6 @@ export function getProps(
  *
  * @param obj The object to read the keys from.
  * @returns Iterable set of keys for the object.
- * @example
- * getKeys({ a: 1, b: 2 }); // ["a", "b"]
  * @see https://shelving.cc/util/object/getKeys
  */
 export function getKeys<T>(obj: T): ImmutableArray<Key<T>>;
@@ -222,8 +216,6 @@ export function getKeys(obj: ImmutableObject | Partial<ImmutableObject> | Iterab
  * @param obj The object to read the prop from.
  * @param key The key of the prop to read.
  * @returns The value of the named prop.
- * @example
- * getProp({ a: 1, b: 2 }, "a"); // 1
  * @see https://shelving.cc/util/object/getProp
  */
 export function getProp<T, K extends Key<T>>(obj: T, key: K): T[K] {
@@ -236,8 +228,6 @@ export function getProp<T, K extends Key<T>>(obj: T, key: K): T[K] {
  * @param key The key of the prop to set.
  * @param value The value of the prop to set.
  * @returns A new object containing only the single prop.
- * @example
- * fromProp("a", 1); // { a: 1 }
  * @see https://shelving.cc/util/object/fromProp
  */
 export function fromProp<K extends PropertyKey, V>(key: K, value: V): { readonly [KK in K]: V } {
@@ -252,8 +242,6 @@ export function fromProp<K extends PropertyKey, V>(key: K, value: V): { readonly
  * @param key The key of the prop to set.
  * @param value The value of the prop to set.
  * @returns A new object including the set prop, or the original object if the value was unchanged.
- * @example
- * withProp({ a: 1 }, "b", 2); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/object/withProp
  */
 export function withProp<T extends ImmutableObject, K extends Key<T>>(input: T, key: K, value: T[K]): T {
@@ -267,8 +255,6 @@ export function withProp<T extends ImmutableObject, K extends Key<T>>(input: T, 
  * @param input The object to set the props on.
  * @param props The props to set, as an object or iterable set of key/value entry tuples.
  * @returns A new object including the set props, or the original object if all values were unchanged.
- * @example
- * withProps({ a: 1 }, { b: 2, c: 3 }); // { a: 1, b: 2, c: 3 }
  * @see https://shelving.cc/util/object/withProps
  */
 export function withProps<T>(input: T, props: Partial<T>): T;
@@ -285,8 +271,6 @@ export function withProps<T>(input: T, props: T | Partial<T> | Iterable<Prop<T>>
  * @param input The object to remove the props from.
  * @param keys The keys of the props to remove.
  * @returns A new object without the removed props, or the original object if no keys were present.
- * @example
- * omitProps({ a: 1, b: 2, c: 3 }, "b", "c"); // { a: 1 }
  * @see https://shelving.cc/util/object/omitProps
  */
 export function omitProps<T, K extends Key<T>>(input: T, ...keys: K[]): Omit<T, K>;
@@ -306,8 +290,6 @@ function _hasntKey<T extends ImmutableObject>(this: Key<T>[], [key]: Prop<T>): b
  * @param input The object to remove the prop from.
  * @param key The key of the prop to remove.
  * @returns A new object without the removed prop, or the original object if the key was not present.
- * @example
- * omitProp({ a: 1, b: 2 }, "b"); // { a: 1 }
  * @see https://shelving.cc/util/object/omitProp
  */
 export const omitProp: <T, K extends Key<T>>(input: T, key: K) => Omit<T, K> = omitProps;
@@ -318,8 +300,6 @@ export const omitProp: <T, K extends Key<T>>(input: T, key: K) => Omit<T, K> = o
  * @param obj The object to pick the props from.
  * @param keys The keys of the props to pick.
  * @returns A new object containing only the picked props.
- * @example
- * pickProps({ a: 1, b: 2, c: 3 }, "a", "b"); // { a: 1, b: 2 }
  * @see https://shelving.cc/util/object/pickProps
  */
 export function pickProps<T, K extends Key<T>>(obj: T, ...keys: K[]): Pick<T, K>;
@@ -337,8 +317,6 @@ function _hasKey<T extends ImmutableObject>(this: Key<T>[], [key]: readonly [Key
  * @param key The key of the prop to set.
  * @param value The value of the prop to set.
  * @returns The value that was set.
- * @example
- * setProp(obj, "a", 1); // 1
  * @see https://shelving.cc/util/object/setProp
  */
 export function setProp<T extends MutableObject, K extends Key<T>>(obj: T, key: K, value: T[K]): T[K] {
@@ -351,8 +329,6 @@ export function setProp<T extends MutableObject, K extends Key<T>>(obj: T, key: 
  *
  * @param obj The object to set the props on (modified by reference).
  * @param entries The props to set, as an object or iterable set of key/value entry tuples.
- * @example
- * setProps(obj, { a: 1, b: 2 });
  * @see https://shelving.cc/util/object/setProps
  */
 export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T> | Iterable<Prop<T>>): void {
@@ -364,8 +340,6 @@ export function setProps<T extends MutableObject>(obj: T, entries: T | Partial<T
  *
  * @param obj The object to remove the props from (modified by reference).
  * @param keys The keys of the props to remove.
- * @example
- * deleteProps(obj, "a", "b");
  * @see https://shelving.cc/util/object/deleteProps
  */
 export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]): void {
@@ -377,8 +351,6 @@ export function deleteProps<T extends MutableObject>(obj: T, ...keys: Key<T>[]):
  *
  * @param input The object to remove the prop from (modified by reference).
  * @param key The key of the prop to remove.
- * @example
- * deleteProp(obj, "a");
  * @see https://shelving.cc/util/object/deleteProp
  */
 export const deleteProp: <T extends MutableObject>(input: T, key: Key<T>) => void = deleteProps;
@@ -389,8 +361,6 @@ export const deleteProp: <T extends MutableObject>(input: T, key: Key<T>) => voi
  *
  * @param obj The object to read the prototype from.
  * @returns The prototype of the object, or `null` if it has none.
- * @example
- * getPrototype({ a: 1 }); // Object.prototype
  * @see https://shelving.cc/util/object/getPrototype
  */
 export function getPrototype<T>(obj: T): Partial<T> | null {
@@ -402,8 +372,6 @@ export function getPrototype<T>(obj: T): Partial<T> | null {
  *
  * @param input The object to clone.
  * @returns A new object with the same prototype and props as `input`.
- * @example
- * cloneObject({ a: 1 }); // { a: 1 }
  * @see https://shelving.cc/util/object/cloneObject
  */
 export function cloneObject<T>(input: T): T {
@@ -418,8 +386,6 @@ export function cloneObject<T>(input: T): T {
  * @param key The key of the prop to change.
  * @param value The value of the prop to change.
  * @returns A new object with the changed prop, or the original object if the value was unchanged.
- * @example
- * cloneObjectWith({ a: 1 }, "a", 2); // { a: 2 }
  * @see https://shelving.cc/util/object/cloneObjectWith
  */
 export function cloneObjectWith<T, K extends Key<T>>(input: T, key: K, value: T[K]): T;

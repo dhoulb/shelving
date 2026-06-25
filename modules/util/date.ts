@@ -26,7 +26,6 @@ export function isDate(value: unknown): value is Date {
  * @param value The value to check.
  * @param caller The function to attribute a thrown error to (defaults to `assertDate`).
  * @throws {RequiredError} If the value is not a valid `Date` instance.
- * @example assertDate(value); // throws unless `value` is a valid `Date`
  * @see https://shelving.cc/util/date/assertDate
  */
 export function assertDate(value: unknown, caller: AnyCaller = assertDate): asserts value is Date {
@@ -50,8 +49,6 @@ export function assertDate(value: unknown, caller: AnyCaller = assertDate): asse
  * - Anything else returns `undefined`
  *
  * @returns `Date` instance if the value could be converted to a valid date, or `undefined` if not.
- * @example getDate("2003-09-12") // Date instance for 2003-09-12
- * @example getDate("nope") // undefined
  * @see https://shelving.cc/util/date/getDate
  */
 export function getDate(value: unknown): Date | undefined {
@@ -72,7 +69,6 @@ export function getDate(value: unknown): Date | undefined {
  * Get a date representing this exact moment.
  *
  * @returns A new `Date` instance for the current moment.
- * @example getNow() // Date instance for right now
  * @see https://shelving.cc/util/date/getNow
  */
 export function getNow(): Date {
@@ -83,7 +79,6 @@ export function getNow(): Date {
  * Get a date representing midnight of the previous day.
  *
  * @returns A new `Date` instance at midnight yesterday.
- * @example getYesterday() // Date instance for yesterday at 00:00
  * @see https://shelving.cc/util/date/getYesterday
  */
 export function getYesterday(): Date {
@@ -97,7 +92,6 @@ export function getYesterday(): Date {
  * Get a date representing midnight of the current day.
  *
  * @returns A new `Date` instance at midnight today.
- * @example getToday() // Date instance for today at 00:00
  * @see https://shelving.cc/util/date/getToday
  */
 export function getToday(): Date {
@@ -110,7 +104,6 @@ export function getToday(): Date {
  * Get a date representing midnight of the next day.
  *
  * @returns A new `Date` instance at midnight tomorrow.
- * @example getTomorrow() // Date instance for tomorrow at 00:00
  * @see https://shelving.cc/util/date/getTomorrow
  */
 export function getTomorrow(): Date {
@@ -127,7 +120,6 @@ export function getTomorrow(): Date {
  * @param caller The function to attribute a thrown error to (defaults to `getMidnight`).
  * @returns A new `Date` instance at midnight of the target date.
  * @throws {RequiredError} If `target` couldn't be converted to a valid date.
- * @example getMidnight("2003-09-12") // Date instance for 2003-09-12 at 00:00
  * @see https://shelving.cc/util/date/getMidnight
  */
 export function getMidnight(target?: PossibleDate, caller: AnyCaller = getMidnight): Date {
@@ -143,7 +135,6 @@ export function getMidnight(target?: PossibleDate, caller: AnyCaller = getMidnig
  * @param caller The function to attribute a thrown error to (defaults to `getMonday`).
  * @returns A new `Date` instance at midnight on Monday of the target week.
  * @throws {RequiredError} If `target` couldn't be converted to a valid date.
- * @example getMonday("2003-09-12") // Date instance for the Monday of that week at 00:00
  * @see https://shelving.cc/util/date/getMonday
  */
 export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday): Date {
@@ -161,7 +152,6 @@ export function getMonday(target?: PossibleDate, caller: AnyCaller = getMonday):
  * @param caller The function to attribute a thrown error to (defaults to `getMonthStart`).
  * @returns A new `Date` instance at midnight on the 1st of the target month.
  * @throws {RequiredError} If `target` couldn't be converted to a valid date.
- * @example getMonthStart("2003-09-12") // Date instance for 2003-09-01 at 00:00
  * @see https://shelving.cc/util/date/getMonthStart
  */
 export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMonthStart): Date {
@@ -177,7 +167,6 @@ export function getMonthStart(target?: PossibleDate, caller: AnyCaller = getMont
  * @param caller The function to attribute a thrown error to (defaults to `requireDate`).
  * @returns A valid `Date` instance.
  * @throws {RequiredError} If `value` couldn't be converted to a valid date.
- * @example requireDate("2003-09-12") // Date instance for 2003-09-12
  * @see https://shelving.cc/util/date/requireDate
  */
 export function requireDate(value: PossibleDate = "now", caller: AnyCaller = requireDate): Date {
@@ -191,7 +180,6 @@ export function requireDate(value: PossibleDate = "now", caller: AnyCaller = req
  *
  * @param value Any value that we want to parse as a valid date.
  * @returns The timestamp in milliseconds, or `undefined` if the value couldn't be converted.
- * @example getTimestamp("1970-01-01T00:00:00Z") // 0
  * @see https://shelving.cc/util/date/getTimestamp
  */
 export function getTimestamp(value?: unknown): number | undefined {
@@ -204,7 +192,6 @@ export function getTimestamp(value?: unknown): number | undefined {
  * @param value Any value that we want to parse as a valid date (defaults to `"now"`).
  * @returns The timestamp in milliseconds.
  * @throws {RequiredError} If `value` couldn't be converted to a valid date.
- * @example requireTimestamp("1970-01-01T00:00:00Z") // 0
  * @see https://shelving.cc/util/date/requireTimestamp
  */
 export function requireTimestamp(value?: PossibleDate): number {
@@ -230,7 +217,6 @@ function _datetime(date: Date): string {
  *
  * @param value Any value that we want to parse as a valid date.
  * @returns The local datetime string, or `undefined` if `value` couldn't be converted.
- * @example getDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
  * @see https://shelving.cc/util/date/getDateTimeString
  */
 export function getDateTimeString(value?: unknown): string | undefined {
@@ -245,7 +231,6 @@ export function getDateTimeString(value?: unknown): string | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireDateTimeString` itself).
  * @returns The local datetime string.
  * @throws {RequiredError} If `value` couldn't be converted to a valid date.
- * @example requireDateTimeString("2015-09-12T18:30:00") // "2015-09-12T18:30:00"
  * @see https://shelving.cc/util/date/requireDateTimeString
  */
 export function requireDateTimeString(value?: PossibleDate, caller: AnyCaller = requireDateTimeString): string {
@@ -257,7 +242,6 @@ export function requireDateTimeString(value?: PossibleDate, caller: AnyCaller = 
  *
  * @param value Any value that we want to parse as a valid date.
  * @returns The local date string, or `undefined` if `value` couldn't be converted.
- * @example getDateString("2015-09-12T18:30:00") // "2015-09-12"
  * @see https://shelving.cc/util/date/getDateString
  */
 export function getDateString(value?: unknown): string | undefined {
@@ -352,7 +336,6 @@ export function addMinutes(change: number, target?: PossibleDate, caller: AnyCal
  * @param caller Function to attribute a thrown error to (defaults to `addSeconds` itself).
  * @returns A new `Date` instance offset by `change` seconds.
  * @throws {RequiredError} If `target` couldn't be converted to a valid date.
- * @example addSeconds(30, "2003-09-12T00:00:00") // Date instance for 2003-09-12T00:00:30
  * @see https://shelving.cc/util/date/addSeconds
  */
 export function addSeconds(change: number, target?: PossibleDate, caller: AnyCaller = addSeconds): Date {
@@ -369,7 +352,6 @@ export function addSeconds(change: number, target?: PossibleDate, caller: AnyCal
  * @param caller Function to attribute a thrown error to (defaults to `addMilliseconds` itself).
  * @returns A new `Date` instance offset by `change` milliseconds.
  * @throws {RequiredError} If `target` couldn't be converted to a valid date.
- * @example addMilliseconds(500, "2003-09-12T00:00:00") // Date instance for 2003-09-12T00:00:00.500
  * @see https://shelving.cc/util/date/addMilliseconds
  */
 export function addMilliseconds(change: number, target?: PossibleDate, caller: AnyCaller = addMilliseconds): Date {

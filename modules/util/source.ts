@@ -20,7 +20,6 @@ export interface Sourceable<T> {
  * @param type The class to search for an instance of.
  * @param value The object to start searching from.
  * @returns The first matching source instance, or `undefined` if none matches.
- * @example getSource(CacheProvider, provider) // CacheProvider instance or undefined
  * @see https://shelving.cc/util/source/getSource
  */
 export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
@@ -39,7 +38,6 @@ export function getSource<T>(type: Class<T>, value: unknown): T | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireSource`).
  * @returns The first matching source instance.
  * @throws {RequiredError} If no source object is an instance of `type`.
- * @example requireSource(CacheProvider, provider) // CacheProvider instance
  * @see https://shelving.cc/util/source/requireSource
  */
 export function requireSource<T>(type: Class<T>, data: unknown, caller: AnyCaller = requireSource): T {

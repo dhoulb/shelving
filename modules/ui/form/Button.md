@@ -53,6 +53,7 @@ import { getButtonClass } from "shelving/ui";
 | `--button-tint` | Tint anchor for the button scope | `inherit` (flows from `color=` / `status=` / parent) |
 | `--button-background` | Surface fill | `var(--tint-90)` |
 | `--button-hover-background` | Surface fill on hover / focus | `var(--tint-95)` |
+| `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid var(--tint-90)` |
 | `--button-text` | Label colour | `var(--tint-50)` |
 | `--button-border` | Border shorthand | `var(--button-stroke) solid var(--tint-80)` |
 | `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
@@ -69,7 +70,6 @@ import { getButtonClass } from "shelving/ui";
 | `--button-disabled-opacity` | Opacity when disabled | `0.5` |
 | `--button-strong-background` | Fill when `strong` | `var(--tint-50)` |
 | `--button-strong-text` | Label colour when `strong` | `var(--tint-100)` |
-| `--button-strong-border` | Border when `strong` | `var(--button-stroke) solid transparent` |
 | `--button-strong-hover-background` | Hover fill when `strong` | `var(--tint-55)` |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90` / `--tint-95` / `--tint-100` / `--tint-55`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.

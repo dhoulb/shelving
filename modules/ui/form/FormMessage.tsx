@@ -7,7 +7,6 @@ import { requireForm } from "./FormContext.js";
 /**
  * Show the current form's "main" (unnamed) message as a `<Message>`, or render nothing when there is no message.
  *
- * @param props Message props (excluding `children`) forwarded to the underlying `<Message>`.
  * @returns A `<Message status="error">` containing the message, or `null` when empty.
  * @kind component
  * @example <FormMessage />

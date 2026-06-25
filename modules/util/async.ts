@@ -31,7 +31,6 @@ export function notAsync<T>(value: PromiseLike<T> | T): value is T {
  * @param value The value to unwrap.
  * @returns Synchronous (not promised) value.
  * @throws Promise if value is an asynchronous (promised) value.
- * @example throwAsync(123) // 123
  * @see https://shelving.cc/util/async/throwAsync
  */
 export function throwAsync<T>(value: PromiseLike<T> | T): T {
@@ -79,7 +78,6 @@ export function assertPromise<T>(value: Promise<T> | T): asserts value is Promis
  * Run any queued microtasks now.
  *
  * @returns A promise that resolves after all currently-queued microtasks have run.
- * @example await runMicrotasks();
  * @see https://shelving.cc/util/async/runMicrotasks
  */
 export function runMicrotasks(): Promise<void> {
@@ -98,7 +96,6 @@ export function runMicrotasks(): Promise<void> {
  * @param promises Values (usually async, but not necessarily) that we need to wait for.
  * @returns Array of values of all promises (in the same order/positions as input).
  * @throws {Errors} If one or more promises throws all rejection reasons after resolving all of the promises.
- * @example const [a, b] = await awaitValues(getA(), getB());
  * @see https://shelving.cc/util/async/awaitValues
  */
 export async function awaitValues<T extends ImmutableArray<unknown>>(...promises: T): Promise<{ readonly [P in keyof T]: Awaited<T[P]> }>;
@@ -118,7 +115,6 @@ export async function awaitValues(...promises: unknown[]): Promise<ImmutableArra
  *
  * @param promises Values (usually async, but not necessarily) that we need to wait for.
  * @returns Array of rejection reasons of all promises (or empty array if no promises threw).
- * @example const errors = await awaitErrors(getA(), getB());
  * @see https://shelving.cc/util/async/awaitErrors
  */
 export async function awaitErrors(...promises: PromiseLike<unknown>[]): Promise<ImmutableArray<unknown>> {
@@ -176,7 +172,6 @@ export type Deferred<T = unknown> = {
  * - See https://github.com/tc39/proposal-promise-with-resolvers/
  *
  * @returns A `Deferred` exposing the promise and its `resolve()`/`reject()` functions.
- * @example const { promise, resolve } = createDeferred<number>();
  * @see https://shelving.cc/util/async/createDeferred
  */
 export function createDeferred<T = void>(): Deferred<T> {
@@ -199,7 +194,6 @@ export function createDeferred<T = void>(): Deferred<T> {
  *
  * @param ms The delay in milliseconds before the promise resolves.
  * @returns A promise that resolves with `undefined` after `ms` milliseconds.
- * @example await getDelay(300); // resolves after 300ms
  * @see https://shelving.cc/util/async/getDelay
  */
 export function getDelay(ms: number): Promise<void> {
@@ -214,7 +208,6 @@ export function getDelay(ms: number): Promise<void> {
  * @param signal The `AbortSignal` to watch.
  * @returns A promise that never resolves and rejects with the signal's reason when it fires.
  * @throws The signal's `reason` when the signal aborts.
- * @example await awaitRace(getDelay(300), awaitAbort(signal));
  * @see https://shelving.cc/util/async/awaitAbort
  */
 export function awaitAbort(signal: AbortSignal): Promise<never> {
@@ -235,7 +228,6 @@ export function awaitAbort(signal: AbortSignal): Promise<never> {
  * @param promises The promises to race against each other.
  * @returns A promise that settles with the first input to settle.
  * @throws The rejection reason of the first input to settle, if it rejects.
- * @example await awaitRace(getDelay(300), awaitAbort(signal)); // delay or abort, no leaked ABORT rejection if delay wins
  * @see https://shelving.cc/util/async/awaitRace
  */
 export function awaitRace<T>(...promises: Promise<T>[]): Promise<T> {

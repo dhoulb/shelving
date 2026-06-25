@@ -7,7 +7,6 @@ const FOCUSABLE = `a:link, button:enabled, input:enabled, select:enabled, textar
  *
  * @param el The HTML element to search (it is tested first, then its descendants).
  * @returns The first focusable `HTMLElement`, or `null` if none is found.
- * @example getFirstFocusable(form) // the first enabled input inside the form
  * @see https://shelving.cc/util/focus/getFirstFocusable
  */
 export function getFirstFocusable(el: HTMLElement): HTMLElement | null {

@@ -22,7 +22,6 @@ export interface DialogProps extends OptionalChildProps {
  * - Wraps content in `<Suspense>` so lazy children can stream in.
  *
  * @kind component
- * @example dialogs.show(<Dialog><p>Are you sure?</p></Dialog>);
  * @see https://shelving.cc/ui/Dialog
  */
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
@@ -64,11 +63,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
 /**
  * Button that closes its wrapping `<dialog>`, showing an X icon by default.
  *
- * @param children Optional button content (defaults to an X icon).
- * @param variants Button styling variants.
- * @returns The close button element.
  * @kind component
- * @example <DialogCloseButton plain />
  * @see https://shelving.cc/ui/DialogCloseButton
  */
 export function DialogCloseButton({ children = <XMarkIcon />, ...variants }: DialogCloseButtonProps): ReactElement {

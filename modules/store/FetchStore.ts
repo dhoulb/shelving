@@ -33,12 +33,6 @@ export type FetchCallback<T> = (signal: AbortSignal) => StoreInput<T> | PromiseL
  * - Fetches are de-duplicated, can be aged out with `maxAge`, and can be forced stale with `invalidate()`.
  * - Provide a `callback` to fetch values, or subclass and override `this._fetch()` for custom behaviour.
  *
- * @param value The initial value for the store, or `NONE` if it does not have one yet.
- * @param callback An optional callback that, if set, will be called when the `refresh()` method is invoked to fetch the next value.
- * - Override `this._fetch()` in subclasses to define custom fetching behaviour for a subclass.
- * @example
- * const store = new FetchStore(NONE, async signal => (await fetch("/api/thing", { signal })).json());
- * store.value; // throws a `Promise` while loading, then resolves to the fetched value
  * @see https://shelving.cc/store/FetchStore
  */
 export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
@@ -112,7 +106,6 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * - Created lazily; a new signal is issued each time `refresh()` starts a new fetch or `abort()` is called.
 	 * - Reading this triggers `abort()` so any current awaits are cancelled.
 	 *
-	 * @returns A fresh `AbortSignal` for the next fetch.
 	 * @see https://shelving.cc/store/FetchStore/signal
 	 */
 	get signal(): AbortSignal {
@@ -135,7 +128,6 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	/**
 	 * Whether this store has currently been invalidated and needs a refresh.
 	 *
-	 * @returns `true` if a refresh is pending after an `invalidate()` call, otherwise `false`.
 	 * @see https://shelving.cc/store/FetchStore/invalidated
 	 */
 	get invalidated(): boolean {
@@ -146,7 +138,6 @@ export class FetchStore<T, TT = T> extends BusyStore<T, TT> {
 	 * Invalidate this store so a new fetch is triggered on the next read of `loading` or `value`.
 	 * - Triggers `abort()` so any current awaits are cancelled.
 	 *
-	 * @returns Nothing.
 	 * @example store.invalidate(); // next read of `value` refetches
 	 * @see https://shelving.cc/store/FetchStore/invalidate
 	 */

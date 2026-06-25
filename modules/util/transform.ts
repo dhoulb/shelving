@@ -22,7 +22,6 @@ export type Transforms<I extends ImmutableObject, O extends ImmutableObject, A e
  * @param transform Function applied to each item to produce the output item.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable yielding each transformed item.
- * @example [...mapItems([1, 2], n => n * 2)] // [2, 4]
  * @see https://shelving.cc/util/transform/mapItems
  */
 export function* mapItems<I, O, A extends Arguments = []>(items: Iterable<I>, transform: (v: I, ...args: A) => O, ...args: A): Iterable<O> {
@@ -36,7 +35,6 @@ export function* mapItems<I, O, A extends Arguments = []>(items: Iterable<I>, tr
  * @param transform Function applied to each item to produce the output item.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new array containing each transformed item.
- * @example mapArray([1, 2], n => n * 2) // [2, 4]
  * @see https://shelving.cc/util/transform/mapArray
  */
 export function mapArray<I, O, A extends Arguments = []>(
@@ -55,7 +53,6 @@ export function mapArray<I, O, A extends Arguments = []>(
  * @param transform Function applied to each `[key, value]` prop to produce the output value.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new object with the same keys and transformed values.
- * @example mapProps({ a: 1, b: 2 }, ([, v]) => v * 2) // { a: 2, b: 4 }
  * @see https://shelving.cc/util/transform/mapProps
  */
 export function mapProps<I extends ImmutableObject, O extends ImmutableObject, A extends Arguments = []>(
@@ -74,7 +71,6 @@ export function mapProps<I extends ImmutableObject, O extends ImmutableObject, A
  * @param transform Function applied to each value to produce the output value.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns A new dictionary with the same keys and transformed values.
- * @example mapDictionary({ a: 1, b: 2 }, v => v * 2) // { a: 2, b: 4 }
  * @see https://shelving.cc/util/transform/mapDictionary
  */
 export function mapDictionary<I, O, A extends Arguments = []>(
@@ -93,7 +89,6 @@ export function mapDictionary<I, O, A extends Arguments = []>(
  * @param transform Function applied to each entry to produce the output value.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable of `[key, transformedValue]` entries.
- * @example [...mapEntries([["a", 1]], ([, v]) => v * 2)] // [["a", 2]]
  * @see https://shelving.cc/util/transform/mapEntries
  */
 export function* mapEntries<K, I, O, A extends Arguments = []>(
@@ -112,7 +107,6 @@ export function* mapEntries<K, I, O, A extends Arguments = []>(
  * @param transform Function applied to each value to produce the output value.
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An iterable of `[key, transformedValue]` entries.
- * @example [...mapEntryValues([["a", 1]], v => v * 2)] // [["a", 2]]
  * @see https://shelving.cc/util/transform/mapEntryValues
  */
 export function* mapEntryValues<K, I, O, A extends Arguments = []>(
@@ -132,7 +126,6 @@ export function* mapEntryValues<K, I, O, A extends Arguments = []>(
  * @param transforms Object of per-prop transform functions, keyed by prop name.
  * @param args Additional arguments passed through to each transform.
  * @returns Transformed object (or same object if no changes were made).
- * @example transformObject({ a: 1, b: 2 }, { a: n => n + 10 }) // { a: 11, b: 2 }
  * @see https://shelving.cc/util/transform/transformObject
  */
 export function transformObject<T extends ImmutableObject, A extends Arguments = []>(
@@ -185,7 +178,6 @@ export function transformObject<A extends Arguments = []>(
  * @param transform Function applied to each item to produce the output item (may be async).
  * @param args Additional arguments passed through to `transform` on every call.
  * @returns An async iterable yielding each transformed item.
- * @example for await (const n of mapSequence(source, x => x * 2)) use(n);
  * @see https://shelving.cc/util/transform/mapSequence
  */
 export async function* mapSequence<I, O, A extends Arguments = []>(

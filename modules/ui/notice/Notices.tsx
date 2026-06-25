@@ -21,9 +21,7 @@ export interface NoticesProps extends FlexVariants {}
  * - Listens for `"notice"` events on `window` (or that bubble up to `window`) and shows them in the global notice list.
  * - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
  *
- * @returns The notices container element.
  * @kind component
- * @example <Notices column />
  * @see https://shelving.cc/ui/Notices
  */
 export function Notices(props: NoticesProps): ReactElement {

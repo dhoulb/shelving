@@ -11,9 +11,6 @@ import { SQLMigrator, type SQLTable, type SQLTableColumn } from "./SQLMigrator.j
 /**
  * SQLite (and Cloudflare D1) migrator that uses `sqlite_master` as the schema source of truth.
  *
- * @example
- *  const migrator = new SQLiteMigrator(provider);
- *  await migrator.migrate(users, posts);
  * @see https://shelving.cc/db/SQLiteMigrator
  */
 export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {

@@ -70,12 +70,6 @@ export type StoreReducer<I, O, A extends Arguments = []> = (value: O, ...args: A
  * - Override conversion by overriding `this._convert(v: TT): T`
  * - Warning: With no override, default behaviour is to just assert TT is T (unsafe).
  *
- * @example
- * const store = new Store(123);
- * store.value; // 123
- * store.value = 456;
- * for await (const value of store) console.log(value); // 456, ...
- *
  * @see https://shelving.cc/store/Store
  */
 export class Store<T, TT = T> implements AsyncIterable<T, void, void>, AsyncDisposable {

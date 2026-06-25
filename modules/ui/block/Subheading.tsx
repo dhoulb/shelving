@@ -18,8 +18,6 @@ export type SubheadingProps = HeadingProps;
  * - Only marginally larger than body text; its bold weight is the main differentiator.
  *
  * @kind component
- * @returns Rendered `<h3>` heading element.
- * @example <Subheading>Details</Subheading>
  * @see https://shelving.cc/ui/Subheading
  */
 export function Subheading({ level = "3", children, ...props }: SubheadingProps): ReactElement {

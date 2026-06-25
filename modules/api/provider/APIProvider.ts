@@ -7,10 +7,6 @@ import type { Endpoint } from "../endpoint/Endpoint.js";
  * - Concrete subclasses implement `renderURL()`, `createRequest()`, `fetch()`, and `parseResponse()`; `call()` orchestrates them.
  * - Implements `AsyncDisposable` so providers can be wrapped and disposed in a chain.
  *
- * @example
- * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
- * const user = await provider.call(getUser, { id: "abc" });
- *
  * @see https://shelving.cc/api/APIProvider
  */
 export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisposable {
@@ -94,7 +90,6 @@ export abstract class APIProvider<P = unknown, R = unknown> implements AsyncDisp
 	 * @param caller The function to attribute thrown errors to.
 	 * @returns A promise resolving to the parsed result.
 	 * @throws {ResponseError} if the response status is non-2xx.
-	 * @example const user = await provider.call(getUser, { id: "abc" });
 	 * @see https://shelving.cc/api/APIProvider/call
 	 */
 	async call<PP extends P, RR extends R>(

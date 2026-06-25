@@ -13,8 +13,6 @@ export class Errors extends AggregateError implements BaseError {
 	readonly [key: string]: unknown;
 
 	/**
-	 * Create a new `Errors` aggregate error.
-	 *
 	 * @param errors Iterable of the individual errors being aggregated.
 	 * @param message Optional human-readable message describing the aggregate failure.
 	 */

@@ -48,9 +48,6 @@ export interface DBContext<I extends Identifier, T extends Data> {
  * - If the database has a `CacheDBProvider` in its chain then in-memory data will be used in the returned stores.
  *
  * @param provider `DBProvider` the created context resolves item and query stores against.
- * @returns `DBContext` bundle containing the `useItem()` and `useQuery()` hooks and the `<DBContext>` wrapper component.
- *
- * @example const { useItem, useQuery, DBContext } = createDBContext(provider);
  *
  * @see https://shelving.cc/react/createDBContext
  */

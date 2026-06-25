@@ -39,7 +39,6 @@ export interface IndentVariants {
 /**
  * Get the inline-padding ("indent") class for a component from its `indent` variant prop.
  *
- * @param variants
  * @returns The indent class string, or `undefined` when no `indent` is set.
  * @example getIndentClass({ indent: "normal" }) // "indent-normal"
  * @see https://shelving.cc/ui/getIndentClass

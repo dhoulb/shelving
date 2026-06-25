@@ -14,31 +14,14 @@ import { NULLABLE } from "./NullableSchema.js";
  * @see https://shelving.cc/schema/TimeSchema
  */
 export class TimeSchema extends DateSchema {
-	/**
-	 * Create a new `TimeSchema`.
-	 */
 	constructor({ one = "time", title = "Time", input = "time", ...options }: DateSchemaOptions) {
 		super({ one, title, input, ...options });
 	}
-	/**
-	 * Convert a `Date` object to a `hh:mm:ss.fff` time string.
-	 *
-	 * @param value The `Date` to convert.
-	 * @returns The time portion as a `hh:mm:ss.fff` string.
-	 * @example schema.stringify(new Date("2005-09-12T23:59:00Z")) // "23:59:00.000"
-	 * @see https://shelving.cc/schema/TimeSchema/stringify
-	 */
+	/** Stringifies as a `hh:mm:ss.fff` time string. */
 	override stringify(value: Date): string {
 		return requireTimeString(value);
 	}
-	/**
-	 * Format a validated time string as a human-readable string for display.
-	 *
-	 * @param value The validated time string to format.
-	 * @returns The time formatted for display.
-	 * @example schema.format("23:59") // "23:59"
-	 * @see https://shelving.cc/schema/TimeSchema/format
-	 */
+	/** Formats the time string for display via `formatTime()`. */
 	override format(value: string): string {
 		return formatTime(value, undefined, this.format);
 	}

@@ -81,7 +81,6 @@ const MATCHERS: {
  *
  * @param query The query to extract filters from.
  * @returns Array of decoded `QueryFilter` objects (excludes `$order` and `$limit` and any `undefined` values).
- * @example getQueryFilters({ name: "Alice" }) // [{ key: ["name"], operator: "is", value: "Alice" }]
  * @see https://shelving.cc/util/query/getQueryFilters
  */
 export function getQueryFilters<T extends Data>(query: Query<T>): ImmutableArray<QueryFilter> {
@@ -108,7 +107,6 @@ function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilt
  *
  * @param query The query to extract sort orders from (reads its `$order` prop).
  * @returns Array of decoded `QueryOrder` objects (`!`-prefixed keys are descending, others ascending).
- * @example getQueryOrders({ $order: "!date" }) // [{ key: ["date"], direction: "desc" }]
  * @see https://shelving.cc/util/query/getQueryOrders
  */
 export function getQueryOrders<T extends Data>({ $order }: Query<T>): ImmutableArray<QueryOrder> {
@@ -127,7 +125,6 @@ function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | 
  *
  * @param query The query to read the limit from (reads its `$limit` prop).
  * @returns The maximum number of results, or `undefined` if the query is unlimited.
- * @example getQueryLimit({ $limit: 10 }) // 10
  * @see https://shelving.cc/util/query/getQueryLimit
  */
 export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | undefined {
@@ -141,7 +138,6 @@ export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | un
  * @param items The iterable of data items to query.
  * @param query The query to apply (filters, sort order, and limit).
  * @returns Iterable of items matching the query, in sorted and limited order.
- * @example Array.from(queryItems(items, { name: "Alice", $limit: 1 })) // matching items
  * @see https://shelving.cc/util/query/queryItems
  */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
@@ -155,7 +151,6 @@ export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>):
  * @param items The iterable of data items to query.
  * @param query The query to apply (filters, sort order, and limit).
  * @returns Iterable of matching items (skips sorting when the query has no limit).
- * @example Array.from(queryWritableItems(items, { name: "Alice" })) // matching items (unsorted)
  * @see https://shelving.cc/util/query/queryWritableItems
  */
 export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
@@ -168,7 +163,6 @@ export function queryWritableItems<T extends Data>(items: Iterable<T>, query: Qu
  * @param item The data item to test.
  * @param filters The set of filters that the item must satisfy.
  * @returns `true` if the item matches every filter, `false` otherwise.
- * @example matchQueryItem({ name: "Alice" }, [{ key: ["name"], operator: "is", value: "Alice" }]) // true
  * @see https://shelving.cc/util/query/matchQueryItem
  */
 export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<QueryFilter>): boolean {
@@ -185,7 +179,6 @@ export function matchQueryItem<T extends Data>(item: T, filters: ImmutableArray<
  * @param items The iterable of data items to filter.
  * @param filters The set of filters that each yielded item must satisfy.
  * @yields Items that match every filter (yields all items when `filters` is empty).
- * @example Array.from(filterQueryItems(items, filters)) // matching items
  * @see https://shelving.cc/util/query/filterQueryItems
  */
 export function* filterQueryItems<T extends Data>(items: Iterable<T>, filters: ImmutableArray<QueryFilter>): Iterable<T> {

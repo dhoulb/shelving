@@ -19,7 +19,6 @@ export type StopCallback = () => void;
  * Callback function that does nothing and returns a blackhole stop callback.
  * - Useful as a no-op default where a `StartCallback` is expected.
  *
- * @example STOPHOLE() // BLACKHOLE
  * @see https://shelving.cc/util/start/STOPHOLE
  */
 export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
@@ -29,21 +28,12 @@ export const STOPHOLE: (...args: Arguments) => StopCallback = () => BLACKHOLE;
  * - If process has already started, `starter.start()` won't be called twice (including if `start()` didn't return a `stop()` callback).
  * - Implements `Disposable` so it can be used with `using`, calling `stop()` on disposal.
  *
- * @example
- * const starter = new Starter(() => { console.log("start"); return () => console.log("stop"); });
- * starter.start();
- * starter.stop();
  * @see https://shelving.cc/util/start/Starter
  */
 export class Starter<T extends Arguments = []> implements Disposable {
 	private readonly _start: StartCallback<T>;
 	private _started = false;
 	private _stop: StopCallback | void = undefined;
-	/**
-	 * Create a new `Starter` wrapping a start callback.
-	 *
-	 * @param start The callback to run on `start()`, which may return a stop callback.
-	 */
 	constructor(start: StartCallback<T>) {
 		this._start = start;
 	}
@@ -54,7 +44,6 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	 * @param values Values forwarded to the start callback.
 	 * @returns Nothing.
 	 * @throws {UnexpectedError} If the start callback throws.
-	 * @example starter.start();
 	 * @see https://shelving.cc/util/start/Starter/start
 	 */
 	start(...values: T): void {
@@ -72,7 +61,6 @@ export class Starter<T extends Arguments = []> implements Disposable {
 	 *
 	 * @returns Nothing.
 	 * @throws {UnexpectedError} If the stop callback throws.
-	 * @example starter.stop();
 	 * @see https://shelving.cc/util/start/Starter/stop
 	 */
 	stop(): void {
@@ -103,7 +91,6 @@ export type PossibleStarter<T extends Arguments> = StartCallback<T> | Starter<T>
  * - Returns the input unchanged when it is already a `Starter`; otherwise wraps the callback in a new `Starter`.
  *
  * @param start A `StartCallback` or an existing `Starter`.
- * @example getStarter(() => () => {}) // Starter instance
  * @see https://shelving.cc/util/start/getStarter
  */
 export function getStarter<T extends Arguments>(start: StartCallback<T> | Starter<T>): Starter<T> {

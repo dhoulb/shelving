@@ -7,7 +7,7 @@ The full detail page for a documented symbol — the default renderer for `tree-
 - Above the title it renders an ancestor trail via `<TreeBreadcrumbs>`, so it needs a `<TreeProvider>` above it to resolve the ancestors.
 - The title carries a `<DocumentationKind>` tag, and below it `<DocumentationButtons>` lists the symbol's relations (`member of`, `extends`, `implements`) as links.
 - It renders the signature(s) via `<DocumentationSignatures>` (one block per overload, each carrying the symbol's name), then prose content, then conditional `Parameters` / `Returns` / `Throws` / `Examples` sections — each only appears when it has entries. Parameters render as a `<Table>` (`Param` / `Type` / `Default` / `Description` columns, a `-` standing in where a parameter has no default); Returns and Throws render as two-column tables (`Return` / `Throws` plus `Description`), with the type in the first column.
-- Child symbols follow, grouped by `kind` into card sections (`Components`, `Functions`, `Classes`, `Interfaces`, `Types`, `Constants`, `Methods`, `Properties`) rendered as `<DocumentationCard>`s inside a `<TreeCards>` listing. A new documented kind needs an entry in `KIND_SECTIONS` here (and a colour in `<DocumentationKind>`).
+- Child symbols follow, grouped by `kind` into card sections (`Modules`, `Components`, `Functions`, `Classes`, `Interfaces`, `Types`, `Constants`, `Static methods`, `Methods`) rendered as `<DocumentationCard>`s inside a `<TreeCards>` listing. Data members (properties) are not child elements — they render as the Properties table instead. A new documented kind needs an entry in `KINDS` here (and a colour in `<DocumentationKind>`).
 
 ## Usage
 

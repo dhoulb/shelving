@@ -49,7 +49,7 @@ isObjectEqual({ x: [1, 2] }, { x: [1, 2] }, isDeepEqual); // true
 ```ts
 import { isInArray, isArrayWith } from "shelving/util";
 
-isInArray(["x", "y", "z"], "y");   // true  — is "y" in the array?
+isInArray("y", ["x", "y", "z"]);   // true  — is "y" in the array?
 isArrayWith(["x", "y"], "x");      // true  — is the left value an array containing "x"?
 ```
 

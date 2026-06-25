@@ -22,9 +22,6 @@ export interface ListProps extends GapVariants, BlockVariants {
  * - Pass `ordered` to render an ordered `<ol>` instead of the default unordered `<ul>`.
  *
  * @kind component
- * @returns Rendered `<ul>` or `<ol>` list element.
- * @example <List>{["One", "Two", "Three"]}</List>
- * @example <List ordered>{["First", "Second"]}</List>
  * @see https://shelving.cc/ui/List
  */
 export function List({ children, ordered = false, ...props }: ListProps): ReactElement {

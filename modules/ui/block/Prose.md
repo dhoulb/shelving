@@ -33,10 +33,4 @@ import { Prose, Paragraph } from "shelving/ui";
 
 ## Styling
 
-`Prose` exposes a single hook for its own block margin. The longform typography of nested content is themed through each block/inline component's own hooks (e.g. `--paragraph-space`, `--heading-size`), not through `Prose` itself.
-
-| Variable | Styles | Default |
-|---|---|---|
-| `--prose-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-
-**Global tokens it reads:** `--space-paragraph`.
+`Prose` exposes no own hooks. It only stamps the "prose" variant class onto its `<div>`; the longform typography of nested content is themed through each block/inline component's own hooks (e.g. `--paragraph-space`, `--heading-size`), not through `Prose` itself.

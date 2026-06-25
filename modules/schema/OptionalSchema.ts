@@ -18,49 +18,20 @@ export interface OptionalSchemaOptions<T> extends ThroughSchemaOptions<T | undef
  * - When used with `validateData()` this means the prop can be silently skipped.
  * - Any other value is delegated to the source schema for validation.
  *
- * @example
- *  const schema = new OptionalSchema({ source: STRING });
- *  schema.validate(undefined); // Returns undefined
- *  schema.validate("abc"); // Returns "abc"
- *
  * @see https://shelving.cc/schema/OptionalSchema
  */
 export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
 	/** Default value for an `OptionalSchema` is always `undefined` (default value is only used when a value is `undefined`, so otherwise `undefined` could never be returned as a value). */
 	declare readonly value: undefined;
-	/**
-	 * Create a new `OptionalSchema`.
-	 */
 	constructor(options: OptionalSchemaOptions<T>) {
 		super({ ...options, value: undefined });
 	}
-	/**
-	 * Validate an unknown value, returning `undefined` for `undefined` input or delegating to the source schema.
-	 *
-	 * @param unsafeValue Value to validate.
-	 * @returns The valid value of type `T`, or `undefined` when the input is `undefined`.
-	 * @throws `string` error message if the source schema rejects the value.
-	 *
-	 * @example
-	 *  OPTIONAL(STRING).validate(undefined); // Returns undefined
-	 *
-	 * @see https://shelving.cc/schema/OptionalSchema/validate
-	 */
+	/** Returns `undefined` for `undefined` input; otherwise delegates to the source schema. */
 	override validate(unsafeValue: unknown): T | undefined {
 		if (unsafeValue === undefined) return undefined;
 		return super.validate(unsafeValue);
 	}
-	/**
-	 * Format an optional value as a human-readable string for display.
-	 *
-	 * @param value Value to format, or `undefined`.
-	 * @returns The formatted string, or `` `No ${one}` `` when the value is `undefined`.
-	 *
-	 * @example
-	 *  OPTIONAL(STRING).format(undefined); // Returns "No string"
-	 *
-	 * @see https://shelving.cc/schema/OptionalSchema/format
-	 */
+	/** Formats `undefined` as `` `No ${one}` ``; otherwise delegates to the source schema. */
 	override format(value: T | undefined): string {
 		return value === undefined ? `No ${this.source.one}` : super.format(value);
 	}
@@ -72,11 +43,7 @@ export class OptionalSchema<T> extends ThroughSchema<T | undefined> {
  * Sugar factory for `OptionalSchema`.
  *
  * @param source Source schema to wrap.
- *
- * @example
- *  const schema = OPTIONAL(STRING);
- *  schema.validate(undefined); // Returns undefined
- *
+ * @example OPTIONAL(STRING).validate(undefined); // Returns undefined
  * @see https://shelving.cc/schema/OPTIONAL
  */
 export function OPTIONAL<T>(source: Schema<T>): OptionalSchema<T> {

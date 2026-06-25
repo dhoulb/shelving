@@ -16,12 +16,6 @@ export abstract class ThroughExtractor<I, O extends TreeElement = TreeElement> e
 	 */
 	readonly source: Extractor<I, O>;
 
-	/**
-	 * Create a `ThroughExtractor` wrapping a source extractor.
-	 *
-	 * @param source The inner extractor to delegate to.
-	 * @see https://shelving.cc/extract/ThroughExtractor
-	 */
 	constructor(source: Extractor<I, O>) {
 		super();
 		this.source = source;

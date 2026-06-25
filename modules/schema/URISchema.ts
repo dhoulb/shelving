@@ -51,9 +51,6 @@ export class URISchema extends StringSchema {
 	/** Whitelist of allowed URI schemes, e.g. `["https:", "http:"]`. */
 	readonly schemes: URISchemes;
 
-	/**
-	 * Create a new `URISchema`.
-	 */
 	constructor({ one = "URI", title = "URI", schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URISchemaOptions) {
 		super({
 			one,
@@ -66,17 +63,7 @@ export class URISchema extends StringSchema {
 		});
 		this.schemes = schemes;
 	}
-	/**
-	 * Validate an unknown input value and return a normalised absolute URI string.
-	 *
-	 * - Override to validate the URI and check the scheme against the whitelist.
-	 *
-	 * @param unsafeValue The unknown input value to validate.
-	 * @returns The valid, normalised URI string.
-	 * @throws `string` error message if the value is empty, malformed, or uses a disallowed scheme.
-	 * @example schema.validate("https://www.google.com") // "https://www.google.com/"
-	 * @see https://shelving.cc/schema/URISchema/validate
-	 */
+	/** Parses and normalises the URI, then checks its scheme against `schemes`. */
 	override validate(unsafeValue: unknown): URIString {
 		const str = super.validate(unsafeValue);
 		const uri = getURI(str);
@@ -85,29 +72,13 @@ export class URISchema extends StringSchema {
 		return uri.href;
 	}
 
-	/**
-	 * Sanitize a string before validation by stripping all whitespace.
-	 *
-	 * - URIs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
-	 *
-	 * @param str The raw string to sanitize.
-	 * @returns The sanitized string with all whitespace removed.
-	 * @example schema.sanitize(" https://a.com ") // "https://a.com"
-	 * @see https://shelving.cc/schema/URISchema/sanitize
-	 */
+	/** Strips all whitespace (URIs `%20`-encode real spaces). */
 	override sanitize(str: string): string {
 		// URIs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
 		return sanitizeWord(str);
 	}
 
-	/**
-	 * Format a validated URI string for display.
-	 *
-	 * @param value The valid URI string to format.
-	 * @returns The URI formatted as a human-readable string.
-	 * @example schema.format("https://www.google.com/") // "www.google.com"
-	 * @see https://shelving.cc/schema/URISchema/format
-	 */
+	/** Formats the URI for display via `formatURI()`. */
 	override format(value: string): string {
 		return formatURI(value, this.format);
 	}

@@ -59,7 +59,6 @@ export type ValidatorsType<T> = { readonly [K in keyof T]: ValidatorType<T[K]> }
  * @param validator The validator to validate the value with.
  * @returns The valid value, or `undefined` if validation threw a string message.
  * @throws `Error` if the validator throws a non-string error.
- * @example getValid(unsafeValue, STRING) // valid string, or `undefined`
  * @see https://shelving.cc/util/validate/getValid
  */
 export function getValid<T>(value: unknown, validator: Validator<T>): T | undefined {
@@ -82,7 +81,6 @@ export function getValid<T>(value: unknown, validator: Validator<T>): T | undefi
  * @returns The valid value.
  * @throws `RequiredError` if validation threw a string message.
  * @throws `Error` if the validator throws a non-string error.
- * @example requireValid(unsafeValue, STRING) // valid string (or throws)
  * @see https://shelving.cc/util/validate/requireValid
  */
 export function requireValid<T>(value: unknown, validator: Validator<T>, caller: AnyCaller = requireValid): T {
@@ -130,7 +128,6 @@ export function* validateItems<T>(unsafeItems: PossibleArray<unknown>, validator
  * @param validator The validator to validate each item with.
  * @returns Array with valid items.
  * @throws `string` if one or more items did not validate (one `"index: message"` line per failure, joined by newlines).
- * @example validateArray(["a", "b"], STRING) // ["a", "b"]
  * @see https://shelving.cc/util/validate/validateArray
  */
 export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator: Validator<T>): ImmutableArray<T> {
@@ -162,7 +159,6 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  * @param validator The validator to validate each value with.
  * @returns Dictionary with valid values.
  * @throws `string` if one or more entry values did not validate (one `"key: message"` line per failure, joined by newlines).
- * @example validateDictionary({ a: "1", b: "2" }, STRING) // { a: "1", b: "2" }
  * @see https://shelving.cc/util/validate/validateDictionary
  */
 export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
@@ -195,7 +191,6 @@ export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unkno
  * @param validators The set of named validators to validate each prop with.
  * @returns Valid object.
  * @throws `string` if one or more props did not validate (one `"key: message"` line per failure, joined by newlines).
- * @example validateData({ name: "Alice" }, { name: STRING }) // { name: "Alice" }
  * @see https://shelving.cc/util/validate/validateData
  */
 export function validateData<T extends Data>(unsafeData: Data, validators: Validators<T>): T {

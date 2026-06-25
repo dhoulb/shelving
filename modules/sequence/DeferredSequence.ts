@@ -25,12 +25,6 @@ export type DeferredResult<T, R> = IteratorResult<T, R | undefined> | DeferredEr
  * - Implements `AsyncIterable` so values can be iterated over using `for await...of`
  * - Call `resolve(value)` to publish the next value, `reject(reason?)` to publish an error, or `done(value?)` to signal completion.
  *
- * @example
- * 	const seq = new DeferredSequence<number>();
- * 	(async () => { for await (const n of seq) console.log(n); })();
- * 	seq.resolve(1);
- * 	seq.resolve(2);
- * 	seq.done();
  * @see https://shelving.cc/sequence/DeferredSequence
  */
 export class DeferredSequence<T = void, R = void, N = void> extends Sequence<T, R, N> implements Deferred<T>, Promise<T> {

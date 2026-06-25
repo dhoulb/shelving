@@ -27,6 +27,6 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 
 ## Styling
 
-This layout exposes no own `--centered-layout-*` hooks. The inner column is capped at the global `--width-wide` token (dropped when `fullWidth` is set), and the outer element owns its scroll, padding, and safe-area behaviour directly — reading the layout hooks `--layout-space`, `--layout-padding`, `--layout-body-bg`, and `--layout-inset-top` / `-bottom` / `-left` / `-right`.
+This layout exposes no own `--centered-layout-*` hooks. The inner column is capped at the global `--width-narrow` token (dropped when `fullWidth` is set), and the outer element owns its scroll, padding, and safe-area behaviour directly — reading the layout hooks `--layout-space`, `--layout-padding`, `--layout-body-bg`, and `--layout-inset-top` / `-bottom` / `-left` / `-right`.
 
-**Global tokens it reads** — `--width-wide`.
+**Global tokens it reads** — `--width-narrow`.

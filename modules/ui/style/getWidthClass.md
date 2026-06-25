@@ -6,7 +6,7 @@ The `width` variant prop sets a component's inline-size — `<Card width="narrow
 
 **Values:**
 
-- `xxnarrow` / `xnarrow` / `narrow` / `normal` / `wide` / `xwide` / `xxwide` / `xxxwide` — fixed widths from the variables below.
+- `xxnarrow` / `xnarrow` / `narrow` / `normal` / `wide` / `xwide` / `xxwide` — fixed widths from the variables below.
 - `full` — the full available width.
 - `fit` — shrink to the content's intrinsic width (`fit-content`).
 

@@ -17,37 +17,15 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  * - Written data is validated against the collection's data schema; read data is validated against the item schema, so trusted, correctly-typed values reach the rest of the app.
  * - Validation failures here are program-state errors, so they throw a typed `ValueError` rather than a raw validation `string`.
  *
- * @example
- *  const provider = new ValidationDBProvider(new FirestoreProvider());
- *  await provider.setItem(users, 123, { name: "Dave", age: 40 }); // Validates before writing.
- *
  * @see https://shelving.cc/db/ValidationDBProvider
  */
 export class ValidationDBProvider<I extends Identifier, T extends Data> extends ThroughDBProvider<I, T> {
-	/**
-	 * Get an item by its id and validate it, or `undefined` if it doesn't exist.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to get.
-	 * @returns The validated item, or `undefined` if no item exists with that id.
-	 * @throws `ValueError` if the stored item does not validate against the collection schema.
-	 * @example await provider.getItem(users, 123) // Validated item or undefined.
-	 * @see https://shelving.cc/db/ValidationDBProvider/getItem
-	 */
+	/** Validate the item after reading; throws `ValueError` if it fails the collection schema. */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return _validateItem(collection, await super.getItem(collection, id), this.getItem);
 	}
 
-	/**
-	 * Subscribe to live changes for a single item, validating each emission.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to subscribe to.
-	 * @returns Async sequence yielding the validated item (or `undefined`) on every change.
-	 * @throws `ValueError` if an emitted item does not validate against the collection schema.
-	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://shelving.cc/db/ValidationDBProvider/getItemSequence
-	 */
+	/** Validate each emitted item; throws `ValueError` if one fails the collection schema. */
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
@@ -55,44 +33,17 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		for await (const item of super.getItemSequence(collection, id)) yield _validateItem(collection, item, this.getItemSequence);
 	}
 
-	/**
-	 * Validate and add a new item, returning its validated generated id.
-	 *
-	 * @param collection Collection to add the item to.
-	 * @param data Data for the new item (validated before writing).
-	 * @returns The validated generated identifier for the new item.
-	 * @throws `ValueError` if the data or returned id does not validate against the collection schema.
-	 * @example await provider.addItem(users, { name: "Dave", age: 40 }) // 123
-	 * @see https://shelving.cc/db/ValidationDBProvider/addItem
-	 */
+	/** Validate the data before writing and the returned id after; throws `ValueError` on failure. */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return _validateIdentifier(collection, await super.addItem(collection, collection.validate(data)), this.addItem);
 	}
 
-	/**
-	 * Validate and set (insert or overwrite) the data for an item by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to set.
-	 * @param data Full data to store for the item (validated before writing).
-	 * @throws `ValueError` if the data does not validate against the collection schema.
-	 * @example await provider.setItem(users, 123, { name: "Dave", age: 40 });
-	 * @see https://shelving.cc/db/ValidationDBProvider/setItem
-	 */
+	/** Validate the data before writing; throws `ValueError` if it fails the collection schema. */
 	override setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		return super.setItem(collection, id, collection.validate(data));
 	}
 
-	/**
-	 * Validate and apply partial updates to an existing item by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to update.
-	 * @param updates Updates to apply (validated before writing).
-	 * @throws `ValueError` if the updates do not validate against the collection schema.
-	 * @example await provider.updateItem(users, 123, { age: 41 });
-	 * @see https://shelving.cc/db/ValidationDBProvider/updateItem
-	 */
+	/** Validate the updates before writing; throws `ValueError` if they fail the collection schema. */
 	override updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
@@ -101,29 +52,11 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		return super.updateItem(collection, id, _validateUpdates(collection, updates, this.updateItem));
 	}
 
-	/**
-	 * Count the items in a collection matching an optional query (passed straight through).
-	 *
-	 * @param collection Collection to count items in.
-	 * @param query Query to filter the counted items (counts all items when omitted).
-	 * @returns The number of matching items.
-	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://shelving.cc/db/ValidationDBProvider/countQuery
-	 */
 	override countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return super.countQuery(collection, query);
 	}
 
-	/**
-	 * Get the items matching an optional query and validate them.
-	 *
-	 * @param collection Collection to query.
-	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
-	 * @returns An array of validated matching items.
-	 * @throws `ValueError` if one or more stored items do not validate against the collection schema.
-	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Validated items.
-	 * @see https://shelving.cc/db/ValidationDBProvider/getQuery
-	 */
+	/** Validate the items after reading; throws `ValueError` if any fail the collection schema. */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
@@ -131,16 +64,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		return _validateItems(collection, await super.getQuery(collection, query), this.getQuery);
 	}
 
-	/**
-	 * Subscribe to live changes for a query, validating each emitted result.
-	 *
-	 * @param collection Collection to query.
-	 * @param query Query to filter, sort, and limit the items.
-	 * @returns Async sequence yielding the validated matching items on every change.
-	 * @throws `ValueError` if one or more emitted items do not validate against the collection schema.
-	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://shelving.cc/db/ValidationDBProvider/getQuerySequence
-	 */
+	/** Validate each emitted result; throws `ValueError` if any items fail the collection schema. */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
@@ -148,16 +72,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		for await (const items of super.getQuerySequence(collection, query)) yield _validateItems(collection, items, this.getQuerySequence);
 	}
 
-	/**
-	 * Validate and set (overwrite) the data for every item matching a query.
-	 *
-	 * @param collection Collection to write to.
-	 * @param query Query selecting the items to set.
-	 * @param data Full data to store for each matching item (validated before writing).
-	 * @throws `ValueError` if the data does not validate against the collection schema.
-	 * @example await provider.setQuery(users, { age: 40 }, { name: "Dave", age: 41 });
-	 * @see https://shelving.cc/db/ValidationDBProvider/setQuery
-	 */
+	/** Validate the data before writing; throws `ValueError` if it fails the collection schema. */
 	override setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -166,16 +81,7 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		return super.setQuery(collection, query, collection.validate(data));
 	}
 
-	/**
-	 * Validate and apply partial updates to every item matching a query.
-	 *
-	 * @param collection Collection to write to.
-	 * @param query Query selecting the items to update.
-	 * @param updates Updates to apply to each matching item (validated before writing).
-	 * @throws `ValueError` if the updates do not validate against the collection schema.
-	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://shelving.cc/db/ValidationDBProvider/updateQuery
-	 */
+	/** Validate the updates before writing; throws `ValueError` if they fail the collection schema. */
 	override updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -184,14 +90,6 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		return super.updateQuery(collection, query, _validateUpdates(collection, updates, this.updateQuery));
 	}
 
-	/**
-	 * Delete every item matching a query (passed straight through).
-	 *
-	 * @param collection Collection to delete from.
-	 * @param query Query selecting the items to delete.
-	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://shelving.cc/db/ValidationDBProvider/deleteQuery
-	 */
 	override deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
 		return super.deleteQuery(collection, query);
 	}

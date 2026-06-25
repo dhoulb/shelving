@@ -3,7 +3,7 @@
 Constants and a helper for wrapping terminal output in ANSI escape codes. Use these when writing CLI tools or test reporters that need colour and style without pulling in a third-party library.
 
 - All colour/style constants are plain escape-code strings, so you can concatenate them yourself or pass them to `ansiWrap()`.
-- `ansiWrap` resolves colour support live on every call the way the broader CLI ecosystem does — precedence `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off. Colour is emitted only when the output is an interactive TTY (or `FORCE_COLOR` opts in), so non-interactive sinks (files, log aggregators, serverless platforms like Cloudflare Workers) get plain text by default.
+- `ansiWrap` emits colour only when the runtime supports it, resolved once at module load the way the broader CLI ecosystem does — precedence `FORCE_COLOR` > `NO_COLOR` > TTY detection > default-off. Colour is emitted only when the output is an interactive TTY (or `FORCE_COLOR` opts in), so non-interactive sinks (files, log aggregators, serverless platforms like Cloudflare Workers) get plain text by default.
 - `NO_COLOR` (any non-empty value) forces colour off, per [no-color.org](https://no-color.org); `FORCE_COLOR` forces it on (`0`/`false` forces off) and overrides `NO_COLOR`.
 
 ## Usage

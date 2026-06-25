@@ -54,7 +54,6 @@ async function _iteratorReturn<T, R, N>(
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `AsyncIterable`, narrowing its type.
- * @example isSequence((async function* () {})()) // true
  * @see https://shelving.cc/util/sequence/isSequence
  */
 export function isSequence(value: unknown): value is AsyncIterable<unknown> {
@@ -69,7 +68,6 @@ export function isSequence(value: unknown): value is AsyncIterable<unknown> {
  * @param signals One or more promises that, when resolved, abort the relay and end the sequence.
  * @returns The value the winning abort signal resolved with, or the source's own return value if it finishes first.
  * @throws {UnexpectedError} If the source iterator's `return()` does not return a `done` result.
- * @example for await (const item of repeatUntil(source, stopSignal)) doSomething(item);
  * @see https://shelving.cc/util/sequence/repeatUntil
  */
 export async function* repeatUntil<T = void, R = void, N = void>(
@@ -108,7 +106,6 @@ export async function* repeatUntil<T = void, R = void, N = void>(
  *
  * @param ms The number of milliseconds to wait between each yield.
  * @returns An infinite async generator yielding `1`, `2`, `3`… one per interval.
- * @example for await (const count of repeatDelay(1000)) console.log(count); // 1, 2, 3… one per second
  * @see https://shelving.cc/util/sequence/repeatDelay
  */
 export async function* repeatDelay(ms: number): AsyncGenerator<number, void, void> {
@@ -126,7 +123,6 @@ export async function* repeatDelay(ms: number): AsyncGenerator<number, void, voi
  * @param sequence The source sequence to relay.
  * @param callback Callback invoked with each yielded item.
  * @returns An async generator that yields the same items as `sequence`.
- * @example for await (const item of callSequence(source, console.log)) use(item);
  * @see https://shelving.cc/util/sequence/callSequence
  */
 export async function* callSequence<T>(sequence: AsyncIterable<T, void, void>, callback: ValueCallback<T>): AsyncGenerator<T, void, void> {
@@ -150,7 +146,6 @@ export async function* callSequence<T>(sequence: AsyncIterable<T, void, void>, c
  * @param onReturn Called with the final return value when the sequence ends or is stopped.
  * @returns Callback function that can end the sequence run, optionally with a return value.
  * @throws {UnexpectedError} If the source iterator's `return()` does not return a `done` result.
- * @example const stop = runSequence(source, onNext, onError, onReturn); stop(); // ends the run
  * @see https://shelving.cc/util/sequence/runSequence
  */
 export function runSequence<T, R, N>(
@@ -199,7 +194,6 @@ async function _runSequenceIterator<T, R, N>(
  *
  * @param sequences The sequences to merge, drained one after another in order.
  * @returns An async iterable that yields every item from each sequence in turn.
- * @example for await (const item of mergeSequences(a, b)) use(item); // all of `a`, then all of `b`
  * @see https://shelving.cc/util/sequence/mergeSequences
  */
 export async function* mergeSequences<T>(...sequences: AsyncIterable<T>[]): AsyncIterable<T> {

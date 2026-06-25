@@ -21,12 +21,6 @@ import { BusyStore } from "./BusyStore.js";
  * - Accepts any `PossibleURL` as input and normalises it to an `ImmutableURL` (resolved against `this.base`).
  * - Exposes the URL's components (`href`, `origin`, `pathname`, etc.) and helpers to read and mutate its search params.
  *
- * @param url The initial URL value.
- * @param base An optional base URL that relative URLs are resolved against.
- * @example
- * const store = new URLStore("https://top.com/a/b/c");
- * store.setParam("page", 2); // https://top.com/a/b/c?page=2
- * store.isActive("https://top.com/a/b/c?page=2"); // true
  * @see https://shelving.cc/store/URLStore
  */
 export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
@@ -160,7 +154,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Return a single param in this URL, or `undefined` if it could not be found.
 	 *
 	 * @param key The name of the param to read.
-	 * @returns The param value, or `undefined` if it is not present.
 	 * @example store.getParam("page"); // "2"
 	 * @see https://shelving.cc/store/URLStore/getParam
 	 */
@@ -172,7 +165,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Require a single param in this URL, or throw `RequiredError` if it could not be found.
 	 *
 	 * @param key The name of the param to read.
-	 * @returns The param value.
 	 * @throws {RequiredError} If the param is not present.
 	 * @example store.requireParam("page");
 	 * @see https://shelving.cc/store/URLStore/requireParam
@@ -185,7 +177,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Set all params in this URL (all current params are cleared first).
 	 *
 	 * @param params The complete set of params to set.
-	 * @returns Nothing.
 	 * @example store.setParams({ page: 2, sort: "name" });
 	 * @see https://shelving.cc/store/URLStore/setParams
 	 */
@@ -198,7 +189,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @param key The name of the param to set.
 	 * @param value The new value for the param.
-	 * @returns Nothing.
 	 * @example store.setParam("page", 2);
 	 * @see https://shelving.cc/store/URLStore/setParam
 	 */
@@ -210,7 +200,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Update several params in this URL (merged with current params).
 	 *
 	 * @param params The set of params to merge in.
-	 * @returns Nothing.
 	 * @example store.updateParams({ sort: "name" });
 	 * @see https://shelving.cc/store/URLStore/updateParams
 	 */
@@ -223,7 +212,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @param key The name of the first param to delete.
 	 * @param keys Additional param names to delete.
-	 * @returns Nothing.
 	 * @example store.deleteParam("page", "sort");
 	 * @see https://shelving.cc/store/URLStore/deleteParam
 	 */
@@ -236,7 +224,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @param key The name of the first param to delete.
 	 * @param keys Additional param names to delete.
-	 * @returns Nothing.
 	 * @example store.deleteParams("page", "sort");
 	 * @see https://shelving.cc/store/URLStore/deleteParams
 	 */
@@ -247,7 +234,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	/**
 	 * Clear all params from this URL.
 	 *
-	 * @returns Nothing.
 	 * @example store.clearParams();
 	 * @see https://shelving.cc/store/URLStore/clearParams
 	 */
@@ -260,7 +246,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @param key The name of the param to add.
 	 * @param value The value for the param.
-	 * @returns A new `ImmutableURL` with the param applied.
 	 * @example store.withParam("page", 2);
 	 * @see https://shelving.cc/store/URLStore/withParam
 	 */
@@ -272,7 +257,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Return the current URL with additional params (without mutating this store).
 	 *
 	 * @param params The params to add.
-	 * @returns A new `ImmutableURL` with the params applied.
 	 * @example store.withParams({ page: 2, sort: "name" });
 	 * @see https://shelving.cc/store/URLStore/withParams
 	 */
@@ -284,7 +268,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Return the current URL with one or more params removed (without mutating this store).
 	 *
 	 * @param keys The param names to remove.
-	 * @returns A new `ImmutableURL` with the params removed.
 	 * @example store.omitParams("page", "sort");
 	 * @see https://shelving.cc/store/URLStore/omitParams
 	 */
@@ -296,7 +279,6 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * Return the current URL with a single param removed (without mutating this store).
 	 *
 	 * @param key The param name to remove.
-	 * @returns A new `ImmutableURL` with the param removed.
 	 * @example store.omitParam("page");
 	 * @see https://shelving.cc/store/URLStore/omitParam
 	 */

@@ -16,16 +16,7 @@ import { FileExtractor } from "./FileExtractor.js";
  * @see https://shelving.cc/extract/MarkupExtractor
  */
 export class MarkupExtractor extends FileExtractor {
-	/**
-	 * Build the file element props for a Markdown file — storing the text as `content` and deriving `title` and `description`.
-	 * - When a `# h1` title is found it is stripped from `content` so it isn't rendered twice.
-	 *
-	 * @param name The basename of the file without extension.
-	 * @param text The raw Markdown source.
-	 * @returns The element props with `name`, `content`, and (when present) `title` and `description`.
-	 * @example new MarkupExtractor().extractProps("guide", "# Guide\n\nIntro text.")
-	 * @see https://shelving.cc/extract/MarkupExtractor/extractProps
-	 */
+	/** Derives `title` and `description` from the Markdown, stripping a leading `# h1` from `content` so it isn't rendered twice. */
 	override extractProps(name: string, text: string): Partial<TreeElementProps> & { name: string } {
 		const { title, description } = extractMarkdownProps(text);
 		// The title `# h1` is surfaced separately as `title`, so strip it from the body to avoid rendering it twice.

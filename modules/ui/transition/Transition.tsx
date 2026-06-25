@@ -23,9 +23,7 @@ export interface TransitionProps extends ChildProps {
  * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition(.overlay)` from `Transition.css`.
  *
  * @kind component
- * @param props Transition class overrides (`default`/`forward`/`back`) plus `children` and variant props.
  * @returns A `<ViewTransition>` element wrapping the children.
- * @example <Transition default="fade">{content}</Transition>
  * @see https://shelving.cc/ui/Transition
  */
 export function Transition({

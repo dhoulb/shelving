@@ -13,7 +13,6 @@ import { type Nullish, notNullish } from "../../util/null.js";
  * @param caller Function to attribute the thrown `RequiredError` to (defaults to `requireContext`).
  * @returns The current context value, guaranteed non-nullish.
  * @throws RequiredError If the context value is `null` or `undefined` (i.e. used outside its provider).
- * @example const theme = requireContext(ThemeContext);
  * @see https://shelving.cc/ui/requireContext
  */
 export function requireContext<T>(context: Context<T | null>, caller?: AnyCaller): T;

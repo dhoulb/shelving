@@ -28,13 +28,6 @@ export class NoticeStore<S extends string> extends DataStore<NoticeData<S>> {
 
 	readonly key = getRandomKey();
 
-	/**
-	 * Create a notice and register it with its parent `NoticesStore`.
-	 *
-	 * @param notices The parent store to add this notice to.
-	 * @param children The notice content (optional).
-	 * @param status The notice status (optional).
-	 */
 	constructor(notices: NoticesStore<S>, children?: ReactNode | null, status?: S | undefined) {
 		super({ status, children });
 		this._notices = notices;

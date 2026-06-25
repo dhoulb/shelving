@@ -6,7 +6,6 @@ import type { AnyCaller } from "./function.js";
  * - Useful as a default callback or placeholder.
  *
  * @returns `null`, always.
- * @example getNull() // null
  * @see https://shelving.cc/util/null/getNull
  */
 export function getNull(): null {
@@ -75,7 +74,6 @@ export function assertNotNull<T>(value: Nullable<T>, caller: AnyCaller = assertN
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The value, narrowed to `T`.
  * @throws RequiredError if `value` is `null`.
- * @example requireNotNull("a") // "a"
  * @see https://shelving.cc/util/null/requireNotNull
  */
 export function requireNotNull<T>(value: Nullable<T>, caller: AnyCaller = requireNotNull): T {
@@ -145,7 +143,6 @@ export function assertNotNullish<T>(value: Nullish<T>, caller: AnyCaller = asser
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The value, narrowed to `T`.
  * @throws RequiredError if `value` is `null` or `undefined`.
- * @example requireNotNullish("a") // "a"
  * @see https://shelving.cc/util/null/requireNotNullish
  */
 export function requireNotNullish<T>(value: Nullish<T>, caller: AnyCaller = requireNotNullish): T {

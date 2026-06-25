@@ -13,8 +13,6 @@ export interface VerticalTransitionProps extends TransitionProps {}
  * Transition that slides its children vertically — down when moving forward, up when moving back.
  *
  * @kind component
- * @returns A `<Transition>` element configured with the vertical slide classes.
- * @example <VerticalTransition>{currentStep}</VerticalTransition>
  * @see https://shelving.cc/ui/VerticalTransition
  */
 export function VerticalTransition(props: VerticalTransitionProps): ReactElement {

@@ -21,10 +21,6 @@ import { DBProvider } from "./DBProvider.js";
  * - Identity-preserving: `getItem()` etc. return the exact same object instance that was passed into `setItem()`.
  * - Supports live subscriptions, so it can back `ItemStore` / `QueryStore` reads.
  *
- * @example
- *  const provider = new MemoryDBProvider();
- *  const id = await provider.addItem(users, { name: "Dave" });
- *
  * @see https://shelving.cc/db/MemoryDBProvider
  */
 export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
@@ -35,7 +31,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * Get (or lazily create) the `MemoryTable` backing a collection.
 	 *
 	 * @param collection Collection to get the table for.
-	 * @returns The `MemoryTable` holding that collection's items.
 	 * @example provider.getTable(users) // MemoryTable
 	 * @see https://shelving.cc/db/MemoryDBProvider/getTable
 	 */
@@ -43,28 +38,10 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= new MemoryTable<II, TT>(collection));
 	}
 
-	/**
-	 * Get an item from its collection's table by id, or `undefined` if it doesn't exist.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to get.
-	 * @returns The item, or `undefined` if no item exists with that id.
-	 * @example await provider.getItem(users, 123) // Item or undefined.
-	 * @see https://shelving.cc/db/MemoryDBProvider/getItem
-	 */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return this.getTable(collection).getItem(id);
 	}
 
-	/**
-	 * Subscribe to live changes for a single item by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to subscribe to.
-	 * @returns Async sequence yielding the item (or `undefined`) on every change.
-	 * @example for await (const item of provider.getItemSequence(users, 123)) console.log(item);
-	 * @see https://shelving.cc/db/MemoryDBProvider/getItemSequence
-	 */
 	override async *getItemSequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
@@ -72,41 +49,14 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		yield* this.getTable(collection).getItemSequence(id);
 	}
 
-	/**
-	 * Add a new item to a collection and return its generated id.
-	 *
-	 * @param collection Collection to add the item to.
-	 * @param data Data for the new item.
-	 * @returns The generated identifier for the new item.
-	 * @example await provider.addItem(users, { name: "Dave" }) // 123
-	 * @see https://shelving.cc/db/MemoryDBProvider/addItem
-	 */
 	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return this.getTable(collection).addItem(data);
 	}
 
-	/**
-	 * Set (insert or overwrite) the data for an item by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to set.
-	 * @param data Full data to store for the item.
-	 * @example await provider.setItem(users, 123, { name: "Dave" });
-	 * @see https://shelving.cc/db/MemoryDBProvider/setItem
-	 */
 	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		this.getTable(collection).setItem(id, data);
 	}
 
-	/**
-	 * Apply partial updates to an existing item by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to update.
-	 * @param updates Updates to apply to the item.
-	 * @example await provider.updateItem(users, 123, { name: "Dave" });
-	 * @see https://shelving.cc/db/MemoryDBProvider/updateItem
-	 */
 	override async updateItem<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		id: II,
@@ -115,27 +65,10 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).updateItem(id, updates);
 	}
 
-	/**
-	 * Delete an item from a collection by its id.
-	 *
-	 * @param collection Collection the item belongs to.
-	 * @param id Identifier of the item to delete.
-	 * @example await provider.deleteItem(users, 123);
-	 * @see https://shelving.cc/db/MemoryDBProvider/deleteItem
-	 */
 	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		this.getTable(collection).deleteItem(id);
 	}
 
-	/**
-	 * Count the items in a collection matching an optional query.
-	 *
-	 * @param collection Collection to count items in.
-	 * @param query Query to filter the counted items (counts all items when omitted).
-	 * @returns The number of matching items.
-	 * @example await provider.countQuery(users, { age: 40 }) // 7
-	 * @see https://shelving.cc/db/MemoryDBProvider/countQuery
-	 */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
@@ -143,15 +76,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return this.getTable(collection).countQuery(query);
 	}
 
-	/**
-	 * Get the items in a collection matching an optional query.
-	 *
-	 * @param collection Collection to query.
-	 * @param query Query to filter, sort, and limit the items (returns all items when omitted).
-	 * @returns An array of matching items.
-	 * @example await provider.getQuery(users, { age: 40, $order: "name" }) // Items.
-	 * @see https://shelving.cc/db/MemoryDBProvider/getQuery
-	 */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
@@ -159,15 +83,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return this.getTable(collection).getQuery(query);
 	}
 
-	/**
-	 * Subscribe to live changes for the result of a query.
-	 *
-	 * @param collection Collection to query.
-	 * @param query Query to filter, sort, and limit the items.
-	 * @returns Async sequence yielding the matching items on every change.
-	 * @example for await (const items of provider.getQuerySequence(users, { age: 40 })) console.log(items);
-	 * @see https://shelving.cc/db/MemoryDBProvider/getQuerySequence
-	 */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
@@ -175,15 +90,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		return yield* this.getTable(collection).getQuerySequence(query);
 	}
 
-	/**
-	 * Set (overwrite) the data for every item matching a query.
-	 *
-	 * @param collection Collection to write to.
-	 * @param query Query selecting the items to set.
-	 * @param data Full data to store for each matching item.
-	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
-	 * @see https://shelving.cc/db/MemoryDBProvider/setQuery
-	 */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -192,15 +98,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).setQuery(query, data);
 	}
 
-	/**
-	 * Apply partial updates to every item matching a query.
-	 *
-	 * @param collection Collection to write to.
-	 * @param query Query selecting the items to update.
-	 * @param updates Updates to apply to each matching item.
-	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
-	 * @see https://shelving.cc/db/MemoryDBProvider/updateQuery
-	 */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -209,14 +106,6 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).updateQuery(query, updates);
 	}
 
-	/**
-	 * Delete every item matching a query.
-	 *
-	 * @param collection Collection to delete from.
-	 * @param query Query selecting the items to delete.
-	 * @example await provider.deleteQuery(users, { active: false });
-	 * @see https://shelving.cc/db/MemoryDBProvider/deleteQuery
-	 */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -267,11 +156,6 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 */
 	readonly collection: Collection<string, I, T>;
 
-	/**
-	 * Create a new `MemoryTable` for a collection.
-	 *
-	 * @param collection Collection this table holds the items of.
-	 */
 	constructor(collection: Collection<string, I, T>) {
 		this.collection = collection;
 	}

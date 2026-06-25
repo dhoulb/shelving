@@ -63,15 +63,6 @@ export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<
 		this.value = getItem(this.id, data);
 	}
 
-	/**
-	 * Create a store that tracks a single item by ID.
-	 *
-	 * @param collection The collection the item lives in.
-	 * @param id The ID of the item to track.
-	 * @param provider The database provider to fetch the item from.
-	 * @param memory Optional memory provider used to seed the initial value and drive realtime updates.
-	 * @example new ItemStore(collection, "abc", provider)
-	 */
 	constructor(collection: Collection<string, I, T>, id: I, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const item = memory?.getTable(collection).getItem(id);
 		super(item ?? NONE); // Use the current memory snapshot if available.

@@ -7,7 +7,6 @@ import type { AnyCaller } from "./function.js";
  * - Useful as a no-op callback or default factory that yields `undefined`.
  *
  * @returns Always `undefined`.
- * @example getUndefined() // undefined
  * @see https://shelving.cc/util/undefined/getUndefined
  */
 export function getUndefined(): undefined {
@@ -49,7 +48,6 @@ export const notUndefined = isDefined;
  * @param value The value to assert is defined.
  * @param caller Function to attribute the thrown error to (defaults to `assertDefined`).
  * @throws `RequiredError` if the value is `undefined`.
- * @example assertDefined(value) // throws `RequiredError` if `value` is `undefined`
  * @see https://shelving.cc/util/undefined/assertDefined
  */
 export function assertDefined<T>(value: T | undefined, caller: AnyCaller = assertDefined): asserts value is T {
@@ -63,7 +61,6 @@ export function assertDefined<T>(value: T | undefined, caller: AnyCaller = asser
  * @param caller Function to attribute the thrown error to (defaults to `requireDefined`).
  * @returns The value, guaranteed not to be `undefined`.
  * @throws `RequiredError` if the value is `undefined`.
- * @example requireDefined(value) // value (or throws if `undefined`)
  * @see https://shelving.cc/util/undefined/requireDefined
  */
 export function requireDefined<T>(value: T | undefined, caller: AnyCaller = requireDefined): T {

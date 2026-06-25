@@ -8,12 +8,6 @@ import { BusyStore } from "./BusyStore.js";
  * - Accepts absolute or relative paths as input and normalises them to an absolute path against `this.base`.
  * - Provides helpers to test whether other paths are active or proud relative to the current path.
  *
- * @param path The initial value for the store (defaults to `.`, resolved against `base`).
- * @param base The base path to resolve relative paths against (defaults to `/`).
- * @example
- * const store = new PathStore("/a/b");
- * store.isActive("/a/b"); // true
- * store.getPath("c"); // "/a/b/c"
  * @see https://shelving.cc/store/PathStore
  */
 export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePath> {
@@ -44,7 +38,6 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * Based on the current store path, is a path active (i.e. equal to the current path)?
 	 *
 	 * @param path The absolute path to test.
-	 * @returns `true` if `path` matches the current path, otherwise `false`.
 	 * @example store.isActive("/a/b");
 	 * @see https://shelving.cc/store/PathStore/isActive
 	 */
@@ -56,7 +49,6 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * Based on the current store path, is a path proud (i.e. an ancestor of the current store path)?
 	 *
 	 * @param path The absolute path to test.
-	 * @returns `true` if `path` is at or above the current path in the hierarchy, otherwise `false`.
 	 * @example store.isProud("/a"); // true when current path is "/a/b"
 	 * @see https://shelving.cc/store/PathStore/isProud
 	 */
@@ -68,7 +60,6 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * Get an absolute path from a path relative to the current store path.
 	 *
 	 * @param path The absolute or relative path to resolve.
-	 * @returns The resolved absolute path.
 	 * @example store.getPath("c"); // "/a/b/c" when current path is "/a/b"
 	 * @see https://shelving.cc/store/PathStore/getPath
 	 */
@@ -76,12 +67,6 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 		return requirePath(path, this.value);
 	}
 
-	/**
-	 * Return the current path as a string.
-	 *
-	 * @returns The current absolute path.
-	 * @see https://shelving.cc/store/PathStore/toString
-	 */
 	override toString(): string {
 		return this.value;
 	}

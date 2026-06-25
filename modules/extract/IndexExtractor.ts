@@ -33,34 +33,16 @@ export interface IndexExtractorOptions {
  * - Purely name-based: it doesn't care whether an element is a directory or a file — any element with children is processed, deepest level first.
  *
  * @example const extractor = new IndexExtractor(new DirectoryExtractor());
- *
  * @see https://shelving.cc/extract/IndexExtractor
  */
 export class IndexExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _index: Matchables;
 
-	/**
-	 * Wrap a source extractor so each element's index child is absorbed into the element itself.
-	 *
-	 * @param source Upstream extractor that produces the `tree-element` tree to process.
-	 *
-	 * @example const extractor = new IndexExtractor(new DirectoryExtractor());
-	 */
 	constructor(source: Extractor<I, TreeElement>, { index = DEFAULT_INDEX }: IndexExtractorOptions = {}) {
 		super(source);
 		this._index = index;
 	}
 
-	/**
-	 * Extract the source tree and absorb each element's index child into its parent.
-	 *
-	 * @param input Input forwarded to the wrapped source extractor.
-	 * @returns The source tree with index children folded into their parents.
-	 *
-	 * @example const tree = await new IndexExtractor(source).extract(input);
-	 *
-	 * @see https://shelving.cc/extract/extract
-	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
 		return _absorbIndex(root, this._index);

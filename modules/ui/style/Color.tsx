@@ -39,7 +39,6 @@ export interface ColorVariants {
  * - Full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected color.
  * - Element can now compose these shades to style itself using the selected color.
  *
- * @param variants
  * @returns The combined tint + colour class string, or `undefined` when no `color` is set.
  * @example getColorClass({ color: "purple" }) // "tint color-purple"
  * @see https://shelving.cc/ui/getColorClass

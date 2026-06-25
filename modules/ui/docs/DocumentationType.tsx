@@ -20,7 +20,7 @@ export function splitType(type: string): { readonly members: readonly string[]; 
 }
 
 /**
- * Props for `DocumentationType` — the union members to render (see [`splitType`](/ui/splitType)).
+ * Props for `DocumentationType` — the union members to render (see `splitType()`).
  *
  * @see https://shelving.cc/ui/DocumentationTypeProps
  */
@@ -31,10 +31,9 @@ export interface DocumentationTypeProps {
 
 /**
  * Render a documentation table's `Type` column — one linked token per union member, each stacked on its own line.
- * - Each member links to its documented page via [`TreeLink`](/ui/TreeLink) (exact-match only; compound or builtin types stay plain text).
+ * - Each member links to its documented page via `TreeLink` (exact-match only; compound or builtin types stay plain text).
  *
  * @kind component
- * @returns One [`TreeLink`](/ui/TreeLink) per member, separated by line breaks.
  * @example <DocumentationType members={["Schemas<T>", "DataSchema<T>"]} />
  * @see https://shelving.cc/ui/DocumentationType
  */

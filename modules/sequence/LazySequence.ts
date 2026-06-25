@@ -6,11 +6,6 @@ import { ThroughSequence } from "./ThroughSequence.js";
  * Sequence of values that calls a `StartCallback` when it has iterators that are iterating, and calls the corresponding `StopCallback` when all iterators have finished.
  * - The `start` callback runs lazily on the first active iterator and the returned stop callback runs when the last iterator finishes.
  *
- * @example
- * 	const seq = new LazySequence(source, () => {
- * 		const timer = setInterval(tick, 1000);
- * 		return () => clearInterval(timer); // Stop callback.
- * 	});
  * @see https://shelving.cc/sequence/LazySequence
  */
 export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<T, R, N> implements AsyncDisposable {
@@ -26,12 +21,6 @@ export class LazySequence<T = void, R = void, N = void> extends ThroughSequence<
 		return this._iterators.size;
 	}
 
-	/**
-	 * Create a new `LazySequence`.
-	 *
-	 * @param source Async iterator to pull values from.
-	 * @param start Callback run when the first iterator starts; its returned stop callback runs when the last iterator finishes.
-	 */
 	constructor(source: AsyncIterator<T, R, N>, start: StartCallback) {
 		super(source);
 		this._starter = new Starter(start);

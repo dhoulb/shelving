@@ -36,9 +36,6 @@ export interface UUIDSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/UUIDSchema
  */
 export class UUIDSchema extends StringSchema {
-	/**
-	 * Create a new `UUIDSchema`.
-	 */
 	constructor({ one = "UUID", title = "UUID", max = 36, ...rest }: UUIDSchemaOptions = {}) {
 		super({
 			one,
@@ -50,14 +47,7 @@ export class UUIDSchema extends StringSchema {
 		});
 	}
 
-	/**
-	 * Sanitize a string before validation by normalising it into a canonical UUID.
-	 *
-	 * @param str The raw string to sanitize.
-	 * @returns The sanitized UUID, or an empty string when the input is not a valid UUID.
-	 * @example schema.sanitize("F47AC10B58CC4372A5670E02B2C3D479") // "f47ac10b-58cc-4372-a567-0e02b2c3d479"
-	 * @see https://shelving.cc/schema/UUIDSchema/sanitize
-	 */
+	/** Normalises the input into a canonical lowercase UUID (or `""` if not a valid UUID). */
 	override sanitize(str: string): string {
 		return getUUID(str) || "";
 	}

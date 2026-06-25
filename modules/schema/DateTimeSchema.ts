@@ -15,31 +15,14 @@ import { NULLABLE } from "./NullableSchema.js";
  * @see https://shelving.cc/schema/DateTimeSchema
  */
 export class DateTimeSchema extends DateSchema {
-	/**
-	 * Create a new `DateTimeSchema`.
-	 */
 	constructor({ one = "time", title = "Time", input = "datetime-local", ...options }: DateSchemaOptions) {
 		super({ one, title, input, ...options });
 	}
-	/**
-	 * Convert a `Date` object to an ISO 8601 UTC string.
-	 *
-	 * @param value The `Date` to convert.
-	 * @returns The datetime as an ISO 8601 string with `Z` suffix.
-	 * @example schema.stringify(new Date("2005-09-12T18:15:00Z")) // "2005-09-12T18:15:00.000Z"
-	 * @see https://shelving.cc/schema/DateTimeSchema/stringify
-	 */
+	/** Stringifies as an ISO 8601 UTC string with `Z` suffix. */
 	override stringify(value: Date): string {
 		return value.toISOString();
 	}
-	/**
-	 * Format a validated datetime string as a human-readable string for display.
-	 *
-	 * @param value The validated datetime string to format.
-	 * @returns The datetime formatted for display.
-	 * @example schema.format("2005-09-12T18:15:00Z") // "12 Sep 2005, 18:15"
-	 * @see https://shelving.cc/schema/DateTimeSchema/format
-	 */
+	/** Formats the datetime string for display via `formatDateTime()`. */
 	override format(value: string): string {
 		return formatDateTime(value, undefined, this.format);
 	}

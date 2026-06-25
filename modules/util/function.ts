@@ -56,7 +56,6 @@ export type ErrorCallback = (reason: unknown) => void;
  *
  * @param value The value to test.
  * @returns `true` if `value` is a function, narrowing its type to `AnyFunction`.
- * @example isFunction(() => {}) // true
  * @see https://shelving.cc/util/function/isFunction
  */
 export function isFunction(value: unknown): value is AnyFunction {
@@ -79,7 +78,6 @@ export function assertFunction(value: unknown): asserts value is AnyFunction {
  *
  * @param value The value to return.
  * @returns The exact `value` it was given, unchanged.
- * @example PASSTHROUGH(123) // 123
  * @see https://shelving.cc/util/function/PASSTHROUGH
  */
 export function PASSTHROUGH<T>(value: T): T {
@@ -91,7 +89,6 @@ export function PASSTHROUGH<T>(value: T): T {
  *
  * @param _unused Zero or more arguments, all ignored.
  * @returns Always `undefined`.
- * @example BLACKHOLE(1, 2, 3) // undefined
  * @see https://shelving.cc/util/function/BLACKHOLE
  */
 export function BLACKHOLE(..._unused: Arguments): void | undefined {

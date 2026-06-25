@@ -30,10 +30,6 @@ export type PossibleLink = PossibleURI;
  * @param url The current page URL — base for relative refs and scheme-prefixed URIs.
  * @param root The site root URL — base for absolute paths. Defaults to `url`.
  * @returns An absolute URI object, or `undefined` if `link` is missing, not a string/URL, or cannot be resolved.
- *
- * @example getLink("/schema", pageURL, siteRoot) // → "https://x.com/app/schema" when siteRoot is "https://x.com/app/"
- * @example getLink("./db", new URL("https://x.com/app/schema/")) // → "https://x.com/app/schema/db"
- * @example getLink("mailto:a@b") // → "mailto:a@b"
  * @see https://shelving.cc/util/link/getLink
  */
 export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
@@ -56,7 +52,6 @@ export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: I
  * @param caller Function to attribute a thrown error to (defaults to `requireLink` itself).
  * @returns An absolute URI string.
  * @throws {RequiredError} If `href` cannot be resolved.
- * @example requireLink("mailto:a@b") // → "mailto:a@b"
  * @see https://shelving.cc/util/link/requireLink
  */
 export function requireLink(href: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): ImmutableURI {

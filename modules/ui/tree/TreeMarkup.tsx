@@ -34,7 +34,6 @@ export const TREE_MARKUP_RULES: MarkupRules = MARKUP_RULES.map(rule => (rule ===
  * @param children The source markup string to parse and render (renders `null` when empty).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @kind component
- * @example <Prose><TreeMarkup>{`Use \`BooleanSchema\` to validate.`}</TreeMarkup></Prose>
  * @see https://shelving.cc/ui/TreeMarkup
  */
 export function TreeMarkup({ rules = TREE_MARKUP_RULES, ...props }: MarkupProps): ReactNode {

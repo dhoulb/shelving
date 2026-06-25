@@ -65,11 +65,6 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	private readonly _module: ModuleExtractor;
 	private readonly _base: AbsolutePath | undefined;
 
-	/**
-	 * Create a package extractor bound to a pre-extracted source tree.
-	 *
-	 * @example const extractor = new PackageExtractor({ tree: sourceTree });
-	 */
 	constructor({ tree, extensions = DEFAULT_EXTENSIONS, module = new ModuleExtractor(), base }: PackageExtractorOptions) {
 		super();
 		this._tree = tree;
@@ -78,17 +73,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		this._base = base;
 	}
 
-	/**
-	 * Read a `package.json` and produce a flat tree of one module element per export entry.
-	 *
-	 * @param packageJson Path of the `package.json` to read — resolved against the configured `base`.
-	 * @returns Promise of the root `tree-element` whose children are the module elements.
-	 * @throws Error If a static export key has no matching source element in the tree, or a wildcard export is malformed.
-	 *
-	 * @example const tree = await new PackageExtractor({ tree: sourceTree }).extract("package.json");
-	 *
-	 * @see https://shelving.cc/extract/extract
-	 */
+	/** Throws `Error` if a static export key has no matching source element in the tree, or a wildcard export is malformed. */
 	override async extract(packageJson: Path): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);
 		const pkg = (await Bun.file(pkgPath).json()) as PackageJson;

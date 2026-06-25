@@ -21,11 +21,6 @@ const EXTERNAL_BLACKHOLE: ExternalStore = {
  * - Pass `undefined` to subscribe to nothing (e.g. for conditional subscriptions).
  *
  * @param store `Store` instance to subscribe to, or `undefined` to subscribe to nothing.
- * @returns The same `store` that was passed in (or `undefined`).
- *
- * @example
- * const store = useStore(myStore);
- * return <>{store.value}</>;
  *
  * @see https://shelving.cc/react/useStore
  */

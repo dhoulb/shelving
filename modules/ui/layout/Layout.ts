@@ -5,7 +5,6 @@
  *
  * @returns A cleanup function that removes the listeners and property, or `undefined` when `visualViewport` is unavailable.
  * @todo This can be removed once Safari iOS supports interactive-widget viewport property. https://caniuse.com/mdn-html_elements_meta_name_viewport_interactive-widget
- * @example useEffect(useSafeKeyboardArea, []);
  * @see https://shelving.cc/ui/useSafeKeyboardArea
  */
 export function useSafeKeyboardArea() {

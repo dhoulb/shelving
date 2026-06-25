@@ -37,7 +37,6 @@ export interface DocumentationParamsProps {
  * - Renders nothing when there are no parameters.
  *
  * @kind component
- * @returns A `<Section>` containing the parameters table, or `null` when there are none.
  * @example <DocumentationParams params={params} />
  * @see https://shelving.cc/ui/DocumentationParams
  */

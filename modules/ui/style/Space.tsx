@@ -41,7 +41,6 @@ export interface SpaceVariants {
 /**
  * Get the block spacing class for a component from its `space=""` variant prop.
  *
- * @param variants
  * @returns The space class string, or `undefined` when no `space` is set.
  * @example getSpaceClass({ space: "large" }) // "large"
  * @see https://shelving.cc/ui/getSpaceClass

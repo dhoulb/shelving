@@ -30,7 +30,6 @@ export interface ButtonVariants extends FlexVariants, ColorVariants, StatusVaria
  *
  * @param variants The button styling variants (flex, color, status, typography, plus button toggles).
  * @returns A space-separated `className` string combining all the resolved variant classes.
- * @example getButtonClass({ color: "primary", small: true }) // "button …"
  * @see https://shelving.cc/ui/getButtonClass
  */
 export function getButtonClass(variants: ButtonVariants): string {
@@ -51,8 +50,6 @@ interface ButtonProps extends ButtonVariants, ClickableProps {}
  * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
  *
  * @kind component
- * @example <Button onClick={save} color="primary">Save</Button>
- * @example <Button href="/about">About</Button>
  * @see https://shelving.cc/ui/Button
  */
 export function Button(props: ButtonProps): ReactElement {

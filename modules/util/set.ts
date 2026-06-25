@@ -47,7 +47,6 @@ export function isSet(value: unknown): value is ImmutableSet {
  * @param value The value to assert on.
  * @param caller Function to attribute a thrown error to (defaults to `assertSet`).
  * @throws {RequiredError} If `value` is not a `Set` instance.
- * @example assertSet(new Set()); // Passes.
  * @see https://shelving.cc/util/set/assertSet
  */
 export function assertSet(value: unknown, caller: AnyCaller = assertSet): asserts value is ImmutableSet {
@@ -60,7 +59,6 @@ export function assertSet(value: unknown, caller: AnyCaller = assertSet): assert
  *
  * @param value A `Set` or any iterable of items.
  * @returns A `Set` containing the items of `value`.
- * @example getSet(["a", "b"]) // Set { "a", "b" }
  * @see https://shelving.cc/util/set/getSet
  */
 export function getSet<T>(value: PossibleSet<T>): ImmutableSet {
@@ -74,7 +72,6 @@ export function getSet<T>(value: PossibleSet<T>): ImmutableSet {
  * @param set The set to limit.
  * @param limit The maximum number of items to keep.
  * @returns A set containing at most `limit` items.
- * @example limitSet(new Set([1, 2, 3]), 2) // Set { 1, 2 }
  * @see https://shelving.cc/util/set/limitSet
  */
 export function limitSet<T>(set: ImmutableSet<T>, limit: number): ImmutableSet<T> {
@@ -100,7 +97,6 @@ export function isSetItem<T>(set: ImmutableSet<T>, item: unknown): item is T {
  * @param item The value to assert membership of.
  * @param caller Function to attribute a thrown error to (defaults to `assertSetItem`).
  * @throws {RequiredError} If `item` does not exist in `set`.
- * @example assertSetItem(new Set(["a"]), "a"); // Passes.
  * @see https://shelving.cc/util/set/assertSetItem
  */
 export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown, caller: AnyCaller = assertSetItem): asserts item is T {
@@ -114,7 +110,6 @@ export function assertSetItem<T>(set: ImmutableSet<T>, item: unknown, caller: An
  * @param set The mutable set to add to.
  * @param item The item to add.
  * @returns The added `item`.
- * @example addSetItem(set, "a") // "a"
  * @see https://shelving.cc/util/set/addSetItem
  */
 export function addSetItem<T>(set: MutableSet<T>, item: T): T {
@@ -129,7 +124,6 @@ export function addSetItem<T>(set: MutableSet<T>, item: T): T {
  * @param set The mutable set to add to.
  * @param items The items to add.
  * @returns Nothing.
- * @example addSetItems(set, "a", "b");
  * @see https://shelving.cc/util/set/addSetItems
  */
 export function addSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
@@ -143,7 +137,6 @@ export function addSetItems<T>(set: MutableSet<T>, ...items: T[]): void {
  * @param set The mutable set to remove from.
  * @param items The items to remove.
  * @returns Nothing.
- * @example deleteSetItems(set, "a", "b");
  * @see https://shelving.cc/util/set/deleteSetItems
  */
 export function deleteSetItems<T>(set: MutableSet<T>, ...items: T[]): void {

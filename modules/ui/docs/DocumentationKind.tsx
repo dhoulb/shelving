@@ -48,7 +48,6 @@ export function getDocumentationKindColor(kind: string): ColorVariant | undefine
  * Colour-coded tag for a documented symbol's kind.
  * - Thin wrapper over `<Tag>` that maps the kind string to a raw colour variant.
  *
- * @returns A `<Tag>` showing the kind, tinted by its colour.
  * @kind component
  * @example <DocumentationKind kind="function" />
  * @see https://shelving.cc/ui/DocumentationKind

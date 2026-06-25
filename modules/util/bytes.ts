@@ -34,7 +34,6 @@ export function isBytes(value: unknown): value is Bytes {
  * @param max Maximum allowed length (defaults to `Infinity`).
  * @param caller Function to attribute a thrown error to (defaults to `assertBytes` itself).
  * @throws {RequiredError} If `value` is not a byte sequence within the allowed length range.
- * @example assertBytes(new Uint8Array([1, 2, 3]), 1, 8);
  * @see https://shelving.cc/util/bytes/assertBytes
  */
 export function assertBytes(
@@ -60,7 +59,6 @@ export function assertBytes(
  *
  * @param value The value to convert.
  * @returns The byte sequence, or `undefined` if `value` cannot be converted.
- * @example getBytes("abc") // Uint8Array([97, 98, 99])
  * @see https://shelving.cc/util/bytes/getBytes
  */
 export function getBytes(value: unknown): Uint8Array<ArrayBuffer> | undefined {
@@ -79,7 +77,6 @@ export function getBytes(value: unknown): Uint8Array<ArrayBuffer> | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireBytes` itself).
  * @returns The converted byte sequence.
  * @throws {RequiredError} If `value` cannot be converted or is outside the allowed length range.
- * @example requireBytes("abc") // Uint8Array([97, 98, 99])
  * @see https://shelving.cc/util/bytes/requireBytes
  */
 export function requireBytes(

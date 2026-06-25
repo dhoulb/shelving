@@ -18,7 +18,7 @@ export type URLString = `${string}://${string}`;
  * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
  * - Requires a URL string, URL object, or path as input, and optionally a base URL.
  * - If a path is provided as input, a base URL _must_ also be provided.
- * - The returned type is
+ * - The returned type is `ImmutableURL`.
  *
  * @see https://shelving.cc/util/url/ImmutableURLConstructor
  */
@@ -67,8 +67,6 @@ export type PossibleURL = string | URL;
  * @param value Unknown value to test.
  * @returns `true` if `value` is a true `scheme://host` URL object, otherwise `false`.
  *
- * @example if (isURL(value)) value.pathname; // `value` is narrowed to `ImmutableURL`
- *
  * @see https://shelving.cc/util/url/isURL
  */
 export function isURL(value: unknown): value is ImmutableURL {
@@ -84,10 +82,6 @@ function _isURL(uri: URL): uri is ImmutableURL {
  * @param value Unknown value to test.
  * @param caller Function to attribute a thrown error to — defaults to `assertURL`.
  * @throws RequiredError If `value` is not a true `scheme://host` URL object.
- *
- * @example
- * assertURL(value);
- * value.pathname; // `value` is narrowed to `ImmutableURL`
  *
  * @see https://shelving.cc/util/url/assertURL
  */
@@ -107,8 +101,6 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
  * @param input URI string, URL object, or path to resolve — falsy values return `undefined`.
  * @param base Base URL to resolve a relative `input` against.
  * @returns Resolved `ImmutableURI`, or `undefined` if conversion fails.
- *
- * @example getBasedURI("path/to/page", "http://example.com/base/"); // `http://example.com/base/path/to/page`
  *
  * @see https://shelving.cc/util/url/getBasedURI
  */
@@ -130,10 +122,6 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
  * @param base Base URL to resolve a relative `target` against.
  * @returns Resolved `ImmutableURL`, or `undefined` if conversion fails or the result is not a true URL.
  *
- * @example
- * getURL("/page", "http://example.com/"); // `http://example.com/page`
- * getURL("mailto:a@b.com"); // `undefined` — not a hierarchical URL
- *
  * @see https://shelving.cc/util/url/getURL
  */
 export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
@@ -149,8 +137,6 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
  * @param caller Function to attribute a thrown error to — defaults to `requireURL`.
  * @returns Resolved `ImmutableURL`.
  * @throws RequiredError If `target` cannot be resolved to a true `scheme://host` URL.
- *
- * @example requireURL("/page", "http://example.com/"); // `http://example.com/page`
  *
  * @see https://shelving.cc/util/url/requireURL
  */
@@ -174,9 +160,6 @@ export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyC
  *
  * @returns Absolute path starting with `/`, or `undefined` for origin mismatches or non-matching paths.
  * @throws RequiredError If `target` or `base` cannot be resolved to a true URL.
- *
- * @example matchURLPrefix("http://x.com/a/b", "http://x.com/a/"); // `/b`
- * @example matchURLPrefix("http://x.com/a/b/", "http://x.com/a/"); // `/b` (trailing slash normalised away)
  *
  * @see https://shelving.cc/util/url/matchURLPrefix
  */
@@ -208,8 +191,6 @@ export function matchURLPrefix(
  * @param caller Function to attribute a thrown error to — defaults to `isURLActive`.
  * @returns `true` if `target` resolves to exactly the same URL as `base`, otherwise `false`.
  *
- * @example isURLActive("http://x.com/a", "http://x.com/a"); // `true`
- *
  * @see https://shelving.cc/util/url/isURLActive
  */
 export function isURLActive(target: PossibleURL | undefined, base: PossibleURL | undefined, caller: AnyCaller = isURLActive): boolean {
@@ -226,8 +207,6 @@ export function isURLActive(target: PossibleURL | undefined, base: PossibleURL |
  * @param base Base URL to test against.
  * @param caller Function to attribute a thrown error to — defaults to `isURLProud`.
  * @returns `true` if `target` is `base` or a descendant of `base`, otherwise `false`.
- *
- * @example isURLProud("http://x.com/a/b", "http://x.com/a"); // `true`
  *
  * @see https://shelving.cc/util/url/isURLProud
  */
@@ -251,8 +230,6 @@ export interface BaseURL extends ImmutableURL {
  * @param value Value to test.
  * @returns `true` if `value` is a `BaseURL` (a URL with a trailing-slash pathname), otherwise `false`.
  *
- * @example isBaseURL(new URL("http://x.com/a/")); // `true`
- *
  * @see https://shelving.cc/util/url/isBaseURL
  */
 export function isBaseURL(value: PossibleURL): value is BaseURL {
@@ -269,8 +246,6 @@ function _isBaseURL(uri: URL): uri is BaseURL {
  *
  * @param input URL string, URL object, or path to normalise.
  * @returns `BaseURL` with a trailing-slash pathname, or `undefined` if `input` is not a true URL.
- *
- * @example getBaseURL("http://x.com/a"); // `http://x.com/a/`
  *
  * @see https://shelving.cc/util/url/getBaseURL
  */
@@ -292,8 +267,6 @@ export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
  * @param caller Function to attribute a thrown error to.
  * @returns `BaseURL` with a trailing-slash pathname.
  * @throws RequiredError If `value` cannot be resolved to a true URL.
- *
- * @example requireBaseURL("http://x.com/a", requireBaseURL); // `http://x.com/a/`
  *
  * @see https://shelving.cc/util/url/requireBaseURL
  */

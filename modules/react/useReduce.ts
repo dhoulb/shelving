@@ -10,11 +10,6 @@ import type { Arguments } from "../util/function.js";
  *
  * @param reduce Reducer called on every render with the previous result and `args`; returns this render's value.
  * @param args Additional arguments forwarded to `reduce()` after `previous`.
- * @returns Whatever `reduce()` returned on this render.
- *
- * @example
- * // Keep the highest count ever seen.
- * const max = useReduce((previous = 0, next: number) => Math.max(previous, next), count);
  *
  * @see https://shelving.cc/react/useReduce
  */

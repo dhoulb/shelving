@@ -28,19 +28,11 @@ const NEGATIVE = ["", "false", "0", "no", "n", "off"];
  * - Strings are coerced: known negative strings (`""`, `"false"`, `"0"`, `"no"`, `"n"`, `"off"`) become `false`, everything else becomes `true`.
  * - All other values are coerced with standard truthiness.
  *
- * @example
- *  const schema = new BooleanSchema({ required: true });
- *  schema.validate("yes"); // Returns true
- *  schema.validate(""); // Throws "Required"
- *
  * @see https://shelving.cc/schema/BooleanSchema
  */
 export class BooleanSchema extends Schema<boolean> {
 	declare readonly value: boolean;
 	declare readonly required: boolean;
-	/**
-	 * Create a new `BooleanSchema`.
-	 */
 	constructor({ value = false, required = false, ...options }: BooleanSchemaOptions) {
 		super({ value, ...options });
 		this.required = required;
@@ -51,10 +43,7 @@ export class BooleanSchema extends Schema<boolean> {
 	 * @param unsafeValue Value to validate (defaults to this schema's `value`).
 	 * @returns The coerced boolean value.
 	 * @throws `string` `"Required"` if `required` is `true` and the coerced value is `false`.
-	 *
-	 * @example
-	 *  BOOLEAN.validate("yes"); // Returns true
-	 *
+	 * @example BOOLEAN.validate("yes"); // Returns true
 	 * @see https://shelving.cc/schema/BooleanSchema/validate
 	 */
 	validate(unsafeValue: unknown = this.value): boolean {
@@ -62,17 +51,7 @@ export class BooleanSchema extends Schema<boolean> {
 		if (this.required && !value) throw "Required";
 		return value;
 	}
-	/**
-	 * Format a boolean value as a human-readable string for display.
-	 *
-	 * @param value Boolean value to format.
-	 * @returns The formatted string, e.g. `"Yes"` or `"No"`.
-	 *
-	 * @example
-	 *  BOOLEAN.format(true); // Returns "Yes"
-	 *
-	 * @see https://shelving.cc/schema/BooleanSchema/format
-	 */
+	/** Formats via `formatBoolean()` (e.g. `"Yes"` / `"No"`). */
 	override format(value: boolean): string {
 		return formatBoolean(value);
 	}
@@ -81,9 +60,7 @@ export class BooleanSchema extends Schema<boolean> {
 /**
  * Sugar instance of `BooleanSchema` for a coerced boolean. Equivalent to `new BooleanSchema({})`.
  *
- * @example
- *  BOOLEAN.validate("yes"); // Returns true
- *
+ * @example BOOLEAN.validate("yes"); // Returns true
  * @see https://shelving.cc/schema/BOOLEAN
  */
 export const BOOLEAN = new BooleanSchema({});

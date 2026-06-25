@@ -30,11 +30,7 @@ export interface QueryInputProps<I, O> extends ValueInputProps<O> {
 	 */
 	onQuery: PayloadFetchCallback<I, ImmutableArray<O> | undefined>;
 
-	/**
-	 * Format an item of type `O` for display in the picker.
-	 * @param value The `T` value of an item returned by `onQuery()`, or `undefined` if a non-value was supplied.
-	 * - `undefined`
-	 */
+	/** Format an item of type `O` for display in the picker. */
 	formatter?: ((value: O) => string) | undefined;
 
 	/** Message that shows when query returns `[]` empty array (set to `""` empty string to show no message). */

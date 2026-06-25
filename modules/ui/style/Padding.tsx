@@ -15,7 +15,6 @@ export interface PaddingVariants {
 /**
  * Get the block-padding class for a component from its `padding` variant prop.
  *
- * @param variants
  * @returns The padding class string, or `undefined` when no `padding` is set.
  * @example getPaddingClass({ padding: "large" }) // "large"
  * @see https://shelving.cc/ui/getPaddingClass

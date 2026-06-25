@@ -15,7 +15,6 @@ const R_QUOTE = /"/g;
  * @param value The value to serialise (any type is accepted).
  * @returns A consistent string representation of `value`, suitable for fingerprinting or equality comparison.
  * @throws {ValueError} If `value` cannot be serialised.
- * @example serialise({ b: 2, a: 1 }) // `{"a":1,"b":2}`
  * @see https://shelving.cc/util/serialise/serialise
  */
 export function serialise(value: unknown): string {

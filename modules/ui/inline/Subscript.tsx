@@ -15,7 +15,6 @@ export interface SubscriptProps extends OptionalChildProps {}
 /**
  * Subscript text — renders a `<sub>` element for typographically lowered text (e.g. chemical formulae).
  *
- * @returns Rendered `<sub>` element.
  * @kind component
  * @example <>H<Subscript>2</Subscript>O</>
  * @see https://shelving.cc/ui/Subscript

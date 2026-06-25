@@ -10,22 +10,11 @@ import { StringSchema, type StringSchemaOptions } from "./StringSchema.js";
  * @see https://shelving.cc/schema/PasswordSchema
  */
 export class PasswordSchema extends StringSchema {
-	/**
-	 * Create a new `PasswordSchema`.
-	 */
 	constructor({ one = "password", title = "Password", min = 6, input = "password", ...options }: StringSchemaOptions = {}) {
 		super({ one, title, min, input, ...options });
 	}
 
-	/**
-	 * Format a password value for display (always returns `""`).
-	 *
-	 * - Passwords are never shown, so this deliberately yields an empty string.
-	 *
-	 * @returns An empty string.
-	 * @example new PasswordSchema({}).format("hunter2"); // Returns ""
-	 * @see https://shelving.cc/schema/PasswordSchema/format
-	 */
+	/** Always returns `""` — passwords are never shown. */
 	override format(): string {
 		return ""; // Never format a password for display.
 	}

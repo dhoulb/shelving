@@ -81,7 +81,6 @@ function _lookup(base64: string, index: number, caller: AnyCaller): number {
  * @param pad Whether to append `=` padding characters (defaults to `true`).
  * @returns The Base64-encoded string.
  * @throws {RequiredError} If `input` cannot be converted to a byte sequence.
- * @example encodeBase64("abc") // "YWJj"
  * @see https://shelving.cc/util/base64/encodeBase64
  */
 export function encodeBase64(input: PossibleBytes, pad = true): string {
@@ -94,7 +93,6 @@ export function encodeBase64(input: PossibleBytes, pad = true): string {
  * @param base64 The Base64 (or Base64URL) string to decode.
  * @returns The decoded UTF-8 string.
  * @throws {ValueError} If `base64` contains an invalid character.
- * @example decodeBase64String("YWJj") // "abc"
  * @see https://shelving.cc/util/base64/decodeBase64String
  */
 export function decodeBase64String(base64: string): string {
@@ -107,7 +105,6 @@ export function decodeBase64String(base64: string): string {
  * @param base64 The Base64 (or Base64URL) string to decode.
  * @returns The decoded byte sequence.
  * @throws {ValueError} If `base64` contains an invalid character.
- * @example decodeBase64Bytes("YWJj") // Uint8Array([97, 98, 99])
  * @see https://shelving.cc/util/base64/decodeBase64Bytes
  */
 export function decodeBase64Bytes(base64: string): Bytes {
@@ -121,7 +118,6 @@ export function decodeBase64Bytes(base64: string): Bytes {
  * @param pad Whether to append `=` padding characters (defaults to `false`).
  * @returns The Base64URL-encoded string.
  * @throws {RequiredError} If `input` cannot be converted to a byte sequence.
- * @example encodeBase64URL("abc") // "YWJj"
  * @see https://shelving.cc/util/base64/encodeBase64URL
  */
 export function encodeBase64URL(input: PossibleBytes, pad = false): string {
@@ -134,7 +130,6 @@ export function encodeBase64URL(input: PossibleBytes, pad = false): string {
  * @param base64 The Base64URL (or Base64) string to decode.
  * @returns The decoded UTF-8 string.
  * @throws {ValueError} If `base64` contains an invalid character.
- * @example decodeBase64URLString("YWJj") // "abc"
  * @see https://shelving.cc/util/base64/decodeBase64URLString
  */
 export function decodeBase64URLString(base64: string): string {
@@ -147,7 +142,6 @@ export function decodeBase64URLString(base64: string): string {
  * @param base64 The Base64URL (or Base64) string to decode.
  * @returns The decoded byte sequence.
  * @throws {ValueError} If `base64` contains an invalid character.
- * @example decodeBase64URLBytes("YWJj") // Uint8Array([97, 98, 99])
  * @see https://shelving.cc/util/base64/decodeBase64URLBytes
  */
 export function decodeBase64URLBytes(base64: string): Bytes {

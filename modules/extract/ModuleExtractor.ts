@@ -31,16 +31,6 @@ export interface ModuleExtractorInput {
  * @see https://shelving.cc/extract/ModuleExtractor
  */
 export class ModuleExtractor extends Extractor<ModuleExtractorInput, DocumentationElement> {
-	/**
-	 * Build a `kind: "module"` `DocumentationElement` from a source file or directory element.
-	 *
-	 * @param input Module name and source element to build from.
-	 * @returns `tree-documentation` element of `kind: "module"` with flattened documented children.
-	 *
-	 * @example const module = new ModuleExtractor().extract({ name: "util/string", source });
-	 *
-	 * @see https://shelving.cc/extract/extract
-	 */
 	override extract({ name, source }: ModuleExtractorInput): DocumentationElement {
 		const children = _collectChildren(source);
 		return {

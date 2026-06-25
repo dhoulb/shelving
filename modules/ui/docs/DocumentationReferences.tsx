@@ -24,7 +24,6 @@ export interface DocumentationReferencesProps {
  * - Renders nothing when there are no referenced types.
  *
  * @kind component
- * @returns A `<Section>` containing the references table, or `null` when there are none.
  * @example <DocumentationReferences types={types} />
  * @see https://shelving.cc/ui/DocumentationReferences
  */

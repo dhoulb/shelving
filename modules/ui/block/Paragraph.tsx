@@ -17,8 +17,6 @@ export interface ParagraphProps extends BlockVariants, OptionalChildProps {}
  * Paragraph block of body text — rendered as `<p>`.
  *
  * @kind component
- * @returns Rendered `<p>` paragraph element.
- * @example <Paragraph>Hello world.</Paragraph>
  * @see https://shelving.cc/ui/Paragraph
  */
 export function Paragraph({ children, ...props }: ParagraphProps): ReactElement {

@@ -32,12 +32,7 @@ export interface RouterProps extends PossibleMeta {
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  *
  * @kind component
- * @param routes The route table to match the current URL against.
- * @param fallback Element to render when nothing matches; explicit `null` renders nothing instead of throwing.
- * @param meta Optional meta (url/base) overrides for this router scope.
- * @returns The matched route element, or `null`/`fallback` when nothing matches.
  * @throws NotFoundError If no route matches and `fallback` is `undefined`.
- * @example <Router routes={{ "/": HomePage, "/about": AboutPage }} />
  * @see https://shelving.cc/ui/Router
  */
 export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement | null {

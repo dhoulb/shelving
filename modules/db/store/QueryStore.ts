@@ -113,15 +113,6 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		return last;
 	}
 
-	/**
-	 * Create a store that tracks the items matching a query.
-	 *
-	 * @param collection The collection the query runs against.
-	 * @param query The query that selects the items to track.
-	 * @param provider The database provider to fetch the items from.
-	 * @param memory Optional memory provider used to seed the initial value and drive realtime updates.
-	 * @example new QueryStore(collection, query, provider)
-	 */
 	constructor(collection: Collection<string, I, T>, query: Query<Item<I, T>>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const items = memory?.getTable(collection).getQuery(query);
 		super(items ?? NONE); // Use the current memory snapshot if available.

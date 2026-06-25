@@ -34,7 +34,6 @@ export interface StatusVariants {
  * - Sets the key `.tint-50` colour for an element (e.g. `--color-success`) based on e.g. `status="success"`.
  * - The full set of shades e.g. `--tint-20` and `--tint-95` are created for the selected colour, ready for the element to compose.
  *
- * @param variants
  * @returns The combined tint + status class string, or `undefined` when no `status` is set.
  * @example getStatusClass({ status: "success" }) // "tint success"
  * @see https://shelving.cc/ui/getStatusClass

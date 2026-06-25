@@ -39,21 +39,11 @@ export interface AddressSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/AddressSchema
  */
 export class AddressSchema extends DataSchema<AddressData> {
-	/**
-	 * Create a new `AddressSchema`.
-	 */
 	constructor({ one = "address", title = "Address", ...options }: AddressSchemaOptions = {}) {
 		super({ one, title, props: ADDRESS_PROPS, ...options });
 	}
 
-	/**
-	 * Format a validated address into a human-readable string.
-	 *
-	 * @param value The valid address data to format.
-	 * @returns The address formatted as a single display string.
-	 * @example ADDRESS.format({ address1: "1 High St", city: "London", postcode: "SW1A 1AA", country: "GB" });
-	 * @see https://shelving.cc/schema/AddressSchema/format
-	 */
+	/** Formats the address as a single display string via `formatAddress()`. */
 	override format(value: AddressData) {
 		return formatAddress(value);
 	}

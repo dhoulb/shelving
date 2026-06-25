@@ -48,21 +48,10 @@ export type SQLColumn = {
  *
  * - Subclasses implement backend-specific schema inspection and column definitions (e.g. SQLite, PostgreSQL).
  *
- * @example
- *  const migrator = new SQLiteMigrator(provider);
- *  await migrator.migrate(users, posts);
  * @see https://shelving.cc/db/SQLMigrator
  */
 export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends DBMigrator<T> {
-	/**
-	 * Bring the provider's tables into line with the given collection schemas by running the generated migrations.
-	 *
-	 * @param collections The collections whose schemas the tables should match.
-	 * @returns Promise that resolves once every migration has been executed.
-	 * @throws {UnimplementedError} If a schema feature can't be represented as a SQL column.
-	 * @example await migrator.migrate(users, posts)
-	 * @see https://shelving.cc/db/SQLMigrator/migrate
-	 */
+	/** Run each statement from `getMigrations()` against the provider in order. */
 	async migrate(...collections: Collections<number>): Promise<void> {
 		for (const migration of await this.getMigrations(...collections)) await this.provider.exec(_getTemplateStrings(migration));
 	}

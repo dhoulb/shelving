@@ -16,7 +16,6 @@ NavigationContext.displayName = "NavigationContext";
  *
  * @returns The current `NavigationStore`.
  * @throws RequiredError If no `<Navigation>` provider is present above.
- * @example const nav = requireNavigation(); nav.forward("/home");
  * @see https://shelving.cc/ui/requireNavigation
  */
 export function requireNavigation(): NavigationStore {

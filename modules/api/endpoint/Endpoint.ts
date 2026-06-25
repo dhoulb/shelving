@@ -13,14 +13,7 @@ import type { EndpointCallback, EndpointHandler } from "./util.js";
  * - Acts as the contract both ends of an API agree on: providers render requests from it, handlers validate against it.
  * - Path may contain `{placeholder}` segments that are filled from the payload at request time.
  *
- * @param method The method of the endpoint, e.g. `GET`
- * @param path Endpoint path, possibly including placeholders e.g. `/users/{id}`
- * @param payload A `Schema` for the payload of the endpoint.
- * @param result A `Schema` for the result of the endpoint.
- *
- * @example
- * const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);
- *
+ * @example const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);
  * @see https://shelving.cc/api/Endpoint
  */
 export class Endpoint<P = unknown, R = unknown> {

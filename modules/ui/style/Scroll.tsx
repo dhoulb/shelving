@@ -21,7 +21,6 @@ export interface ScrollVariants {
 /**
  * Get the scroll class for a component from its `horizontal` / `vertical` variant props.
  *
- * @param variants
  * @returns The combined scroll class string (empty when neither axis is enabled).
  * @example getScrollClass({ horizontal: true }) // "horizontal"
  * @see https://shelving.cc/ui/getScrollClass

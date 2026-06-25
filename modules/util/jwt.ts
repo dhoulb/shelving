@@ -58,7 +58,6 @@ export interface TokenClaims extends Data {
  * @param secret The secret key to sign the JWT with (minimum 64 bytes / 512 bits).
  * @returns A promise resolving to the signed JWT string token.
  * @throws `ValueError` If the `secret` is not a byte sequence of at least 64 bytes.
- * @example const token = await encodeToken({ sub: "user1" }, secret)
  * @see https://shelving.cc/util/jwt/encodeToken
  */
 export async function encodeToken(
@@ -108,7 +107,6 @@ export type TokenData = {
  * @param caller Identity of the calling function for error attribution.
  * @returns A `TokenData` object with the raw segments and their decoded header, payload, and signature.
  * @throws `UnauthorizedError` If the token is malformed, or its segments are not valid Base64URL-encoded JSON.
- * @example splitToken("aaa.bbb.ccc") // { header, payload, signature, headerData, payloadData, signatureBytes }
  * @see https://shelving.cc/util/jwt/splitToken
  */
 export function splitToken(token: string, caller: AnyCaller = splitToken): TokenData {
@@ -155,7 +153,6 @@ export function splitToken(token: string, caller: AnyCaller = splitToken): Token
  * @returns A promise resolving to the decoded payload claims.
  * @throws `ValueError` If the `secret` is not a byte sequence of at least 64 bytes.
  * @throws `UnauthorizedError` If the token is malformed, the signature is incorrect, or the token is expired or not yet valid.
- * @example const { sub } = await verifyToken(token, secret)
  * @see https://shelving.cc/util/jwt/verifyToken
  */
 export async function verifyToken(token: string, secret: PossibleBytes, caller: AnyCaller = verifyToken): Promise<Data> {
@@ -189,7 +186,6 @@ export async function verifyToken(token: string, secret: PossibleBytes, caller: 
  * @param request The `Request` object to set the token on.
  * @param token The JWT string to set in the `Authorization` header.
  * @returns The same `Request` object that was passed in.
- * @example setRequestToken(request, token)
  * @see https://shelving.cc/util/jwt/setRequestToken
  */
 export function setRequestToken(request: Request, token: string): Request {
@@ -202,7 +198,6 @@ export function setRequestToken(request: Request, token: string): Request {
  *
  * @param request The `Request` object possibly containing an `Authorization: Bearer {token}` header to extract the token from.
  * @returns The string token extracted from the `Authorization` header, or `undefined` if not set.
- * @example getRequestToken(request) // "eyJ..." or undefined
  * @see https://shelving.cc/util/jwt/getRequestToken
  */
 export function getRequestToken(request: Request): string | undefined {
@@ -217,7 +212,6 @@ export function getRequestToken(request: Request): string | undefined {
  * @param caller Identity of the calling function for error attribution.
  * @returns The string token extracted from the `Authorization` header.
  * @throws `UnauthorizedError` If the `Authorization` header is not set, or the JWT it contains is not well-formed.
- * @example requireRequestToken(request) // "eyJ..."
  * @see https://shelving.cc/util/jwt/requireRequestToken
  */
 export function requireRequestToken(request: Request, caller: AnyCaller = requireRequestToken): string {
@@ -235,7 +229,6 @@ export function requireRequestToken(request: Request, caller: AnyCaller = requir
  * @param caller Identity of the calling function for error attribution.
  * @returns A promise resolving to the decoded payload data from the JWT.
  * @throws `UnauthorizedError` If the `Authorization` header is not set, the JWT it contains is not well-formed, or the JWT signature is invalid.
- * @example const { sub, iss, customClaim } = await verifyRequestToken(request, secret)
  * @see https://shelving.cc/util/jwt/verifyRequestToken
  */
 export function verifyRequestToken(request: Request, secret: PossibleBytes, caller: AnyCaller = verifyRequestToken): Promise<Data> {

@@ -35,14 +35,6 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 */
 	readonly provider: APIProvider<P, R>;
 
-	/**
-	 * Create a new `EndpointCache` for a single endpoint and provider.
-	 *
-	 * @param endpoint The endpoint that every cached store fetches from.
-	 * @param provider The `APIProvider` used to render URLs and fetch results.
-	 * @example new EndpointCache(getUser, provider)
-	 * @see https://shelving.cc/api/EndpointCache
-	 */
 	constructor(endpoint: Endpoint<P, R>, provider: APIProvider<P, R>) {
 		this.endpoint = endpoint;
 		this.provider = provider;

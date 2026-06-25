@@ -21,8 +21,6 @@ export interface ColumnProps extends BlockVariants, FlexVariants, OptionalChildP
 /**
  * Flex container that stacks its children as a column by default.
  *
- * @param variants
- * @returns A `<div>` element with the computed block/flex class.
  * @kind component
  * @example <Column gap="small">{items}</Column>
  * @see https://shelving.cc/ui/Column

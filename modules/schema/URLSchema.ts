@@ -56,9 +56,6 @@ export class URLSchema extends StringSchema {
 	/** Whitelist of allowed URL schemes, e.g. `["https:", "http:"]`. */
 	readonly schemes: URISchemes;
 
-	/**
-	 * Create a new `URLSchema`.
-	 */
 	constructor({ one = "URL", title = "URL", base, schemes = HTTP_SCHEMES, input = "url", max = 512, ...options }: URLSchemaOptions) {
 		super({
 			one,
@@ -72,17 +69,7 @@ export class URLSchema extends StringSchema {
 		this.base = getURL(base)?.href;
 		this.schemes = schemes;
 	}
-	/**
-	 * Validate an unknown input value and return a normalised absolute URL string.
-	 *
-	 * - Override to validate the URL and check the scheme and host against the whitelists.
-	 *
-	 * @param unsafeValue The unknown input value to validate.
-	 * @returns The valid, fully-resolved URL string.
-	 * @throws `string` error message if the value is empty, malformed, or uses a disallowed scheme.
-	 * @example schema.validate("https://www.google.com") // "https://www.google.com/"
-	 * @see https://shelving.cc/schema/URLSchema/validate
-	 */
+	/** Resolves the URL against `base`, then checks its scheme against `schemes`. */
 	override validate(unsafeValue: unknown): URLString {
 		const str = super.validate(unsafeValue);
 		const url = getURL(str, this.base);
@@ -91,29 +78,13 @@ export class URLSchema extends StringSchema {
 		return url.href;
 	}
 
-	/**
-	 * Sanitize a string before validation by stripping all whitespace.
-	 *
-	 * - URLs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
-	 *
-	 * @param str The raw string to sanitize.
-	 * @returns The sanitized string with all whitespace removed.
-	 * @example schema.sanitize(" https://a.com ") // "https://a.com"
-	 * @see https://shelving.cc/schema/URLSchema/sanitize
-	 */
+	/** Strips all whitespace (URLs `%20`-encode real spaces). */
 	override sanitize(str: string): string {
 		// URLs never contain whitespace (a real space must be `%20`-encoded), so strip it entirely.
 		return sanitizeWord(str);
 	}
 
-	/**
-	 * Format a validated URL string for display.
-	 *
-	 * @param value The valid URL string to format.
-	 * @returns The URL formatted as a human-readable string.
-	 * @example schema.format("https://www.google.com/") // "www.google.com"
-	 * @see https://shelving.cc/schema/URLSchema/format
-	 */
+	/** Formats the URL for display via `formatURL()`. */
 	override format(value: string): string {
 		return formatURL(value, this.base, this.format);
 	}

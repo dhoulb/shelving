@@ -11,49 +11,21 @@ import type { Identifier } from "../util/item.js";
  * - Identifiers are escaped through `Bun.SQL`'s own `sql()` helper rather than naive string quoting, which is more secure.
  * - Requires the `bun` peer dependency and a running Bun environment.
  *
- * @example
- * import { SQL } from "bun";
- * const provider = new BunPostgreSQLProvider(new SQL(process.env.DATABASE_URL));
- *
  * @see https://shelving.cc/bun/BunPostgreSQLProvider
  */
 export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgreSQLProvider<I, T> {
 	private _sql: SQL;
 
-	/**
-	 * Create a provider wrapping an existing `Bun.SQL` connection.
-	 *
-	 * @param sql The `Bun.SQL` instance to execute queries against.
-	 * @see https://shelving.cc/bun/BunPostgreSQLProvider
-	 */
 	constructor(sql: SQL) {
 		super();
 		this._sql = sql;
 	}
 
-	/**
-	 * Execute an SQL query through the underlying `Bun.SQL` connection.
-	 *
-	 * @param strings The tagged-template string parts of the query.
-	 * @param values The interpolated values bound as query parameters.
-	 * @returns Promise resolving to the array of result rows.
-	 * @example provider.exec`SELECT * FROM ${provider.sqlIdentifier("items")}`
-	 * @see https://shelving.cc/bun/BunPostgreSQLProvider/exec
-	 */
 	override exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>> {
 		return this._sql(strings, ...values);
 	}
 
-	/**
-	 * Build an SQL fragment for an identifier, escaped via `Bun.SQL`'s `sql()` helper.
-	 *
-	 * Overrides the base implementation because the Bun SQL engine supports first-class identifier wrapping, which is more secure than manual quoting.
-	 *
-	 * @param name The identifier (table or column name) to escape.
-	 * @returns An `SQLFragment` wrapping the escaped identifier.
-	 * @example provider.sqlIdentifier("items")
-	 * @see https://shelving.cc/bun/BunPostgreSQLProvider/sqlIdentifier
-	 */
+	/** Escapes the identifier via `Bun.SQL`'s first-class `sql()` wrapping rather than manual quoting, which is more secure. */
 	override sqlIdentifier(name: string): SQLFragment {
 		return this.sql`${this._sql(name)}`;
 	}

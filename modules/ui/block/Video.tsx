@@ -42,7 +42,6 @@ export interface VideoButtonProps extends ChildProps {
  * - Has a black background and a 16:9 aspect ratio.
  * - Shows its contents (i.e. a `<video>` element or a `<TwilioRoom>`.
  *
- * @returns Rendered `<figure>` video container.
  * @kind component
  * @example <Video><video src="/clip.mp4" /></Video>
  * @see https://shelving.cc/ui/Video
@@ -66,7 +65,6 @@ export function Video({ children, ...props }: VideoProps): ReactElement {
 /**
  * Set of video buttons floating over a video.
  *
- * @returns Rendered overlay container for video buttons.
  * @example <VideoButtons><FullscreenVideoButton /></VideoButtons>
  * @see https://shelving.cc/ui/VideoButtons
  */
@@ -77,7 +75,6 @@ export function VideoButtons({ children, ...variants }: VideoButtonsProps) {
 /**
  * Individual video button over a video — renders a `<button>`.
  *
- * @returns Rendered `<button>` element overlaid on the video.
  * @kind component
  * @example <VideoButton title="Play" onClick={play}><PlayIcon /></VideoButton>
  * @see https://shelving.cc/ui/VideoButton

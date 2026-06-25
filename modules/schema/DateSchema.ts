@@ -62,9 +62,6 @@ export class DateSchema extends Schema<string> {
 	/** Rounding step in milliseconds, or `undefined` for no rounding. */
 	readonly step: number | undefined;
 
-	/**
-	 * Create a new `DateSchema`.
-	 */
 	constructor({ one = "date", min, max, value, input = "date", step, ...options }: DateSchemaOptions) {
 		super({ one, title: "Date", value, ...options });
 		this.min = getDate(min);
@@ -73,15 +70,7 @@ export class DateSchema extends Schema<string> {
 		this.step = step;
 	}
 
-	/**
-	 * Validate an unknown input value and return a valid date string.
-	 *
-	 * @param value The value to validate (defaults to this schema's `value`).
-	 * @returns The validated date as a `YYYY-MM-DD` string.
-	 * @throws `string` `"Required"` if the value is empty, `` `Invalid ${one} format` `` if it is not a date, or `` `Minimum…` `` / `` `Maximum…` `` if outside the allowed range.
-	 * @example schema.validate("2005-09-12") // "2005-09-12"
-	 * @see https://shelving.cc/schema/DateSchema/validate
-	 */
+	/** Coerces to a `Date`, optionally rounds to `step`, range-checks against `min` / `max`, then stringifies. */
 	override validate(value: unknown = this.value): string {
 		const date = getDate(value);
 		if (!date) throw value ? `Invalid ${this.one} format` : "Required";
@@ -106,14 +95,7 @@ export class DateSchema extends Schema<string> {
 		return requireDateString(value);
 	}
 
-	/**
-	 * Format a validated date string as a human-readable string for display.
-	 *
-	 * @param value The validated date string to format.
-	 * @returns The date formatted for display.
-	 * @example schema.format("2005-09-12") // "12 Sep 2005"
-	 * @see https://shelving.cc/schema/DateSchema/format
-	 */
+	/** Formats the date string for display via `formatDate()` (e.g. `"12 Sep 2005"`). */
 	override format(value: string): string {
 		return formatDate(value, undefined, this.format);
 	}

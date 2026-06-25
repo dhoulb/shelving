@@ -28,8 +28,6 @@ export function matchMenuElement(element: Element): boolean {
  * - Links straight to the element's own canonical `path` (stamped by `flattenTree()`), so the menu must be fed the flattened tree's elements.
  * - Passes both the label and the nested `<TreeMenuMapper>` to `<MenuItem>`; `<MenuItem>` itself decides whether to reveal the nested submenu based on the current URL.
  *
- * @param props The tree element props — `path` is the canonical URL to link to.
- * @returns A `<MenuItem>` for the element, with a nested `<Menu>` when it has menu-eligible children.
  * @kind component
  * @example <TreeMenuItem {...element.props} />
  * @see https://shelving.cc/ui/TreeMenuItem
@@ -77,8 +75,6 @@ export interface TreeMenuProps {
  * - Only directories and files appear — code symbols are kept off the navigation.
  *
  * @kind component
- * @returns A `<Menu>` of navigation links to the root's children.
- * @example <TreeMenu tree={useTreeMap().get("/")} />
  * @see https://shelving.cc/ui/TreeMenu
  */
 export function TreeMenu({ tree }: TreeMenuProps): ReactNode {
