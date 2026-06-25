@@ -30,9 +30,6 @@ export interface PanelProps extends BlockVariants, PaddingVariants, StatusVarian
  * Renders as a `<section>` by default; pass `as="header"` etc. for other semantic elements.
  *
  * @kind component
- * @returns Rendered full-width panel region.
- * @example <Panel><Block width="narrow"><Title>Welcome</Title></Block></Panel>
- * @example <Panel padding="xlarge" color="primary"><Title>Welcome</Title></Panel>
  * @see https://shelving.cc/ui/Panel
  */
 export function Panel({ as: Element = "section", children, ...props }: PanelProps): ReactElement {

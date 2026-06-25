@@ -18,7 +18,6 @@ export interface LabelProps extends HeadingProps {}
  * - This is the default style used by things like a `<th>` from a `<table>`.
  * - Default text properties for all of these can be controlled with global variables: `--size-label`, `--font-label`, `--case-label`.
  *
- * @returns Rendered `<h3>` label heading element.
  * @kind component
  * @example <Label>Email address</Label>
  * @see https://shelving.cc/ui/Label

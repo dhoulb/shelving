@@ -42,9 +42,6 @@ export interface ColorSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/ColorSchema
  */
 export class ColorSchema extends StringSchema {
-	/**
-	 * Create a new `ColorSchema`.
-	 */
 	constructor({ one = "color", title = "Color", value = "#000000", input = "color", max = 7, ...options }: ColorSchemaOptions) {
 		super({
 			one,
@@ -58,17 +55,7 @@ export class ColorSchema extends StringSchema {
 			match: COLOR_REGEXP,
 		});
 	}
-	/**
-	 * Sanitize the string into a `#RRGGBB` hex color.
-	 *
-	 * - Uppercases the input and strips every non-hex character.
-	 * - Prefixes the first six hex digits with `#`, or returns `""` when there are none.
-	 *
-	 * @param insaneString String to sanitize.
-	 * @returns The sanitized hex color, or `""` if no hex digits are present.
-	 * @example COLOR.sanitize("00ccff"); // Returns "#00CCFF"
-	 * @see https://shelving.cc/schema/ColorSchema/sanitize
-	 */
+	/** Uppercases and strips non-hex characters, returning the first six digits as `#RRGGBB` (or `""` if none). */
 	override sanitize(insaneString: string): string {
 		const saneString = insaneString.toUpperCase().replace(NOT_HEX_REGEXP, "");
 		return saneString ? `#${saneString.slice(0, 6)}` : "";

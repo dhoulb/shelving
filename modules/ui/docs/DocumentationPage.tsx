@@ -45,8 +45,6 @@ const KINDS = {
  * - All sections are conditional — only render when they have entries.
  *
  * @kind component
- * @returns A `<Page>` containing the symbol's full documentation.
- * @example <DocumentationPage {...element.props} />
  * @see https://shelving.cc/ui/DocumentationPage
  */
 export function DocumentationPage({

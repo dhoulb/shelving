@@ -21,8 +21,6 @@ export interface RowProps extends FlexVariants, OptionalChildProps {
 /**
  * Flex container that arranges its children as a row by default.
  *
- * @param variants
- * @returns A `<div>` element with the computed block/flex class.
  * @kind component
  * @example <Row gap="small" center>{items}</Row>
  * @see https://shelving.cc/ui/Row

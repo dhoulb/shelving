@@ -40,7 +40,6 @@ export type CSSModule = ImmutableDictionary<string | undefined>;
  *
  * @param classes The input set of classes to merge.
  * @returns The merged string classname.
- * @example getClass("button", { active: true, disabled: false }) // "button active"
  * @see https://shelving.cc/ui/getClass
  */
 export function getClass(...classes: unknown[]): string {
@@ -79,7 +78,6 @@ function* getClasses(classes: unknown): Iterable<string> {
  *
  * @param classes Class keys/values to merge.
  * @returns The merged string classname, or `undefined` when `module` is a string (unprocessed CSS module).
- * @example getModuleClass(styles, "base", { active: true }) // "base_x7q active_p2k"
  * @see https://shelving.cc/ui/getModuleClass
  */
 export function getModuleClass(module: CSSModule | string, ...classes: unknown[]): string | undefined {

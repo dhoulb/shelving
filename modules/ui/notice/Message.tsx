@@ -19,8 +19,6 @@ export interface MessageProps extends BlockVariants, StatusVariants, ChildProps 
  *
  * - Sets an ARIA `role` of `"alert"` for error/danger statuses, otherwise `"status"`.
  *
- * @param children The message content.
- * @returns The message paragraph element.
  * @example <Message status="error">Something went wrong</Message>
  * @see https://shelving.cc/ui/Message
  */

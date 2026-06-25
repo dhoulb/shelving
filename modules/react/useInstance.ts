@@ -9,9 +9,6 @@ import type { Arguments } from "../util/function.js";
  *
  * @param Constructor Class to instantiate with `args`.
  * @param args Constructor arguments — a change in `args` constructs a fresh instance.
- * @returns The memoised instance, reconstructed only when `args` changes.
- *
- * @example const cache = useInstance(DBCache, provider);
  *
  * @see https://shelving.cc/react/useInstance
  */

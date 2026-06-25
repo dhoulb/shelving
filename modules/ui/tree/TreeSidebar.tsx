@@ -24,8 +24,6 @@ export interface TreeSidebarProps extends OptionalChildProps {}
  * Reads the flattened tree from the surrounding `<TreeProvider>` (`useTreeMap().get("/")`), so child and result hrefs use each element's stamped canonical `path`. To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
  *
  * @kind component
- * @returns The sectioned sidebar — home/index links, a search input, and either the tree menu or search results.
- * @example <TreeSidebar />
  * @see https://shelving.cc/ui/TreeSidebar
  */
 export function TreeSidebar({ children }: TreeSidebarProps): ReactNode {

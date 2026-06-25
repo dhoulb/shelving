@@ -20,8 +20,6 @@ export interface CellProps extends WidthVariants, TypographyVariants, OptionalCh
  * - A column's width is the widest of its cells, so use this to size a column that has no header to set the width on.
  *
  * @kind component
- * @returns Rendered `<td>` element.
- * @example <Cell width="12x" grow>A longer description that wants a sensible minimum width.</Cell>
  * @see https://shelving.cc/ui/Cell
  */
 export function Cell({ header = false, children, ...props }: CellProps): ReactElement {

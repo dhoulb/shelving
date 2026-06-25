@@ -10,6 +10,10 @@ import CENTERED_LAYOUT_CSS from "./CenteredLayout.module.css";
  * @see https://shelving.cc/ui/CenteredLayoutProps
  */
 export interface CenteredLayoutProps extends OptionalChildProps {
+	/**
+	 * Drop the narrow max-width and let content fill the width.
+	 * @default false
+	 */
 	fullWidth?: boolean;
 }
 
@@ -18,10 +22,6 @@ export interface CenteredLayoutProps extends OptionalChildProps {
  * - Used for e.g. login/register/error/form pages where the content is the only focus.
  *
  * @kind component
- * @param children The content to centre.
- * @param fullWidth Drop the narrow max-width and let content fill the width (defaults to `false`).
- * @returns The centred layout element.
- * @example <CenteredLayout><LoginForm /></CenteredLayout>
  * @see https://shelving.cc/ui/CenteredLayout
  */
 export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutProps): ReactElement {

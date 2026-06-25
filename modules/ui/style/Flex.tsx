@@ -71,7 +71,6 @@ export interface FlexVariants extends GapVariants {
 /**
  * Get the flex layout class for a component from its flex variant props.
  *
- * @param variants
  * @returns The combined flex + gap class string.
  * @example getFlexClass({ column: true, center: true, gap: "large" })
  * @see https://shelving.cc/ui/getFlexClass

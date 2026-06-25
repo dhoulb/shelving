@@ -15,7 +15,6 @@ import { TreeMarkup } from "./TreeMarkup.js";
  * - Shows the title, any absorbed prose content, and the element's children as a stack of cards.
  * - Child cards cover both nested directories/files and the code symbols of a source file.
  *
- * @returns A `<Page>` with the title, prose content, and a stack of child cards.
  * @kind component
  * @example <TreePage {...element.props} />
  * @see https://shelving.cc/ui/TreePage

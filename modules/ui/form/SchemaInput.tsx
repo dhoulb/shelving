@@ -61,8 +61,6 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
  * @returns The matching input element for the schema.
  * @throws `UnexpectedError` if no input matches the schema type.
  * @kind component
- * @example <SchemaInput name="email" schema={EMAIL} /> // Outputs a `<TextInput>` for the "email" property.
- * @example <SchemaInput name="age" schema={AGE} /> // Outputs a `<NumberInput>` for the "age" property.
  * @see https://shelving.cc/ui/SchemaInput
  */
 export function SchemaInput<T extends Schema>(props: SchemaInputProps<T>): ReactElement;
@@ -274,8 +272,6 @@ export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, Opt
  *
  * @returns A `<Field>` wrapping the schema's input.
  * @kind component
- * @example <SchemaField name="email" schema={EMAIL} /> // Outputs a `<Field>` wrapping a `<TextInput>`.
- * @example <SchemaField name="age" schema={AGE} /> // Outputs a `<Field>` wrapping a `<NumberInput>`.
  * @see https://shelving.cc/ui/SchemaField
  */
 export function SchemaField({ schema, children, ...props }: SchemaFieldProps): ReactElement {

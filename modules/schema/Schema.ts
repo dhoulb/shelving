@@ -53,9 +53,6 @@ export abstract class Schema<T = unknown> implements Validator<T> {
 	/** Default value for the schema if `validate()` is called with an `undefined` value. */
 	readonly value: unknown;
 
-	/**
-	 * Create a new `Schema`.
-	 */
 	constructor({ one = "value", many = `${one}s`, title, description, placeholder, value }: SchemaOptions) {
 		this.one = one;
 		this.many = many;

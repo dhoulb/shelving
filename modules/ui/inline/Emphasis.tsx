@@ -15,7 +15,6 @@ export interface EmphasisProps extends OptionalChildProps {}
 /**
  * Emphasised text — renders an `<em>` element for stress emphasis (typically italic).
  *
- * @returns Rendered `<em>` element.
  * @kind component
  * @example <Emphasis>really</Emphasis>
  * @see https://shelving.cc/ui/Emphasis

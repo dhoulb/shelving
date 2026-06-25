@@ -15,7 +15,6 @@ export interface DeletedProps extends OptionalChildProps {}
 /**
  * Deleted text — renders a `<del>` element to mark content removed from a document.
  *
- * @returns Rendered `<del>` element.
  * @kind component
  * @example <Deleted>old price</Deleted>
  * @see https://shelving.cc/ui/Deleted

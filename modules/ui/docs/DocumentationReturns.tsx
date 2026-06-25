@@ -28,7 +28,6 @@ export interface DocumentationReturnsProps {
  * - Renders nothing when there are no return entries.
  *
  * @kind component
- * @returns A `<Section>` containing the returns table, or `null` when there are none.
  * @example <DocumentationReturns returns={returns} />
  * @see https://shelving.cc/ui/DocumentationReturns
  */

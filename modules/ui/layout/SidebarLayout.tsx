@@ -26,14 +26,8 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
  * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
  * - The scrollable content column is kept alive across navigation via `<RouteCache>`, so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
- * - Use the `--sidebar-layout-width`, `--sidebar-layout-bg`, `--sidebar-layout-border`, and `--sidebar-layout-color-border` custom properties to override defaults.
  *
  * @kind component
- * @param sidebar The side-column content, rendered inside a `<nav>`.
- * @param children The main scrollable content.
- * @param right Render the sidebar on the right rather than the left (defaults to `false`).
- * @returns The sidebar layout element.
- * @example <SidebarLayout sidebar={<Menu />}><Page /></SidebarLayout>
  * @see https://shelving.cc/ui/SidebarLayout
  */
 export function SidebarLayout({ sidebar, children, right = false }: SidebarLayoutProps): ReactElement {

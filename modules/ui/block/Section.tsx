@@ -32,8 +32,6 @@ function _getSectionClass(props: SectionProps): string {
  * - Pass `as` to render a different semantic element.
  *
  * @kind component
- * @returns Rendered `<section>` element.
- * @example <Section><Heading>About</Heading></Section>
  * @see https://shelving.cc/ui/Section
  */
 export function Section({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
@@ -44,8 +42,6 @@ export function Section({ as: Element = "section", children, ...variants }: Sect
  * `<header>` block with section-level spacing.
  *
  * @kind component
- * @returns Rendered `<header>` element.
- * @example <Header><Title>Welcome</Title></Header>
  * @see https://shelving.cc/ui/Header
  */
 export function Header({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
@@ -56,8 +52,6 @@ export function Header({ as: Element = "section", children, ...variants }: Secti
  * `<footer>` block with section-level spacing.
  *
  * @kind component
- * @returns Rendered `<footer>` element.
- * @example <Footer><Small>© 2026</Small></Footer>
  * @see https://shelving.cc/ui/Footer
  */
 export function Footer({ as: Element = "section", children, ...variants }: SectionProps): ReactElement {
@@ -69,7 +63,6 @@ export function Footer({ as: Element = "section", children, ...variants }: Secti
  * - Use a `<Card>` instead to display boxed content.
  *
  * @kind component
- * @returns Rendered `<article>` element.
  * @see https://shelving.cc/ui/Article
  */
 export function Article({ as: Element = "article", children, ...variants }: SectionProps): ReactElement {
@@ -81,8 +74,6 @@ export function Article({ as: Element = "article", children, ...variants }: Sect
  * - Pair with `<Caption>` for `<figcaption>` content.
  *
  * @kind component
- * @returns Rendered `<figure>` element.
- * @example <Figure><Image src="/cat.jpg" /><Caption>A cat</Caption></Figure>
  * @see https://shelving.cc/ui/Figure
  */
 export function Figure({ as: Element = "figure", children, ...variants }: SectionProps): ReactElement {

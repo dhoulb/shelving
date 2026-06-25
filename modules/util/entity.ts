@@ -35,8 +35,6 @@ export const EMPTY_ENTITY: EmptyEntity = [undefined, undefined];
  *
  * @param entity The entity string to split, or a nullish value.
  * @returns A `[type, id]` tuple, or `EMPTY_ENTITY` if the entity was missing or invalid.
- * @example getEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
- * @example getEntity(undefined) // [undefined, undefined]
  * @see https://shelving.cc/util/entity/getEntity
  */
 export function getEntity<T extends string>(entity: Entity<T>): [type: T, id: string];
@@ -57,7 +55,6 @@ export function getEntity(entity: Nullish<string>): [type: string, id: string] |
  * @param caller Function to attribute a thrown error to (defaults to `requireEntity`).
  * @returns A `[type, id]` tuple.
  * @throws {RequiredError} If the entity string is missing or invalid.
- * @example requireEntity("challenge:a1b2c3") // ["challenge", "a1b2c3"]
  * @see https://shelving.cc/util/entity/requireEntity
  */
 export function requireEntity<T extends string>(entity: Entity<T>, caller?: AnyCaller): [type: T, id: string];

@@ -14,8 +14,6 @@ import { DocumentationSignatures } from "./DocumentationSignatures.js";
  * - The card is tinted by `kind` (colour carries the method/property/etc. distinction — no separate tag).
  *
  * @kind component
- * @returns A `<Card>` linking to the symbol's own page.
- * @example <DocumentationCard {...element.props} />
  * @see https://shelving.cc/ui/DocumentationCard
  */
 export function DocumentationCard({

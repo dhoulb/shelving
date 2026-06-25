@@ -39,8 +39,6 @@ export interface TreeAppProps extends PossibleMeta {
  *   Override by wrapping with `<TreePageMapping>`, `<TreeMenuMapping>`, or `<TreeCardMapping>`.
  *
  * @kind component
- * @returns The configured `<App>` element with sidebar layout and tree routing.
- * @example <TreeApp tree={tree} title="Docs" />
  * @see https://shelving.cc/ui/TreeApp
  */
 export function TreeApp({ tree, routes, sidebar = <TreeSidebar />, ...meta }: TreeAppProps): ReactElement {

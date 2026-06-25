@@ -32,10 +32,6 @@ export interface NumberSchemaOptions extends SchemaOptions {
  * - Values are coerced with `getNumber`; anything that cannot become a number is rejected.
  * - The number is snapped to `step` (if set), then checked against `min` and `max`.
  *
- * @example
- *  const schema = new NumberSchema({ min: 0, max: 100, step: 1 });
- *  schema.validate("42"); // Returns 42
- *
  * @see https://shelving.cc/schema/NumberSchema
  */
 export class NumberSchema extends Schema<number> {
@@ -43,9 +39,6 @@ export class NumberSchema extends Schema<number> {
 	readonly min: number;
 	readonly max: number;
 	readonly step: number | undefined;
-	/**
-	 * Create a new `NumberSchema`.
-	 */
 	constructor({
 		one = "number",
 		title = "Number",
@@ -60,18 +53,8 @@ export class NumberSchema extends Schema<number> {
 		this.max = max;
 		this.step = step;
 	}
-	/**
-	 * Validate an unknown value and coerce it to a number.
-	 *
-	 * @param value Value to validate (defaults to this schema's `value`).
-	 * @returns The coerced (and optionally stepped) number value.
-	 * @throws `string` `"Required"` if the value is empty or missing, `` `Must be ${one}` `` if it cannot be coerced to a number, `` `Minimum ${min}` `` if below `min`, or `` `Maximum ${max}` `` if above `max`.
-	 *
-	 * @example
-	 *  NUMBER.validate("42"); // Returns 42
-	 *
-	 * @see https://shelving.cc/schema/NumberSchema/validate
-	 */
+
+	/** Coerce an unknown value to a number, snap it to `step`, and enforce `min` / `max`. */
 	override validate(value: unknown = this.value): number {
 		const number = getNumber(value);
 		if (typeof number !== "number") throw value ? `Must be ${this.one}` : "Required";
@@ -80,17 +63,8 @@ export class NumberSchema extends Schema<number> {
 		if (stepped > this.max) throw `Maximum ${this.format(this.max)}`;
 		return stepped;
 	}
-	/**
-	 * Format a number value as a human-readable string for display.
-	 *
-	 * @param value Number value to format.
-	 * @returns The formatted string.
-	 *
-	 * @example
-	 *  NUMBER.format(2048.5); // Returns "2,048.5"
-	 *
-	 * @see https://shelving.cc/schema/NumberSchema/format
-	 */
+
+	/** Format a number for display via `formatNumber()` (e.g. `2048.5` → `"2,048.5"`). */
 	override format(value: number): string {
 		return formatNumber(value);
 	}
@@ -99,9 +73,7 @@ export class NumberSchema extends Schema<number> {
 /**
  * Sugar instance of `NumberSchema` for an unconstrained number. Equivalent to `new NumberSchema({ title: "Number" })`.
  *
- * @example
- *  NUMBER.validate("42"); // Returns 42
- *
+ * @example NUMBER.validate("42"); // Returns 42
  * @see https://shelving.cc/schema/NUMBER
  */
 export const NUMBER = new NumberSchema({ title: "Number" });
@@ -109,9 +81,7 @@ export const NUMBER = new NumberSchema({ title: "Number" });
 /**
  * Sugar instance allowing a `NUMBER` or `null`. Equivalent to `NULLABLE(NUMBER)`.
  *
- * @example
- *  NULLABLE_NUMBER.validate(null); // Returns null
- *
+ * @example NULLABLE_NUMBER.validate(null); // Returns null
  * @see https://shelving.cc/schema/NULLABLE_NUMBER
  */
 export const NULLABLE_NUMBER = NULLABLE(NUMBER);
@@ -119,9 +89,7 @@ export const NULLABLE_NUMBER = NULLABLE(NUMBER);
 /**
  * Sugar instance of `NumberSchema` for an integer. Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
  *
- * @example
- *  INTEGER.validate("42.7"); // Returns 43 (rounded to step)
- *
+ * @example INTEGER.validate("42.7"); // Returns 43 (rounded to step)
  * @see https://shelving.cc/schema/INTEGER
  */
 export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER });
@@ -129,9 +97,7 @@ export const INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER,
 /**
  * Sugar instance of `NumberSchema` for a positive integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER })`.
  *
- * @example
- *  POSITIVE_INTEGER.validate(0); // Throws "Required"
- *
+ * @example POSITIVE_INTEGER.validate(0); // Throws "Required"
  * @see https://shelving.cc/schema/POSITIVE_INTEGER
  */
 export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.MAX_SAFE_INTEGER });
@@ -139,9 +105,7 @@ export const POSITIVE_INTEGER = new NumberSchema({ step: 1, min: 1, max: Number.
 /**
  * Sugar instance of `NumberSchema` for a non-negative integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER })`.
  *
- * @example
- *  NON_NEGATIVE_INTEGER.validate(0); // Returns 0
- *
+ * @example NON_NEGATIVE_INTEGER.validate(0); // Returns 0
  * @see https://shelving.cc/schema/NON_NEGATIVE_INTEGER
  */
 export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Number.MAX_SAFE_INTEGER });
@@ -149,9 +113,7 @@ export const NON_NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: 0, max: Num
 /**
  * Sugar instance of `NumberSchema` for a negative integer (excluding zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 })`.
  *
- * @example
- *  NEGATIVE_INTEGER.validate(-3); // Returns -3
- *
+ * @example NEGATIVE_INTEGER.validate(-3); // Returns -3
  * @see https://shelving.cc/schema/NEGATIVE_INTEGER
  */
 export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: -1 });
@@ -159,9 +121,7 @@ export const NEGATIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE
 /**
  * Sugar instance of `NumberSchema` for a non-positive integer (including zero). Equivalent to `new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 })`.
  *
- * @example
- *  NON_POSITIVE_INTEGER.validate(0); // Returns 0
- *
+ * @example NON_POSITIVE_INTEGER.validate(0); // Returns 0
  * @see https://shelving.cc/schema/NON_POSITIVE_INTEGER
  */
 export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_SAFE_INTEGER, max: 0 });
@@ -169,9 +129,7 @@ export const NON_POSITIVE_INTEGER = new NumberSchema({ step: 1, min: Number.MIN_
 /**
  * Sugar instance allowing an `INTEGER` or `null`. Equivalent to `NULLABLE(INTEGER)`.
  *
- * @example
- *  NULLABLE_INTEGER.validate(null); // Returns null
- *
+ * @example NULLABLE_INTEGER.validate(null); // Returns null
  * @see https://shelving.cc/schema/NULLABLE_INTEGER
  */
 export const NULLABLE_INTEGER = NULLABLE(INTEGER);
@@ -179,9 +137,7 @@ export const NULLABLE_INTEGER = NULLABLE(INTEGER);
 /**
  * Sugar instance of `NumberSchema` for a Unix timestamp (including milliseconds). Equivalent to `new NumberSchema({ title: "Timestamp", step: 1, min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER })`.
  *
- * @example
- *  TIMESTAMP.validate(1700000000000); // Returns 1700000000000
- *
+ * @example TIMESTAMP.validate(1700000000000); // Returns 1700000000000
  * @see https://shelving.cc/schema/TIMESTAMP
  */
 export const TIMESTAMP = new NumberSchema({
@@ -194,9 +150,7 @@ export const TIMESTAMP = new NumberSchema({
 /**
  * Sugar instance — alias of `NULLABLE_INTEGER`. Equivalent to `NULLABLE_INTEGER`.
  *
- * @example
- *  NULLABLE_TIMESTAMP.validate(null); // Returns null
- *
+ * @example NULLABLE_TIMESTAMP.validate(null); // Returns null
  * @see https://shelving.cc/schema/NULLABLE_TIMESTAMP
  */
 export const NULLABLE_TIMESTAMP = NULLABLE_INTEGER;

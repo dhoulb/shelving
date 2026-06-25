@@ -45,9 +45,6 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 	readonly min: number;
 	readonly max: number;
 
-	/**
-	 * Create a new `DictionarySchema`.
-	 */
 	constructor({
 		items,
 		one = items.one,
@@ -65,15 +62,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		this.max = max;
 	}
 
-	/**
-	 * Validate an unknown value as a dictionary whose entries all match the `items` schema.
-	 *
-	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
-	 * @returns The valid dictionary with each entry value validated by the `items` schema.
-	 * @throws `string` `"Must be object"` if not a dictionary, `"Required"` or `` `Minimum ${min} ${many}` `` if too few entries, or `` `Maximum ${max} ${many}` `` if too many.
-	 * @example schema.validate({ a: 1, b: 2 }) // { a: 1, b: 2 }
-	 * @see https://shelving.cc/schema/DictionarySchema/validate
-	 */
+	/** Validates each entry value against `items`, then checks the entry count against `min` / `max`. */
 	override validate(unsafeValue: unknown = this.value): ImmutableDictionary<T> {
 		if (!isDictionary(unsafeValue)) throw "Must be object";
 		const validDictionary = validateDictionary(unsafeValue, this.items);
@@ -83,14 +72,7 @@ export class DictionarySchema<T> extends Schema<ImmutableDictionary<T>> {
 		return validDictionary;
 	}
 
-	/**
-	 * Format a validated dictionary as a string for display.
-	 *
-	 * @param dict The valid dictionary to format.
-	 * @returns The dictionary's values formatted as a human-readable string.
-	 * @example schema.format({ a: 1, b: 2 }) // "1, 2"
-	 * @see https://shelving.cc/schema/DictionarySchema/format
-	 */
+	/** Formats each value via the `items` schema, joined for display. */
 	override format(dict: ImmutableDictionary<T>): string {
 		return formatArray(
 			Object.values(dict).map(v => this.items.format(v)),

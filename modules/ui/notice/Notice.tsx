@@ -25,11 +25,7 @@ export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants
  * - Shows a `<StatusIcon>` for the current `status` by default; pass `icon` to override, or `false`/`null` to hide it.
  * - Sets an ARIA `role` of `"alert"` for error/danger statuses, otherwise `"status"`.
  *
- * @param children The notice content.
- * @param icon Optional icon override (`false`/`null` hides it; defaults to the matching `<StatusIcon>`).
- * @returns The notice callout element.
  * @kind component
- * @example <Notice status="success">Saved your changes</Notice>
  * @see https://shelving.cc/ui/Notice
  */
 export function Notice({
@@ -57,7 +53,6 @@ export function Notice({
 /**
  * Shared loading `<Notice>` element showing the loading spinner.
  *
- * @example <Suspense fallback={LOADING_NOTICE}>…</Suspense>
  * @see https://shelving.cc/ui/LOADING_NOTICE
  */
 export const LOADING_NOTICE = <Notice status="loading" />;

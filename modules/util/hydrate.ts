@@ -42,7 +42,6 @@ function _isDehydrated(value: DehydratedObject | ImmutableObject): value is Dehy
  * @param hydrations The set of `$type` keys mapped to the class constructors used to rebuild instances.
  * @returns The hydrated value, with matched objects rebuilt as their class instances.
  * @throws `ValueError` If a dehydrated object's `$type` is not matched by any constructor in `hydrations`.
- * @example hydrate({ $type: "Date", $value: 0 }, {}) // Date instance
  * @see https://shelving.cc/util/hydrate/hydrate
  */
 export function hydrate(value: unknown, hydrations: Hydrations): unknown {
@@ -76,7 +75,6 @@ function _hydrateProp([, v]: Entry, hydrations: Hydrations): unknown {
  * @param hydrations The set of `$type` keys mapped to the class constructors used to recognise instances.
  * @returns The dehydrated version of the specified value.
  * @throws `ValueError` If the value is a class instance that cannot be dehydrated (i.e. is not matched by any constructor in `hydrations`).
- * @example dehydrate(new Date(0), {}) // { $type: "Date", $value: 0 }
  * @see https://shelving.cc/util/hydrate/dehydrate
  */
 export function dehydrate(value: unknown, hydrations: Hydrations): unknown {

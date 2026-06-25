@@ -26,5 +26,5 @@ The following `:root` variables are defined by this module and can be overridden
 
 | Variable | Default | Used for |
 |---|---|---|
-| `--space-section` | `var(--space-normal) * 2` | Top margin for titles / headings / section blocks. |
+| `--space-section` | `2rem` | Top margin for titles / headings / section blocks. |
 | `--space-paragraph` | `var(--space-normal)` | Default block-space for most prose elements. |

@@ -22,10 +22,6 @@ export interface CurrencyAmountSchemaOptions extends NumberSchemaOptions {
  * - The validation step is inferred from the currency's minor units.
  * - The default formatter renders amounts using shelving's currency helpers.
  *
- * @example
- * const PRICE = new CurrencyAmountSchema({ currency: "GBP", min: 0 });
- * PRICE.validate("12.345"); // 12.35
- * PRICE.format(12.3); // "£12.30"
  * @see https://shelving.cc/schema/CurrencyAmountSchema
  */
 export class CurrencyAmountSchema extends NumberSchema {
@@ -48,11 +44,7 @@ export class CurrencyAmountSchema extends NumberSchema {
 	 */
 	readonly symbol: string;
 
-	/**
-	 * Create a new `CurrencyAmountSchema`.
-	 *
-	 * @throws `string` if `currency` is not a valid ISO 4217 currency code.
-	 */
+	/** @throws `string` if `currency` is not a valid ISO 4217 currency code. */
 	constructor({ currency, one = "amount", title = "Amount", symbol, step, ...options }: CurrencyAmountSchemaOptions) {
 		const validCurrency = requireCurrencyCode(currency, CurrencyAmountSchema);
 		super({
@@ -65,16 +57,7 @@ export class CurrencyAmountSchema extends NumberSchema {
 		this.symbol = symbol ?? getCurrencySymbol(validCurrency, CurrencyAmountSchema);
 	}
 
-	/**
-	 * Format a validated amount as a currency string for display.
-	 *
-	 * - Decimal places are omitted when `step` is `1` or more.
-	 *
-	 * @param value The validated amount to format.
-	 * @returns The amount formatted using the schema's currency and symbol.
-	 * @example schema.format(12.3) // "£12.30"
-	 * @see https://shelving.cc/schema/CurrencyAmountSchema/format
-	 */
+	/** Formats the amount with its currency symbol; omits decimals when `step` is `1` or more. */
 	override format(value: number): string {
 		const options = this.step >= 1 ? { maximumFractionDigits: 0 } : {}; // Skip showing decimal places if step is 1 or more.
 		return formatCurrency(value, this.currency, options, this.format);

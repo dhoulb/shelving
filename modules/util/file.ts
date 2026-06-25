@@ -16,10 +16,6 @@ export type FileTypes = { [extension: string]: string };
  *
  * @param file The filename to split, or a nullish value (defaults to `""`).
  * @returns A `[base, extension]` tuple, with `undefined` for either part that is absent.
- * @example splitFileExtension("array.ts") // ["array", "ts"]
- * @example splitFileExtension("no-ext") // ["no-ext", undefined]
- * @example splitFileExtension(".gitignore") // [undefined, "gitignore"]
- * @example splitFileExtension(undefined) // [undefined, undefined]
  * @see https://shelving.cc/util/file/splitFileExtension
  */
 export function splitFileExtension(file: Nullish<string> = ""): [base: string | undefined, extension: string | undefined] {
@@ -34,7 +30,6 @@ export function splitFileExtension(file: Nullish<string> = ""): [base: string | 
  *
  * @param file The filename to read the extension from, or a nullish value.
  * @returns The extension (no leading dot), or `undefined` if the input has no extension.
- * @example getFileExtension("readme.md") // "md"
  * @see https://shelving.cc/util/file/getFileExtension
  */
 export function getFileExtension(file: Nullish<string>): string | undefined {
@@ -48,7 +43,6 @@ export function getFileExtension(file: Nullish<string>): string | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireFileExtension`).
  * @returns The extension (no leading dot).
  * @throws `RequiredError` if the input has no extension.
- * @example requireFileExtension("component.tsx") // "tsx"
  * @see https://shelving.cc/util/file/requireFileExtension
  */
 export function requireFileExtension(file: string, caller: AnyCaller = requireFileExtension): string {

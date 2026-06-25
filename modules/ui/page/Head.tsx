@@ -14,8 +14,6 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
  * - Updates `window.history` to match the page URL.
  *
  * @kind component
- * @returns The hoistable head elements derived from the current `<Meta>` context.
- * @example <Page title="Settings"><Head />…</Page>
  * @see https://shelving.cc/ui/Head
  */
 export function Head(): ReactElement {

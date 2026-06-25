@@ -33,7 +33,6 @@ const INDEX_LIMIT = 100;
  * - Reads the whole tree from the surrounding `<TreeProvider>` (the flattened map's root), so it works on every page.
  *
  * @kind component
- * @returns A `<Page>` with a search input, kind checkboxes, and a flat card listing of results.
  * @example <Router routes={{ search: DocumentationSearchPage }} />
  * @see https://shelving.cc/ui/DocumentationSearchPage
  */

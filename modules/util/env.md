@@ -6,12 +6,11 @@ These helpers read `process.env` safely across Node, edge runtimes, and browser 
 
 - All functions return `undefined` (or throw) silently in browser environments where `process.env` does not exist — no runtime error is thrown for the missing global.
 - `getEnvBoolean()` recognises `1`, `on`, `yes`, `true` as `true` and `0`, `off`, `no`, `false` as `false` (case-insensitive). Any other value returns `undefined`.
-- `NO_COLOR` is a module-level constant evaluated at import time, matching the [no-color.org](https://no-color.org) convention.
 
 ## Usage
 
 ```ts
-import { getEnv, requireEnv, getEnvBoolean, requireEnvBoolean, NO_COLOR } from "shelving/util";
+import { getEnv, requireEnv, getEnvBoolean, requireEnvBoolean } from "shelving/util";
 
 // Safe read — returns undefined if missing.
 const port = getEnv("PORT");             // "3000" | undefined
@@ -24,7 +23,4 @@ const debug = getEnvBoolean("DEBUG");    // true | false | undefined
 
 // Throws if the value isn't a recognised boolean.
 const verbose = requireEnvBoolean("VERBOSE"); // true | false or throws
-
-// Module-level constant — false when NO_COLOR is not set.
-if (!NO_COLOR) process.stdout.write("\x1b[32mgreen\x1b[0m");
 ```

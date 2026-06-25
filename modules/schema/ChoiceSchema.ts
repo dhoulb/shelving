@@ -49,19 +49,12 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
  * - The input must be one of the keys in `options`, otherwise it is rejected.
  * - Each choice has a human-readable title used by `format()`.
  *
- * @example
- *  const schema = new ChoiceSchema({ options: { yes: "Yes", no: "No" } });
- *  schema.validate("yes"); // "yes"
- *
  * @see https://shelving.cc/schema/ChoiceSchema
  */
 export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	declare readonly value: O | I | undefined;
 	readonly options: ChoiceOptions<O>;
 
-	/**
-	 * Create a new `ChoiceSchema`.
-	 */
 	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = _getChoiceOptions(options);
@@ -99,14 +92,7 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
 
-	/**
-	 * Format a validated choice as its human-readable title.
-	 *
-	 * @param value The valid choice key to format.
-	 * @returns The choice's title from `options`.
-	 * @example schema.format("yes") // "Yes"
-	 * @see https://shelving.cc/schema/ChoiceSchema/format
-	 */
+	/** Format a validated choice as its human-readable title from `options`. */
 	override format(value: O): string {
 		return this.options[value];
 	}

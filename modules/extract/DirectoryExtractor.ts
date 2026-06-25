@@ -56,7 +56,6 @@ export interface DirectoryExtractorOptions {
  *   and/or `IndexExtractor` to opt in to those behaviours.
  *
  * @example const tree = await new DirectoryExtractor().extract("modules/util");
- *
  * @see https://shelving.cc/extract/DirectoryExtractor
  */
 export class DirectoryExtractor extends Extractor<Path, TreeElement> {
@@ -64,11 +63,6 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private readonly _base: AbsolutePath | undefined;
 	private readonly _ignore: Matchables;
 
-	/**
-	 * Create a directory extractor with optional extractor dispatch, base path, and ignore patterns.
-	 *
-	 * @example const extractor = new DirectoryExtractor({ base: "/repo/modules" });
-	 */
 	constructor({ extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {
 		super();
 		this._extractors = extractors;
@@ -76,16 +70,6 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 		this._ignore = ignore;
 	}
 
-	/**
-	 * Walk a directory on disk and produce a tree of `tree-element` nodes.
-	 *
-	 * @param source Path of the directory to walk — resolved against the configured `base`.
-	 * @returns Promise of the root `tree-element` for the walked directory.
-	 *
-	 * @example const tree = await new DirectoryExtractor().extract("modules/util");
-	 *
-	 * @see https://shelving.cc/extract/extract
-	 */
 	override extract(source: Path): Promise<TreeElement> {
 		return this._extractDirectory(requirePath(source, this._base, this.extract));
 	}

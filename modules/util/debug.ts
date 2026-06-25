@@ -11,7 +11,6 @@ import type { ImmutableSet } from "./set.js";
  * @param value The value to debug.
  * @param depth How many levels of nested containers to expand (defaults to `1`).
  * @returns A human-readable string representation of `value`.
- * @example debug({ a: 1, b: "two" }) // `{\n\t"a": 1,\n\t"b": "two"\n}`
  * @see https://shelving.cc/util/debug/debug
  */
 export function debug(value: unknown, depth = 1): string {
@@ -43,7 +42,6 @@ export function debug(value: unknown, depth = 1): string {
  *
  * @param value The string to debug.
  * @returns The quoted and escaped string.
- * @example debugString("a\tb") // `"a\\tb"`
  * @see https://shelving.cc/util/debug/debugString
  */
 export function debugString(value: string): string {
@@ -69,7 +67,6 @@ const _escapeChar = (char: string): string => ESCAPE_LIST[char] || `\\x${char.ch
  *
  * @param headers The `Headers` object to debug.
  * @returns A newline-separated string of `key: value` pairs.
- * @example debugHeaders(new Headers({ "Content-Type": "text/plain" })) // "content-type: text/plain"
  * @see https://shelving.cc/util/debug/debugHeaders
  */
 export function debugHeaders(headers: Headers): string {
@@ -83,7 +80,6 @@ export function debugHeaders(headers: Headers): string {
  *
  * @param request The `Request` to debug.
  * @returns A promise resolving to the request line, headers, and body as a string.
- * @example await debugFullRequest(new Request("https://x.com")) // "GET https://x.com/"
  * @see https://shelving.cc/util/debug/debugFullRequest
  */
 export async function debugFullRequest(request: Request): Promise<string> {
@@ -98,7 +94,6 @@ export async function debugFullRequest(request: Request): Promise<string> {
  *
  * @param response The `Response` to debug.
  * @returns A promise resolving to the status line, headers, and body as a string.
- * @example await debugFullResponse(new Response("hi", { status: 200 })) // "200 \n\nhi"
  * @see https://shelving.cc/util/debug/debugFullResponse
  */
 export async function debugFullResponse(response: Response): Promise<string> {
@@ -146,7 +141,6 @@ async function _debugMessageBody(message: Request | Response): Promise<string> {
  *
  * @param request The `Request` to debug.
  * @returns A string in `METHOD url` format.
- * @example debugRequest(new Request("https://x.com")) // "GET https://x.com/"
  * @see https://shelving.cc/util/debug/debugRequest
  */
 export function debugRequest(request: Request): string {
@@ -159,7 +153,6 @@ export function debugRequest(request: Request): string {
  *
  * @param response The `Response` to debug.
  * @returns A string in `status statusText` format.
- * @example debugResponse(new Response("hi", { status: 404 })) // "404 Not Found"
  * @see https://shelving.cc/util/debug/debugResponse
  */
 export function debugResponse(response: Response): string {
@@ -174,7 +167,6 @@ export function debugResponse(response: Response): string {
  * @param value The array to debug.
  * @param depth How many levels of nested containers to expand (defaults to `1`).
  * @returns A human-readable string representation of the array.
- * @example debugArray([1, 2]) // `[\n\t1,\n\t2\n]`
  * @see https://shelving.cc/util/debug/debugArray
  */
 export function debugArray(value: ImmutableArray, depth = 1): string {
@@ -192,7 +184,6 @@ export function debugArray(value: ImmutableArray, depth = 1): string {
  * @param value The set to debug.
  * @param depth How many levels of nested containers to expand (defaults to `1`).
  * @returns A human-readable string representation of the set.
- * @example debugSet(new Set([1, 2])) // `(value.size) {\n\t1,\n\t2\n}`
  * @see https://shelving.cc/util/debug/debugSet
  */
 export function debugSet(value: ImmutableSet, depth = 1): string {
@@ -215,7 +206,6 @@ export function debugSet(value: ImmutableSet, depth = 1): string {
  * @param value The map to debug.
  * @param depth How many levels of nested containers to expand (defaults to `1`).
  * @returns A human-readable string representation of the map.
- * @example debugMap(new Map([["a", 1]])) // `(value.size) {\n\t"a": 1\n}`
  * @see https://shelving.cc/util/debug/debugMap
  */
 export function debugMap(value: ImmutableMap, depth = 1): string {
@@ -238,7 +228,6 @@ export function debugMap(value: ImmutableMap, depth = 1): string {
  * @param value The object to debug.
  * @param depth How many levels of nested containers to expand (defaults to `1`).
  * @returns A human-readable string representation of the object.
- * @example debugObject({ a: 1 }) // `{\n\t"a": 1\n}`
  * @see https://shelving.cc/util/debug/debugObject
  */
 export function debugObject(value: object, depth = 1): string {
@@ -260,7 +249,6 @@ export function debugObject(value: object, depth = 1): string {
  *
  * @param str The string to indent.
  * @returns The indented string.
- * @example indent("a\nb") // `\na\n\tb`
  * @see https://shelving.cc/util/debug/indent
  */
 export function indent(str: string): string {

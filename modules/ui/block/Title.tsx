@@ -18,8 +18,6 @@ export type TitleProps = HeadingProps;
  * - The most prominent heading on a page; there should normally be exactly one.
  *
  * @kind component
- * @returns Rendered `<h1>` heading element.
- * @example <Title>Welcome</Title>
  * @see https://shelving.cc/ui/Title
  */
 export function Title({ level = "1", children, ...props }: TitleProps): ReactElement {

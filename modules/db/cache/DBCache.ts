@@ -37,12 +37,6 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 */
 	readonly memory: MemoryDBProvider<I, T> | undefined;
 
-	/**
-	 * Create a cache of collection caches for a database provider.
-	 *
-	 * @param provider The database provider the cached stores fetch from.
-	 * @example new DBCache(provider)
-	 */
 	constructor(provider: DBProvider<I, T>) {
 		this.provider = provider;
 		// If the provider chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.

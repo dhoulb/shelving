@@ -22,9 +22,6 @@ export interface ThroughSchemaOptions<T> extends SchemaOptions {
 export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<Schema<T>> {
 	/** The source schema this schema passes through to. */
 	readonly source: Schema<T>;
-	/**
-	 * Create a new `ThroughSchema`.
-	 */
 	constructor({ source, ...options }: ThroughSchemaOptions<T>) {
 		super(source instanceof Schema ? { ...source, ...options } : options);
 		this.source = source;
@@ -41,14 +38,7 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 	validate(unsafeValue: unknown): T {
 		return this.source.validate(unsafeValue);
 	}
-	/**
-	 * Format a valid value by passing it through to the source schema.
-	 *
-	 * @param value The valid value to format.
-	 * @returns The value formatted as a human-readable string.
-	 * @example schema.format(value) // Delegates to source schema.
-	 * @see https://shelving.cc/schema/ThroughSchema/format
-	 */
+	/** Delegates to the source schema. */
 	override format(value: T): string {
 		return this.source.format(value);
 	}

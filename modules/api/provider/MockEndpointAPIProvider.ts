@@ -6,23 +6,9 @@ import { MockAPIProvider } from "./MockAPIProvider.js";
  * Provider that mocks an API that calls and matches an array of `EndpointHandler` objects returned from `Endpoint.handler()`
  * - Used to test server-side API code, calls against an API made up of multiple `Endpoint` instances.
  *
- * @example
- *  const endpoint = POST("/squared", INTEGER, INTEGER); // Create an endpoint designed to square its input number.
- *  const handlers = [endpoint.handler(num => num * num)]; // Implement handlers for the endpoints.
- * 	const api = new MockEnpdointAPIProvider(handlers); // Create a new mock provider.
- *  const result = await api.fetch(endpoint, 4); // Mock a call to the endpoint through the provider.
- *  expect(result).toBe(16);
  * @see https://shelving.cc/api/MockEndpointAPIProvider
  */
 export class MockEndpointAPIProvider<P, R, C> extends MockAPIProvider<P, R> {
-	/**
-	 * Create a mock provider that routes calls through an array of endpoint handlers instead of the network.
-	 *
-	 * @param handlers The endpoint handlers (from `Endpoint.handler()`) that serve matching requests.
-	 * @param context The context value passed to each handler.
-	 * @param source Optional source provider used to build requests and parse responses.
-	 * @example new MockEndpointAPIProvider(handlers, context)
-	 */
 	constructor(handlers: EndpointHandlers<C>, context: C, source?: ClientAPIProvider<P, R>) {
 		super(request => handleEndpoints(this.url, handlers, request, context, this.call), source);
 	}

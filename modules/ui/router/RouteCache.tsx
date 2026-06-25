@@ -43,10 +43,6 @@ export interface RouteCacheProps {
  * - When `maxCached <= 0` the page is rendered directly with no caching (it unmounts as you leave it).
  *
  * @kind component
- * @param maxCached Number of recently-visited URLs to keep alive (defaults to `10`; `0` disables caching).
- * @param children The content region to render and cache (typically a layout's scrollable column).
- * @returns The visible current page plus any cached pages kept alive but hidden.
- * @example <SidebarLayout sidebar={<Menu />}><RouteCache><Router … /></RouteCache></SidebarLayout>
  * @see https://shelving.cc/ui/RouteCache
  */
 export function RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode {

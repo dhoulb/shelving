@@ -31,7 +31,6 @@ export type PossibleColor = Color | string;
 /**
  * Represents an RGBA color with red, green, blue, and alpha channels (each `0`–`255`).
  *
- * @example new Color(255, 0, 0).hex // "#FF0000"
  * @see https://shelving.cc/util/color/Color
  */
 export class Color {
@@ -40,7 +39,6 @@ export class Color {
 	 *
 	 * @param possible The value to parse, typically a `Color` instance or a three/six/eight digit hex string.
 	 * @returns The parsed `Color`, or `undefined` if `possible` cannot be converted.
-	 * @example Color.from("#F00") // Color(255, 0, 0)
 	 * @see https://shelving.cc/util/color/Color/from
 	 */
 	static from(possible: unknown): Color | undefined {
@@ -84,16 +82,6 @@ export class Color {
 	 */
 	readonly a: number;
 
-	/**
-	 * Create a new `Color` from red, green, blue, and alpha channel values.
-	 *
-	 * @param r Red channel, bounded to `0`–`255` (defaults to `255`).
-	 * @param g Green channel, bounded to `0`–`255` (defaults to `255`).
-	 * @param b Blue channel, bounded to `0`–`255` (defaults to `255`).
-	 * @param a Alpha channel, bounded to `0`–`255` (defaults to `255`).
-	 * @example new Color(255, 0, 0) // opaque red
-	 * @see https://shelving.cc/util/color/Color/constructor
-	 */
 	constructor(r = 255, g = 255, b = 255, a = 255) {
 		this.r = boundNumber(r, 0, 255);
 		this.g = boundNumber(g, 0, 255);
@@ -181,7 +169,6 @@ function _hex(channel: number) {
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `Color`, narrowing its type.
- * @example isColor(new Color()) // true
  * @see https://shelving.cc/util/color/isColor
  */
 export function isColor(value: unknown): value is Color {
@@ -194,7 +181,6 @@ export function isColor(value: unknown): value is Color {
  * @param value The value to assert.
  * @param caller Function to attribute a thrown error to (defaults to `assertColor` itself).
  * @throws {RequiredError} If `value` is not a `Color` instance.
- * @example assertColor(new Color());
  * @see https://shelving.cc/util/color/assertColor
  */
 export function assertColor(value: unknown, caller: AnyCaller = assertColor): asserts value is Color {
@@ -206,7 +192,6 @@ export function assertColor(value: unknown, caller: AnyCaller = assertColor): as
  *
  * @param value The value to convert.
  * @returns The converted `Color`, or `undefined` if `value` cannot be converted.
- * @example getColor("#F00") // Color(255, 0, 0)
  * @see https://shelving.cc/util/color/getColor
  */
 export function getColor(value: unknown): Color | undefined {
@@ -219,7 +204,6 @@ export function getColor(value: unknown): Color | undefined {
  * @param value The possible color to convert.
  * @param caller Function to attribute a thrown error to (defaults to `requireColor` itself).
  * @throws {RequiredError} If `value` cannot be converted to a `Color`.
- * @example requireColor("#F00") // Color(255, 0, 0)
  * @see https://shelving.cc/util/color/requireColor
  */
 export function requireColor(value: PossibleColor, caller: AnyCaller = requireColor): Color {

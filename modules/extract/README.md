@@ -84,12 +84,13 @@ Internally `<TreeApp>` wires together:
 
 ```ts
 new DirectoryExtractor({
-  index: [/^readme\.md$/i],                     // filenames treated as the directory index
   extractors: { md: new MarkupExtractor() },  // file extension → extractor
   ignore: [/\.test\.tsx?$/i],                   // entries to skip
   base: "/abs/path",                            // base for resolving relative paths
 });
 ```
+
+(Index-file absorption is configured separately on `IndexExtractor` via its `index` option.)
 
 By default, test files, hidden files, underscore-prefixed files, and `node_modules` are skipped, and `.md`, `.ts`, `.tsx`, and `.txt` files are extracted.
 

@@ -12,8 +12,6 @@ export interface FadeTransitionProps extends TransitionProps {}
  * Transition that fades its children in and out by animating their opacity.
  *
  * @kind component
- * @returns A `<Transition>` element configured with the `fade` class.
- * @example <FadeTransition>{visible && <Toast />}</FadeTransition>
  * @see https://shelving.cc/ui/FadeTransition
  */
 export function FadeTransition(props: FadeTransitionProps): ReactElement {

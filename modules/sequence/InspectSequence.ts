@@ -9,11 +9,6 @@ const _NOVALUE: unique symbol = Symbol("shelving/InspectSequence.NOVALUE");
  * Sequence of values that inspects a source sequence of values as it iterates.
  * - Stores: first/last yielded value, returned value, whether iteration is done, the number of items that were iterated.
  *
- * @example
- * 	const watch = new InspectSequence(iterable);
- * 	for await (const next of capture) console.log("YIELDED", next);
- * 	console.log("FIRST", watch.first);
- * 	console.log("RETURNED", watch.returned);
  * @see https://shelving.cc/sequence/InspectSequence
  */
 export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
@@ -91,38 +86,14 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	}
 	private _returned: R | undefined | typeof _NOVALUE = _NOVALUE;
 
-	// Override to watch returned values.
+	// Override to record each yielded or returned value as it passes through.
 
-	/**
-	 * Advance the source sequence by one step, recording the yielded or returned value.
-	 *
-	 * @param value Optional value passed into the source sequence's `next()`.
-	 * @returns Promise resolving to the next `IteratorResult` from the source sequence.
-	 * @example const { value, done } = await watch.next()
-	 * @see https://shelving.cc/sequence/InspectSequence/next
-	 */
 	override async next(value?: N | undefined): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.next(value));
 	}
-	/**
-	 * Finish the source sequence early, recording the returned value.
-	 *
-	 * @param value Optional value to return from the source sequence.
-	 * @returns Promise resolving to the final `IteratorResult` from the source sequence.
-	 * @example await watch.return()
-	 * @see https://shelving.cc/sequence/InspectSequence/return
-	 */
 	override async return(value?: R | undefined | PromiseLike<R | undefined>): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.return(value));
 	}
-	/**
-	 * Throw an error into the source sequence, recording the resulting value.
-	 *
-	 * @param reason The reason to throw into the source sequence.
-	 * @returns Promise resolving to the `IteratorResult` produced after throwing.
-	 * @example await watch.throw(new Error("stop"))
-	 * @see https://shelving.cc/sequence/InspectSequence/throw
-	 */
 	override async throw(reason?: unknown): Promise<IteratorResult<T, R | undefined>> {
 		return this._inspect(await super.throw(reason));
 	}

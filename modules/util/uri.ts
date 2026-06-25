@@ -155,7 +155,6 @@ export type PossibleURI = string | URL;
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `ImmutableURI`, narrowing its type.
- * @example isURI(new URL("http://x.com")) // true
  * @see https://shelving.cc/util/uri/isURI
  */
 export function isURI(value: unknown): value is ImmutableURI {
@@ -181,7 +180,6 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
  *
  * @param possible Possible URI value to convert (a nullish value returns `undefined`).
  * @returns Converted `ImmutableURI`, or `undefined` if conversion fails.
- * @example getURI("http://shax.com") // URL { … }
  * @see https://shelving.cc/util/uri/getURI
  */
 export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined {
@@ -201,7 +199,6 @@ export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined
  * @param caller Function to attribute a thrown error to (defaults to `requireURI` itself).
  * @returns Converted `ImmutableURI`.
  * @throws {RequiredError} If `possible` cannot be converted to a valid URI.
- * @example requireURI("http://shax.com") // URL { … }
  * @see https://shelving.cc/util/uri/requireURI
  */
 export function requireURI(possible: PossibleURI, caller: AnyCaller = requireURI): ImmutableURI {
@@ -260,7 +257,6 @@ function* getURIEntries(params: PossibleURIParams, caller: AnyCaller = getURIPar
  * @returns Dictionary of string params keyed by name.
  * @throws {RequiredError} If `params` is a string or URL that cannot be converted to a valid URI.
  * @throws {ValueError} If any param value cannot be converted to a string.
- * @example getURIParams("http://x.com?a=1&b=2") // { a: "1", b: "2" }
  * @see https://shelving.cc/util/uri/getURIParams
  */
 export function getURIParams(params: PossibleURIParams, caller: AnyCaller = getURIParams): URIParams {

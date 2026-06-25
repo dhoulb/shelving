@@ -58,18 +58,9 @@ export interface ClientAPIProviderOptions {
  * - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
  * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
  *
- * @example
- * const provider = new ClientAPIProvider({ url: "https://api.example.com" });
- * const user = await provider.call(getUser, { id: "abc" });
- *
  * @see https://shelving.cc/api/ClientAPIProvider
  */
 export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, R> {
-	/**
-	 * The common base URL for all rendered endpoint requests.
-	 *
-	 * @see https://shelving.cc/api/ClientAPIProvider/url
-	 */
 	override readonly url: URL;
 
 	/**
@@ -86,13 +77,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 	 */
 	readonly timeout: number;
 
-	/**
-	 * Create a `ClientAPIProvider` from a base URL and request options.
-	 *
-	 * @throws {RequiredError} if `url` cannot be resolved to a valid base URL.
-	 * @example new ClientAPIProvider({ url: "https://api.example.com" })
-	 * @see https://shelving.cc/api/ClientAPIProvider
-	 */
+	/** @throws {RequiredError} if `url` cannot be resolved to a valid base URL. */
 	constructor({ url, options = {}, timeout = 20_000 }: ClientAPIProviderOptions) {
 		super();
 		this.url = requireBaseURL(url, ClientAPIProvider);
@@ -100,18 +85,6 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		this.timeout = timeout;
 	}
 
-	/**
-	 * Render the full request URL, appending `?query` params for `HEAD` and `GET` requests.
-	 *
-	 * @param endpoint The endpoint whose path is rendered into the base URL.
-	 * @param payload The payload supplying `{placeholder}` and query-param values.
-	 * @param caller The function to attribute thrown errors to (defaults to this method).
-	 * @returns The fully resolved request `URL`.
-	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
-	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
-	 * @example provider.renderURL(getUser, { id: "abc" })
-	 * @see https://shelving.cc/api/ClientAPIProvider/renderURL
-	 */
 	override renderURL<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, caller: AnyCaller = this.renderURL): URL {
 		// Construct the full URL from `this.url` and the rendered path.
 		// Adding the `.` turns the absolute path from `renderPath()` into a relative URL.
@@ -131,21 +104,7 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return url;
 	}
 
-	/**
-	 * Create a `Request` for an endpoint, rendering payload into the URL or body depending on the method.
-	 * - `HEAD` and `GET` requests carry their payload as `?query` params; other methods carry it as the body.
-	 * - Merges `options` over the provider's default options and attaches a timeout `AbortSignal` when `timeout` is set.
-	 *
-	 * @param endpoint The endpoint the request targets.
-	 * @param payload The payload to embed into the `Request`.
-	 * @param options Per-call `RequestOptions` merged over the provider's defaults.
-	 * @param caller The function to attribute thrown errors to (defaults to this method).
-	 * @returns The created `Request`.
-	 * @throws {RequiredError} if this endpoint's path has `{placeholders}` but `payload` is not a data object.
-	 * @throws {RequiredError} if this is a `HEAD` or `GET` request but `payload` is not a data object.
-	 * @example provider.createRequest(getUser, { id: "abc" })
-	 * @see https://shelving.cc/api/ClientAPIProvider/createRequest
-	 */
+	/** Merges `options` over the provider's defaults and attaches a timeout `AbortSignal` when `timeout` is set. */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
@@ -190,29 +149,12 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return createRequest(method, url, payload, options, caller);
 	}
 
-	/**
-	 * Send the request over the network using the global `fetch()` API.
-	 *
-	 * @param request The `Request` to send.
-	 * @returns A promise resolving to the `Response`.
-	 * @example await provider.fetch(request)
-	 * @see https://shelving.cc/api/ClientAPIProvider/fetch
-	 */
+	/** Sends the request over the network using the global `fetch()` API. */
 	override async fetch(request: Request): Promise<Response> {
 		return fetch(request);
 	}
 
-	/**
-	 * Parse a response body into a result, throwing `ResponseError` for non-2xx responses.
-	 *
-	 * @param _endpoint The endpoint the response was produced for.
-	 * @param response The `Response` to parse.
-	 * @param caller The function to attribute thrown errors to (defaults to this method).
-	 * @returns A promise resolving to the parsed result.
-	 * @throws {ResponseError} if the response status is non-2xx.
-	 * @example await provider.parseResponse(getUser, response)
-	 * @see https://shelving.cc/api/ClientAPIProvider/parseResponse
-	 */
+	/** Parses the response body as JSON. */
 	override async parseResponse<PP extends P, RR extends R>(
 		_endpoint: Endpoint<PP, RR>,
 		response: Response,

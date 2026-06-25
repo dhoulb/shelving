@@ -14,18 +14,7 @@ import { ThroughSchema } from "./ThroughSchema.js";
  * @see https://shelving.cc/schema/RequiredSchema
  */
 export class RequiredSchema<T> extends ThroughSchema<T> {
-	/**
-	 * Validate an unknown value via the source schema and reject a falsy result.
-	 *
-	 * @param unsafeValue Value to validate.
-	 * @returns The valid (truthy) value of type `T`.
-	 * @throws `string` `"Required"` if the validated value is falsy, or any error message thrown by the source schema.
-	 *
-	 * @example
-	 *  REQUIRED(STRING).validate(""); // Throws "Required"
-	 *
-	 * @see https://shelving.cc/schema/RequiredSchema/validate
-	 */
+	/** Delegates to the source schema, then throws `"Required"` if the result is falsy. */
 	override validate(unsafeValue: unknown): T {
 		const safeValue = super.validate(unsafeValue);
 		if (!safeValue) throw "Required";
@@ -39,11 +28,7 @@ export class RequiredSchema<T> extends ThroughSchema<T> {
  * Sugar factory for `RequiredSchema`.
  *
  * @param source Source schema to wrap.
- *
- * @example
- *  const schema = REQUIRED(STRING);
- *  schema.validate(""); // Throws "Required"
- *
+ * @example REQUIRED(STRING).validate(""); // Throws "Required"
  * @see https://shelving.cc/schema/REQUIRED
  */
 export function REQUIRED<T>(source: Schema<T>): RequiredSchema<T> {

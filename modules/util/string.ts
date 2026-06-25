@@ -59,7 +59,6 @@ export function assertString(value: unknown, caller: AnyCaller = assertString): 
  *
  * @param value The value to convert.
  * @returns The string representation of `value`, or `undefined` if it cannot be converted.
- * @example getString(123) // "123"
  * @see https://shelving.cc/util/string/getString
  */
 export function getString(value: unknown): string | undefined {
@@ -108,7 +107,6 @@ export function isStringLength(value: unknown, min = 0, max = Number.POSITIVE_IN
  * @param max The maximum allowed length.
  * @param caller Function to attribute a thrown error to (defaults to `assertString`).
  * @throws {RequiredError} If `value` is not a string within the length bounds.
- * @example assertStringLength("abc", 1, 5); // Passes.
  * @see https://shelving.cc/util/string/assertStringLength
  */
 export function assertStringLength(value: unknown, min?: number, max?: number, caller: AnyCaller = assertString): asserts value is string {
@@ -154,7 +152,6 @@ export function isStringBetween(str: string, min = 0, max = Number.POSITIVE_INFI
  * @param joiner The separator to insert between strings (defaults to `""`).
  * @returns The joined string.
  * @throws {RequiredError} If `strs` is not a valid array of strings.
- * @example joinStrings(["a", "b"], "-") // "a-b"
  * @see https://shelving.cc/util/string/joinStrings
  */
 export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): string {
@@ -170,7 +167,6 @@ export function joinStrings(strs: Iterable<string> & NotString, joiner = ""): st
  *
  * @param str The string to sanitize.
  * @returns The sanitized single-line string.
- * @example sanitizeText("\x00Nice!   ") // "Nice!"
  * @see https://shelving.cc/util/string/sanitizeText
  */
 export function sanitizeText(str: string): string {
@@ -209,7 +205,6 @@ export function sanitizeWord(str: string): string {
  *
  * @param str The string to sanitize.
  * @returns The sanitized multi-line string.
- * @example sanitizeMultilineText("\x00Line one\n\n\n\nLine two   ") // "Line one\n\nLine two"
  * @see https://shelving.cc/util/string/sanitizeMultilineText
  */
 export function sanitizeMultilineText(str: string): string {
@@ -232,7 +227,6 @@ export function sanitizeMultilineText(str: string): string {
  *
  * @param str The string to simplify.
  * @returns The simplified, lowercased string containing only numbers, letters, and single spaces.
- * @example simplifyString("Däve-is\nREALLY    éxcitable—apparęntly!!!    😂"); // Returns "dave is really excitable apparently"
  * @see https://shelving.cc/util/string/simplifyString
  *
  * @todo Convert confusables (e.g. `ℵ` alef symbol or `℮` estimate symbol) to their letterlike equivalent (e.g. `N` and `e`).
@@ -251,7 +245,6 @@ export function simplifyString(str: string): string {
  *
  * @param str The string to convert.
  * @returns The `kebab-case` slug, or `undefined` if conversion resulted in an empty string.
- * @example getSlug("Hello World!") // "hello-world"
  * @see https://shelving.cc/util/string/getSlug
  */
 export function getSlug(str: string): string | undefined {
@@ -265,7 +258,6 @@ export function getSlug(str: string): string | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireSlug` itself).
  * @returns The `kebab-case` slug.
  * @throws {RequiredError} If conversion resulted in an empty string.
- * @example requireSlug("Hello World!") // "hello-world"
  * @see https://shelving.cc/util/string/requireSlug
  */
 export function requireSlug(str: string, caller: AnyCaller = requireSlug): string {
@@ -279,7 +271,6 @@ export function requireSlug(str: string, caller: AnyCaller = requireSlug): strin
  *
  * @param str The string to convert.
  * @returns The ref, or `undefined` if conversion resulted in an empty string.
- * @example getRef("Hello World!") // "helloworld"
  * @see https://shelving.cc/util/string/getRef
  */
 export function getRef(str: string): string | undefined {
@@ -311,7 +302,6 @@ export function requireRef(str: string, caller: AnyCaller = requireRef): string 
  *
  * @param str The string to extract words from.
  * @returns Array of the separate words and quoted phrases found in `str`.
- * @example getWords(`a "b c" d`) // ["a", "b c", "d"]
  * @see https://shelving.cc/util/string/getWords
  */
 export function getWords(str: string): ImmutableArray<string> {
@@ -330,7 +320,6 @@ const WORD = /([^\s"]+)|"([^"]*)"|'([^']*)'/g; // Runs of characters without spa
  *
  * @param str The string to read the first line from.
  * @returns The trimmed first line of `str` (everything before the first `\n` newline).
- * @example getFirstLine("first\nsecond") // "first"
  * @see https://shelving.cc/util/string/getFirstLine
  */
 export function getFirstLine(str: string): string {
@@ -369,7 +358,6 @@ export function isLowercaseLetter(str: string): boolean {
  * @param maxLength The maximum length of the returned string (before `append` is added).
  * @param append The string to append when a limit is applied (defaults to `"…"`).
  * @returns `str` unchanged if it's shorter than `maxLength`, otherwise truncated with `append` added.
- * @example limitString("the quick brown fox", 9) // "the quick…"
  * @see https://shelving.cc/util/string/limitString
  */
 export function limitString(str: string, maxLength: number, append = "…") {
@@ -391,7 +379,6 @@ export function limitString(str: string, maxLength: number, append = "…") {
  * @param caller Function to attribute a thrown error to (defaults to `splitString` itself).
  * @returns Array of the divided segments.
  * @throws {ValueError} If `min` isn't met, or if any of the segments are empty.
- * @example splitString("a-b-c", "-", 2, 2) // ["a", "b-c"]
  * @see https://shelving.cc/util/string/splitString
  */
 export function splitString(str: string, separator: string, min: 1, max: 1, caller?: AnyCaller): readonly [string];

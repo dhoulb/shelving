@@ -8,9 +8,6 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
 /**
  * Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations.
  *
- * @example
- *  class MyProvider extends PostgreSQLProvider { async exec(strings, ...values) { ... } }
- *  const item = await new MyProvider().getItem(collection, "abc");
  * @see https://shelving.cc/db/PostgreSQLProvider
  */
 export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
@@ -24,14 +21,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 		);
 	}
 
-	/**
-	 * Get the Postgres JSONB extract syntax for a key, e.g. `"a" #>> {"b","c"}`.
-	 *
-	 * @param key The key segments identifying the column and any nested JSONB path.
-	 * @returns An `SQLFragment` extracting the value.
-	 * @example this.sqlExtract(["a", "b"]); // "a" #>> {"b"}
-	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlExtract
-	 */
+	/** Extract via the Postgres `#>>` JSONB operator for nested keys, e.g. `"a" #>> {"b"}`. */
 	override sqlExtract(key: Segments): SQLFragment {
 		const column = this.sqlIdentifier(key[0]);
 		if (key.length > 1) {
@@ -41,15 +31,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 		return column;
 	}
 
-	/**
-	 * Define an SQL fragment for a single update action, with Postgres JSONB support for nested keys and `with`/`omit` array mutations.
-	 *
-	 * @param update The update action (`action`, `key`, `value`) to convert.
-	 * @returns The composed `SQLFragment`.
-	 * @throws {UnimplementedError} If the action is unsupported.
-	 * @example this.sqlUpdate({ action: "set", key: ["a", "b"], value: 1 })
-	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlUpdate
-	 */
+	/** Add Postgres JSONB support for nested keys and `with` / `omit` array mutations. */
 	override sqlUpdate(update: Update): SQLFragment {
 		const { action, key, value } = update;
 		const column = this.sqlIdentifier(key[0]);
@@ -100,15 +82,7 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 		return super.sqlUpdate(update);
 	}
 
-	/**
-	 * Define an SQL fragment for a filter clause, with Postgres JSONB support for `contains` and deeply-nested queries.
-	 *
-	 * @param filter The filter (`key`, `operator`, `value`) to translate.
-	 * @returns The composed `SQLFragment`.
-	 * @throws {UnimplementedError} If the operator is unsupported.
-	 * @example this.sqlFilter({ key: ["tags"], operator: "contains", value: "x" })
-	 * @see https://shelving.cc/db/PostgreSQLProvider/sqlFilter
-	 */
+	/** Add Postgres JSONB support for `contains` filters and deeply-nested queries. */
 	override sqlFilter(filter: QueryFilter): SQLFragment {
 		const { key, operator, value } = filter;
 

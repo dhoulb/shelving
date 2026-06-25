@@ -26,10 +26,6 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  * TODO: switch click/popstate handling to the browser Navigation API when broadly supported.
  *
  * @kind component
- * @param children The app subtree to provide navigation to.
- * @param meta Initial meta (url/base) merged with the surrounding `<Meta>` context.
- * @returns The navigation provider wrapping `children`.
- * @example <Navigation><App /></Navigation>
  * @see https://shelving.cc/ui/Navigation
  */
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {

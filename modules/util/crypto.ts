@@ -19,7 +19,6 @@ function _getKey(password: string): Promise<CryptoKey> {
  *
  * @param length The number of random bytes to generate.
  * @returns A `Bytes` (`Uint8Array`) of the requested length filled with random values.
- * @example getRandomBytes(16) // Uint8Array(16) [ ... ]
  * @see https://shelving.cc/util/crypto/getRandomBytes
  */
 export function getRandomBytes(length: number): Bytes {
@@ -38,8 +37,6 @@ export function getRandomBytes(length: number): Bytes {
  * - Returned hash tring will be about 128 characters long (16 byte salt + iteration count + 64 byte hash + 2 separators = 116 characters once base64 encoded).
  *
  * @throws {ValueError} If the password is shorter than the minimum length, or `iterations` is less than 1.
- *
- * @example const hash = await hashPassword("correct-horse"); // "abc…$500000$def…"
  * @see https://shelving.cc/util/crypto/hashPassword
  */
 export async function hashPassword(password: string, iterations = ITERATIONS): Promise<string> {
@@ -69,8 +66,6 @@ export async function hashPassword(password: string, iterations = ITERATIONS): P
  *
  * @returns True if the password matches the hash, false otherwise.
  * - Returns `false` (never throws) for malformed hash strings or invalid iteration counts.
- *
- * @example await verifyPassword("correct-horse", storedHash) // true
  * @see https://shelving.cc/util/crypto/verifyPassword
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {

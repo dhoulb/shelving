@@ -58,8 +58,6 @@ export type MarkupOptions = {
  * - Rules are grouped into priority tiers and resolved highest tier first; a claimed region is masked so lower-priority rules can't match into or across it.
  * - Rules own the recursion into their own children by calling `parse()` again, optionally with a different context.
  *
- * @example
- * const node = new MarkupParser().parse("This is a *bold* string.");
  * @see https://shelving.cc/markup/MarkupParser
  */
 export class MarkupParser implements Parser<string, ReactNode> {
@@ -108,12 +106,6 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 */
 	readonly context: string;
 
-	/**
-	 * Create a new `MarkupParser` from a set of options.
-	 *
-	 * @example new MarkupParser({ rel: "nofollow ugc" })
-	 * @see https://shelving.cc/markup/MarkupParser
-	 */
 	constructor({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES, context = "block" }: MarkupOptions = {}) {
 		this.rules = rules;
 		this.priorities = _getPriorities(rules);

@@ -39,9 +39,6 @@ export interface SlugSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/SlugSchema
  */
 export class SlugSchema extends StringSchema {
-	/**
-	 * Create a new `SlugSchema`.
-	 */
 	constructor({ max = 32, ...options }: SlugSchemaOptions) {
 		super({
 			...options,
@@ -51,14 +48,7 @@ export class SlugSchema extends StringSchema {
 		});
 	}
 
-	/**
-	 * Sanitize a string before validation by converting it into a slug.
-	 *
-	 * @param str The raw string to sanitize.
-	 * @returns The sanitized slug, or an empty string when nothing usable remains.
-	 * @example schema.sanitize("This is a Slug!") // "this-is-a-slug"
-	 * @see https://shelving.cc/schema/SlugSchema/sanitize
-	 */
+	/** Converts the input into a lowercase, hyphen-separated slug (or `""` if nothing usable remains). */
 	override sanitize(str: string): string {
 		return getSlug(str) || "";
 	}

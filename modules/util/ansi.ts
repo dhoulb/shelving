@@ -143,7 +143,6 @@ const _USES_COLOR: boolean = (() => {
  * @param input The string to wrap in ANSI codes.
  * @param wrappers Any number of ANSI escape codes (e.g. `ANSI_RED`, `ANSI_BOLD`) to prepend before `input`.
  * @returns The wrapped string, or `input` unchanged when colour is not supported (see precedence above).
- * @example ansiWrap("hello", ANSI_RED, ANSI_BOLD) // "\x1b[31m\x1b[1mhello\x1b[0m"
  * @see https://shelving.cc/util/ansi/ansiWrap
  */
 export function ansiWrap(input: string, ...wrappers: ImmutableArray<string>) {

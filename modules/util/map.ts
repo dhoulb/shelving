@@ -64,7 +64,6 @@ export type PossibleStringMap<K extends string, T> = PossibleMap<K, T> | { reado
  *
  * @param value The value to test.
  * @returns `true` if `value` is a `Map` instance, otherwise `false`.
- * @example isMap(new Map()) // true
  * @see https://shelving.cc/util/map/isMap
  */
 export function isMap(value: unknown): value is ImmutableMap {
@@ -78,7 +77,6 @@ export function isMap(value: unknown): value is ImmutableMap {
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `value` to `ImmutableMap`.
  * @throws {RequiredError} If `value` is not a `Map` instance.
- * @example assertMap(new Map()); // passes
  * @see https://shelving.cc/util/map/assertMap
  */
 export function assertMap(value: unknown, caller: AnyCaller = assertMap): asserts value is ImmutableMap {
@@ -90,7 +88,6 @@ export function assertMap(value: unknown, caller: AnyCaller = assertMap): assert
  *
  * @param input The map, object, or iterable of entries to convert.
  * @returns An `ImmutableMap` — the input unchanged if it's already a `Map`, otherwise a new `Map`.
- * @example getMap({ a: 1, b: 2 }) // Map { "a" => 1, "b" => 2 }
  * @see https://shelving.cc/util/map/getMap
  */
 export function getMap<K extends string, T>(input: PossibleStringMap<K, T>): ImmutableMap<K, T>;
@@ -106,7 +103,6 @@ export function getMap(input: PossibleMap<unknown, unknown> | { readonly [key: s
  * @param map The map to limit.
  * @param limit The maximum number of items to keep.
  * @returns An `ImmutableMap` with at most `limit` items (the input map unchanged if it already fits).
- * @example limitMap(new Map([["a", 1], ["b", 2]]), 1) // Map { "a" => 1 }
  * @see https://shelving.cc/util/map/limitMap
  */
 export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T> {
@@ -119,7 +115,6 @@ export function limitMap<T>(map: ImmutableMap<T>, limit: number): ImmutableMap<T
  * @param map The map to look in.
  * @param key The candidate key to test.
  * @returns `true` if `key` exists in `map`, otherwise `false`.
- * @example isMapItem(new Map([["a", 1]]), "a") // true
  * @see https://shelving.cc/util/map/isMapItem
  */
 export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K {
@@ -134,7 +129,6 @@ export function isMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown): key is K
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns Nothing; narrows `key` to the map's key type.
  * @throws {RequiredError} If `key` does not exist in `map`.
- * @example assertMapItem(new Map([["a", 1]]), "a"); // passes
  * @see https://shelving.cc/util/map/assertMapItem
  */
 export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown, caller: AnyCaller = assertMapItem): asserts key is K {
@@ -148,7 +142,6 @@ export function assertMapItem<K, V>(map: ImmutableMap<K, V>, key: unknown, calle
  * @param key The key to set.
  * @param value The value to set.
  * @returns The `value` that was set.
- * @example setMapItem(map, "a", 1) // 1
  * @see https://shelving.cc/util/map/setMapItem
  */
 export function setMapItem<K, T>(map: MutableMap<K, T>, key: K, value: T): T {
@@ -162,7 +155,6 @@ export function setMapItem<K, T>(map: MutableMap<K, T>, key: K, value: T): T {
  * @param map The mutable map to set the items on.
  * @param items Iterable of key/value entries to set.
  * @returns Nothing; mutates `map` in place.
- * @example setMapItems(map, [["a", 1], ["b", 2]]);
  * @see https://shelving.cc/util/map/setMapItems
  */
 export function setMapItems<K, T>(map: MutableMap<K, T>, items: Iterable<MapItem<ImmutableMap<K, T>>>): void {
@@ -175,7 +167,6 @@ export function setMapItems<K, T>(map: MutableMap<K, T>, items: Iterable<MapItem
  * @param map The mutable map to remove the items from.
  * @param keys The keys to delete.
  * @returns Nothing; mutates `map` in place.
- * @example removeMapItems(map, "a", "b");
  * @see https://shelving.cc/util/map/removeMapItems
  */
 export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void {
@@ -188,7 +179,6 @@ export function removeMapItems<K, T>(map: MutableMap<K, T>, ...keys: K[]): void 
  * @param map The map to read from.
  * @param key The key to look up.
  * @returns The value for `key`, or `undefined` if it doesn't exist.
- * @example getMapItem(new Map([["a", 1]]), "a") // 1
  * @see https://shelving.cc/util/map/getMapItem
  */
 export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined {
@@ -203,7 +193,6 @@ export function getMapItem<K, T>(map: ImmutableMap<K, T>, key: K): T | undefined
  * @param caller Function used to attribute a thrown error to the calling site.
  * @returns The value for `key`.
  * @throws {RequiredError} If `key` does not exist in `map`.
- * @example requireMapItem(new Map([["a", 1]]), "a") // 1
  * @see https://shelving.cc/util/map/requireMapItem
  */
 export function requireMapItem<K, T>(map: ImmutableMap<K, T>, key: K, caller: AnyCaller = requireMapItem): T {

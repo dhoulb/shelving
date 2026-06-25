@@ -28,11 +28,8 @@ export interface APIContext<P, R> {
  * - Each mounted `APIContext` gets its own in-memory store cache.
  *
  * @param provider `APIProvider` the created context resolves endpoint stores against.
- * @returns `APIContext` bundle containing the `useAPI()` hook and the `<APIContext>` wrapper component.
  *
  * @todo Use and integreate our `EndpointCache` functionality and use it in this.
- *
- * @example const { useAPI, APIContext } = createAPIContext(provider);
  *
  * @see https://shelving.cc/react/createAPIContext
  */

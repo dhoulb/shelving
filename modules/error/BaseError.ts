@@ -36,9 +36,7 @@ export interface BaseError extends Error {
  * - Uses `Error.captureStackTrace()` with the resolved caller so the stack points at the user's call site, not the error plumbing.
  *
  * @param defaultCaller Function to attribute the stack to when `options.caller` is not supplied.
- * @param error The `BaseError` instance to mutate with contextual data and a trimmed stack.
- * @param options Options to apply — `cause` and `caller` are consumed, all other keys are copied onto `error`.
- * @returns Nothing — `error` is mutated in place.
+ * @param error The error instance to mutate with contextual data and a trimmed stack.
  * @example
  * 	const error = new ValueError("Wrong");
  * 	setBaseErrorOptions(ValueError, error, { received: 123, caller: myFunction });

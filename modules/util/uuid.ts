@@ -6,7 +6,6 @@ const R_NOT_LOWERCHAR = /[^0-9a-f]/g;
  * Return a random UUID (v4) as a 32-character lowercase hex string with dashes stripped.
  *
  * @returns A random 32-character lowercase hex UUID string.
- * @example randomUUID() // "1b4e28ba2fa14931918f4c9bf9f12b3a"
  * @see https://shelving.cc/util/uuid/randomUUID
  */
 export function randomUUID(): string {
@@ -22,7 +21,6 @@ export function randomUUID(): string {
  *
  * @param value The value to convert/validate as a UUID.
  * @returns The normalised UUID string, or `undefined` if the value is not a valid UUID.
- * @example getUUID("1b4e28ba-2fa1-4931-918f-4c9bf9f12b3a") // "1b4e28ba2fa14931918f4c9bf9f12b3a"
  * @see https://shelving.cc/util/uuid/getUUID
  */
 export function getUUID(value: string): string | undefined {
@@ -39,7 +37,6 @@ export function getUUID(value: string): string | undefined {
  * @param value The value to convert/validate as a UUID.
  * @returns The normalised UUID string.
  * @throws `RequiredError` if the value is not a valid UUID.
- * @example requireUUID("1b4e28ba-2fa1-4931-918f-4c9bf9f12b3a") // "1b4e28ba2fa14931918f4c9bf9f12b3a"
  * @see https://shelving.cc/util/uuid/requireUUID
  */
 export function requireUUID(value: string): string {

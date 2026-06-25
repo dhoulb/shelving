@@ -7,7 +7,6 @@ import { Subheading } from "../block/Subheading.js";
 /**
  * Card renderer for a generic `tree-element` (a directory or file) — a summary card showing the heading and description.
  *
- * @returns A `<Card>` linking to the element's canonical `path`.
  * @kind component
  * @example <TreeCard {...element.props} />
  * @see https://shelving.cc/ui/TreeCard

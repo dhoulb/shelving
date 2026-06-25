@@ -25,7 +25,6 @@ export type Compare<T, A extends Arguments = []> = (left: T, right: T, ...args: 
  * @param left The first value to rank.
  * @param right The second value to rank.
  * @returns Number below zero if `left` is higher, number above zero if `right` is higher, or `0` if they're equally sorted.
- * @example compareAscending(1, 2) // -1
  * @see https://shelving.cc/util/sort/compareAscending
  */
 export function compareAscending(left: unknown, right: unknown): number {
@@ -75,7 +74,6 @@ export function compareAscending(left: unknown, right: unknown): number {
  * @param left The first value to rank.
  * @param right The second value to rank.
  * @returns Number below zero if `right` is higher, number above zero if `left` is higher, or `0` if they're equally sorted.
- * @example compareDescending(1, 2) // 1
  * @see https://shelving.cc/util/sort/compareDescending
  */
 export function compareDescending(left: unknown, right: unknown): number {
@@ -145,7 +143,6 @@ function _quicksort<T, A extends Arguments>(
  * @param compare A `Compare` function ranking two items (defaults to `compareAscending()`).
  * @param args Extra arguments forwarded to `compare` on each call.
  * @returns A sorted array (the original reference if it was an already-sorted array).
- * @example sortArray([3, 1, 2]) // [1, 2, 3]
  * @see https://shelving.cc/util/sort/sortArray
  */
 export function sortArray<T, A extends Arguments = []>(

@@ -29,7 +29,7 @@ export interface IconProps extends ColorVariants, StatusVariants {
 	icon?: ComponentType<{ className?: string | undefined }>;
 	/**
 	 * Size of the icon.
-	 * @default 1lh
+	 * @default var(--size-icon)
 	 */
 	size?: SizeVariant;
 }
@@ -40,7 +40,6 @@ export interface IconProps extends ColorVariants, StatusVariants {
  * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @kind component
- * @example <Icon status="error" size="large" />
  * @see https://shelving.cc/ui/Icon
  */
 export function Icon(props: IconProps): ReactElement {

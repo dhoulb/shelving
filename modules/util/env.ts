@@ -6,7 +6,6 @@ import type { AnyCaller } from "./function.js";
  *
  * @param name Name of the environment variable to read.
  * @returns The variable's string value, or `undefined` if missing or unsupported.
- * @example getEnv("NODE_ENV") // "production"
  * @see https://shelving.cc/util/env/getEnv
  */
 export function getEnv(name: string): string | undefined {
@@ -20,7 +19,6 @@ export function getEnv(name: string): string | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireEnv`).
  * @returns The variable's string value.
  * @throws `RequiredError` if the variable is missing or `process.env` is unsupported.
- * @example requireEnv("DATABASE_URL") // "postgres://..."
  * @see https://shelving.cc/util/env/requireEnv
  */
 export function requireEnv(name: string, caller: AnyCaller = requireEnv): string {
@@ -36,7 +34,6 @@ export function requireEnv(name: string, caller: AnyCaller = requireEnv): string
  *
  * @param name Name of the environment variable to read.
  * @returns `true` or `false` if the value is recognised, otherwise `undefined`.
- * @example getEnvBoolean("FEATURE_FLAG") // true
  * @see https://shelving.cc/util/env/getEnvBoolean
  */
 export function getEnvBoolean(name: string): boolean | undefined {
@@ -54,7 +51,6 @@ const _FALSES = [`0`, `off`, `no`, `false`];
  * @param caller Function to attribute a thrown error to (defaults to `requireEnvBoolean`).
  * @returns `false` if the environment variable is `0`, `off`, `no`, `false`; `true` if it is `1`, `on`, `yes`, `true`.
  * @throws `RequiredError` if the env variable is any other value.
- * @example requireEnvBoolean("FEATURE_FLAG") // true
  * @see https://shelving.cc/util/env/requireEnvBoolean
  */
 export function requireEnvBoolean(name: string, caller: AnyCaller = requireEnvBoolean): boolean {

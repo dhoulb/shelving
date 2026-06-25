@@ -11,7 +11,7 @@ The following `:root` variables are defined by this module and can be overridden
 | `--radius-xxsmall` | `calc(var(--radius-normal) * 0.25)` | 4px |
 | `--radius-xsmall` | `calc(var(--radius-normal) * 0.5)` | 8px |
 | `--radius-small` | `calc(var(--radius-normal) * 0.75)` | 12px |
-| `--radius-normal` | `var(--radius-normal)` | 16px — Base radius (the root of the scale) |
+| `--radius-normal` | `1rem` | 16px — Base radius (the root of the scale) |
 | `--radius-large` | `calc(var(--radius-normal) * 1.5)` | 24px |
 | `--radius-xlarge` | `calc(var(--radius-normal) * 2)` | 32px |
 | `--radius-xxlarge` | `calc(var(--radius-normal) * 3)` | 48px |

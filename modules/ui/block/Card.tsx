@@ -27,9 +27,6 @@ export interface CardProps extends ClickableProps, StatusVariants, BlockVariants
  * - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
  *
  * @kind component
- * @example <Card><Subheading>Static</Subheading></Card>
- * @example <Card href="/foo" title="Open foo"><Subheading>Clickable</Subheading></Card>
- * @example <Card status="error"><Subheading>Not found</Subheading></Card>
  * @see https://shelving.cc/ui/Card
  */
 export function Card({ as: Element = "article", children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {

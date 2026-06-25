@@ -29,19 +29,12 @@ export interface DataSchemaOptions<T extends Data> extends SchemaOptions {
  * - Each property is validated by its own schema in `props`.
  * - Excess keys are stripped and `undefined` outputs removed (via `validateData()`).
  *
- * @example
- *  const schema = new DataSchema({ props: { name: STRING, age: NUMBER } });
- *  schema.validate({ name: "Dave", age: 40 }); // { name: "Dave", age: 40 }
- *
  * @see https://shelving.cc/schema/DataSchema
  */
 export class DataSchema<T extends Data> extends Schema<unknown> {
 	declare readonly value: T;
 	readonly props: Schemas<T>;
 
-	/**
-	 * Create a new `DataSchema`.
-	 */
 	constructor({ one = "item", title = "Item", props, value: partialValue, ...options }: DataSchemaOptions<T>) {
 		// Build default value from props and partial value.
 		const value: T = { ...mapProps(props, _getSchemaValue), ...partialValue };
@@ -49,15 +42,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 		this.props = props;
 	}
 
-	/**
-	 * Validate an unknown value as a data object matching this schema's props.
-	 *
-	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
-	 * @returns The valid data object with each property validated by its schema.
-	 * @throws `string` `"Must be object"` if the value is not a data object, or a `"key: message"` line per invalid property.
-	 * @example schema.validate({ name: "Dave" }) // { name: "Dave" }
-	 * @see https://shelving.cc/schema/DataSchema/validate
-	 */
+	/** Validates each property against its schema in `props`; joins per-property failures as `"key: message"` lines. */
 	override validate(unsafeValue: unknown = this.value): T {
 		if (!isData(unsafeValue)) throw "Must be object";
 		return validateData(unsafeValue, this.props);
@@ -85,14 +70,7 @@ export class DataSchema<T extends Data> extends Schema<unknown> {
 		return new DataSchema<Omit<T, K>>({ ...this, props: omitProps<Schemas<T>, K>(this.props, ...keys) });
 	}
 
-	/**
-	 * Format a validated data object as a string for display.
-	 *
-	 * @param value The valid data object to format.
-	 * @returns The data object formatted as a human-readable string.
-	 * @example schema.format({ name: "Dave" }) // "name: Dave"
-	 * @see https://shelving.cc/schema/DataSchema/format
-	 */
+	/** Formats the data object for display via `formatObject()`. */
 	override format(value: T): string {
 		return formatObject(value);
 	}
@@ -134,7 +112,6 @@ export function NULLABLE_DATA<T extends Data>(props: Schemas<T>): NullableSchema
  * Sugar factory for `DataSchema`.
  *
  * @param source The props schemas or an existing `DataSchema` to make partial.
- * @returns A `DataSchema` whose every property is optional.
  * @example PARTIAL({ name: STRING, age: NUMBER }) // DataSchema<{ name?: string; age?: number }>
  * @see https://shelving.cc/schema/PARTIAL
  */
@@ -156,7 +133,6 @@ function _optionalProp([, v]: Prop<Schemas<Data>>): Schema<unknown> {
  *
  * @param id Schema for the item's `id` identifier property.
  * @param schemas The props schemas or an existing `DataSchema` for the rest of the item.
- * @returns A `DataSchema` validating an item with an `id` property plus the given props.
  * @example ITEM(NUMBER, { name: STRING }) // DataSchema<{ id: number; name: string }>
  * @see https://shelving.cc/schema/ITEM
  */

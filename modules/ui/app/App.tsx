@@ -15,11 +15,7 @@ export interface AppProps extends PossibleMeta, ChildProps {}
  * - Descendants can read or update metadata via the provided `<Meta>` context.
  * - Design tokens and body baseline typography are set globally via the `style/` token modules (`Color`, `Size`, `Font`, …).
  *
- * @param children The application content.
- * @param meta The root meta (app name, root URL, language, etc.).
- * @returns The app root element wrapping `children`.
  * @kind component
- * @example <App app="My App" root="https://example.com/"><Navigation>…</Navigation></App>
  * @see https://shelving.cc/ui/App
  */
 export function App({ children, ...meta }: AppProps): ReactElement {

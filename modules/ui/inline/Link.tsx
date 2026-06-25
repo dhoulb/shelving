@@ -16,8 +16,6 @@ export interface LinkProps extends ClickableProps {}
  * Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
  *
  * @kind component
- * @returns Rendered inline `<a>` or `<button>` element.
- * @example <Link href="/about">About us</Link>
  * @see https://shelving.cc/ui/Link
  */
 export function Link(props: LinkProps): ReactElement {

@@ -48,12 +48,6 @@ export class CurrencyCodeSchema extends StringSchema {
 	 */
 	readonly currencies: ImmutableArray<CurrencyCode>;
 
-	/**
-	 * Create a new `CurrencyCodeSchema`.
-	 *
-	 * @example new CurrencyCodeSchema({ currencies: ["GBP", "USD"] })
-	 * @see https://shelving.cc/schema/CurrencyCodeSchema
-	 */
 	constructor({ one = "currency", title = "Currency", currencies = CURRENCY_CODES, max = 3, ...options }: CurrencyCodeSchemaOptions) {
 		super({
 			one,
@@ -68,28 +62,13 @@ export class CurrencyCodeSchema extends StringSchema {
 		this.currencies = currencies;
 	}
 
-	/**
-	 * Sanitize an input string down to uppercase `A-Z` letters.
-	 *
-	 * @param insaneString The raw input string to sanitize.
-	 * @returns The sanitized string with all non-`A-Z` characters stripped.
-	 * @example schema.sanitize(" gb p ") // "GBP"
-	 * @see https://shelving.cc/schema/CurrencyCodeSchema/sanitize
-	 */
+	/** Strips everything but uppercase `A-Z` letters. */
 	override sanitize(insaneString: string): string {
 		// Strip characters that aren't A-Z (including whitespace).
 		return super.sanitize(insaneString).replace(/[^A-Z+]/g, "");
 	}
 
-	/**
-	 * Validate an unknown input value and return a valid currency code.
-	 *
-	 * @param value The value to validate (defaults to this schema's `value`).
-	 * @returns The validated three-letter uppercase currency code.
-	 * @throws `string` if the value is not a valid string, or `"Unknown currency code"` if it is not in `currencies`.
-	 * @example schema.validate("gbp") // "GBP"
-	 * @see https://shelving.cc/schema/CurrencyCodeSchema/validate
-	 */
+	/** Additionally rejects a code not in `currencies` with `"Unknown currency code"`. */
 	override validate(value?: unknown): string {
 		const currency = super.validate(value);
 		if (!this.currencies.includes(currency)) throw "Unknown currency code";

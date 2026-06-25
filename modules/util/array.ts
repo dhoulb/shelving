@@ -39,10 +39,6 @@ export type PossibleArray<T> = ImmutableArray<T> | Iterable<T>;
  * @param min Minimum number of items the array must contain (defaults to `0`).
  * @param max Maximum number of items the array may contain (defaults to `Infinity`).
  * @returns `true` if `value` is an array within the length bounds, narrowing its type.
- *
- * @example isArray([1, 2, 3]); // true
- * @example isArray([1], 2, 2); // false
- *
  * @see https://shelving.cc/util/array/isArray
  */
 export function isArray<T>(arr: MutableArray<T>, min: 1, max: 1): arr is [T];
@@ -71,10 +67,6 @@ export function isArray(value: unknown, min = 0, max = Number.POSITIVE_INFINITY)
  * @param max Maximum number of items the array may contain (defaults to `Infinity`).
  * @param caller Function to attribute a thrown error to (defaults to `assertArray` itself).
  * @throws {RequiredError} If `value` is not an array within the length bounds.
- *
- * @example assertArray([1, 2, 3]); // (passes)
- * @example assertArray("nope"); // throws RequiredError
- *
  * @see https://shelving.cc/util/array/assertArray
  */
 export function assertArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): asserts arr is [T];
@@ -104,10 +96,6 @@ export function assertArray(value: unknown, min?: number, max?: number, caller: 
  *
  * @param list The value to convert (an array is returned as-is, an iterable is collected into a new array).
  * @returns An array of the items, or `undefined` if `list` could not be converted.
- *
- * @example getArray(new Set([1, 2])); // [1, 2]
- * @example getArray(123); // undefined
- *
  * @see https://shelving.cc/util/array/getArray
  */
 export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
@@ -123,10 +111,6 @@ export function getArray(list: unknown): ImmutableArray<unknown> | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireArray` itself).
  * @returns An array of the items within the length bounds.
  * @throws {RequiredError} If `list` cannot be converted to an array within the length bounds.
- *
- * @example requireArray(new Set([1, 2])); // [1, 2]
- * @example requireArray([], 1); // throws RequiredError
- *
  * @see https://shelving.cc/util/array/requireArray
  */
 export function requireArray<T>(arr: MutableArray<T>, min: 1, max: 1, caller?: AnyCaller): [T];
@@ -155,10 +139,6 @@ export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: numb
  * @param list The array or iterable to search.
  * @param item The value to look for.
  * @returns `true` if `item` exists in `list`, narrowing its type.
- *
- * @example isArrayItem([1, 2, 3], 2); // true
- * @example isArrayItem([1, 2, 3], 9); // false
- *
  * @see https://shelving.cc/util/array/isArrayItem
  */
 export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T {
@@ -174,10 +154,6 @@ export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T
  * @param item The value to look for.
  * @param caller Function to attribute a thrown error to (defaults to `assertArrayItem` itself).
  * @throws {RequiredError} If `item` does not exist in `arr`.
- *
- * @example assertArrayItem([1, 2, 3], 2); // (passes)
- * @example assertArrayItem([1, 2, 3], 9); // throws RequiredError
- *
  * @see https://shelving.cc/util/array/assertArrayItem
  */
 export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller: AnyCaller = assertArrayItem): asserts item is T {
@@ -190,9 +166,6 @@ export function assertArrayItem<T>(arr: PossibleArray<T>, item: unknown, caller:
  * @param list The array or iterable to add to.
  * @param add The items to add (items already present are skipped).
  * @returns A new array including the added items, or the same array if nothing changed.
- *
- * @example withArrayItems([1, 2], 2, 3); // [1, 2, 3]
- *
  * @see https://shelving.cc/util/array/withArrayItems
  */
 export function withArrayItems<T>(list: PossibleArray<T>, ...add: T[]): ImmutableArray<T> {
@@ -210,9 +183,6 @@ function _doesNotInclude<T>(this: T[], value: T) {
  * @param items The array or iterable to add to.
  * @param add The item to add (skipped if already present).
  * @returns A new array including the added item, or the same array if nothing changed.
- *
- * @example withArrayItem([1, 2], 3); // [1, 2, 3]
- *
  * @see https://shelving.cc/util/array/withArrayItem
  */
 export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArray<T> = withArrayItems;
@@ -223,9 +193,6 @@ export const withArrayItem: <T>(items: PossibleArray<T>, add: T) => ImmutableArr
  * @param items The array or iterable to pick from.
  * @param pick The items to keep.
  * @returns A new array containing only the picked items, or the same array if nothing changed.
- *
- * @example pickArrayItems([1, 2, 3], 1, 3); // [1, 3]
- *
  * @see https://shelving.cc/util/array/pickArrayItems
  */
 export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): ImmutableArray<T> {
@@ -239,9 +206,6 @@ export function pickArrayItems<T>(items: PossibleArray<T>, ...pick: T[]): Immuta
  * @param items The array or iterable to pick from.
  * @param pick The item to keep.
  * @returns A new array containing only the picked item, or the same array if nothing changed.
- *
- * @example pickArrayItem([1, 2, 3], 2); // [2]
- *
  * @see https://shelving.cc/util/array/pickArrayItem
  */
 export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableArray<T> = pickArrayItems;
@@ -252,9 +216,6 @@ export const pickArrayItem: <T>(items: PossibleArray<T>, pick: T) => ImmutableAr
  * @param items The array or iterable to remove from.
  * @param omit The items to remove.
  * @returns A new array without the omitted items, or the same array if nothing changed.
- *
- * @example omitArrayItems([1, 2, 3], 2); // [1, 3]
- *
  * @see https://shelving.cc/util/array/omitArrayItems
  */
 export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): ImmutableArray<T> {
@@ -268,9 +229,6 @@ export function omitArrayItems<T>(items: PossibleArray<T>, ...omit: T[]): Immuta
  * @param items The array or iterable to remove from.
  * @param omit The item to remove.
  * @returns A new array without the omitted item, or the same array if nothing changed.
- *
- * @example omitArrayItem([1, 2, 3], 2); // [1, 3]
- *
  * @see https://shelving.cc/util/array/omitArrayItem
  */
 export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableArray<T> = omitArrayItems;
@@ -281,9 +239,6 @@ export const omitArrayItem: <T>(items: PossibleArray<T>, omit: T) => ImmutableAr
  * @param items The array or iterable to toggle within.
  * @param toggle The items to toggle (added if absent, removed if present).
  * @returns A new array with the items toggled, or the same array if nothing changed.
- *
- * @example toggleArrayItems([1, 2], 2, 3); // [1, 3]
- *
  * @see https://shelving.cc/util/array/toggleArrayItems
  */
 export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): ImmutableArray<T> {
@@ -299,9 +254,6 @@ export function toggleArrayItems<T>(items: PossibleArray<T>, ...toggle: T[]): Im
  * @param items The array or iterable to toggle within.
  * @param toggle The item to toggle (added if absent, removed if present).
  * @returns A new array with the item toggled, or the same array if nothing changed.
- *
- * @example toggleArrayItem([1, 2], 2); // [1]
- *
  * @see https://shelving.cc/util/array/toggleArrayItem
  */
 export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => ImmutableArray<T> = toggleArrayItems;
@@ -311,9 +263,6 @@ export const toggleArrayItem: <T>(items: PossibleArray<T>, toggle: T) => Immutab
  *
  * @param items The array or iterable to shuffle.
  * @returns A new array containing the same items in random order.
- *
- * @example shuffleArray([1, 2, 3]); // e.g. [2, 3, 1]
- *
  * @see https://shelving.cc/util/array/shuffleArray
  */
 export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
@@ -332,9 +281,6 @@ export function shuffleArray<T>(items: PossibleArray<T>): ImmutableArray<T> {
  * @param arr The array to add to (modified in place).
  * @param item The item to add.
  * @returns The added `item`.
- *
- * @example addArrayItem(arr, 3); // 3 (and `arr` now contains `3`)
- *
  * @see https://shelving.cc/util/array/addArrayItem
  */
 export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
@@ -348,7 +294,6 @@ export function addArrayItem<T>(arr: MutableArray<T>, item: T): T {
  *
  * @param arr The array to add to (modified in place).
  * @param items The items to add.
- * @example addArrayItems(arr, 3, 4); // (`arr` now contains `3` and `4`)
  * @see https://shelving.cc/util/array/addArrayItems
  */
 export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
@@ -360,7 +305,6 @@ export function addArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
  *
  * @param arr The array to remove from (modified in place).
  * @param items The items to remove.
- * @example deleteArrayItems(arr, 2, 3); // (`arr` no longer contains `2` or `3`)
  * @see https://shelving.cc/util/array/deleteArrayItems
  */
 export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
@@ -372,7 +316,6 @@ export function deleteArrayItems<T>(arr: MutableArray<T>, ...items: T[]): void {
  *
  * @param arr The array to remove from (modified in place).
  * @param item The item to remove.
- * @example deleteArrayItem(arr, 2); // (`arr` no longer contains `2`)
  * @see https://shelving.cc/util/array/deleteArrayItem
  */
 export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = deleteArrayItems;
@@ -382,7 +325,6 @@ export const deleteArrayItem: <T>(arr: MutableArray<T>, item: T) => void = delet
  *
  * @param list The array or iterable to deduplicate.
  * @returns A new array with duplicate items removed, or the same array if all items were already unique.
- * @example getUniqueArray([1, 2, 2, 3]) // [1, 2, 3]
  * @see https://shelving.cc/util/array/getUniqueArray
  */
 export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
@@ -398,7 +340,6 @@ export function getUniqueArray<T>(list: PossibleArray<T>): ImmutableArray<T> {
  * @param limit The maximum number of items to keep.
  * @returns An array of at most `limit` items, or the same array if it was already within the limit.
  * @throws {RequiredError} If `list` cannot be converted to an array.
- * @example limitArray([1, 2, 3, 4], 2) // [1, 2]
  * @see https://shelving.cc/util/array/limitArray
  */
 export function limitArray<T>(list: PossibleArray<T>, limit: number): ImmutableArray<T> {
@@ -424,7 +365,6 @@ export function countArray<T>(arr: ImmutableArray<T>): number {
  * @param items The array or iterable to interleave.
  * @param separator The value to insert between each pair of items.
  * @returns A new array with `separator` inserted between items, or the same array if it had fewer than two items.
- * @example interleaveArray([1, 2, 3], 0) // [1, 0, 2, 0, 3]
  * @see https://shelving.cc/util/array/interleaveArray
  */
 export function interleaveArray<T>(items: PossibleArray<T>, separator: T): ImmutableArray<T>;
@@ -441,7 +381,6 @@ export function interleaveArray<A, B>(items: PossibleArray<A>, separator: B): Im
  * @param index The index to replace.
  * @param value The new value to set at `index`.
  * @returns A new array with `value` at `index`, or the same array if the value was unchanged.
- * @example withArrayIndex([1, 2, 3], 1, 9) // [1, 9, 3]
  * @see https://shelving.cc/util/array/withArrayIndex
  */
 export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: T): ImmutableArray<T> {
@@ -455,7 +394,6 @@ export function withArrayIndex<T>(arr: ImmutableArray<T>, index: number, value: 
  * @param arr The array to update.
  * @param index The index to remove.
  * @returns A new array without `index`, or the same array if nothing changed.
- * @example omitArrayIndex([1, 2, 3], 1) // [1, 3]
  * @see https://shelving.cc/util/array/omitArrayIndex
  */
 export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): ImmutableArray<T> {
@@ -468,7 +406,6 @@ export function omitArrayIndex<T>(arr: ImmutableArray<T>, index: number): Immuta
  *
  * @param items The array or iterable to read from.
  * @returns The first item, or `undefined` if `items` is empty.
- * @example getFirst([1, 2, 3]) // 1
  * @see https://shelving.cc/util/array/getFirst
  */
 export function getFirst<T>(items: PossibleArray<T>): T | undefined {
@@ -483,7 +420,6 @@ export function getFirst<T>(items: PossibleArray<T>): T | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireFirst` itself).
  * @returns The first item.
  * @throws {RequiredError} If `items` is empty.
- * @example requireFirst([1, 2, 3]) // 1
  * @see https://shelving.cc/util/array/requireFirst
  */
 export function requireFirst<T>(items: PossibleArray<T>, caller: AnyCaller = requireFirst): T {
@@ -497,7 +433,6 @@ export function requireFirst<T>(items: PossibleArray<T>, caller: AnyCaller = req
  *
  * @param items The array or iterable to read from.
  * @returns The last item, or `undefined` if `items` is empty.
- * @example getLast([1, 2, 3]) // 3
  * @see https://shelving.cc/util/array/getLast
  */
 export function getLast<T>(items: PossibleArray<T>): T | undefined {
@@ -516,7 +451,6 @@ export function getLast<T>(items: PossibleArray<T>): T | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireLast` itself).
  * @returns The last item.
  * @throws {RequiredError} If `items` is empty.
- * @example requireLast([1, 2, 3]) // 3
  * @see https://shelving.cc/util/array/requireLast
  */
 export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requireLast): T {
@@ -531,7 +465,6 @@ export function requireLast<T>(items: PossibleArray<T>, caller: AnyCaller = requ
  * @param items The array or iterable to search.
  * @param item The item to find the successor of.
  * @returns The item following `item`, or `undefined` if `item` is missing or last.
- * @example getNext([1, 2, 3], 2) // 3
  * @see https://shelving.cc/util/array/getNext
  */
 export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
@@ -550,7 +483,6 @@ export function getNext<T>(items: PossibleArray<T>, item: T): T | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireNext` itself).
  * @returns The item following `item`.
  * @throws {RequiredError} If `item` is missing or has no successor.
- * @example requireNext([1, 2, 3], 2) // 3
  * @see https://shelving.cc/util/array/requireNext
  */
 export function requireNext<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requireNext): T {
@@ -565,7 +497,6 @@ export function requireNext<T>(items: PossibleArray<T>, item: T, caller: AnyCall
  * @param items The array or iterable to search.
  * @param value The item to find the predecessor of.
  * @returns The item preceding `value`, or `undefined` if `value` is missing or first.
- * @example getPrev([1, 2, 3], 2) // 1
  * @see https://shelving.cc/util/array/getPrev
  */
 export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
@@ -584,7 +515,6 @@ export function getPrev<T>(items: PossibleArray<T>, value: T): T | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requirePrev` itself).
  * @returns The item preceding `item`.
  * @throws {RequiredError} If `item` is missing or has no predecessor.
- * @example requirePrev([1, 2, 3], 2) // 1
  * @see https://shelving.cc/util/array/requirePrev
  */
 export function requirePrev<T>(items: PossibleArray<T>, item: T, caller: AnyCaller = requirePrev): T {

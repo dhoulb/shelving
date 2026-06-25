@@ -55,7 +55,6 @@ export type ItemsSequence<I extends Identifier = Identifier, T extends Data = Da
  *
  * @param item The item object to read the `id` from.
  * @returns The item's `id` identifier.
- * @example getIdentifier({ id: "abc", name: "Dave" }) // "abc"
  * @see https://shelving.cc/util/item/getIdentifier
  */
 export function getIdentifier<I extends Identifier, T extends Data>({ id }: Item<I, T>): I {
@@ -67,7 +66,6 @@ export function getIdentifier<I extends Identifier, T extends Data>({ id }: Item
  *
  * @param entities The iterable of item objects to read identifiers from.
  * @returns An iterable yielding the `id` of each item.
- * @example Array.from(getIdentifiers([{ id: "a" }, { id: "b" }])) // ["a", "b"]
  * @see https://shelving.cc/util/item/getIdentifiers
  */
 export function* getIdentifiers<I extends Identifier, T extends Data>(entities: Iterable<Item<I, T>>): Iterable<I> {
@@ -80,7 +78,6 @@ export function* getIdentifiers<I extends Identifier, T extends Data>(entities: 
  * @param item The data or item object to test.
  * @param id The identifier to match against the object's `id` property.
  * @returns `true` if `item.id` equals `id`, otherwise `false`.
- * @example hasIdentifier({ id: "abc" }, "abc") // true
  * @see https://shelving.cc/util/item/hasIdentifier
  */
 export function hasIdentifier<I extends Identifier, T extends Data>(item: T | Item<I, T>, id: I): item is Item<I, T> {
@@ -94,7 +91,6 @@ export function hasIdentifier<I extends Identifier, T extends Data>(item: T | It
  * @param id The identifier to set on the data.
  * @param data The data or item object to attach the identifier to.
  * @returns An item object with the given `id`.
- * @example getItem("abc", { name: "Dave" }) // { name: "Dave", id: "abc" }
  * @see https://shelving.cc/util/item/getItem
  */
 export function getItem<I extends Identifier, T extends Data>(id: I, data: T | Item<I, T>): Item<I, T> {

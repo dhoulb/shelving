@@ -27,23 +27,12 @@ export class FileSchema extends StringSchema {
 	/** Set of allowed file extensions; when set, the file name's extension must be one of these. */
 	readonly types: FileTypes | undefined;
 
-	/**
-	 * Create a new `FileSchema`.
-	 */
 	constructor({ one = "file", title = "File", types, ...options }: FileSchemaOptions) {
 		super({ one, title, ...options });
 		this.types = types;
 	}
 
-	/**
-	 * Validate an unknown value as a file name with a valid extension.
-	 *
-	 * @param unsafeValue Value to validate (defaults to this schema's `value`).
-	 * @returns The validated file name.
-	 * @throws `string` `` `Must have extension` `` if the file name has no extension, or `` `Invalid extension` `` if its extension isn't in `types`. Also throws the `string` messages from `StringSchema.validate()`.
-	 * @example FILE.validate("photo.jpg"); // Returns "photo.jpg"
-	 * @see https://shelving.cc/schema/FileSchema/validate
-	 */
+	/** Additionally requires a file extension and, when `types` is set, one within it. */
 	override validate(unsafeValue: unknown = this.value): string {
 		const path = super.validate(unsafeValue);
 		const extension = getFileExtension(path);

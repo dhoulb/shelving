@@ -99,10 +99,4 @@ When an `onSubmit` callback returns a non-empty `ReactNode`, `Form` dispatches i
 
 ## Styling
 
-`Form` only lays out its block flow — it exposes a single spacing hook and otherwise inherits styling from the components inside it.
-
-| Variable | Styles | Default |
-|---|---|---|
-| `--form-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-
-**Global tokens it reads:** `--space-paragraph`. The `indent` variant (inline padding, via `getIndentClass()`) comes from the shared `shelving/ui` styling system — set `<Form indent="normal">` to inset the form's content from the edges.
+`Form` exposes no own hooks. It renders a plain `<form>` styled by the shared block variants from `getBlockClass()`, so it inherits its layout from the standard `space`, `indent`, `padding`, `width`, `color`, and typography variants — set `<Form indent="normal">` to inset the form's content from the edges, or `<Form space="large">` to change its outer block margin.

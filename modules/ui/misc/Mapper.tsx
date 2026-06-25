@@ -48,19 +48,6 @@ type AnyMapping = Record<string, ComponentType<any> | undefined>;
  *
  * @param defaults The initial mapping of element types to renderer components.
  * @returns A `[Mapping, Mapper]` tuple of components sharing a private context.
- *
- * @example
- * const [TreeCardMapping, TreeCardMapper] = createMapper({
- *   "tree-element": TreeCard,
- * });
- * <TreeCardMapper>{walkElements(children)}</TreeCardMapper>
- *
- * @example
- * // Override one entry inside a subtree:
- * <TreeCardMapping mapping={{ "tree-element": SpecialTreeCard }}>
- *   <TreeCardMapper>{walkElements(children)}</TreeCardMapper>
- * </TreeCardMapping>
- *
  * @see https://shelving.cc/ui/createMapper
  */
 export function createMapper(defaults: Mapping = {}): [Mapping: FunctionComponent<MappingProps>, Mapper: FunctionComponent<MapperProps>] {

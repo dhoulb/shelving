@@ -11,11 +11,6 @@ import { BusyStore } from "./BusyStore.js";
  * - Mutations replace the stored dictionary with an immutable updated copy.
  * - Iterable, yielding `[key, value]` entry tuples.
  *
- * @param value The initial dictionary value (defaults to an empty dictionary).
- * @example
- * const store = new DictionaryStore<number>({ a: 1, b: 2 });
- * store.set("c", 3);
- * store.get("a"); // 1
  * @see https://shelving.cc/store/DictionaryStore
  */
 export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, PossibleDictionary<T>> implements Iterable<DictionaryItem<T>> {
@@ -42,7 +37,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * Update several entries in this dictionary.
 	 *
 	 * @param updates The set of entry updates to apply.
-	 * @returns Nothing.
 	 * @example store.update({ a: 10, b: 20 });
 	 * @see https://shelving.cc/store/DictionaryStore/update
 	 */
@@ -54,7 +48,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * Remove one or more named entries from this dictionary.
 	 *
 	 * @param keys The keys of the entries to remove.
-	 * @returns Nothing.
 	 * @example store.deleteItems("a", "b");
 	 * @see https://shelving.cc/store/DictionaryStore/deleteItems
 	 */
@@ -66,7 +59,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 * Get a single named item from this dictionary, or `undefined` if it is not set.
 	 *
 	 * @param name The key of the item to read.
-	 * @returns The item value, or `undefined` if it is not present.
 	 * @example store.get("a"); // 1
 	 * @see https://shelving.cc/store/DictionaryStore/get
 	 */
@@ -79,7 +71,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 *
 	 * @param name The key of the item to set.
 	 * @param value The new value for the item.
-	 * @returns Nothing.
 	 * @example store.set("a", 10);
 	 * @see https://shelving.cc/store/DictionaryStore/set
 	 */
@@ -92,7 +83,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	 *
 	 * @param name The key of the first item to delete.
 	 * @param names Additional keys to delete.
-	 * @returns Nothing.
 	 * @example store.delete("a", "b");
 	 * @see https://shelving.cc/store/DictionaryStore/delete
 	 */
@@ -103,7 +93,6 @@ export class DictionaryStore<T> extends BusyStore<ImmutableDictionary<T>, Possib
 	/**
 	 * Iterate over the `[key, value]` entries of this dictionary.
 	 *
-	 * @returns An iterator over the dictionary's entry tuples.
 	 * @see https://shelving.cc/store/DictionaryStore/[Symbol.iterator]
 	 */
 	[Symbol.iterator](): Iterator<DictionaryItem<T>> {

@@ -21,7 +21,6 @@ export interface DurationVariants {
 /**
  * Get the transition-duration class for a component from its `duration` variant prop.
  *
- * @param variants
  * @returns The duration class string, or `undefined` when no `duration` is set.
  * @example getDurationClass({ duration: "fast" }) // "duration-fast"
  * @see https://shelving.cc/ui/getDurationClass

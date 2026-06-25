@@ -83,7 +83,6 @@ function _parseMessageBody(
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws {RequestError} If the content is not `text/plain`, or `application/json` with valid JSON.
- * @example const body = await parseRequestBody(request);
  * @see https://shelving.cc/util/http/parseRequestBody
  */
 export function parseRequestBody(request: Request, caller: AnyCaller = parseRequestBody): Promise<unknown> {
@@ -97,7 +96,6 @@ export function parseRequestBody(request: Request, caller: AnyCaller = parseRequ
  * @param caller Identity of the calling function for error attribution.
  * @returns The parsed JSON value, or `undefined` if the body is empty.
  * @throws {RequestError} If the request body is not valid JSON.
- * @example const data = await parseRequestJSON(request);
  * @see https://shelving.cc/util/http/parseRequestJSON
  */
 export function parseRequestJSON(request: Request, caller: AnyCaller = parseRequestJSON): Promise<unknown> {
@@ -128,7 +126,6 @@ export function parseRequestFormData(request: Request, caller: AnyCaller = parse
  * @returns string If content type is `text/plain` or anything else (including `""` empty string if it's empty).
  *
  * @throws {ResponseError} If the content is not `text/plain` or `application/json` with valid JSON.
- * @example const body = await parseResponseBody(response);
  * @see https://shelving.cc/util/http/parseResponseBody
  */
 export function parseResponseBody(response: Response, caller: AnyCaller = parseResponseBody): Promise<unknown> {
@@ -171,7 +168,6 @@ export function parseResponseFormData(response: Response, caller: AnyCaller = pa
  *
  * @param value The value to convert to a `Response`.
  * @returns A `Response` with a 2xx status, and response body as JSON (if it was set), or no body if `value` is `undefined`
- * @example getResponse({ name: "abc" }) // 200 JSON Response
  * @see https://shelving.cc/util/http/getResponse
  */
 export function getResponse(value: unknown): Response {
@@ -198,7 +194,6 @@ export function getResponse(value: unknown): Response {
  * @param reason The error value to convert to a `Response`.
  * @param debug If `true` include the error message in the response (for debugging), or `false` to return generic error codes (for security). Defaults to `false`.
  * @returns A `Response` with a status code and (optionally) body derived from the error.
- * @example getErrorResponse("Invalid input") // 422 Response
  * @see https://shelving.cc/util/http/getErrorResponse
  */
 export function getErrorResponse(reason: unknown, debug = false): Response {
@@ -298,7 +293,6 @@ export type RequestOptions = Pick<
  * @param a The provider-level (default) request options.
  * @param b The call-level request options whose values override `a`.
  * @returns A merged `RequestOptions` with combined headers and abort signals.
- * @example mergeRequestOptions({ cache: "no-store" }, { mode: "cors" }) // { cache: "no-store", mode: "cors", ... }
  * @see https://shelving.cc/util/http/mergeRequestOptions
  */
 export function mergeRequestOptions(
@@ -320,8 +314,6 @@ export function mergeRequestOptions(
  * @param options Additional request options.
  * @param caller Function to attribute a thrown error to (defaults to `createHeadRequest`).
  * @returns A `Request` with no body content.
- *
- * @example createHeadRequest("POST", "https://api.example.com/items", { name: "abc" })
  * @see https://shelving.cc/util/http/createHeadRequest
  */
 export function createHeadRequest(
@@ -345,7 +337,6 @@ export function createHeadRequest(
  * @param options Additional request options.
  * @param caller Function to attribute a thrown error to (defaults to `createTextRequest`).
  * @returns A `Request` with `text/plain` content type.
- *
  * @example createTextRequest("POST", "https://api.example.com/items", "hello")
  * @see https://shelving.cc/util/http/createTextRequest
  */
@@ -371,8 +362,6 @@ const _REQUEST_TEXT_OPTIONS = { headers: { "Content-Type": "text/plain" } };
  * @param options Additional request options.
  * @param caller Function to attribute a thrown error to (defaults to `createJSONRequest`).
  * @returns A `Request` with `application/json` content type.
- *
- * @example createJSONRequest("POST", "https://api.example.com/items", { name: "abc" })
  * @see https://shelving.cc/util/http/createJSONRequest
  */
 export function createJSONRequest(
@@ -400,7 +389,6 @@ const _REQUEST_JSON_OPTIONS = { headers: { "Content-Type": "application/json" } 
  * @param options Additional request options.
  * @param caller Function to attribute a thrown error to (defaults to `createFormDataRequest`).
  * @returns A `Request` with a multipart body.
- *
  * @example createFormDataRequest("POST", "https://api.example.com/upload", new FormData())
  * @see https://shelving.cc/util/http/createFormDataRequest
  */
@@ -427,7 +415,6 @@ export function createFormDataRequest(
  * @returns A `Request` with `application/xml` content type.
  *
  * @throws {RequiredError} If the XML data contains invalid element names or values.
- *
  * @example createXMLRequest("POST", "https://api.example.com/items", { item: { name: "abc" } })
  * @see https://shelving.cc/util/http/createXMLRequest
  */
@@ -463,8 +450,6 @@ const _REQUEST_XML_OPTIONS = { headers: { "Content-Type": "application/xml; char
  * @returns A `Request` with a content type chosen to match `payload`.
  *
  * @throws {RequiredError} if this is a `HEAD` or `GET` request but `body` is not a data object.
- *
- * @example createRequest("POST", "https://api.example.com/items", { name: "abc" }) // JSON Request
  * @see https://shelving.cc/util/http/createRequest
  */
 export function createRequest(

@@ -26,7 +26,6 @@ export interface FormatOptions {
  *
  * @param value Boolean value to format.
  * @returns `"Yes"` if `value` is `true`, otherwise `"No"`.
- * @example formatBoolean(true) // "Yes"
  * @see https://shelving.cc/util/format/formatBoolean
  */
 export function formatBoolean(value: boolean): string {
@@ -48,7 +47,6 @@ export interface NumberFormatOptions
  * @param num Number to format.
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted number string.
- * @example formatNumber(1234.5) // "1,234.5"
  * @see https://shelving.cc/util/format/formatNumber
  */
 export function formatNumber(num: number, options?: NumberFormatOptions): string {
@@ -62,7 +60,6 @@ export function formatNumber(num: number, options?: NumberFormatOptions): string
  * @param to Number at the end of the range.
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted number range string.
- * @example formatRange(1, 10) // "1–10"
  * @see https://shelving.cc/util/format/formatRange
  */
 export function formatRange(from: number, to: number, options?: NumberFormatOptions): string {
@@ -115,7 +112,6 @@ export interface UnitFormatOptions
  * @param unit Unit reference to format the quantity as, e.g. `"minute"` or `"product"`.
  * @param options Formatting options including custom `one`/`many`/`abbr` strings for unsupported units.
  * @returns Formatted quantity string, e.g. `"5 minutes"` or `"5 products"`.
- * @example formatUnit(5, "minute", { unitDisplay: "long" }) // "5 minutes"
  * @see https://shelving.cc/util/format/formatUnit
  */
 export function formatUnit(num: number, unit: string, options?: UnitFormatOptions): string {
@@ -148,7 +144,6 @@ export interface CurrencyFormatOptions
  * @param caller Function to attribute a thrown error to (defaults to `formatCurrency` itself).
  * @returns Locale-formatted currency string.
  * @throws {RequiredError} If `currency` is not a valid currency code.
- * @example formatCurrency(1234.5, "USD") // "$1,234.50"
  * @see https://shelving.cc/util/format/formatCurrency
  */
 export function formatCurrency(
@@ -183,7 +178,6 @@ export interface PercentFormatOptions
  * @param denumerator The number representing the whole amount (defaults to 100).
  * @param options Formatting options passed through to `Intl.NumberFormat`.
  * @returns Locale-formatted percentage string.
- * @example formatPercent(50) // "50%"
  * @see https://shelving.cc/util/format/formatPercent
  */
 export function formatPercent(numerator: number, denumerator?: number, options?: PercentFormatOptions): string {
@@ -203,7 +197,6 @@ export function formatPercent(numerator: number, denumerator?: number, options?:
  *
  * @param obj Object to format.
  * @returns Best-available string representation of `obj`, or `"Object"` as a fallback.
- * @example formatObject({ name: "Dave" }) // "Dave"
  * @see https://shelving.cc/util/format/formatObject
  */
 export function formatObject(obj: ImmutableObject): string {
@@ -231,7 +224,6 @@ export interface ArrayFormatOptions extends FormatOptions, Intl.ListFormatOption
  * @param options Formatting options passed through to `Intl.ListFormat`.
  * @param caller Function to attribute a thrown error to (defaults to `formatArray` itself).
  * @returns Locale-formatted list string with each item converted via `formatValue()`.
- * @example formatArray(["a", "b", "c"]) // "a, b, and c"
  * @see https://shelving.cc/util/format/formatArray
  */
 export function formatArray(arr: ImmutableArray<unknown>, options?: ArrayFormatOptions, caller: AnyCaller = formatArray): string {
@@ -260,7 +252,6 @@ export interface DateFormatOptions extends Intl.DateTimeFormatOptions {
  * @param caller Function to attribute a thrown error to (defaults to `formatDate` itself).
  * @returns Locale-formatted date string.
  * @throws {RequiredError} If `date` cannot be converted to a valid date.
- * @example formatDate("2025-01-01") // "1/1/2025"
  * @see https://shelving.cc/util/format/formatDate
  */
 export function formatDate(date: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatDate): string {
@@ -275,7 +266,6 @@ export function formatDate(date: PossibleDate, options?: DateFormatOptions, call
  * @param caller Function to attribute a thrown error to (defaults to `formatTime` itself).
  * @returns Locale-formatted time string.
  * @throws {RequiredError} If `time` cannot be converted to a valid date.
- * @example formatTime("2025-01-01T13:30") // "01:30 PM"
  * @see https://shelving.cc/util/format/formatTime
  */
 export function formatTime(time?: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatTime): string {
@@ -295,7 +285,6 @@ export function formatTime(time?: PossibleDate, options?: DateFormatOptions, cal
  * @param caller Function to attribute a thrown error to (defaults to `formatDateTime` itself).
  * @returns Locale-formatted datetime string.
  * @throws {RequiredError} If `date` cannot be converted to a valid date.
- * @example formatDateTime("2025-01-01T13:30") // "1/1/2025, 01:30 PM"
  * @see https://shelving.cc/util/format/formatDateTime
  */
 export function formatDateTime(date: PossibleDate, options?: DateFormatOptions, caller: AnyCaller = formatDateTime): string {
@@ -319,7 +308,6 @@ export function formatDateTime(date: PossibleDate, options?: DateFormatOptions, 
  * @param caller Function to attribute a thrown error to (defaults to `formatURI` itself).
  * @returns Friendly string showing the host and path with any trailing slash removed.
  * @throws {RequiredError} If `url` cannot be converted to a valid URI.
- * @example formatURI("http://shax.com/test?uid=129483") // "shax.com/test"
  * @see https://shelving.cc/util/format/formatURI
  */
 export function formatURI(url: PossibleURI, caller: AnyCaller = formatURI): string {
@@ -338,7 +326,6 @@ function _formatURI({ host, pathname }: URL): string {
  * @param caller Function to attribute a thrown error to (defaults to `formatURL` itself).
  * @returns Friendly string showing the host and path with any trailing slash removed.
  * @throws {RequiredError} If `url` cannot be converted to a valid URL.
- * @example formatURL("http://shax.com/test?uid=129483") // "shax.com/test"
  * @see https://shelving.cc/util/format/formatURL
  */
 export function formatURL(url: PossibleURL, base?: PossibleURL, caller: AnyCaller = formatURL): string {
@@ -362,7 +349,6 @@ export function formatURL(url: PossibleURL, base?: PossibleURL, caller: AnyCalle
  * @param options Formatting options passed through to the underlying formatter.
  * @param caller Function to attribute a thrown error to (defaults to `formatValue` itself).
  * @returns User-facing string representation of `value`.
- * @example formatValue(1234) // "1,234"
  * @see https://shelving.cc/util/format/formatValue
  */
 export function formatValue(value: unknown, options?: FormatOptions, caller: AnyCaller = formatValue): string {

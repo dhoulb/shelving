@@ -18,11 +18,6 @@ import { BusyStore } from "./BusyStore.js";
  * - Mutations (`add()`, `delete()`, `toggle()`) replace the stored array with an immutable updated copy.
  * - Iterable, so you can `for (const item of store)`.
  *
- * @param value The initial array value (defaults to an empty array).
- * @example
- * const store = new ArrayStore([1, 2, 3]);
- * store.add(4); // [1, 2, 3, 4]
- * store.first; // 1
  * @see https://shelving.cc/store/ArrayStore
  */
 export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>> implements Iterable<T> {
@@ -95,7 +90,6 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * - Duplicate items (already present in the array) are skipped.
 	 *
 	 * @param items The items to add.
-	 * @returns Nothing.
 	 * @example store.add(4, 5);
 	 * @see https://shelving.cc/store/ArrayStore/add
 	 */
@@ -107,7 +101,6 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * Remove one or more items from this array.
 	 *
 	 * @param items The items to remove.
-	 * @returns Nothing.
 	 * @example store.delete(2, 3);
 	 * @see https://shelving.cc/store/ArrayStore/delete
 	 */
@@ -119,7 +112,6 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	 * Toggle one or more items in this array (add if absent, remove if present).
 	 *
 	 * @param items The items to toggle.
-	 * @returns Nothing.
 	 * @example store.toggle(1, 4);
 	 * @see https://shelving.cc/store/ArrayStore/toggle
 	 */
@@ -130,7 +122,6 @@ export class ArrayStore<T> extends BusyStore<ImmutableArray<T>, PossibleArray<T>
 	/**
 	 * Iterate over the items in this store's current array.
 	 *
-	 * @returns An iterator over the items.
 	 * @see https://shelving.cc/store/ArrayStore/[Symbol.iterator]
 	 */
 	[Symbol.iterator](): Iterator<T, void> {

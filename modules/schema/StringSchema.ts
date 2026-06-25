@@ -53,12 +53,6 @@ export interface StringSchemaOptions extends SchemaOptions {
  * - Numbers are coerced to strings; all other non-string values are rejected.
  * - The value is sanitized (and optionally case-folded), then checked against `match`, `min`, and `max`.
  *
- * @example
- *  const schema = new StringSchema({ min: 2, max: 6, match: /^[a-z0-9]+$/ });
- *  schema.validate("def"); // Returns "def"
- *  schema.validate(1234); // Returns "1234" (numbers are coerced)
- *  schema.validate("j"); // Throws "Minimum 2 characters"
- *
  * @see https://shelving.cc/schema/StringSchema
  */
 export class StringSchema extends Schema<string> {
@@ -70,9 +64,6 @@ export class StringSchema extends Schema<string> {
 	readonly match: RegExp | undefined;
 	readonly case: "upper" | "lower" | undefined;
 
-	/**
-	 * Create a new `StringSchema`.
-	 */
 	constructor({
 		one = "string",
 		min = 0,
@@ -93,18 +84,7 @@ export class StringSchema extends Schema<string> {
 		this.input = input;
 	}
 
-	/**
-	 * Validate an unknown value and coerce it to a sanitized string.
-	 *
-	 * @param value Value to validate (defaults to this schema's `value`).
-	 * @returns The sanitized string value.
-	 * @throws `string` `"Required"` if the value is empty or missing, `` `Must be ${one}` `` if it is not a string or number, `` `Invalid ${one}` `` if it fails `match`, `` `Minimum ${min} characters` `` if too short, or `` `Maximum ${max} characters` `` if too long.
-	 *
-	 * @example
-	 *  STRING.validate(123); // Returns "123"
-	 *
-	 * @see https://shelving.cc/schema/StringSchema/validate
-	 */
+	/** Coerce a value to a string, `sanitize()` it, then enforce `match`, `min`, and `max`. */
 	override validate(value: unknown = this.value): string {
 		const str = typeof value === "number" ? value.toString() : value;
 		if (typeof str !== "string") throw value ? `Must be ${this.one}` : "Required";
@@ -123,10 +103,7 @@ export class StringSchema extends Schema<string> {
 	 *
 	 * @param str String to sanitize.
 	 * @returns The sanitized (and optionally case-folded) string.
-	 *
-	 * @example
-	 *  STRING.sanitize("  hello  "); // Returns "hello"
-	 *
+	 * @example STRING.sanitize("  hello  ") // "hello"
 	 * @see https://shelving.cc/schema/StringSchema/sanitize
 	 */
 	sanitize(str: string): string {
@@ -136,17 +113,7 @@ export class StringSchema extends Schema<string> {
 		return sane;
 	}
 
-	/**
-	 * Format a string value for display (returns the string unchanged).
-	 *
-	 * @param str String value to format.
-	 * @returns The same string value.
-	 *
-	 * @example
-	 *  STRING.format("abc"); // Returns "abc"
-	 *
-	 * @see https://shelving.cc/schema/StringSchema/format
-	 */
+	/** Returns the string unchanged. */
 	override format(str: string): string {
 		return str;
 	}
@@ -155,9 +122,7 @@ export class StringSchema extends Schema<string> {
 /**
  * Sugar instance of `StringSchema` for an unconstrained string. Equivalent to `new StringSchema({})`.
  *
- * @example
- *  STRING.validate(123); // Returns "123"
- *
+ * @example STRING.validate(123); // Returns "123"
  * @see https://shelving.cc/schema/STRING
  */
 export const STRING = new StringSchema({});
@@ -165,9 +130,7 @@ export const STRING = new StringSchema({});
 /**
  * Sugar instance of `StringSchema` requiring at least one character. Equivalent to `new StringSchema({ min: 1 })`.
  *
- * @example
- *  REQUIRED_STRING.validate(""); // Throws "Required"
- *
+ * @example REQUIRED_STRING.validate(""); // Throws "Required"
  * @see https://shelving.cc/schema/REQUIRED_STRING
  */
 export const REQUIRED_STRING = new StringSchema({ min: 1 });
@@ -175,9 +138,7 @@ export const REQUIRED_STRING = new StringSchema({ min: 1 });
 /**
  * Sugar instance of `StringSchema` for a title of 1–100 characters. Equivalent to `new StringSchema({ one: "title", title: "Title", min: 1, max: 100 })`.
  *
- * @example
- *  TITLE.validate("My Title"); // Returns "My Title"
- *
+ * @example TITLE.validate("My Title"); // Returns "My Title"
  * @see https://shelving.cc/schema/TITLE
  */
 export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, max: 100 });
@@ -185,9 +146,7 @@ export const TITLE = new StringSchema({ one: "title", title: "Title", min: 1, ma
 /**
  * Sugar instance allowing a `TITLE` or `null`. Equivalent to `NULLABLE(TITLE)`.
  *
- * @example
- *  NULLABLE_TITLE.validate(null); // Returns null
- *
+ * @example NULLABLE_TITLE.validate(null); // Returns null
  * @see https://shelving.cc/schema/NULLABLE_TITLE
  */
 export const NULLABLE_TITLE = NULLABLE(TITLE);
@@ -195,9 +154,7 @@ export const NULLABLE_TITLE = NULLABLE(TITLE);
 /**
  * Sugar instance of `StringSchema` for a name of 1–100 characters. Equivalent to `new StringSchema({ one: "name", title: "Name", min: 1, max: 100 })`.
  *
- * @example
- *  NAME.validate("Dave"); // Returns "Dave"
- *
+ * @example NAME.validate("Dave"); // Returns "Dave"
  * @see https://shelving.cc/schema/NAME
  */
 export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 100 });
@@ -205,9 +162,7 @@ export const NAME = new StringSchema({ one: "name", title: "Name", min: 1, max: 
 /**
  * Sugar instance allowing a `NAME` or `null`. Equivalent to `NULLABLE(NAME)`.
  *
- * @example
- *  NULLABLE_NAME.validate(null); // Returns null
- *
+ * @example NULLABLE_NAME.validate(null); // Returns null
  * @see https://shelving.cc/schema/NULLABLE_NAME
  */
 export const NULLABLE_NAME = NULLABLE(NAME);

@@ -8,7 +8,6 @@ import { debug, debugFullRequest, debugFullResponse, debugRequest } from "./debu
  *
  * @param request The `Request` to log.
  * @returns A promise that resolves once the request has been logged.
- * @example await logRequest(request)
  * @see https://shelving.cc/util/log/logRequest
  */
 export async function logRequest(request: Request) {
@@ -21,7 +20,6 @@ export async function logRequest(request: Request) {
  * @param response The `Response` to log.
  * @param request The originating `Request`, included in the log for context.
  * @returns A promise that resolves once the response has been logged.
- * @example await logRequestResponse(response, request)
  * @see https://shelving.cc/util/log/logRequestResponse
  */
 export async function logRequestResponse(response: Response, request: Request): Promise<void> {
@@ -34,7 +32,6 @@ export async function logRequestResponse(response: Response, request: Request): 
  * @param reason The error value to log.
  * @param request The originating `Request`, included in the log for context.
  * @returns Nothing.
- * @example logRequestError(error, request)
  * @see https://shelving.cc/util/log/logRequestError
  */
 export function logRequestError(reason: unknown, request: Request): void {

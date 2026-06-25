@@ -51,9 +51,6 @@ export interface EmailSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/EmailSchema
  */
 export class EmailSchema extends StringSchema {
-	/**
-	 * Create a new `EmailSchema`.
-	 */
 	constructor({ one = "email address", title = "Email", input = "email", max = 254, ...options }: EmailSchemaOptions) {
 		super({
 			one,
@@ -66,17 +63,7 @@ export class EmailSchema extends StringSchema {
 			match: R_MATCH,
 		});
 	}
-	/**
-	 * Sanitize the string into a valid email address.
-	 *
-	 * - Strips all whitespace (email addresses never contain whitespace).
-	 * - Lowercases the result (RFC says addresses should be case-insensitive).
-	 *
-	 * @param str String to sanitize.
-	 * @returns The sanitized, lowercased email address.
-	 * @example EMAIL.sanitize(" Test@Test.com "); // Returns "test@test.com"
-	 * @see https://shelving.cc/schema/EmailSchema/sanitize
-	 */
+	/** Strips all whitespace and lowercases the address. */
 	override sanitize(str: string): string {
 		// Email addresses never contain whitespace, so strip it entirely, then lowercase (RFC says addresses should be case-insensitive).
 		return sanitizeWord(str).toLowerCase();

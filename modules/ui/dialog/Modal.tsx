@@ -14,9 +14,6 @@ export interface ModalProps extends OptionalChildProps {}
  * Styled `<aside>` overlay container for modal content.
  *
  * @kind component
- * @param children The modal content.
- * @returns The modal container element.
- * @example <Modal><p>Modal content</p></Modal>
  * @see https://shelving.cc/ui/Modal
  */
 export function Modal({ children }: ModalProps): ReactElement {

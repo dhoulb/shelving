@@ -44,10 +44,7 @@ export interface TagProps extends TagVariants, ClickableProps {}
  * - Delegates to `getClickable()` — renders as `<a>` when `href` is set, otherwise `<button>`.
  * - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.).
  *
- * @returns The tag element.
  * @kind component
- * @example <Tag success>Active</Tag>
- * @example <Tag color="purple" href="/beta">Beta</Tag>
  * @see https://shelving.cc/ui/Tag
  */
 export function Tag(props: TagProps): ReactElement {

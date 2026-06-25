@@ -51,7 +51,6 @@ export interface FormProps<T extends Data> extends BlockVariants, OptionalChildP
  *
  * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
  * @kind component
- * @example <Form schema={USER_SCHEMA} onSubmit={save} />
  * @see https://shelving.cc/ui/Form
  */
 export function Form<T extends Data>(props: FormProps<T>): ReactElement;

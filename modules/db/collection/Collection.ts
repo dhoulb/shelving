@@ -53,13 +53,6 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 	 */
 	readonly item: DataSchema<Item<I, T>>;
 
-	/**
-	 * Create a new `Collection`.
-	 *
-	 * @param name Collection name used as the table/collection key.
-	 * @param id Schema for the identifier type.
-	 * @param data Data schema, or the `Schemas` props used to construct one.
-	 */
 	constructor(name: N, id: Schema<I>, data: Schemas<T> | DataSchema<T>) {
 		const dataSchema = data instanceof DataSchema ? data : new DataSchema({ props: data });
 		super({ ...dataSchema, props: dataSchema.props });
@@ -68,13 +61,7 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 		this.item = ITEM(id, dataSchema);
 	}
 
-	/**
-	 * Convert this collection to its string name.
-	 *
-	 * @returns The collection name.
-	 * @example `${users}` // "users"
-	 * @see https://shelving.cc/db/Collection/toString
-	 */
+	/** Returns the collection name. */
 	override toString(): string {
 		return this.name;
 	}

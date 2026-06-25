@@ -29,10 +29,6 @@ interface UnitProps<T extends string> extends UnitFormatOptions {
  *
  * - Knows how to convert amounts to/from other units in its list and to format them for display.
  *
- * @param list `UnitList` this unit belongs to.
- * @param key String key for this unit, e.g. `kilometer`.
- * @param props Props to configure this unit (conversions and formatting options).
- * @example LENGTH_UNITS.require("kilometer").to(5, "meter") // 5000
  * @see https://shelving.cc/util/units/Unit
  */
 export class Unit<K extends string> {
@@ -79,7 +75,6 @@ export class Unit<K extends string> {
 	 * @returns The amount expressed in the target unit.
 	 * @throws `RequiredError` if `targetKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists to the target unit.
-	 * @example LENGTH_UNITS.require("kilometer").to(1, "meter") // 1000
 	 * @see https://shelving.cc/util/units/Unit/to
 	 */
 	to(amount: number, targetKey?: K): number {
@@ -95,7 +90,6 @@ export class Unit<K extends string> {
 	 * @returns The amount expressed in this unit.
 	 * @throws `RequiredError` if `sourceKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists from the source unit.
-	 * @example LENGTH_UNITS.require("kilometer").from(1000, "meter") // 1
 	 * @see https://shelving.cc/util/units/Unit/from
 	 */
 	from(amount: number, sourceKey?: K): number {
@@ -137,7 +131,6 @@ export class Unit<K extends string> {
 	 * @param amount The amount to format.
 	 * @param options Formatting options merged over this unit's own `options`.
 	 * @returns The formatted unit string.
-	 * @example MASS_UNITS.require("kilogram").format(12) // "12 kg"
 	 * @see https://shelving.cc/util/units/Unit/format
 	 */
 	format(amount: number, options?: UnitFormatOptions): string {
@@ -151,8 +144,6 @@ export class Unit<K extends string> {
  * - Can get required units from `.unit()`
  * - Cannot have additional units added after it is created.
  *
- * @param units Set of units keyed by their string key — the first entry becomes the base unit.
- * @example new UnitList({ meter: {}, kilometer: { to: { meter: 1000 } } }).convert(1, "kilometer", "meter") // 1000
  * @see https://shelving.cc/util/units/UnitList
  */
 export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
@@ -180,7 +171,6 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 * @returns The amount expressed in the target unit.
 	 * @throws `RequiredError` if `sourceKey` or `targetKey` is not a unit in this list.
 	 * @throws `ValueError` if no conversion path exists between the units.
-	 * @example LENGTH_UNITS.convert(1, "kilometer", "meter") // 1000
 	 * @see https://shelving.cc/util/units/UnitList/convert
 	 */
 	convert(amount: number, sourceKey: K, targetKey: K): number {
@@ -192,7 +182,6 @@ export class UnitList<K extends string> extends ImmutableMap<K, Unit<K>> {
 	 *
 	 * @param key Key of the unit to retrieve.
 	 * @throws `RequiredError` if the unit key is not found.
-	 * @example LENGTH_UNITS.require("kilometer") // Unit instance
 	 * @see https://shelving.cc/util/units/UnitList/require
 	 */
 	require(key: K): Unit<K> {

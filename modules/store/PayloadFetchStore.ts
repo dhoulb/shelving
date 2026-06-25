@@ -18,13 +18,6 @@ export type PayloadFetchCallback<P, R> = (payload: P, signal: AbortSignal) => As
  * - Holds the current payload in a nested `this.payload` store; setting `this.payload.value` triggers a fresh fetch.
  * - Optionally debounces fetches so rapid payload changes only result in a single request.
  *
- * @param payload The initial payload for the store.
- * @param value The initial value for the store, or `NONE` if it does not have one yet.
- * @param callback An optional callback that, if set, will be called with the current payload when the `fetch()` method is invoked to fetch the next value.
- * @param debounce Delay in milliseconds before the fetch is triggered after a payload change. `busy` becomes `true` immediately; the actual fetch waits for the debounce period to expire. If the payload changes again before the delay expires the previous fetch is cancelled and the timer resets.
- * @example
- * const store = new PayloadFetchStore("dave", NONE, async (name, signal) => (await fetch(`/api/user/${name}`, { signal })).json());
- * store.payload.value = "sam"; // triggers a new fetch
  * @see https://shelving.cc/store/PayloadFetchStore
  */
 export class PayloadFetchStore<P, R> extends FetchStore<R> {

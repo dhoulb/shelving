@@ -28,7 +28,6 @@ export interface DocumentationDescriptionProps {
  * - Wrapped in `<Prose>` so markup-produced `<code>` (and other inline) elements pick up the standard prose typography (the chip background, etc.) — a bare `<code>` is only styled inside a `.prose` ancestor.
  *
  * @kind component
- * @returns The description and any trailing notes wrapped in a `<Prose>`, or `null` when all are empty.
  * @example <DocumentationDescription description="The `foo` value." optional={false} readonly />
  * @see https://shelving.cc/ui/DocumentationDescription
  */

@@ -28,23 +28,12 @@ export interface EntitySchemaOptions<T extends string> extends StringSchemaOptio
 export class EntitySchema<T extends string> extends StringSchema {
 	readonly types: ImmutableArray<T> | undefined;
 
-	/**
-	 * Create a new `EntitySchema`.
-	 */
 	constructor({ one = "entity", title = "Entity", types, ...options }: EntitySchemaOptions<T>) {
 		super({ one, title, ...options });
 		this.types = types;
 	}
 
-	/**
-	 * Validate an unknown value as an `Entity` string with a valid type and ID.
-	 *
-	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
-	 * @returns The valid `Entity` string.
-	 * @throws `string` `"Must be entity"` if the value lacks a type and ID, or `"Invalid entity type"` if its type is not in the allowed `types`. Also throws any `string` from the underlying `StringSchema`.
-	 * @example schema.validate("challenge:a1b2c3") // "challenge:a1b2c3"
-	 * @see https://shelving.cc/schema/EntitySchema/validate
-	 */
+	/** Additionally requires a `type:id` shape and, when `types` is set, a type within it. */
 	override validate(unsafeValue: unknown = this.value): Entity<T> {
 		const entity = super.validate(unsafeValue);
 		const [type] = getEntity(entity);

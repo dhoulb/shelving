@@ -195,7 +195,6 @@ declare module "react" {
  * @param root The root element to flatten.
  * @param base An existing map to merge onto (copied, not mutated). Useful to combine several trees into one lookup.
  * @returns A new `Map` keyed by both flat key and canonical path, whose values are copies of every element stamped with its canonical `path`.
- * @example flattenTree(root).get("/schema/BooleanSchema") // the stamped `BooleanSchema` element
  * @see https://shelving.cc/util/tree/flattenTree
  */
 export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeElement>): Map<string, TreeElement> {

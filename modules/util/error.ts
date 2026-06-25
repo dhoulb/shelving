@@ -8,7 +8,6 @@ import { isObject } from "./object.js";
  *
  * @param reason The error (or any thrown value) to log.
  * @returns Nothing.
- * @example logError(new Error("Boom")) // logs to console.error
  * @see https://shelving.cc/util/error/logError
  */
 export function logError(reason: unknown): void {
@@ -39,8 +38,6 @@ export type PossibleMessage = { message: string } | string;
  *
  * @param input The value to read a message from (a string, or an object with a `message` string).
  * @returns The message string, or `undefined` if none could be found.
- * @example getMessage(new Error("Boom")) // "Boom"
- * @example getMessage(123) // undefined
  * @see https://shelving.cc/util/error/getMessage
  */
 export function getMessage(input: unknown): string | undefined {
@@ -54,7 +51,6 @@ export function getMessage(input: unknown): string | undefined {
  * @param caller Function to attribute a thrown error to (defaults to `requireMessage`).
  * @returns The message string.
  * @throws `RequiredError` if no message could be found.
- * @example requireMessage(new Error("Boom")) // "Boom"
  * @see https://shelving.cc/util/error/requireMessage
  */
 export function requireMessage(input: PossibleMessage, caller: AnyCaller = requireMessage): string {
@@ -72,7 +68,6 @@ export function requireMessage(input: PossibleMessage, caller: AnyCaller = requi
  * @param input The value to read a message from (a string, or an object with a `message` string).
  * @returns Dictionary mapping each name (or `""` for unnamed lines) to its combined message.
  * @throws `RequiredError` if no message could be found.
- * @example splitMessage("name: Bad\nUh oh") // { name: "Bad", "": "Uh oh" }
  * @see https://shelving.cc/util/error/splitMessage
  */
 export function splitMessage(input: PossibleMessage): ImmutableDictionary<string> {
@@ -104,7 +99,6 @@ export function splitMessage(input: PossibleMessage): ImmutableDictionary<string
  *
  * @param input Dictionary mapping each name (or `""` for unnamed lines) to its message.
  * @returns The combined message string, with one line per message line.
- * @example joinMessage({ name: "Bad", "": "Uh oh" }) // "name: Bad\nUh oh"
  * @see https://shelving.cc/util/error/joinMessage
  */
 export function joinMessage(input: ImmutableDictionary<string>): string {
@@ -126,7 +120,6 @@ export function joinMessage(input: ImmutableDictionary<string>): string {
  * @param name The name to prefix each line of the message with.
  * @param message The message to prefix (may contain multiple `\n`-separated lines).
  * @returns The message with `name: ` prefixed to every line.
- * @example getNamedMessage("email", "Required\nInvalid") // "email: Required\nemail: Invalid"
  * @see https://shelving.cc/util/error/getNamedMessage
  */
 export function getNamedMessage(name: string | number, message: string): string {

@@ -18,21 +18,11 @@ const R_NOT_CHAR = /[^a-zA-Z0-9]/g;
  * @see https://shelving.cc/schema/KeySchema
  */
 export class KeySchema extends StringSchema {
-	/**
-	 * Create a new `KeySchema`.
-	 */
 	constructor({ one = "key", title = "Key", min = 1, max = 32, ...options }: StringSchemaOptions) {
 		super({ one, title, min, max, ...options });
 	}
 
-	/**
-	 * Sanitize the string by removing all characters that are not a-z, A-Z, or 0-9.
-	 *
-	 * @param str String to sanitize.
-	 * @returns The sanitized key with non-alphanumeric characters removed.
-	 * @example schema.sanitize("a1b2-c3d4") // "a1b2c3d4"
-	 * @see https://shelving.cc/schema/KeySchema/sanitize
-	 */
+	/** Strips every non-alphanumeric character. */
 	override sanitize(str: string): string {
 		return str.replace(R_NOT_CHAR, "");
 	}

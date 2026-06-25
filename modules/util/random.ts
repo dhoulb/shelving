@@ -8,8 +8,6 @@ import { requireDefined } from "./undefined.js";
  * @param max Highest possible integer to return — defaults to `Number.MAX_SAFE_INTEGER`.
  * @returns Random integer in the range `min` to `max` (inclusive).
  *
- * @example const dice = getRandom(1, 6); // e.g. `4`
- *
  * @see https://shelving.cc/util/random/getRandom
  */
 export function getRandom(min: number = Number.MIN_SAFE_INTEGER, max: number = Number.MAX_SAFE_INTEGER): number {
@@ -24,8 +22,6 @@ export function getRandom(min: number = Number.MIN_SAFE_INTEGER, max: number = N
  * @param min Lowest possible integer to return — defaults to `Number.MIN_SAFE_INTEGER`.
  * @param max Highest possible integer to return — defaults to `Number.MAX_SAFE_INTEGER`.
  * @returns Random integer in the range `min` to `max` that is not equal to `existing`.
- *
- * @example const next = getRandomExcept(current, 1, 6); // any of `1`–`6` except `current`
  *
  * @see https://shelving.cc/util/random/getRandomExcept
  */
@@ -45,8 +41,6 @@ export function getRandomExcept(existing: number, min?: number, max?: number) {
  * @param length Number of characters in the returned key — defaults to `12`.
  * @returns Random string of `length` lowercase alphanumeric characters.
  *
- * @example const id = getRandomKey(); // e.g. `xs23r34hhsdx`
- *
  * @see https://shelving.cc/util/random/getRandomKey
  */
 export function getRandomKey(length = 12): string {
@@ -63,8 +57,6 @@ function getRandomKeyCharacter() {
  * @param str String to pick a character from.
  * @returns Single character chosen at random from `str`.
  *
- * @example const letter = getRandomCharacter("abcde"); // e.g. `"c"`
- *
  * @see https://shelving.cc/util/random/getRandomCharacter
  */
 export function getRandomCharacter(str: string): string {
@@ -77,8 +69,6 @@ export function getRandomCharacter(str: string): string {
  * @param arr Array to pick an item from.
  * @returns Single item chosen at random from `arr`.
  * @throws RequiredError If the chosen item is undefined (e.g. the array is empty).
- *
- * @example const item = getRandomItem(["a", "b", "c"]); // e.g. `"b"`
  *
  * @see https://shelving.cc/util/random/getRandomItem
  */

@@ -12,9 +12,6 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
  * - On `call(...)`, triggers `cache.refresh(maxAge)` for the endpoint+payload before awaiting `cache.call(...)`.
  * - `invalidate`, `invalidateAll`, `refresh`, and `refreshAll` pass through to the underlying cache and use `this.maxAge` as the default refresh timing.
  *
- * @example
- *  const api = new CachedAPIProvider(source);
- *  const result = await api.call(endpoint, payload);
  * @see https://shelving.cc/api/CachedAPIProvider
  */
 export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements AsyncDisposable {
@@ -26,30 +23,13 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	readonly maxAge: number | undefined;
 	private readonly _cache: APICache<P, R>;
 
-	/**
-	 * Create a cached provider wrapping a source provider.
-	 *
-	 * @param source The source provider whose results are cached.
-	 * @param maxAge Default maximum age in milliseconds for `call()` (defaults to `AVOID_REFRESH`).
-	 * @example new CachedAPIProvider(source)
-	 */
 	constructor(source: APIProvider<P, R>, maxAge: number = AVOID_REFRESH) {
 		super(source);
 		this.maxAge = maxAge;
 		this._cache = new APICache(source);
 	}
 
-	/**
-	 * Call an endpoint through the cache, reusing a cached result where possible instead of fetching fresh.
-	 *
-	 * @param endpoint The endpoint to call.
-	 * @param payload The payload to call the endpoint with.
-	 * @param _options Request options (unused; the cache key is derived from endpoint and payload).
-	 * @param caller The calling function used for error stack traces.
-	 * @returns Promise resolving to the (possibly cached) result.
-	 * @example await api.call(endpoint, payload)
-	 * @see https://shelving.cc/api/CachedAPIProvider/call
-	 */
+	/** Serves the call through the cache, reusing a cached result where possible; request options are ignored as the cache key is derived from `endpoint` and `payload`. */
 	override call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
@@ -64,7 +44,6 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 *
 	 * @param endpoint The endpoint whose cached result should be invalidated.
 	 * @param payload The payload identifying the cached result.
-	 * @example api.invalidate(endpoint, payload)
 	 * @see https://shelving.cc/api/CachedAPIProvider/invalidate
 	 */
 	invalidate<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
@@ -75,7 +54,6 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 * Invalidate every cached result for an endpoint, across all payloads.
 	 *
 	 * @param endpoint The endpoint whose cached results should be invalidated.
-	 * @example api.invalidateAll(endpoint)
 	 * @see https://shelving.cc/api/CachedAPIProvider/invalidateAll
 	 */
 	invalidateAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
@@ -87,7 +65,6 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 *
 	 * @param endpoint The endpoint whose cached result should be refreshed.
 	 * @param payload The payload identifying the cached result.
-	 * @example api.refresh(endpoint, payload)
 	 * @see https://shelving.cc/api/CachedAPIProvider/refresh
 	 */
 	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
@@ -98,7 +75,6 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 * Refresh every cached result for an endpoint, across all payloads.
 	 *
 	 * @param endpoint The endpoint whose cached results should be refreshed.
-	 * @example api.refreshAll(endpoint)
 	 * @see https://shelving.cc/api/CachedAPIProvider/refreshAll
 	 */
 	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {

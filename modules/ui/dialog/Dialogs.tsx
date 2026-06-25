@@ -14,7 +14,6 @@ const REMOVE_DELAY = 500;
  *
  * - `show()` opens a new dialog; closed dialogs are removed after an animation delay.
  *
- * @example const dialogs = new DialogsStore(); dialogs.show(<p>Hello</p>);
  * @see https://shelving.cc/ui/DialogsStore
  */
 export class DialogsStore extends ArrayStore<ReactElement> {
@@ -22,7 +21,6 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 	 * Open a new dialog wrapping the given content.
 	 *
 	 * @param children The content to show inside the dialog.
-	 * @example dialogs.show(<ConfirmForm />);
 	 * @see https://shelving.cc/ui/DialogsStore/show
 	 */
 	show(children: ReactNode) {
@@ -44,7 +42,6 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 	/**
 	 * Hide all currently visible dialogs.
 	 *
-	 * @example dialogs.hideAll();
 	 * @see https://shelving.cc/ui/DialogsStore/hideAll
 	 */
 	hideAll() {
@@ -60,7 +57,6 @@ _DialogsContext.displayName = "DialogsContext";
  * Read the current `DialogsStore` from the nearest `<DialogsContext>`.
  *
  * @returns The current `DialogsStore`.
- * @example requireDialogs().show(<ConfirmForm />);
  * @see https://shelving.cc/ui/requireDialogs
  */
 export function requireDialogs(): DialogsStore {
@@ -88,10 +84,7 @@ export interface DialogsProps {
 /**
  * Provider that creates a fresh `DialogsStore` and shares it with its subtree.
  *
- * @param children The subtree that can open dialogs via `requireDialogs()`.
- * @returns The dialogs context provider wrapping `children`.
  * @kind component
- * @example <DialogsContext><App /></DialogsContext>
  * @see https://shelving.cc/ui/DialogsContext
  */
 export function DialogsContext({ children }: DialogsContextProps): ReactElement {
@@ -101,9 +94,7 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
 /**
  * Render the open dialogs from the current `DialogsContext`.
  *
- * @returns The list of open dialog elements, or `null` when there are none.
  * @kind component
- * @example <DialogsContext><App /><Dialogs /></DialogsContext>
  * @see https://shelving.cc/ui/Dialogs
  */
 export function Dialogs(): ReactNode | null {

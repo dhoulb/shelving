@@ -23,7 +23,6 @@ export const EXPECT_PROMISELIKE = expect.objectContaining({
  * @param items The items to check, each carrying an `.id` prop.
  * @param keys The exact set of `.id` values expected (order ignored).
  * @throws {Error} If the items' ids don't match `keys`.
- * @example expectUnorderedItems(results, ["person1", "person2"])
  * @see https://shelving.cc/test/expectUnorderedItems
  */
 export function expectUnorderedItems<I extends Identifier, T extends Data>(
@@ -48,7 +47,6 @@ export function expectUnorderedItems<I extends Identifier, T extends Data>(
  * @param items The items to check, each carrying an `.id` prop.
  * @param keys The exact ordered sequence of `.id` values expected.
  * @throws {Error} If the items' ids don't match `keys` in order.
- * @example expectOrderedItems(results, ["person1", "person2"])
  * @see https://shelving.cc/test/expectOrderedItems
  */
 export function expectOrderedItems<I extends Identifier, T extends Data>(

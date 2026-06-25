@@ -43,34 +43,16 @@ export interface MergingExtractorOptions {
  * - A secondary with no matching token or file is left in place — pure prose files (e.g. `concepts.md` with no `concepts.ts`) stand alone.
  *
  * @example const extractor = new MergingExtractor(new DirectoryExtractor());
- *
  * @see https://shelving.cc/extract/MergingExtractor
  */
 export class MergingExtractor<I> extends ThroughExtractor<I, TreeElement> {
 	private readonly _merges: ImmutableDictionary<readonly string[]>;
 
-	/**
-	 * Wrap a source extractor so its produced tree has same-template sibling elements merged.
-	 *
-	 * @param source Upstream extractor that produces the `tree-element` tree to merge.
-	 *
-	 * @example const extractor = new MergingExtractor(new DirectoryExtractor());
-	 */
 	constructor(source: Extractor<I, TreeElement>, { merges = DEFAULT_MERGES }: MergingExtractorOptions = {}) {
 		super(source);
 		this._merges = merges;
 	}
 
-	/**
-	 * Extract the source tree and merge same-template sibling elements at every level.
-	 *
-	 * @param input Input forwarded to the wrapped source extractor.
-	 * @returns The source tree with matching sibling elements merged together.
-	 *
-	 * @example const tree = await new MergingExtractor(source).extract(input);
-	 *
-	 * @see https://shelving.cc/extract/extract
-	 */
 	override async extract(input: I): Promise<TreeElement> {
 		const root = await this.source.extract(input);
 		return _mergeElement(root, this._merges);

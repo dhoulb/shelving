@@ -40,7 +40,6 @@ export type PossiblePath = string | readonly string[];
  *
  * @param path The path to test.
  * @returns `true` if `path` is an `AbsolutePath` starting with `/`, narrowing its type.
- * @example isAbsolutePath("/a/b") // true
  * @see https://shelving.cc/util/path/isAbsolutePath
  */
 export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
@@ -52,7 +51,6 @@ export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
  *
  * @param path The path to test.
  * @returns `true` if `path` is a `RelativePath` (`.` or starting with `./`), narrowing its type.
- * @example isRelativePath("./a") // true
  * @see https://shelving.cc/util/path/isRelativePath
  */
 export function isRelativePath(path: PossiblePath): path is RelativePath {
@@ -68,7 +66,6 @@ export function isRelativePath(path: PossiblePath): path is RelativePath {
  * @param inputPath Absolute path e.g. `/a/b/c`, relative path e.g. `./a` or `b` or `../c`, URL string e.g. `http://shax.com/a/b/c`, or `URL` instance.
  * @param inputBase Absolute path used for resolving relative paths in `inputPath`.
  * @returns Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`, or `undefined` if `inputPath` is not a valid path.
- * @example getPath("./a", "/b") // "/b/a"
  * @see https://shelving.cc/util/path/getPath
  */
 export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePath = "/"): AbsolutePath | undefined {
@@ -86,7 +83,6 @@ export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePat
  *
  * @param path The path to normalise.
  * @returns The normalised path, preserving the absolute/relative type of `path`.
- * @example cleanPath("/a//b/") // "/a/b"
  * @see https://shelving.cc/util/path/cleanPath
  */
 export function cleanPath(path: AbsolutePath): AbsolutePath;
@@ -106,7 +102,6 @@ export function cleanPath(path: string): string {
  * @param caller Function to attribute a thrown error to (defaults to `requirePath` itself).
  * @returns Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`.
  * @throws {RequiredError} If `path` is not a valid path.
- * @example requirePath("./a", "/b") // "/b/a"
  * @see https://shelving.cc/util/path/requirePath
  */
 export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
@@ -125,7 +120,6 @@ export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: Any
  * @param caller Function to attribute a thrown error to (defaults to `matchPathPrefix` itself).
  * @returns The remaining absolute path after stripping `base`, `/` for an exact match, or `undefined` if `target` is not under `base`.
  * @throws {RequiredError} If `target` or `base` is not a valid path.
- * @example matchPathPrefix("/a/b", "/a") // "/b"
  * @see https://shelving.cc/util/path/matchPathPrefix
  */
 export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller: AnyCaller = matchPathPrefix): AbsolutePath | undefined {
@@ -143,7 +137,6 @@ export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller
  * @param target Path whose status to test.
  * @param current Current path to test against.
  * @returns `true` if `target` is exactly `current`.
- * @example isPathActive("/a", "/a") // true
  * @see https://shelving.cc/util/path/isPathActive
  */
 export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
@@ -157,7 +150,6 @@ export function isPathActive(target: AbsolutePath, current: AbsolutePath): boole
  * @param target Path whose status to test.
  * @param current Current path to test against.
  * @returns `true` if `current` is `target` or a descendant of `target`.
- * @example isPathProud("/a", "/a/b") // true
  * @see https://shelving.cc/util/path/isPathProud
  */
 export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolean {
@@ -170,7 +162,6 @@ export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolea
  *
  * @param path Path to split (an array of segments is returned as-is).
  * @returns Array of path segments.
- * @example splitPath("/a/b") // ["a", "b"]
  * @see https://shelving.cc/util/path/splitPath
  */
 export function splitPath(path: PossiblePath): readonly string[] {
@@ -191,12 +182,6 @@ export type PathPart = string | readonly string[];
  * - Each part can be a string (e.g. `"/foo/bar"`, `"foo"`) or an array of segments (e.g. `["foo", "bar"]`). String parts may themselves contain `/` separators — they're flattened and normalised.
  * - Runs of `//` are collapsed and trailing slashes stripped (via `cleanPath()`); `\` Windows slashes are converted too.
  * - If the first argument is an `AbsolutePath` string (starts with `/`), the result is also an `AbsolutePath`; otherwise the return type is `string`.
- *
- * @example joinPath("/foo", "bar") // → "/foo/bar"
- * @example joinPath("/foo", ["bar", "baz"]) // → "/foo/bar/baz"
- * @example joinPath(["foo", "bar"], "baz") // → "foo/bar/baz" (relative — no leading slash)
- * @example joinPath("/a/", "/b/") // → "/a/b" (slashes normalised)
- * @example joinPath("/") // → "/"
  */
 export function joinPath(first: AbsolutePath, ...rest: PathPart[]): AbsolutePath;
 export function joinPath(...parts: PathPart[]): string;

@@ -21,7 +21,6 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * @param children The source markup string to parse and render (renders `null` when empty).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
  * @kind component
- * @example <Prose><Markup>{`A *bold* word with \`code\`.`}</Markup></Prose>
  * @see https://shelving.cc/ui/Markup
  */
 export function Markup({ children, ...options }: MarkupProps): ReactNode {

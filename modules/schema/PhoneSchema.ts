@@ -36,9 +36,6 @@ export interface PhoneSchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/PhoneSchema
  */
 export class PhoneSchema extends StringSchema {
-	/**
-	 * Create a new `PhoneSchema`.
-	 */
 	constructor({ one = "phone number", title = "Phone", input = "tel", max = 16, ...options }: PhoneSchemaOptions) {
 		super({
 			one,
@@ -55,17 +52,7 @@ export class PhoneSchema extends StringSchema {
 			match: /^\+[1-9][0-9]{0,2}[0-9]{5,12}$/,
 		});
 	}
-	/**
-	 * Sanitize the string into a valid E.164 phone number.
-	 *
-	 * - Strips every character that isn't `0`–`9` or `+` plus (including whitespace).
-	 * - Keeps a `+` plus only when it is the first character.
-	 *
-	 * @param insaneString String to sanitize.
-	 * @returns The sanitized phone number.
-	 * @example PHONE.sanitize("+44 (1234) 567890"); // Returns "+441234567890"
-	 * @see https://shelving.cc/schema/PhoneSchema/sanitize
-	 */
+	/** Strips every character that isn't `0`–`9`, keeping a leading `+` plus, to make an E.164 number. */
 	override sanitize(insaneString: string): string {
 		// Strip characters that aren't 0-9 or `+` plus (including whitespace).
 		const saneString = insaneString.replace(/[^0-9+]/g, "");

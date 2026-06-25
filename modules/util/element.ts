@@ -37,7 +37,6 @@ export type Elements<T extends Element = Element> = undefined | null | string | 
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `Element`, narrowing its type.
- * @example isElement({ type: "div", props: {}, key: null }) // true
  * @see https://shelving.cc/util/element/isElement
  */
 export function isElement(value: unknown): value is Element {
@@ -49,7 +48,6 @@ export function isElement(value: unknown): value is Element {
  *
  * @param value The value to test.
  * @returns `true` if `value` is an `Elements` value, narrowing its type.
- * @example isElements("hello") // true
  * @see https://shelving.cc/util/element/isElements
  */
 export function isElements(value: unknown): value is Elements {
@@ -62,8 +60,6 @@ export function isElements(value: unknown): value is Elements {
  *
  * @param elements An element, a plain string, or null/undefined (or an array of those things).
  * @returns The combined string made from the elements.
- *
- * @example `- Item with *strong*\n- Item with _em_` becomes `Item with strong Item with em`
  * @see https://shelving.cc/util/element/getElementText
  */
 export function getElementText(elements: Elements): string {
@@ -91,7 +87,6 @@ export function getElementText(elements: Elements): string {
  *
  * @param elements An element, a (possibly nested) iterable of elements, `null`, `undefined`, or a string (strings are skipped).
  * @returns A flat iterable of `Element` objects.
- * @example [...walkElements([a, [b, c]])] // [a, b, c]
  * @see https://shelving.cc/util/element/walkElements
  */
 export function walkElements<T extends Element>(elements: Elements<T>): Iterable<T>;
@@ -108,7 +103,6 @@ export function* walkElements(elements: Elements): Iterable<Element> {
  * @param elements The elements to walk and filter.
  * @param query The `Query<Element>` object describing the filter, sort, and limit to apply.
  * @returns An iterable of the matching `Element` objects.
- * @example [...queryElements(elements, { type: "br" })] // all `<br>` elements
  * @see https://shelving.cc/util/element/queryElements
  */
 export function queryElements(elements: Elements, query: Query<Element>): Iterable<Element> {
@@ -121,7 +115,6 @@ export function queryElements(elements: Elements, query: Query<Element>): Iterab
  * @param elements The elements to walk and filter.
  * @param match Function called with each element; return `true` to keep the element.
  * @returns An iterable of the matching `Element` objects.
- * @example [...filterElements(elements, el => el.type === "br")] // all `<br>` elements
  * @see https://shelving.cc/util/element/filterElements
  */
 export function* filterElements(elements: Elements, match: (element: Element) => boolean): Iterable<Element> {
@@ -135,7 +128,6 @@ export function* filterElements(elements: Elements, match: (element: Element) =>
  * @param a The first elements.
  * @param b The second elements.
  * @returns The combined `Elements`, or whichever side is set if the other is falsy.
- * @example mergeElements("a", "b") // ["a", "b"]
  * @see https://shelving.cc/util/element/mergeElements
  */
 export function mergeElements<T extends Element>(a: Elements<T>, b: Elements<T>): Elements<T>;

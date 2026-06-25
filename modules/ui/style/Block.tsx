@@ -21,7 +21,6 @@ export interface BlockVariants extends ColorVariants, IndentVariants, SpaceVaria
  *
  * Composes the base block class and tint ladder with the colour, space, typography, and width variant helpers, so anything that wants block-level styling can apply it.
  *
- * @param variants Colour, space, typography, and width variants.
  * @returns A space-separated `className` string combining the block class and resolved variant classes.
  * @example getBlockClass({ space: "large" }) // "block tint …"
  * @see https://shelving.cc/ui/getBlockClass

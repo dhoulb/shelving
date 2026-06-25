@@ -19,7 +19,6 @@ class NoticeEvent extends CustomEvent<{ message: ReactNode; status: Status | und
  * @param message The message to show, as a React node.
  * @param status Optional status (`"success"`, `"error"`, etc.) controlling how the notice is styled.
  * @param el Element to dispatch the event on (defaults to `window`).
- * @example notify("Saved your changes", "success");
  * @see https://shelving.cc/ui/notify
  */
 export function notify(message: ReactNode, status?: Status | undefined, el: EventTarget = window): void {
@@ -36,7 +35,6 @@ export function notify(message: ReactNode, status?: Status | undefined, el: Even
  *
  * @param message The success message to show, as a React node.
  * @param el Element to dispatch the event on (defaults to `window`).
- * @example notifySuccess("Profile updated");
  * @see https://shelving.cc/ui/notifySuccess
  */
 export function notifySuccess(message: ReactNode, el?: EventTarget) {
@@ -48,7 +46,6 @@ export function notifySuccess(message: ReactNode, el?: EventTarget) {
  *
  * @param message The error message to show, as a React node.
  * @param el Element to dispatch the event on (defaults to `window`).
- * @example notifyError("Could not save your changes");
  * @see https://shelving.cc/ui/notifyError
  */
 export function notifyError(message: ReactNode, el?: EventTarget) {
@@ -63,7 +60,6 @@ export function notifyError(message: ReactNode, el?: EventTarget) {
  *
  * @param thrown The thrown value to report.
  * @param el Element to dispatch the event on (defaults to `window`).
- * @example try { await save(); } catch (thrown) { notifyThrown(thrown); }
  * @see https://shelving.cc/ui/notifyThrown
  */
 export function notifyThrown(thrown: unknown, el?: EventTarget) {
@@ -84,7 +80,6 @@ export function notifyThrown(thrown: unknown, el?: EventTarget) {
  * @param callback Called with the message and status each time a notice event fires.
  * @param el Element to subscribe on (defaults to `window`).
  * @returns An unsubscribe function that removes the listener.
- * @example const stop = subscribeNotices((message, status) => show(message, status));
  * @see https://shelving.cc/ui/subscribeNotices
  */
 export function subscribeNotices(
@@ -115,7 +110,6 @@ export type NoticeCallback<A extends Arguments> = (...args: A) => PromiseLike<Re
  * @param callback The callback to run, whose return/throw drives the notice.
  * @param args Arguments forwarded to the callback.
  * @returns `true` if the callback succeeded, `false` if it threw (a `Promise` of the same when async).
- * @example callNotified(() => save()); // notifies "success" or "error"
  * @see https://shelving.cc/ui/callNotified
  */
 export function callNotified<A extends Arguments>(callback: NoticeCallback<A>, ...args: A): boolean | Promise<boolean> {
@@ -129,7 +123,6 @@ export function callNotified<A extends Arguments>(callback: NoticeCallback<A>, .
  *
  * @param pending The promise-like value to await.
  * @returns `true` if the value resolved, `false` if it rejected.
- * @example await awaitNotified(save());
  * @see https://shelving.cc/ui/awaitNotified
  */
 export function awaitNotified(pending: PromiseLike<ReactNode | undefined | void>): Promise<boolean> {

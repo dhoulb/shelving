@@ -18,9 +18,7 @@ export interface LoadingProps {
  *
  * - Self-contained inline SVG with a rotating indicator arc; inherits its colour and size from the surrounding text.
  *
- * @returns The spinner element.
  * @kind component
- * @example <Loading />
  * @see https://shelving.cc/ui/Loading
  */
 export function Loading(): ReactElement {
@@ -53,7 +51,6 @@ export function Loading(): ReactElement {
 /**
  * Shared `<Loading>` element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
  *
- * @example <Suspense fallback={LOADING}>…</Suspense>
  * @see https://shelving.cc/ui/LOADING
  */
 export const LOADING = <Loading key="loading" />;

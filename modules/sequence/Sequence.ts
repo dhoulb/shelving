@@ -7,10 +7,6 @@
  * - This means when a generator throws, further requests to `next()` will always return `done: true`
  * - This class does not provide that guarantee or have that constraint.
  *
- * @example
- * 	class NumberSequence extends Sequence<number, void, void> {
- * 		async next() { return { done: false, value: Math.random() }; }
- * 	}
  * @see https://shelving.cc/sequence/Sequence
  */
 export abstract class Sequence<T, R, N>

@@ -15,7 +15,6 @@ export interface InsertedProps extends OptionalChildProps {}
 /**
  * Inserted text — renders an `<ins>` element to mark content added to a document.
  *
- * @returns Rendered `<ins>` element.
  * @kind component
  * @example <Inserted>new price</Inserted>
  * @see https://shelving.cc/ui/Inserted

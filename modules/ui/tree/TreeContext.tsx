@@ -17,8 +17,6 @@ TreeContext.displayName = "TreeContext";
  * - Flattens `tree` **once** (memoised) when set — not on every lookup in every element.
  * - Merges onto any parent `<TreeProvider>`'s map, so cross-references resolve across an entire nested set of trees; the outer (parent) tree wins on collision.
  *
- * @param props The `tree` to flatten and provide, plus `children`.
- * @returns A `<TreeContext>` provider wrapping the children with the flattened map.
  * @kind component
  * @example <TreeProvider tree={tree}>{children}</TreeProvider>
  * @see https://shelving.cc/ui/TreeProvider

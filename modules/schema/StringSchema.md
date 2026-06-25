@@ -29,5 +29,5 @@ import { StringSchema } from "shelving/schema";
 const USERNAME = new StringSchema({ title: "Username", min: 3, max: 20, match: /^[a-z0-9_]+$/ });
 USERNAME.validate("alice_99");   // "alice_99"
 USERNAME.validate("al");         // throws "Minimum 3 characters"
-USERNAME.validate("ALICE");      // throws "Invalid format"
+USERNAME.validate("ALICE");      // throws "Invalid string"
 ```

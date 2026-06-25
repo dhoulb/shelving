@@ -28,7 +28,6 @@ export interface DocumentationThrowsProps {
  * - Renders nothing when there are no throw entries.
  *
  * @kind component
- * @returns A `<Section>` containing the throws table, or `null` when there are none.
  * @example <DocumentationThrows throws={throws} />
  * @see https://shelving.cc/ui/DocumentationThrows
  */

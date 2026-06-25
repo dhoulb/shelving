@@ -47,10 +47,6 @@ async function _mockHandler(request: Request): Promise<Response> {
  * - The source provider's `fetch()` is never called — this provider intercepts all fetches and routes them through a `RequestHandler`.
  * - Records `requestCalls`, `fetchCalls`, and `responseCalls` so tests can assert on what happened.
  *
- * @example
- *  const api = new MockAPIProvider();
- *  const result = await api.call(endpoint, payload);
- *  expect(api.fetchCalls).toHaveLength(1);
  * @see https://shelving.cc/api/MockAPIProvider
  */
 export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvider<P, R> {
@@ -76,29 +72,12 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 	 */
 	readonly handler: RequestHandler;
 
-	/**
-	 * Create a mock provider that serves fetches from a handler.
-	 *
-	 * @param handler The handler that produces a response for each request (defaults to echoing the request).
-	 * @param source The source provider used to build requests and parse responses.
-	 * @example new MockAPIProvider()
-	 */
 	constructor(handler: RequestHandler = _mockHandler, source: APIProvider<P, R> = new ClientAPIProvider({ url: "https://api.mock.com" })) {
 		super(source);
 		this.handler = handler;
 	}
 
-	/**
-	 * Build a request via the source provider, recording the endpoint and payload in `requestCalls`.
-	 *
-	 * @param endpoint The endpoint to build a request for.
-	 * @param payload The payload to send.
-	 * @param options Optional request options.
-	 * @param caller The calling function used for error stack traces.
-	 * @returns The built request.
-	 * @example api.createRequest(endpoint, payload)
-	 * @see https://shelving.cc/api/MockAPIProvider/createRequest
-	 */
+	/** Record the endpoint and payload in `requestCalls` while building the request. */
 	override createRequest<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
@@ -110,16 +89,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 		return request;
 	}
 
-	/**
-	 * Parse a response via the source provider, recording the response and result in `responseCalls`.
-	 *
-	 * @param endpoint The endpoint the response came from.
-	 * @param response The response to parse.
-	 * @param caller The calling function used for error stack traces.
-	 * @returns Promise resolving to the parsed result.
-	 * @example await api.parseResponse(endpoint, response)
-	 * @see https://shelving.cc/api/MockAPIProvider/parseResponse
-	 */
+	/** Record the response and result in `responseCalls` while parsing the response. */
 	override async parseResponse<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		response: Response,
@@ -130,14 +100,7 @@ export class MockAPIProvider<P = unknown, R = unknown> extends ThroughAPIProvide
 		return result;
 	}
 
-	/**
-	 * Serve a request through the handler instead of the network, recording it in `fetchCalls`.
-	 *
-	 * @param request The request to handle.
-	 * @returns Promise resolving to the handler's response.
-	 * @example await api.fetch(request)
-	 * @see https://shelving.cc/api/MockAPIProvider/fetch
-	 */
+	/** Serve the request through the handler instead of the network, recording it in `fetchCalls`. */
 	override async fetch(request: Request): Promise<Response> {
 		const response = await this.handler(request);
 		this.fetchCalls.push({ request, response });

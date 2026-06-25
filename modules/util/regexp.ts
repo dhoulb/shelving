@@ -70,8 +70,6 @@ export function assertRegExp(value: unknown): asserts value is RegExp {
  * @param pattern The regular expression or string source to convert.
  * @param flags The flags to use when creating a `RegExp` from a string source.
  * @returns The corresponding `RegExp` instance.
- * @example
- * getRegExp("abc", "i"); // /abc/i
  * @see https://shelving.cc/util/regexp/getRegExp
  */
 export function getRegExp<T extends NamedRegExpData>(
@@ -92,8 +90,6 @@ export function getRegExp(pattern: PossibleRegExp, flags?: string): RegExp {
  *
  * @param regexp The regular expression or string source to read.
  * @returns The string source of the regular expression.
- * @example
- * getRegExpSource(/abc/); // "abc"
  * @see https://shelving.cc/util/regexp/getRegExpSource
  */
 export function getRegExpSource(regexp: PossibleRegExp): string {
@@ -106,8 +102,6 @@ export function getRegExpSource(regexp: PossibleRegExp): string {
  *
  * @param pattern The string to escape.
  * @returns The escaped string, safe to use as a literal regular expression source.
- * @example
- * escapeRegExp("a.b"); // "a\\.b"
  * @see https://shelving.cc/util/regexp/escapeRegExp
  */
 export function escapeRegExp(pattern: string): string {
@@ -122,8 +116,6 @@ const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
  * @param patterns The regular expressions or string sources to combine.
  * @param flags The flags to use when creating the combined `RegExp`.
  * @returns A `RegExp` that matches if any of the provided expressions match.
- * @example
- * createRegExpAny(["abc", "def"]); // /(?:abc)|(?:def)/
  * @see https://shelving.cc/util/regexp/createRegExpAny
  */
 export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
@@ -141,8 +133,6 @@ export function createRegExpAny(patterns: Iterable<PossibleRegExp> & NotString, 
  * @param patterns The regular expressions or string sources to combine.
  * @param flags The flags to use when creating the combined `RegExp`.
  * @returns A `RegExp` that matches only if all of the provided expressions match.
- * @example
- * createRegExpAll(["abc", "def"]); // /^(?=.*?(?:abc))(?=.*?(?:def))/
  * @see https://shelving.cc/util/regexp/createRegExpAll
  */
 export function createRegExpAll(patterns: Iterable<PossibleRegExp> & NotString, flags?: string): RegExp {
@@ -205,8 +195,6 @@ export interface NamedRegExp<T extends NamedRegExpData = NamedRegExpData> extend
  * - If `regexp` is a `RegExp` it is tested against the string using `RegExp.test()`.
  * - If `regexp` is a `string` it is simply tested against the string using `===` equality.
  * @returns `true` if the string matches the regular expression, otherwise `false`.
- * @example
- * isMatch("abc", /b/); // true
  * @see https://shelving.cc/util/regexp/isMatch
  */
 export function isMatch(str: string, regexp: Matchable): boolean {
@@ -222,8 +210,6 @@ export function isMatch(str: string, regexp: Matchable): boolean {
  * - If `regexp` is a `RegExp` it is tested against the string using `RegExp.test()`.
  * - If `regexp` is a `string` it is simply tested against the string using `!==` equality.
  * @returns `true` if the string does not match the regular expression, otherwise `false`.
- * @example
- * notMatch("abc", /z/); // true
  * @see https://shelving.cc/util/regexp/notMatch
  */
 export function notMatch(str: string, regexp: Matchable): boolean {
@@ -240,8 +226,6 @@ export function notMatch(str: string, regexp: Matchable): boolean {
  * - If a `string` it is simply tested against the string using `===` equality.
  * - If `null` or `undefined` it is ignored.
  * @returns `true` if every provided regular expression matches the string, otherwise `false`.
- * @example
- * allMatch("abc", /a/, /b/); // true
  * @see https://shelving.cc/util/regexp/allMatch
  */
 export function allMatch(str: string, ...regexps: Matchables): boolean {
@@ -262,8 +246,6 @@ export function allMatch(str: string, ...regexps: Matchables): boolean {
  * - If a `string` it is simply tested against the string using `===` equality.
  * - If `null` or `undefined` it is ignored.
  * @returns `true` if at least one provided regular expression matches the string, otherwise `false`.
- * @example
- * anyMatch("abc", /z/, /b/); // true
  * @see https://shelving.cc/util/regexp/anyMatch
  */
 export function anyMatch(str: string, ...regexps: Matchables): boolean {
@@ -284,8 +266,6 @@ export function anyMatch(str: string, ...regexps: Matchables): boolean {
  * - If a `string` it is simply tested against the string using `===` equality.
  * - If `null` or `undefined` it is ignored.
  * @returns `true` if none of the provided regular expressions match the string, otherwise `false`.
- * @example
- * noneMatch("abc", /x/, /y/); // true
  * @see https://shelving.cc/util/regexp/noneMatch
  */
 export function noneMatch(str: string, ...regexps: Matchables): boolean {
@@ -298,8 +278,6 @@ export function noneMatch(str: string, ...regexps: Matchables): boolean {
  * @param str String to match against the regular expression.
  * @param regexp Regular expression to match against the string.
  * @returns The match array, or `undefined` if the string did not match.
- * @example
- * getMatch("abc", /b/); // ["b"]
  * @see https://shelving.cc/util/regexp/getMatch
  */
 export function getMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T> | undefined;
@@ -316,8 +294,6 @@ export function getMatch(str: string, regexp: RegExp): RegExpExecArray | undefin
  * @param regexp Regular expression to match against the string.
  * @returns The match array.
  * @throws {ValueError} If the string did not match the regular expression.
- * @example
- * requireMatch("abc", /b/); // ["b"]
  * @see https://shelving.cc/util/regexp/requireMatch
  */
 export function requireMatch<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): NamedRegExpExecArray<T>;
@@ -335,8 +311,6 @@ export function requireMatch(str: string, regexp: RegExp): RegExpExecArray {
  * @param str String to match against the regular expression.
  * @param regexp Regular expression to match against the string.
  * @returns The set of named match groups, or `undefined` if the string did not match.
- * @example
- * getMatchGroups("abc", /(?<first>a)/); // { first: "a" }
  * @see https://shelving.cc/util/regexp/getMatchGroups
  */
 export function getMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T | undefined;
@@ -352,8 +326,6 @@ export function getMatchGroups(str: string, regexp: RegExp): NamedRegExpData | u
  * @param regexp Regular expression to match against the string.
  * @returns The set of named match groups.
  * @throws {ValueError} If the string did not match the regular expression.
- * @example
- * requireMatchGroups("abc", /(?<first>a)/); // { first: "a" }
  * @see https://shelving.cc/util/regexp/requireMatchGroups
  */
 export function requireMatchGroups<T extends NamedRegExpData>(str: string, regexp: NamedRegExp<T>): T;
