@@ -24,11 +24,6 @@ export interface NumberSchemaOptions extends SchemaOptions {
 	readonly max?: number | undefined;
 	/** Rounding step the value is snapped to (e.g. `1` for integers). */
 	readonly step?: number | undefined;
-	/**
-	 * Format the number for display in downstream UIs.
-	 * @default formatNumber
-	 */
-	readonly format?: typeof formatNumber | undefined;
 }
 
 /**
@@ -57,7 +52,6 @@ export class NumberSchema extends Schema<number> {
 		min = Number.NEGATIVE_INFINITY,
 		max = Number.POSITIVE_INFINITY,
 		step,
-		format = formatNumber,
 		value,
 		...options
 	}: NumberSchemaOptions) {
