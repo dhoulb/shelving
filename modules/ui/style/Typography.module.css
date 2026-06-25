@@ -36,7 +36,7 @@
 		--size-xxxlarge: calc(var(--size-normal) * pow(var(--size-scale), 4));
 
 		/* Semantic sizes */
-		--size-icon: var(--size-large);
+		--size-icon: 1.5rem;
 		--size-label: var(--size-small);
 
 		/* Relative sizes */
