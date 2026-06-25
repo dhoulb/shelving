@@ -101,7 +101,7 @@ export class InspectSequence<T, R, N> extends ThroughSequence<T, R, N> {
 	/** Capture a result. */
 	private _inspect(result: IteratorResult<T, R | undefined>): IteratorResult<T, R | undefined> {
 		if (!result.done) {
-			if (this.first === undefined) this._first = result.value;
+			if (this._first === _NOVALUE) this._first = result.value;
 			this._last = result.value;
 			this._count++;
 		} else {
