@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -27,36 +26,35 @@ export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChild
 export function RadioInput({
 	name,
 	title,
-	placeholder = "Choose",
+	placeholder = title || "Choose",
 	required = false,
 	disabled = false,
 	message = "",
 	value = false,
 	onValue,
-	children = title,
+	children = placeholder,
 	...props
 }: RadioInputProps): ReactElement {
-	const hasChildren = notNullish(children);
 	return (
 		<label
 			className={getClass(
 				getInputClass(props), //
 				getFlexClass(props),
 				INPUT_LABEL_CLASS,
-				!hasChildren && INPUT_PLACEHOLDER_CLASS,
 			)}
 		>
 			<input
 				className={getModuleClass(INPUT_CSS, "radio")}
 				type="radio"
 				name={name}
-				defaultChecked={value}
+				defaultChecked={!!value}
 				onChange={() => onValue(true)}
 				disabled={disabled}
 				required={required}
+				title={message}
 				aria-invalid={!!message}
 			/>
-			{hasChildren ? children : placeholder}
+			<span>{children}</span>
 		</label>
 	);
 }

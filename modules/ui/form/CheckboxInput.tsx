@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { notNullish } from "../../util/null.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -27,37 +26,35 @@ export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildPr
 export function CheckboxInput({
 	name,
 	title,
-	placeholder = "Yes",
+	placeholder = title || "Yes",
 	required = false,
 	disabled = false,
 	message = "",
 	value = false,
 	onValue,
-	children = title,
-	...variants
+	children = placeholder,
+	...props
 }: CheckboxProps): ReactElement {
-	const hasChildren = notNullish(children);
 	return (
 		<label
 			className={getClass(
-				getInputClass(variants), //
-				getFlexClass(variants),
+				getInputClass(props), //
+				getFlexClass(props),
 				INPUT_LABEL_CLASS,
-				!hasChildren && INPUT_PLACEHOLDER_CLASS,
 			)}
-			aria-invalid={!!message}
 		>
 			<input
-				name={name}
+				className={getModuleClass(INPUT_CSS, "radio")}
 				type="checkbox"
+				name={name}
 				defaultChecked={!!value}
 				onChange={e => onValue?.(!!e.currentTarget.checked)}
-				required={required}
 				disabled={disabled}
+				required={required}
 				title={message}
-				className={getModuleClass(INPUT_CSS, "radio")}
+				aria-invalid={!!message}
 			/>
-			<span>{hasChildren ? children : placeholder}</span>
+			<span>{children}</span>
 		</label>
 	);
 }
