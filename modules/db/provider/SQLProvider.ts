@@ -284,7 +284,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 */
 	sqlWhere(query: Query<Item>) {
 		const filters = getQueryFilters(query);
-		if (filters.length) return this.sql``;
+		if (!filters.length) return this.sql``;
 		return this.sql` WHERE ${this.sqlConcat(
 			filters.map(filter => this.sqlFilter(filter)),
 			" AND ",
