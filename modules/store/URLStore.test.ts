@@ -60,7 +60,8 @@ describe("getParam()", () => {
 describe("requireParam()", () => {
 	test("returns param value", () => {
 		const store = new URLStore("https://example.com/path?foo=bar");
-		expect(store.requireParam("foo")).toBe("bar");
+		const value: string = store.requireParam("foo"); // `requireParam()` returns `string`, never `string | undefined`.
+		expect(value).toBe("bar");
 	});
 	test("throws for missing param", () => {
 		const store = new URLStore("https://example.com/path");

@@ -169,7 +169,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @example store.requireParam("page");
 	 * @see https://shelving.cc/store/URLStore/requireParam
 	 */
-	requireParam(key: string): string | undefined {
+	requireParam(key: string): string {
 		return requireURIParam(this.value.searchParams, key, getSetter(this, "requireParam"));
 	}
 
