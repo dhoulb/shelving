@@ -142,7 +142,7 @@ export function requireArray<T>(list: PossibleArray<T>, min?: number, max?: numb
  * @see https://shelving.cc/util/array/isArrayItem
  */
 export function isArrayItem<T>(list: PossibleArray<T>, item: unknown): item is T {
-	if (isArray(list)) list.includes(item as T);
+	if (isArray(list)) return list.includes(item as T);
 	for (const i of list) if (i === item) return true;
 	return false;
 }
