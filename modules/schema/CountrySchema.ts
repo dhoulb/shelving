@@ -25,29 +25,11 @@ export interface CountrySchemaOptions extends SchemaOptions {
  * @see https://shelving.cc/schema/CountrySchema
  */
 export class CountrySchema extends ChoiceSchema<Country, PossibleCountry> {
-	/**
-	 * Create a new `CountrySchema`.
-	 *
-	 * @example new CountrySchema({ value: "GB" })
-	 * @see https://shelving.cc/schema/CountrySchema
-	 */
 	constructor({ one = "country", title = "Country", value = "detect", ...options }: CountrySchemaOptions = {}) {
 		super({ one, title, options: COUNTRIES, value, ...options });
 	}
-
-	/**
-	 * Validate an unknown input value and return a valid country code.
-	 *
-	 * @param unsafeValue The value to validate (defaults to this schema's `value`).
-	 * @returns The validated ISO 3166 country code.
-	 * @throws `string` `"Required"` if the value is empty, or `` `Unknown ${one}` `` if it is not a known country.
-	 * @example schema.validate("GB") // "GB"
-	 * @see https://shelving.cc/schema/CountrySchema/validate
-	 */
-	override validate(unsafeValue: unknown = this.value): Country {
-		const country = getCountry(unsafeValue);
-		if (country) return super.validate(country);
-		throw unsafeValue === "detect" ? "Required" : `Unknown ${this.one}`;
+	override get(unsafeValue: unknown = this.value): Country | undefined {
+		return getCountry(unsafeValue);
 	}
 }
 

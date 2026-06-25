@@ -152,15 +152,18 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
 /**
  * Show a choice input for a `ChoiceSchema` — radio inputs for up to 8 options, otherwise a select.
  *
+ * - The value is normalised through the schema's `get()`, so invalid or sentinel values (e.g. a `CountrySchema`'s `"detect"`) resolve to a real option or fall back to the placeholder rather than mis-selecting the first option.
+ *
  * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
  * @kind component
  * @example <ChoiceSchemaInput name="role" schema={ROLE} />
  * @see https://shelving.cc/ui/ChoiceSchemaInput
  */
 export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInputProps): ReactElement {
-	const { options } = requireSource(ChoiceSchema, schema);
-	if (getKeys(options).length <= 8) return <ChoiceRadioInputs {...schema} value={getString(value)} {...props} />;
-	return <SelectInput {...schema} value={getString(value)} {...props} />;
+	const choice = requireSource(ChoiceSchema, schema);
+	const string = choice.get(value);
+	if (getKeys(choice.options).length <= 8) return <ChoiceRadioInputs {...schema} value={string} {...props} />;
+	return <SelectInput {...schema} value={string} {...props} />;
 }
 
 /**

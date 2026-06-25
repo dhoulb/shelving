@@ -32,4 +32,19 @@ describe("CountrySchema", () => {
 		const schema = new CountrySchema({});
 		expect(() => schema.validate("ZZ")).toThrow();
 	});
+
+	test("get() coerces a country code without throwing", () => {
+		const schema = new CountrySchema({});
+		expect(schema.get("gb")).toBe("GB");
+	});
+
+	test("get() returns undefined for an unknown country", () => {
+		const schema = new CountrySchema({});
+		expect(schema.get("ZZ")).toBeUndefined();
+	});
+
+	test("get() resolves detect mode to the browser country or undefined", () => {
+		const schema = new CountrySchema({});
+		expect(schema.get("detect")).toBe(getCountry("detect"));
+	});
 });

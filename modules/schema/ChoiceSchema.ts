@@ -68,6 +68,23 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	}
 
 	/**
+	 * Get an unknown value as one of the allowed choices, or `undefined` if it isn't one.
+	 *
+	 * - Non-throwing counterpart to `validate()`, which defers to this and throws when it returns `undefined`.
+	 * - Use it to normalise a value for display (e.g. in a form input) without raising on invalid or sentinel values.
+	 *
+	 * @param unsafeValue The unknown input value to coerce (defaults to this schema's `value`).
+	 * @returns The valid choice key, or `undefined` if the value is not one of the allowed choices.
+	 * @example schema.get("yes") // "yes"
+	 * @example schema.get("nope") // undefined
+	 * @see https://shelving.cc/schema/ChoiceSchema/get
+	 */
+	get(unsafeValue: unknown = this.value): O | undefined {
+		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
+		return undefined;
+	}
+
+	/**
 	 * Validate an unknown value as one of the allowed choices.
 	 *
 	 * @param unsafeValue The unknown input value to validate (defaults to this schema's `value`).
@@ -77,7 +94,8 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	 * @see https://shelving.cc/schema/ChoiceSchema/validate
 	 */
 	validate(unsafeValue: unknown = this.value): O {
-		if (typeof unsafeValue === "string" && isProp(this.options, unsafeValue)) return unsafeValue;
+		const value = this.get(unsafeValue);
+		if (value !== undefined) return value;
 		throw unsafeValue ? `Unknown ${this.one}` : "Required";
 	}
 

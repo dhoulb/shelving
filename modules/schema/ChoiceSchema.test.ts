@@ -54,3 +54,17 @@ test("Invalid if value doesn't exist in array options", () => {
 	const schema2 = new ChoiceSchema({ options: ["1", "2", "3"] });
 	expect(() => schema2.validate(2)).toThrow(); // Must be string.
 });
+test("get() returns a valid choice unchanged", () => {
+	const schema = new ChoiceSchema({ options: { a: "A", b: "B", c: "C" } });
+	expect(schema.get("a")).toBe("a");
+});
+test("get() returns undefined for an invalid choice instead of throwing", () => {
+	const schema = new ChoiceSchema({ options: { a: "A", b: "B", c: "C" } });
+	expect(schema.get("d")).toBeUndefined();
+	expect(schema.get(2)).toBeUndefined(); // Must be string.
+	expect(schema.get(undefined)).toBeUndefined();
+});
+test("get() falls back to the default value", () => {
+	const schema = new ChoiceSchema<"a" | "b" | "c">({ options: { a: "A", b: "B", c: "C" }, value: "b" });
+	expect(schema.get(undefined)).toBe("b");
+});
