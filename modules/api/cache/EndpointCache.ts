@@ -107,7 +107,7 @@ export class EndpointCache<P = unknown, R = unknown> implements AsyncDisposable 
 	 * @example await cache.refresh({ id: "abc" })
 	 * @see https://shelving.cc/api/EndpointCache/refresh
 	 */
-	async refresh(payload: P, maxAge?: number, caller: AnyCaller = this.invalidate): Promise<void> {
+	async refresh(payload: P, maxAge?: number, caller: AnyCaller = this.refresh): Promise<void> {
 		await this.get(payload, caller)?.refresh(maxAge);
 	}
 

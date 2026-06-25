@@ -108,7 +108,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 				provider: this.provider,
 				collection: this.collection.name,
 				query: this.query,
-				caller: getGetter(this, "first"),
+				caller: getGetter(this, "last"),
 			});
 		return last;
 	}
