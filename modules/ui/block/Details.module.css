@@ -1,3 +1,11 @@
+@import "../style/layers.css";
+@import "../style/Space.module.css";
+@import "../style/Radius.module.css";
+@import "../style/Stroke.module.css";
+@import "../style/Color.module.css";
+@import "../style/Duration.module.css";
+@import "../style/Tint.module.css";
+
 @layer components {
 	.prose details,
 	.details {
