@@ -40,6 +40,7 @@ The following `:root` variables are defined by this module and can be overridden
 | `--size-scale` | `1.25` | Ratio between steps. |
 | `--size-normal` | `1rem` | Base size — the root of the modular scale. |
 | `--size-xxsmall` … `--size-xxxlarge` | `calc(var(--size-normal) * pow(var(--size-scale), n))` | Each step is the base scaled by a power of the ratio. |
+| `--size-1x` … `--size-10x` | `calc(var(--size-normal) * n)` | Direct multiples of normal size. |
 | `--size-icon` | `1.5rem` | Icon box size. |
 | `--size-label` | `var(--size-small)` | Label text size. |
 | `--size-smaller` | `0.875em` | Relative (em) shrink — e.g. inline `<Small>`. |

@@ -7,7 +7,25 @@ import TYPOGRAPHY_CSS from "./Typography.module.css";
  *
  * @see https://shelving.cc/ui/SizeVariant
  */
-export type SizeVariant = "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type SizeVariant =
+	| "xxsmall"
+	| "xsmall"
+	| "small"
+	| "normal"
+	| "large"
+	| "xlarge"
+	| "xxlarge"
+	| "xxxlarge"
+	| "1x"
+	| "2x"
+	| "3x"
+	| "4x"
+	| "5x"
+	| "6x"
+	| "7x"
+	| "8x"
+	| "9x"
+	| "10x";
 
 /**
  * Allowed values for font weight for components that support `TypographyVariants`

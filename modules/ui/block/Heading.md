@@ -59,6 +59,6 @@ import { Heading } from "shelving/ui";
 /* Theme: serif headings, a touch larger. */
 :root {
   --heading-font: var(--font-serif);
-  --heading-size: var(--size-xxxlarge);
+  --heading-size: 3rem;
 }
 ```

@@ -98,6 +98,40 @@
 		font-size: var(--size-xxlarge);
 		line-height: var(--leading);
 	}
+	.size-xxxlarge {
+		font-size: var(--size-xxxlarge);
+		line-height: var(--leading);
+	}
+	.size-1x {
+		margin-block: calc(var(--size-normal) * 1);
+	}
+	.size-2x {
+		margin-block: calc(var(--size-normal) * 2);
+	}
+	.size-3x {
+		margin-block: calc(var(--size-normal) * 3);
+	}
+	.size-4x {
+		margin-block: calc(var(--size-normal) * 4);
+	}
+	.size-5x {
+		margin-block: calc(var(--size-normal) * 5);
+	}
+	.size-6x {
+		margin-block: calc(var(--size-normal) * 6);
+	}
+	.size-7x {
+		margin-block: calc(var(--size-normal) * 7);
+	}
+	.size-8x {
+		margin-block: calc(var(--size-normal) * 8);
+	}
+	.size-9x {
+		margin-block: calc(var(--size-normal) * 9);
+	}
+	.size-10x {
+		margin-block: calc(var(--size-normal) * 10);
+	}
 
 	/* Font-family variants. */
 	.font-title {
