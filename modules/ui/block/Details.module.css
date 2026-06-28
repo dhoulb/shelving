@@ -1,0 +1,109 @@
+@layer components {
+	.prose details,
+	.details {
+		/* Box */
+		margin-block: var(--details-space, var(--space-paragraph));
+		border: 0;
+
+		/* Nested */
+		& + & {
+			border-block-start: var(--details-border, var(--stroke-normal) solid var(--tint-90));
+			padding-top: var(--details-space, var(--space-paragraph));
+		}
+
+		/* Title */
+		summary {
+			/* Box */
+			position: relative;
+			margin: 0;
+			padding: 0;
+
+			/* Style */
+			cursor: pointer;
+			outline: none;
+
+			/* Typography */
+			font-weight: var(--weight-strong);
+
+			/* Pseudo-elements */
+			&::marker {
+				color: var(--details-marker-color, var(--tint-80));
+			}
+			&::before {
+				position: absolute;
+				content: "";
+				inset: calc(0px - var(--space-normal));
+				border-radius: var(--details-radius, var(--radius-xsmall));
+				outline: var(--stroke-focus) solid var(--color-focus);
+				outline-offset: calc(0px - var(--stroke-normal));
+			}
+		}
+
+		/* Title (with chevron icon) */
+		.summary {
+			/* Box */
+			display: flex;
+
+			/* Contents */
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--space-normal);
+
+			/* Children */
+			[data-slot="icon"] {
+				flex: none;
+				width: var(--size-icon);
+				height: var(--size-icon);
+				color: var(--color-gray);
+				transform: rotate(180deg);
+				transition: var(--details-transition, all var(--duration-fast));
+				border-radius: var(--radius-xxsmall);
+			}
+		}
+
+		/* Content */
+		&::details-content {
+			/* Box */
+			padding: 0;
+			margin: 0;
+			block-size: 0;
+			overflow: hidden;
+
+			/* Style */
+			opacity: 0;
+			interpolate-size: allow-keywords;
+			transition:
+				var(--details-transition, all var(--duration-fast)),
+				content-visibility var(--duration-fast) ease allow-discrete;
+
+			/* Add margin between the summary and content that gets swallowed by the animation */
+			&::before {
+				content: "";
+				height: 0;
+				margin-block-end: var(--details-gap, var(--space-paragraph));
+				display: block;
+			}
+		}
+
+		/* States */
+		&[open] {
+			.summary {
+				[data-slot="icon"] {
+					transform: rotate(0deg);
+				}
+			}
+			&::details-content {
+				block-size: fit-content;
+				opacity: 1;
+			}
+		}
+	}
+}
+
+@layer overrides {
+	.details {
+		summary:not(:focus-visible)::before {
+			outline: 0;
+		}
+	}
+}

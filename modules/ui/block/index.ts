@@ -5,6 +5,7 @@ export * from "./Caption.js";
 export * from "./Card.js";
 export * from "./Column.js";
 export * from "./Definitions.js";
+export * from "./Details.js";
 export * from "./Divider.js";
 export * from "./Heading.js";
 export * from "./Image.js";
