@@ -19,5 +19,6 @@
 		font-size: var(--subheading-size, var(--size-large));
 		line-height: var(--subheading-leading, var(--leading));
 		color: var(--subheading-color, inherit);
+		text-wrap: balance;
 	}
 }

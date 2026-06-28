@@ -19,5 +19,6 @@
 		font-size: var(--title-size, var(--size-xxxlarge));
 		line-height: var(--title-leading, var(--leading));
 		color: var(--title-color, inherit);
+		text-wrap: balance;
 	}
 }
