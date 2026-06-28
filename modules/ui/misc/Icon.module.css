@@ -4,8 +4,9 @@
 
 @layer defaults {
 	.icon {
-		width: var(--icon-size, var(--size-icon));
-		height: var(--icon-size, var(--size-icon));
+		font-size: var(--icon-size, var(--size-icon));
+		width: 1em;
+		height: 1em;
 		color: var(--icon-color, var(--tint-50));
 	}
 }
