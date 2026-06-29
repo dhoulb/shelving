@@ -12,8 +12,9 @@
 
 		/* Children */
 		> [data-slot="icon"] {
-			inline-size: var(--flex-icon-size, var(--size-icon));
-			block-size: var(--flex-icon-size, var(--size-icon));
+			font-size: var(--size-icon);
+			inline-size: 1em;
+			block-size: 1em;
 			flex: none;
 		}
 

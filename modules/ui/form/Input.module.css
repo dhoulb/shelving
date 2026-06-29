@@ -132,11 +132,6 @@
 			margin: 0;
 			outline: 0;
 		}
-		&& > [data-slot="icon"] {
-			inline-size: var(--input-icon-size, var(--size-icon));
-			block-size: var(--input-icon-size, var(--size-icon));
-			flex: none;
-		}
 
 		&.wrapper {
 			position: relative;

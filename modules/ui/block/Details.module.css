@@ -59,13 +59,13 @@
 
 			/* Children */
 			[data-slot="icon"] {
-				flex: none;
 				width: var(--size-icon);
 				height: var(--size-icon);
 				color: var(--color-gray);
 				transform: rotate(180deg);
 				transition: var(--details-transition, all var(--duration-fast));
 				border-radius: var(--radius-xxsmall);
+				flex: none;
 			}
 		}
 
