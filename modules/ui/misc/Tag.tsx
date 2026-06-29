@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../form/Clickable.js";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -13,7 +12,7 @@ const TAG_CLASS = getModuleClass(TAG_CSS, "tag");
  *
  * @see https://shelving.cc/ui/TagVariants
  */
-export interface TagVariants extends StatusVariants, ColorVariants, TypographyVariants {}
+export interface TagVariants extends StatusVariants, TypographyVariants {}
 
 /**
  * Build the combined `className` string for a `<Tag>` from its styling variants.
@@ -27,7 +26,6 @@ export function getTagClass(variants: TagVariants) {
 	return getClass(
 		TAG_CLASS, //
 		getStatusClass(variants),
-		getColorClass(variants),
 		getTypographyClass(variants),
 	);
 }

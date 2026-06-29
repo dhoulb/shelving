@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -12,7 +11,7 @@ const INSERTED_CLASS = getModuleClass(INSERTED_CSS, "inserted");
  *
  * @see https://shelving.cc/ui/InsertedProps
  */
-export interface InsertedProps extends OptionalChildProps, ColorVariants, TypographyVariants {}
+export interface InsertedProps extends OptionalChildProps, TypographyVariants {}
 
 /**
  * Inserted text — renders an `<ins>` element to mark content added to a document.
@@ -26,7 +25,6 @@ export function Inserted({ children, ...props }: InsertedProps): ReactElement {
 		<ins
 			className={getClass(
 				INSERTED_CLASS, //
-				getColorClass(props),
 				getTypographyClass(props),
 			)}
 		>

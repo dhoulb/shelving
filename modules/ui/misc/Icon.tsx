@@ -1,6 +1,6 @@
 import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
+import type { ColorVariants } from "../style/Color.js";
 import type { SpaceVariants } from "../style/Space.js";
 import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
 import type { TintVariant } from "../style/Tint.js";
@@ -55,9 +55,8 @@ export function Icon(props: IconProps): ReactElement {
 		<Element
 			className={getClass(
 				getModuleClass(ICON_CSS, "icon"), //
-				getColorClass(props),
 				getStatusClass(props),
-				getTypographyClass(props), // Used for size and tint.
+				getTypographyClass(props), // Used for colour, size, and tint.
 			)}
 		/>
 	);

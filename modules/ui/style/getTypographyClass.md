@@ -2,7 +2,7 @@
 
 The typography variant props set an element's text styling from a single helper — `<Heading font="title" size="large">`, `<Paragraph weight="strong" center>`, `<Small case="upper">`. They're **overrides** for one-off changes; for an app-wide change, retune the variables below in a theme file.
 
-`getTypographyClass({ size, weight, font, case, tint, left, center, right, wrap, nowrap })` maps each prop to a class (e.g. `size="large"` → `size-large`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, and wrapping. It supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
+`getTypographyClass({ color, size, weight, font, case, tint, left, center, right, wrap, nowrap })` maps each prop to a class (e.g. `size="large"` → `size-large`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, and wrapping. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
 
 The semantic faces, weights, sizes, and cases are aliases of the base values, so a theme usually only needs to move the small set of base variables.
 

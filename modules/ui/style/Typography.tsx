@@ -1,4 +1,5 @@
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import { type ColorVariants, getColorClass } from "./Color.js";
 import type { TintVariant } from "./Tint.js";
 import TYPOGRAPHY_CSS from "./Typography.module.css";
 
@@ -49,11 +50,13 @@ export type CaseVariant = "title" | "body" | "label" | "code" | "upper" | "lower
 export type FontVariant = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
 
 /**
- * Typographic variant props — font-family, weight, case, size, tint, alignment, and wrap, applied via `getTypographyClass()`
+ * Typographic variant props — colour, font-family, weight, case, size, tint, alignment, and wrap, applied via `getTypographyClass()`
+ *
+ * - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
  *
  * @see https://shelving.cc/ui/TypographyVariants
  */
-export interface TypographyVariants {
+export interface TypographyVariants extends ColorVariants {
 	/** Font size of the element. */
 	size?: SizeVariant | undefined;
 	/** Set CSS text `color:` to one of the shades of the current tint ladder. */
@@ -79,20 +82,24 @@ export interface TypographyVariants {
 /**
  * Get the typography class for a component from its typographic variant props.
  *
- * Maps the size, weight, font, case, tint, alignment, and wrap variant props to their CSS classes.
+ * Maps the colour, size, weight, font, case, tint, alignment, and wrap variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
  *
- * @returns The combined typography class string, or `undefined` when no variants apply.
+ * @returns The combined typography class string (empty when no variants apply).
  * @example getTypographyClass({ font: "title", size: "large", center: true })
+ * @example getTypographyClass({ color: "purple", tint: "40" })
  * @see https://shelving.cc/ui/getTypographyClass
  */
-export function getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: TypographyVariants): string | undefined {
-	return getModuleClass(
-		TYPOGRAPHY_CSS,
-		caseValue && `case-${caseValue}`,
-		tint && `tint-${tint}`,
-		weight && `weight-${weight}`,
-		font && `font-${font}`,
-		size && `size-${size}`,
-		props,
+export function getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: TypographyVariants): string {
+	return getClass(
+		getColorClass(props),
+		getModuleClass(
+			TYPOGRAPHY_CSS,
+			caseValue && `case-${caseValue}`,
+			tint && `tint-${tint}`,
+			weight && `weight-${weight}`,
+			font && `font-${font}`,
+			size && `size-${size}`,
+			props,
+		),
 	);
 }

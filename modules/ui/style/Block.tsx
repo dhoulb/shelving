@@ -1,6 +1,5 @@
 import { getClass, getModuleClass } from "../util/css.js";
 import BLOCK_CSS from "./Block.module.css";
-import { type ColorVariants, getColorClass } from "./Color.js";
 import { getIndentClass, type IndentVariants } from "./Indent.js";
 import { getPaddingClass, type PaddingVariants } from "./Padding.js";
 import { getSpaceClass, type SpaceVariants } from "./Space.js";
@@ -14,7 +13,7 @@ const BLOCK_CLASS = getModuleClass(BLOCK_CSS, "block");
  *
  * @see https://shelving.cc/ui/BlockVariants
  */
-export interface BlockVariants extends ColorVariants, IndentVariants, SpaceVariants, PaddingVariants, TypographyVariants, WidthVariants {}
+export interface BlockVariants extends IndentVariants, SpaceVariants, PaddingVariants, TypographyVariants, WidthVariants {}
 
 /**
  * Get the combined `className` string for a block from its styling variants.
@@ -28,7 +27,6 @@ export interface BlockVariants extends ColorVariants, IndentVariants, SpaceVaria
 export function getBlockClass(variants: BlockVariants): string {
 	return getClass(
 		BLOCK_CLASS, //
-		getColorClass(variants),
 		getIndentClass(variants),
 		getPaddingClass(variants),
 		getSpaceClass(variants),

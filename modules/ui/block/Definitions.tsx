@@ -1,6 +1,5 @@
 import type { ReactElement } from "react";
 import { getBlockClass } from "../style/Block.js";
-import type { ColorVariants } from "../style/Color.js";
 import type { GapVariants } from "../style/Gap.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { TypographyVariants } from "../style/Typography.js";
@@ -15,7 +14,7 @@ const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
  *
  * @see https://shelving.cc/ui/DefinitionsProps
  */
-export interface DefinitionsProps extends ColorVariants, GapVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
+export interface DefinitionsProps extends GapVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
 
 /**
  * Description list — a sequence of term/value pairs rendered as a `<dl>`.

@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import type { ColorVariants } from "../style/Color.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
@@ -14,7 +13,7 @@ const CODE_PLAIN_CLASS = getModuleClass(CODE_CSS, "plain");
  *
  * @see https://shelving.cc/ui/CodeProps
  */
-export interface CodeProps extends ColorVariants, TypographyVariants, OptionalChildProps {
+export interface CodeProps extends TypographyVariants, OptionalChildProps {
 	plain?: boolean | undefined;
 }
 

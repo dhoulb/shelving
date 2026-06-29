@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
@@ -12,7 +11,7 @@ import { Clickable, type ClickableProps } from "./Clickable.js";
  *
  * @see https://shelving.cc/ui/ButtonVariants
  */
-export interface ButtonVariants extends FlexVariants, ColorVariants, StatusVariants, TypographyVariants {
+export interface ButtonVariants extends FlexVariants, StatusVariants, TypographyVariants {
 	/** This is the default button in a form and should be displayed stronger. */
 	strong?: boolean | undefined;
 	/** Add plain styling (background only appears on hover or focus). */
@@ -37,7 +36,6 @@ export function getButtonClass(variants: ButtonVariants): string {
 		getModuleClass(BUTTON_CSS, "button", variants),
 		getFlexClass(variants),
 		getStatusClass(variants),
-		getColorClass(variants),
 		getTypographyClass(variants),
 	);
 }
