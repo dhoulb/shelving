@@ -4,10 +4,19 @@
 
 @layer defaults {
 	.icon {
-		font-size: var(--icon-size, var(--size-icon));
+		/* Box */
 		width: 1em;
 		height: 1em;
+		margin: 0;
+		padding: 0;
+
+		/* Style */
 		color: var(--icon-color, var(--tint-50));
+
+		/* Contents */
 		flex: none;
+
+		/* Text */
+		font-size: var(--icon-size, var(--size-icon));
 	}
 }

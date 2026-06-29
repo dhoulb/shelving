@@ -1,7 +1,9 @@
 import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, ReactElement } from "react";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
+import type { SpaceVariants } from "../style/Space.js";
 import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
+import type { TintVariant } from "../style/Tint.js";
 import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import ICON_CSS from "./Icon.module.css";
@@ -22,16 +24,21 @@ const STATUS_ICONS: {
  *
  * @see https://shelving.cc/ui/IconProps
  */
-export interface IconProps extends ColorVariants, StatusVariants {
+export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants {
 	/**
-	 * Set the icon to use. Defaults to appropriate icon matching for `status`
+	 * Set the icon to use. Defaults to appropriate icon for `status`
 	 */
 	icon?: ComponentType<{ className?: string | undefined }>;
 	/**
 	 * Size of the icon.
 	 * @default var(--size-icon)
 	 */
-	size?: SizeVariant;
+	size?: SizeVariant | undefined;
+	/**
+	 * Tint of the selected color.
+	 * @default "50"
+	 */
+	tint?: TintVariant | undefined;
 }
 
 /**
@@ -50,7 +57,7 @@ export function Icon(props: IconProps): ReactElement {
 				getModuleClass(ICON_CSS, "icon"), //
 				getColorClass(props),
 				getStatusClass(props),
-				getTypographyClass(props),
+				getTypographyClass(props), // Used for size and tint.
 			)}
 		/>
 	);
