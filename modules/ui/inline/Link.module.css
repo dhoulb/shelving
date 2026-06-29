@@ -6,8 +6,10 @@
 @layer components {
 	.link,
 	.prose a {
+		--tint-50: var(--link-tint, var(--color-link));
+
 		/* Style */
-		color: var(--link-weight, var(--color-link));
+		color: var(--link-color, var(--tint-50));
 		text-decoration: none;
 		cursor: inherit;
 

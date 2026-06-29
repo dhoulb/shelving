@@ -6,11 +6,13 @@
 @layer components {
 	.inserted,
 	.prose ins {
+		--tint-50: var(--inserted-tint, var(--color-green));
+
 		/* Style */
-		color: var(--color-green);
-		text-decoration: underline var(--stroke-normal);
+		color: var(--inserted-color, var(--tint-50));
+		text-decoration: var(--inserted-decoration, underline var(--stroke-normal));
 
 		/* Text */
-		font-weight: var(--weight-strong);
+		font-weight: var(--inserted-weight, var(--weight-strong));
 	}
 }

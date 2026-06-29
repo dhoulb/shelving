@@ -13,7 +13,7 @@ An inline code span — renders a `<code>` element with monospace type and a sub
 
 - Pick the sibling whose semantics match — they all look the same but mean different things to assistive tech and search.
 - Pass `plain` to drop the default background and inline padding (useful when the code already sits inside a tinted container).
-- Painted from the [tint ladder](/ui/TINT_CLASS): the background is `--tint-90` and the text `--tint-00`, so it re-tints with its surrounding scope.
+- Painted from the [tint ladder](/ui/TINT_CLASS): the background defaults to `--tint-90` and the text to `--tint-00`, so it re-tints with its surrounding scope (override per-instance with `--code-background` / `--code-color`).
 - Inside `<Prose>` raw `<code>` / `<kbd>` / `<samp>` / `<var>` pick up the same styling, and code inside a `<pre>` drops the inline box automatically.
 
 ## Usage
@@ -37,7 +37,7 @@ import { Code } from "shelving/ui";
 
 ## Styling
 
-`Code` paints from the [tint ladder](/ui/TINT_CLASS); the box (`background` / `color`) reads ladder steps directly, while type, padding, and radius have per-property hooks.
+`Code` paints from the [tint ladder](/ui/TINT_CLASS): the box `background` / `color` default to ladder steps so they re-tint with the surrounding scope, and every property has a per-instance override hook.
 
 | Variable | Styles | Default |
 |---|---|---|
@@ -47,5 +47,7 @@ import { Code } from "shelving/ui";
 | `--code-leading` | Line height | `var(--leading)` |
 | `--code-padding` | Inline padding (non-`plain`) | `var(--space-xxsmall)` |
 | `--code-radius` | Corner radius (non-`plain`) | `var(--radius-xxsmall)` |
+| `--code-background` | Background fill (non-`plain`) | `var(--tint-90)` |
+| `--code-color` | Text colour (non-`plain`) | `var(--tint-00)` |
 
 **Global tokens it reads:** `--font-code`, `--weight-code`, `--size-smaller`, `--leading`, `--space-xxsmall`, `--radius-xxsmall`, and the tint-ladder steps `--tint-00` / `--tint-90` for the box fill and text.

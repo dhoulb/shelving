@@ -6,11 +6,13 @@
 @layer components {
 	.deleted,
 	.prose del {
+		--tint-50: var(--deleted-tint, var(--color-red));
+
 		/* Style */
-		color: var(--color-red);
-		text-decoration: line-through var(--stroke-normal);
+		color: var(--deleted-color, var(--tint-50));
+		text-decoration: var(--deleted-decoration, line-through var(--stroke-normal));
 
 		/* Text */
-		font-weight: var(--weight-strong);
+		font-weight: var(--deleted-weight, var(--weight-strong));
 	}
 }

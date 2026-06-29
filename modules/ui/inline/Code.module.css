@@ -24,7 +24,7 @@
 		border-radius: var(--code-radius, var(--radius-xxsmall));
 
 		/* Style */
-		background-color: var(--tint-90);
-		color: var(--tint-00);
+		background: var(--code-background, var(--tint-90));
+		color: var(--code-color, var(--tint-00));
 	}
 }

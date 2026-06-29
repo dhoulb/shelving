@@ -20,14 +20,15 @@ import { Mark } from "shelving/ui";
 
 ## Styling
 
-`Mark` is a fixed-palette highlight: it paints from dedicated colour hooks rather than the tint ladder.
+`Mark` paints from the [tint ladder](/ui/TINT_CLASS): the `50` tint sets the background and the `00` tint the text. By default the base tint resolves to `--color-yellow`; override `--mark-tint` to recolour the whole pill, or `--mark-background` / `--mark-color` to set the two faces independently.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--mark-color-bg` | Background fill | `var(--light-yellow)` |
-| `--mark-color-text` | Text colour | `var(--dark-yellow)` |
-| `--mark-padding` | Inline padding | `0.375em` |
+| `--mark-tint` | Base tint (`--tint-50`) the pill derives from | `var(--color-yellow)` |
+| `--mark-background` | Background fill | `var(--tint-50)` |
+| `--mark-color` | Text colour | `var(--tint-00)` |
+| `--mark-padding` | Inline padding | `var(--space-xxsmall)` |
 | `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--mark-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads:** `--light-yellow`, `--dark-yellow`, `--radius-xxsmall`, and `--weight-strong`.
+**Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder steps `--tint-50` / `--tint-00`.

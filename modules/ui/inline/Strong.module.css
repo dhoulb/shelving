@@ -5,6 +5,6 @@
 	.strong,
 	.prose :is(strong, b) {
 		/* Style */
-		font-weight: var(--weight-strong);
+		font-weight: var(--strong-weight, var(--weight-strong));
 	}
 }

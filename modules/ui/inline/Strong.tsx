@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import STRONG_CSS from "./Strong.module.css";
 
@@ -10,7 +11,7 @@ const STRONG_CLASS = getModuleClass(STRONG_CSS, "strong");
  *
  * @see https://shelving.cc/ui/StrongProps
  */
-export interface StrongProps extends OptionalChildProps {}
+export interface StrongProps extends OptionalChildProps, TypographyVariants {}
 
 /**
  * Strong importance — renders a `<strong>` element for text of strong importance (typically bold).
@@ -18,6 +19,15 @@ export interface StrongProps extends OptionalChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Strong
  */
-export function Strong({ children }: StrongProps): ReactElement {
-	return <strong className={STRONG_CLASS}>{children}</strong>;
+export function Strong({ children, ...props }: StrongProps): ReactElement {
+	return (
+		<strong
+			className={getClass(
+				STRONG_CLASS, //
+				getTypographyClass(props),
+			)}
+		>
+			{children}
+		</strong>
+	);
 }

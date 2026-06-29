@@ -1,16 +1,24 @@
 @import "../style/layers.css";
 @import "../style/Radius.module.css";
 @import "../style/Typography.module.css";
+@import "../style/Tint.module.css";
 
 @layer components {
 	.mark,
 	.prose mark {
+		--tint-50: var(--mark-tint, var(--color-yellow));
+
+		/* Box */
 		display: inline-block;
-		vertical-align: text-bottom;
-		padding-inline: var(--mark-padding, 0.375em);
+		padding-inline: var(--mark-padding, var(--space-xxsmall));
 		border-radius: var(--mark-radius, var(--radius-xxsmall));
-		background-color: var(--mark-color-bg, var(--light-yellow));
-		color: var(--mark-color-text, var(--dark-yellow));
+		vertical-align: text-bottom;
+
+		/* Style */
+		background-color: var(--mark-background, var(--tint-50));
+		color: var(--mark-color, var(--tint-00));
+
+		/* Text */
 		font-weight: var(--mark-weight, var(--weight-strong));
 	}
 }

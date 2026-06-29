@@ -4,6 +4,6 @@
 	.emphasis,
 	.prose :is(em, i) {
 		/* Style */
-		font-style: italic;
+		font-style: var(--emphasis-style, italic);
 	}
 }

@@ -31,10 +31,12 @@ import { Link } from "shelving/ui";
 
 ## Styling
 
-`Link` exposes a couple of inline hooks; the link colour comes from the global `--color-link` token.
+`Link` drives its colour through the tint ladder, so the `color` variant (`color="purple"`, `color="red"`, …) recolours the link. By default the `50` tint resolves to the global `--color-link` token.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--link-weight` | Text colour and font weight | `var(--color-link)` colour / `var(--weight-strong)` weight |
+| `--link-tint` | Base tint (`--tint-50`) the link colour derives from | `var(--color-link)` |
+| `--link-color` | Text colour | `var(--tint-50)` |
+| `--link-weight` | Font weight | `var(--weight-strong)` |
 
 **Global tokens it reads:** `--color-link`, `--weight-strong`, and `--stroke-normal` (the underline thickness).

@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { TINT_CLASS } from "../style/Tint.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import MARK_CSS from "./Mark.module.css";
 
@@ -10,7 +12,7 @@ const MARK_CLASS = getModuleClass(MARK_CSS, "mark");
  *
  * @see https://shelving.cc/ui/MarkProps
  */
-export interface MarkProps extends OptionalChildProps {}
+export interface MarkProps extends OptionalChildProps, TypographyVariants {}
 
 /**
  * Highlighted text — renders a `<mark>` element to call attention to a run of text.
@@ -18,6 +20,16 @@ export interface MarkProps extends OptionalChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Mark
  */
-export function Mark({ children }: MarkProps): ReactElement {
-	return <mark className={MARK_CLASS}>{children}</mark>;
+export function Mark({ children, ...props }: MarkProps): ReactElement {
+	return (
+		<mark
+			className={getClass(
+				MARK_CLASS, //
+				TINT_CLASS,
+				getTypographyClass(props),
+			)}
+		>
+			{children}
+		</mark>
+	);
 }

@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import EMPHASIS_CSS from "./Emphasis.module.css";
 
@@ -10,7 +11,7 @@ const EMPHASIS_CLASS = getModuleClass(EMPHASIS_CSS, "emphasis");
  *
  * @see https://shelving.cc/ui/EmphasisProps
  */
-export interface EmphasisProps extends OptionalChildProps {}
+export interface EmphasisProps extends OptionalChildProps, TypographyVariants {}
 
 /**
  * Emphasised text — renders an `<em>` element for stress emphasis (typically italic).
@@ -19,6 +20,15 @@ export interface EmphasisProps extends OptionalChildProps {}
  * @example <Emphasis>really</Emphasis>
  * @see https://shelving.cc/ui/Emphasis
  */
-export function Emphasis({ children }: EmphasisProps): ReactElement {
-	return <em className={EMPHASIS_CLASS}>{children}</em>;
+export function Emphasis({ children, ...props }: EmphasisProps): ReactElement {
+	return (
+		<em
+			className={getClass(
+				EMPHASIS_CLASS, //
+				getTypographyClass(props),
+			)}
+		>
+			{children}
+		</em>
+	);
 }
