@@ -6,7 +6,6 @@ import { getInputClass, type InputVariants, type ValueInputProps } from "./Input
 import INPUT_CSS from "./Input.module.css";
 
 const INPUT_LABEL_CLASS = getModuleClass(INPUT_CSS, "label");
-const INPUT_PLACEHOLDER_CLASS = getModuleClass(INPUT_CSS, "placeholder");
 
 /**
  * Props for `CheckboxInput`, a boolean-valued checkbox input.
