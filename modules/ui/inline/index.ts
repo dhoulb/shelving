@@ -5,6 +5,7 @@ export * from "./Inserted.js";
 export * from "./Link.js";
 export * from "./Mark.js";
 export * from "./Small.js";
+export * from "./Span.js";
 export * from "./Strong.js";
 export * from "./Subscript.js";
 export * from "./Superscript.js";
