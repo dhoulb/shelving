@@ -3,6 +3,7 @@ import { Component, createContext, type ReactElement, type ReactNode, use } from
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
 import { Card } from "../block/Card.js";
+import { Paragraph } from "../block/Paragraph.js";
 import { Row } from "../block/Row.js";
 import { Subheading } from "../block/Subheading.js";
 import { Button, type ButtonVariants } from "../form/Button.js";
@@ -51,9 +52,9 @@ export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButton
 /**
  * Props for a component that renders a caught error `reason`.
  *
- * @see https://shelving.cc/ui/ErrorComponentProps
+ * @see https://shelving.cc/ui/ErrorProps
  */
-export interface ErrorComponentProps {
+export interface ErrorProps {
 	reason: unknown;
 }
 
@@ -64,7 +65,7 @@ export interface ErrorComponentProps {
  */
 export interface CatcherProps extends ChildProps {
 	/** Component to render an error (defaults to `<ErrorNotice />`) */
-	as: (props: ErrorComponentProps) => ReactElement;
+	as: (props: ErrorProps) => ReactElement;
 }
 
 type CatcherState = {
@@ -108,30 +109,6 @@ export class Catcher extends Component<CatcherProps, CatcherState> {
 }
 
 /**
- * Props for `<PageCatcher>` — the page `children` to guard.
- *
- * @see https://shelving.cc/ui/PageCatcherProps
- */
-export interface PageCatcherProps extends ChildProps {}
-
-/**
- * Error boundary for a whole page that renders a full `<ErrorPage>` fallback on error.
- *
- * @kind component
- * @see https://shelving.cc/ui/PageCatcher
- */
-export function PageCatcher({ children }: PageCatcherProps): ReactElement {
-	return <Catcher as={ErrorPage}>{children}</Catcher>;
-}
-
-/**
- * Props for `<ErrorNotice>` — the caught error `reason`.
- *
- * @see https://shelving.cc/ui/ErrorNoticeProps
- */
-export interface ErrorNoticeProps extends ErrorComponentProps {}
-
-/**
  * Render a caught error as an inline `<Notice>` with a retry button.
  *
  * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
@@ -139,22 +116,25 @@ export interface ErrorNoticeProps extends ErrorComponentProps {}
  * @kind component
  * @see https://shelving.cc/ui/ErrorNotice
  */
-export function ErrorNotice({ reason }: ErrorNoticeProps): ReactElement {
+export function ErrorNotice({ reason }: ErrorProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
 	return (
 		<Notice status="error">
-			<p>{message}</p>
+			<Paragraph>{message}</Paragraph>
 			<RetryButton small />
 		</Notice>
 	);
 }
 
 /**
- * Props for `<ErrorPage>` — the caught error `reason`.
+ * Error boundary for a whole page that renders a full `<ErrorPage>` fallback on error.
  *
- * @see https://shelving.cc/ui/ErrorPageProps
+ * @kind component
+ * @see https://shelving.cc/ui/PageCatcher
  */
-export interface ErrorPageProps extends ErrorComponentProps {}
+export function PageCatcher({ children }: ChildProps): ReactElement {
+	return <Catcher as={ErrorPage}>{children}</Catcher>;
+}
 
 /**
  * Render a caught error as a full-page `<Page>` with an error `<Card>` and retry button.
@@ -164,7 +144,7 @@ export interface ErrorPageProps extends ErrorComponentProps {}
  * @kind component
  * @see https://shelving.cc/ui/ErrorPage
  */
-export function ErrorPage({ reason }: ErrorPageProps): ReactElement {
+export function ErrorPage({ reason }: ErrorProps): ReactElement {
 	const message = getMessage(reason) ?? "Unknown error";
 	return (
 		<Page title="Error">
