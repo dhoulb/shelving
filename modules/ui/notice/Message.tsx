@@ -39,7 +39,7 @@ export function Message({ children, ...props }: MessageProps) {
 }
 
 /**
- * Shared loading `<Message>` element containing the `<Loading>` spinner.
+ * Shared loading `<Message>` element containing the `LOADING` spinner.
  *
  * @example return isLoading ? LOADING_MESSAGE : <Message>{text}</Message>;
  * @see https://shelving.cc/ui/LOADING_MESSAGE

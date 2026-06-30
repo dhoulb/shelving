@@ -1,7 +1,7 @@
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
-import { Loading } from "../misc/Loading.js";
+import { LOADING } from "../misc/Loading.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
 import { requireForm } from "./FormContext.js";
@@ -25,7 +25,7 @@ export function SubmitButton({
 	const busy = useStore(form.busy).value;
 	return (
 		<button type="submit" disabled={busy} className={getButtonClass({ strong, color, full, ...variants })}>
-			{busy ? <Loading /> : children}
+			{busy ? LOADING : children}
 		</button>
 	);
 }
