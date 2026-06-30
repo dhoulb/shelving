@@ -19,9 +19,9 @@
 	.prose :is(code, kbd, samp, var):not(pre *) {
 		/* Box */
 		display: inline-block;
-		vertical-align: text-bottom;
 		padding-inline: var(--code-padding, var(--space-xxsmall));
 		border-radius: var(--code-radius, var(--radius-xxsmall));
+		vertical-align: baseline;
 
 		/* Style */
 		background: var(--code-background, var(--tint-90));
