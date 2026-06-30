@@ -1,25 +1,26 @@
-import { createContext, type ReactElement, type ReactNode, use } from "react";
+import { createContext, type ReactElement, use } from "react";
 import type { Endpoint } from "../api/endpoint/Endpoint.js";
 import { APICache } from "../api/index.js";
 import type { APIProvider } from "../api/provider/APIProvider.js";
 import type { EndpointStore } from "../api/store/EndpointStore.js";
 import { RequiredError } from "../error/RequiredError.js";
+import type { ChildProps } from "../ui/index.js";
 import type { Nullish } from "../util/null.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
 
 /**
- * Bundle of hooks and a provider component returned by `createAPIContext()`.
+ * Bundle of hooks and a provider component returned by `createAPIContext()`
  *
  * @see https://shelving.cc/react/APIContext
  */
 export interface APIContext<P, R> {
-	/** Get an `EndpointStore` for the specified endpoint/payload in the current `APIProvider` context. */
+	/** React hook to return an `EndpointStore` for the specified endpoint/payload in the current `APIProvider` context. */
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP): EndpointStore<PP, RR>;
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined;
 
 	/** The `<APIContext>` wrapper to give your React components access to this API provider. */
-	readonly APIContext: ({ children }: { children: ReactNode }) => ReactElement;
+	readonly APIContext: (props: ChildProps) => ReactElement;
 }
 
 /**
@@ -28,8 +29,6 @@ export interface APIContext<P, R> {
  * - Each mounted `APIContext` gets its own in-memory store cache.
  *
  * @param provider `APIProvider` the created context resolves endpoint stores against.
- *
- * @todo Use and integreate our `EndpointCache` functionality and use it in this.
  *
  * @see https://shelving.cc/react/createAPIContext
  */
@@ -42,7 +41,7 @@ export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<
 		return useStore(endpoint ? cache.get(endpoint).get(payload) : undefined);
 	}
 
-	function APIContext({ children }: { children: ReactNode }): ReactElement {
+	function APIContext({ children }: ChildProps): ReactElement {
 		const cache = useInstance(APICache, provider);
 		return <CacheContext value={cache}>{children}</CacheContext>;
 	}
