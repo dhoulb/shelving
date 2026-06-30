@@ -7,12 +7,12 @@ import type { TintVariant } from "../style/Tint.js";
 import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import ICON_CSS from "./Icon.module.css";
-import { LoadingIcon } from "./LoadingIcon.js";
+import { Loading } from "./Loading.js";
 
 const STATUS_ICONS: {
 	[K in Status]?: ComponentType;
 } = {
-	loading: LoadingIcon,
+	loading: Loading,
 	success: CheckCircleIcon,
 	error: XCircleIcon,
 	warning: ExclamationTriangleIcon,
@@ -44,7 +44,7 @@ export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants 
 /**
  * Render the icon for a given status, coloured to match.
  *
- * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<LoadingIcon>` spinner for `"loading"`.
+ * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Icon

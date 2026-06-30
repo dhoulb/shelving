@@ -1,0 +1,18 @@
+@import "../style/layers.css";
+@import "../style/Tint.module.css";
+
+@layer components {
+	.track {
+		fill: none;
+		stroke: var(--loading-track, var(--tint-70));
+		stroke-width: var(--loading-stroke-width, 2.5);
+	}
+
+	.indicator {
+		fill: none;
+		stroke: var(--loading-indicator, var(--tint-80));
+		stroke-width: var(--loading-stroke-width, 2.5);
+		stroke-linecap: round;
+		stroke-dasharray: var(--loading-length, 28 100);
+	}
+}
