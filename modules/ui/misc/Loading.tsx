@@ -1,33 +1,53 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import type { ColorVariants } from "../style/Color.js";
+import type { SpaceVariants } from "../style/Space.js";
+import { getStatusClass, type StatusVariants } from "../style/Status.js";
+import type { TintVariant } from "../style/Tint.js";
+import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import ICON_CSS from "./Icon.module.css";
 import styles from "./Loading.module.css";
 
-declare const _componentProps: unique symbol;
-
 /**
- * Props for `<Loading>` — takes no props (branded empty interface).
+ * Props for `<Loading>` — the same styling variants as `<Icon>`.
+ *
+ * - Mirrors `IconProps` minus the `icon` prop, since the spinner is its own fixed graphic.
  *
  * @see https://shelving.cc/ui/LoadingProps
  */
-export interface LoadingProps {
-	readonly [_componentProps]?: never;
+export interface LoadingProps extends ColorVariants, StatusVariants, SpaceVariants {
+	/**
+	 * Size of the spinner.
+	 * @default var(--size-icon)
+	 */
+	size?: SizeVariant | undefined;
+	/**
+	 * Tint of the selected color.
+	 * @default "50"
+	 */
+	tint?: TintVariant | undefined;
 }
 
 /**
  * Animated spinner SVG used as a loading indicator.
  *
- * - Self-contained inline SVG with a rotating indicator arc; inherits its colour and size from the surrounding text.
+ * - Self-contained inline SVG with a rotating indicator arc.
+ * - Shares `<Icon>`'s `Icon.module.css` styling and accepts the same colour, status, space, size, and tint variants, so it sizes and centres like any other icon.
  *
  * @kind component
  * @see https://shelving.cc/ui/Loading
  */
-export function Loading(): ReactElement {
+export function Loading(props: LoadingProps): ReactElement {
 	return (
 		<svg
 			aria-hidden="true"
 			viewBox="0 0 24 24"
 			xmlns="http://www.w3.org/2000/svg"
-			className={getModuleClass(styles, "spinner")}
+			className={getClass(
+				getModuleClass(ICON_CSS, "icon"), //
+				getStatusClass(props),
+				getTypographyClass(props), // Used for colour, size, and tint.
+			)}
 			data-slot="icon"
 		>
 			<title>Loading...</title>
