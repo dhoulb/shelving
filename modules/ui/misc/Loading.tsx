@@ -6,7 +6,9 @@ import type { TintVariant } from "../style/Tint.js";
 import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import ICON_CSS from "./Icon.module.css";
-import styles from "./Loading.module.css";
+import LOADING_CSS from "./Loading.module.css";
+
+const LOADING_CLASS = getModuleClass(LOADING_CSS, "loading");
 
 /**
  * Props for `<Loading>` — the same styling variants as `<Icon>`.
@@ -45,13 +47,14 @@ export function Loading(props: LoadingProps): ReactElement {
 			xmlns="http://www.w3.org/2000/svg"
 			className={getClass(
 				getModuleClass(ICON_CSS, "icon"), //
+				LOADING_CLASS,
 				getStatusClass(props),
 				getTypographyClass(props), // Used for colour, size, and tint.
 			)}
 			data-slot="icon"
 		>
 			<title>Loading...</title>
-			<circle className={getModuleClass(styles, "track")} cx="12" cy="12" r="9" pathLength="100" />
+			<circle className={getModuleClass(LOADING_CSS, "track")} cx="12" cy="12" r="9" pathLength="100" />
 			<g>
 				<animateTransform
 					attributeName="transform"
@@ -62,7 +65,7 @@ export function Loading(props: LoadingProps): ReactElement {
 					dur="0.5s"
 					repeatCount="indefinite"
 				/>
-				<circle className={getModuleClass(styles, "indicator")} cx="12" cy="12" r="9" pathLength="100" />
+				<circle className={getModuleClass(LOADING_CSS, "indicator")} cx="12" cy="12" r="9" pathLength="100" />
 			</g>
 		</svg>
 	);

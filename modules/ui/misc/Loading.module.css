@@ -2,17 +2,20 @@
 @import "../style/Tint.module.css";
 
 @layer components {
-	.track {
-		fill: none;
-		stroke: var(--loading-color, var(--tint-70));
-		stroke-width: var(--loading-stroke-width, 2.5);
-	}
+	.loading {
+		/* Box, size, centring, and colour come from the shared `.icon` class; only the arc strokes are loading-specific. */
+		.track {
+			fill: none;
+			stroke: var(--loading-color, var(--tint-70));
+			stroke-width: var(--loading-stroke-width, 2.5);
+		}
 
-	.indicator {
-		fill: none;
-		stroke: var(--loading-fill, var(--tint-80));
-		stroke-width: var(--loading-stroke-width, 2.5);
-		stroke-linecap: round;
-		stroke-dasharray: var(--loading-indicator-length, 28 100);
+		.indicator {
+			fill: none;
+			stroke: var(--loading-fill, var(--tint-80));
+			stroke-width: var(--loading-stroke-width, 2.5);
+			stroke-linecap: round;
+			stroke-dasharray: var(--loading-indicator-length, 28 100);
+		}
 	}
 }
