@@ -1,4 +1,3 @@
-import { LOADING } from "../misc/Loading.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -37,11 +36,3 @@ export function Message({ children, ...props }: MessageProps) {
 		</p>
 	);
 }
-
-/**
- * Shared loading `<Message>` element containing the `LOADING` spinner.
- *
- * @example return isLoading ? LOADING_MESSAGE : <Message>{text}</Message>;
- * @see https://shelving.cc/ui/LOADING_MESSAGE
- */
-export const LOADING_MESSAGE = <Message status="loading">{LOADING}</Message>;
