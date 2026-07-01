@@ -11,7 +11,7 @@
 		inline-size: 100%;
 		height: var(--progress-height, 0.375rem);
 		border-radius: var(--progress-radius, 999px);
-		background: var(--progress-bg, var(--tint-90));
+		background: var(--progress-background, var(--tint-90));
 		overflow: hidden;
 	}
 
