@@ -11,23 +11,24 @@ import styles from "./Progress.module.css";
  */
 export interface ProgressProps {
 	value: number;
-	total?: number;
+	min?: number;
+	max?: number;
 	success?: boolean;
 	warning?: boolean;
 	danger?: boolean;
 }
 
 /**
- * Show progress as a single continuous horizontal bar, filled to `value` as a percentage of `total` (matches `getPercent()` and `formatPercent()`).
+ * Show progress as a single continuous horizontal bar, filled to `value` within the `min`–`max` range (matches `getPercent()` and `formatPercent()`).
  * - The fill is allowed to overspill; CSS clamps it to the `0%`–`100%` range via `min-width`/`max-width`.
  *
  * @returns A progress bar element.
  * @kind component
- * @example <Progress value={3} total={4} />
+ * @example <Progress value={3} max={4} />
  * @see https://shelving.cc/ui/Progress
  */
-export function Progress({ value, total, success, warning, danger }: ProgressProps): ReactElement | null {
-	const percent = getPercent(value, total);
+export function Progress({ value, min = 0, max = 100, success, warning, danger }: ProgressProps): ReactElement | null {
+	const percent = getPercent(value - min, max - min);
 	const fillStyle = { width: `${Number.isFinite(percent) ? percent : 0}%` } as CSSProperties;
 
 	return (
@@ -39,10 +40,10 @@ export function Progress({ value, total, success, warning, danger }: ProgressPro
 				danger && getModuleClass(styles, "danger"),
 			)}
 			role="progressbar"
-			aria-valuemin={0}
-			aria-valuemax={total ?? 100}
+			aria-valuemin={min}
+			aria-valuemax={max}
 			aria-valuenow={value}
-			aria-valuetext={formatPercent(value, total)}
+			aria-valuetext={formatPercent(value - min, max - min)}
 		>
 			<span className={getModuleClass(styles, "fill")} style={fillStyle} />
 		</figure>
