@@ -1,5 +1,4 @@
 import type { ReactElement } from "react";
-import { TINT_CLASS } from "../style/Tint.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -25,7 +24,6 @@ export function Mark({ children, ...props }: MarkProps): ReactElement {
 		<mark
 			className={getClass(
 				MARK_CLASS, //
-				TINT_CLASS,
 				getTypographyClass(props),
 			)}
 		>

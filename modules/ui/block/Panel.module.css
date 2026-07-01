@@ -14,9 +14,6 @@
  */
 @layer components {
 	.panel {
-		/* Theme */
-		--tint-50: var(--panel-tint, inherit);
-
 		/* Box */
 		position: relative;
 		padding-block: var(--panel-padding, var(--space-section));

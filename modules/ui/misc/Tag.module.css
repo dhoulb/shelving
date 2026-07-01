@@ -8,9 +8,6 @@
 
 @layer components {
 	.tag {
-		/* Theme */
-		--tint-50: var(--tag-tint, inherit);
-
 		/* Box */
 		display: inline-block;
 		vertical-align: text-bottom;

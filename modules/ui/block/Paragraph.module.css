@@ -4,9 +4,6 @@
 @layer components {
 	.prose p,
 	.paragraph {
-		/* Theme */
-		--tint-50: var(--paragraph-tint, inherit);
-
 		/* Box */
 		margin-block: var(--paragraph-space, var(--space-paragraph));
 	}

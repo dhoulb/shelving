@@ -6,9 +6,6 @@
 @layer components {
 	.title,
 	.prose h1 {
-		/* Theme */
-		--tint-50: var(--title-tint, inherit);
-
 		/* Box */
 		margin-block-start: var(--title-space-before, var(--space-section));
 		margin-block-end: var(--title-space, var(--space-paragraph));
