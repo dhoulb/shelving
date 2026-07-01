@@ -7,6 +7,7 @@
 	/* Continuous progress bar — a single track that fills horizontally. */
 	.track {
 		position: relative;
+		margin: 0;
 		inline-size: 100%;
 		height: var(--progress-height, 0.375rem);
 		border-radius: var(--progress-radius, 999px);
@@ -17,41 +18,23 @@
 	.fill {
 		display: block;
 		block-size: 100%;
-		inline-size: var(--progress-value, 0%);
+		/* Width is set inline; clamp overspill to the track here. */
+		min-width: 0px;
+		max-width: 100%;
 		background: var(--progress-color-active, var(--color-blue));
 		transition:
-			inline-size 160ms ease-out,
+			width 160ms ease-out,
 			background-color var(--duration-fast) ease-in-out;
 	}
 
-	/* Segmented progress — a grid of N items, of which some are `.active`. */
-	.segmented {
-		display: grid;
-		grid-template-columns: repeat(var(--progress-steps), minmax(0, 1fr));
-		gap: var(--progress-gap, 0.375rem);
-	}
-
-	.item {
-		height: var(--progress-height, 0.375rem);
-		border-radius: var(--progress-radius, 999px);
-		background: var(--progress-color-bg, var(--tint-90));
-	}
-
-	.active {
-		background: var(--progress-color-active, var(--color-blue));
-	}
-
 	/* Status variants applied at the container level. */
-	.success .fill,
-	.success .active {
+	.success .fill {
 		background: var(--progress-success-color-active, var(--color-green));
 	}
-	.warning .fill,
-	.warning .active {
+	.warning .fill {
 		background: var(--progress-warning-color-active, var(--color-orange));
 	}
-	.danger .fill,
-	.danger .active {
+	.danger .fill {
 		background: var(--progress-danger-color-active, var(--color-red));
 	}
 }
