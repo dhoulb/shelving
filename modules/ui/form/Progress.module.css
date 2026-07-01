@@ -22,9 +22,7 @@
 		min-width: 0px;
 		max-width: 100%;
 		background: var(--progress-color-active, var(--color-blue));
-		transition:
-			width 160ms ease-out,
-			background-color var(--duration-fast) ease-in-out;
+		transition: all var(--duration-fast);
 	}
 
 	/* Status variants applied at the container level. */
