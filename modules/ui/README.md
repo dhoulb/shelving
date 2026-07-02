@@ -27,7 +27,7 @@ The styling system lives in `style/` and has four moving parts: design tokens, t
 
 **Styling props.** The cross-cutting visual options are props, each backed by a helper in `style/` that maps the prop to a class. Colour and status move the tint anchor — `getColorClass()` and `getStatusClass()`; font size, weight, family, and case, plus text alignment, tint, and wrapping, all come from `getTypographyClass()`, which extends `ColorVariants` and composes `getColorClass()` so every typographic element also accepts `color` (use `getColorClass()` directly only for colour-without-typography, e.g. `<Icon>`); spacing, block-padding, inline-padding ("indent"), and gap from `getSpaceClass()`, `getPaddingClass()`, `getIndentClass()`, and `getGapClass()`; width constraints from `getWidthClass()`; flex layout from `getFlexClass()`; and opt-in scrolling from `getScrollClass()`. Each helper's page lists its exact prop values and what they set. A component opts into the props it wants by extending the matching `*Props` interfaces and composing the `getXxxClass(props)` calls.
 
-Each painting component also exposes its own theme hooks — a single tint hook (`--card-tint`) to recolour the whole component, plus per-property hooks (`--card-background`, `--card-radius`, …) for surgical overrides. Those are documented in each component's own **Styling** section (see `<Card>` for the precedent).
+Each painting component also exposes per-property theme hooks (`--card-background`, `--card-radius`, …) for surgical overrides. To recolour a component or a whole region, apply `color=` / `status=` — on it or an ancestor scope — rather than a per-component tint hook; components no longer set the tint anchor themselves. Those hooks are documented in each component's own **Styling** section (see `<Card>` for the precedent).
 
 ## Theming
 
@@ -50,7 +50,7 @@ Each base token lives in a themed module that documents the variables it defines
 - `space` · `width` — layout spacing and widths (`--space-*`, `--width-*`).
 - `radius` · `stroke` · `shadow` · `duration` — surface tokens (`--radius-*`, `--stroke-*`, `--shadow-*`, `--duration-*`).
 
-The **tint ladder** is the one exception that doesn't follow the override-a-variable pattern: its 21 steps are *recomputed* from a single anchor inside every tinted scope, so you move the anchor rather than overriding individual steps. See `TINT_CLASS` for the full theming guide, and each component's **Styling** section for its per-component hooks.
+The **tint ladder** is the one exception that doesn't follow the override-a-variable pattern: its 21 steps are *recomputed* from a single anchor inside every tinted scope, so you move the anchor (via `color=` / `status=`) rather than overriding individual steps. See `TINT_CLASS` for the full theming guide, and each component's **Styling** section for its per-property hooks.
 
 ## Finding your way around
 

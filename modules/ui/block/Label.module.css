@@ -5,9 +5,6 @@
 
 @layer components {
 	.label {
-		/* Theme */
-		--tint-50: var(--label-tint, inherit);
-
 		/* Box */
 		margin-block: var(--label-space, var(--space-paragraph));
 

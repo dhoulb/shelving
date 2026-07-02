@@ -44,7 +44,6 @@ import { Heading } from "shelving/ui";
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--heading-tint` | Tint anchor for the heading scope | `inherit` (flows from `color=` / parent) |
 | `--heading-color` | Text colour | `inherit` |
 | `--heading-space-before` | Top margin | `var(--space-section)` (2rem) |
 | `--heading-space` | Bottom margin | `var(--space-paragraph)` (16px) |

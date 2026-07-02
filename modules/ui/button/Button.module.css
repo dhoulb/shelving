@@ -9,9 +9,6 @@
 
 @layer components {
 	.button {
-		/* Theme */
-		--tint-50: var(--button-tint, inherit);
-
 		/* Box */
 		display: block;
 		box-sizing: border-box;

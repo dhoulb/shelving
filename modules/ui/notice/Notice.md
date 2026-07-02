@@ -28,11 +28,10 @@ import { LOADING_NOTICE } from "shelving/ui";
 
 ## Styling
 
-`Notice` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Move `--notice-tint` to recolour everything at once.
+`Notice` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Its `status` (or a `color=` / `status=` on an ancestor scope) sets the tint that the surface, border, and text all derive from; reach for a per-property hook for a single change.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--notice-tint` | Tint anchor for the notice scope | `inherit` (flows from `color=` / `status=` / parent) |
 | `--notice-background` | Surface fill | `var(--tint-90)` |
 | `--notice-color` | Text colour | `var(--tint-50)` |
 | `--notice-border` | Border shorthand | `var(--notice-stroke) solid var(--tint-80)` |

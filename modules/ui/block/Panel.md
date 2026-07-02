@@ -31,11 +31,10 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 
 ## Styling
 
-`Panel` paints from the [tint ladder](/ui/TINT_CLASS); rebind `--panel-tint` to recolour the whole scope at once, or reach for a per-property hook for a single change.
+`Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface, border, and text re-derive together — or reach for a per-property hook for a single change.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--panel-tint` | Tint anchor for the panel scope — recolours surface, border, and text together | `inherit` (flows from `color=` / `status=` / parent) |
 | `--panel-background` | Surface fill | `var(--tint-90)` |
 | `--panel-color` | Text colour | `var(--tint-00)` |
 | `--panel-border` | Top/bottom border shorthand | `var(--panel-stroke) solid var(--tint-80)` |

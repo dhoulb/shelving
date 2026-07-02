@@ -5,9 +5,6 @@
 
 @layer components {
 	.message {
-		/* Theme */
-		--tint-50: var(--notice-tint, inherit);
-
 		/* Box */
 		margin-block: var(--message-space, var(--space-paragraph));
 

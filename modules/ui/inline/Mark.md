@@ -1,6 +1,6 @@
 # Mark
 
-Highlighted text — renders a `<mark>` element to call attention to a run of text, such as a matched search term. Painted as a small inline pill with a yellow background by default.
+Highlighted text — renders a `<mark>` element to call attention to a run of text, such as a matched search term. Painted as a small inline pill with a translucent yellow background by default.
 
 **Things to know:**
 
@@ -20,15 +20,15 @@ import { Mark } from "shelving/ui";
 
 ## Styling
 
-`Mark` paints from the [tint ladder](/ui/TINT_CLASS): the `50` tint sets the background and the `00` tint the text. By default the base tint resolves to `--color-yellow`; override `--mark-tint` to recolour the whole pill, or `--mark-background` / `--mark-color` to set the two faces independently.
+`Mark` highlights with a translucent wash of `--color-yellow` — `color-mix(…, transparent)`, so the text underneath stays legible — with the text painted from `--tint-00`. Override `--mark-tint` to change the highlight hue, `--mark-background` to replace the fill outright, or `--mark-color` for the text.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--mark-tint` | Base tint (`--tint-50`) the pill derives from | `var(--color-yellow)` |
-| `--mark-background` | Background fill | `var(--tint-50)` |
+| `--mark-tint` | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)` |
+| `--mark-background` | Background fill | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
 | `--mark-color` | Text colour | `var(--tint-00)` |
 | `--mark-padding` | Inline padding | `var(--space-xxsmall)` |
 | `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--mark-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder steps `--tint-50` / `--tint-00`.
+**Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder step `--tint-00`.

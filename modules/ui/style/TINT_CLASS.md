@@ -42,7 +42,7 @@ Pairings follow contrast: long text reads at `00`-on-`90` or `00`-on-`100`; shor
 A theme is a CSS file of custom-property overrides at `:root`, imported after the base styles. Work from broadest to narrowest:
 
 1. **Move a palette colour.** Overriding `--color-gray` moves the default anchor, retinting every neutral ladder in the app — the broadest possible change. Overriding `--color-red`, `--color-primary`, etc. re-aims every variant and status that maps to it.
-2. **Retint one component family.** Set its tint hook: `--card-tint: var(--color-purple)` makes all cards (and their nested content) purple-tinted, with text, border, surface, and hover shades all derived for free.
+2. **Retint a region.** Apply `color=` / `status=` to a container — `<Card color="purple">`, or a `<Panel color="purple">` wrapping a whole section — and everything inside re-tints, with text, border, surface, and hover shades all derived for free. Components don't expose a per-component `--x-tint` hook; the variant moves the anchor, not a bespoke variable.
 3. **Override one property.** Per-property hooks are the scalpel: `--button-radius: 999px`, `--card-border: none`, `--tag-case: none`.
 
 **Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is *recomputed* from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.

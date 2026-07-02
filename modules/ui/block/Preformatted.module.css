@@ -10,9 +10,6 @@
 @layer components {
 	.preformatted,
 	.prose pre {
-		/* Theme */
-		--tint-50: var(--preformatted-tint, inherit);
-
 		/* Box */
 		position: relative;
 		margin-inline: 0;

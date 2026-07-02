@@ -7,9 +7,6 @@
 @layer components {
 	.blockquote,
 	.prose blockquote {
-		/* Theme */
-		--tint-50: var(--blockquote-tint, inherit);
-
 		/* Box */
 		margin-block: var(--blockquote-space, var(--space-paragraph));
 		border-inline-start: var(--blockquote-border, var(--blockquote-stroke, var(--stroke-normal)) solid var(--tint-80));

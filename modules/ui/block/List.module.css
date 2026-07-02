@@ -9,9 +9,6 @@
 	.ordered,
 	.prose ul,
 	.prose ol {
-		/* Theme */
-		--tint-50: var(--list-tint, inherit);
-
 		/* Box */
 		margin-block: var(--list-space, var(--space-paragraph));
 

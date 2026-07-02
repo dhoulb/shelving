@@ -46,11 +46,10 @@ import { getButtonClass } from "shelving/ui";
 
 ## Styling
 
-`Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; move `--button-tint` to recolour the whole button, or use a per-property hook for one change.
+`Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--button-tint` | Tint anchor for the button scope | `inherit` (flows from `color=` / `status=` / parent) |
 | `--button-background` | Surface fill | `var(--tint-90)` |
 | `--button-hover-background` | Surface fill on hover / focus | `var(--tint-95)` |
 | `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid var(--tint-90)` |

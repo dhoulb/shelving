@@ -39,7 +39,6 @@ import { Title, Heading, Subheading } from "shelving/ui";
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--subheading-tint` | Tint anchor for the subheading scope | `inherit` (flows from `color=` / parent) |
 | `--subheading-color` | Text colour | `inherit` |
 | `--subheading-space-before` | Top margin | `var(--space-section)` (2rem) |
 | `--subheading-space` | Bottom margin | `var(--space-paragraph)` (16px) |

@@ -6,9 +6,6 @@
 @layer components {
 	.heading,
 	.prose h2 {
-		/* Theme */
-		--tint-50: var(--heading-tint, inherit);
-
 		/* Box */
 		margin-block-start: var(--heading-space-before, var(--space-section));
 		margin-block-end: var(--heading-space, var(--space-paragraph));
