@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ChangesDBProvider, MockDBProvider } from "../../index.js";
+import { ChangesDBProvider, MockDBProvider } from "shelving/db";
 import { BASICS_COLLECTION, basic1, basic999 } from "../../test/index.js";
 
 describe("ChangesDBProvider", () => {

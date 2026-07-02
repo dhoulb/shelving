@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { BOOLEAN, BooleanSchema } from "../index.js";
+import { BOOLEAN, BooleanSchema, type Schema } from "shelving/schema";
 
 // Tests.
 test("TypeScript", () => {

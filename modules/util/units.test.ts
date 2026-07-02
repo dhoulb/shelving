@@ -1,14 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import {
-	ANGLE_UNITS,
-	AREA_UNITS,
-	DURATION_UNITS,
-	LENGTH_UNITS,
-	MASS_UNITS,
-	SPEED_UNITS,
-	TEMPERATURE_UNITS,
-	VOLUME_UNITS,
-} from "../index.js";
+import { DURATION_UNITS } from "shelving/util/duration";
+import { ANGLE_UNITS, AREA_UNITS, LENGTH_UNITS, MASS_UNITS, SPEED_UNITS, TEMPERATURE_UNITS, VOLUME_UNITS } from "shelving/util/units";
 
 describe("to()", () => {
 	test("to() works correctly with base", () => {

@@ -40,7 +40,12 @@ export function getButtonClass(variants: ButtonVariants): string {
 	);
 }
 
-interface ButtonProps extends ButtonVariants, ClickableProps {}
+/**
+ * Component props for a `<Button>` component.
+ *
+ * @see https://shelving.cc/ui/ButtonProps
+ */
+export interface ButtonProps extends ButtonVariants, ClickableProps {}
 
 /**
  * Render either a `<button>` or an `<a href="">` styled as a button, based on whether an `onClick` or `href` prop is provided.

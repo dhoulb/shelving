@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { createDeferred, DATA, EndpointStore, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
+import { EndpointStore, GET, MockAPIProvider } from "shelving/api";
+import { DATA, STRING } from "shelving/schema";
+import { createDeferred, runMicrotasks } from "shelving/util/async";
 import { EXPECT_PROMISELIKE } from "../../test/index.js";
 
 describe("EndpointStore", () => {

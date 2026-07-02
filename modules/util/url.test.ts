@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getBasedURI, getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "../index.js";
+import { getBasedURI, getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "shelving/util/url";
 
 describe("isURL()", () => {
 	test("returns true for URL instance", () => {

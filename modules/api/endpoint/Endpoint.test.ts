@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, POST, STRING } from "../../index.js";
+import { GET, POST } from "shelving/api";
+import { DATA, STRING } from "shelving/schema";
 
 describe("Endpoint.toString()", () => {
 	test("toString should include method and path", () => {

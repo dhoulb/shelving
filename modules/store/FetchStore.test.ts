@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
-import { createDeferred, type Deferred, FetchStore, NONE, runMicrotasks } from "../index.js";
+import { FetchStore } from "shelving/store";
+import { createDeferred, type Deferred, runMicrotasks } from "shelving/util/async";
+import { NONE } from "shelving/util/constants";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 // --- Basic fetch ---

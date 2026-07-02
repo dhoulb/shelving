@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { countItems, getChunks, getRange, interleaveItems, limitItems, mergeItems, reduceItems, requireArray } from "../index.js";
+import { requireArray } from "shelving/util/array";
+import { countItems, getChunks, getRange, interleaveItems, limitItems, mergeItems, reduceItems } from "shelving/util/iterate";
 
 test("getRange()", () => {
 	expect(requireArray(getRange(1, 4))).toEqual([1, 2, 3, 4]);

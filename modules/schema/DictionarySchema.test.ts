@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { BOOLEAN, DICTIONARY, DictionarySchema, type ImmutableDictionary, NUMBER, type Schema, STRING } from "../index.js";
+import { BOOLEAN, DICTIONARY, DictionarySchema, NUMBER, type Schema, STRING } from "shelving/schema";
+import type { ImmutableDictionary } from "shelving/util/dictionary";
 
 // Tests.
 test("TypeScript", () => {

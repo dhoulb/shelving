@@ -1,10 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { DocumentationElement } from "../../util/tree.js";
-import { MetaContext } from "../misc/MetaContext.js";
-import { createMeta } from "../util/meta.js";
-import { DocumentationPage } from "./DocumentationPage.js";
+import { createMeta, DocumentationPage, MetaContext } from "shelving/ui";
+import type { DocumentationElement } from "shelving/util/tree";
 
 /** Make a minimal `tree-documentation` child element of a given kind. */
 function doc(name: string, kind: string): DocumentationElement {

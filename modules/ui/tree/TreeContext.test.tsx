@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { DocumentationElement, TreeElement } from "../../util/tree.js";
-import { flattenTree } from "../../util/tree.js";
-import { getTreeElement } from "./TreeContext.js";
+import { getTreeElement } from "shelving/ui";
+import { type DocumentationElement, flattenTree, type TreeElement } from "shelving/util/tree";
 
 /** Tree spanning a module, a class with a member, a standalone function, and a component. */
 const validate: DocumentationElement = {

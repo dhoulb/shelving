@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { type Data, deepDiff, deepDiffArray, deepDiffObject, SAME } from "../index.js";
+import type { Data } from "shelving/util/data";
+import { deepDiff, deepDiffArray, deepDiffObject, SAME } from "shelving/util/diff";
 
 const arrFlat: readonly unknown[] = [1, "b", true, false, null];
 const arrFlatSame: readonly unknown[] = [1, "b", true, false, null];

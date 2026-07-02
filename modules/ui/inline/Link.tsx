@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import LINK_CSS from "./Link.module.css";

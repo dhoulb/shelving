@@ -1,6 +1,6 @@
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, type ReactNode, useEffect, useState } from "react";
-import { Button } from "../form/Button.js";
+import { Button } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";

@@ -2,7 +2,7 @@ import { type ReactNode, useState } from "react";
 import { filterElements } from "../../util/element.js";
 import { searchTree } from "../../util/tree.js";
 import { Divider } from "../block/Divider.js";
-import { TextInput } from "../form/TextInput.js";
+import { TextInput } from "../input/TextInput.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
 import type { OptionalChildProps } from "../util/index.js";
 import { useTreeMap } from "./TreeContext.js";

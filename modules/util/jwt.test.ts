@@ -1,15 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import {
-	DAY,
-	encodeToken,
-	getRequestToken,
-	requireRequestToken,
-	setRequestToken,
-	UnauthorizedError,
-	ValueError,
-	verifyRequestToken,
-	verifyToken,
-} from "../index.js";
+import { UnauthorizedError, ValueError } from "shelving/error";
+import { DAY } from "shelving/util/constants";
+import { encodeToken, getRequestToken, requireRequestToken, setRequestToken, verifyRequestToken, verifyToken } from "shelving/util/jwt";
 
 const TOKEN_SECRET = "mytokensecretmytokensecretmytokensecretmytokensecretmytokensecretmytokensecret";
 const TOKEN_ISSUER = "mytokenissuer";

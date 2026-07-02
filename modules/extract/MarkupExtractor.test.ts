@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { BunFile } from "bun";
-import { extractMarkdownProps, MarkupExtractor } from "./index.js";
+import { extractMarkdownProps, MarkupExtractor } from "shelving/extract";
 
 const extractor = new MarkupExtractor();
 

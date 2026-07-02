@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { COUNTRIES, getCountry } from "../index.js";
+import { COUNTRIES, getCountry } from "shelving/util/geo";
 
 describe("getCountry()", () => {
 	test("Returns explicit country codes", () => {

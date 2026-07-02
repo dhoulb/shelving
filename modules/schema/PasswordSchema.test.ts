@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { PASSWORD, PasswordSchema } from "../index.js";
+import { PASSWORD, PasswordSchema } from "shelving/schema";
 
 test("constructor()", () => {
 	const schema1 = new PasswordSchema({});

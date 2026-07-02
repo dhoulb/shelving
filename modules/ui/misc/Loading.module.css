@@ -1,25 +1,18 @@
 @import "../style/layers.css";
-@import "../style/Typography.module.css";
 @import "../style/Tint.module.css";
 
 @layer components {
-	.spinner {
-		inline-size: var(--loading-size, var(--size-icon));
-		block-size: var(--loading-size, var(--size-icon));
-		flex: none;
-	}
-
 	.track {
 		fill: none;
-		stroke: var(--loading-color, var(--tint-70));
+		stroke: var(--loading-track, var(--tint-70));
 		stroke-width: var(--loading-stroke-width, 2.5);
 	}
 
 	.indicator {
 		fill: none;
-		stroke: var(--loading-fill, var(--tint-80));
+		stroke: var(--loading-indicator, var(--tint-80));
 		stroke-width: var(--loading-stroke-width, 2.5);
 		stroke-linecap: round;
-		stroke-dasharray: var(--loading-indicator-length, 28 100);
+		stroke-dasharray: var(--loading-length, 28 100);
 	}
 }

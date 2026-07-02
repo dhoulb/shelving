@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { AddressData, Schema } from "../index.js";
-import { ADDRESS, AddressSchema, formatAddress, NULLABLE_ADDRESS } from "../index.js";
+import { ADDRESS, type AddressData, AddressSchema, formatAddress, NULLABLE_ADDRESS, type Schema } from "shelving/schema";
 
 test("TypeScript", () => {
 	const s1: Schema<AddressData | null> = NULLABLE_ADDRESS;

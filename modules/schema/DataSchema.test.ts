@@ -13,7 +13,7 @@ import {
 	type Schema,
 	STRING,
 	StringSchema,
-} from "../index.js";
+} from "shelving/schema";
 
 // Tests.
 test("TypeScript", () => {

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { formatNumber, NULLABLE_NUMBER, NUMBER, NumberSchema, Schema } from "../index.js";
+import { NULLABLE_NUMBER, NUMBER, NumberSchema, Schema } from "shelving/schema";
+import { formatNumber } from "shelving/util/format";
 
 // Tests.
 test("TypeScript", () => {

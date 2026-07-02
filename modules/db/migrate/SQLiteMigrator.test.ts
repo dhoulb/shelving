@@ -1,6 +1,8 @@
 import { Database, type SQLQueryBindings } from "bun:sqlite";
 import { expect, test } from "bun:test";
-import { ARRAY, COLLECTION, DATA, type Data, INTEGER, type SQLFragment, SQLiteMigrator, SQLProvider, STRING } from "../../index.js";
+import { COLLECTION, type SQLFragment, SQLiteMigrator, SQLProvider } from "shelving/db";
+import { ARRAY, DATA, INTEGER, STRING } from "shelving/schema";
+import type { Data } from "shelving/util/data";
 import { BASIC_SCHEMA } from "../../test/index.js";
 
 const BASICS_COLLECTION = COLLECTION("basics", INTEGER, BASIC_SCHEMA);

@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, memo, type ReactElement, Suspense, useEffect, useRef } from "react";
 import type { Callback } from "../../util/function.js";
-import type { ButtonVariants } from "../form/Button.js";
+import type { ButtonVariants } from "../button/Button.js";
 import { getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";

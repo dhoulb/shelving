@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { debug, debugFullRequest, debugFullResponse, debugHeaders } from "../index.js";
+import { debug, debugFullRequest, debugFullResponse, debugHeaders } from "shelving/util/debug";
 
 describe("debugHeaders()", () => {
 	test("formats headers correctly", () => {

@@ -1,9 +1,9 @@
 import type { ReactElement, ReactNode } from "react";
 import { Row } from "../block/Row.js";
 import { Footer } from "../block/Section.js";
+import { SubmitButton } from "../button/SubmitButton.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { FormMessage } from "./FormMessage.js";
-import { SubmitButton } from "./SubmitButton.js";
 
 /**
  * Props for `FormFooter`, the submit-button-and-message footer for a form.

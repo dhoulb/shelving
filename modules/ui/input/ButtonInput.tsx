@@ -1,8 +1,8 @@
 import type { ReactElement } from "react";
 import { notNullish } from "../../util/null.js";
+import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { Clickable, type ClickableProps } from "./Clickable.js";
 import { getInputClass, type InputProps, type InputVariants } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 

@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, MockAPIProvider, POST, REQUIRED_STRING, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { GET, MockAPIProvider, POST, ValidationAPIProvider } from "shelving/api";
+import { ResponseError } from "shelving/error";
+import { DATA, REQUIRED_STRING, STRING } from "shelving/schema";
 
 describe("ValidationAPIProvider", () => {
 	test("validates payloads before calling the source provider", async () => {

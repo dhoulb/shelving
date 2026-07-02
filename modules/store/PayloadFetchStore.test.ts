@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
-import { NONE, PayloadFetchStore, runMicrotasks } from "../index.js";
+import { PayloadFetchStore } from "shelving/store";
+import { runMicrotasks } from "shelving/util/async";
+import { NONE } from "shelving/util/constants";
 
 // --- Initial state ---
 

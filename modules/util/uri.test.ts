@@ -1,15 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import {
-	getURIParam,
-	getURIParams,
-	ImmutableURL,
-	omitURIParam,
-	omitURIParams,
-	RequiredError,
-	requireURIParam,
-	withURIParam,
-	withURIParams,
-} from "../index.js";
+import { RequiredError } from "shelving/error";
+import { getURIParam, getURIParams, omitURIParam, omitURIParams, requireURIParam, withURIParam, withURIParams } from "shelving/util/uri";
+import { ImmutableURL } from "shelving/util/url";
 
 describe("getURIParams()", () => {
 	test("returns params from URL", () => {

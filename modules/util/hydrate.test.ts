@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import type { Data } from "../index.js";
-import { dehydrate, hydrate } from "../index.js";
+import type { Data } from "shelving/util/data";
+import { dehydrate, hydrate } from "shelving/util/hydrate";
 
 class Message {
 	readonly message: string;

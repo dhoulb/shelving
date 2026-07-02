@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { ValueError } from "shelving/error";
 import {
 	decodeBase64Bytes,
 	decodeBase64String,
@@ -6,8 +7,7 @@ import {
 	decodeBase64URLString,
 	encodeBase64,
 	encodeBase64URL,
-	ValueError,
-} from "../index.js";
+} from "shelving/util/base64";
 
 describe("encodeBase64()", () => {
 	test("encode ASCII strings correctly", () => {

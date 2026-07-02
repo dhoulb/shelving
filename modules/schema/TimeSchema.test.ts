@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { formatTime, TIME, TimeSchema } from "../index.js";
+import { TIME, TimeSchema } from "shelving/schema";
+import { formatTime } from "shelving/util/format";
 
 test("constructor()", () => {
 	const schema1 = new TimeSchema({});

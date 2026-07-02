@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { getLink, type ImmutableURI, RequiredError, requireLink, requireURL } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { getLink, requireLink } from "shelving/util/link";
+import type { ImmutableURI } from "shelving/util/uri";
+import { requireURL } from "shelving/util/url";
 
 const ROOT = requireURL("https://x.com/app/");
 const ROOT_NO_SLASH = requireURL("https://x.com/app");

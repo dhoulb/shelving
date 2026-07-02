@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { getUndefined, mapArray, mapProps, transformObject } from "../index.js";
+import { mapArray, mapProps, transformObject } from "shelving/util/transform";
+import { getUndefined } from "shelving/util/undefined";
 
 test("mapArray()", () => {
 	const arr = [1, 2, 3, 4];

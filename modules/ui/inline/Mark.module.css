@@ -11,7 +11,7 @@
 		display: inline-block;
 		padding-inline: var(--mark-padding, var(--space-xxsmall));
 		border-radius: var(--mark-radius, var(--radius-xxsmall));
-		vertical-align: text-bottom;
+		vertical-align: baseline;
 
 		/* Style */
 		background-color: var(--mark-background, color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent));

@@ -1,8 +1,8 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { StringInputType } from "../../schema/StringSchema.js";
 import { PASSTHROUGH } from "../../util/function.js";
+import { getInputClass, type InputVariants, type ValueInputProps } from "../input/Input.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 import INPUT_CSS from "./Input.module.css";
 
 type TextFormatter = (str: string) => string;

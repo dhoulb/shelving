@@ -1,5 +1,7 @@
 import { expect, test } from "bun:test";
-import { BusyStore, createDeferred, NONE, runMicrotasks } from "../index.js";
+import { BusyStore } from "shelving/store";
+import { createDeferred, runMicrotasks } from "shelving/util/async";
+import { NONE } from "shelving/util/constants";
 
 test("busy is false initially", () => {
 	const store = new BusyStore<number>(42);

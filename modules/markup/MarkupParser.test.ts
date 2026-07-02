@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { isValidElement } from "react";
 import { renderToString } from "react-dom/server";
-import { MarkupParser } from "./index.js";
+import { MarkupParser } from "shelving/markup";
 
 const PARSER = new MarkupParser();
 

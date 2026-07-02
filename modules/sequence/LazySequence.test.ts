@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DeferredSequence } from "../index.js";
-import { LazySequence } from "./LazySequence.js";
+import { DeferredSequence, LazySequence } from "shelving/sequence";
 
 describe("LazySequence", () => {
 	test("StartCallback is called", async () => {

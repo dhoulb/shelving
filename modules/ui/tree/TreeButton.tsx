@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { Button, type ButtonVariants } from "../form/Button.js";
+import { Button, type ButtonVariants } from "../button/Button.js";
 import { getTreeElement, useTreeMap } from "./TreeContext.js";
 
 /**

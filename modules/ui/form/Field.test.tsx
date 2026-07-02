@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Field } from "./Field.js";
+import { Field } from "shelving/ui";
 
 describe("Field", () => {
 	test("does not render a message container when there is no message", () => {

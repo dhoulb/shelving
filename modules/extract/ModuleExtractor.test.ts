@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { AbsolutePath } from "../util/path.js";
-import type { DocumentationElement, TreeElement } from "../util/tree.js";
-import { ModuleExtractor } from "./ModuleExtractor.js";
+import { ModuleExtractor } from "shelving/extract";
+import type { AbsolutePath } from "shelving/util/path";
+import type { DocumentationElement, TreeElement } from "shelving/util/tree";
 
 function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElement {
 	const [name] = key.split(".");

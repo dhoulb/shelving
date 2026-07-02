@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, EndpointCache, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
+import { EndpointCache, GET, MockAPIProvider } from "shelving/api";
+import { DATA, STRING } from "shelving/schema";
+import { runMicrotasks } from "shelving/util/async";
 
 describe("EndpointCache", () => {
 	test("reuses the same store for deeply equal payloads", () => {

@@ -4,9 +4,12 @@
 @layer components {
 	.image,
 	.prose img {
-		inline-size: var(--image-width, 100%);
+		/* Box */
+		border: var(--image-border, none);
+		border-radius: var(--image-radius, var(--radius-normal));
 		margin-block: var(--image-space, var(--space-paragraph));
 
+		/* Contents */
 		object-position: center center;
 		object-fit: cover; /* Don't distort when resized. */
 	}

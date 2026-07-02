@@ -1,11 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { DocumentationElement, TreeElement } from "../../util/tree.js";
-import { MetaContext } from "../misc/MetaContext.js";
-import { createMeta } from "../util/meta.js";
-import { TreeProvider } from "./TreeContext.js";
-import { TreeMarkup } from "./TreeMarkup.js";
+import { createMeta, MetaContext, TreeMarkup, TreeProvider } from "shelving/ui";
+import type { DocumentationElement, TreeElement } from "shelving/util/tree";
 
 /** Tree with a single documented class so `Store` resolves to a canonical path. */
 const store: DocumentationElement = {

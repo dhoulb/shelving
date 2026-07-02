@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { ARRAY, ArraySchema, DATA, NUMBER, STRING } from "../index.js";
+import { ARRAY, ArraySchema, DATA, NUMBER, type Schema, STRING } from "shelving/schema";
 
 // Vars.
 const stringArray = ["a", "b", "c"];

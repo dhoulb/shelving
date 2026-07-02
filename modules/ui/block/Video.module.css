@@ -12,7 +12,7 @@
 		/* Box */
 		aspect-ratio: 16 / 9;
 		margin-block: var(--video-space, var(--space-paragraph));
-		border: var(--video-border, var(--stroke-normal) solid black);
+		border: var(--video-border, none);
 		border-radius: var(--video-radius, var(--radius-normal));
 		padding: var(--video-padding, var(--space-normal));
 
@@ -33,56 +33,6 @@
 
 		&:fullscreen {
 			border-radius: 0;
-		}
-	}
-
-	.buttons {
-		position: absolute;
-		top: var(--video-buttons-offset-y, var(--space-normal));
-		right: var(--video-buttons-offset-x, var(--space-normal));
-		display: flex;
-		gap: var(--video-buttons-gap, var(--space-small));
-
-		&.left {
-			right: auto;
-			left: var(--video-buttons-offset-x, var(--space-normal));
-		}
-	}
-
-	.button {
-		/* Box */
-		display: block;
-		border: var(--video-button-border, var(--stroke-normal) solid black);
-		border-radius: var(--video-button-radius, 100rem);
-		padding-inline: var(--video-button-padding-x, var(--space-xsmall));
-
-		/* Style */
-		color: var(--video-button-text, white);
-		background: var(--video-button-bg, black);
-		transition: var(--video-button-transition, all var(--duration-fast));
-		outline: var(--video-button-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--stroke-normal));
-		box-shadow: var(--video-button-shadow, var(--shadow-normal));
-		cursor: pointer;
-
-		/* Pseudo-classes */
-		&:disabled,
-		&:where(a:not(:any-link)) {
-			opacity: var(--video-button-disabled-opacity, 0.5);
-			cursor: default;
-		}
-		&:enabled:hover,
-		&:any-link:hover,
-		&:focus:not(:focus-visible) {
-			background: color-mix(in oklch, white 85%, transparent);
-		}
-	}
-}
-
-@layer overrides {
-	.button {
-		&:not(:focus-visible) {
-			outline-color: transparent;
 		}
 	}
 }

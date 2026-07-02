@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { RequiredError } from "../error/RequiredError.js";
-import { getMessage, joinMessage, requireMessage, splitMessage } from "./error.js";
+import { RequiredError } from "shelving/error";
+import { getMessage, joinMessage, requireMessage, splitMessage } from "shelving/util/error";
 
 describe("getMessage()", () => {
 	test("returns string when input is string", () => {

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { isArray } from "../../util/array.js";
 import { getLink, isURLActive, isURLProud } from "../../util/index.js";
-import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";

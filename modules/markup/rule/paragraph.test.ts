@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { MarkupParser } from "../index.js";
+import { MarkupParser } from "shelving/markup";
 
 const PARSER = new MarkupParser();
 

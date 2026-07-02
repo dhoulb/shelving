@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { CURRENCY_CODE, CurrencyCodeSchema, NULLABLE_CURRENCY_CODE } from "../index.js";
+import { CURRENCY_CODE, CurrencyCodeSchema, NULLABLE_CURRENCY_CODE, type Schema } from "shelving/schema";
 
 test("TypeScript", () => {
 	// Test currencyCode.optional

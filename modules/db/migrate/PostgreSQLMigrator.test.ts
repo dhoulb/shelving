@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { DATA, INTEGER, PostgreSQLMigrator, SQLProvider, STRING } from "../../index.js";
-import type { Schema } from "../../schema/Schema.js";
+import { PostgreSQLMigrator, SQLProvider } from "shelving/db";
+import { DATA, INTEGER, type Schema, STRING } from "shelving/schema";
 
 class TestSQLProvider extends SQLProvider {
 	override async exec<T extends Record<string, unknown> = Record<string, unknown>>(
