@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { StringSchema } from "../../schema/index.js";
-import { PASSTHROUGH } from "../../util/function.js";
-import { StringSchemaInput } from "./SchemaInput.js";
+import { PASSTHROUGH, StringSchema } from "../../index.js";
+import { StringSchemaInput } from "../index.js";
 
 describe("StringSchemaInput", () => {
 	test("formats the initial value to its clean sanitized value", () => {

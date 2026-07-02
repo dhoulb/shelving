@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
+import type { InputProps } from "../input/Input.js";
+import { SchemaInput } from "../input/SchemaInput.js";
 import { requireForm, useField } from "./FormContext.js";
-import type { InputProps } from "./Input.js";
-import { SchemaInput } from "./SchemaInput.js";
 
 /**
  * Props for `FormInput`, a bare `SchemaInput` bound to a named form field.

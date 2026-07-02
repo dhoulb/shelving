@@ -1,9 +1,9 @@
 import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
+import type { InputProps } from "../input/Input.js";
+import { SchemaInput } from "../input/SchemaInput.js";
 import { Field } from "./Field.js";
 import { requireForm, useField } from "./FormContext.js";
-import type { InputProps } from "./Input.js";
-import { SchemaInput } from "./SchemaInput.js";
 
 /**
  * Show a `<Field>` (label, input, and message) for a single named property of the current form.

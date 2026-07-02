@@ -5,6 +5,7 @@ export * from "./dialog/index.js";
 export * from "./docs/index.js";
 export * from "./form/index.js";
 export * from "./inline/index.js";
+export * from "./input/index.js";
 export * from "./layout/index.js";
 export * from "./menu/index.js";
 export * from "./misc/index.js";
