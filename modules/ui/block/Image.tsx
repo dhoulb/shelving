@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
-import { getSpaceClass, type SpaceVariants } from "../style/Space.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
+import { getBlockClass } from "../style/Block.js";
+import type { SpaceVariants } from "../style/Space.js";
+import type { WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import IMAGE_CSS from "./Image.module.css";
 
@@ -23,6 +24,15 @@ export interface ImageProps extends SpaceVariants, WidthVariants {
  * @example <Image src="/logo.png" alt="Logo" width="narrow" />
  * @see https://shelving.cc/ui/Image
  */
-export function Image({ src, alt, ...variants }: ImageProps): ReactElement {
-	return <img src={src} alt={alt} className={getClass(IMAGE_CLASS, getSpaceClass(variants), getWidthClass(variants))} />;
+export function Image({ src, alt, ...props }: ImageProps): ReactElement {
+	return (
+		<img
+			src={src}
+			alt={alt}
+			className={getClass(
+				IMAGE_CLASS, //
+				getBlockClass(props),
+			)}
+		/>
+	);
 }
