@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 /**
  * Track the dynamic viewport height so layout safe-area insets follow the on-screen keyboard.
  *
@@ -8,6 +10,10 @@
  * @see https://shelving.cc/ui/useSafeKeyboardArea
  */
 export function useSafeKeyboardArea() {
+	useEffect(_safeKeyboardArea, []);
+}
+
+function _safeKeyboardArea() {
 	const vv = window.visualViewport;
 	if (!vv) return;
 	const onResize = () => {
