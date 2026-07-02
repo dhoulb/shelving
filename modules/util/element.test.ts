@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement, ReactNode } from "react";
-import type { Data, Element, Elements } from "../index.js";
-import { filterElements, getElementText, queryElements, walkElements } from "../index.js";
+import type { Data } from "shelving/util/data";
+import { type Element, type Elements, filterElements, getElementText, queryElements, walkElements } from "shelving/util/element";
 
 const P: Element = {
 	key: null,

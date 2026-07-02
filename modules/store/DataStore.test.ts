@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test";
-import { DataStore, OptionalDataStore, RequiredError, runMicrotasks, runSequence } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { DataStore, OptionalDataStore } from "shelving/store";
+import { runMicrotasks } from "shelving/util/async";
+import { runSequence } from "shelving/util/sequence";
 
 test("DataStore.prototype.data", async () => {
 	type T = { a: number };

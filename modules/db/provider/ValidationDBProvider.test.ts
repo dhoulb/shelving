@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { MockDBProvider, ValidationDBProvider, ValueError } from "../../index.js";
+import { MockDBProvider, ValidationDBProvider } from "shelving/db";
+import { ValueError } from "shelving/error";
 import { BASICS_COLLECTION, basic1, basic2, basic999 } from "../../test/index.js";
 
 describe("ValidationDBProvider", () => {

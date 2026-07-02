@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, handleEndpoints, INTEGER, MethodNotAllowedError, NotFoundError, POST, STRING, ValueError } from "../../index.js";
+import { GET, handleEndpoints, POST } from "shelving/api";
+import { MethodNotAllowedError, NotFoundError, ValueError } from "shelving/error";
+import { DATA, INTEGER, STRING } from "shelving/schema";
 
 const PAYLOAD = DATA({ id: INTEGER });
 

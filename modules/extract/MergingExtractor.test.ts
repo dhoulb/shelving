@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { AbsolutePath } from "../util/path.js";
-import type { TreeElement } from "../util/tree.js";
-import { Extractor } from "./Extractor.js";
-import { MergingExtractor } from "./MergingExtractor.js";
+import { Extractor, MergingExtractor } from "shelving/extract";
+import type { AbsolutePath } from "shelving/util/path";
+import type { TreeElement } from "shelving/util/tree";
 
 /** Helper to build a file `tree-element` for tests. */
 function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElement {

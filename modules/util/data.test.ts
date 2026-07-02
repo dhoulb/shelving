@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import type { BranchData, Data, ImmutableDictionary, LeafData } from "../index.js";
-import { getDataProp } from "../index.js";
+import { type BranchData, type Data, getDataProp, type LeafData } from "shelving/util/data";
+import type { ImmutableDictionary } from "shelving/util/dictionary";
 
 type T = {
 	readonly a: {

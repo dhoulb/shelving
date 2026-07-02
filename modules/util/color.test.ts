@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { Color, getColor, RequiredError, requireColor } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { Color, getColor, requireColor } from "shelving/util/color";
 
 test("toColor(): colors", () => {
 	expect(getColor("#fff")).toBeInstanceOf(Color);

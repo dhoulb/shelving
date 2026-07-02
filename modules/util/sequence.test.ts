@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { MutableArray } from "../index.js";
-import { createDeferred, mergeSequences, repeatDelay, repeatUntil, runSequence } from "../index.js";
+import type { MutableArray } from "shelving/util/array";
+import { createDeferred } from "shelving/util/async";
+import { mergeSequences, repeatDelay, repeatUntil, runSequence } from "shelving/util/sequence";
 
 const DELAY = 50;
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK } from "./constants.js";
-import { getBestDurationUnit, getMillisecondsUntil } from "./duration.js";
+import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK } from "shelving/util/constants";
+import { getBestDurationUnit, getMillisecondsUntil } from "shelving/util/duration";
 
 test("getMillisecondsUntil()", () => {
 	expect(getMillisecondsUntil(10000000, 20000000)).toBe(-10000000);

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import type { ImmutableArray } from "../index.js";
-import { filterQueryItems, getIdentifiers, getQueryFilters, getQueryOrders, matchQueryItem, queryItems, sortQueryItems } from "../index.js";
+import type { ImmutableArray } from "shelving/util/array";
+import { getIdentifiers } from "shelving/util/item";
+import { filterQueryItems, getQueryFilters, getQueryOrders, matchQueryItem, queryItems, sortQueryItems } from "shelving/util/query";
 import type { BasicData } from "../test/index.js";
 import { basic1, basic2, basics, expectUnorderedItems } from "../test/index.js";
 import { expectOrderedItems } from "../test/util.js";

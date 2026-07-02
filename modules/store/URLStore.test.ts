@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { RequiredError, URLStore } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { URLStore } from "shelving/store";
 
 describe("URLStore", () => {
 	test("constructor: creates store with URL string", () => {

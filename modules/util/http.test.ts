@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { RequestError } from "shelving/error";
 import {
 	createFormDataRequest,
 	createJSONRequest,
@@ -11,8 +12,7 @@ import {
 	parseResponseBody,
 	parseResponseFormData,
 	parseResponseJSON,
-	RequestError,
-} from "../index.js";
+} from "shelving/util/http";
 
 function mockRequest(body: string | null, contentType?: string, method = "POST"): Request {
 	return new Request("http://x.com/", {

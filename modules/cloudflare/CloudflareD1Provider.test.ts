@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CloudflareD1Provider, type D1Database, type D1PreparedStatement, type D1Value } from "./index.js";
+import { CloudflareD1Provider, type D1Database, type D1PreparedStatement, type D1Value } from "shelving/cloudflare";
 
 type D1Call = {
 	readonly query: string;

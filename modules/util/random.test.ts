@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { getRandom, getRandomCharacter, getRandomItem, getRandomKey } from "../index.js";
+import { getRandom, getRandomCharacter, getRandomItem, getRandomKey } from "shelving/util/random";
 
 test("getRandomCharacter()", () => {
 	expect(typeof getRandomCharacter("abc")).toBe("string");

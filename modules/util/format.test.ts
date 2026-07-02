@@ -1,17 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import {
-	DAY,
-	formatAgo,
-	formatDuration,
-	formatNumber,
-	formatPercent,
-	formatUnit,
-	formatUntil,
-	formatValue,
-	formatWhen,
-	HOUR,
-	YEAR,
-} from "../index.js";
+import { DAY, HOUR, YEAR } from "shelving/util/constants";
+import { formatAgo, formatDuration, formatUntil, formatWhen } from "shelving/util/duration";
+import { formatNumber, formatPercent, formatUnit, formatValue } from "shelving/util/format";
 
 describe("formatNumber()", () => {
 	test("Works correctly", () => {

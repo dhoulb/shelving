@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, JSONAPIProvider, POST, ResponseError, STRING } from "../../index.js";
+import { GET, JSONAPIProvider, POST } from "shelving/api";
+import { ResponseError } from "shelving/error";
+import { DATA, STRING } from "shelving/schema";
 
 describe("JSONAPIProvider", () => {
 	test("createRequest() serializes POST payloads as JSON bodies", async () => {

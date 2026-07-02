@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { CURRENCY_CODES, formatCurrency, getCurrencySymbol } from "../index.js";
+import { CURRENCY_CODES, getCurrencySymbol } from "shelving/util/currency";
+import { formatCurrency } from "shelving/util/format";
 
 test("TypeScript", () => {
 	const amount: string = formatCurrency(12.34, "GBP");

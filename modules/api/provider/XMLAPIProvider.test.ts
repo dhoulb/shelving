@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, type Endpoint, GET, POST, RequiredError, STRING, XMLAPIProvider } from "../../index.js";
+import { type Endpoint, GET, POST, XMLAPIProvider } from "shelving/api";
+import { RequiredError } from "shelving/error";
+import { DATA, STRING } from "shelving/schema";
 
 describe("XMLAPIProvider", () => {
 	test("createRequest() serializes POST payloads as XML bodies", async () => {

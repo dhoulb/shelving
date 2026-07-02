@@ -1,16 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import {
-	NUMBER,
-	OPTIONAL,
-	RequiredError,
-	requireValid,
-	STRING,
-	StringSchema,
-	validateArray,
-	validateData,
-	validateDictionary,
-	validateItems,
-} from "../index.js";
+import { RequiredError } from "shelving/error";
+import { NUMBER, OPTIONAL, STRING, StringSchema } from "shelving/schema";
+import { requireValid, validateArray, validateData, validateDictionary, validateItems } from "shelving/util/validate";
 
 const VALIDATORS = {
 	str: STRING,

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { ImmutableArray } from "../index.js";
-import { deepMerge, mergeArray, mergeObject, shallowMerge } from "../index.js";
+import type { ImmutableArray } from "shelving/util/array";
+import { deepMerge, mergeArray, mergeObject, shallowMerge } from "shelving/util/merge";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];

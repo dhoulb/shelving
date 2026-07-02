@@ -1,9 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { MetaContext } from "../misc/MetaContext.js";
-import { createMeta } from "../util/meta.js";
-import { Router } from "./Router.js";
-import type { RouteProps } from "./Routes.js";
+import { createMeta, MetaContext, type RouteProps, Router } from "shelving/ui";
 
 const ROUTES = {
 	"/": () => <main>Home</main>,

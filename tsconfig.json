@@ -14,7 +14,12 @@
 		"noUncheckedIndexedAccess": true,
 		"skipLibCheck": true,
 		"target": "esnext",
-		"verbatimModuleSyntax": true
+		"verbatimModuleSyntax": true,
+		"paths": {
+			"shelving": ["./modules/index.ts"],
+			"shelving/util/*": ["./modules/util/*.ts"],
+			"shelving/*": ["./modules/*/index.ts"]
+		}
 	},
 	"include": ["./modules/**/*", "./docs/**/*", "./**/*.json"],
 	"exclude": ["node_modules", "dist"]

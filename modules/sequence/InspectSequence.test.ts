@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { InspectSequence } from "../index.js";
+import { InspectSequence } from "shelving/sequence";
 
 // Build an `InspectSequence` wrapping a simple async generator source.
 async function* _numbers(): AsyncGenerator<number, string, undefined> {

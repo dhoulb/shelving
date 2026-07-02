@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { NULLABLE_PHONE, PHONE, PhoneSchema } from "../index.js";
+import { NULLABLE_PHONE, PHONE, PhoneSchema, type Schema } from "shelving/schema";
 
 // Tests.
 test("TypeScript", () => {

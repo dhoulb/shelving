@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { escapeXML, getXML, RequiredError } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { escapeXML, getXML } from "shelving/util/xml";
 
 describe("escapeXML()", () => {
 	test("escapes special XML characters", () => {

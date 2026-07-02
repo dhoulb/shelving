@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { REQUIRED_STRING, STRING, StringSchema } from "../index.js";
+import { REQUIRED_STRING, type Schema, STRING, StringSchema } from "shelving/schema";
 
 // Vars.
 const longString =

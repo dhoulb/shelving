@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { RequiredError } from "../error/RequiredError.js";
-import { getFileExtension, requireFileExtension, splitFileExtension } from "./file.js";
+import { RequiredError } from "shelving/error";
+import { getFileExtension, requireFileExtension, splitFileExtension } from "shelving/util/file";
 
 test("getOptionalFileExtension()", () => {
 	expect(getFileExtension("abc.jpg")).toBe("jpg");

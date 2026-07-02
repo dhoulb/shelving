@@ -1,9 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { RequiredError } from "../../error/RequiredError.js";
-import { createMeta } from "../util/meta.js";
-import { MetaContext, requireMetaURL } from "./MetaContext.js";
+import { RequiredError } from "shelving/error";
+import { createMeta, MetaContext, requireMetaURL } from "shelving/ui";
 
 /** Render `requireMetaURL().path` from inside a component so its `use(MetaContext)` call is valid. */
 function Probe(): ReactNode {

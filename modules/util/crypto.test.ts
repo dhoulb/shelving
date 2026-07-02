@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { ValueError } from "../error/ValueError.js";
-import { hashPassword, verifyPassword } from "./crypto.js";
+import { ValueError } from "shelving/error";
+import { hashPassword, verifyPassword } from "shelving/util/crypto";
 
 const PASSWORD = "mysecretpassword";
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { BunFile } from "bun";
-import { TypescriptExtractor } from "./index.js";
+import { TypescriptExtractor } from "shelving/extract";
 
 const extractor = new TypescriptExtractor();
 

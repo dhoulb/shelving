@@ -1,16 +1,13 @@
 import { expect, test } from "bun:test";
-import type { ImmutableDictionary, MutableDictionary } from "../index.js";
 import {
 	deleteDictionaryItems,
-	getProp,
-	isObject,
-	omitProps,
-	pickProps,
+	type ImmutableDictionary,
+	type MutableDictionary,
 	setDictionaryItem,
 	setDictionaryItems,
 	withDictionaryItem,
-	withProps,
-} from "../index.js";
+} from "shelving/util/dictionary";
+import { getProp, isObject, omitProps, pickProps, withProps } from "shelving/util/object";
 
 const maplikeObj: ImmutableDictionary<number> = { a: 1, b: 2, c: 3, d: 4 };
 

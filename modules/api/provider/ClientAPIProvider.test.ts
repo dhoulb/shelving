@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { ClientAPIProvider, DATA, GET, POST, RequiredError, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
+import { ClientAPIProvider, GET, POST, ValidationAPIProvider } from "shelving/api";
+import { RequiredError, ResponseError } from "shelving/error";
+import { DATA, STRING } from "shelving/schema";
 
 describe("ClientAPIProvider", () => {
 	test("createRequest() renders placeholders into the URL and omits them from the remaining payload", () => {

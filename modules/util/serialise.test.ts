@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { serialise } from "../index.js";
+import { serialise } from "shelving/util/serialise";
 
 describe("serialise()", () => {
 	test("Works correctly", () => {

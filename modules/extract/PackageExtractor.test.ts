@@ -2,12 +2,9 @@ import { describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AbsolutePath } from "../util/path.js";
-import type { TreeElement } from "../util/tree.js";
-import { DirectoryExtractor } from "./DirectoryExtractor.js";
-import { IndexExtractor } from "./IndexExtractor.js";
-import { MergingExtractor } from "./MergingExtractor.js";
-import { PackageExtractor } from "./PackageExtractor.js";
+import { DirectoryExtractor, IndexExtractor, MergingExtractor, PackageExtractor } from "shelving/extract";
+import type { AbsolutePath } from "shelving/util/path";
+import type { TreeElement } from "shelving/util/tree";
 
 /** Build a self-contained source tree on disk (independent per test, so concurrent runs don't collide). */
 async function _setup(
@@ -117,7 +114,7 @@ describe("PackageExtractor", () => {
 	});
 
 	test("respects custom extensions when resolving exports to source files", async () => {
-		const { TypescriptExtractor } = await import("./TypescriptExtractor.js");
+		const { TypescriptExtractor } = await import("shelving/extract");
 		const { root, tree, cleanup } = await _setup(async r => {
 			await mkdir(join(r, "api"), { recursive: true });
 			await writeFile(join(r, "api", "mts-only.mts"), "export const X = 1;");

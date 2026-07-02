@@ -1,7 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { PossibleDate } from "../index.js";
-import { getDate, getDateString, requireDateString } from "../index.js";
-import { requireTimeString } from "./date.js";
+import { getDate, getDateString, type PossibleDate, requireDateString, requireTimeString } from "shelving/util/date";
 
 describe("getDate()", () => {
 	test("getDate(): Parses valid possible dates to Date instances", () => {

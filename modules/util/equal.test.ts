@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isArrayEqual, isArrayWith, isDeepEqual, isEqual, isObjectEqual, isObjectMatch, notArrayWith } from "../index.js";
+import { isArrayEqual, isArrayWith, isDeepEqual, isEqual, isObjectEqual, isObjectMatch, notArrayWith } from "shelving/util/equal";
 
 const arrFlat = [1, "b", true, false, null];
 const arrFlatSame = [1, "b", true, false, null];
