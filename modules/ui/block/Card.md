@@ -45,11 +45,10 @@ import { Card, Subheading } from "shelving/ui";
 
 ## Styling
 
-`Card` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Move `--card-tint` to recolour everything at once; reach for a per-property hook for a single surgical change.
+`Card` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the card or an ancestor scope) to recolour everything at once — surface, border, text, and hover shade re-derive together; reach for a per-property hook for a single surgical change.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--card-tint` | Tint anchor for the card scope — recolours surface, border, text and hover together | `inherit` (flows from `color=` / `status=` / parent) |
 | `--card-background` | Surface fill | `var(--tint-90)` |
 | `--card-hover-background` | Surface fill when a navigable card is hovered | `var(--tint-95)` |
 | `--card-color` | Text colour | `var(--tint-00)` |
@@ -71,9 +70,6 @@ import { Card, Subheading } from "shelving/ui";
   --card-shadow: var(--shadow-small);
   --card-radius: var(--radius-small);
 }
-
-/* Retint every card purple — surface, border, text and hover all follow. */
-:root {
-  --card-tint: var(--color-purple);
-}
 ```
+
+To recolour cards, apply `color=` / `status=` to the card (or a tinted ancestor scope) — e.g. `<Card color="purple">` — rather than a per-component tint hook.

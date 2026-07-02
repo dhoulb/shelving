@@ -330,8 +330,8 @@ Conventions for the upcoming reusable component layer.
 - CSS nesting is used for variants (`&.small { ... }`), pseudo-classes (`&:hover { ... }`), and child selectors (`:where(& > *) { ... }`)
 - `:where()` is used to keep specificity low for default child styles
 - CSS modules are imported as default: `import styles from "./Foo.module.css"`, or with a `_CSS` suffix for named-export style: `import BUTTON_CSS from "./Button.module.css"`. CSS modules are the one exception to the named-exports-only rule
-- **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Card.module.css` owns `--card-tint`, `--card-background`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`.
-- **One tint anchor, then per-property hooks.** A painted component rebinds the ladder anchor once at the top of its rule (`--tint-50: var(--card-tint, inherit);`) and paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`). Do **not** reintroduce a per-component five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). That scheme was tried and removed in favour of the single-anchor model; older issue comments describing it are stale. The tint ladder and the rebind pattern are documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
+- **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Card.module.css` owns `--card-background`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`.
+- **Paint from the ladder; don't rebind the anchor.** A painted component paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`), reading whatever tint is ambient in its scope. A component must **not** set `--tint-50` itself — the anchor is moved only by `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root`, so a component never carries a stale ladder and a raw element in `.prose` behaves identically to its component. A component with a fixed semantic colour (`<Deleted>`, `<Inserted>`, `<Link>`) reads its palette token directly (`color: var(--deleted-color, var(--color-red))`) instead of the ladder. Do **not** reintroduce a per-component `--x-tint` anchor hook (removed — tinting is done with the `color=` / `status=` variants), nor the older five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). Both were tried and removed; older issue comments describing them are stale. The tint ladder is documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
 
 ### Writing a new component
 
@@ -367,9 +367,6 @@ export function Address({ children, ...props }: AddressProps) {
 
 @layer components {
   .address {
-    /* Theme — rebind the tint anchor so `--address-tint` (and parent scopes) flow through. */
-    --tint-50: var(--address-tint, inherit);
-
     /* Box */
     display: block;
     margin-inline: 0;
@@ -397,7 +394,7 @@ Checklist:
 - [ ] `@import "../style/base.css";` at the top of the `.module.css`.
 - [ ] All component rules inside `@layer components { … }`.
 - [ ] All custom properties owned by this file start with the file name (`--address-*`, etc.) — see the CSS custom property naming rule above.
-- [ ] If the component paints colour, rebind the tint anchor at the top of the rule (`--tint-50: var(--address-tint, inherit);`) and paint from ladder steps with per-property hooks in front.
+- [ ] If the component paints colour, paint from ladder steps with a per-property hook in front (`background: var(--address-background, var(--tint-90))`) — don't set `--tint-50`; the tint flows in from `color=` / `status=` or an ancestor scope. Read a palette token directly (`var(--color-red)`) only for a fixed semantic colour.
 - [ ] `:first-child` / `:last-child` overrides in a separate `@layer overrides { … }` block.
 - [ ] TSX extends the styling-prop interfaces (`ColorProps`, `SpacingProps`, `TypographyProps`, etc.) you want to expose and composes the matching `getXxxClass(props)` calls.
 - [ ] `@kind component` in the docblock, and a sibling `Address.md` with usage examples and a Styling section (see the Documentation section).

@@ -20,11 +20,10 @@ import { Tag } from "shelving/ui";
 
 ## Styling
 
-`Tag` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Move `--tag-tint` to recolour the whole tag at once.
+`Tag` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the tag or an ancestor scope) to recolour the whole tag at once.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--tag-tint` | Tint anchor for the tag scope | `inherit` (flows from `color=` / `status=` / parent) |
 | `--tag-background` | Surface fill | `var(--tint-50)` |
 | `--tag-hover-background` | Surface fill when an interactive tag is hovered | `var(--tint-55)` |
 | `--tag-color` | Text colour | `var(--tint-100)` |

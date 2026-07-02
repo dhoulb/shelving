@@ -31,11 +31,10 @@ import { List } from "shelving/ui";
 
 ## Styling
 
-`List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; rebind `--list-tint` to recolour the scope, or reach for a per-property hook for a single change.
+`List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; apply `color=` (on the list or an ancestor scope) to recolour the markers, or reach for a per-property hook for a single change.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--list-tint` | Tint anchor for the list scope | `inherit` (flows from `color=` / parent) |
 | `--list-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 | `--list-gap` | Space between items | `var(--space-xsmall)` |
 | `--list-indent` | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |

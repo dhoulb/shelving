@@ -5,7 +5,7 @@ Deleted text — renders a `<del>` element to mark content that has been removed
 **Things to know:**
 
 - Use `Deleted` for content genuinely removed from a document (edits, diffs, retired prices), and `<Inserted>` for content added — they pair up.
-- It drives its colour through the [tint ladder](/ui/TINT_CLASS), so the `color` variant (`color="purple"`, `color="orange"`, …) recolours the strike-through. The base tint defaults to `--color-red`.
+- It colours itself directly from `--color-red` rather than the tint ladder, so a deletion stays a consistent red even inside a tinted region; change it with `--deleted-color`.
 - Inside `<Prose>` a raw `<del>` picks up the same styling, so Markdown-rendered deletions match component ones.
 
 ## Usage
@@ -22,13 +22,12 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 ## Styling
 
-`Deleted` paints from the [tint ladder](/ui/TINT_CLASS): the `50` tint sets the text colour, defaulting to `--color-red`. Override `--deleted-tint` to recolour from the base, or set each property directly.
+`Deleted` colours its text directly from `--color-red` (not the tint ladder), so deletions stay a consistent red regardless of the surrounding tint. Override `--deleted-color` to recolour.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--deleted-tint` | Base tint (`--tint-50`) the colour derives from | `var(--color-red)` |
-| `--deleted-color` | Text colour | `var(--tint-50)` |
+| `--deleted-color` | Text colour | `var(--color-red)` |
 | `--deleted-decoration` | Text decoration | `line-through var(--stroke-normal)` |
 | `--deleted-weight` | Font weight | `var(--weight-strong)` |
 
-**Global tokens it reads:** `--color-red`, `--stroke-normal`, `--weight-strong`, and the tint-ladder step `--tint-50`.
+**Global tokens it reads:** `--color-red`, `--stroke-normal`, and `--weight-strong`.

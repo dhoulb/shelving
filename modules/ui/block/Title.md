@@ -38,7 +38,6 @@ import { Panel, Block, Title } from "shelving/ui";
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--title-tint` | Tint anchor for the title scope | `inherit` (flows from `color=` / parent) |
 | `--title-color` | Text colour | `inherit` |
 | `--title-space-before` | Top margin | `var(--space-section)` (2rem) |
 | `--title-space` | Bottom margin | `var(--space-paragraph)` (16px) |

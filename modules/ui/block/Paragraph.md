@@ -31,11 +31,10 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 
 ## Styling
 
-`Paragraph` exposes a single hook for its own block margin and rebinds the tint anchor for its scope; it paints no colour of its own, so it inherits the surrounding text colour.
+`Paragraph` exposes a single hook for its own block margin; it paints no colour of its own, so it inherits the surrounding text colour. Apply `color=` / `status=` to set the tint scope for any ladder-reading inline content inside it.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--paragraph-tint` | Tint anchor for the paragraph scope | `inherit` (flows from `color=` / parent) |
 | `--paragraph-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
 **Global tokens it reads:** `--space-paragraph`.
