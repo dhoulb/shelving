@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { getUUID, RequiredError, randomUUID, requireUUID } from "../index.js";
+import { RequiredError } from "shelving/error";
+import { getUUID, randomUUID, requireUUID } from "shelving/util/uuid";
 
 // filepath: /Users/dhoulb/Repos/shelving/modules/util/uuid.test.ts
 

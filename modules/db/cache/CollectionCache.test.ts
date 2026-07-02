@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { CollectionCache, ItemStore, MockDBProvider, QueryStore, runMicrotasks } from "../../index.js";
+import { CollectionCache, ItemStore, MockDBProvider, QueryStore } from "shelving/db";
+import { runMicrotasks } from "shelving/util/async";
 import { BASICS_COLLECTION, basic1, basic2 } from "../../test/index.js";
 
 describe("CollectionCache", () => {

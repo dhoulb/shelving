@@ -1,7 +1,5 @@
 import { expect, test } from "bun:test";
-import { NumberSchema } from "./NumberSchema.js";
-import { OPTIONAL, OptionalSchema } from "./OptionalSchema.js";
-import { StringSchema } from "./StringSchema.js";
+import { NumberSchema, OPTIONAL, OptionalSchema, StringSchema } from "shelving/schema";
 
 test("TypeScript", () => {
 	// Test OptionalSchema type inference

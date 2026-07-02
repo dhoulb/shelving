@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { EMAIL, EmailSchema, NULLABLE_EMAIL } from "../index.js";
+import { EMAIL, EmailSchema, NULLABLE_EMAIL, type Schema } from "shelving/schema";
 
 // Tests.
 test("TypeScript", () => {

@@ -1,11 +1,10 @@
 import { describe, expect, test } from "bun:test";
+import { RequiredError, ValueError } from "shelving/error";
+import { NBSP, NNBSP, THINSP } from "shelving/util/constants";
 import {
 	assertStringLength,
 	getWords,
 	isStringBetween,
-	NBSP,
-	NNBSP,
-	RequiredError,
 	requireSlug,
 	requireStringLength,
 	sanitizeMultilineText,
@@ -13,9 +12,7 @@ import {
 	sanitizeWord,
 	simplifyString,
 	splitString,
-	THINSP,
-	ValueError,
-} from "../index.js";
+} from "shelving/util/string";
 
 test("assertStringLength()", () => {
 	// Assert string.

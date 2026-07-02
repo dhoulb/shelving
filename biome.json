@@ -95,6 +95,26 @@
 			"javascript": {
 				"globals": ["test", "describe", "expect"]
 			}
+		},
+		{
+			"includes": ["**/*.test.ts", "**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noRestrictedImports": {
+							"level": "error",
+							"options": {
+								"patterns": [
+									{
+										"group": ["./**", "../**", "!**/test", "!**/test/**"],
+										"message": "Test files must import from the public 'shelving/*' barrel, not a relative source path — this verifies the barrel actually re-exports the token (see AGENTS.md → Testing). Fixtures under 'modules/test' are exempt."
+									}
+								]
+							}
+						}
+					}
+				}
+			}
 		}
 	]
 }

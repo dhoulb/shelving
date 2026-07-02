@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { DATA, GET, MockAPIProvider, POST, ResponseError, STRING, ValidationAPIProvider } from "../../index.js";
-import { ClientAPIProvider } from "./ClientAPIProvider.js";
+import { ClientAPIProvider, GET, MockAPIProvider, POST, ValidationAPIProvider } from "shelving/api";
+import { ResponseError } from "shelving/error";
+import { DATA, STRING } from "shelving/schema";
 
 describe("MockAPIProvider", () => {
 	test("fetch() returns parsed handler responses and logs the resolved result", async () => {

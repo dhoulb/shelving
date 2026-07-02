@@ -1,16 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import {
-	boundNumber,
-	getNumber,
-	getPercent,
-	getRange,
-	roundNumber,
-	roundStep,
-	sumNumbers,
-	truncateNumber,
-	ValueError,
-	wrapNumber,
-} from "../index.js";
+import { ValueError } from "shelving/error";
+import { getRange } from "shelving/util/iterate";
+import { boundNumber, getNumber, getPercent, roundNumber, roundStep, sumNumbers, truncateNumber, wrapNumber } from "shelving/util/number";
 
 test("roundNumber(): Works correctly", () => {
 	expect(roundNumber(123.456, 0)).toBe(123);

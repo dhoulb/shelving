@@ -1,15 +1,15 @@
 import { expect, test } from "bun:test";
+import { filterArray } from "shelving/util/filter";
 import {
 	createRegExpAll,
 	createRegExpAny,
-	filterArray,
 	getMatch,
 	getMatchGroups,
 	isMatch,
 	notMatch,
 	requireMatch,
 	requireMatchGroups,
-} from "../index.js";
+} from "shelving/util/regexp";
 
 test("getAllRegExp()", () => {
 	// No pattern (always true).

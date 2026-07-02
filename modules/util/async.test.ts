@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { awaitAbort, awaitValues, createDeferred, Errors as ShelvingAggregateError } from "../index.js";
+import { Errors as ShelvingAggregateError } from "shelving/error";
+import { awaitAbort, awaitValues, createDeferred } from "shelving/util/async";
 
 describe("awaitAbort()", () => {
 	test("rejects when signal is already aborted", async () => {
@@ -15,13 +16,13 @@ describe("awaitAbort()", () => {
 	});
 	test("races against getDelay — delay wins when signal never fires", async () => {
 		const controller = new AbortController();
-		const { getDelay } = await import("./async.js");
+		const { getDelay } = await import("shelving/util/async");
 		const result = await Promise.race([getDelay(10).then(() => "done"), awaitAbort(controller.signal).catch(() => "aborted")]);
 		expect(result).toBe("done");
 	});
 	test("races against getDelay — abort wins when signal fires first", async () => {
 		const controller = new AbortController();
-		const { getDelay } = await import("./async.js");
+		const { getDelay } = await import("shelving/util/async");
 		const race = Promise.race([getDelay(100).then(() => "done"), awaitAbort(controller.signal).catch(() => "aborted")]);
 		controller.abort();
 		expect(await race).toBe("aborted");

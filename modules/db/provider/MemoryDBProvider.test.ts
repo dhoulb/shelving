@@ -1,5 +1,9 @@
 import { expect, test } from "bun:test";
-import { type ImmutableArray, type Item, MemoryDBProvider, type OptionalItem, runMicrotasks, runSequence } from "../../index.js";
+import { MemoryDBProvider } from "shelving/db";
+import type { ImmutableArray } from "shelving/util/array";
+import { runMicrotasks } from "shelving/util/async";
+import type { Item, OptionalItem } from "shelving/util/item";
+import { runSequence } from "shelving/util/sequence";
 import {
 	BASICS_COLLECTION,
 	type BasicData,

@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { createDeferred, NONE, runMicrotasks, runSequence, Store } from "../index.js";
+import { Store } from "shelving/store";
+import { createDeferred, runMicrotasks } from "shelving/util/async";
+import { NONE } from "shelving/util/constants";
+import { runSequence } from "shelving/util/sequence";
 import { EXPECT_PROMISELIKE } from "../test/util.js";
 
 test("No initial value", async () => {

@@ -1,30 +1,23 @@
 import { expect, test } from "bun:test";
+import { RequiredError } from "shelving/error";
 import {
 	addArrayItem,
 	addArrayItems,
 	assertArray,
 	deleteArrayItems,
-	filterArray,
 	getNext,
 	getPrev,
 	getUniqueArray,
 	interleaveArray,
 	isArray,
-	isArrayWith,
-	isEqual,
-	isEqualGreater,
-	isEqualLess,
-	isGreater,
-	isInArray,
-	isLess,
-	notEqual,
 	omitArrayItems,
-	RequiredError,
 	requireArray,
 	shuffleArray,
 	toggleArrayItems,
 	withArrayItems,
-} from "../index.js";
+} from "shelving/util/array";
+import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual } from "shelving/util/equal";
+import { filterArray } from "shelving/util/filter";
 
 test("toggleArrayItems()", () => {
 	const arr = [1, 2, 3];

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isConstructor } from "../index.js";
+import { isConstructor } from "shelving/util/class";
 
 test("isClass(): Works correctly", () => {
 	// Classes.

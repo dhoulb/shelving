@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { DATETIME, DateTimeSchema, formatDateTime, NULLABLE_DATETIME } from "../index.js";
+import { DATETIME, DateTimeSchema, NULLABLE_DATETIME, type Schema } from "shelving/schema";
+import { formatDateTime } from "shelving/util/format";
 
 // Tests.
 test("TypeScript", () => {

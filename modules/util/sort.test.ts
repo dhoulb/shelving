@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { compareAscending, compareDescending, sortArray } from "../index.js";
+import { compareAscending, compareDescending, sortArray } from "shelving/util/sort";
 
 describe("ASC & DESC", () => {
 	test("Different types are sorted correctly", () => {

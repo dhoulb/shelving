@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ForbiddenError, NotFoundError, RequestError, UnauthorizedError, UnprocessableError } from "../index.js";
+import { ForbiddenError, NotFoundError, RequestError, UnauthorizedError, UnprocessableError } from "shelving/error";
 
 describe("RequestError", () => {
 	test("code is correct", () => {

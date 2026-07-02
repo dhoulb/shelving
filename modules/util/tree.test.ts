@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { DocumentationElement, TreeElement } from "../index.js";
-import { flattenTree, searchTree, walkElements } from "../index.js";
+import { walkElements } from "shelving/util/element";
+import { type DocumentationElement, flattenTree, searchTree, type TreeElement } from "shelving/util/tree";
 
 /** First child of a tree element (children are an `Elements` iterable, not necessarily an array). */
 function firstChild(element: TreeElement | undefined): TreeElement | undefined {

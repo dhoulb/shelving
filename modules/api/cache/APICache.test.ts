@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { APICache, DATA, GET, MockAPIProvider, runMicrotasks, STRING } from "../../index.js";
-import { ClientAPIProvider } from "../provider/ClientAPIProvider.js";
+import { APICache, ClientAPIProvider, GET, MockAPIProvider } from "shelving/api";
+import { DATA, STRING } from "shelving/schema";
+import { runMicrotasks } from "shelving/util/async";
 
 describe("APICache", () => {
 	test("creates endpoint stores that fetch through the configured provider", async () => {

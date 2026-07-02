@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import type { ImmutableArray, ImmutableDictionary, Updates } from "./index.js";
-import { getUpdates, updateData } from "./index.js";
+import type { ImmutableArray } from "shelving/util/array";
+import type { ImmutableDictionary } from "shelving/util/dictionary";
+import { getUpdates, type Updates, updateData } from "shelving/util/update";
 
 type T = {
 	a: {

@@ -1,10 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { TreeElement } from "../../util/tree.js";
-import { MetaContext } from "../misc/MetaContext.js";
-import { createMeta } from "../util/meta.js";
-import { TreeProvider } from "./TreeContext.js";
-import { TreeRouter } from "./TreeRouter.js";
+import { createMeta, MetaContext, TreeProvider, TreeRouter } from "shelving/ui";
+import type { TreeElement } from "shelving/util/tree";
 
 /** Minimal tree: root → `util` directory → `array` file. */
 const tree: TreeElement = {

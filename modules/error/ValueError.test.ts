@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ValueError } from "../index.js";
+import { ValueError } from "shelving/error";
 
 describe("ValueError", () => {
 	test("caller argument works correctly in ValueError", () => {

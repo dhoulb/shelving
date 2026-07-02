@@ -1,16 +1,15 @@
 import { describe, expect, test } from "bun:test";
+import { RequiredError, ValueError } from "shelving/error";
 import {
 	getPlaceholders,
 	matchPathTemplate,
 	matchPathTemplates,
 	matchTemplate,
 	matchTemplates,
-	RequiredError,
 	renderPathTemplate,
 	renderTemplate,
 	type TemplateMatches,
-	ValueError,
-} from "../index.js";
+} from "shelving/util/template";
 
 // Tests.
 describe("matchTemplate()", () => {

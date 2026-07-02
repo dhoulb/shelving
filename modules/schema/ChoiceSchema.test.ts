@@ -1,6 +1,5 @@
 import { expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { CHOICE, ChoiceSchema } from "../index.js";
+import { CHOICE, ChoiceSchema, type Schema } from "shelving/schema";
 
 test("TypeScript", () => {
 	// String object options.

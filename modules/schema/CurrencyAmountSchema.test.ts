@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CURRENCY_AMOUNT, CurrencyAmountSchema, NULLABLE_CURRENCY_AMOUNT } from "./CurrencyAmountSchema.js";
-import type { Schema } from "./Schema.js";
+import { CURRENCY_AMOUNT, CurrencyAmountSchema, NULLABLE_CURRENCY_AMOUNT, type Schema } from "shelving/schema";
 
 test("TypeScript", () => {
 	const s1: Schema<number> = CURRENCY_AMOUNT("GBP");

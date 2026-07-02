@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getPath, isAbsolutePath, isPathProud, matchPathPrefix } from "../index.js";
+import { getPath, isAbsolutePath, isPathProud, matchPathPrefix } from "shelving/util/path";
 
 test("isAbsolutePath()", () => {
 	// Absolute.

@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { COUNTRY, CountrySchema, getCountry, NULLABLE_COUNTRY } from "../index.js";
-import type { Country } from "../util/geo.js";
+import { COUNTRY, CountrySchema, NULLABLE_COUNTRY, type Schema } from "shelving/schema";
+import { type Country, getCountry } from "shelving/util/geo";
 
 test("TypeScript", () => {
 	const s1: Schema<Country | null> = NULLABLE_COUNTRY;

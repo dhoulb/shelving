@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import { runMicrotasks, runSequence } from "../index.js";
-import { DeferredSequence } from "./DeferredSequence.js";
+import { DeferredSequence } from "shelving/sequence";
+import { runMicrotasks } from "shelving/util/async";
+import { runSequence } from "shelving/util/sequence";
 
 test("Multiple `resolve()` and `reject()` calls", async () => {
 	const deferred = new DeferredSequence<number>();

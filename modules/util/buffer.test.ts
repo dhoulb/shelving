@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { isBuffer, isBufferView, isTypedArray } from "../index.js";
+import { isBuffer, isBufferView, isTypedArray } from "shelving/util/buffer";
 
 test("isBuffer()", () => {
 	// Valid ArrayBuffer

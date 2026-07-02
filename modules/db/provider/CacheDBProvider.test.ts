@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { CacheDBProvider, MemoryDBProvider, runMicrotasks, runSequence } from "../../index.js";
+import { CacheDBProvider, MemoryDBProvider } from "shelving/db";
+import { runMicrotasks } from "shelving/util/async";
+import { runSequence } from "shelving/util/sequence";
 import { BASICS_COLLECTION, basic1, basic2, expectOrderedItems } from "../../test/index.js";
 
 describe("CacheDBProvider", () => {

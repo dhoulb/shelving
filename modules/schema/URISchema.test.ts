@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { Schema } from "../index.js";
-import { NULLABLE_URI_SCHEMA, URI_SCHEMA, URISchema } from "../index.js";
+import { NULLABLE_URI_SCHEMA, type Schema, URI_SCHEMA, URISchema } from "shelving/schema";
 
 // Tests.
 test("TypeScript", () => {

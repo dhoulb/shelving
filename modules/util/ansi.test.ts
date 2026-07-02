@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { ANSI_GREEN, ANSI_RESET, ANSI_SUCCESS, ansiWrap, SUCCESS } from "../index.js";
+import { ANSI_GREEN, ANSI_RESET, ANSI_SUCCESS, ansiWrap } from "shelving/util/ansi";
+import { SUCCESS } from "shelving/util/constants";
 
 // `ansiWrap` resolves colour support once at module load (`_USES_COLOR`), so within this process its behaviour is
 // fixed — every result is one of two deterministic forms regardless of the test runner's TTY/env state.

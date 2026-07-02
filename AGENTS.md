@@ -158,7 +158,7 @@ These prefixes are reserved for the upcoming UI / component layer. Don't repurpo
 - Barrel files (`index.ts`) re-export with `export * from "./X.js"`, alphabetically sorted
 - Keep barrel exports in sync when moving or adding files
 - In source files, always import from the declaration file directly (e.g. `../../util/array.js`), never from a barrel
-- In test files, always import from the highest applicable barrel (e.g. `shelving/util` not `../../util/array.js`) — this verifies the barrel export exists
+- In test files, always import from the public `shelving/*` barrel, not a relative source path (e.g. `shelving/schema` not `../StringSchema.js`, `shelving/util/array` not `../../util/array.js`) — this verifies the barrel actually re-exports the token. Enforced by a Biome `noRestrictedImports` rule; fixtures under `modules/test` are exempt and stay relative. Resolution of `shelving/*` to source in dev is wired via `tsconfig.json` `paths`
 - `verbatimModuleSyntax` is on — `import type { ... }` is mandatory for type-only imports. Inline `type` in mixed imports: `import { type Foo, bar }`
 
 ## Types
@@ -412,7 +412,7 @@ Checklist:
 - When changing runtime behaviour, update or add the closest colocated `*.test.ts`
 - When changing TypeScript inference or public generic behaviour, include compile-time assignment checks in tests in addition to runtime assertions
 - Reuse fixtures and helpers from `modules/test/` when they fit, especially for collection, provider, and query tests
-- Test files always import from the highest possible barrel file, so the test also ensures the barrel export
+- Test files always import from the public `shelving/*` barrel (never a relative `../` source path), so the test also ensures the barrel export — enforced by a Biome `noRestrictedImports` rule (`modules/test` fixtures exempt)
 - Test descriptions are lowercase sentence fragments: `test("formats from leading 0", ...)`
 - Use `expect.unreachable()` to assert that a code path should not be reached (in catch blocks testing thrown errors)
 

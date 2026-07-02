@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
-import { type Element, type ElementProps, requireURL } from "../../index.js";
-import { MarkupParser } from "../index.js";
+import { MarkupParser } from "shelving/markup";
+import type { Element, ElementProps } from "shelving/util/element";
+import { requireURL } from "shelving/util/url";
 
 const PARSER = new MarkupParser();
 const NOFOLLOW_PARSER = new MarkupParser({ rel: "nofollow ugc" });

@@ -1,6 +1,8 @@
 import { expect, test } from "bun:test";
-import type { ImmutableArray } from "../index.js";
-import { ArrayStore, runMicrotasks, runSequence } from "../index.js";
+import { ArrayStore } from "shelving/store";
+import type { ImmutableArray } from "shelving/util/array";
+import { runMicrotasks } from "shelving/util/async";
+import { runSequence } from "shelving/util/sequence";
 
 test("ArrayStore with initial value", async () => {
 	const store = new ArrayStore<number>([1, 2, 3]);
