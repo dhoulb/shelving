@@ -1,4 +1,6 @@
 import type { CSSProperties, ReactElement } from "react";
+import { formatPercent } from "../../util/format.js";
+import { getPercent } from "../../util/number.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import styles from "./Progress.module.css";
 
@@ -9,76 +11,41 @@ import styles from "./Progress.module.css";
  */
 export interface ProgressProps {
 	value: number;
+	min?: number;
+	max?: number;
 	success?: boolean;
 	warning?: boolean;
 	danger?: boolean;
 }
 
 /**
- * Show progress as a single continuous horizontal bar, filled to `value` clamped between `0` and `1`.
+ * Show progress as a single continuous horizontal bar, filled to `value` within the `min`–`max` range (matches `getPercent()` and `formatPercent()`).
+ * - The fill is allowed to overspill; CSS clamps it to the `0%`–`100%` range via `min-width`/`max-width`.
  *
  * @returns A progress bar element.
  * @kind component
- * @example <Progress value={0.5} />
+ * @example <Progress value={3} max={4} />
  * @see https://shelving.cc/ui/Progress
  */
-export function Progress({ value, success, warning, danger }: ProgressProps): ReactElement | null {
-	const clamped = Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
-	const progressStyle = { ["--progress-value" as string]: `${clamped * 100}%` } as CSSProperties;
+export function Progress({ value, min = 0, max = 100, success, warning, danger }: ProgressProps): ReactElement | null {
+	const percent = getPercent(value - min, max - min);
+	const fillStyle = { width: `${Number.isFinite(percent) ? percent : 0}%` } as CSSProperties;
 
 	return (
-		<div
+		<figure
 			className={getClass(
 				getModuleClass(styles, "track"),
 				success && getModuleClass(styles, "success"),
 				warning && getModuleClass(styles, "warning"),
 				danger && getModuleClass(styles, "danger"),
 			)}
-			style={progressStyle}
+			role="progressbar"
+			aria-valuemin={min}
+			aria-valuemax={max}
+			aria-valuenow={value}
+			aria-valuetext={formatPercent(value - min, max - min)}
 		>
-			<span className={getModuleClass(styles, "fill")} />
-		</div>
-	);
-}
-
-/**
- * Props for `SegmentedProgress`, a stepped progress bar of discrete segments.
- *
- * @see https://shelving.cc/ui/SegmentedProgressProps
- */
-export interface SegmentedProgressProps {
-	total: number;
-	current: number;
-	success?: boolean;
-	warning?: boolean;
-	danger?: boolean;
-}
-
-/**
- * Show step progress as a horizontal bar of `total` segments, of which `current + 1` are filled.
- *
- * @returns A segmented progress bar element, or `null` when `total` is not positive.
- * @kind component
- * @example <SegmentedProgress total={4} current={1} />
- * @see https://shelving.cc/ui/SegmentedProgress
- */
-export function SegmentedProgress({ total, current, success, warning, danger }: SegmentedProgressProps): ReactElement | null {
-	if (total <= 0) return null;
-	const progressStyle = { ["--progress-steps" as string]: total } as CSSProperties;
-
-	return (
-		<div
-			className={getClass(
-				getModuleClass(styles, "segmented"),
-				success && getModuleClass(styles, "success"),
-				warning && getModuleClass(styles, "warning"),
-				danger && getModuleClass(styles, "danger"),
-			)}
-			style={progressStyle}
-		>
-			{Array.from({ length: total }, (_, i) => (
-				<span key={i.toString()} className={getClass(getModuleClass(styles, "item"), i <= current && getModuleClass(styles, "active"))} />
-			))}
-		</div>
+			<span className={getModuleClass(styles, "fill")} style={fillStyle} />
+		</figure>
 	);
 }

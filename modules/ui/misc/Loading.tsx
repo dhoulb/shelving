@@ -1,37 +1,26 @@
 import type { ReactElement } from "react";
 import { getModuleClass } from "../util/css.js";
-import styles from "./Loading.module.css";
+import { Icon } from "./Icon.js";
+import LOADING_CSS from "./Loading.module.css";
 
-declare const _componentProps: unique symbol;
-
-/**
- * Props for `<Loading>` — takes no props (branded empty interface).
- *
- * @see https://shelving.cc/ui/LoadingProps
- */
-export interface LoadingProps {
-	readonly [_componentProps]?: never;
-}
+const LOADING_TRACK_CLASS = getModuleClass(LOADING_CSS, "track");
+const LOADING_INDICATOR_CLASS = getModuleClass(LOADING_CSS, "indicator");
 
 /**
- * Animated spinner SVG used as a loading indicator.
+ * Animated loading spinner shaped like a Heroicon — a faint track plus a rotating indicator arc.
  *
- * - Self-contained inline SVG with a rotating indicator arc; inherits its colour and size from the surrounding text.
+ * - Self-contained inline SVG; the spin is driven by an inline SMIL `<animateTransform>`.
+ * - The track and indicator paint from scaled steps of the current tint ladder (`--tint-70` / `--tint-80`), so their colour follows whatever tint `<Icon>` (or an ancestor) sets.
+ * - Takes only `className` like the Heroicons, so it slots straight into `<Icon icon={Loading} />` to pick up icon sizing, colour, and centring.
  *
  * @kind component
  * @see https://shelving.cc/ui/Loading
  */
-export function Loading(): ReactElement {
+export function Loading({ className }: { className?: string | undefined }): ReactElement {
 	return (
-		<svg
-			aria-hidden="true"
-			viewBox="0 0 24 24"
-			xmlns="http://www.w3.org/2000/svg"
-			className={getModuleClass(styles, "spinner")}
-			data-slot="icon"
-		>
+		<svg aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={className} data-slot="icon">
 			<title>Loading...</title>
-			<circle className={getModuleClass(styles, "track")} cx="12" cy="12" r="9" pathLength="100" />
+			<circle className={LOADING_TRACK_CLASS} cx="12" cy="12" r="9" pathLength="100" />
 			<g>
 				<animateTransform
 					attributeName="transform"
@@ -42,15 +31,17 @@ export function Loading(): ReactElement {
 					dur="0.5s"
 					repeatCount="indefinite"
 				/>
-				<circle className={getModuleClass(styles, "indicator")} cx="12" cy="12" r="9" pathLength="100" />
+				<circle className={LOADING_INDICATOR_CLASS} cx="12" cy="12" r="9" pathLength="100" />
 			</g>
 		</svg>
 	);
 }
 
 /**
- * Shared `<Loading>` element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
+ * Shared loading spinner element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
+ *
+ * - A `<Loading>` rendered through `<Icon>`, so it picks up icon sizing, colour, and centring.
  *
  * @see https://shelving.cc/ui/LOADING
  */
-export const LOADING = <Loading key="loading" />;
+export const LOADING = <Icon icon={Loading} key="loading" />;

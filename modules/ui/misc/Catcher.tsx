@@ -2,16 +2,12 @@ import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Component, createContext, type ReactElement, type ReactNode, use } from "react";
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
-import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
-import { Row } from "../block/Row.js";
-import { Subheading } from "../block/Subheading.js";
 import { Button, type ButtonVariants } from "../button/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
 import type { ChildProps, OptionalChildProps } from "../util/props.js";
-import { Icon } from "./Icon.js";
 
 const RetryContext = createContext<Callback | undefined>(undefined);
 RetryContext.displayName = "RetryContext";
@@ -19,11 +15,13 @@ RetryContext.displayName = "RetryContext";
 /**
  * Props for `<RetryButton>` — `<Button>` variants plus optional `children` to override the default "Retry" label.
  *
+ * @property children - The content of the button. Defaults to a refresh icon and `"Retry"`
+ *
  * @see https://shelving.cc/ui/RetryButtonProps
  */
 export interface RetryButtonProps extends ButtonVariants, OptionalChildProps {}
 
-const RETRY_CHILDREN = (
+const _RETRY_CHILDREN = (
 	<>
 		<ArrowPathIcon />
 		Retry
@@ -39,7 +37,7 @@ const RETRY_CHILDREN = (
  * @kind component
  * @see https://shelving.cc/ui/RetryButton
  */
-export function RetryButton({ children = RETRY_CHILDREN, ...props }: RetryButtonProps): ReactElement | null {
+export function RetryButton({ children = _RETRY_CHILDREN, ...props }: RetryButtonProps): ReactElement | null {
 	const retry = use(RetryContext);
 	if (!retry) return null;
 	return (
@@ -137,26 +135,16 @@ export function PageCatcher({ children }: ChildProps): ReactElement {
 }
 
 /**
- * Render a caught error as a full-page `<Page>` with an error `<Card>` and retry button.
- *
- * - Uses `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
+ * Render a caught error as a full-page `<Page>` with a centered `<ErrorNotice>`.
  *
  * @kind component
  * @see https://shelving.cc/ui/ErrorPage
  */
 export function ErrorPage({ reason }: ErrorProps): ReactElement {
-	const message = getMessage(reason) ?? "Unknown error";
 	return (
 		<Page title="Error">
 			<CenteredLayout>
-				<Card status="error">
-					<Subheading>
-						<Row left>
-							<Icon status="error" /> {message}
-						</Row>
-					</Subheading>
-					<RetryButton />
-				</Card>
+				<ErrorNotice reason={reason} />
 			</CenteredLayout>
 		</Page>
 	);

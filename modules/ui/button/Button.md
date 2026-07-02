@@ -60,6 +60,8 @@ import { getButtonClass } from "shelving/ui";
 | `--button-radius` | Corner radius | `var(--radius-xsmall)` (8px) |
 | `--button-padding` | Inner padding | `var(--space-small)` (12px) |
 | `--button-small-padding` | Inner padding when `small` | `var(--space-xxsmall)` (4px) |
+| `--button-gap` | Gap between icon and label | `var(--space-small)` (12px) |
+| `--button-small-gap` | Gap between icon and label when `small` | `var(--space-xxsmall)` (4px) |
 | `--button-space` | Outer block margin | `var(--space-small)` (12px) |
 | `--button-font` | Font family | `var(--font-body)` |
 | `--button-weight` | Font weight | `var(--weight-strong)` (700) |
