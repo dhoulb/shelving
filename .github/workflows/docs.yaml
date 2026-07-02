@@ -106,14 +106,31 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [ -d "pr-${PR_NUMBER}" ]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # The `docs` branch has many concurrent writers (every PR preview and every `main` deploy),
+          # so a plain `git push` races and fails non-fast-forward — which is exactly how stale `pr-*`
+          # previews pile up: the removal commit is built but never lands. Re-sync to the latest `docs`
+          # tip and retry the removal until the push succeeds (or the preview is already gone).
+          for attempt in 1 2 3 4 5; do
+            git fetch --quiet origin docs
+            git reset --hard --quiet FETCH_HEAD
+            if [ ! -d "pr-${PR_NUMBER}" ]; then
+              echo "Preview pr-${PR_NUMBER} already removed; nothing to do."
+              exit 0
+            fi
             rm -rf "pr-${PR_NUMBER}"
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "chore: remove docs preview for PR #${PR_NUMBER}"
-            git push
-          fi
+            git commit --quiet -m "chore: remove docs preview for PR #${PR_NUMBER}"
+            if git push origin HEAD:docs; then
+              echo "Removed pr-${PR_NUMBER} preview (attempt ${attempt})."
+              exit 0
+            fi
+            echo "Push raced with another deploy on attempt ${attempt}; re-syncing and retrying."
+            sleep $((attempt * 3))
+          done
+          echo "::error::Failed to remove pr-${PR_NUMBER} preview after 5 attempts."
+          exit 1
       # GitHub never deletes deployment records on its own, so the `docs-preview` deployments this
       # PR created would linger forever pointing at a now-removed preview. Mark them inactive (you
       # can't delete an active deployment) then delete them.
