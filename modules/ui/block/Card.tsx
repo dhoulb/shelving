@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { Clickable, type ClickableProps } from "../form/Clickable.js";
+import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";

@@ -6,7 +6,7 @@ import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Row } from "../block/Row.js";
 import { Subheading } from "../block/Subheading.js";
-import { Button, type ButtonVariants } from "../form/Button.js";
+import { Button, type ButtonVariants } from "../button/Button.js";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";

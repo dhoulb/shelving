@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: This is fine we're only using this to listen for clicks on child buttons. */
 
 import { type ReactElement, useState } from "react";
-import { Button, type ButtonVariants } from "./Button.js";
+import { Button, type ButtonVariants } from "../button/Button.js";
 import { Popover, type PopoverChildren } from "./Popover.js";
 
 /**

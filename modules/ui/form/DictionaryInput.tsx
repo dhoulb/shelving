@@ -7,7 +7,7 @@ import { splitMessage } from "../../util/error.js";
 import { formatUnit } from "../../util/format.js";
 import { omitProp } from "../../util/object.js";
 import { Row } from "../block/Row.js";
-import { Button } from "./Button.js";
+import { Button } from "../button/Button.js";
 import { ButtonInput } from "./ButtonInput.js";
 import type { ValueInputProps } from "./Input.js";
 import { SchemaInput } from "./SchemaInput.js";

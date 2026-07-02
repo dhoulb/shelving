@@ -1,10 +1,10 @@
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
+import { requireForm } from "../form/FormContext.js";
 import { Loading } from "../misc/Loading.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
-import { requireForm } from "./FormContext.js";
 
 /**
  * Submit button for a form that disables itself and shows a spinner while the form is busy.
