@@ -53,7 +53,7 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 
 - **`MemoryDBProvider`** — fully in-memory, ideal for testing and as a lightweight standalone store.
 - **`ValidationDBProvider`** — validates data in and out using the collection's schema. Throws `ValueError` on bad data from the backend.
-- **`CacheDBProvider`** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the `shelving/react` integration via `createDBContext()`.
+- **`CacheDBProvider`** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the [React integration](#react-integration).
 - **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
 - **`SQLiteProvider`** / **`PostgreSQLProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 

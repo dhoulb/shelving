@@ -54,7 +54,7 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 
 `APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by the rendered URL. For `GET`/`HEAD` requests, query params are part of the key so `?role=admin` and `?role=editor` are stored separately. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
 
-The cache is primarily useful as the backbone of the `shelving/react` integration via `createAPIContext()`. Use it directly only when you need a reactive layer outside React.
+The cache is primarily useful as the backbone of the [React integration](#react-integration). Use it directly only when you need a reactive layer outside React.
 
 ## Usage
 
