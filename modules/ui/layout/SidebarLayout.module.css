@@ -50,8 +50,10 @@
 		inset: 0;
 
 		/* Style */
-		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		/* Page background + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset.
+		 * `color` inherits, so this one rule sets the text colour for the whole layout (including `.content`). */
 		background: var(--sidebar-layout-background, var(--tint-100));
+		color: var(--sidebar-layout-color, var(--tint-00));
 	}
 
 	.main {
@@ -75,8 +77,9 @@
 		padding: var(--space-normal);
 
 		/* Style */
-		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		/* Sidebar fill + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset. */
 		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
+		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
 	}
 
 	.content {
@@ -93,7 +96,7 @@
 		scroll-behavior: smooth;
 
 		/* Style */
-		/* Falls back to the white page background (--tint-100) when the hook is unset; shares the page background hook. */
+		/* Shares the page background hook; text colour is inherited from the `body` rule above (no `color` here on purpose). */
 		background: var(--sidebar-layout-background, var(--tint-100));
 	}
 

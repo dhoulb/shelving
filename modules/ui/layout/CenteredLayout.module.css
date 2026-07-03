@@ -35,8 +35,9 @@
 		position: fixed;
 		inset: 0;
 
-		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		/* Page background + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset. */
 		background: var(--centered-layout-background, var(--tint-100));
+		color: var(--centered-layout-color, var(--tint-00));
 	}
 
 	.main {
