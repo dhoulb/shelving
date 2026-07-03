@@ -5,6 +5,6 @@
 		}
 	],
 	"settings": {
-		"typescript.native-preview.tsdk": "/Users/dhoulb/Repos/shelving/node_modules/@typescript/native-preview"
+		"typescript.tsdk": "node_modules/typescript/lib"
 	}
 }
