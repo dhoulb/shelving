@@ -9,7 +9,7 @@ import WIDTH_CSS from "./Width.module.css";
  *
  * @see https://shelving.cc/ui/WidthVariant
  */
-export type WidthVariant = "xxnarrow" | "xnarrow" | "narrow" | "normal" | "wide" | "xwide" | "xxwide" | "full" | "fit";
+export type WidthVariant = "narrow" | "normal" | "wide" | "full" | "fit";
 
 /**
  * Variant props that set (or unconstrain) a component's width, e.g. `width="narrow"` or `width="12x"`.

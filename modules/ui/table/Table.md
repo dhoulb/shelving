@@ -81,7 +81,7 @@ The following table does the same but with a minimum width on the description co
   <tr>
     <Cell nowrap>{name}</Cell>
     <Cell nowrap>{location}</Cell>
-    <Cell width="xnarrow" grow>{description}</Cell>
+    <Cell width="narrow" grow>{description}</Cell>
   </tr>
 </Table>
 ```

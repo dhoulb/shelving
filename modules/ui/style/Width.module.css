@@ -4,14 +4,9 @@
 @layer defaults {
 	:root {
 		/* Semantic widths */
-		--width-xxnarrow: 16rem;
-		--width-xnarrow: 24rem;
 		--width-narrow: 36rem;
 		--width-normal: 48rem;
 		--width-wide: 80rem;
-		--width-xwide: 96rem;
-		--width-xxwide: 112rem;
-		--width-xxxwide: 128rem;
 	}
 
 	/* Frame shared by every width value (weak default — a component's own margin can still beat the centering). */
@@ -28,12 +23,6 @@
 	}
 
 	/* Semantic widths. */
-	.width-xxnarrow {
-		--width: var(--width-xxnarrow);
-	}
-	.width-xnarrow {
-		--width: var(--width-xnarrow);
-	}
 	.width-narrow {
 		--width: var(--width-narrow);
 	}
@@ -42,12 +31,6 @@
 	}
 	.width-wide {
 		--width: var(--width-wide);
-	}
-	.width-xwide {
-		--width: var(--width-xwide);
-	}
-	.width-xxwide {
-		--width: var(--width-xxwide);
 	}
 	.width-full {
 		--width: 100%;

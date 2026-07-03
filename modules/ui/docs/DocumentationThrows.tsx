@@ -43,7 +43,7 @@ export function DocumentationThrows({ throws }: DocumentationThrowsProps): React
 							<Cell header width="fit">
 								Throws
 							</Cell>
-							<Cell header width="xxnarrow" grow />
+							<Cell header width="narrow" grow />
 						</tr>
 					</thead>
 					<tbody>
