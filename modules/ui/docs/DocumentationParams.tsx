@@ -55,7 +55,7 @@ export function DocumentationParams({ params }: DocumentationParamsProps): React
 							<Cell header width="fit">
 								Type
 							</Cell>
-							<Cell header width="xxnarrow" grow />
+							<Cell header width="16x" grow />
 						</tr>
 					</thead>
 					<tbody>

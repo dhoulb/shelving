@@ -4,14 +4,9 @@
 @layer defaults {
 	:root {
 		/* Semantic widths */
-		--width-xxnarrow: 16rem;
-		--width-xnarrow: 24rem;
 		--width-narrow: 36rem;
 		--width-normal: 48rem;
 		--width-wide: 80rem;
-		--width-xwide: 96rem;
-		--width-xxwide: 112rem;
-		--width-xxxwide: 128rem;
 	}
 
 	/* Frame shared by every width value (weak default — a component's own margin can still beat the centering). */
@@ -28,12 +23,6 @@
 	}
 
 	/* Semantic widths. */
-	.width-xxnarrow {
-		--width: var(--width-xxnarrow);
-	}
-	.width-xnarrow {
-		--width: var(--width-xnarrow);
-	}
 	.width-narrow {
 		--width: var(--width-narrow);
 	}
@@ -43,17 +32,58 @@
 	.width-wide {
 		--width: var(--width-wide);
 	}
-	.width-xwide {
-		--width: var(--width-xwide);
-	}
-	.width-xxwide {
-		--width: var(--width-xxwide);
-	}
 	.width-full {
 		--width: 100%;
 	}
 	.width-fit {
 		--width: fit-content;
+	}
+
+	/* Numeric widths — multiples of `--space-normal` (no `--width-*` tokens; calculated directly). */
+	.width-1x {
+		--width: calc(1 * var(--space-normal));
+	}
+	.width-2x {
+		--width: calc(2 * var(--space-normal));
+	}
+	.width-3x {
+		--width: calc(3 * var(--space-normal));
+	}
+	.width-4x {
+		--width: calc(4 * var(--space-normal));
+	}
+	.width-5x {
+		--width: calc(5 * var(--space-normal));
+	}
+	.width-6x {
+		--width: calc(6 * var(--space-normal));
+	}
+	.width-7x {
+		--width: calc(7 * var(--space-normal));
+	}
+	.width-8x {
+		--width: calc(8 * var(--space-normal));
+	}
+	.width-10x {
+		--width: calc(10 * var(--space-normal));
+	}
+	.width-12x {
+		--width: calc(12 * var(--space-normal));
+	}
+	.width-16x {
+		--width: calc(16 * var(--space-normal));
+	}
+	.width-20x {
+		--width: calc(20 * var(--space-normal));
+	}
+	.width-24x {
+		--width: calc(24 * var(--space-normal));
+	}
+	.width-28x {
+		--width: calc(28 * var(--space-normal));
+	}
+	.width-32x {
+		--width: calc(32 * var(--space-normal));
 	}
 
 	/* Grow modifier — turn the chosen width into a floor and expand to fill (flex items + table columns). */

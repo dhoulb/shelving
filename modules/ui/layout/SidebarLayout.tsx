@@ -5,7 +5,14 @@ import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import SIDEBAR_LAYOUT_CSS from "./SidebarLayout.module.css";
+import LAYOUT_CSS from "./SidebarLayout.module.css";
+
+const LAYOUT_SIDEBAR_CLASS = getModuleClass(LAYOUT_CSS, "sidebar");
+const LAYOUT_CONTENT_CLASS = getModuleClass(LAYOUT_CSS, "content");
+const LAYOUT_TOGGLE_CLASS = getModuleClass(LAYOUT_CSS, "toggle");
+const LAYOUT_OVERLAY_CLASS = getModuleClass(LAYOUT_CSS, "overlay");
+const LAYOUT_MAIN_CLASS = getModuleClass(LAYOUT_CSS, "main");
+const LAYOUT_OPEN_CLASS = getModuleClass(LAYOUT_CSS, "open");
 
 /**
  * Props for `<SidebarLayout>` — the `sidebar` column content, main `children`, and a `right` placement flag.
@@ -42,39 +49,35 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 	const sidebarEl = (
 		<nav
 			key="sidebar"
-			className={getClass(getModuleClass(SIDEBAR_LAYOUT_CSS, "sidebar"), open && getModuleClass(SIDEBAR_LAYOUT_CSS, "open"))}
+			className={getClass(
+				LAYOUT_SIDEBAR_CLASS, //
+				open && LAYOUT_OPEN_CLASS,
+			)}
 		>
 			{sidebar}
 		</nav>
 	);
+
 	// Wrap the scrolling content column in `<RouteCache>` so recently-visited pages stay mounted but hidden
 	// — keeping the scroll position of this `.content` container (and all page state) intact across
 	// back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither
 	// duplicated nor remounted as the URL changes.
 	const contentEl = (
 		<RouteCache key="content">
-			<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "content")}>
-				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "toggle")}>
+			<div className={LAYOUT_CONTENT_CLASS}>
+				<div className={LAYOUT_TOGGLE_CLASS}>
 					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
 						{open ? <XMarkIcon /> : <Bars3Icon />}
 					</Button>
 				</div>
-				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "contentInner")}>{children}</div>
+				{children}
 			</div>
 		</RouteCache>
 	);
+
 	const overlayEl = open && (
-		<button
-			key="overlay"
-			type="button"
-			className={getModuleClass(SIDEBAR_LAYOUT_CSS, "overlay")}
-			aria-label="Close menu"
-			onClick={() => setOpen(false)}
-		/>
+		<button key="overlay" type="button" className={LAYOUT_OVERLAY_CLASS} aria-label="Close menu" onClick={() => setOpen(false)} />
 	);
-	return (
-		<main className={getModuleClass(SIDEBAR_LAYOUT_CSS, "main")}>
-			{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}
-		</main>
-	);
+
+	return <main className={LAYOUT_MAIN_CLASS}>{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}</main>;
 }

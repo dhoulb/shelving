@@ -27,6 +27,13 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 
 ## Styling
 
-This layout exposes no own `--centered-layout-*` hooks. The inner column is capped at the global `--width-narrow` token (dropped when `fullWidth` is set), and the outer element owns its scroll, padding, and safe-area behaviour directly — reading the layout hooks `--layout-space`, `--layout-padding`, `--layout-body-bg`, and `--layout-inset-top` / `-bottom` / `-left` / `-right`.
+| Variable | Styles | Default |
+|---|---|---|
+| `--centered-layout-width` | Max width of the centred column | `var(--width-narrow)` |
+| `--centered-layout-space` | Top/bottom padding of the scroll area | `var(--space-normal)` |
+| `--centered-layout-padding` | Left/right padding of the scroll area | `var(--space-normal)` |
+| `--centered-layout-background` | Page background while the layout is mounted | Unset — the `body` default from `Typography.module.css` shows |
 
-**Global tokens it reads** — `--width-narrow`.
+The max-width cap is dropped entirely when `fullWidth` is set. The outer element owns its scroll, padding, and safe-area behaviour directly — it also reads the `--layout-inset-top` / `-bottom` / `-left` / `-right` hooks owned by `Layout.ts` (`useSafeKeyboardArea()` writes `--layout-inset-bottom`).
+
+**Global tokens it reads** — `--width-narrow` and `--space-normal`.
