@@ -24,23 +24,12 @@
 		background: var(--progress-background, var(--tint-90));
 	}
 
-	/* Fill — WebKit/Blink and Firefox expose the fill under different pseudo-elements, so both repeat the same paint. */
+	/* Fill — WebKit/Blink and Firefox expose the fill under different pseudo-elements, so both repeat the same paint. Painted from the tint ladder, so `color=` / `status=` recolour it. */
 	.progress::-webkit-progress-value {
-		background: var(--progress-color, var(--color-blue));
+		background: var(--progress-color, var(--tint-50));
 		transition: inline-size var(--duration-fast);
 	}
 	.progress::-moz-progress-bar {
-		background: var(--progress-color, var(--color-blue));
-	}
-
-	/* Status variants — set `--progress-color` so both fill pseudo-elements pick it up. */
-	.success {
-		--progress-color: var(--progress-success, var(--color-green));
-	}
-	.warning {
-		--progress-color: var(--progress-warning, var(--color-orange));
-	}
-	.danger {
-		--progress-color: var(--progress-danger, var(--color-red));
+		background: var(--progress-color, var(--tint-50));
 	}
 }
