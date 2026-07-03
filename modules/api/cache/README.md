@@ -25,7 +25,7 @@ APICache
 
 ## Usage
 
-Direct use of `APICache` or `EndpointCache` is rarely necessary outside of `CachedAPIProvider`. They power the [React integration](#see-also) via `createAPIContext()`.
+Direct use of `APICache` or `EndpointCache` is rarely necessary outside of `CachedAPIProvider`. They power the `shelving/react` integration via `createAPIContext()`.
 
 ```ts
 import { APICache } from "shelving/api"
