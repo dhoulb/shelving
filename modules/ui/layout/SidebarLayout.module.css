@@ -77,8 +77,9 @@
 		padding: var(--space-normal);
 
 		/* Style */
-		/* Sidebar fill + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset. */
-		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
+		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-90 / --tint-00) when the hooks are unset.
+		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
 		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
 	}
 

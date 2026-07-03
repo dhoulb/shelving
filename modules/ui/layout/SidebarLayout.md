@@ -50,10 +50,10 @@ useEffect(useSafeKeyboardArea, []);
 | `--sidebar-layout-width` | Width of the side column (and drawer) | `17.5rem` |
 | `--sidebar-layout-background` | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white) |
 | `--sidebar-layout-color` | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black) |
-| `--sidebar-layout-sidebar-background` | Sidebar column fill | `var(--tint-100)` (white) |
+| `--sidebar-layout-sidebar-background` | Sidebar column fill | `var(--tint-90)` (one shade darker than the page) |
 | `--sidebar-layout-sidebar-color` | Sidebar column text colour | `var(--tint-00)` (black) |
 | `--sidebar-layout-border` | Divider between sidebar and content | `var(--stroke-normal) solid var(--tint-80)` |
 
 The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class). `useSafeKeyboardArea()` still writes `--layout-inset-bottom` for layouts that pad to the safe area.
 
-**Global tokens it reads** — `--tint-00` / `--tint-80` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.
+**Global tokens it reads** — `--tint-00` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.
