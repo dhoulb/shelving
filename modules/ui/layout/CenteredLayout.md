@@ -1,10 +1,11 @@
 # CenteredLayout
 
-A full-viewport layout that centres its content horizontally inside a narrow max-width column. Good for login, registration, error, and other focused single-purpose pages where the content is the only thing on screen.
+A full-viewport layout that centres its content — vertically and horizontally — inside a narrow max-width column. Good for login, registration, error, and other focused single-purpose pages where the content is the only thing on screen. When the content is taller than the viewport it scrolls vertically, pinned to the top so nothing is clipped.
 
 **Things to know:**
 
-- Pass `fullWidth` to drop the max-width constraint while keeping the centred positioning — use it when the content itself needs to fill the width.
+- Pass the `width` variant to resize the centred column (e.g. `width="normal"`, `width="wide"`, or `width="full"` to fill the available width).
+- Pass the `padding` (block / top + bottom) and `indent` (inline / left + right) variants to change the space around the content.
 - Like the other full-viewport layouts it owns scroll, padding, and safe-area insets so individual pages don't have to.
 
 ## Usage
@@ -14,8 +15,8 @@ import { CenteredLayout, Section } from "shelving/ui";
 
 function LoginPage() {
   return (
-    <CenteredLayout>
-      <Section width="narrow">
+    <CenteredLayout width="narrow">
+      <Section>
         <LoginForm/>
       </Section>
     </CenteredLayout>
@@ -29,11 +30,11 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--centered-layout-width` | Max width of the centred column | `var(--width-narrow)` |
-| `--centered-layout-space` | Top/bottom padding of the scroll area | `var(--space-normal)` |
-| `--centered-layout-padding` | Left/right padding of the scroll area | `var(--space-normal)` |
+| `--centered-layout-width` | Width of the centred column (capped at 100%) | `var(--width-narrow)` |
+| `--centered-layout-padding` | Block (top/bottom) padding of the scroll area | `var(--space-normal)` |
+| `--centered-layout-indent` | Inline (left/right) padding of the scroll area | `var(--space-normal)` |
 | `--centered-layout-background` | Page background while the layout is mounted | Unset — the `body` default from `Typography.module.css` shows |
 
-The max-width cap is dropped entirely when `fullWidth` is set. The outer element owns its scroll, padding, and safe-area behaviour directly — it also reads the `--layout-inset-top` / `-bottom` / `-left` / `-right` hooks owned by `Layout.ts` (`useSafeKeyboardArea()` writes `--layout-inset-bottom`).
+The column width and the scroll-area padding can also be set per-instance via the `width`, `padding`, and `indent` variant props. The outer element owns its scroll, padding, and safe-area behaviour directly — safe-area insets are applied as transparent borders so they stack with (rather than replace) the padding.
 
 **Global tokens it reads** — `--width-narrow` and `--space-normal`.
