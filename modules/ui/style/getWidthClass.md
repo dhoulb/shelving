@@ -9,8 +9,9 @@ The `width` variant prop sets a component's inline-size — `<Card width="narrow
 - `narrow` / `normal` / `wide` — fixed widths from the variables below.
 - `full` — the full available width.
 - `fit` — shrink to the content's intrinsic width (`fit-content`).
+- `1x` / `2x` / `3x` / `4x` / `5x` / `6x` / `7x` / `8x` / `10x` / `12x` / `16x` / `20x` / `24x` / `28x` / `32x` — fixed multiples of `--space-normal` (no per-step variables; calculated directly).
 
-**The `grow` flag** turns the chosen `width` into a floor rather than an exact size: it applies the value as `min-inline-size` and adds `flex-grow: 1`, so the element expands to fill the available space when it's a flex item. Set it on a `<Cell>` (`width="narrow" grow`) to give that column a `--width-narrow` minimum that absorbs the remaining width and keeps the table from collapsing the column on a narrow viewport — cells honour `min-width`, so the table scrolls instead.
+**The `grow` flag** turns the chosen `width` into a floor rather than an exact size: it applies the value as `min-inline-size` and adds `flex-grow: 1`, so the element expands to fill the available space when it's a flex item. Set it on a `<Cell>` (`width="12x" grow`) to give that column a 192px minimum that absorbs the remaining width and keeps the table from collapsing the column on a narrow viewport — cells honour `min-width`, so the table scrolls instead.
 
 ## Theme variables
 

@@ -43,7 +43,7 @@ export function DocumentationReturns({ returns }: DocumentationReturnsProps): Re
 							<Cell header width="fit">
 								Return
 							</Cell>
-							<Cell header width="narrow" grow />
+							<Cell header width="16x" grow />
 						</tr>
 					</thead>
 					<tbody>

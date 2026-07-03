@@ -49,7 +49,7 @@ export function DocumentationProperties({ properties }: DocumentationPropertiesP
 							<Cell header width="fit">
 								Type
 							</Cell>
-							<Cell header width="narrow" grow />
+							<Cell header width="16x" grow />
 						</tr>
 					</thead>
 					<tbody>
