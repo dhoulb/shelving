@@ -1,5 +1,6 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
+@import "../style/Tint.module.css";
 @import "../style/Width.module.css";
 
 @layer components {
@@ -34,8 +35,8 @@
 		position: fixed;
 		inset: 0;
 
-		/* Deliberately no fallback: when the hook is unset this declaration fails and the body default from Typography.module.css shows. */
-		background: var(--centered-layout-background);
+		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		background: var(--centered-layout-background, var(--tint-100));
 	}
 
 	.main {

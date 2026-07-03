@@ -32,8 +32,8 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 | `--centered-layout-width` | Max width of the centred column | `var(--width-narrow)` |
 | `--centered-layout-space` | Top/bottom padding of the scroll area | `var(--space-normal)` |
 | `--centered-layout-padding` | Left/right padding of the scroll area | `var(--space-normal)` |
-| `--centered-layout-background` | Page background while the layout is mounted | Unset — the `body` default from `Typography.module.css` shows |
+| `--centered-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
 
 The max-width cap is dropped entirely when `fullWidth` is set. The outer element owns its scroll, padding, and safe-area behaviour directly — it also reads the `--layout-inset-top` / `-bottom` / `-left` / `-right` hooks owned by `Layout.ts` (`useSafeKeyboardArea()` writes `--layout-inset-bottom`).
 
-**Global tokens it reads** — `--width-narrow` and `--space-normal`.
+**Global tokens it reads** — `--width-narrow`, `--space-normal`, and `--tint-100`.

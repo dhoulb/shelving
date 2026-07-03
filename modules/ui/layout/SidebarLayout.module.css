@@ -50,8 +50,8 @@
 		inset: 0;
 
 		/* Style */
-		/* Deliberately no fallback: when the hook is unset this declaration fails and the body default from Typography.module.css shows. */
-		background: var(--sidebar-layout-background);
+		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		background: var(--sidebar-layout-background, var(--tint-100));
 	}
 
 	.main {
@@ -75,8 +75,8 @@
 		padding: var(--space-normal);
 
 		/* Style */
-		/* Deliberately no fallback: when the hook is unset this declaration fails and the page background shows. */
-		background: var(--sidebar-layout-sidebar-background);
+		/* Falls back to the white page background (--tint-100) when the hook is unset. */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
 	}
 
 	.content {
@@ -93,8 +93,8 @@
 		scroll-behavior: smooth;
 
 		/* Style */
-		/* Deliberately no fallback: when the hook is unset this declaration fails and the page background shows. */
-		background: var(--sidebar-layout-content-background);
+		/* Falls back to the white page background (--tint-100) when the hook is unset; shares the page background hook. */
+		background: var(--sidebar-layout-background, var(--tint-100));
 	}
 
 	/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
