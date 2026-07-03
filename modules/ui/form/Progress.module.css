@@ -4,35 +4,32 @@
 @import "../style/Tint.module.css";
 
 @layer components {
-	/* Continuous progress bar — a single track that fills horizontally. */
-	.track {
-		position: relative;
-		margin: 0;
-		inline-size: 100%;
-		height: var(--progress-height, 0.375rem);
-		border-radius: var(--progress-radius, 999px);
-		background: var(--progress-background, var(--tint-90));
-		overflow: hidden;
-	}
-
-	.fill {
+	/* Continuous progress bar — a native `<progress>` styled as a single track that fills horizontally. */
+	.progress {
+		/* Strip the native rendering so the track/fill can be painted from tokens. */
+		appearance: none;
 		display: block;
-		block-size: 100%;
-		/* Width is set inline; clamp overspill to the track here. */
-		min-width: 0px;
-		max-width: 100%;
-		background: var(--progress-color, var(--color-blue));
-		transition: all var(--duration-fast);
+		margin: 0;
+		border: none;
+		inline-size: 100%;
+		block-size: var(--progress-height, 0.375rem);
+		border-radius: var(--progress-radius, 999px);
+		overflow: hidden;
+		/* Track colour — Firefox uses the element itself as the track; WebKit/Blink repaints it on the pseudo-element below. */
+		background: var(--progress-background, var(--tint-90));
 	}
 
-	/* Status variants applied at the container level. */
-	.success .fill {
-		background: var(--progress-success, var(--color-green));
+	/* Track (WebKit/Blink) — Firefox has no track pseudo-element. */
+	.progress::-webkit-progress-bar {
+		background: var(--progress-background, var(--tint-90));
 	}
-	.warning .fill {
-		background: var(--progress-warning, var(--color-orange));
+
+	/* Fill — WebKit/Blink and Firefox expose the fill under different pseudo-elements, so both repeat the same paint. Painted from the tint ladder, so `color=` / `status=` recolour it. */
+	.progress::-webkit-progress-value {
+		background: var(--progress-color, var(--tint-50));
+		transition: inline-size var(--duration-fast);
 	}
-	.danger .fill {
-		background: var(--progress-danger, var(--color-red));
+	.progress::-moz-progress-bar {
+		background: var(--progress-color, var(--tint-50));
 	}
 }
