@@ -97,12 +97,6 @@
 		background: var(--sidebar-layout-content-background);
 	}
 
-	.contentInner {
-		width: 100%;
-		padding: 0;
-		margin: 0 auto;
-	}
-
 	/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
 	.toggle {
 		display: none;

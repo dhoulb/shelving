@@ -59,7 +59,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 						{open ? <XMarkIcon /> : <Bars3Icon />}
 					</Button>
 				</div>
-				<div className={getModuleClass(SIDEBAR_LAYOUT_CSS, "contentInner")}>{children}</div>
+				{children}
 			</div>
 		</RouteCache>
 	);
