@@ -1,18 +1,27 @@
 @import "../style/layers.css";
 @import "../style/Space.module.css";
-@import "../style/Tint.module.css";
 @import "../style/Width.module.css";
 
 /* Low-priority padding defaults live in `@layer defaults` so consumers can override them */
 /* with normal-specificity selectors without needing `:where()` tricks. */
 @layer defaults {
 	.main {
-		/* Top/bottom use `layout-space` and left/right use `layout-padding`, plus safe-area additions. */
-		padding: var(--layout-space, var(--space-normal)) var(--layout-padding, var(--space-normal));
-		padding-top: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
-		padding-bottom: calc(var(--layout-space, var(--space-normal)) + max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px)));
-		padding-left: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px)));
-		padding-right: calc(var(--layout-padding, var(--space-normal)) + max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px)));
+		/* Top/bottom use `centered-layout-space` and left/right use `centered-layout-padding`, plus safe-area additions. */
+		/* The `--layout-inset-*` variables are owned by `Layout.ts` (`useSafeKeyboardArea()` writes `--layout-inset-bottom`). */
+		padding: var(--centered-layout-space, var(--space-normal)) var(--centered-layout-padding, var(--space-normal));
+		padding-top: calc(var(--centered-layout-space, var(--space-normal)) + max(var(--layout-inset-top, 0px), env(safe-area-inset-top, 0px)));
+		padding-bottom: calc(
+			var(--centered-layout-space, var(--space-normal)) +
+			max(var(--layout-inset-bottom, 0px), env(safe-area-inset-bottom, 0px))
+		);
+		padding-left: calc(
+			var(--centered-layout-padding, var(--space-normal)) +
+			max(var(--layout-inset-left, 0px), env(safe-area-inset-left, 0px))
+		);
+		padding-right: calc(
+			var(--centered-layout-padding, var(--space-normal)) +
+			max(var(--layout-inset-right, 0px), env(safe-area-inset-right, 0px))
+		);
 
 		/* Grow to fill the body. */
 		flex: 1;
@@ -51,8 +60,8 @@
 		position: fixed;
 		inset: 0;
 
-		/* Layout-specific bg hook. */
-		background: var(--layout-body-bg, var(--tint-100));
+		/* Deliberately no fallback: when the hook is unset this declaration fails and the body default from Typography.module.css shows. */
+		background: var(--centered-layout-background);
 	}
 
 	.main {
