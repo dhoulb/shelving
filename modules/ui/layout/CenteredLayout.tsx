@@ -30,9 +30,7 @@ export function CenteredLayout({ children, fullWidth = false }: CenteredLayoutPr
 	return (
 		<RouteCache>
 			<main className={getModuleClass(CENTERED_LAYOUT_CSS, "main")}>
-				<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner")} style={fullWidth ? { maxWidth: "none" } : undefined}>
-					{children}
-				</div>
+				<div className={getModuleClass(CENTERED_LAYOUT_CSS, "mainInner", { fullWidth })}>{children}</div>
 			</main>
 		</RouteCache>
 	);

@@ -81,7 +81,11 @@
 
 	.mainInner {
 		width: 100%;
-		max-width: var(--width-narrow);
+		max-width: var(--centered-layout-width, var(--width-narrow));
 		margin: auto;
+
+		&.fullWidth {
+			max-width: none;
+		}
 	}
 }
