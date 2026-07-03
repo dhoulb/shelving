@@ -33,8 +33,9 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 | `--centered-layout-width` | Width of the centred column (capped at 100%) | `var(--width-narrow)` |
 | `--centered-layout-padding` | Block (top/bottom) padding of the scroll area | `var(--space-normal)` |
 | `--centered-layout-indent` | Inline (left/right) padding of the scroll area | `var(--space-normal)` |
-| `--centered-layout-background` | Page background while the layout is mounted | Unset — the `body` default from `Typography.module.css` shows |
+| `--centered-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
+| `--centered-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
 
 The column width and the scroll-area padding can also be set per-instance via the `width`, `padding`, and `indent` variant props. The outer element owns its scroll, padding, and safe-area behaviour directly — safe-area insets are applied as transparent borders so they stack with (rather than replace) the padding.
 
-**Global tokens it reads** — `--width-narrow` and `--space-normal`.
+**Global tokens it reads** — `--width-narrow`, `--space-normal`, `--tint-100`, and `--tint-00`.
