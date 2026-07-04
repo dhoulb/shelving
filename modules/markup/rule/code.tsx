@@ -18,7 +18,8 @@ import { BLOCK_CONTENT_REGEXP } from "../util/regexp.js";
 export const CODE_RULE = createMarkupRule<{
 	code: string;
 }>(
-	getRegExp(`(?<fence>\`+)(?<code>${BLOCK_CONTENT_REGEXP})\\k<fence>`),
+	// Fence length is bounded (`{1,64}`) so a long run of backticks can't force O(n²) backtracking against the closing backreference.
+	getRegExp(`(?<fence>\`{1,64})(?<code>${BLOCK_CONTENT_REGEXP})\\k<fence>`),
 	(key, { code }) => <code key={key}>{code}</code>,
 	["inline", "list", "link"],
 	10,

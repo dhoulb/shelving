@@ -47,7 +47,8 @@ export const LINK_RULE = createMarkupRule<LinkData>(
  * @see https://shelving.cc/markup/AUTOLINK_RULE
  */
 export const AUTOLINK_RULE = createMarkupRule<LinkData>(
-	getRegExp(/(?<href>[a-z]{3,}?:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/), //
+	// Scheme length is bounded (`{3,64}?`) so a long run of letters with no `:` can't force O(n²) backtracking.
+	getRegExp(/(?<href>[a-z]{3,64}?:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/), //
 	_renderLink,
 	["inline", "list"],
 );
