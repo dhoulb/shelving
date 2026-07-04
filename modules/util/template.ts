@@ -265,16 +265,47 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 }
 
 /**
- * Render a path-shaped template. Behaviourally identical to `renderTemplate()` — substitution doesn't need separator awareness — but provided as a sibling to `matchPathTemplate()` so callers can pair them.
+ * Render a path-shaped template, percent-encoding each substituted value so it stays within its path segment.
+ *
+ * Unlike `renderTemplate()`, each placeholder value is run through `encodeURIComponent()` before substitution.
+ * This stops a value that contains `/`, `?`, `#`, `%`, or control characters from escaping its segment and
+ * altering the resolved URL — i.e. path traversal to a different endpoint, or query/fragment injection — when
+ * the result is resolved against a base URL (e.g. by `ClientAPIProvider`). Catchall placeholders (`**`,
+ * `{...path}`, …) legitimately span segments, so each `/`-separated part is encoded but the separators are kept.
+ *
+ * Note: because `encodeURIComponent()` does not encode `.`, a value that is exactly `.` or `..` still renders as
+ * `.`/`..`; callers that treat a placeholder as a trusted single segment should validate against those.
  *
  * @param template The path-shaped template including placeholders, e.g. `/users/{name}`.
  * @param values An object containing values (functions are called, everything else converted to string), or a function or string to use for all placeholders.
  * @param caller Function to attribute a thrown error to (defaults to `renderPathTemplate` itself).
- * @returns The rendered path, e.g. `/users/Dave`.
+ * @returns The rendered path with each value percent-encoded, e.g. `/users/Dave`.
  * @throws {RequiredError} If a placeholder in the template string is not specified in values.
- * @example renderPathTemplate("/users/{name}", { name: "Dave" }) // "/users/Dave"
+ * @example renderPathTemplate("/users/{name}", { name: "a/b" }) // "/users/a%2Fb"
  * @see https://shelving.cc/util/template/renderPathTemplate
  */
 export function renderPathTemplate(template: AbsolutePath, values: TemplateValues, caller: AnyCaller = renderPathTemplate): AbsolutePath {
-	return renderTemplate(template, values, caller) as AbsolutePath;
+	const chunks = _splitTemplateCached(template, caller);
+	if (!chunks.length) return template;
+	let output: string = template;
+	for (const { name, placeholder, catchall } of chunks) {
+		const value = _getTemplateValue(values, name, caller);
+		const encoded = catchall ? value.split("/").map(encodeURIComponent).join("/") : encodeURIComponent(value);
+		// Use a replacer function so `$` sequences in the (already-encoded) value are never treated as special replacement patterns.
+		output = output.replace(placeholder, () => encoded);
+	}
+	return output as AbsolutePath;
+}
+
+/** Resolve the string value for a single template placeholder from `TemplateValues` (mirrors `renderTemplate()`'s per-name resolution). */
+function _getTemplateValue(values: TemplateValues, name: string, caller: AnyCaller): string {
+	const value = isFunction(values)
+		? values(name)
+		: isData(values)
+			? getString(getDataProp(values, name))
+			: isArray(values)
+				? getString(values[Number(name)])
+				: getString(values);
+	if (value === undefined) throw new RequiredError(`Template placeholder "${name}" not found`, { received: values, name, caller });
+	return value;
 }
