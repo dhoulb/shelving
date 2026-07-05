@@ -133,4 +133,12 @@ describe("validateDictionary()", () => {
 			expect(err).toBe("b: Must be number");
 		}
 	});
+	test("a `__proto__` key does not pollute the prototype or the returned object", () => {
+		// JSON.parse creates an own `"__proto__"` data key (not a setter call), so this reaches the loop with a hostile key.
+		const dict: Record<string, unknown> = JSON.parse('{"__proto__": "5", "b": "1"}');
+		const out = validateDictionary(dict, NUMBER); // coercion → `changed`, so the accumulator is returned
+		expect(Object.getPrototypeOf(out)).toBe(null); // accumulator is null-prototype, not attacker-controlled
+		expect(Object.keys(out)).toEqual(["__proto__", "b"]); // `__proto__` stays an enumerable own entry (counts stay correct)
+		expect(({} as Record<string, unknown>).b).toBe(undefined); // Object.prototype untouched
+	});
 });
