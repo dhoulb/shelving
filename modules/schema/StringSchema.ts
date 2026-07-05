@@ -89,9 +89,12 @@ export class StringSchema extends Schema<string> {
 		const str = typeof value === "number" ? value.toString() : value;
 		if (typeof str !== "string") throw value ? `Must be ${this.one}` : "Required";
 		const sane = this.sanitize(str);
+		// Enforce `max` before running `match`, so an over-length string is rejected without ever being handed to
+		// the (potentially expensive) regex — a length cap can't shield the pattern otherwise. `min` stays after
+		// `match` to preserve the existing "Invalid" precedence for short-but-malformed values.
+		if (sane.length > this.max) throw `Maximum ${this.max} characters`;
 		if (this.match && !this.match.test(sane)) throw str.length ? `Invalid ${this.one}` : "Required";
 		if (sane.length < this.min) throw str.length ? `Minimum ${this.min} characters` : "Required";
-		if (sane.length > this.max) throw `Maximum ${this.max} characters`;
 		return sane;
 	}
 
