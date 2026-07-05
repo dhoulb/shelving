@@ -97,6 +97,7 @@ export function mergeArray(left: ImmutableArray, right: ImmutableArray): Immutab
  * - Only works on enumerable own keys (as returned by `Object.keys()`).
  * - Always returns a new object (or the `left` object if no changes were made).
  * - Resulting object is `cleaned`, i.e. properties in `left` or `right` that are `undefined` will be removed from the merged object.
+ * - Merged object has a `null` prototype, so an untrusted `"__proto__"` key in `right` becomes an inert own property instead of injecting a prototype.
  *
  * @param left The left object to merge into.
  * @param right The right object whose props replace or merge with `left`.
@@ -119,7 +120,10 @@ export function mergeObject(left: ImmutableObject, right: ImmutableObject, recur
 	if (!rightEntries.length) return left;
 
 	const leftKeys = Object.keys(left);
-	const merged: MutableObject = { ...left };
+	// Null-prototype accumulator: an untrusted `"__proto__"` key in `right` then becomes an inert own property
+	// instead of invoking the inherited `__proto__` setter, so a crafted `{ "__proto__": … }` input can't reassign
+	// the merged object's prototype.
+	const merged: MutableObject = Object.assign(Object.create(null), left);
 	let changed = false;
 
 	for (const [k, r] of rightEntries) {

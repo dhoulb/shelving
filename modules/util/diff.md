@@ -6,6 +6,7 @@ Compute the minimal transformation needed to turn one value into another. Used i
 - Objects are compared recursively. Keys present in `left` but absent from `right` appear in the diff as `undefined` (indicating deletion).
 - Scalar values that differ always return `right` directly — they cannot be partially diffed.
 - Objects with different constructors are never merged; `right` is returned as-is.
+- Diff objects are built with a `null` prototype, so an untrusted `__proto__` key in `right` becomes an inert own property instead of injecting a prototype.
 
 ## Usage
 

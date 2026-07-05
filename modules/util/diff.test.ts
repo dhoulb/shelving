@@ -164,4 +164,13 @@ describe("deepDiffObject()", () => {
 		expect(deepDiffObject(objDeep, objDeepMissing)).toEqual({ obj2: { b: undefined } });
 		expect(deepDiffObject(objDeepMissing, objDeep)).toEqual({ obj2: { b: "b" } });
 	});
+	test("deepDiffObject(): a `__proto__` key does not inject a prototype", () => {
+		// JSON.parse creates an own `"__proto__"` data key (not a setter call), so this reaches the loop with a hostile key.
+		const right: Data = JSON.parse('{"__proto__": { "polluted": true }, "b": 2}');
+		const diff = deepDiffObject({ a: 1 }, right);
+		expect(diff).not.toBe(SAME);
+		expect(Object.getPrototypeOf(diff)).toBe(null); // Hostile prototype was not injected.
+		expect(Object.keys(diff)).toEqual(["__proto__", "b", "a"]); // `__proto__` stays an enumerable own entry.
+		expect(({} as { polluted?: boolean }).polluted).toBeUndefined(); // Global `Object.prototype` untouched.
+	});
 });
