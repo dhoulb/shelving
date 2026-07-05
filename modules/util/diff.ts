@@ -61,6 +61,7 @@ export function deepDiffArray<R extends ImmutableArray>(left: ImmutableArray, ri
  * @returns Object containing the missing/updated properties that `left` needs to become `right`.
  * - If the two values are deeply equal the `SAME` constant is returned.
  * - If `left` isn't an object then the result can't be diffed so entire `right` is returned.
+ * - Diff object has a `null` prototype, so an untrusted `"__proto__"` key in `right` becomes an inert own property instead of injecting a prototype.
  * @see https://shelving.cc/util/diff/deepDiffObject
  */
 export function deepDiffObject<R extends ImmutableObject>(left: ImmutableObject, right: R): R | DeepPartial<R> | typeof SAME;
@@ -73,7 +74,10 @@ export function deepDiffObject(left: ImmutableObject, right: ImmutableObject): I
 	// If left is empty, entire right is returned.
 	if (!leftKeys.length) return rightKeys.length ? right : SAME;
 
-	const diff: MutableObject = {};
+	// Null-prototype accumulator: an untrusted `"__proto__"` key in `right` then becomes an inert own property
+	// instead of invoking the inherited `__proto__` setter, so a crafted `{ "__proto__": … }` input can't reassign
+	// the diff object's prototype.
+	const diff: MutableObject = Object.create(null);
 	let changed = false;
 
 	for (const k of rightKeys) {

@@ -8,6 +8,7 @@ Core immutable helpers for reading and updating plain objects, plus utility type
 - Same-reference shortcut: if the new value is `===` to the existing value, the original object is returned without allocating.
 - `omitProp()` is an alias for `omitProps()` with a single key — they are the same function.
 - `deleteProp()` / `deleteProps()` and `setProp()` / `setProps()` mutate by reference; use the `with*` / `omit*` variants for immutable operations.
+- `setProp()` / `setProps()` trust their keys by contract: a runtime-untrusted key like `__proto__` would mutate the target's prototype, so validate or filter untrusted keys first (or use a null-prototype target).
 - `isObject()` returns `true` for any non-null object including arrays and class instances. Use `isPlainObject()` when you need only `{}` shaped objects.
 
 ## Usage

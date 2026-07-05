@@ -204,6 +204,7 @@ export const pickDictionaryItems: <T>(dict: ImmutableDictionary<T>, ...keys: str
 
 /**
  * Set a single named item on a dictionary object (by reference) and return its value.
+ * - The key is trusted by contract: a runtime-untrusted key like `"__proto__"` would mutate the target's prototype, so validate or filter untrusted keys before calling (or use a null-prototype target).
  *
  * @param dict The dictionary to set the item on (modified by reference).
  * @param key The key of the item to set.
@@ -215,6 +216,7 @@ export const setDictionaryItem: <T>(dict: MutableDictionary<T>, key: string, val
 
 /**
  * Set several named items on a dictionary object (by reference).
+ * - Keys are trusted by contract: a runtime-untrusted key like `"__proto__"` would mutate the target's prototype, so validate or filter untrusted keys before calling (or use a null-prototype target).
  *
  * @param dict The dictionary to set the items on (modified by reference).
  * @param entries The items to set, as a dictionary or iterable set of key/value entry tuples.

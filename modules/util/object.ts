@@ -312,6 +312,7 @@ function _hasKey<T extends ImmutableObject>(this: Key<T>[], [key]: readonly [Key
 
 /**
  * Set a single named prop on an object (by reference) and return its value.
+ * - The key is trusted by contract: a runtime-untrusted key like `"__proto__"` would mutate the target's prototype, so validate or filter untrusted keys before calling (or use a null-prototype target).
  *
  * @param obj The object to set the prop on (modified by reference).
  * @param key The key of the prop to set.
@@ -326,6 +327,7 @@ export function setProp<T extends MutableObject, K extends Key<T>>(obj: T, key: 
 
 /**
  * Set several named props on an object (by reference).
+ * - Keys are trusted by contract: a runtime-untrusted key like `"__proto__"` would mutate the target's prototype, so validate or filter untrusted keys before calling (or use a null-prototype target).
  *
  * @param obj The object to set the props on (modified by reference).
  * @param entries The props to set, as an object or iterable set of key/value entry tuples.
