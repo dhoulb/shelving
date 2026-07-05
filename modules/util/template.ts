@@ -272,26 +272,36 @@ export function renderTemplate(template: string, values: TemplateValues, caller:
 	if (!chunks.length) return template;
 	let output = template;
 	if (isFunction(values)) {
-		for (const { name, placeholder } of chunks) output = output.replace(placeholder, values(name));
+		for (const { name, placeholder } of chunks) output = output.replace(placeholder, _escapeReplacement(values(name)));
 	} else if (isData(values)) {
 		for (const { name, placeholder } of chunks) {
 			const v = getString(getDataProp(values, name));
 			if (v === undefined)
 				throw new RequiredError(`Template placeholder "${name}" not found in object`, { received: values, name, caller });
-			output = output.replace(placeholder, v);
+			output = output.replace(placeholder, _escapeReplacement(v));
 		}
 	} else if (isArray(values)) {
 		for (const { name, placeholder } of chunks) {
 			const v = getString(values[Number(name)]);
 			if (v === undefined) throw new RequiredError(`Template placeholder "${name}" not found in array`, { received: values, name, caller });
-			output = output.replace(placeholder, v);
+			output = output.replace(placeholder, _escapeReplacement(v));
 		}
 	} else {
 		const v = getString(values);
 		if (v === undefined) throw new RequiredError(`Template value must be string`, { received: values, caller });
-		for (const { placeholder } of chunks) output = output.replace(placeholder, v);
+		for (const { placeholder } of chunks) output = output.replace(placeholder, _escapeReplacement(v));
 	}
 	return output;
+}
+
+/**
+ * Escape `$` in a `String.prototype.replace()` replacement value so it's inserted literally.
+ * - Without this, `$&`, `$'`, `` $` ``, `$1`, `$$` in a (often user-supplied) value are interpreted as replacement
+ *   patterns and pull surrounding template text into the value's slot.
+ * - Cheap: only rewrites when a `$` is actually present, so the common case is a single scan with no allocation.
+ */
+function _escapeReplacement(value: string): string {
+	return value.includes("$") ? value.replaceAll("$", "$$$$") : value;
 }
 
 /**

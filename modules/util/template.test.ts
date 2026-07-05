@@ -183,6 +183,17 @@ describe("renderTemplate()", () => {
 		expect(() => renderTemplate("/*/", [])).toThrow(RequiredError);
 		expect(() => renderTemplate("/*/*", ["A"])).toThrow(RequiredError);
 	});
+	test("`$` sequences in values are inserted literally, not as replacement patterns", () => {
+		// `$&`, `$'`, `` $` ``, `$1`, `$$` must not be interpreted by String.prototype.replace.
+		expect(renderTemplate("a{x}b", { x: "$&" })).toBe("a$&b");
+		expect(renderTemplate("a{x}b", { x: "$`" })).toBe("a$`b");
+		expect(renderTemplate("a{x}b", { x: "$'" })).toBe("a$'b");
+		expect(renderTemplate("a{x}b", { x: "$1$2" })).toBe("a$1$2b");
+		expect(renderTemplate("a{x}b", { x: "p$$q" })).toBe("ap$$qb");
+		// Also via function and string value sources.
+		expect(renderTemplate("a{x}b", () => "$&")).toBe("a$&b");
+		expect(renderTemplate(":x", "$&")).toBe("$&");
+	});
 });
 
 describe("renderPathTemplate()", () => {
