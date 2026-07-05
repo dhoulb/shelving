@@ -30,6 +30,7 @@ export const TREE_MARKUP_RULES: MarkupRules = MARKUP_RULES.map(rule => (rule ===
  * - Like `<Markup>` but defaults to `TREE_MARKUP_RULES`, so each backtick span resolves through `TreeLink` against the surrounding `<TreeProvider>` — a known token links to its canonical page, an unknown one stays plain code.
  * - The standard way to render documentation-site content (READMEs, docblocks, per-symbol pages); plain `<Markup>` stays the choice for general user content that shouldn't cross-link.
  * - Falls back to plain code spans outside a `<TreeProvider>`, so it's safe to use anywhere. Pass any `MarkupOptions` prop (including `rules`) to override.
+ * - Inherits `<Markup>`'s input-length guidance: when `children` is untrusted, cap its length before rendering (see `MarkupParser.parse()`).
  *
  * @param children The source markup string to parse and render (renders `null` when empty).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.

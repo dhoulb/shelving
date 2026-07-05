@@ -17,6 +17,7 @@ export interface MarkupProps extends Partial<MarkupOptions> {
  * - Defaults to `MARKUP_OPTIONS` (full block + inline rule set). Pass `rules`, `rel`, `url`, `root`, or `schemes` as props to override.
  * - `url`/`root` default to the current `<Meta>` context so link rules resolve site-absolute and relative hrefs.
  * - Renders inside whatever ancestor element the caller provides — wrap in `<Prose>` to get the standard prose typography for the produced `<p>` / `<ul>` / `<pre>` / etc.
+ * - **Untrusted input:** when `children` comes from users, cap its length before rendering — parsing is linear for normal content but a few rules can degrade on adversarial input (a sane maximum for your use case, typically tens of kilobytes, bounds worst-case work). See `MarkupParser.parse()`.
  *
  * @param children The source markup string to parse and render (renders `null` when empty).
  * @returns The parsed markup as React nodes, or `null` when `children` is empty.
