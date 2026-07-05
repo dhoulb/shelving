@@ -50,6 +50,14 @@ export type MarkupOptions = {
 	 * Default context to use if one isn't set. Defaults to `"block"`
 	 */
 	readonly context?: string;
+
+	/**
+	 * Current nesting depth — used to cap self-recursive rules (e.g. blockquotes) so pathological input can't
+	 * overflow the stack. Internal: set automatically as rules recurse via `MarkupParser.nested()`; callers
+	 * normally leave it at the default `0`.
+	 * @default 0
+	 */
+	readonly depth?: number | undefined;
 };
 
 /**
@@ -106,7 +114,14 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 */
 	readonly context: string;
 
-	constructor({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES, context = "block" }: MarkupOptions = {}) {
+	/**
+	 * Current nesting depth, incremented by `nested()` as self-recursive rules descend. Used to cap recursion so
+	 * pathological input (e.g. a long `>>>>…` blockquote) can't overflow the stack.
+	 * @see https://shelving.cc/markup/MarkupParser/depth
+	 */
+	readonly depth: number;
+
+	constructor({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES, context = "block", depth = 0 }: MarkupOptions = {}) {
 		this.rules = rules;
 		this.priorities = _getPriorities(rules);
 		this.rel = rel;
@@ -114,6 +129,27 @@ export class MarkupParser implements Parser<string, ReactNode> {
 		this.root = root;
 		this.schemes = schemes;
 		this.context = context;
+		this.depth = depth;
+	}
+
+	/**
+	 * Return a copy of this parser with `depth` incremented by one, sharing all other options.
+	 * - Self-recursive rules (e.g. blockquotes) parse their nested content through `nested()` so `depth` tracks how
+	 *   deep the recursion has gone, letting them stop before the call stack overflows.
+	 *
+	 * @returns A new `MarkupParser` identical to this one but one level deeper.
+	 * @see https://shelving.cc/markup/MarkupParser/nested
+	 */
+	nested(): MarkupParser {
+		return new MarkupParser({
+			rules: this.rules,
+			rel: this.rel,
+			url: this.url,
+			root: this.root,
+			schemes: this.schemes,
+			context: this.context,
+			depth: this.depth + 1,
+		});
 	}
 
 	/**
