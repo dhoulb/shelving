@@ -118,5 +118,8 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 }
 
 function _getKey(collection: string, id: string): string {
-	return `${collection}:${id}`;
+	// Percent-encode both parts so the `:` separator is unambiguous: without this, an `id` containing `:`
+	// (e.g. collection `a` + id `b:c`) collides with a different collection/id pair (collection `a:b` + id `c`).
+	// Plain identifiers (letters, digits, `-`, `_`, `.`) are left unchanged, so keys for typical names/UUIDs are stable.
+	return `${encodeURIComponent(collection)}:${encodeURIComponent(id)}`;
 }
