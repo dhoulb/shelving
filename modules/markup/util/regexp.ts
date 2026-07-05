@@ -17,13 +17,13 @@ export const BLOCK_SPACE_REGEXP = "\\s"; // Block whitespace (run of any whitesp
  * Regular expression source matching the start of a block — the start of the string, or one linebreak.
  * @see https://shelving.cc/markup/BLOCK_START_REGEXP
  */
-export const BLOCK_START_REGEXP = "(?:\\s*\\n|^)"; // Start of block (start of string, or one linebreak).
+export const BLOCK_START_REGEXP = "(?:\\s{0,2000}\\n|^)"; // Start of block (start of string, or one linebreak). Whitespace is bounded so a long whitespace run can't force O(n²) backtracking at every offset.
 
 /**
  * Regular expression source matching the end of a block — the end of the string, or two linebreaks, with trailing whitespace trimmed.
  * @see https://shelving.cc/markup/BLOCK_END_REGEXP
  */
-export const BLOCK_END_REGEXP = "\\s*(?:$|\\n\\s*\\n)"; // End of block (end of string, or two linebreaks, trimmed whitespace).
+export const BLOCK_END_REGEXP = "\\s{0,2000}(?:$|\\n\\s{0,2000}\\n)"; // End of block (end of string, or two linebreaks, trimmed whitespace). Whitespace runs bounded to avoid O(n²) backtracking.
 
 /**
  * Regular expression source matching line content — the shortest run of any character except newline.
@@ -47,7 +47,7 @@ export const LINE_START_REGEXP = BLOCK_START_REGEXP; // Start of line (start of 
  * Regular expression source matching the end of a line — the end of the string, or one linebreak, with trailing whitespace trimmed.
  * @see https://shelving.cc/markup/LINE_END_REGEXP
  */
-export const LINE_END_REGEXP = `${LINE_SPACE_REGEXP}*(?:\\s*\\n|$)`; // End of line (end of string, or one linebreak, trimmed whitespace).
+export const LINE_END_REGEXP = `${LINE_SPACE_REGEXP}{0,2000}(?:\\s{0,2000}\\n|$)`; // End of line (end of string, or one linebreak, trimmed whitespace). Whitespace runs bounded to avoid O(n²) backtracking.
 
 /**
  * Regular expression source matching word content — at least one letter or number character.

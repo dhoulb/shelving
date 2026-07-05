@@ -42,6 +42,18 @@ import { MARKUP_PARSER } from "shelving/markup";
 const node = MARKUP_PARSER.parse(content);
 ```
 
+### Input length (untrusted content)
+
+`parse()` is linear in the length of normal content, but a few rules can still degrade on deliberately adversarial input — notably long unbroken runs of backtick code fences, and deeply-nested `>` blockquotes (each leading `>` recurses one level, so a pathological line can overflow the stack).
+
+When the source comes from users, **cap its length before parsing**. A sane maximum for your use case — for typical user-generated content, tens of kilobytes — keeps worst-case work bounded:
+
+```ts
+const MAX_MARKUP_LENGTH = 100_000;
+if (source.length > MAX_MARKUP_LENGTH) throw new Error("Content too long");
+const node = MARKUP_PARSER.parse(source);
+```
+
 ### Options
 
 `MarkupParser` is constructed with `MarkupOptions`:

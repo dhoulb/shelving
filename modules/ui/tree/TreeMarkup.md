@@ -7,7 +7,7 @@ Renders a markup string just like `<Markup>`, but auto-links every inline code s
 - Defaults to `TREE_MARKUP_RULES` — the full default rule set with the inline-code rule swapped for `TREE_CODE_RULE`, which renders each span through `TreeLink`.
 - Resolution is exact-match against the tree map: a hit (`` `BooleanSchema` ``, `` `Store.get` ``) links; a miss (`` `bun run fix` ``, `` `string` ``) falls back to a plain code token, so unknown spans never produce a broken link.
 - Falls back to plain code spans outside a `<TreeProvider>`, so it's safe to use anywhere — it simply stops linking.
-- Inherits everything else from `<Markup>`: `url` / `root` default to the current `<Meta>` context, and any `MarkupOptions` prop (`rules`, `rel`, `url`, `root`, `schemes`) can be overridden directly.
+- Inherits everything else from `<Markup>`: `url` / `root` default to the current `<Meta>` context, and any `MarkupOptions` prop (`rules`, `rel`, `url`, `root`, `schemes`) can be overridden directly. That includes the input-length guidance — cap untrusted `children` length before rendering.
 - Wrap in `<Prose>` to give the produced `<p>` / `<ul>` / `<pre>` / etc. the standard prose typography.
 
 ## Usage

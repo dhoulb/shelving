@@ -3,7 +3,7 @@ import { createMarkupRule } from "../MarkupRule.js";
 import { createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 
 // Constants.
-const _SPACE = `${LINE_SPACE_REGEXP}*`; // Run of line whitespace (never crosses a newline).
+const _SPACE = `${LINE_SPACE_REGEXP}{0,2000}`; // Run of line whitespace (never crosses a newline); bounded so a long whitespace line can't force O(n²) backtracking in the delimiter row.
 const _CELL = `${_SPACE}:?-+:?${_SPACE}`; // Delimiter-row cell: one or more dashes with optional `:` alignment markers.
 const _DELIMITER_SOURCE = `${_SPACE}\\|?(?:${_CELL}\\|)+(?:${_CELL})?${_SPACE}`; // Delimiter row: pipe-separated dash cells.
 const _DELIMITER = new RegExp(`^${_DELIMITER_SOURCE}$`, "u"); // Tests whether a single line is a delimiter row.
