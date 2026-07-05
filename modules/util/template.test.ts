@@ -104,6 +104,16 @@ describe("matchPathTemplate()", () => {
 		expect(matchPathTemplate("/files/{...path}", "/files/")).toEqual({ path: "" });
 		expect(matchPathTemplate("/files/**", "/files")).toEqual({ "0": "" });
 	});
+	test("Percent-decodes matched values (inverse of renderPathTemplate)", () => {
+		expect(matchPathTemplate("/users/{id}", "/users/a%2Fb")).toEqual({ id: "a/b" });
+		expect(matchPathTemplate("/users/{id}", "/users/caf%C3%A9")).toEqual({ id: "café" });
+		// Catchall decodes each segment but keeps the `/` separators.
+		expect(matchPathTemplate("/files/{...path}", "/files/a%20b/c")).toEqual({ path: "a b/c" });
+	});
+	test("Rejects malformed percent-encoding as a non-match", () => {
+		expect<TemplateMatches | undefined>(matchPathTemplate("/users/{id}", "/users/%zz")).toBe(undefined);
+		expect<TemplateMatches | undefined>(matchPathTemplate("/users/{id}", "/users/%")).toBe(undefined);
+	});
 });
 
 describe("getPlaceholders()", () => {
@@ -176,9 +186,24 @@ describe("renderTemplate()", () => {
 });
 
 describe("renderPathTemplate()", () => {
-	test("Behaviour matches renderTemplate (paired sibling for matchPathTemplate)", () => {
+	test("Plain values render unchanged", () => {
 		expect(renderPathTemplate("/users/{id}", { id: "123" })).toBe("/users/123");
 		expect(renderPathTemplate("/files/{...path}", { path: "a/b/c" })).toBe("/files/a/b/c");
+	});
+	test("Percent-encodes values so they stay within their path segment", () => {
+		expect(renderPathTemplate("/users/{id}", { id: "a/b" })).toBe("/users/a%2Fb");
+		expect(renderPathTemplate("/users/{id}", { id: "x?a=1#f" })).toBe("/users/x%3Fa%3D1%23f");
+		expect(renderPathTemplate("/users/{id}", { id: "café" })).toBe("/users/caf%C3%A9");
+		// Catchall keeps `/` separators, encoding each segment independently.
+		expect(renderPathTemplate("/files/{...path}", { path: "a b/c" })).toBe("/files/a%20b/c");
+	});
+	test("Round-trips losslessly with matchPathTemplate", () => {
+		for (const value of ["Dave", "a/b", "x?a=1#f", "café münchen", "50%"]) {
+			const path = renderPathTemplate("/users/{id}", { id: value });
+			expect(matchPathTemplate("/users/{id}", path)).toEqual({ id: value });
+		}
+		const path = renderPathTemplate("/files/{...path}", { path: "a b/c/d.txt" });
+		expect(matchPathTemplate("/files/{...path}", path)).toEqual({ path: "a b/c/d.txt" });
 	});
 });
 

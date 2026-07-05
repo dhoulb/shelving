@@ -129,18 +129,20 @@ function _getPlaceholder({ name }: TemplateChunk): string {
  * @see https://shelving.cc/util/template/matchTemplate
  */
 export function matchTemplate(template: string, target: string, caller: AnyCaller = matchTemplate): TemplateMatches | undefined {
-	return _matchTemplate(template, target, "", caller);
+	return _matchTemplate(template, target, "", false, caller);
 }
 
 /**
  * Match a path-shaped template against a target path.
  * - Like `matchTemplate()`, but with `/` segment semantics: non-catchall placeholders cannot span path segments; catchall placeholders can.
  * - A trailing catchall (e.g. `/files/{...path}`) also matches when the trailing separator is absent (e.g. `/files`), with the catchall value as `""`.
+ * - Matched values are **percent-decoded** (the inverse of `renderPathTemplate()`'s encoding), so a round trip is lossless: `matchPathTemplate(t, renderPathTemplate(t, values))` returns the original values. Catchall values keep their `/` separators (each segment is decoded).
+ * - Returns `undefined` if `target` is not validly percent-encoded (e.g. a bare `%` or `%zz`), treating a malformed path as a non-match.
  *
  * @param template The path-shaped template string, e.g. `/users/{name}`.
  * @param target The path containing values, e.g. `/users/Dave`.
  * @param caller Function to attribute a thrown error to (defaults to `matchPathTemplate` itself).
- * @returns An object containing values (e.g. `{ name: "Dave" }`), or `undefined` if no match.
+ * @returns An object containing decoded values (e.g. `{ name: "Dave" }`), or `undefined` if no match.
  * @throws {ValueError} If two template placeholders are not separated by at least one character.
  * @example matchPathTemplate("/users/{name}", "/users/Dave") // { name: "Dave" }
  * @see https://shelving.cc/util/template/matchPathTemplate
@@ -150,10 +152,29 @@ export function matchPathTemplate(
 	target: AbsolutePath,
 	caller: AnyCaller = matchPathTemplate,
 ): TemplateMatches | undefined {
-	return _matchTemplate(template, target, "/", caller);
+	return _matchTemplate(template, target, "/", true, caller);
 }
 
-function _matchTemplate(template: string, target: string, separator: string, caller: AnyCaller): TemplateMatches | undefined {
+/**
+ * Decode a matched path value — the inverse of `renderPathTemplate()`'s `encodeURIComponent`.
+ * - Catchall values keep their `/` separators (each segment is decoded independently, mirroring the per-segment encode).
+ * - Returns `undefined` for malformed percent-encoding (e.g. a bare `%` or `%zz`), so the caller can reject the whole match.
+ */
+function _decodePathValue(value: string, catchall: boolean): string | undefined {
+	try {
+		return catchall ? value.split("/").map(decodeURIComponent).join("/") : decodeURIComponent(value);
+	} catch {
+		return undefined;
+	}
+}
+
+function _matchTemplate(
+	template: string,
+	target: string,
+	separator: string,
+	decode: boolean,
+	caller: AnyCaller,
+): TemplateMatches | undefined {
 	// Get separators and placeholders from template.
 	const chunks = _splitTemplateCached(template, caller);
 	const firstChunk = chunks[0];
@@ -187,7 +208,16 @@ function _matchTemplate(template: string, target: string, separator: string, cal
 			if (!value.length) return undefined; // Empty values only allowed for catchall placeholders.
 			if (separator && value.includes(separator)) return undefined; // Non-catchall placeholders can't span separators (when one is configured).
 		}
-		values[name] = value;
+		// In path mode, percent-decode the (still-encoded) value so it round-trips with `renderPathTemplate()`; a
+		// malformed encoding rejects the whole match. The separator check above runs on the encoded value first,
+		// so an encoded `%2F` can't smuggle a separator into a non-catchall segment.
+		if (decode) {
+			const decoded = _decodePathValue(value, catchall);
+			if (decoded === undefined) return undefined;
+			values[name] = decoded;
+		} else {
+			values[name] = value;
+		}
 		startIndex = stopIndex + post.length;
 	}
 	if (startIndex < target.length) return undefined; // Target doesn't match template because last chunk post didn't reach the end.

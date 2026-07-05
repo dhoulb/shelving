@@ -2,8 +2,7 @@ import type { ReactElement } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { getProps } from "../../util/index.js";
-import type { AbsolutePath } from "../../util/path.js";
-import { matchPathTemplate, renderTemplate } from "../../util/template.js";
+import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/meta.js";
 import type { Routes } from "./Routes.js";
@@ -62,8 +61,8 @@ function _matchRoute(
 		// String value is a redirect; re-run matching with the new path. Guard against infinite redirect loops by limiting depth.
 		if (typeof Route === "string") {
 			if (depth > 10) throw new UnexpectedError("Infinite redirect loop", { received: route, expected: path, caller: _matchRoute });
-			// Redirect targets re-use raw matched params (which may already be percent-encoded), so render without re-encoding.
-			return _matchRoute(routes, fallback, meta, renderTemplate(Route, placeholders) as AbsolutePath, depth + 1);
+			// `placeholders` are already decoded by `matchPathTemplate`, so re-encode them into the redirect path with `renderPathTemplate` — the symmetric partner of the match above.
+			return _matchRoute(routes, fallback, meta, renderPathTemplate(Route, placeholders), depth + 1);
 		}
 
 		// React element — render as-is.
