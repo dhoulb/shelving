@@ -2,7 +2,6 @@
 import { type ReactElement, ViewTransition } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import type { TransitionClasses } from "./util.js";
 import TRANSITION_CSS from "./Transition.module.css";
 
 const TRANSITION_OVERLAY_CLASS = getModuleClass(TRANSITION_CSS, "overlay");
@@ -43,9 +42,15 @@ export interface TransitionProps extends ChildProps, TransitionVariants {
  * @see https://shelving.cc/ui/Transition
  */
 export function Transition({ children, default: d, forward = d, back = d, overlay = false }: TransitionProps): ReactElement {
-	return <ViewTransition default={{
-		default: getClass(d, overlay && TRANSITION_OVERLAY_CLASS),
-		forward: getClass(forward, overlay && TRANSITION_OVERLAY_CLASS),
-		back: getClass(back, overlay && TRANSITION_OVERLAY_CLASS),
-	}}>{children}</ViewTransition>;
+	return (
+		<ViewTransition
+			default={{
+				default: getClass(d, overlay && TRANSITION_OVERLAY_CLASS),
+				forward: getClass(forward, overlay && TRANSITION_OVERLAY_CLASS),
+				back: getClass(back, overlay && TRANSITION_OVERLAY_CLASS),
+			}}
+		>
+			{children}
+		</ViewTransition>
+	);
 }

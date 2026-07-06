@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
+import { getModuleClass } from "../util/css.js";
 import COLLAPSE_CSS from "./CollapseTransition.module.css";
 import { Transition, type TransitionProps } from "./Transition.js";
-import { getModuleClass } from "../util/css.js";
 
 const COLLAPSE_CLASS = getModuleClass(COLLAPSE_CSS, "collapse");
 

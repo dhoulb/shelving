@@ -4,10 +4,10 @@ import { Card } from "../block/Card.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { Row } from "../block/Row.js";
 import { Subheading } from "../block/Subheading.js";
+import { CollapseTransition } from "../transition/CollapseTransition.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
-import { CollapseTransition } from "../transition/CollapseTransition.js";
 
 /**
  * Card renderer for a `tree-documentation` element — a compact summary card linking to the symbol's detail page.
@@ -39,7 +39,7 @@ export function DocumentationCard({
 				</Row>
 			</Subheading>
 			<CollapseTransition>
-			<DocumentationButtons {...props} space="none" />
+				<DocumentationButtons {...props} space="none" />
 			</CollapseTransition>
 			{description && <Paragraph>{description}</Paragraph>}
 			<DocumentationSignatures signatures={signatures} />
