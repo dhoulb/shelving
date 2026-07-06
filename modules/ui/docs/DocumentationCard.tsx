@@ -7,6 +7,7 @@ import { Subheading } from "../block/Subheading.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
+import { CollapseTransition } from "../transition/CollapseTransition.js";
 
 /**
  * Card renderer for a `tree-documentation` element — a compact summary card linking to the symbol's detail page.
@@ -37,7 +38,9 @@ export function DocumentationCard({
 					{kind && <DocumentationKind kind={kind} />}
 				</Row>
 			</Subheading>
+			<CollapseTransition>
 			<DocumentationButtons {...props} space="none" />
+			</CollapseTransition>
 			{description && <Paragraph>{description}</Paragraph>}
 			<DocumentationSignatures signatures={signatures} />
 		</Card>
