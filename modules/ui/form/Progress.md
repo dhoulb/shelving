@@ -7,7 +7,7 @@ A continuous horizontal progress bar for the completion of a task. Rendered as a
 - Use `Progress` for **task completion** — a value heading toward "done" (an upload, a multi-step form, a load). For a static reading within a range that can move up and down (disk usage, a score), a gauge is the right model, not a progress bar.
 - `value` is filled within the `min`–`max` range (defaults `0`–`100`), matching `getPercent()` and `formatPercent()`. `<progress>` has no `min` attribute, so the range is normalised to `value - min` / `max - min` before it reaches the element.
 - The browser clamps `value` to the `0`–`max` range, so an out-of-range `value` renders an empty or full bar rather than overspilling. A non-positive range (`min === max`) falls back to an empty bar rather than the indeterminate state.
-- Pass `indeterminate` for an ongoing task whose duration isn't known — `value` is dropped so the element is natively indeterminate (no `aria-valuenow`), and a band of fill colour flows across the track on a loop. `color=` / `status=` still recolour it. The animation respects `prefers-reduced-motion` (it holds a centred band instead of looping).
+- Omit `value` (or pass `null`/`undefined`) for an ongoing task whose duration isn't known — exactly like a native `<progress>`, dropping the attribute switches the element into the `:indeterminate` state (no `aria-valuenow`), and a block of fill colour flows across the track on a loop. `color=` / `status=` still recolour it. The animation respects `prefers-reduced-motion` (it holds a centred block instead of looping).
 - `aria-valuetext` carries the formatted percentage, so assistive tech announces e.g. "75%".
 - Paints from the [tint ladder](/ui/TINT_CLASS): `color=` and `status=` move the tint anchor for the bar, so the fill (and track) re-derive together — `status="success"` gives a green bar, `color="purple"` a purple one. Without either, the bar takes the ambient tint (`--tint-50`, gray by default).
 
@@ -46,11 +46,11 @@ import { Progress } from "shelving/ui";
 ```tsx
 import { Progress } from "shelving/ui";
 
-// Looping flow animation for a task of unknown duration.
-<Progress value={0} indeterminate />
+// No `value` → looping flow animation for a task of unknown duration.
+<Progress />
 
-// The flowing band still picks up status/colour.
-<Progress value={0} indeterminate status="success" />
+// The flowing block still picks up status/colour.
+<Progress status="success" />
 ```
 
 ## Styling

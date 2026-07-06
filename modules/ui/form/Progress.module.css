@@ -5,7 +5,8 @@
 
 @layer components {
 	/* Continuous progress bar — a native `<progress>` styled as a single track that fills horizontally. */
-	.progress {
+	.progress,
+	.prose progress {
 		/* Strip the native rendering so the track/fill can be painted from tokens. */
 		appearance: none;
 		display: block;
@@ -21,22 +22,26 @@
 	}
 
 	/* Track (WebKit/Blink) — Firefox has no track pseudo-element. */
-	.progress::-webkit-progress-bar {
+	.progress::-webkit-progress-bar,
+	.prose progress::-webkit-progress-bar {
 		background: var(--progress-background, var(--tint-90));
 	}
 
 	/* Fill — WebKit/Blink and Firefox expose the fill under different pseudo-elements, so both repeat the same paint. Painted from the tint ladder, so `color=` / `status=` recolour it. */
-	.progress::-webkit-progress-value {
+	.progress::-webkit-progress-value,
+	.prose progress::-webkit-progress-value {
 		background: var(--progress-color, var(--tint-50));
 		transition: inline-size var(--duration-fast);
 	}
 
-	.progress::-moz-progress-bar {
+	.progress::-moz-progress-bar,
+	.prose progress::-moz-progress-bar {
 		background: var(--progress-color, var(--tint-50));
 	}
 
-	/* Indeterminate — no `value`, so a band of fill colour flows left-to-right across the track on a loop for a task of unknown duration. */
-	.progress.indeterminate {
+	/* Indeterminate — a native `<progress>` with no `value`, so a solid block of fill colour slides across the track on a loop for a task of unknown duration. */
+	.progress:indeterminate,
+	.prose progress:indeterminate {
 		/* Track underneath, plus a solid block of fill colour that slides across the element itself — hard edges, no blended fade. */
 		background-color: var(--progress-background, var(--tint-90));
 		background-image: linear-gradient(90deg, var(--progress-color, var(--tint-50)), var(--progress-color, var(--tint-50)));
@@ -45,19 +50,23 @@
 		animation: progress-flow var(--progress-duration, 1.5s) linear infinite;
 	}
 
-	/* The native track/fill pseudo-elements would paint over the flowing band, so make them transparent and let the element's own background show through. */
-	.progress.indeterminate::-webkit-progress-bar,
-	.progress.indeterminate::-webkit-progress-value {
+	/* The native track/fill pseudo-elements would paint over the sliding block, so make them transparent and let the element's own background show through. */
+	.progress:indeterminate::-webkit-progress-bar,
+	.progress:indeterminate::-webkit-progress-value,
+	.prose progress:indeterminate::-webkit-progress-bar,
+	.prose progress:indeterminate::-webkit-progress-value {
 		background: transparent;
 	}
 
-	.progress.indeterminate::-moz-progress-bar {
+	.progress:indeterminate::-moz-progress-bar,
+	.prose progress:indeterminate::-moz-progress-bar {
 		background: transparent;
 	}
 
-	/* Honour reduced-motion: hold the band centred rather than looping. */
+	/* Honour reduced-motion: hold the block centred rather than looping. */
 	@media (prefers-reduced-motion: reduce) {
-		.progress.indeterminate {
+		.progress:indeterminate,
+		.prose progress:indeterminate {
 			animation: none;
 			background-position: 50% 0;
 		}
