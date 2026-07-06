@@ -34,4 +34,43 @@
 	.progress::-moz-progress-bar {
 		background: var(--progress-color, var(--tint-50));
 	}
+
+	/* Indeterminate — no `value`, so a band of fill colour flows left-to-right across the track on a loop for a task of unknown duration. */
+	.progress.indeterminate {
+		/* Track underneath, plus a flowing band of fill colour painted as a moving gradient across the element itself. */
+		background-color: var(--progress-background, var(--tint-90));
+		background-image: linear-gradient(90deg, transparent, var(--progress-color, var(--tint-50)), transparent);
+		background-repeat: no-repeat;
+		background-size: 40% 100%;
+		animation: progress-flow var(--progress-duration, 1.5s) ease-in-out infinite;
+	}
+
+	/* The native track/fill pseudo-elements would paint over the flowing band, so make them transparent and let the element's own background show through. */
+	.progress.indeterminate::-webkit-progress-bar,
+	.progress.indeterminate::-webkit-progress-value {
+		background: transparent;
+	}
+
+	.progress.indeterminate::-moz-progress-bar {
+		background: transparent;
+	}
+
+	/* Honour reduced-motion: hold the band centred rather than looping. */
+	@media (prefers-reduced-motion: reduce) {
+		.progress.indeterminate {
+			animation: none;
+			background-position: 50% 0;
+		}
+	}
+}
+
+/* Slide the fill band from just off the left edge to just off the right edge. */
+@keyframes progress-flow {
+	from {
+		background-position: -50% 0;
+	}
+
+	to {
+		background-position: 150% 0;
+	}
 }
