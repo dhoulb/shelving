@@ -14,8 +14,11 @@
 * document so `.main` is the only scroll container.
 *
 * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
-* screen; the `.toggle` button opens/closes it and the `.overlay` dims the page behind the open
-* drawer (both are hidden entirely on wide viewports).
+* screen (the right edge for the `.right` variant); the `.toggle` button opens/closes it and the
+* `.overlay` dims the page behind the open drawer (both are hidden entirely on wide viewports).
+*
+* The `.right` variant keeps the DOM order static (sidebar → content) and mirrors the visual order in
+* CSS by swapping the grid columns, so the markup never reshuffles.
 */
 
 @layer components {
@@ -103,6 +106,25 @@
 		background: var(--sidebar-layout-background, var(--tint-100));
 	}
 
+	/*
+	 * Right variant — mirror the layout so the sidebar sits on the right, without touching DOM order.
+	 * The grid columns are swapped, the sidebar and content are placed into them explicitly, and the
+	 * divider border moves to the sidebar's inner (left) edge.
+	 */
+	.main.right {
+		grid-template-columns: 1fr var(--sidebar-layout-width, 17.5rem);
+	}
+
+	.main.right .sidebar {
+		grid-column: 2;
+		border-right: none;
+		border-left: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-80));
+	}
+
+	.main.right .content {
+		grid-column: 1;
+	}
+
 	/* Wrapper for the menu toggle button — hidden on wide viewports, shown on narrow ones (see media query). */
 	.toggle {
 		display: none;
@@ -115,9 +137,10 @@
 		display: none;
 	}
 
-	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
+	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left (right for the `right` variant). */
 	@media (width <= 48rem) {
-		.main {
+		.main,
+		.main.right {
 			grid-template-columns: 1fr;
 		}
 
@@ -140,6 +163,17 @@
 			box-shadow: 0 0 1.5rem #0006;
 		}
 
+		/* Right variant: dock the drawer to the right edge and slide it in from the right instead. */
+		.main.right .sidebar {
+			left: auto;
+			right: 0;
+			transform: translateX(100%);
+		}
+
+		.main.right .sidebar.open {
+			transform: translateX(0);
+		}
+
 		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
 		.toggle {
 			display: block;
@@ -149,7 +183,7 @@
 			z-index: 110;
 		}
 
-		/* Dim the page behind the open drawer; clicking the overlay closes it. */
+		/* Dim the page behind the open drawer; clicking the overlay closes it. Always mounted, so it fades both ways via the `open` class. */
 		.overlay {
 			/* Box */
 			display: block;
@@ -164,13 +198,17 @@
 			background: var(--shadow-color);
 			cursor: pointer;
 
-			/* Fade in on mount. The overlay is added to the DOM only while the drawer is open, so a plain transition has no `from` state to animate from — `@starting-style` supplies one. Degrades to an instant appearance on browsers without `@starting-style`. */
-			opacity: 1;
-			transition: opacity var(--duration-normal) ease-in-out;
+			/* Hidden and non-interactive until open. Transition `visibility` alongside `opacity` so the overlay stays in the a11y tree (and clickable) only while shown, then flips hidden at the end of the fade-out. */
+			opacity: 0;
+			visibility: hidden;
+			transition:
+				opacity var(--duration-normal) ease-in-out,
+				visibility var(--duration-normal);
+		}
 
-			@starting-style {
-				opacity: 0;
-			}
+		.overlay.open {
+			opacity: 1;
+			visibility: visible;
 		}
 	}
 }

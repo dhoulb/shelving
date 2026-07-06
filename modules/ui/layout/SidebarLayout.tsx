@@ -13,6 +13,7 @@ const LAYOUT_TOGGLE_CLASS = getModuleClass(LAYOUT_CSS, "toggle");
 const LAYOUT_OVERLAY_CLASS = getModuleClass(LAYOUT_CSS, "overlay");
 const LAYOUT_MAIN_CLASS = getModuleClass(LAYOUT_CSS, "main");
 const LAYOUT_OPEN_CLASS = getModuleClass(LAYOUT_CSS, "open");
+const LAYOUT_RIGHT_CLASS = getModuleClass(LAYOUT_CSS, "right");
 
 /**
  * Props for `<SidebarLayout>` — the `sidebar` column content, main `children`, and a `right` placement flag.
@@ -48,7 +49,6 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 
 	const sidebarEl = (
 		<nav
-			key="sidebar"
 			className={getClass(
 				LAYOUT_SIDEBAR_CLASS, //
 				open && LAYOUT_OPEN_CLASS,
@@ -63,7 +63,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 	// back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither
 	// duplicated nor remounted as the URL changes.
 	const contentEl = (
-		<RouteCache key="content">
+		<RouteCache>
 			<div className={LAYOUT_CONTENT_CLASS}>
 				<div className={LAYOUT_TOGGLE_CLASS}>
 					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
@@ -75,9 +75,22 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		</RouteCache>
 	);
 
-	const overlayEl = open && (
-		<button key="overlay" type="button" className={LAYOUT_OVERLAY_CLASS} aria-label="Close menu" onClick={() => setOpen(false)} />
+	// Always mounted (on narrow viewports) so it can fade both in and out via the `open` class — a conditionally-mounted element can't animate on the way out.
+	const overlayEl = (
+		<button
+			type="button"
+			className={getClass(LAYOUT_OVERLAY_CLASS, open && LAYOUT_OPEN_CLASS)}
+			aria-label="Close menu"
+			onClick={() => setOpen(false)}
+		/>
 	);
 
-	return <main className={LAYOUT_MAIN_CLASS}>{right ? [contentEl, sidebarEl, overlayEl] : [sidebarEl, contentEl, overlayEl]}</main>;
+	// DOM order is always sidebar → content → overlay; the `right` variant flips the visual column order in CSS, so the markup never reshuffles.
+	return (
+		<main className={getClass(LAYOUT_MAIN_CLASS, right && LAYOUT_RIGHT_CLASS)}>
+			{sidebarEl}
+			{contentEl}
+			{overlayEl}
+		</main>
+	);
 }
