@@ -33,16 +33,6 @@ function AppShell() {
 
 Layouts compose naturally as `<Router>` route values — wrap a group of routes in a shared layout, then route further inside it.
 
-### Keyboard-aware safe area
-
-`useSafeKeyboardArea()` (exported alongside the layouts) tracks the dynamic viewport and writes a `--layout-inset-bottom` custom property reflecting the space hidden behind the on-screen keyboard. This is an iOS Safari workaround until `interactive-widget` viewport support lands.
-
-```tsx
-import { useSafeKeyboardArea } from "shelving/ui";
-
-useEffect(useSafeKeyboardArea, []);
-```
-
 ## Styling
 
 | Variable | Styles | Default |
@@ -54,6 +44,6 @@ useEffect(useSafeKeyboardArea, []);
 | `--sidebar-layout-sidebar-color` | Sidebar column text colour | `var(--tint-00)` (black) |
 | `--sidebar-layout-border` | Divider between sidebar and content | `var(--stroke-normal) solid var(--tint-80)` |
 
-The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class). `useSafeKeyboardArea()` still writes `--layout-inset-bottom` for layouts that pad to the safe area.
+The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class).
 
 **Global tokens it reads** — `--tint-00` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.
