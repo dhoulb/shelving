@@ -187,4 +187,14 @@ describe("mergeObject()", () => {
 		expect(mergeObject(objDeepMissing, objDeep, deepMerge)).toEqual(objDeep);
 		expect(mergeObject({ deep: { a: 1 } }, { deep: { b: 2 } }, deepMerge)).toEqual({ deep: { a: 1, b: 2 } });
 	});
+	test("mergeObject(): a `__proto__` key does not inject a prototype", () => {
+		// JSON.parse creates an own `"__proto__"` data key (not a setter call), so this reaches the loop with a hostile key.
+		const right: Record<string, unknown> = JSON.parse('{"__proto__": { "polluted": true }, "b": 2}');
+		const merged = mergeObject({ a: 1 }, right);
+		expect(Object.getPrototypeOf(merged)).toBe(null); // Hostile prototype was not injected.
+		expect(Object.keys(merged)).toEqual(["a", "__proto__", "b"]); // `__proto__` stays an enumerable own entry.
+		expect(({} as { polluted?: boolean }).polluted).toBeUndefined(); // Global `Object.prototype` untouched.
+		// Same via `deepMerge()`, which recurses into `mergeObject()`.
+		expect(Object.getPrototypeOf(deepMerge({ a: 1 }, right))).toBe(null);
+	});
 });

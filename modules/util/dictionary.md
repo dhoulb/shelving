@@ -5,6 +5,7 @@ Typed helpers for working with `{ [key: string]: T }` objects — called *dictio
 - `ImmutableDictionary<T>` and `MutableDictionary<T>` are the two variants; all immutable helpers return the same reference when nothing changed.
 - `requireDictionary()` converts an iterable of `[key, value]` pairs into a plain object — useful when you receive entries from a `Map` or other iterable source.
 - `EMPTY_DICTIONARY` is a prototype-null singleton; use it as a safe empty default.
+- `setDictionaryItem()` / `setDictionaryItems()` trust their keys by contract: a runtime-untrusted key like `__proto__` would mutate the target's prototype, so validate or filter untrusted keys first (or use a null-prototype target).
 
 ## Usage
 

@@ -7,6 +7,7 @@ Parses a markup string and renders the resulting React nodes inline. Defaults to
 - `url` and `root` default to the current `<Meta>` context, so link rules resolve site-absolute and relative hrefs correctly. Override any `MarkupOptions` prop (`rules`, `rel`, `url`, `root`, `schemes`) directly on `<Markup>` for a custom rule set or base URL.
 - Renders `null` when `children` is empty.
 - Wrap in `<Prose>` to give the produced `<p>` / `<ul>` / `<pre>` / etc. the standard prose typography.
+- When `children` comes from users, cap its length before rendering: parsing is linear for normal content, but a few rules can degrade on adversarial input (long backtick runs, deeply-nested `>` blockquotes). A sane maximum for your use case — tens of kilobytes for typical user content — keeps worst-case work bounded.
 
 ## Usage
 

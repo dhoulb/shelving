@@ -8,6 +8,7 @@ Immutably merge two values — objects, arrays, or primitives. All merge functio
 - `mergeObject()` treats an explicit `undefined` value in `right` as a deletion of that key from the merged result.
 - `exactMerge()` simply returns `right` — the building block for shallow merges of object properties.
 - Same-reference shortcut: if `left === right`, the function returns immediately without allocating.
+- Merged objects are built with a `null` prototype, so an untrusted `__proto__` key in `right` becomes an inert own property instead of injecting a prototype.
 
 ## Usage
 

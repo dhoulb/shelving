@@ -163,7 +163,10 @@ export function validateArray<T>(unsafeArray: PossibleArray<unknown>, validator:
  */
 export function validateDictionary<T>(unsafeDictionary: PossibleDictionary<unknown>, validator: Validator<T>): ImmutableDictionary<T> {
 	let changed = false;
-	const safeDictionary: MutableDictionary<T> = {};
+	// Null-prototype accumulator: an untrusted `"__proto__"` key (or `"constructor"`) then becomes an inert own
+	// property instead of invoking the inherited `__proto__` setter, so a crafted `{ "__proto__": … }` input can't
+	// reassign the returned dictionary's prototype, and the entry stays enumerable so `min`/`max` counts are correct.
+	const safeDictionary: MutableDictionary<T> = Object.create(null);
 	const messages: MutableArray<string> = [];
 	for (const [key, unsafeValue] of getDictionaryItems(unsafeDictionary)) {
 		try {

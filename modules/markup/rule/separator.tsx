@@ -12,7 +12,8 @@ import { createLineRegExp } from "../util/regexp.js";
  * @see https://shelving.cc/markup/SEPARATOR_RULE
  */
 export const SEPARATOR_RULE = createMarkupRule(
-	createLineRegExp("([-*•+_=])(?: *\\1){2,}"), //
+	// Inter-character whitespace is bounded (`{0,2000}`) so a long run of spaces can't force O(n²) backtracking.
+	createLineRegExp("([-*•+_=])(?: {0,2000}\\1){2,}"), //
 	key => <hr key={key} />,
 	["block"],
 );

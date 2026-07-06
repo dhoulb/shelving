@@ -49,7 +49,7 @@ describe("validate()", () => {
 
 	test("Invalid currency codes are invalid", () => {
 		expect(() => schema.validate("US")).toThrow("Invalid currency");
-		expect(() => schema.validate("USDT")).toThrow("Invalid currency");
+		expect(() => schema.validate("USDT")).toThrow("Maximum 3 characters"); // Over-length is now caught by `max` before the pattern runs.
 		expect(() => schema.validate("ZZZ")).toThrow("Unknown currency code");
 	});
 

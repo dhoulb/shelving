@@ -251,6 +251,7 @@ function* getURIEntries(params: PossibleURIParams, caller: AnyCaller = getURIPar
 /**
  * Get a set of params for a URI as a dictionary.
  * - Any params with `undefined` value will be ignored.
+ * - Returned dictionary has a `null` prototype, so an untrusted `__proto__` param becomes an inert own entry (instead of being silently dropped by the inherited `__proto__` setter).
  *
  * @param params Possible URI params to convert.
  * @param caller Function to attribute a thrown error to (defaults to `getURIParams` itself).
@@ -260,7 +261,9 @@ function* getURIEntries(params: PossibleURIParams, caller: AnyCaller = getURIPar
  * @see https://shelving.cc/util/uri/getURIParams
  */
 export function getURIParams(params: PossibleURIParams, caller: AnyCaller = getURIParams): URIParams {
-	const output: MutableDictionary<string> = {};
+	// Null-prototype accumulator: param keys are runtime-untrusted, so an untrusted `"__proto__"` key becomes an
+	// inert own entry instead of invoking the inherited `__proto__` setter (which would silently drop the param).
+	const output: MutableDictionary<string> = Object.create(null);
 	for (const [key, str] of getURIEntries(params, caller)) output[key] = str;
 	return output;
 }

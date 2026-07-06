@@ -61,6 +61,7 @@ function _matchRoute(
 		// String value is a redirect; re-run matching with the new path. Guard against infinite redirect loops by limiting depth.
 		if (typeof Route === "string") {
 			if (depth > 10) throw new UnexpectedError("Infinite redirect loop", { received: route, expected: path, caller: _matchRoute });
+			// `placeholders` are already decoded by `matchPathTemplate`, so re-encode them into the redirect path with `renderPathTemplate` — the symmetric partner of the match above.
 			return _matchRoute(routes, fallback, meta, renderPathTemplate(Route, placeholders), depth + 1);
 		}
 

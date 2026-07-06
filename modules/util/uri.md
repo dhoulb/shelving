@@ -7,7 +7,7 @@ These helpers work with any valid URI — including non-hierarchical ones like `
 - `ImmutableURI` is a re-export of the native `URL` constructor with a tighter TypeScript interface. At runtime it _is_ `URL`; the type just restricts properties to narrower literal types.
 - `getURI()` only accepts **complete** URIs (with protocol). Relative inputs always return `undefined`. Use `getBasedURI()` from `url.ts` to resolve a path against a base.
 - `withURIParam()` / `withURIParams()` return the **same URI instance** when the params would not change.
-- `getURIParams()` converts `URLSearchParams`, a URI string, a URL object, or a plain dictionary — all to the same `{ key: string }` shape.
+- `getURIParams()` converts `URLSearchParams`, a URI string, a URL object, or a plain dictionary — all to the same `{ key: string }` shape. The returned dictionary has a `null` prototype, so an untrusted `__proto__` param becomes an inert own entry.
 - `omitURIParam` is an alias for `omitURIParams()` with a single key.
 
 ## Usage

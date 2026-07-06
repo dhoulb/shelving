@@ -5,6 +5,7 @@ import { type Bytes, requireBytes } from "./bytes.js";
 // Constants.
 const ALGORITHM = { name: "PBKDF2", hash: "SHA-512" };
 const ITERATIONS = 500000;
+const MAX_ITERATIONS = 10000000; // Upper bound on iterations accepted from a stored hash — guards against a malicious hash forcing an arbitrarily expensive derivation (DoS). Comfortably above the 500k default.
 const SALT_LENGTH = 16; // 16 bytes = 128 bits
 const HASH_LENGTH = 64; // 64 bytes = 512 bits
 const PASSWORD_LENGTH = 6;
@@ -46,7 +47,8 @@ export async function hashPassword(password: string, iterations = ITERATIONS): P
 			received: password.length,
 			caller: hashPassword,
 		});
-	if (iterations < 1) throw new ValueError("Iterations must be number greater than 0", { received: iterations, caller: hashPassword });
+	if (iterations < 1 || iterations > MAX_ITERATIONS)
+		throw new ValueError(`Iterations must be between 1 and ${MAX_ITERATIONS}`, { received: iterations, caller: hashPassword });
 
 	// Hash the password.
 	const key = await _getKey(password);
@@ -76,7 +78,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 	// Check iterations.
 	const iterations = Number.parseInt(i, 10);
-	if (!Number.isFinite(iterations) || iterations < 1) return false;
+	if (!Number.isFinite(iterations) || iterations < 1 || iterations > MAX_ITERATIONS) return false;
 
 	// Derive the hash.
 	const key = await _getKey(password);

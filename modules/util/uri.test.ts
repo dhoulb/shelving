@@ -8,6 +8,14 @@ describe("getURIParams()", () => {
 		expect(getURIParams("https://a.com/?a=1&b=2")).toEqual({ a: "1", b: "2" });
 		expect(getURIParams(new ImmutableURL("https://a.com/?a=1&b=2"))).toEqual({ a: "1", b: "2" });
 	});
+	test("a `__proto__` param does not inject a prototype", () => {
+		const params = getURIParams("https://a.com/?__proto__=a&b=2");
+		expect(Object.getPrototypeOf(params)).toBe(null); // No prototype to inject through.
+		expect(Object.entries(params)).toEqual([
+			["__proto__", "a"], // `__proto__` stays an enumerable own entry (not silently dropped).
+			["b", "2"],
+		]);
+	});
 });
 describe("getURIParam()", () => {
 	test("gets param from URL", () => {
