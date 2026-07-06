@@ -5,7 +5,6 @@ import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
-import "./SidebarLayout.css";
 import LAYOUT_CSS from "./SidebarLayout.module.css";
 
 const LAYOUT_SIDEBAR_CLASS = getModuleClass(LAYOUT_CSS, "sidebar");

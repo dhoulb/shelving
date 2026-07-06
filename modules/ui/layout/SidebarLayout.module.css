@@ -115,8 +115,6 @@
 		display: none;
 	}
 
-	/* The `overlay-fade-in` keyframes referenced below live in the sibling non-module `SidebarLayout.css` — see the note there for why they can't be defined in this module file. */
-
 	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
 	@media (width <= 48rem) {
 		.main {
@@ -165,7 +163,14 @@
 			/* Style */
 			background: var(--shadow-color);
 			cursor: pointer;
-			animation: overlay-fade-in var(--duration-normal) ease-in-out;
+
+			/* Fade in on mount. The overlay is added to the DOM only while the drawer is open, so a plain transition has no `from` state to animate from — `@starting-style` supplies one. Degrades to an instant appearance on browsers without `@starting-style`. */
+			opacity: 1;
+			transition: opacity var(--duration-normal) ease-in-out;
+
+			@starting-style {
+				opacity: 0;
+			}
 		}
 	}
 }
