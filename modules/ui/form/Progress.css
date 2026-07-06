@@ -1,0 +1,23 @@
+/*
+* Keyframes for the `Progress` indeterminate animation.
+*
+* This lives in a plain (non-module) CSS file, not `Progress.module.css`, because Bun's CSS-modules
+* transform renames the `@keyframes` identifier (appends the module hash) but does *not* rewrite the
+* matching `animation` reference, so a keyframes block defined in the module file animates against a
+* name that no longer exists. Keeping the declaration global here leaves the name stable, and the
+* un-rewritten `animation: progress-flow` reference in `Progress.module.css` resolves to it. This
+* mirrors how the `transition` components keep their keyframes in sibling `.css` files.
+*
+* Tracked in dhoulb/shelving#259 (revert once Bun ships the fix for oven-sh/bun#18921).
+*/
+
+/* Conveyor the block fully off the left edge, across, and fully off the right — then it loops back round unseen. `-70%`/`170%` fully clear a `40%`-wide block, and `linear` timing keeps a constant speed with no ease-out stall at the ends. */
+@keyframes progress-flow {
+	from {
+		background-position: -70% 0;
+	}
+
+	to {
+		background-position: 170% 0;
+	}
+}
