@@ -16,5 +16,5 @@ export interface VerticalTransitionProps extends TransitionProps {}
  * @see https://shelving.cc/ui/VerticalTransition
  */
 export function VerticalTransition(props: VerticalTransitionProps): ReactElement {
-	return <Transition default="slideDown" forward="slideDown" back="slideUp" {...props} />;
+	return <Transition default="slide-down" forward="slide-down" back="slide-up" {...props} />;
 }

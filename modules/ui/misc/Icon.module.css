@@ -1,6 +1,6 @@
-@import "../style/layers.css";
-@import "../style/Typography.module.css";
-@import "../style/Tint.module.css";
+@import url("../style/layers.css");
+@import url("../style/Typography.module.css");
+@import url("../style/Tint.module.css");
 
 @layer defaults {
 	.icon {

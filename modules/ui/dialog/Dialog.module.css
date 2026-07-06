@@ -1,7 +1,8 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Space.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Shadow.module.css");
 
 @layer components {
 	.dialog {
@@ -18,7 +19,7 @@
 		padding: var(--dialog-padding, var(--space-normal));
 
 		/* Style */
-		background: var(--dialog-color-overlay, var(--color-shadow));
+		background: var(--dialog-color-overlay, var(--shadow-color));
 		opacity: 0;
 		transition: var(--dialog-transition, all var(--duration-fast));
 

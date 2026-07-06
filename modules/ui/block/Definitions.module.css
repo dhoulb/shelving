@@ -1,8 +1,8 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
-@import "../style/Typography.module.css";
-@import "../style/Color.module.css";
-@import "../style/Gap.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Typography.module.css");
+@import url("../style/Color.module.css");
+@import url("../style/Gap.module.css");
 
 @layer components {
 	.definitions,
@@ -24,6 +24,7 @@
 			display: block;
 			margin: 0;
 		}
+
 		dt {
 			/* Box */
 			margin-block-start: var(--definitions-gap, var(--space-small));

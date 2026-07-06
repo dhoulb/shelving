@@ -1,18 +1,18 @@
-@import "layers.css";
-@import "Tint.module.css";
+@import url("layers.css");
+@import url("Tint.module.css");
 
 @layer defaults {
 	:root {
 		/* Basic colors */
-		--color-gray: oklch(60% 0.01 240); /* Subtle blue tint so neutrals don't feel "dead". */
-		--color-red: oklch(62% 0.2 30); /* Slightly desaturated from default — takes the edge off without losing red identity. */
-		--color-orange: oklch(74% 0.157 60);
-		--color-yellow: oklch(86% 0.16 92);
-		--color-green: oklch(72% 0.185 130);
-		--color-aqua: oklch(72% 0.121 185);
-		--color-blue: oklch(57% 0.216 260); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
-		--color-purple: oklch(58% 0.25 300);
-		--color-pink: oklch(68% 0.239 350);
+		--color-gray: oklch(60% 0.01 240deg); /* Subtle blue tint so neutrals don't feel "dead". */
+		--color-red: oklch(62% 0.2 30deg); /* Slightly desaturated from default — takes the edge off without losing red identity. */
+		--color-orange: oklch(74% 0.157 60deg);
+		--color-yellow: oklch(86% 0.16 92deg);
+		--color-green: oklch(72% 0.185 130deg);
+		--color-aqua: oklch(72% 0.121 185deg);
+		--color-blue: oklch(57% 0.216 260deg); /* OKLCH form of #156ef4 — warmer hue (260) than the previous 240. */
+		--color-purple: oklch(58% 0.25 300deg);
+		--color-pink: oklch(68% 0.239 350deg);
 
 		/* Semantic colors */
 		--color-link: var(--color-blue);
@@ -33,27 +33,35 @@
 	.gray {
 		--tint-50: var(--color-gray);
 	}
+
 	.red {
 		--tint-50: var(--color-red);
 	}
+
 	.orange {
 		--tint-50: var(--color-orange);
 	}
+
 	.yellow {
 		--tint-50: var(--color-yellow);
 	}
+
 	.green {
 		--tint-50: var(--color-green);
 	}
+
 	.aqua {
 		--tint-50: var(--color-aqua);
 	}
+
 	.blue {
 		--tint-50: var(--color-blue);
 	}
+
 	.purple {
 		--tint-50: var(--color-purple);
 	}
+
 	.pink {
 		--tint-50: var(--color-pink);
 	}
@@ -62,9 +70,11 @@
 	.primary {
 		--tint-50: var(--color-primary);
 	}
+
 	.secondary {
 		--tint-50: var(--color-secondary);
 	}
+
 	.tertiary {
 		--tint-50: var(--color-tertiary);
 	}

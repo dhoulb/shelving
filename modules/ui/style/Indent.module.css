@@ -1,14 +1,16 @@
-@import "layers.css";
-@import "Space.module.css";
+@import url("layers.css");
+@import url("Space.module.css");
 
 @layer variants {
 	/* Named. */
 	.indent-none {
 		padding-inline: 0;
 	}
+
 	.indent-paragraph {
 		padding-inline: var(--space-paragraph);
 	}
+
 	.indent-section {
 		padding-inline: var(--space-section);
 	}
@@ -17,21 +19,27 @@
 	.indent-xxsmall {
 		padding-inline: var(--space-xxsmall);
 	}
+
 	.indent-xsmall {
 		padding-inline: var(--space-xsmall);
 	}
+
 	.indent-small {
 		padding-inline: var(--space-small);
 	}
+
 	.indent-normal {
 		padding-inline: var(--space-normal);
 	}
+
 	.indent-large {
 		padding-inline: var(--space-large);
 	}
+
 	.indent-xlarge {
 		padding-inline: var(--space-xlarge);
 	}
+
 	.indent-xxlarge {
 		padding-inline: var(--space-xxlarge);
 	}
@@ -40,30 +48,39 @@
 	.indent-1x {
 		padding-inline: calc(var(--space-normal) * 1);
 	}
+
 	.indent-2x {
 		padding-inline: calc(var(--space-normal) * 2);
 	}
+
 	.indent-3x {
 		padding-inline: calc(var(--space-normal) * 3);
 	}
+
 	.indent-4x {
 		padding-inline: calc(var(--space-normal) * 4);
 	}
+
 	.indent-5x {
 		padding-inline: calc(var(--space-normal) * 5);
 	}
+
 	.indent-6x {
 		padding-inline: calc(var(--space-normal) * 6);
 	}
+
 	.indent-7x {
 		padding-inline: calc(var(--space-normal) * 7);
 	}
+
 	.indent-8x {
 		padding-inline: calc(var(--space-normal) * 8);
 	}
+
 	.indent-9x {
 		padding-inline: calc(var(--space-normal) * 9);
 	}
+
 	.indent-10x {
 		padding-inline: calc(var(--space-normal) * 10);
 	}

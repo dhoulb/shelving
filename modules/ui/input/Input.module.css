@@ -1,11 +1,11 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Radius.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.input {
@@ -58,6 +58,7 @@
 				border-color: var(--color-green);
 			}
 		}
+
 		&.text {
 			/* Text inputs have text cursor, selection, placeholder. */
 			cursor: text;
@@ -67,6 +68,7 @@
 				color: var(--tint-100);
 				background-color: var(--color-focus);
 			}
+
 			&::placeholder {
 				color: var(--tint-70);
 			}
@@ -84,11 +86,12 @@
 			&.multiline {
 				/* Textarea has pre-space and field-sizing for auto-resizing. */
 				white-space: pre-wrap;
-				word-break: break-word;
+				overflow-wrap: break-word;
 				field-sizing: content;
 				min-height: calc(1lh * attr(rows number, 2));
 			}
 		}
+
 		&.button,
 		&.label {
 			/* Button and label inputs have a pointer cursor and clip overlong labels. */
@@ -106,6 +109,7 @@
 				border-color: var(--color-failure);
 			}
 		}
+
 		&.button {
 			justify-content: center;
 		}
@@ -193,6 +197,7 @@
 		&:first-child {
 			margin-block-start: 0;
 		}
+
 		&:last-child {
 			margin-block-end: 0;
 		}

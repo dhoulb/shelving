@@ -1,9 +1,9 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Radius.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.menu {
@@ -24,6 +24,7 @@
 		/* Nested submenu — Blockquote-style left border to signal hierarchy. */
 		.menu {
 			margin-block: var(--menu-nested-space, var(--space-xxsmall));
+
 			/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
 			margin-inline-start: var(--menu-padding, var(--space-xxsmall));
 			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
@@ -54,6 +55,7 @@
 			background: var(--menu-hover-background, var(--tint-90));
 			color: var(--menu-hover-color, var(--tint-00));
 		}
+
 		&:not(:focus-visible) {
 			outline-color: transparent;
 		}
@@ -64,6 +66,7 @@
 			color: var(--menu-proud, var(--tint-00));
 			font-weight: var(--menu-proud-weight, var(--weight-strong));
 		}
+
 		&.active {
 			background: var(--menu-active-background, var(--tint-100));
 			color: var(--menu-active-color, var(--tint-00));

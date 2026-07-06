@@ -5,62 +5,66 @@
 	}
 }
 
-@keyframes slideInFromLeft {
+@keyframes slide-in-from-left {
 	from {
 		opacity: 0;
 		transform: translateX(calc(0px - var(--horizontal-transition-size)));
 	}
+
 	to {
 		opacity: 1;
 		transform: translateX(0);
 	}
 }
 
-@keyframes slideInFromRight {
+@keyframes slide-in-from-right {
 	from {
 		opacity: 0;
 		transform: translateX(var(--horizontal-transition-size));
 	}
+
 	to {
 		opacity: 1;
 		transform: translateX(0);
 	}
 }
 
-@keyframes slideOutToLeft {
+@keyframes slide-out-to-left {
 	from {
 		opacity: 1;
 		transform: translateX(0);
 	}
+
 	to {
 		opacity: 0;
 		transform: translateX(calc(0px - var(--horizontal-transition-size)));
 	}
 }
 
-@keyframes slideOutToRight {
+@keyframes slide-out-to-right {
 	from {
 		opacity: 1;
 		transform: translateX(0);
 	}
+
 	to {
 		opacity: 0;
 		transform: translateX(var(--horizontal-transition-size));
 	}
 }
 
-::view-transition-new(.slideRight) {
-	animation: slideInFromRight var(--horizontal-transition-duration) ease-in-out both;
+::view-transition-new(.slide-right) {
+	animation: slide-in-from-right var(--horizontal-transition-duration) ease-in-out both;
 }
 
-::view-transition-old(.slideRight) {
-	animation: slideOutToLeft var(--horizontal-transition-duration) ease-in-out both;
+::view-transition-old(.slide-right) {
+	animation: slide-out-to-left var(--horizontal-transition-duration) ease-in-out both;
 }
 
-::view-transition-new(.slideLeft) {
-	animation: slideInFromLeft var(--horizontal-transition-duration) ease-in-out both;
+::view-transition-new(.slide-left) {
+	animation: slide-in-from-left var(--horizontal-transition-duration) ease-in-out both;
 }
 
-::view-transition-old(.slideLeft) {
-	animation: slideOutToRight var(--horizontal-transition-duration) ease-in-out both;
+::view-transition-old(.slide-left) {
+	animation: slide-out-to-right var(--horizontal-transition-duration) ease-in-out both;
 }

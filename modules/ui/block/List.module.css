@@ -1,8 +1,8 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
-@import "../style/Color.module.css";
-@import "../style/Gap.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Color.module.css");
+@import url("../style/Gap.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.unordered,
@@ -44,6 +44,7 @@
 		&:first-child {
 			margin-block-start: 0;
 		}
+
 		&:last-child {
 			margin-block-end: 0;
 		}

@@ -1,11 +1,11 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Radius.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Width.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Width.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.preformatted,
@@ -29,8 +29,8 @@
 		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
 
 		/* Text */
-		font-family: var(--preformatted-font, var(--font-preformatted));
-		font-weight: var(--preformatted-weight, var(--weight-preformatted));
+		font-family: var(--preformatted-font, var(--font-code));
+		font-weight: var(--preformatted-weight, var(--weight-code));
 		font-size: var(--preformatted-size, var(--size-normal));
 		line-height: var(--preformatted-leading, var(--leading));
 		text-transform: none;
@@ -39,8 +39,7 @@
 		overflow-wrap: normal;
 
 		/* Scrolling */
-		overflow-y: hidden;
-		overflow-x: auto;
+		overflow: auto hidden;
 		overscroll-behavior-x: none;
 		scroll-behavior: smooth;
 
@@ -59,6 +58,7 @@
 		&:first-child {
 			margin-block-start: 0;
 		}
+
 		&:last-child {
 			margin-block-end: 0;
 		}

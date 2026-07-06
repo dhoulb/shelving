@@ -1,9 +1,10 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Shadow.module.css");
 
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
@@ -50,6 +51,7 @@
 		inset: 0;
 
 		/* Style */
+
 		/* Page background + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset.
 		 * `color` inherits, so this one rule sets the text colour for the whole layout (including `.content`). */
 		background: var(--sidebar-layout-background, var(--tint-100));
@@ -77,6 +79,7 @@
 		padding: var(--space-normal);
 
 		/* Style */
+
 		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-90 / --tint-00) when the hooks are unset.
 		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
 		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
@@ -90,13 +93,12 @@
 
 		/* Scrolling */
 		display: flow-root;
-		overflow-x: hidden;
-		overflow-y: auto;
-		overscroll-behavior-x: auto;
-		overscroll-behavior-y: contain;
+		overflow: hidden auto;
+		overscroll-behavior: auto contain;
 		scroll-behavior: smooth;
 
 		/* Style */
+
 		/* Shares the page background hook; text colour is inherited from the `body` rule above (no `color` here on purpose). */
 		background: var(--sidebar-layout-background, var(--tint-100));
 	}
@@ -117,16 +119,18 @@
 		from {
 			opacity: 0;
 		}
+
 		to {
 			opacity: 1;
 		}
 	}
 
 	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
-	@media (max-width: 48rem) {
+	@media (width <= 48rem) {
 		.main {
 			grid-template-columns: 1fr;
 		}
+
 		.sidebar {
 			/* Box */
 			position: fixed;
@@ -140,10 +144,12 @@
 			transform: translateX(-100%);
 			transition: transform var(--duration-normal) ease-in-out;
 		}
+
 		.sidebar.open {
 			transform: translateX(0);
-			box-shadow: 0 0 1.5rem var(--color-shadow);
+			box-shadow: 0 0 1.5rem #0006;
 		}
+
 		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
 		.toggle {
 			display: block;
@@ -152,6 +158,7 @@
 			right: var(--space-normal);
 			z-index: 110;
 		}
+
 		/* Dim the page behind the open drawer; clicking the overlay closes it. */
 		.overlay {
 			/* Box */
@@ -164,7 +171,7 @@
 			border: 0;
 
 			/* Style */
-			background: var(--color-shadow);
+			background: var(--shadow-color);
 			cursor: pointer;
 			animation: overlay-fade-in var(--duration-normal) ease-in-out;
 		}

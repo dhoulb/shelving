@@ -1,4 +1,4 @@
-@import "layers.css";
+@import url("layers.css");
 
 @layer defaults {
 	:root {
@@ -19,6 +19,7 @@
 		border-style: solid;
 		border-width: var(--stroke-normal);
 	}
+
 	.thick {
 		border-style: solid;
 		border-width: var(--stroke-thick);

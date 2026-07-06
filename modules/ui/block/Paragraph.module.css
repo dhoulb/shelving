@@ -1,5 +1,5 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
 
 @layer components {
 	.prose p,

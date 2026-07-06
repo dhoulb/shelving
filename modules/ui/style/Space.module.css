@@ -1,4 +1,4 @@
-@import "layers.css";
+@import url("layers.css");
 
 @layer defaults {
 	:root {
@@ -22,9 +22,11 @@
 	.space-none {
 		margin-block: 0;
 	}
+
 	.space-paragraph {
 		margin-block: var(--space-paragraph);
 	}
+
 	.space-section {
 		margin-block: var(--space-section);
 	}
@@ -33,21 +35,27 @@
 	.space-xxsmall {
 		margin-block: var(--space-xxsmall);
 	}
+
 	.space-xsmall {
 		margin-block: var(--space-xsmall);
 	}
+
 	.space-small {
 		margin-block: var(--space-small);
 	}
+
 	.space-normal {
 		margin-block: var(--space-normal);
 	}
+
 	.space-large {
 		margin-block: var(--space-large);
 	}
+
 	.space-xlarge {
 		margin-block: var(--space-xlarge);
 	}
+
 	.space-xxlarge {
 		margin-block: var(--space-xxlarge);
 	}
@@ -56,30 +64,39 @@
 	.space-1x {
 		margin-block: calc(var(--space-normal) * 1);
 	}
+
 	.space-2x {
 		margin-block: calc(var(--space-normal) * 2);
 	}
+
 	.space-3x {
 		margin-block: calc(var(--space-normal) * 3);
 	}
+
 	.space-4x {
 		margin-block: calc(var(--space-normal) * 4);
 	}
+
 	.space-5x {
 		margin-block: calc(var(--space-normal) * 5);
 	}
+
 	.space-6x {
 		margin-block: calc(var(--space-normal) * 6);
 	}
+
 	.space-7x {
 		margin-block: calc(var(--space-normal) * 7);
 	}
+
 	.space-8x {
 		margin-block: calc(var(--space-normal) * 8);
 	}
+
 	.space-9x {
 		margin-block: calc(var(--space-normal) * 9);
 	}
+
 	.space-10x {
 		margin-block: calc(var(--space-normal) * 10);
 	}

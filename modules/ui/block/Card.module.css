@@ -1,10 +1,10 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Radius.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
 
 @layer defaults {
 	.card {

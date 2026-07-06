@@ -1,14 +1,16 @@
-@import "layers.css";
-@import "Space.module.css";
+@import url("layers.css");
+@import url("Space.module.css");
 
 @layer variants {
 	/* Named. */
 	.padding-none {
 		padding-block: 0;
 	}
+
 	.padding-paragraph {
 		padding-block: var(--space-paragraph);
 	}
+
 	.padding-section {
 		padding-block: var(--space-section);
 	}
@@ -17,21 +19,27 @@
 	.padding-xxsmall {
 		padding-block: var(--space-xxsmall);
 	}
+
 	.padding-xsmall {
 		padding-block: var(--space-xsmall);
 	}
+
 	.padding-small {
 		padding-block: var(--space-small);
 	}
+
 	.padding-normal {
 		padding-block: var(--space-normal);
 	}
+
 	.padding-large {
 		padding-block: var(--space-large);
 	}
+
 	.padding-xlarge {
 		padding-block: var(--space-xlarge);
 	}
+
 	.padding-xxlarge {
 		padding-block: var(--space-xxlarge);
 	}
@@ -40,30 +48,39 @@
 	.padding-1x {
 		padding-block: calc(var(--space-normal) * 1);
 	}
+
 	.padding-2x {
 		padding-block: calc(var(--space-normal) * 2);
 	}
+
 	.padding-3x {
 		padding-block: calc(var(--space-normal) * 3);
 	}
+
 	.padding-4x {
 		padding-block: calc(var(--space-normal) * 4);
 	}
+
 	.padding-5x {
 		padding-block: calc(var(--space-normal) * 5);
 	}
+
 	.padding-6x {
 		padding-block: calc(var(--space-normal) * 6);
 	}
+
 	.padding-7x {
 		padding-block: calc(var(--space-normal) * 7);
 	}
+
 	.padding-8x {
 		padding-block: calc(var(--space-normal) * 8);
 	}
+
 	.padding-9x {
 		padding-block: calc(var(--space-normal) * 9);
 	}
+
 	.padding-10x {
 		padding-block: calc(var(--space-normal) * 10);
 	}

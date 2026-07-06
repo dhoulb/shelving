@@ -1,7 +1,7 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Width.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Width.module.css");
 
 @layer components {
 	/*
@@ -42,10 +42,10 @@
 
 	.main {
 		/* Box */
-		border-top: env(safe-area-inset-top, 0px) solid transparent;
-		border-bottom: env(safe-area-inset-bottom, 0px) solid transparent;
-		border-left: env(safe-area-inset-left, 0px) solid transparent;
-		border-right: env(safe-area-inset-right, 0px) solid transparent;
+		border-top: env(safe-area-inset-top, 0) solid transparent;
+		border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
+		border-left: env(safe-area-inset-left, 0) solid transparent;
+		border-right: env(safe-area-inset-right, 0) solid transparent;
 		padding-block: var(--centered-layout-padding, var(--space-normal));
 		padding-inline: var(--centered-layout-indent, var(--space-normal));
 
@@ -59,10 +59,8 @@
 		justify-content: start;
 
 		/* Scrolling */
-		overflow-x: hidden;
-		overflow-y: auto;
-		overscroll-behavior-x: auto;
-		overscroll-behavior-y: contain;
+		overflow: hidden auto;
+		overscroll-behavior: auto contain;
 		scroll-behavior: smooth;
 	}
 

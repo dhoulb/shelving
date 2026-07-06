@@ -1,6 +1,6 @@
-@import "layers.css";
-@import "Typography.module.css";
-@import "Space.module.css";
+@import url("layers.css");
+@import url("Typography.module.css");
+@import url("Space.module.css");
 
 @layer defaults {
 	.flex {
@@ -34,65 +34,84 @@
 		&.wrap {
 			flex-wrap: wrap;
 		}
+
 		&.nowrap {
 			flex-wrap: nowrap;
 		}
+
 		&.between {
 			justify-content: space-between;
 		}
+
 		&.around {
 			justify-content: space-around;
 		}
+
 		&:not(.column) {
 			&.reverse {
 				flex-direction: row-reverse;
 			}
+
 			&.left {
 				justify-content: start;
 			}
+
 			&.center {
 				justify-content: center;
 			}
+
 			&.right {
 				justify-content: end;
 			}
+
 			&.stretch {
 				justify-content: stretch;
 			}
+
 			&.top {
 				align-items: start;
 			}
+
 			&.middle {
 				align-items: center;
 			}
+
 			&.bottom {
 				align-items: end;
 			}
+
 			&.baseline {
 				align-items: baseline;
 			}
 		}
+
 		&.column {
 			flex-direction: column;
 
 			&.reverse {
 				flex-direction: column-reverse;
 			}
+
 			&.top {
 				justify-content: start;
 			}
+
 			&.middle {
 				justify-content: center;
 			}
+
 			&.bottom {
 				justify-content: end;
 			}
+
 			&.left {
 				align-items: start;
 			}
+
 			&.center {
 				align-items: center;
 			}
+
 			&.right {
 				align-items: end;
 			}

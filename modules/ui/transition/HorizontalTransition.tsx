@@ -16,5 +16,5 @@ export interface HorizontalTransitionProps extends TransitionProps {}
  * @see https://shelving.cc/ui/HorizontalTransition
  */
 export function HorizontalTransition(props: HorizontalTransitionProps): ReactElement {
-	return <Transition default="slideRight" forward="slideRight" back="slideLeft" {...props} />;
+	return <Transition default="slide-right" forward="slide-right" back="slide-left" {...props} />;
 }

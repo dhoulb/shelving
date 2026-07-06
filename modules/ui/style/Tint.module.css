@@ -1,4 +1,4 @@
-@import "layers.css";
+@import url("layers.css");
 
 @layer defaults {
 	:root {
@@ -21,6 +21,7 @@
 		--tint-35: color-mix(in oklch, var(--tint-50), black 30%);
 		--tint-40: color-mix(in oklch, var(--tint-50), black 20%);
 		--tint-45: color-mix(in oklch, var(--tint-50), black 10%);
+
 		/* --tint-50: var(--color-gray); // The middle tint is used to calculate the others. */
 		--tint-55: color-mix(in oklch, var(--tint-50), white 10%);
 		--tint-60: color-mix(in oklch, var(--tint-50), white 20%);

@@ -1,5 +1,5 @@
-@import "layers.css";
-@import "Tint.module.css";
+@import url("layers.css");
+@import url("Tint.module.css");
 
 @layer defaults {
 	:root {
@@ -74,70 +74,87 @@
 		font-size: var(--size-xxsmall);
 		line-height: var(--leading);
 	}
+
 	.size-xsmall {
 		font-size: var(--size-xsmall);
 		line-height: var(--leading);
 	}
+
 	.size-small {
 		font-size: var(--size-small);
 		line-height: var(--leading);
 	}
+
 	.size-normal {
 		font-size: var(--size-normal);
 		line-height: var(--leading);
 	}
+
 	.size-large {
 		font-size: var(--size-large);
 		line-height: var(--leading);
 	}
+
 	.size-xlarge {
 		font-size: var(--size-xlarge);
 		line-height: var(--leading);
 	}
+
 	.size-xxlarge {
 		font-size: var(--size-xxlarge);
 		line-height: var(--leading);
 	}
+
 	.size-xxxlarge {
 		font-size: var(--size-xxxlarge);
 		line-height: var(--leading);
 	}
+
 	.size-1x {
 		font-size: calc(var(--size-normal) * 1);
 		line-height: var(--leading);
 	}
+
 	.size-2x {
 		font-size: calc(var(--size-normal) * 2);
 		line-height: var(--leading);
 	}
+
 	.size-3x {
 		font-size: calc(var(--size-normal) * 3);
 		line-height: var(--leading);
 	}
+
 	.size-4x {
 		font-size: calc(var(--size-normal) * 4);
 		line-height: var(--leading);
 	}
+
 	.size-5x {
 		font-size: calc(var(--size-normal) * 5);
 		line-height: var(--leading);
 	}
+
 	.size-6x {
 		font-size: calc(var(--size-normal) * 6);
 		line-height: var(--leading);
 	}
+
 	.size-7x {
 		font-size: calc(var(--size-normal) * 7);
 		line-height: var(--leading);
 	}
+
 	.size-8x {
 		font-size: calc(var(--size-normal) * 8);
 		line-height: var(--leading);
 	}
+
 	.size-9x {
 		font-size: calc(var(--size-normal) * 9);
 		line-height: var(--leading);
 	}
+
 	.size-10x {
 		font-size: calc(var(--size-normal) * 10);
 		line-height: var(--leading);
@@ -147,21 +164,27 @@
 	.font-title {
 		font-family: var(--font-title);
 	}
+
 	.font-body {
 		font-family: var(--font-body);
 	}
+
 	.font-code {
 		font-family: var(--font-code);
 	}
+
 	.font-label {
 		font-family: var(--font-label);
 	}
+
 	.font-sans {
 		font-family: var(--font-sans);
 	}
+
 	.font-serif {
 		font-family: var(--font-serif);
 	}
+
 	.font-monospace {
 		font-family: var(--font-monospace);
 	}
@@ -170,18 +193,23 @@
 	.weight-title {
 		font-weight: var(--weight-title);
 	}
+
 	.weight-body {
 		font-weight: var(--weight-body);
 	}
+
 	.weight-code {
 		font-weight: var(--weight-code);
 	}
+
 	.weight-label {
 		font-weight: var(--weight-label);
 	}
+
 	.weight-normal {
 		font-weight: var(--weight-normal);
 	}
+
 	.weight-strong {
 		font-weight: var(--weight-strong);
 	}
@@ -190,21 +218,27 @@
 	.case-title {
 		text-transform: var(--case-title);
 	}
+
 	.case-body {
 		text-transform: var(--case-body);
 	}
+
 	.case-code {
 		text-transform: var(--case-code);
 	}
+
 	.case-label {
 		text-transform: var(--case-label);
 	}
+
 	.case-upper {
 		text-transform: uppercase;
 	}
+
 	.case-lower {
 		text-transform: lowercase;
 	}
+
 	.case-normal {
 		text-transform: none;
 	}
@@ -213,63 +247,83 @@
 	.tint-00 {
 		color: var(--tint-00);
 	}
+
 	.tint-05 {
 		color: var(--tint-05);
 	}
+
 	.tint-10 {
 		color: var(--tint-10);
 	}
+
 	.tint-15 {
 		color: var(--tint-15);
 	}
+
 	.tint-20 {
 		color: var(--tint-20);
 	}
+
 	.tint-25 {
 		color: var(--tint-25);
 	}
+
 	.tint-30 {
 		color: var(--tint-30);
 	}
+
 	.tint-35 {
 		color: var(--tint-35);
 	}
+
 	.tint-40 {
 		color: var(--tint-40);
 	}
+
 	.tint-45 {
 		color: var(--tint-45);
 	}
+
 	.tint-50 {
 		color: var(--tint-50);
 	}
+
 	.tint-55 {
 		color: var(--tint-55);
 	}
+
 	.tint-60 {
 		color: var(--tint-60);
 	}
+
 	.tint-65 {
 		color: var(--tint-65);
 	}
+
 	.tint-70 {
 		color: var(--tint-70);
 	}
+
 	.tint-75 {
 		color: var(--tint-75);
 	}
+
 	.tint-80 {
 		color: var(--tint-80);
 	}
+
 	.tint-85 {
 		color: var(--tint-85);
 	}
+
 	.tint-90 {
 		color: var(--tint-90);
 	}
+
 	.tint-95 {
 		color: var(--tint-95);
 	}
+
 	.tint-100 {
 		color: var(--tint-100);
 	}
@@ -278,9 +332,11 @@
 	.left {
 		text-align: left;
 	}
+
 	.center {
 		text-align: center;
 	}
+
 	.right {
 		text-align: right;
 	}
@@ -289,6 +345,7 @@
 	.wrap {
 		white-space: wrap;
 	}
+
 	.nowrap {
 		white-space: nowrap;
 	}

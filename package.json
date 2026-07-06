@@ -19,6 +19,8 @@
 		"firebase": "^12.15.0",
 		"react": "^19.3.0-canary-fef12a01-20260413",
 		"react-dom": "^19.3.0-canary-fef12a01-20260413",
+		"stylelint": "^17.14.0",
+		"stylelint-config-standard": "^40.0.0",
 		"typescript": "^5.9.3"
 	},
 	"peerDependencies": {
@@ -68,9 +70,11 @@
 		"test": "bun run --parallel test:*",
 		"test:lint": "biome check .",
 		"test:type": "tsgo --noEmit",
+		"test:style": "stylelint \"modules/**/*.css\"",
 		"test:unit": "bun test ./modules --concurrent --only-failures",
 		"fix": "bun run --sequential fix:*",
 		"fix:0:lint": "biome check --write .",
+		"fix:1:style": "stylelint \"modules/**/*.css\" --fix",
 		"docs:build": "bun ./docs/build.tsx",
 		"docs:start": "bun ./docs/start.tsx",
 		"build": "bun run --sequential build:*",

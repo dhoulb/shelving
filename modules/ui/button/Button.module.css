@@ -1,11 +1,11 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Duration.module.css";
-@import "../style/Radius.module.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Duration.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.button {
@@ -24,7 +24,7 @@
 
 		/* Content */
 		overflow: hidden;
-		word-break: normal;
+		overflow-wrap: break-word;
 		gap: var(--button-gap, var(--space-small));
 		justify-content: center;
 		align-items: center;
@@ -50,6 +50,7 @@
 			opacity: var(--button-disabled-opacity, 0.5);
 			cursor: default;
 		}
+
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
@@ -63,10 +64,12 @@
 			padding-block: var(--button-small-padding, var(--space-xxsmall));
 			padding-inline: var(--button-small-padding, var(--space-xxsmall));
 		}
+
 		&.full {
 			/* Fill the available width — basis becomes 100%, then shrinks (down to the content floor) to share a row. */
 			inline-size: 100%;
 		}
+
 		&.strong {
 			background: var(--button-strong-background, var(--tint-50));
 			color: var(--button-strong-text, var(--tint-100));
@@ -85,6 +88,7 @@
 		&:first-child {
 			margin-block-start: 0;
 		}
+
 		&:last-child {
 			margin-block-end: 0;
 		}
@@ -98,10 +102,12 @@
 		&.strong {
 			border-color: transparent;
 		}
+
 		&.plain:not(:enabled:hover, :any-link:hover, :focus) {
 			border-color: transparent;
 			background: transparent;
 		}
+
 		&.outline:not(:enabled:hover, :any-link:hover, :focus) {
 			background: transparent;
 		}

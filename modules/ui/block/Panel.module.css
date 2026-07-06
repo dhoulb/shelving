@@ -1,7 +1,7 @@
-@import "../style/layers.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Space.module.css";
+@import url("../style/layers.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Space.module.css");
 
 /*
  * Full-width vertical region that paints the current surface. Panels always have zero block-space
@@ -32,6 +32,7 @@
 		&:first-child {
 			border-top: none;
 		}
+
 		&:last-child {
 			border-bottom: none;
 		}

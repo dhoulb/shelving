@@ -1,4 +1,4 @@
-@import "../style/layers.css";
+@import url("../style/layers.css");
 
 @layer components {
 	.emphasis,

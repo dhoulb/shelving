@@ -1,14 +1,13 @@
-@import "../style/layers.css";
-@import "../style/Tint.module.css";
-@import "../style/Color.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Color.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.subheading,
 	.prose :is(h3, h4, h5, h6) {
 		/* Box */
-		margin-block-start: var(--subheading-space-before, var(--space-section));
-		margin-block-end: var(--subheading-space, var(--space-paragraph));
+		margin-block: var(--subheading-space-before, var(--space-section)) var(--subheading-space, var(--space-paragraph));
 
 		/* Text */
 		font-family: var(--subheading-font, var(--font-title));

@@ -1,8 +1,8 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
-@import "../style/Stroke.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.table,
@@ -24,29 +24,35 @@
 			padding-inline: var(--table-padding, var(--space-xsmall));
 			border-block: var(--table-border, var(--table-stroke, var(--stroke-normal) solid var(--tint-80)));
 		}
+
 		th:first-child,
 		td:first-child {
 			padding-inline-start: 0;
 		}
+
 		th:last-child,
 		td:last-child {
 			padding-inline-end: 0;
 		}
+
 		thead,
 		tbody th,
 		tfoot {
 			font-weight: var(--table-header-weight, var(--weight-strong));
 		}
+
 		thead th,
 		thead td {
 			padding-block-start: 0;
 			border: 0;
 		}
+
 		tfoot th,
 		tfoot td {
 			padding-block-end: 0;
 			border: 0;
 		}
+
 		thead th,
 		tfoot th {
 			font-family: var(--table-label-font, var(--font-label));

@@ -1,9 +1,9 @@
-@import "../style/layers.css";
-@import "../style/Color.module.css";
-@import "../style/Indent.module.css";
-@import "../style/Typography.module.css";
-@import "../style/Space.module.css";
-@import "../style/Width.module.css";
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Indent.module.css");
+@import url("../style/Typography.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Width.module.css");
 
 @layer components {
 	.prose :where(section, article, aside, nav, header, footer, figure),

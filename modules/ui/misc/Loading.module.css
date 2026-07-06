@@ -1,5 +1,5 @@
-@import "../style/layers.css";
-@import "../style/Tint.module.css";
+@import url("../style/layers.css");
+@import url("../style/Tint.module.css");
 
 @layer components {
 	.track {

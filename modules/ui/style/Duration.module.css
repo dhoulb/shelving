@@ -1,4 +1,4 @@
-@import "layers.css";
+@import url("layers.css");
 
 @layer defaults {
 	:root {
@@ -14,9 +14,11 @@
 	.duration-fast {
 		transition-duration: var(--duration-fast);
 	}
+
 	.duration-normal {
 		transition-duration: var(--duration-normal);
 	}
+
 	.duration-slow {
 		transition-duration: var(--duration-slow);
 	}

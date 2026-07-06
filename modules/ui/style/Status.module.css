@@ -1,6 +1,6 @@
-@import "layers.css";
-@import "Color.module.css";
-@import "Tint.module.css";
+@import url("layers.css");
+@import url("Color.module.css");
+@import url("Tint.module.css");
 
 /* Status variant classes go in `@layer variants` — always beat component rules.
  * Each variant moves the tint anchor (`--tint-50`) at its scope; the accompanying `.tint`

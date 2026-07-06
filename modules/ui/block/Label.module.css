@@ -1,7 +1,7 @@
-@import "../style/layers.css";
-@import "../style/Space.module.css";
-@import "../style/Tint.module.css";
-@import "../style/Typography.module.css";
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.label {

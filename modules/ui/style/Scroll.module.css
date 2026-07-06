@@ -1,11 +1,12 @@
-@import "layers.css";
-@import "Color.module.css";
-@import "Stroke.module.css";
+@import url("layers.css");
+@import url("Color.module.css");
+@import url("Stroke.module.css");
 
 @layer defaults {
 	.horizontal {
 		margin: 0;
 	}
+
 	.horizontal,
 	.vertical {
 		overflow: hidden;
