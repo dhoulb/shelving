@@ -115,15 +115,7 @@
 		display: none;
 	}
 
-	@keyframes overlay-fade-in {
-		from {
-			opacity: 0;
-		}
-
-		to {
-			opacity: 1;
-		}
-	}
+	/* The `overlay-fade-in` keyframes referenced below live in the sibling non-module `SidebarLayout.css` — see the note there for why they can't be defined in this module file. */
 
 	/* On narrow viewports the sidebar becomes an off-canvas drawer that slides in from the left. */
 	@media (width <= 48rem) {

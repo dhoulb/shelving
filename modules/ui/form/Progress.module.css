@@ -73,13 +73,4 @@
 	}
 }
 
-/* Conveyor the block fully off the left edge, across, and fully off the right — then it loops back round unseen. `-70%`/`170%` fully clear a `40%`-wide block, and `linear` timing keeps a constant speed with no ease-out stall at the ends. */
-@keyframes progress-flow {
-	from {
-		background-position: -70% 0;
-	}
-
-	to {
-		background-position: 170% 0;
-	}
-}
+/* The `progress-flow` keyframes referenced above live in the sibling non-module `Progress.css` — see the note there for why they can't be defined in this module file. */
