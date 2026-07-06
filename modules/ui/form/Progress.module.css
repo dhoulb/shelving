@@ -37,9 +37,9 @@
 
 	/* Indeterminate — no `value`, so a band of fill colour flows left-to-right across the track on a loop for a task of unknown duration. */
 	.progress.indeterminate {
-		/* Track underneath, plus a flowing band of fill colour painted as a moving gradient across the element itself. */
+		/* Track underneath, plus a solid block of fill colour that slides across the element itself — hard edges, no blended fade. */
 		background-color: var(--progress-background, var(--tint-90));
-		background-image: linear-gradient(90deg, transparent, var(--progress-color, var(--tint-50)), transparent);
+		background-image: linear-gradient(90deg, var(--progress-color, var(--tint-50)), var(--progress-color, var(--tint-50)));
 		background-repeat: no-repeat;
 		background-size: 40% 100%;
 		animation: progress-flow var(--progress-duration, 1.5s) ease-in-out infinite;
