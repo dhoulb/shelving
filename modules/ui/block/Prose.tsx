@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import PROGRESS_CSS from "../form/Progress.module.css";
 import CODE_CSS from "../inline/Code.module.css";
 import DELETED_CSS from "../inline/Deleted.module.css";
 import EMPHASIS_CSS from "../inline/Emphasis.module.css";
@@ -50,6 +51,7 @@ const PROSE_STYLES = getClass(
 	getModuleClass(LINK_CSS, "prose"),
 	getModuleClass(MARK_CSS, "prose"),
 	getModuleClass(PREFORMATTED_CSS, "prose"),
+	getModuleClass(PROGRESS_CSS, "prose"),
 	getModuleClass(SMALL_CSS, "prose"),
 	getModuleClass(STRONG_CSS, "prose"),
 	getModuleClass(SUBSCRIPT_CSS, "prose"),
