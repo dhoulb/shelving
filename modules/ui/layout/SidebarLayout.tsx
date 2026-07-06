@@ -47,50 +47,35 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 		if (path) setOpen(false);
 	}, [path]);
 
-	const sidebarEl = (
-		<nav
-			className={getClass(
-				LAYOUT_SIDEBAR_CLASS, //
-				open && LAYOUT_OPEN_CLASS,
-			)}
-		>
-			{sidebar}
-		</nav>
-	);
-
-	// Wrap the scrolling content column in `<RouteCache>` so recently-visited pages stay mounted but hidden
-	// — keeping the scroll position of this `.content` container (and all page state) intact across
-	// back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither
-	// duplicated nor remounted as the URL changes.
-	const contentEl = (
-		<RouteCache>
-			<div className={LAYOUT_CONTENT_CLASS}>
-				<div className={LAYOUT_TOGGLE_CLASS}>
-					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
-						{open ? <XMarkIcon /> : <Bars3Icon />}
-					</Button>
-				</div>
-				{children}
-			</div>
-		</RouteCache>
-	);
-
-	// Always mounted (on narrow viewports) so it can fade both in and out via the `open` class — a conditionally-mounted element can't animate on the way out.
-	const overlayEl = (
-		<button
-			type="button"
-			className={getClass(LAYOUT_OVERLAY_CLASS, open && LAYOUT_OPEN_CLASS)}
-			aria-label="Close menu"
-			onClick={() => setOpen(false)}
-		/>
-	);
-
 	// DOM order is always sidebar → content → overlay; the `right` variant flips the visual column order in CSS, so the markup never reshuffles.
 	return (
 		<main className={getClass(LAYOUT_MAIN_CLASS, right && LAYOUT_RIGHT_CLASS)}>
-			{sidebarEl}
-			{contentEl}
-			{overlayEl}
+			<nav
+				className={getClass(
+					LAYOUT_SIDEBAR_CLASS, //
+					open && LAYOUT_OPEN_CLASS,
+				)}
+			>
+				{sidebar}
+			</nav>
+			{/* Wrap the scrolling content column in `<RouteCache>` so recently-visited pages stay mounted but hidden — keeping the scroll position of this `.content` container (and all page state) intact across back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither duplicated nor remounted as the URL changes. */}
+			<RouteCache>
+				<div className={LAYOUT_CONTENT_CLASS}>
+					<div className={LAYOUT_TOGGLE_CLASS}>
+						<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
+							{open ? <XMarkIcon /> : <Bars3Icon />}
+						</Button>
+					</div>
+					{children}
+				</div>
+			</RouteCache>
+			{/* Overlay is always mounted (on narrow viewports) so it can fade both in and out via the `open` class — a conditionally-mounted element can't animate on the way out. */}
+			<button
+				type="button"
+				className={getClass(LAYOUT_OVERLAY_CLASS, open && LAYOUT_OPEN_CLASS)}
+				aria-label="Close menu"
+				onClick={() => setOpen(false)}
+			/>
 		</main>
 	);
 }
