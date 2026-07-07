@@ -6,7 +6,7 @@ import SHADOW_CSS from "./Shadow.module.css";
  *
  * @see https://shelving.cc/ui/ShadowVariant
  */
-export type ShadowVariant = "none" | "xxsmall" | "xsmall" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
+export type ShadowVariant = "none" | "small" | "normal" | "large";
 
 /**
  * Variant props for the drop shadow of an element, e.g. `shadow="large"`.

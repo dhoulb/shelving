@@ -1,17 +1,18 @@
 import type { ReactElement } from "react";
 import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
+import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { BlockElement } from "./Block.js";
 import CARD_CSS from "./Card.module.css";
 
 /**
- * Props for `Card` — combines `ClickableProps` (for navigable cards) with colour, status, padding, space, typography, and width variants.
+ * Props for `Card` — combines `ClickableProps` (for navigable cards) with colour, status, padding, space, typography, width, and shadow variants.
  *
  * @see https://shelving.cc/ui/CardProps
  */
-export interface CardProps extends ClickableProps, StatusVariants, BlockVariants {
+export interface CardProps extends ClickableProps, StatusVariants, BlockVariants, ShadowVariants {
 	/**
 	 * Element this `<Card>` renders as, e.g. "header" to output a "<header>"
 	 * @default "article"
@@ -25,6 +26,7 @@ export interface CardProps extends ClickableProps, StatusVariants, BlockVariants
  * - When `href` or `onClick` is set the card becomes navigable: a stretched overlay `<a>` / `<button>` covers the entire card while the children render normally inside.
  * - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
  * - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
+ * - Carries a `normal` drop shadow by default — set `shadow="none"` to flatten a card, or `shadow="small"` / `shadow="large"` to adjust its elevation.
  *
  * @kind component
  * @see https://shelving.cc/ui/Card
@@ -39,6 +41,7 @@ export function Card({ as: Element = "article", children, href, onClick, title =
 				getModuleClass(CARD_CSS, "card"), //
 				getStatusClass(props),
 				getBlockClass(props),
+				getShadowClass(props),
 			)}
 		>
 			{overlay}

@@ -2,6 +2,7 @@
 @import url("../style/Color.module.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Radius.module.css");
+@import url("../style/Shadow.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
@@ -30,7 +31,7 @@
 		/* Style */
 		background: var(--card-background, var(--tint-90));
 		color: var(--card-color, var(--tint-00));
-		box-shadow: var(--card-shadow, none);
+		box-shadow: var(--card-shadow, var(--shadow-normal));
 		transition: var(--card-transition, all var(--duration-fast));
 		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--card-stroke, var(--stroke-normal)));
