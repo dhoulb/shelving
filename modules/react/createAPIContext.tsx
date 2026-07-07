@@ -1,4 +1,5 @@
 import { createContext, type ReactElement, use } from "react";
+import type { AnyCaller } from "shelving/util/function";
 import type { Endpoint } from "../api/endpoint/Endpoint.js";
 import { APICache } from "../api/index.js";
 import type { APIProvider } from "../api/provider/APIProvider.js";
@@ -8,7 +9,6 @@ import type { ChildProps } from "../ui/index.js";
 import type { Nullish } from "../util/null.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
-import type { AnyCaller } from "shelving/util/function";
 
 /**
  * Bundle of hooks and a provider component returned by `createAPIContext()`

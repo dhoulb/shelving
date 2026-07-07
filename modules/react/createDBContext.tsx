@@ -1,4 +1,5 @@
 import { createContext, type ReactElement, type ReactNode, use } from "react";
+import type { AnyCaller } from "shelving/util/function";
 import { DBCache } from "../db/cache/DBCache.js";
 import type { Collection } from "../db/collection/Collection.js";
 import type { DBProvider } from "../db/provider/DBProvider.js";
@@ -11,7 +12,6 @@ import type { Nullish } from "../util/null.js";
 import type { Query } from "../util/query.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
-import type { AnyCaller } from "shelving/util/function";
 
 /**
  * Bundle of hooks and a provider component returned by `createDBContext()`.
@@ -19,7 +19,6 @@ import type { AnyCaller } from "shelving/util/function";
  * @see https://shelving.cc/react/DBContext
  */
 export interface DBContext<I extends Identifier, T extends Data> {
-
 	/** Get an `ItemStore` for the specified collection item in the current `DataProvider` context and subscribe to any changes in it. */
 	useItem<II extends I, TT extends T>(
 		collection: Nullish<Collection<string, II, TT>>, //
@@ -45,7 +44,6 @@ export interface DBContext<I extends Identifier, T extends Data> {
 
 	/** Return the underlying `DBCache` for `<DBContext>` */
 	requireDBCache(): DBCache<I, T>;
-
 }
 
 /**
