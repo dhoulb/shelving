@@ -8,6 +8,7 @@ import type { ChildProps } from "../ui/index.js";
 import type { Nullish } from "../util/null.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
+import type { AnyCaller } from "shelving/util/function";
 
 /**
  * Bundle of hooks and a provider component returned by `createAPIContext()`
@@ -19,8 +20,11 @@ export interface APIContext<P, R> {
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP): EndpointStore<PP, RR>;
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined;
 
-	/** The `<APIContext>` wrapper to give your React components access to this API provider. */
+	/** Create a new `APICache` and provide it as context to child nodes, to allow them to use `useAPI()` */
 	readonly APIContext: (props: ChildProps) => ReactElement;
+
+	/** Return the underlying `APICache` for `<APIContext>` */
+	requireAPICache(): APICache<P, R>;
 }
 
 /**
@@ -35,10 +39,14 @@ export interface APIContext<P, R> {
 export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<P, R> {
 	const CacheContext = createContext<APICache<P, R> | undefined>(undefined);
 
-	function useAPI<PP extends P, RR extends R>(endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined {
+	function requireAPICache(caller: AnyCaller = requireAPICache): APICache<P, R> {
 		const cache = use(CacheContext);
-		if (!cache) throw new RequiredError(`useAPI() can only be used inside <APIContext>`, { caller: useAPI });
-		return useStore(endpoint ? cache.get(endpoint).get(payload) : undefined);
+		if (!cache) throw new RequiredError(`Must be used inside <APIContext>`, { caller });
+		return cache;
+	}
+
+	function useAPI<PP extends P, RR extends R>(endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined {
+		return useStore(endpoint ? requireAPICache(useAPI).get(endpoint).get(payload) : undefined);
 	}
 
 	function APIContext({ children }: ChildProps): ReactElement {
@@ -46,5 +54,5 @@ export function createAPIContext<P, R>(provider: APIProvider<P, R>): APIContext<
 		return <CacheContext value={cache}>{children}</CacheContext>;
 	}
 
-	return { useAPI, APIContext } as APIContext<P, R>;
+	return { requireAPICache, useAPI, APIContext } as APIContext<P, R>;
 }

@@ -11,6 +11,7 @@ import type { Nullish } from "../util/null.js";
 import type { Query } from "../util/query.js";
 import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
+import type { AnyCaller } from "shelving/util/function";
 
 /**
  * Bundle of hooks and a provider component returned by `createDBContext()`.
@@ -18,6 +19,7 @@ import { useStore } from "./useStore.js";
  * @see https://shelving.cc/react/DBContext
  */
 export interface DBContext<I extends Identifier, T extends Data> {
+
 	/** Get an `ItemStore` for the specified collection item in the current `DataProvider` context and subscribe to any changes in it. */
 	useItem<II extends I, TT extends T>(
 		collection: Nullish<Collection<string, II, TT>>, //
@@ -38,8 +40,12 @@ export interface DBContext<I extends Identifier, T extends Data> {
 		query: Query<Item<II, TT>>,
 	): QueryStore<II, TT>;
 
-	/** The `<DataContext>` wrapper to give your React components access to this data. */
+	/** Create a new `DBCache` and provide it as context to child nodes, to allow them to use `useItem()` and `useQuery()` */
 	readonly DBContext: ({ children }: { children: ReactNode }) => ReactElement;
+
+	/** Return the underlying `DBCache` for `<DBContext>` */
+	requireDBCache(): DBCache<I, T>;
+
 }
 
 /**
@@ -54,22 +60,24 @@ export interface DBContext<I extends Identifier, T extends Data> {
 export function createDBContext<I extends Identifier, T extends Data>(provider: DBProvider<I, T>): DBContext<I, T> {
 	const CacheContext = createContext<DBCache<I, T> | undefined>(undefined);
 
+	function requireDBCache(caller: AnyCaller = requireDBCache): DBCache<I, T> {
+		const cache = use(CacheContext);
+		if (!cache) throw new RequiredError(`Must be used inside <DBContext>`, { caller });
+		return cache;
+	}
+
 	function useItem(
 		collection: Nullish<Collection<string, I, T>>, //
 		id: Nullish<I>,
 	): ItemStore<I, T> | undefined {
-		const cache = use(CacheContext);
-		if (!cache) throw new RequiredError("useItem() can only be used inside <DBContext>", { caller: useItem });
-		return useStore(collection && id ? cache.getItem(collection, id) : undefined);
+		return useStore(collection && id ? requireDBCache(useItem).getItem(collection, id) : undefined);
 	}
 
 	function useQuery(
 		collection: Nullish<Collection<string, I, T>>, //
 		query: Nullish<Query<Item<I, T>>>,
 	): QueryStore<I, T> | undefined {
-		const cache = use(CacheContext);
-		if (!cache) throw new RequiredError("useQuery() can only be used inside <DBContext>", { caller: useQuery });
-		return useStore(collection && query ? cache.getQuery(collection, query) : undefined);
+		return useStore(collection && query ? requireDBCache(useQuery).getQuery(collection, query) : undefined);
 	}
 
 	function DBContext({ children }: { children: ReactNode }): ReactElement {
@@ -77,5 +85,5 @@ export function createDBContext<I extends Identifier, T extends Data>(provider: 
 		return <CacheContext value={cache}>{children}</CacheContext>;
 	}
 
-	return { useItem, useQuery, DBContext } as DBContext<I, T>;
+	return { requireDBCache, useItem, useQuery, DBContext } as DBContext<I, T>;
 }
