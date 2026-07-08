@@ -239,7 +239,7 @@ export function mergeMetaLinks(
 	root: ImmutableURL | undefined,
 	caller: AnyCaller = mergeMetaLinks,
 ): MetaLinks | undefined {
-	return next ? { ...current, ..._yieldMetaLinkEntries(next, url, root, caller) } : current;
+	return next ? { ...current, ...Object.fromEntries(_yieldMetaLinkEntries(next, url, root, caller)) } : current;
 }
 function* _yieldMetaLinkEntries(
 	links: PossibleMetaLinks,
