@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { getBlockClass } from "../style/Block.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/index.js";
@@ -10,7 +10,7 @@ import type { BlockElement } from "./Block.js";
  *
  * @see https://shelving.cc/ui/RowProps
  */
-export interface RowProps extends FlexVariants, OptionalChildProps {
+export interface RowProps extends BlockVariants, FlexVariants, OptionalChildProps {
 	/**
 	 * Element this `<Row>` renders as, e.g. "header" to output a "<header>"
 	 * @default "div"
