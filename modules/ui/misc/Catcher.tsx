@@ -9,7 +9,6 @@ import { Page } from "../page/Page.js";
 import type { ChildProps } from "../util/props.js";
 
 /**
-import { RetryButton, RetryContext } from "../button/RetryButton.js";
  * Props for a component that renders a caught error `reason`.
  *
  * @see https://shelving.cc/ui/ErrorProps

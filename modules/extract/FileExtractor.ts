@@ -35,7 +35,7 @@ export class FileExtractor extends Extractor<BunFile, TreeElement> {
 		const [base = filename] = splitFileExtension(filename);
 
 		const text = await file.text();
-		const props: TreeElementProps = { ...this.extractProps(base, text), source };
+		const props: TreeElementProps = { ...(await this.extractProps(base, text)), source };
 		return {
 			type: "tree-element",
 			key: filename,
@@ -47,15 +47,18 @@ export class FileExtractor extends Extractor<BunFile, TreeElement> {
 	 * Build the file element props from the extracted content.
 	 * - `name` is the basename without extension (e.g. `"array"`) — display-ready, used by menus, cards, and URL paths.
 	 * - Override to parse `text` into richer elements (content/children/description) and to set
-	 *   `title` if a confident title is available.
+	 *   `title` if a confident title is available. Overrides may be async (e.g. `TypescriptExtractor` parses via the native compiler server) — `extract()` awaits the result either way.
 	 *
 	 * @param name The basename of the file without extension (e.g. `"array"`).
 	 * @param content The raw text content of the file.
-	 * @returns The element props, always including a `name`; the base implementation stores `content` verbatim.
+	 * @returns The element props (or a promise resolving to them), always including a `name`; the base implementation stores `content` verbatim.
 	 * @example extractProps("notes", "Some text") // { name: "notes", content: "Some text" }
 	 * @see https://shelving.cc/extract/FileExtractor/extractProps
 	 */
-	extractProps(name: string, content: string): Partial<TreeElementProps> & { name: string } {
+	extractProps(
+		name: string,
+		content: string,
+	): (Partial<TreeElementProps> & { name: string }) | Promise<Partial<TreeElementProps> & { name: string }> {
 		return { name, content };
 	}
 }
