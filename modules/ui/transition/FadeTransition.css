@@ -25,3 +25,10 @@
 ::view-transition-old(.fade) {
 	animation: fade-out var(--fade-transition-duration, var(--duration-fast)) ease-in-out both;
 }
+
+/* Reduced motion: keep the opacity-only crossfade — a fade moves nothing spatially, so it is reduced-motion-safe — but disable the group's default positional morph so content never slides between layouts. */
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(.fade) {
+		animation: none;
+	}
+}
