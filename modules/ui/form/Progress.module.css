@@ -63,14 +63,7 @@
 		background: transparent;
 	}
 
-	/* Honour reduced-motion: hold the block centred rather than looping. */
-	@media (prefers-reduced-motion: reduce) {
-		.progress:indeterminate,
-		.prose progress:indeterminate {
-			animation: none;
-			background-position: 50% 0;
-		}
-	}
+	/* No `prefers-reduced-motion` override — movement is the indeterminate bar's only signal, so freezing it reads as a stalled determinate bar rather than "working". The animation is a small element-sized loop, not a large vestibular-trigger transition. */
 }
 
 /* The `progress-flow` keyframes referenced above live in the sibling non-module `Progress.css` — see the note there for why they can't be defined in this module file. */
