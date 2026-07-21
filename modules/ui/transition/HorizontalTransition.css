@@ -68,3 +68,15 @@
 ::view-transition-old(.slide-left) {
 	animation: slide-out-to-right var(--horizontal-transition-duration) ease-in-out both;
 }
+
+/* Reduced motion: null the slide distance so the keyframes above degrade to an opacity-only crossfade (reduced-motion-safe), and disable the group's default positional morph. Unlayered so it wins over app-level overrides of the distance hook. */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--horizontal-transition-size: 0px;
+	}
+
+	::view-transition-group(.slide-right),
+	::view-transition-group(.slide-left) {
+		animation: none;
+	}
+}
