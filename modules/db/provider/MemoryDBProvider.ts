@@ -35,7 +35,15 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @see https://shelving.cc/db/MemoryDBProvider/getTable
 	 */
 	getTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
-		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= new MemoryTable<II, TT>(collection));
+		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= this._makeTable(collection));
+	}
+
+	/**
+	 * Create the `MemoryTable` backing a collection.
+	 * - Override point for subclasses that back collections with a specialised table, e.g. `LocalStorageProvider`.
+	 */
+	protected _makeTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
+		return new MemoryTable<II, TT>(collection);
 	}
 
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
@@ -225,6 +233,24 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	/**
+	 * Set an item instance in the table data, returning whether anything changed.
+	 * - Override point for subclasses that mirror writes to another medium — the mirror write should complete (or throw) before calling `super._set()`.
+	 */
+	protected _set(id: I, item: Item<I, T>): boolean {
+		if (this._data.get(id) === item) return false;
+		this._data.set(id, item);
+		return true;
+	}
+
+	/**
+	 * Delete an item instance from the table data, returning whether anything changed.
+	 * - Override point for subclasses that mirror writes to another medium — the mirror write should complete (or throw) before calling `super._delete()`.
+	 */
+	protected _delete(id: I): boolean {
+		return this._data.delete(id);
+	}
+
+	/**
 	 * Set (insert or overwrite) an item by its id.
 	 * - Only resolves `next` when the stored instance actually changes.
 	 *
@@ -234,11 +260,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/setItem
 	 */
 	setItem(id: I, data: Item<I, T> | T): void {
-		const item = getItem(id, data);
-		if (this._data.get(id) !== item) {
-			this._data.set(id, item);
-			this.next.resolve();
-		}
+		if (this._set(id, getItem(id, data))) this.next.resolve();
 	}
 
 	/**
@@ -270,11 +292,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	updateItem(id: I, updates: Updates<Item<I, T>>): void {
 		const oldItem = this._data.get(id);
 		if (!oldItem) return;
-		const nextItem = updateData(oldItem, updates);
-		if (this._data.get(id) !== nextItem) {
-			this._data.set(id, nextItem);
-			this.next.resolve();
-		}
+		if (this._set(id, updateData(oldItem, updates))) this.next.resolve();
 	}
 
 	/**
@@ -286,10 +304,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/deleteItem
 	 */
 	deleteItem(id: I): void {
-		if (this._data.has(id)) {
-			this._data.delete(id);
-			this.next.resolve();
-		}
+		if (this._delete(id)) this.next.resolve();
 	}
 
 	/**
@@ -349,13 +364,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 */
 	setQuery(query: Query<Item<I, T>>, data: T): void {
 		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			const item = getItem(id, data);
-			if (this._data.get(id) !== item) {
-				this._data.set(id, item);
-				changed = true;
-			}
-		}
+		for (const { id } of queryWritableItems(this._data.values(), query)) if (this._set(id, getItem(id, data))) changed = true;
 		if (changed) this.next.resolve();
 	}
 
@@ -372,34 +381,20 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 		for (const { id } of queryWritableItems(this._data.values(), query)) {
 			const oldItem = this._data.get(id);
 			if (!oldItem) continue;
-			const nextItem = updateData<Item<I, T>>(oldItem, updates);
-			if (this._data.get(id) !== nextItem) {
-				this._data.set(id, nextItem);
-				changed = true;
-			}
+			if (this._set(id, updateData<Item<I, T>>(oldItem, updates))) changed = true;
 		}
 		if (changed) this.next.resolve();
 	}
 
 	deleteQuery(query: Query<Item<I, T>>): void {
 		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			if (this._data.has(id)) {
-				this._data.delete(id);
-				changed = true;
-			}
-		}
+		for (const { id } of queryWritableItems(this._data.values(), query)) if (this._delete(id)) changed = true;
 		if (changed) this.next.resolve();
 	}
 
 	setItems(items: Items<I, T>): void {
 		let changed = false;
-		for (const item of items) {
-			if (this._data.get(item.id) !== item) {
-				this._data.set(item.id, item);
-				changed = true;
-			}
-		}
+		for (const item of items) if (this._set(item.id, item)) changed = true;
 		if (changed) this.next.resolve();
 	}
 

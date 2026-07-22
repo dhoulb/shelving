@@ -9,6 +9,7 @@ export * from "./provider/CacheDBProvider.js";
 export * from "./provider/ChangesDBProvider.js";
 export * from "./provider/DBProvider.js";
 export * from "./provider/DebugDBProvider.js";
+export * from "./provider/LocalStorageProvider.js";
 export * from "./provider/MemoryDBProvider.js";
 export * from "./provider/MockDBProvider.js";
 export * from "./provider/PostgreSQLProvider.js";
