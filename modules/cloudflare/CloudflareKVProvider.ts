@@ -1,6 +1,6 @@
 import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
-import { UnimplementedError } from "../error/UnimplementedError.js";
+import { UnsupportedError } from "../error/UnsupportedError.js";
 import type { Data } from "../util/data.js";
 import { getItem, type Item, type Items, type ItemsSequence, type OptionalItem, type OptionalItemSequence } from "../util/item.js";
 import type { Query } from "../util/query.js";
@@ -19,9 +19,9 @@ import type { KVNamespace } from "./types.js";
  * - ID generation: `addItem()` generates a UUID v4 identifier automatically.
  *
  * ### Not supported
- * - **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+ * - **Realtime subscriptions:** `getItemSequence()` and `getQuerySequence()` throw `UnsupportedError`.
  *   KV has no change feed or push notification mechanism.
- * - **Updates:** `updateItem()` and `updateQuery()` throw `UnimplementedError`.
+ * - **Updates:** `updateItem()` and `updateQuery()` throw `UnsupportedError`.
  * - **Collection queries:** `getQuery()`, `setQuery()`, `deleteQuery()`, and `countQuery()` are not supported.
  *   KV does not expose efficient filtering, sorting, or collection scans, so this provider avoids the old "read everything and filter in memory" behavior.
  *
@@ -45,9 +45,9 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 		if (data) return getItem(id, data);
 	}
 
-	/** Not supported — KV has no change feed, so this throws `UnimplementedError`. */
+	/** Not supported — KV has no change feed, so this throws `UnsupportedError`. */
 	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
-		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
+		throw new UnsupportedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
 	/** Generates a UUID v4 identifier for the new item. */
@@ -61,59 +61,59 @@ export class CloudflareKVProvider<I extends string = string, T extends Data = Da
 		await this._kv.put(_getKey(name, id), JSON.stringify(data));
 	}
 
-	/** Not supported — KV cannot apply partial updates, so this throws `UnimplementedError`. */
+	/** Not supported — KV cannot apply partial updates, so this throws `UnsupportedError`. */
 	override async updateItem<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_id: II,
 		_updates: Updates<Item<II, TT>>,
 	): Promise<void> {
-		throw new UnimplementedError("CloudflareKVProvider does not support updates to items");
+		throw new UnsupportedError("CloudflareKVProvider does not support updates to items");
 	}
 
 	override async deleteItem<II extends I, TT extends T>({ name }: Collection<string, II, TT>, id: II): Promise<void> {
 		await this._kv.delete(_getKey(name, id));
 	}
 
-	/** Not supported — KV cannot filter, sort, or scan collections, so this throws `UnimplementedError`. */
+	/** Not supported — KV cannot filter, sort, or scan collections, so this throws `UnsupportedError`. */
 	override async getQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
 	): Promise<Items<II, TT>> {
-		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
+		throw new UnsupportedError("CloudflareKVProvider does not support querying items");
 	}
 
-	/** Not supported — KV has no change feed, so this throws `UnimplementedError`. */
+	/** Not supported — KV has no change feed, so this throws `UnsupportedError`. */
 	override getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
 	): ItemsSequence<II, TT> {
-		throw new UnimplementedError("CloudflareKVProvider does not support realtime subscriptions");
+		throw new UnsupportedError("CloudflareKVProvider does not support realtime subscriptions");
 	}
 
-	/** Not supported — KV cannot run collection queries, so this throws `UnimplementedError`. */
+	/** Not supported — KV cannot run collection queries, so this throws `UnsupportedError`. */
 	override async setQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query: Query<Item<II, TT>>,
 		_data: TT,
 	): Promise<void> {
-		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
+		throw new UnsupportedError("CloudflareKVProvider does not support querying items");
 	}
 
-	/** Not supported — KV supports neither updates nor collection queries, so this throws `UnimplementedError`. */
+	/** Not supported — KV supports neither updates nor collection queries, so this throws `UnsupportedError`. */
 	override async updateQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query: Query<Item<II, TT>>,
 		_updates: Updates<TT>,
 	): Promise<void> {
-		throw new UnimplementedError("CloudflareKVProvider does not support updates to items");
+		throw new UnsupportedError("CloudflareKVProvider does not support updates to items");
 	}
 
-	/** Not supported — KV cannot run collection queries, so this throws `UnimplementedError`. */
+	/** Not supported — KV cannot run collection queries, so this throws `UnsupportedError`. */
 	override async deleteQuery<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query: Query<Item<II, TT>>,
 	): Promise<void> {
-		throw new UnimplementedError("CloudflareKVProvider does not support querying items");
+		throw new UnsupportedError("CloudflareKVProvider does not support querying items");
 	}
 }
 

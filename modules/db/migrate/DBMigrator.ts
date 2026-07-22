@@ -23,7 +23,7 @@ export abstract class DBMigrator<T extends DBProvider = DBProvider> {
 	 * Bring the provider's storage into line with the given collection schemas.
 	 *
 	 * @param collections The collections whose schemas the storage should match.
-	 * @throws `UnimplementedError` if a schema feature can't be represented by the backend.
+	 * @throws `UnsupportedError` if a schema feature can't be represented by the backend.
 	 * @example await migrator.migrate(users, posts)
 	 * @see https://shelving.cc/db/DBMigrator/migrate
 	 */
