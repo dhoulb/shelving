@@ -30,7 +30,7 @@ import {
 } from "firebase/firestore/lite";
 import type { Collection } from "../../db/collection/Collection.js";
 import { DBProvider } from "../../db/provider/DBProvider.js";
-import { UnimplementedError } from "../../error/UnimplementedError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import type { Data, DataProp } from "../../util/data.js";
 import { joinDataPath } from "../../util/data.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -101,7 +101,7 @@ function _getFieldValue({ key, action, value }: Update): DataProp<Data> {
  *
  * - Works with the Firebase JS SDK via `firebase/firestore/lite`, which keeps bundle size small.
  * - Does not support offline mode.
- * - Does not support realtime subscriptions: `getItemSequence()` and `getQuerySequence()` throw `UnimplementedError`.
+ * - Does not support realtime subscriptions: `getItemSequence()` and `getQuerySequence()` throw `UnsupportedError`.
  *
  * @see https://shelving.cc/firestore/lite/FirestoreLiteProvider
  */
@@ -132,9 +132,9 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 		const snapshot = await getDoc(this._doc(c, id));
 		return _getOptionalItem<II, TT>(snapshot);
 	}
-	/** Not supported — the Firebase Lite SDK has no realtime listeners, so this throws `UnimplementedError`. */
+	/** Not supported — the Firebase Lite SDK has no realtime listeners, so this throws `UnsupportedError`. */
 	override getItemSequence<II extends I, TT extends T>(_c: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
-		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
+		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	override async addItem<II extends I, TT extends T>(c: Collection<string, II, TT>, data: TT): Promise<II> {
 		const reference = await addDoc(this._collection(c), data);
@@ -160,9 +160,9 @@ export class FirestoreLiteProvider<I extends string = string, T extends Data = D
 	override async getQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
 		return _getItems<II, TT>(await getDocs(this._query(c, q)));
 	}
-	/** Not supported — the Firebase Lite SDK has no realtime listeners, so this throws `UnimplementedError`. */
+	/** Not supported — the Firebase Lite SDK has no realtime listeners, so this throws `UnsupportedError`. */
 	override getQuerySequence<II extends I, TT extends T>(_c: Collection<string, II, TT>, _q?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
-		throw new UnimplementedError("FirestoreLiteProvider does not support realtime subscriptions");
+		throw new UnsupportedError("FirestoreLiteProvider does not support realtime subscriptions");
 	}
 	override async setQuery<II extends I, TT extends T>(c: Collection<string, II, TT>, q: Query<Item<II, TT>>, data: TT): Promise<void> {
 		const snapshot = await getDocs(this._query(c, q));
