@@ -6,39 +6,29 @@ import type { Identifier, Item } from "../../util/item.js";
 import type { Collection } from "../collection/Collection.js";
 import { MemoryDBProvider, MemoryTable } from "./MemoryDBProvider.js";
 
-/** Options for `LocalStorageProvider`. */
-export interface LocalStorageProviderOptions {
-	/** Prefix for every storage key written by this provider, so it can share an origin's storage with other code (defaults to `"shelving:"`). */
-	readonly prefix?: string;
-	/** `Storage` instance to persist to, e.g. `sessionStorage` or a test double (defaults to `globalThis.localStorage`). */
-	readonly storage?: Storage;
-}
-
 /**
- * In-memory database provider that persists every collection to `localStorage` (or any other `Storage`).
+ * In-memory database provider that persists every collection to a `Storage` — `localStorage`, `sessionStorage`, or anything else with the same interface.
  *
  * - Extends `MemoryDBProvider`, so all reads, queries, and realtime sequences are served synchronously from memory, and it can seed `ItemStore` / `QueryStore` and act as the cache inside `CacheDBProvider`.
+ * - The storage is a required argument (there is no default), so server code that constructs this provider must reference `localStorage` / `sessionStorage` itself — surfacing the mistake at the callsite instead of deep inside this class.
  * - Each collection is hydrated from storage once, lazily, on first access; after that every write persists to storage *before* it is applied to memory, so a failed write (e.g. `QuotaExceededError` when the origin's quota is full) throws and leaves memory and storage consistent.
  * - Items are stored as JSON under keys formatted as `{prefix}{collection}:{id}`, so values must be JSON-serializable.
  * - Listens for `storage` events, so changes made in other tabs/windows update memory and notify realtime sequences.
  * - Treat the persisted data as best-effort: quota is shared across the origin (typically ~5MB) and users can clear it at any time. Data read back from storage is unvalidated — wrap this provider in `ValidationDBProvider` if it may have been written by an older version of your app.
- *
- * ### Environment support
- * - **No `localStorage` at all** (Node/SSR): the constructor throws `UnsupportedError` — construct this provider in browser code only.
- * - **Unusable `localStorage`** (storage access blocked, or private browsing with zero quota): the provider silently degrades to memory-only operation. Check the `persistent` flag to warn users their changes won't be saved.
+ * - If the storage is unusable (writes blocked by browser settings, or private browsing with zero quota), the provider degrades to memory-only operation — check the `persistent` flag to warn users their changes won't be saved.
  *
  * @example
- *  const provider = new LocalStorageProvider();
+ *  const provider = new StorageDBProvider(localStorage);
  *  if (!provider.persistent) console.warn("Changes won't be saved on this device.");
  *  const id = await provider.addItem(users, { name: "Dave" });
  *
- * @see https://shelving.cc/db/LocalStorageProvider
+ * @see https://shelving.cc/db/StorageDBProvider
  */
-export class LocalStorageProvider<I extends Identifier = Identifier, T extends Data = Data> extends MemoryDBProvider<I, T> {
+export class StorageDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends MemoryDBProvider<I, T> {
 	/**
 	 * Prefix for every storage key written by this provider.
 	 *
-	 * @see https://shelving.cc/db/LocalStorageProvider/prefix
+	 * @see https://shelving.cc/db/StorageDBProvider/prefix
 	 */
 	readonly prefix: string;
 
@@ -46,7 +36,7 @@ export class LocalStorageProvider<I extends Identifier = Identifier, T extends D
 	 * Whether this provider is actually persisting to storage.
 	 * - `false` when storage exists but is unusable (e.g. blocked by browser settings, or private browsing with zero quota) — the provider still works, but data only lives in memory and is lost when the page closes.
 	 *
-	 * @see https://shelving.cc/db/LocalStorageProvider/persistent
+	 * @see https://shelving.cc/db/StorageDBProvider/persistent
 	 */
 	readonly persistent: boolean;
 
@@ -54,43 +44,35 @@ export class LocalStorageProvider<I extends Identifier = Identifier, T extends D
 	private readonly _storage: Storage | undefined;
 
 	/** Persisting tables by collection name, so `storage` events can be routed to them. */
-	private readonly _syncTables = new Map<string, LocalStorageTable<I, T>>();
+	private readonly _syncTables = new Map<string, StorageTable<I, T>>();
 
 	/** Attached `storage` event listener (so it can be detached on dispose), or `undefined` if none was attached. */
 	private readonly _listener: ((event: StorageEvent) => void) | undefined;
 
-	constructor({ prefix = "shelving:", storage }: LocalStorageProviderOptions = {}) {
+	/**
+	 * @param storage `Storage` instance to persist to, e.g. `localStorage` or `sessionStorage` (required so environments without one, e.g. the server, fail at the callsite).
+	 * @param prefix Prefix for every storage key written by this provider, so it can share an origin's storage with other code (defaults to `"shelving:"`).
+	 */
+	constructor(storage: Storage, prefix = "shelving:") {
 		super();
 		this.prefix = prefix;
-
-		// Resolve the storage to use, throwing in environments that have no `localStorage` at all.
-		let resolved = storage;
-		if (!resolved) {
-			if (!("localStorage" in globalThis))
-				throw new UnsupportedError("LocalStorageProvider requires localStorage (construct it in browser code only)", {
-					caller: LocalStorageProvider,
-				});
-			try {
-				resolved = globalThis.localStorage;
-			} catch {
-				// Accessing `localStorage` throws `SecurityError` in some browsers (e.g. storage-partitioned iframes) — degrade to memory-only.
-			}
-		}
+		if (!storage)
+			throw new UnsupportedError("StorageDBProvider requires a Storage, e.g. localStorage or sessionStorage", {
+				caller: StorageDBProvider,
+			});
 
 		// Probe with a write+remove: private browsing can expose a `Storage` whose every write throws.
 		let persistent = false;
-		if (resolved) {
-			try {
-				const probe = `${prefix}?`;
-				resolved.setItem(probe, "?");
-				resolved.removeItem(probe);
-				persistent = true;
-			} catch {
-				// Unusable storage — degrade to memory-only.
-			}
+		try {
+			const probe = `${prefix}?`;
+			storage.setItem(probe, "?");
+			storage.removeItem(probe);
+			persistent = true;
+		} catch {
+			// Unusable storage — degrade to memory-only.
 		}
 		this.persistent = persistent;
-		this._storage = persistent ? resolved : undefined;
+		this._storage = persistent ? storage : undefined;
 
 		// Changes made in other tabs/windows arrive as `storage` events on the global scope.
 		if (this._storage && typeof globalThis.addEventListener === "function") {
@@ -101,8 +83,8 @@ export class LocalStorageProvider<I extends Identifier = Identifier, T extends D
 
 	protected override _makeTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
 		if (!this._storage) return super._makeTable(collection);
-		const table = new LocalStorageTable<II, TT>(collection, this._storage, this.prefix);
-		this._syncTables.set(collection.name, table as LocalStorageTable<I, T>); // `as` needed: the map holds tables of varying subtypes under the provider's base types.
+		const table = new StorageTable<II, TT>(collection, this._storage, this.prefix);
+		this._syncTables.set(collection.name, table as StorageTable<I, T>); // `as` needed: the map holds tables of varying subtypes under the provider's base types.
 		return table;
 	}
 
@@ -130,18 +112,18 @@ export class LocalStorageProvider<I extends Identifier = Identifier, T extends D
 }
 
 /**
- * `MemoryTable` that persists every change to a `Storage` instance for a `LocalStorageProvider`.
+ * `MemoryTable` that persists every change to a `Storage` instance for a `StorageDBProvider`.
  *
  * - Hydrates itself from storage on construction, then persists each write *before* applying it to memory (so a storage failure throws and changes nothing).
  * - Because persistence hooks the table's write primitives, every path into the table persists — including `CacheDBProvider` mirroring and store sequences.
  *
- * @see https://shelving.cc/db/LocalStorageTable
+ * @see https://shelving.cc/db/StorageTable
  */
-export class LocalStorageTable<I extends Identifier, T extends Data> extends MemoryTable<I, T> {
+export class StorageTable<I extends Identifier, T extends Data> extends MemoryTable<I, T> {
 	/**
 	 * Prefix for every storage key belonging to this table, e.g. `"shelving:users:"`.
 	 *
-	 * @see https://shelving.cc/db/LocalStorageTable/keyPrefix
+	 * @see https://shelving.cc/db/StorageTable/keyPrefix
 	 */
 	readonly keyPrefix: string;
 
@@ -213,7 +195,7 @@ export class LocalStorageTable<I extends Identifier, T extends Data> extends Mem
 	 *
 	 * @param key Storage key that changed (must start with `keyPrefix`).
 	 * @param value New stored JSON value, or `null` if the key was removed.
-	 * @see https://shelving.cc/db/LocalStorageTable/sync
+	 * @see https://shelving.cc/db/StorageTable/sync
 	 */
 	sync(key: string, value: string | null): void {
 		if (value === null) {
@@ -228,7 +210,7 @@ export class LocalStorageTable<I extends Identifier, T extends Data> extends Mem
 	 * Apply a `storage.clear()` made in another tab/window to memory.
 	 * - Skips persisting (storage is already empty) and notifies subscribed sequences.
 	 *
-	 * @see https://shelving.cc/db/LocalStorageTable/syncClear
+	 * @see https://shelving.cc/db/StorageTable/syncClear
 	 */
 	syncClear(): void {
 		let changed = false;
