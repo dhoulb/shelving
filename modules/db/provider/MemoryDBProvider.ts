@@ -40,7 +40,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 
 	/**
 	 * Create the `MemoryTable` backing a collection.
-	 * - Override point for subclasses that back collections with a specialised table, e.g. `LocalStorageProvider`.
+	 * - Override point for subclasses that back collections with a specialised table, e.g. `StorageDBProvider`.
 	 */
 	protected _makeTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
 		return new MemoryTable<II, TT>(collection);

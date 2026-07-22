@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { LocalStorageProvider, type LocalStorageTable } from "shelving/db";
+import { StorageDBProvider, type StorageTable } from "shelving/db";
 import { UnsupportedError } from "shelving/error";
 import { runMicrotasks } from "shelving/util/async";
 import type { Item, OptionalItem } from "shelving/util/item";
@@ -30,9 +30,9 @@ function createStorage(map = new Map<string, string>()): Storage {
 	} as Storage;
 }
 
-test("LocalStorageProvider: writes persist to storage and reads come from memory", async () => {
+test("StorageDBProvider: writes persist to storage and reads come from memory", async () => {
 	const map = new Map<string, string>();
-	const db = new LocalStorageProvider<string>({ prefix: "test:", storage: createStorage(map) });
+	const db = new StorageDBProvider<string>(createStorage(map), "test:");
 	expect(db.persistent).toBe(true);
 
 	// Set persists the full item as JSON under a prefixed key.
@@ -56,21 +56,21 @@ test("LocalStorageProvider: writes persist to storage and reads come from memory
 	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
 });
 
-test("LocalStorageProvider: hydrates a collection from pre-existing storage", async () => {
+test("StorageDBProvider: hydrates a collection from pre-existing storage", async () => {
 	const map = new Map<string, string>();
 	for (const item of basics) map.set(`test:basics:${item.id}`, JSON.stringify(item));
 	map.set("other:unrelated", "not ours"); // Foreign keys are ignored.
 	map.set("test:basics:garbage", "{malformed json"); // Malformed values are skipped.
 
-	const db = new LocalStorageProvider<string>({ prefix: "test:", storage: createStorage(map) });
+	const db = new StorageDBProvider<string>(createStorage(map), "test:");
 	expect(await db.getQuery(BASICS_COLLECTION, {})).toEqual(basics);
 	expectUnorderedItems(await db.getQuery(BASICS_COLLECTION, { group: "a" }), ["basic1", "basic2", "basic3"]);
 	expect(await db.getItem(BASICS_COLLECTION, "basic2")).toMatchObject(basic2);
 });
 
-test("LocalStorageProvider: query writes persist per item", async () => {
+test("StorageDBProvider: query writes persist per item", async () => {
 	const map = new Map<string, string>();
-	const db = new LocalStorageProvider<string>({ prefix: "test:", storage: createStorage(map) });
+	const db = new StorageDBProvider<string>(createStorage(map), "test:");
 	for (const { id, ...data } of basics) await db.setItem(BASICS_COLLECTION, id, data);
 
 	await db.updateQuery(BASICS_COLLECTION, { group: "a" }, { str: "GROUPED" });
@@ -83,7 +83,7 @@ test("LocalStorageProvider: query writes persist per item", async () => {
 	expect(await db.countQuery(BASICS_COLLECTION, {})).toBe(6);
 });
 
-test("LocalStorageProvider: a failed storage write throws and leaves memory unchanged", async () => {
+test("StorageDBProvider: a failed storage write throws and leaves memory unchanged", async () => {
 	const map = new Map<string, string>();
 	const storage = createStorage(map);
 	let full = false;
@@ -93,7 +93,7 @@ test("LocalStorageProvider: a failed storage write throws and leaves memory unch
 		setItem(key, value);
 	};
 
-	const db = new LocalStorageProvider<string>({ prefix: "test:", storage });
+	const db = new StorageDBProvider<string>(storage, "test:");
 	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
 
 	full = true;
@@ -110,13 +110,13 @@ test("LocalStorageProvider: a failed storage write throws and leaves memory unch
 	expect(map.has("test:basics:basic1")).toBe(false);
 });
 
-test("LocalStorageProvider: unusable storage degrades to memory-only", async () => {
+test("StorageDBProvider: unusable storage degrades to memory-only", async () => {
 	const storage = createStorage();
 	storage.setItem = () => {
 		throw new Error("QuotaExceededError"); // e.g. private browsing with zero quota — the probe write fails.
 	};
 
-	const db = new LocalStorageProvider<string>({ prefix: "test:", storage });
+	const db = new StorageDBProvider<string>(storage, "test:");
 	expect(db.persistent).toBe(false);
 
 	// The provider still works, purely in memory.
@@ -125,18 +125,18 @@ test("LocalStorageProvider: unusable storage degrades to memory-only", async () 
 	expect(storage.length).toBe(0);
 });
 
-test.skipIf("localStorage" in globalThis)("LocalStorageProvider: throws UnsupportedError where localStorage doesn't exist", () => {
-	expect(() => new LocalStorageProvider()).toThrow(UnsupportedError);
+test("StorageDBProvider: throws UnsupportedError when no storage is given", () => {
+	expect(() => new StorageDBProvider(undefined as unknown as Storage)).toThrow(UnsupportedError); // `as` needed: simulates a plain-JS caller passing nothing.
 });
 
-test("LocalStorageProvider: syncs changes made in another tab into memory and sequences", async () => {
+test("StorageDBProvider: syncs changes made in another tab into memory and sequences", async () => {
 	const map = new Map<string, string>();
 	const storage = createStorage(map);
 
 	// Two providers over the same storage simulate two tabs.
-	const tabA = new LocalStorageProvider<string>({ prefix: "test:", storage });
-	const tabB = new LocalStorageProvider<string>({ prefix: "test:", storage });
-	const tableA = tabA.getTable(BASICS_COLLECTION) as LocalStorageTable<string, BasicData>;
+	const tabA = new StorageDBProvider<string>(storage, "test:");
+	const tabB = new StorageDBProvider<string>(storage, "test:");
+	const tableA = tabA.getTable(BASICS_COLLECTION) as StorageTable<string, BasicData>;
 
 	// Subscribe in tab A.
 	const calls: OptionalItem<string, BasicData>[] = [];

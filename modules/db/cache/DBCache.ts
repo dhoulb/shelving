@@ -39,7 +39,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 
 	constructor(provider: DBProvider<I, T>) {
 		this.provider = provider;
-		// If the provider is itself in-memory (e.g. `MemoryDBProvider` or `LocalStorageProvider`), or the chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
+		// If the provider is itself in-memory (e.g. `MemoryDBProvider` or `StorageDBProvider`), or the chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
 		this.memory = provider instanceof MemoryDBProvider ? provider : getSource<CacheDBProvider<I, T>>(CacheDBProvider, provider)?.memory;
 	}
 

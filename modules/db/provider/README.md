@@ -19,7 +19,7 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | Provider | Role |
 |---|---|
 | `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests and as the cache layer. |
-| `LocalStorageProvider` | Extends `MemoryDBProvider` and persists every collection to `localStorage`, with cross-tab sync. Browser-only. |
+| `StorageDBProvider` | Extends `MemoryDBProvider` and persists every collection to a required `Storage` (`localStorage` / `sessionStorage`), with cross-tab sync. |
 | `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws `ValueError` on bad backend data. |
 | `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. |
 | `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |
