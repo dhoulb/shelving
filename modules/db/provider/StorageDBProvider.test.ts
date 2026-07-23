@@ -146,7 +146,7 @@ test("StorageDBProvider: syncs changes made in another tab into memory and seque
 
 	// Tab B writes; the browser would fire a `storage` event in tab A — deliver it to the table directly.
 	await tabB.setItem(BASICS_COLLECTION, "basic1", basic1);
-	tableA.sync("test:basics:basic1", map.get("test:basics:basic1") ?? null);
+	tableA.syncItem("test:basics:basic1", map.get("test:basics:basic1") ?? null);
 	await runMicrotasks();
 	expect(calls.length).toBe(2);
 	expect(calls[1]).toMatchObject(basic1);
@@ -154,14 +154,14 @@ test("StorageDBProvider: syncs changes made in another tab into memory and seque
 
 	// Tab B deletes.
 	await tabB.deleteItem(BASICS_COLLECTION, "basic1");
-	tableA.sync("test:basics:basic1", null);
+	tableA.syncItem("test:basics:basic1", null);
 	await runMicrotasks();
 	expect(calls.length).toBe(3);
 	expect<Item<string, BasicData> | undefined>(calls[2]).toBe(undefined);
 
 	// Another tab clears storage entirely.
 	await tabB.setItem(BASICS_COLLECTION, "basic3", basic3);
-	tableA.sync("test:basics:basic3", map.get("test:basics:basic3") ?? null);
+	tableA.syncItem("test:basics:basic3", map.get("test:basics:basic3") ?? null);
 	storage.clear();
 	tableA.syncClear();
 	expect(await tabA.countQuery(BASICS_COLLECTION, {})).toBe(0);

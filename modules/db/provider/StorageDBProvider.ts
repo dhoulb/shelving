@@ -3,6 +3,7 @@ import { StringSchema } from "../../schema/StringSchema.js";
 import type { Data } from "../../util/data.js";
 import { isData } from "../../util/data.js";
 import type { Identifier, Item } from "../../util/item.js";
+import { getItem } from "../../util/item.js";
 import type { Collection } from "../collection/Collection.js";
 import { MemoryDBProvider, MemoryTable } from "./MemoryDBProvider.js";
 
@@ -43,9 +44,6 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
 	/** Storage being persisted to, or `undefined` when operating memory-only. */
 	private readonly _storage: Storage | undefined;
 
-	/** Persisting tables by collection name, so `storage` events can be routed to them. */
-	private readonly _syncTables = new Map<string, StorageTable<I, T>>();
-
 	/** Attached `storage` event listener (so it can be detached on dispose), or `undefined` if none was attached. */
 	private readonly _listener: ((event: StorageEvent) => void) | undefined;
 
@@ -62,17 +60,17 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
 			});
 
 		// Probe with a write+remove: private browsing can expose a `Storage` whose every write throws.
-		let persistent = false;
 		try {
 			const probe = `${prefix}?`;
 			storage.setItem(probe, "?");
 			storage.removeItem(probe);
-			persistent = true;
+			this.persistent = true;
+			this._storage = storage;
 		} catch {
 			// Unusable storage — degrade to memory-only.
+			this.persistent = false;
+			this._storage = undefined;
 		}
-		this.persistent = persistent;
-		this._storage = persistent ? storage : undefined;
 
 		// Changes made in other tabs/windows arrive as `storage` events on the global scope.
 		if (this._storage && typeof globalThis.addEventListener === "function") {
@@ -81,27 +79,21 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
 		}
 	}
 
-	protected override _makeTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
-		if (!this._storage) return super._makeTable(collection);
-		const table = new StorageTable<II, TT>(collection, this._storage, this.prefix);
-		this._syncTables.set(collection.name, table as StorageTable<I, T>); // `as` needed: the map holds tables of varying subtypes under the provider's base types.
-		return table;
+	override createTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
+		return this._storage ? new StorageTable<II, TT>(collection, this._storage, this.prefix) : super.createTable(collection);
+	}
+
+	/** Every existing table that persists to storage (all of them, whenever the `storage` event listener is attached). */
+	private *_storageTables(): Iterable<StorageTable<I, T>> {
+		for (const table of Object.values(this._tables)) if (table instanceof StorageTable) yield table;
 	}
 
 	/** Apply a `storage` event (a change made in another tab/window) to the in-memory tables. */
 	private _syncStorage({ storageArea, key, newValue }: StorageEvent): void {
 		if (storageArea !== this._storage) return;
-		if (key === null) {
-			// A `null` key means the other tab called `storage.clear()`.
-			for (const table of this._syncTables.values()) table.syncClear();
-		} else {
-			for (const table of this._syncTables.values()) {
-				if (key.startsWith(table.keyPrefix)) {
-					table.sync(key, newValue);
-					break;
-				}
-			}
-		}
+		// A `null` key means the other tab called `storage.clear()`; otherwise each table applies keys matching its own prefix.
+		if (key === null) for (const table of this._storageTables()) table.syncClear();
+		else for (const table of this._storageTables()) table.syncItem(key, newValue);
 	}
 
 	// Implement `AsyncDisposable`
@@ -120,12 +112,8 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
  * @see https://shelving.cc/db/StorageTable
  */
 export class StorageTable<I extends Identifier, T extends Data> extends MemoryTable<I, T> {
-	/**
-	 * Prefix for every storage key belonging to this table, e.g. `"shelving:users:"`.
-	 *
-	 * @see https://shelving.cc/db/StorageTable/keyPrefix
-	 */
-	readonly keyPrefix: string;
+	/** Prefix for every storage key belonging to this table, e.g. `"shelving:users:"`. */
+	private readonly _prefix: string;
 
 	/** Storage this table persists to. */
 	private readonly _storage: Storage;
@@ -133,42 +121,39 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 	constructor(collection: Collection<string, I, T>, storage: Storage, prefix: string) {
 		super(collection);
 		this._storage = storage;
-		// Percent-encode both parts so the `:` separator is unambiguous: without this, an `id` containing `:`
-		// (e.g. collection `a` + id `b:c`) collides with a different collection/id pair (collection `a:b` + id `c`).
-		this.keyPrefix = `${prefix}${encodeURIComponent(collection.name)}:`;
+		this._prefix = `${prefix}${collection.name}:`;
 		this._hydrate();
 	}
 
 	/** Load every persisted item of this table's collection into memory. */
 	private _hydrate(): void {
-		const items: Item<I, T>[] = [];
 		for (let i = 0; i < this._storage.length; i++) {
 			const key = this._storage.key(i);
-			if (key?.startsWith(this.keyPrefix)) {
-				const item = this._parse(this._storage.getItem(key));
-				if (item) items.push(item);
+			if (key?.startsWith(this._prefix)) {
+				const id = this._decodeKey(key);
+				const item = this._parse(id, this._storage.getItem(key));
+				if (item) super._set(id, item); // `super._set()` skips persisting back what was just read.
 			}
 		}
-		for (const item of items) super._set(item.id, item); // `super._set()` skips persisting back what was just read.
 	}
 
 	/** Storage key for an item of this table. */
 	private _key(id: I): string {
-		return `${this.keyPrefix}${encodeURIComponent(String(id))}`;
+		return `${this._prefix}${id}`;
 	}
 
 	/** Identifier encoded in a storage key of this table. */
 	private _decodeKey(key: string): I {
-		const raw = decodeURIComponent(key.slice(this.keyPrefix.length));
+		const raw = key.slice(this._prefix.length);
 		return (this.collection.id instanceof StringSchema ? raw : Number(raw)) as I; // `as I` needed: TypeScript can't narrow I from the schema check.
 	}
 
-	/** Parse a stored JSON value into an item, or `undefined` if it's malformed. */
-	private _parse(value: string | null): Item<I, T> | undefined {
+	/** Parse a stored JSON value into an item with the given id, or `undefined` if it's malformed. */
+	private _parse(id: I, value: string | null): Item<I, T> | undefined {
 		if (value) {
 			try {
-				const item: unknown = JSON.parse(value);
-				if (isData(item) && "id" in item) return item as Item<I, T>; // `as` needed: stored values are unvalidated — wrap the provider in `ValidationDBProvider` to validate them.
+				const data: unknown = JSON.parse(value);
+				if (isData(data)) return getItem(id, data as T); // `as T` needed: stored values are unvalidated — wrap the provider in `ValidationDBProvider` to validate them.
 			} catch {
 				// Malformed values are skipped, not deleted — they may belong to other code sharing the prefix.
 			}
@@ -190,19 +175,21 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 	}
 
 	/**
-	 * Apply a change made in another tab/window to memory.
-	 * - Skips persisting (the change is already in storage) and notifies subscribed sequences.
+	 * Apply a changed storage key from another tab/window to memory.
+	 * - Ignores keys that don't belong to this table, skips persisting (the change is already in storage), and notifies subscribed sequences.
 	 *
-	 * @param key Storage key that changed (must start with `keyPrefix`).
+	 * @param key Storage key that changed.
 	 * @param value New stored JSON value, or `null` if the key was removed.
-	 * @see https://shelving.cc/db/StorageTable/sync
+	 * @see https://shelving.cc/db/StorageTable/syncItem
 	 */
-	sync(key: string, value: string | null): void {
+	syncItem(key: string, value: string | null): void {
+		if (!key.startsWith(this._prefix)) return;
+		const id = this._decodeKey(key);
 		if (value === null) {
-			if (super._delete(this._decodeKey(key))) this.next.resolve();
+			if (super._delete(id)) this.next.resolve();
 		} else {
-			const item = this._parse(value);
-			if (item && super._set(item.id, item)) this.next.resolve();
+			const item = this._parse(id, value);
+			if (item && super._set(id, item)) this.next.resolve();
 		}
 	}
 

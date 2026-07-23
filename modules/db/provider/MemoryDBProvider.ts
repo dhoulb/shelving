@@ -25,7 +25,7 @@ import { DBProvider } from "./DBProvider.js";
  */
 export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	/** List of tables in `{ name: MemoryTable }` format. */
-	private _tables: { [K in string]?: MemoryTable<I, T> } = {};
+	protected _tables: { [K in string]?: MemoryTable<I, T> } = {};
 
 	/**
 	 * Get (or lazily create) the `MemoryTable` backing a collection.
@@ -35,14 +35,18 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @see https://shelving.cc/db/MemoryDBProvider/getTable
 	 */
 	getTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
-		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= this._makeTable(collection));
+		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= this.createTable(collection));
 	}
 
 	/**
-	 * Create the `MemoryTable` backing a collection.
+	 * Create a new `MemoryTable` for a collection (without registering it — use `getTable()` for that).
 	 * - Override point for subclasses that back collections with a specialised table, e.g. `StorageDBProvider`.
+	 *
+	 * @param collection Collection to create a table for.
+	 * @example provider.createTable(users) // MemoryTable
+	 * @see https://shelving.cc/db/MemoryDBProvider/createTable
 	 */
-	protected _makeTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
+	createTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
 		return new MemoryTable<II, TT>(collection);
 	}
 
