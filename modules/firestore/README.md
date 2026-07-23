@@ -41,7 +41,7 @@ const provider = new FirestoreClientProvider(db);
 
 A lighter alternative to the full client SDK, suitable for browser or server environments where realtime updates are not needed. Produces a smaller bundle and avoids the overhead of persistent connections.
 
-`.getItemSequence()` and `.getQuerySequence()` throw `UnimplementedError`.
+`.getItemSequence()` and `.getQuerySequence()` throw `UnsupportedError`.
 
 **Install:**
 
