@@ -52,7 +52,7 @@ export interface MenuItemProps extends ClickableProps {
 	 * The first child becomes the link label (rendered inside the `<a>`).
 	 * - Any additional children form the submenu — only rendered when this item is "proud" (an ancestor of the current page). The caller is responsible for wrapping the submenu in a nested `<Menu>` if it wants the CSS `.menu .menu` descendant rules to apply.
 	 */
-	readonly children: ReactNode | [ReactNode, ...ReactNode[]];
+	readonly children: ReactNode | readonly [ReactNode, ...ReactNode[]];
 }
 
 /**
