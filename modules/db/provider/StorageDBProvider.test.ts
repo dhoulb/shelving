@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { StorageDBProvider, type StorageTable } from "shelving/db";
+import { StorageDBProvider } from "shelving/db";
 import { UnsupportedError } from "shelving/error";
 import { runMicrotasks } from "shelving/util/async";
 import type { Item, OptionalItem } from "shelving/util/item";
@@ -30,9 +30,14 @@ function createStorage(map = new Map<string, string>()): Storage {
 	} as Storage;
 }
 
+/** Fire a `storage` event on the global scope, as the browser would after another tab changed `storageArea`. */
+function dispatchStorage(storageArea: Storage, key: string | null, newValue: string | null): void {
+	globalThis.dispatchEvent(Object.assign(new Event("storage"), { storageArea, key, newValue }));
+}
+
 test("StorageDBProvider: writes persist to storage and reads come from memory", async () => {
 	const map = new Map<string, string>();
-	const db = new StorageDBProvider<string>(createStorage(map), "test:");
+	await using db = new StorageDBProvider<string>(createStorage(map), "test:");
 	expect(db.persistent).toBe(true);
 
 	// Set persists the full item as JSON under a prefixed key.
@@ -61,8 +66,9 @@ test("StorageDBProvider: hydrates a collection from pre-existing storage", async
 	for (const item of basics) map.set(`test:basics:${item.id}`, JSON.stringify(item));
 	map.set("other:unrelated", "not ours"); // Foreign keys are ignored.
 	map.set("test:basics:garbage", "{malformed json"); // Malformed values are skipped.
+	map.set("test:basics:basic1", JSON.stringify({ ...basic1, id: "WRONG" })); // The id in the key is authoritative, not the one in the JSON.
 
-	const db = new StorageDBProvider<string>(createStorage(map), "test:");
+	await using db = new StorageDBProvider<string>(createStorage(map), "test:");
 	expect(await db.getQuery(BASICS_COLLECTION, {})).toEqual(basics);
 	expectUnorderedItems(await db.getQuery(BASICS_COLLECTION, { group: "a" }), ["basic1", "basic2", "basic3"]);
 	expect(await db.getItem(BASICS_COLLECTION, "basic2")).toMatchObject(basic2);
@@ -70,7 +76,7 @@ test("StorageDBProvider: hydrates a collection from pre-existing storage", async
 
 test("StorageDBProvider: query writes persist per item", async () => {
 	const map = new Map<string, string>();
-	const db = new StorageDBProvider<string>(createStorage(map), "test:");
+	await using db = new StorageDBProvider<string>(createStorage(map), "test:");
 	for (const { id, ...data } of basics) await db.setItem(BASICS_COLLECTION, id, data);
 
 	await db.updateQuery(BASICS_COLLECTION, { group: "a" }, { str: "GROUPED" });
@@ -93,7 +99,7 @@ test("StorageDBProvider: a failed storage write throws and leaves memory unchang
 		setItem(key, value);
 	};
 
-	const db = new StorageDBProvider<string>(storage, "test:");
+	await using db = new StorageDBProvider<string>(storage, "test:");
 	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
 
 	full = true;
@@ -116,7 +122,7 @@ test("StorageDBProvider: unusable storage degrades to memory-only", async () => 
 		throw new Error("QuotaExceededError"); // e.g. private browsing with zero quota — the probe write fails.
 	};
 
-	const db = new StorageDBProvider<string>(storage, "test:");
+	await using db = new StorageDBProvider<string>(storage, "test:");
 	expect(db.persistent).toBe(false);
 
 	// The provider still works, purely in memory.
@@ -132,39 +138,53 @@ test("StorageDBProvider: throws UnsupportedError when no storage is given", () =
 test("StorageDBProvider: syncs changes made in another tab into memory and sequences", async () => {
 	const map = new Map<string, string>();
 	const storage = createStorage(map);
+	await using db = new StorageDBProvider<string>(storage, "test:");
 
-	// Two providers over the same storage simulate two tabs.
-	const tabA = new StorageDBProvider<string>(storage, "test:");
-	const tabB = new StorageDBProvider<string>(storage, "test:");
-	const tableA = tabA.getTable(BASICS_COLLECTION) as StorageTable<string, BasicData>;
-
-	// Subscribe in tab A.
+	// Subscribe.
 	const calls: OptionalItem<string, BasicData>[] = [];
-	const stop = runSequence(tabA.getItemSequence(BASICS_COLLECTION, "basic1"), v => void calls.push(v));
+	const stop = runSequence(db.getItemSequence(BASICS_COLLECTION, "basic1"), v => void calls.push(v));
 	await runMicrotasks();
 	expect(calls.length).toBe(1);
 
-	// Tab B writes; the browser would fire a `storage` event in tab A — deliver it to the table directly.
-	await tabB.setItem(BASICS_COLLECTION, "basic1", basic1);
-	tableA.syncItem("test:basics:basic1", map.get("test:basics:basic1") ?? null);
+	// Another tab sets an item: the value appears in storage, then the browser fires a `storage` event here.
+	map.set("test:basics:basic1", JSON.stringify(basic1));
+	dispatchStorage(storage, "test:basics:basic1", map.get("test:basics:basic1") ?? null);
 	await runMicrotasks();
 	expect(calls.length).toBe(2);
 	expect(calls[1]).toMatchObject(basic1);
-	expect(await tabA.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+	expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
 
-	// Tab B deletes.
-	await tabB.deleteItem(BASICS_COLLECTION, "basic1");
-	tableA.syncItem("test:basics:basic1", null);
+	// Another tab deletes the item.
+	map.delete("test:basics:basic1");
+	dispatchStorage(storage, "test:basics:basic1", null);
 	await runMicrotasks();
 	expect(calls.length).toBe(3);
 	expect<Item<string, BasicData> | undefined>(calls[2]).toBe(undefined);
 
-	// Another tab clears storage entirely.
-	await tabB.setItem(BASICS_COLLECTION, "basic3", basic3);
-	tableA.syncItem("test:basics:basic3", map.get("test:basics:basic3") ?? null);
-	storage.clear();
-	tableA.syncClear();
-	expect(await tabA.countQuery(BASICS_COLLECTION, {})).toBe(0);
+	// Events for other storages and foreign keys are ignored.
+	dispatchStorage(createStorage(), "test:basics:basic1", JSON.stringify(basic2));
+	dispatchStorage(storage, "other:unrelated", "not ours");
+	await runMicrotasks();
+	expect(calls.length).toBe(3);
+
+	// Another tab clears the storage entirely.
+	await db.setItem(BASICS_COLLECTION, "basic3", basic3);
+	map.clear();
+	dispatchStorage(storage, null, null);
+	expect(await db.countQuery(BASICS_COLLECTION, {})).toBe(0);
 
 	stop();
+});
+
+test("StorageDBProvider: disposal removes the storage event listener", async () => {
+	const map = new Map<string, string>();
+	const storage = createStorage(map);
+	const db = new StorageDBProvider<string>(storage, "test:");
+	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
+	await db[Symbol.asyncDispose]();
+
+	// Events after disposal are no longer applied.
+	map.set("test:basics:basic2", JSON.stringify(basic2));
+	dispatchStorage(storage, "test:basics:basic2", map.get("test:basics:basic2") ?? null);
+	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic2")).toBe(undefined);
 });

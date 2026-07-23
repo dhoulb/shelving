@@ -6,6 +6,8 @@ Because it *is* a `MemoryDBProvider`, it plugs into everything that expects one:
 
 `storage` events from other tabs/windows are applied to memory and notify realtime sequences, so `getItemSequence()` / `getQuerySequence()` update live across tabs.
 
+All the persistence logic lives in `StorageTable`, a self-contained `MemoryTable` subclass that hydrates itself, persists its own writes, and manages its own `storage` event listener — the provider is just a `MemoryDBProvider` whose `createTable()` returns `StorageTable`. `StorageTable` can also be used independently. Dispose the provider (or table) to remove the event listeners.
+
 ## Usage
 
 The storage to persist to is a required argument — there is no default, so server code that constructs this provider must reference `localStorage` / `sessionStorage` itself, surfacing the mistake at the callsite (at compile time, in a project without DOM types) rather than deep inside the class:

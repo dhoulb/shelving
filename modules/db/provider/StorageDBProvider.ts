@@ -2,6 +2,7 @@ import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { StringSchema } from "../../schema/StringSchema.js";
 import type { Data } from "../../util/data.js";
 import { isData } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import type { Collection } from "../collection/Collection.js";
@@ -10,11 +11,8 @@ import { MemoryDBProvider, MemoryTable } from "./MemoryDBProvider.js";
 /**
  * In-memory database provider that persists every collection to a `Storage` — `localStorage`, `sessionStorage`, or anything else with the same interface.
  *
- * - Extends `MemoryDBProvider`, so all reads, queries, and realtime sequences are served synchronously from memory, and it can seed `ItemStore` / `QueryStore` and act as the cache inside `CacheDBProvider`.
+ * - Extends `MemoryDBProvider`, so all reads, queries, and realtime sequences are served synchronously from memory, and it can seed `ItemStore` / `QueryStore` and act as the cache inside `CacheDBProvider`. The only difference is that collections are backed by `StorageTable` instead of `MemoryTable`.
  * - The storage is a required argument (there is no default), so server code that constructs this provider must reference `localStorage` / `sessionStorage` itself — surfacing the mistake at the callsite instead of deep inside this class.
- * - Each collection is hydrated from storage once, lazily, on first access; after that every write persists to storage *before* it is applied to memory, so a failed write (e.g. `QuotaExceededError` when the origin's quota is full) throws and leaves memory and storage consistent.
- * - Items are stored as JSON under keys formatted as `{prefix}{collection}:{id}`, so values must be JSON-serializable.
- * - Listens for `storage` events, so changes made in other tabs/windows update memory and notify realtime sequences.
  * - Treat the persisted data as best-effort: quota is shared across the origin (typically ~5MB) and users can clear it at any time. Data read back from storage is unvalidated — wrap this provider in `ValidationDBProvider` if it may have been written by an older version of your app.
  * - If the storage is unusable (writes blocked by browser settings, or private browsing with zero quota), the provider degrades to memory-only operation — check the `persistent` flag to warn users their changes won't be saved.
  *
@@ -44,9 +42,6 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
 	/** Storage being persisted to, or `undefined` when operating memory-only. */
 	private readonly _storage: Storage | undefined;
 
-	/** Attached `storage` event listener (so it can be detached on dispose), or `undefined` if none was attached. */
-	private readonly _listener: ((event: StorageEvent) => void) | undefined;
-
 	/**
 	 * @param storage `Storage` instance to persist to, e.g. `localStorage` or `sessionStorage` (required so environments without one, e.g. the server, fail at the callsite).
 	 * @param prefix Prefix for every storage key written by this provider, so it can share an origin's storage with other code (defaults to `"shelving:"`).
@@ -71,43 +66,20 @@ export class StorageDBProvider<I extends Identifier = Identifier, T extends Data
 			this.persistent = false;
 			this._storage = undefined;
 		}
-
-		// Changes made in other tabs/windows arrive as `storage` events on the global scope.
-		if (this._storage && typeof globalThis.addEventListener === "function") {
-			this._listener = event => this._syncStorage(event);
-			globalThis.addEventListener("storage", this._listener);
-		}
 	}
 
+	/** Back collections with a `StorageTable`, or a plain `MemoryTable` when operating memory-only. */
 	override createTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
 		return this._storage ? new StorageTable<II, TT>(collection, this._storage, this.prefix) : super.createTable(collection);
-	}
-
-	/** Every existing table that persists to storage (all of them, whenever the `storage` event listener is attached). */
-	private *_storageTables(): Iterable<StorageTable<I, T>> {
-		for (const table of Object.values(this._tables)) if (table instanceof StorageTable) yield table;
-	}
-
-	/** Apply a `storage` event (a change made in another tab/window) to the in-memory tables. */
-	private _syncStorage({ storageArea, key, newValue }: StorageEvent): void {
-		if (storageArea !== this._storage) return;
-		// A `null` key means the other tab called `storage.clear()`; otherwise each table applies keys matching its own prefix.
-		if (key === null) for (const table of this._storageTables()) table.syncClear();
-		else for (const table of this._storageTables()) table.syncItem(key, newValue);
-	}
-
-	// Implement `AsyncDisposable`
-	override async [Symbol.asyncDispose](): Promise<void> {
-		if (this._listener) globalThis.removeEventListener("storage", this._listener);
-		await super[Symbol.asyncDispose]();
 	}
 }
 
 /**
- * `MemoryTable` that persists every change to a `Storage` instance for a `StorageDBProvider`.
+ * `MemoryTable` that persists its items to a `Storage` instance — self-contained, so it can also be used independently of `StorageDBProvider`.
  *
- * - Hydrates itself from storage on construction, then persists each write *before* applying it to memory (so a storage failure throws and changes nothing).
- * - Because persistence hooks the table's write primitives, every path into the table persists — including `CacheDBProvider` mirroring and store sequences.
+ * - Hydrates itself from storage on construction, then persists each write *before* applying it to memory, so a failed write (e.g. `QuotaExceededError` when the origin's quota is full) throws and leaves memory and storage consistent.
+ * - Items are stored as JSON under keys formatted as `{prefix}{collection}:{id}`, so values must be JSON-serializable. The id in the key is authoritative — an `id` stored inside the JSON is overridden.
+ * - Listens for `storage` events, so changes made in other tabs/windows update memory and notify realtime sequences. Dispose the table (or its provider) to remove the listener.
  *
  * @see https://shelving.cc/db/StorageTable
  */
@@ -118,21 +90,30 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 	/** Storage this table persists to. */
 	private readonly _storage: Storage;
 
-	constructor(collection: Collection<string, I, T>, storage: Storage, prefix: string) {
+	/** Attached `storage` event listener (so it can be detached on dispose), or `undefined` if none was attached. */
+	private readonly _listener: ((event: StorageEvent) => void) | undefined;
+
+	constructor(collection: Collection<string, I, T>, storage: Storage, prefix = "shelving:") {
 		super(collection);
 		this._storage = storage;
 		this._prefix = `${prefix}${collection.name}:`;
 		this._hydrate();
+
+		// Changes made in other tabs/windows arrive as `storage` events on the global scope.
+		if (typeof globalThis.addEventListener === "function") {
+			this._listener = event => this._syncStorage(event);
+			globalThis.addEventListener("storage", this._listener);
+		}
 	}
 
-	/** Load every persisted item of this table's collection into memory. */
+	/** Load every persisted item of this table's collection into memory (directly, skipping the persist-back in `setItem()`). */
 	private _hydrate(): void {
 		for (let i = 0; i < this._storage.length; i++) {
 			const key = this._storage.key(i);
 			if (key?.startsWith(this._prefix)) {
 				const id = this._decodeKey(key);
 				const item = this._parse(id, this._storage.getItem(key));
-				if (item) super._set(id, item); // `super._set()` skips persisting back what was just read.
+				if (item) this._data.set(id, item);
 			}
 		}
 	}
@@ -160,48 +141,39 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 		}
 	}
 
-	/** Persist to storage first — a failure (e.g. `QuotaExceededError`) throws before memory changes, keeping the two consistent. */
-	protected override _set(id: I, item: Item<I, T>): boolean {
-		if (this._data.get(id) === item) return false;
-		this._storage.setItem(this._key(id), JSON.stringify(item));
-		return super._set(id, item);
-	}
-
-	/** Remove from storage first, keeping storage and memory consistent. */
-	protected override _delete(id: I): boolean {
-		if (!this._data.has(id)) return false;
-		this._storage.removeItem(this._key(id));
-		return super._delete(id);
-	}
-
 	/**
-	 * Apply a changed storage key from another tab/window to memory.
-	 * - Ignores keys that don't belong to this table, skips persisting (the change is already in storage), and notifies subscribed sequences.
-	 *
-	 * @param key Storage key that changed.
-	 * @param value New stored JSON value, or `null` if the key was removed.
-	 * @see https://shelving.cc/db/StorageTable/syncItem
+	 * Apply a `storage` event (a change made in another tab/window) to this table.
+	 * - Reuses `setItem()` / `deleteItem()` — re-persisting the value already in storage is a no-op, and same-tab writes don't fire `storage` events, so this can't loop.
 	 */
-	syncItem(key: string, value: string | null): void {
-		if (!key.startsWith(this._prefix)) return;
-		const id = this._decodeKey(key);
-		if (value === null) {
-			if (super._delete(id)) this.next.resolve();
-		} else {
-			const item = this._parse(id, value);
-			if (item && super._set(id, item)) this.next.resolve();
+	private _syncStorage({ storageArea, key, newValue }: StorageEvent): void {
+		if (storageArea !== this._storage) return;
+		if (key === null) {
+			this.deleteQuery({}); // A `null` key means the other tab called `storage.clear()`.
+		} else if (key.startsWith(this._prefix)) {
+			const id = this._decodeKey(key);
+			const item = newValue !== null ? this._parse(id, newValue) : undefined;
+			item ? this.setItem(id, item) : this.deleteItem(id);
 		}
 	}
 
-	/**
-	 * Apply a `storage.clear()` made in another tab/window to memory.
-	 * - Skips persisting (storage is already empty) and notifies subscribed sequences.
-	 *
-	 * @see https://shelving.cc/db/StorageTable/syncClear
-	 */
-	syncClear(): void {
-		let changed = false;
-		for (const id of [...this._data.keys()]) if (super._delete(id)) changed = true;
-		if (changed) this.next.resolve();
+	/** Persist to storage first — a failure (e.g. `QuotaExceededError`) throws before memory changes, keeping the two consistent. */
+	override setItem(id: I, data: Item<I, T> | T): void {
+		const item = getItem(id, data);
+		if (this._data.get(id) !== item) this._storage.setItem(this._key(id), JSON.stringify(item));
+		super.setItem(id, item);
+	}
+
+	/** Remove from storage first, keeping storage and memory consistent. */
+	override deleteItem(id: I): void {
+		if (this._data.has(id)) this._storage.removeItem(this._key(id));
+		super.deleteItem(id);
+	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			() => this._listener && globalThis.removeEventListener("storage", this._listener), // Stop listening for `storage` events.
+			super[Symbol.asyncDispose](), // Chain.
+		);
 	}
 }

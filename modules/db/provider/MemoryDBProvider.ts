@@ -2,6 +2,7 @@ import { StringSchema } from "../../schema/StringSchema.js";
 import { DeferredSequence } from "../../sequence/DeferredSequence.js";
 import { requireArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import { isArrayEqual } from "../../util/equal.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
@@ -136,6 +137,14 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	setItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, items: Items<II, TT>): void {
 		this.getTable(collection).setItems(items);
 	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			...Object.values(this._tables), // Dispose all tables.
+			super[Symbol.asyncDispose](), // Chain.
+		);
+	}
 }
 
 /**
@@ -150,7 +159,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  *
  * @see https://shelving.cc/db/MemoryTable
  */
-export class MemoryTable<I extends Identifier, T extends Data> {
+export class MemoryTable<I extends Identifier, T extends Data> implements AsyncDisposable {
 	/** Actual data in this table. */
 	protected readonly _data = new Map<I, Item<I, T>>();
 
@@ -237,24 +246,6 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	}
 
 	/**
-	 * Set an item instance in the table data, returning whether anything changed.
-	 * - Override point for subclasses that mirror writes to another medium — the mirror write should complete (or throw) before calling `super._set()`.
-	 */
-	protected _set(id: I, item: Item<I, T>): boolean {
-		if (this._data.get(id) === item) return false;
-		this._data.set(id, item);
-		return true;
-	}
-
-	/**
-	 * Delete an item instance from the table data, returning whether anything changed.
-	 * - Override point for subclasses that mirror writes to another medium — the mirror write should complete (or throw) before calling `super._delete()`.
-	 */
-	protected _delete(id: I): boolean {
-		return this._data.delete(id);
-	}
-
-	/**
 	 * Set (insert or overwrite) an item by its id.
 	 * - Only resolves `next` when the stored instance actually changes.
 	 *
@@ -264,7 +255,11 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/setItem
 	 */
 	setItem(id: I, data: Item<I, T> | T): void {
-		if (this._set(id, getItem(id, data))) this.next.resolve();
+		const item = getItem(id, data);
+		if (this._data.get(id) !== item) {
+			this._data.set(id, item);
+			this.next.resolve();
+		}
 	}
 
 	/**
@@ -296,7 +291,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	updateItem(id: I, updates: Updates<Item<I, T>>): void {
 		const oldItem = this._data.get(id);
 		if (!oldItem) return;
-		if (this._set(id, updateData(oldItem, updates))) this.next.resolve();
+		this.setItem(id, updateData(oldItem, updates));
 	}
 
 	/**
@@ -308,7 +303,10 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/deleteItem
 	 */
 	deleteItem(id: I): void {
-		if (this._delete(id)) this.next.resolve();
+		if (this._data.has(id)) {
+			this._data.delete(id);
+			this.next.resolve();
+		}
 	}
 
 	/**
@@ -367,9 +365,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/setQuery
 	 */
 	setQuery(query: Query<Item<I, T>>, data: T): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) if (this._set(id, getItem(id, data))) changed = true;
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.setItem(id, data);
 	}
 
 	/**
@@ -381,25 +377,15 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/updateQuery
 	 */
 	updateQuery(query: Query<Item<I, T>>, updates: Updates<T>): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			const oldItem = this._data.get(id);
-			if (!oldItem) continue;
-			if (this._set(id, updateData<Item<I, T>>(oldItem, updates))) changed = true;
-		}
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.updateItem(id, updates as Updates<Item<I, T>>);
 	}
 
 	deleteQuery(query: Query<Item<I, T>>): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) if (this._delete(id)) changed = true;
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.deleteItem(id);
 	}
 
 	setItems(items: Items<I, T>): void {
-		let changed = false;
-		for (const item of items) if (this._set(item.id, item)) changed = true;
-		if (changed) this.next.resolve();
+		for (const item of items) this.setItem(item.id, item);
 	}
 
 	async *setItemsSequence(sequence: AsyncIterable<Items<I, T>>): AsyncIterable<Items<I, T>> {
@@ -407,5 +393,12 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 			this.setItems(items);
 			yield items;
 		}
+	}
+
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			// Empty by default.
+		);
 	}
 }
