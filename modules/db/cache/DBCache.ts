@@ -7,7 +7,7 @@ import { getSource } from "../../util/source.js";
 import type { Collection } from "../collection/Collection.js";
 import { CacheDBProvider } from "../provider/CacheDBProvider.js";
 import type { DBProvider } from "../provider/DBProvider.js";
-import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
+import { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 import type { ItemStore } from "../store/ItemStore.js";
 import type { QueryStore } from "../store/QueryStore.js";
 import { CollectionCache } from "./CollectionCache.js";
@@ -39,8 +39,8 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 
 	constructor(provider: DBProvider<I, T>) {
 		this.provider = provider;
-		// If the provider chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
-		this.memory = getSource<CacheDBProvider<I, T>>(CacheDBProvider, provider)?.memory;
+		// If the provider is itself in-memory (e.g. `MemoryDBProvider` or `StorageDBProvider`), or the chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
+		this.memory = provider instanceof MemoryDBProvider ? provider : getSource<CacheDBProvider<I, T>>(CacheDBProvider, provider)?.memory;
 	}
 
 	private _get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT> | undefined;
