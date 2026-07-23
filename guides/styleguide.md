@@ -1,6 +1,8 @@
 # Code styleguide
 
-A portable styleguide distilled from the `shelving` codebase and its `AGENTS.md`. Follow it when starting a new TypeScript project in this style. Rules are stated as requirements — deviate only with a stated reason.
+The canonical code style for the `shelving` codebase and for any project built in its style. `AGENTS.md` signposts this file — **read it fully before writing any code**. Rules are stated as requirements — deviate only with a stated reason.
+
+The rules here are portable: they describe the style itself, not this repository. Repo-specific mechanics (commands, release flow, docs-site conventions, the UI tint ladder) stay in `AGENTS.md`.
 
 ## Philosophy
 
