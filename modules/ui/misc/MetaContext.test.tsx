@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { RequiredError } from "shelving/error";
 import { createMeta, MetaContext, requireMetaURL } from "shelving/ui";
+import { requireURL } from "shelving/util/url";
 
 /** Render `requireMetaURL().path` from inside a component so its `use(MetaContext)` call is valid. */
 function Probe(): ReactNode {
@@ -38,8 +38,28 @@ describe("requireMetaURL", () => {
 		expect(html).toBe("/enquiry/loan");
 	});
 
+	test("defaults root to the url's origin when root is unset", () => {
+		const html = renderToStaticMarkup(
+			<MetaContext value={createMeta({ url: "http://x.com/enquiry/loan" })}>
+				<Probe />
+			</MetaContext>,
+		);
+		expect(html).toBe("/enquiry/loan");
+	});
+
 	test("throws RequiredError when url is unset", () => {
-		expect(() => renderToStaticMarkup(<Probe />)).toThrow(RequiredError);
+		expect(() => renderToStaticMarkup(<Probe />)).toThrow("Meta URL is required");
+	});
+
+	test("throws RequiredError when root is unset and was not derived", () => {
+		// Bypass `createMeta()` deliberately — merged meta always derives a root, so this backup check only fires for hand-built meta.
+		expect(() =>
+			renderToStaticMarkup(
+				<MetaContext value={{ url: requireURL("http://x.com/foo") }}>
+					<Probe />
+				</MetaContext>,
+			),
+		).toThrow("Meta root is required");
 	});
 
 	test("throws RequiredError when url and root are on different origins", () => {
@@ -49,6 +69,16 @@ describe("requireMetaURL", () => {
 					<Probe />
 				</MetaContext>,
 			),
-		).toThrow(RequiredError);
+		).toThrow("Meta URL and meta root must share a root");
+	});
+
+	test("throws RequiredError when url is outside the root's path", () => {
+		expect(() =>
+			renderToStaticMarkup(
+				<MetaContext value={createMeta({ root: "http://x.com/app/", url: "http://x.com/other" })}>
+					<Probe />
+				</MetaContext>,
+			),
+		).toThrow("Meta URL and meta root must share a root");
 	});
 });
