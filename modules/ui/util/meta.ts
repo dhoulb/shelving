@@ -4,7 +4,7 @@ import type { AnyCaller } from "../../util/function.js";
 import { type PossibleLink, requireLink } from "../../util/link.js";
 import type { Nullish } from "../../util/null.js";
 import { type ImmutableURI, type PossibleURI, type PossibleURIParams, withURIParams } from "../../util/uri.js";
-import { type ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
+import { ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
 
 /**
  * Set of named meta `<meta />` tags in `{ name: content }` format.
@@ -85,7 +85,7 @@ export interface Meta {
  * @see https://shelving.cc/ui/PossibleMeta
  */
 export interface PossibleMeta extends Omit<Meta, "root" | "url" | "links" | "scripts" | "modules" | "stylesheets"> {
-	/** Base URL for the app — accepts a string or `URL`, resolved with `requireURL()`. */
+	/** Base URL for the app — accepts a string or `URL`, resolved with `requireURL()`. Defaults to the origin of `url` when unset. */
 	readonly root?: PossibleURL | undefined;
 
 	/**
@@ -139,6 +139,7 @@ export function joinTitles(...titles: (string | undefined)[]): string {
  *
  * - `title` is merged with `joinTitles()`.
  * - `url` is resolved to an absolute URL, e.g. `./d/e/f` + `/a/b/c` becomes `https://d.com/a/b/c/d/e/f`
+ * - `root` defaults to the origin of the resolved `url` (e.g. `https://x.com/`) when not set explicitly, so merged meta with a `url` always has a `root`.
  * - `stylesheets` and `links` hrefs newly set in `meta2` are absolutified against the merged `url`/`root`, so they stay correct no matter where they are later rendered.
  *
  * @param meta1 The existing fully-resolved `Meta` to merge into.
@@ -151,8 +152,11 @@ export function joinTitles(...titles: (string | undefined)[]): string {
 export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta {
 	const title = joinTitles(meta2.title, meta1.title);
 
-	const root = mergeMetaURL(undefined, meta1.root, meta2.root, undefined, caller);
-	const url = mergeMetaURL(root, meta1.url, meta2.url, meta2.params, caller);
+	const explicitRoot = mergeMetaURL(undefined, meta1.root, meta2.root, undefined, caller);
+	const url = mergeMetaURL(explicitRoot, meta1.url, meta2.url, meta2.params, caller);
+
+	// A meta with a `url` must always have a `root` — only correct for apps served from the origin's `/`, so sub-path deployments must set `root` explicitly.
+	const root = explicitRoot ?? (url ? new ImmutableURL("/", url) : undefined);
 
 	return {
 		...meta1,

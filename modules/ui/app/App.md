@@ -46,6 +46,8 @@ export function MyApp() {
 }
 ```
 
+**Setting a `root` URL on `<App>` is strongly recommended.** `root` is the base that site-absolute links and assets (`/favicon.png`, `/base.css`) resolve against, the `<base>` tag rendered by `<HTML>`, and the prefix `<Router>` strips when matching routes. When it's unset, merging a `url` into the meta context derives `root` from that URL's origin (e.g. `https://example.com/`) — a safe fallback for apps served from the domain root, but wrong for apps deployed under a sub-path, so set it explicitly whenever your app doesn't live at `/`.
+
 `<App>` accepts all `PossibleMeta` props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
 
 For a documentation site, hand an extracted tree to `<TreeApp>` instead — see the `shelving/extract` guide.

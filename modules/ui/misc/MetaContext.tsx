@@ -37,6 +37,7 @@ export function requireMeta(meta?: PossibleMeta): Meta {
  */
 export interface MetaURL extends Meta {
 	url: ImmutableURL;
+	root: ImmutableURL;
 	/** The path of `url` relative to `meta.root` (i.e. the _site-root-relative_ path). */
 	path: AbsolutePath;
 	/** The `?query` params of `url` extracted as a flat set of parameters. */
@@ -48,17 +49,18 @@ export interface MetaURL extends Meta {
  *
  * @param meta A set of new possible meta data to combine into the current meta context.
  * @param caller Function to attribute thrown `RequiredError`s to (defaults to `requireMetaURL`).
- * @returns A `Meta` object with a defined `url`, plus `path` and `params` properties combined in.
- * @throws RequiredError If the current meta has no `url`.
- * @throws RequiredError If the current meta `url` does not share an origin with the meta `root`.
+ * @returns A `Meta` object with a defined `url` and `root`, plus `path` and `params` properties combined in.
+ * @throws RequiredError If the current meta has no `url` or no `root`.
+ * @throws RequiredError If the current meta `url` and `root` do not share a root (different origin, or `url` outside `root`'s path).
  * @example const { path, params } = requireMetaURL();
  * @see https://shelving.cc/ui/requireMetaURL
  */
 export function requireMetaURL(meta?: PossibleMeta, caller: AnyCaller = requireMetaURL): MetaURL {
 	const { url, root, ...combined } = requireMeta(meta);
 	if (!url) throw new RequiredError("Meta URL is required", { received: url, caller });
+	if (!root) throw new RequiredError("Meta root is required", { received: root, caller });
 	const path = matchURLPrefix(url, root, caller);
-	if (!path) throw new RequiredError("Meta URL and meta root must share an origin", { url, root, caller });
+	if (!path) throw new RequiredError("Meta URL and meta root must share a root", { url, root, caller });
 	const params = getURIParams(url, caller);
 	return { ...combined, url, root, path, params };
 }

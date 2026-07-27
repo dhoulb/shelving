@@ -60,4 +60,21 @@ describe("mergeMeta", () => {
 		expect(meta2.links?.icon?.href).toBe("http://x.com/favicon.png");
 		expect(meta2.links?.canonical?.href).toBe("http://x.com/page");
 	});
+
+	test("defaults root to the origin of the url when root is unset", () => {
+		const meta = createMeta({ url: "http://x.com/sub/page" });
+		expect(meta.url?.href).toBe("http://x.com/sub/page");
+		expect(meta.root?.href).toBe("http://x.com/");
+	});
+
+	test("keeps an explicit root instead of defaulting from the url", () => {
+		const meta = createMeta({ root: "http://x.com/app/", url: "http://x.com/app/page" });
+		expect(meta.root?.href).toBe("http://x.com/app/");
+	});
+
+	test("leaves root unset when url is also unset", () => {
+		const meta = createMeta({ title: "Title" });
+		expect(meta.root).toBeUndefined();
+		expect(meta.url).toBeUndefined();
+	});
 });
