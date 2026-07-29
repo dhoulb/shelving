@@ -10,7 +10,7 @@ Follow the file and folder names in this guide exactly. The layout works because
 2. **The contract lives in `shared/`.** Database schemas, endpoint definitions, domain logic, and utilities used by both sides are defined once in `shared/` and imported by both `api/` and `app/`. Neither side ever redeclares a type or a validation rule the other side also needs.
 3. **Schema-first.** Data shapes are defined as Shelving schemas (runtime validators), and TypeScript types are *derived* from them with `ValidatorType`. You never write a type by hand and a validator separately.
 4. **Hard boundaries, mechanically enforced.** `app/` must never import from `api/`, and `api/` must never import from `app/`. This is enforced by the linter, not by convention (see [Boundaries](#boundaries)).
-5. **Dependency injection via a context object, owned by the composition root.** Handlers and services never construct their own providers (database, external APIs). They receive a single context object, so the same code runs against real providers in production, debug/in-memory providers locally, and mock providers in tests. The full context type (`APIContext`) is defined in `api/` — never in `shared/`. Shared code stays generic over a context type `C`, and each adapter declares only the small slice of context it needs (see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root)).
+5. **Dependency injection via a context object, owned by the composition root.** Handlers and services never construct their own providers (database, external APIs). They receive a single context object, so the same code runs against real providers in production, debug/in-memory providers locally, and mock providers in tests. The full context type (`APIContext`) is defined in `api/` — never in `shared/`. Shared code stays generic over a context type `C`, and declares only small named context slices — reusable ones like `DatabaseContext` in `shared/util/context.ts`, adapter-specific ones alongside each adapter (see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root)).
 6. **Group by domain, not by file type.** Feature code sits in a folder named after the domain entity it handles, with its components, styles, helpers, and tests together.
 7. **Every code PR gets a disposable preview environment.** CI deploys a full app + API stack per pull request at deterministic URLs, and tears it down when the PR closes. Reviewing against a real deployment — not just reading the diff — is a core part of the workflow (see [CI](#ci-the-test-gate-preview-environments-and-deployment)).
 8. **Document the repo for agents.** An `AGENTS.md` at the repo root is the operating manual LLM coding agents read before working; keeping it current is part of the definition of done (see [AGENTS.md](#agentsmd--make-the-repo-legible-to-llms)).
@@ -167,11 +167,10 @@ The composition root's `APIContext` satisfies `CRMContext` structurally, so the 
 
 ### `shared/util/` — shared utilities
 
-Flat folder, one file per topic (`phone.ts`, `cookie.ts`, `env.ts`, …), each with a co-located `<topic>.test.ts`. One file deserves special mention:
+Flat folder, one file per topic (`phone.ts`, `cookie.ts`, `env.ts`, …), each with a co-located `<topic>.test.ts`. Two files deserve special mention:
 
 - **`shared/util/env.ts`** — parses *public* environment variables only. It starts with a comment warning that these values are inlined into client bundles. Required values throw at module load: `if (!process.env.API_URL) throw new ReferenceError(...)`. Export parsed values (e.g. `URL` objects via `requireURL`), not raw strings.
-
-Note there is deliberately **no `shared/util/context.ts`** — the server's DI context type lives in `api/util/context.ts`, because nothing in `app/` ever imports it, and defining it in `shared/` forces generic shared code to depend on the whole application environment. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
+- **`shared/util/context.ts`** — declares small, descriptive, **reusable context slices** — `DatabaseContext { db: DBProvider }` and the like — that shared service callbacks reuse when they need context. What it must **never** declare is the full server context: the "large bundle" shape is owned by `api/util/context.ts`, where `APIContext` composes these slices into its final shape. Nothing in `app/` ever imports the full server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
 
 ## Dependency injection: context slices and the composition root
 
@@ -179,25 +178,43 @@ Everything server-side receives its dependencies through a single context object
 
 ### The composition root owns the context type
 
-The server's DI context is defined in **`api/util/context.ts`**, named `APIContext`, with `APIHandlers = EndpointHandlers<APIContext>` alongside. It does **not** live in `shared/`. This mirrors `app/util/context.ts` — each side owns its own context file. Nothing in `app/` ever imports the server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment.
+The server's full DI context is defined in **`api/util/context.ts`**, named `APIContext`, with `APIHandlers = EndpointHandlers<APIContext>` alongside. It does **not** live in `shared/`. This mirrors `app/util/context.ts` — each side owns its own context file. Nothing in `app/` ever imports the server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment.
+
+What `shared/` *does* declare is **slices**: small, descriptive interfaces that each name one capability. The full context only ever exists at the composition root, as a composition of slices.
 
 ### Shared code never names the full context
 
 Any shared class that receives providers at call time — a forwarder-style "port" class, a processor — is **generic over a context type `C`**. This is exactly the idiom Shelving itself uses for `EndpointHandlers<C>` and `Endpoint.handler<C>()`. The rule: **if a shared module hard-codes the application's context type, it is mis-layered** — make it generic over `C`.
 
-### Adapters declare their own context slice
+### Code declares the context slice it needs
 
-Each integration exports a small interface stating only what it needs — e.g. `shared/integration/crm` exports `CRMContext { crm: APIProvider<Data, string> }` and its forwarder extends `BaseForwarder<I, O, CRMContext>`. The composition root then composes the full context **by extension**:
+Slices come from two places:
+
+- **Cross-cutting, reusable slices** live in `shared/util/context.ts` — `DatabaseContext { db: DBProvider }` and similar. Shared service callbacks that need a capability name the slice, not the application context:
+
+  ```ts
+  // shared/util/context.ts (excerpt)
+  import type { DBProvider } from "shelving";
+
+  /** Slice of the DI context that provides database access. */
+  export interface DatabaseContext {
+  	db: DBProvider;
+  }
+  ```
+
+- **Adapter-specific slices** live with their adapter — e.g. `shared/integration/crm` exports `CRMContext { crm: APIProvider<Data, string> }` and its forwarder extends `BaseForwarder<I, O, CRMContext>`.
+
+The composition root then composes the full context **by extension**:
 
 ```ts
 // api/util/context.ts
 import type { OrderProcessors, OrderRedirectContext } from "shared/order";
 import type { CRMContext } from "shared/integration/crm";
-import type { AsyncProvider, EndpointHandlers } from "shelving";
+import type { DatabaseContext } from "shared/util/context";
+import type { EndpointHandlers } from "shelving";
 
 /** Dependency-injection context assembled at each API entry point. */
-export interface APIContext extends CRMContext, OrderRedirectContext {
-	db: AsyncProvider;
+export interface APIContext extends DatabaseContext, CRMContext, OrderRedirectContext {
 	processors: OrderProcessors<APIContext>;
 }
 export type APIHandlers = EndpointHandlers<APIContext>;
@@ -274,7 +291,7 @@ Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` define
 
 ### `api/util/` — server-only utilities
 
-- **`api/util/context.ts`** — defines `APIContext` (the DI context interface, composed by extending each adapter's context slice) and `APIHandlers = EndpointHandlers<APIContext>`. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
+- **`api/util/context.ts`** — defines `APIContext` (the DI context interface, composed by extending the reusable slices from `shared/util/context.ts` and each adapter's own slice) and `APIHandlers = EndpointHandlers<APIContext>`. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
 - **`api/util/env.ts`** — parses *secret* environment variables (API keys etc.). Starts with a comment: "these values are server-side secrets — only import this file in API code, never in APP code."
 - **`api/util/middleware.ts`** — request middleware as higher-order functions named `with*`: `withCORS(handler)`, `withLogging(handler)`. Each takes a `RequestHandler` and returns a new one.
 - **`api/util/test.ts`** — the mock-context factory described above, plus shared test fixtures.
