@@ -10,7 +10,7 @@ Follow the file and folder names in this guide exactly. The layout works because
 2. **The contract lives in `shared/`.** Database schemas, endpoint definitions, domain logic, and utilities used by both sides are defined once in `shared/` and imported by both `api/` and `app/`. Neither side ever redeclares a type or a validation rule the other side also needs.
 3. **Schema-first.** Data shapes are defined as Shelving schemas (runtime validators), and TypeScript types are *derived* from them with `ValidatorType`. You never write a type by hand and a validator separately.
 4. **Hard boundaries, mechanically enforced.** `app/` must never import from `api/`, and `api/` must never import from `app/`. This is enforced by the linter, not by convention (see [Boundaries](#boundaries)).
-5. **Dependency injection via a context object.** Handlers and services never construct their own providers (database, external APIs). They receive a single context object, so the same code runs against real providers in production, debug/in-memory providers locally, and mock providers in tests.
+5. **Dependency injection via a context object, owned by the composition root.** Handlers and services never construct their own providers (database, external APIs). They receive a single context object, so the same code runs against real providers in production, debug/in-memory providers locally, and mock providers in tests. The full context type (`APIContext`) is defined in `api/` — never in `shared/`. Shared code stays generic over a context type `C`, and each adapter declares only the small slice of context it needs (see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root)).
 6. **Group by domain, not by file type.** Feature code sits in a folder named after the domain entity it handles, with its components, styles, helpers, and tests together.
 7. **Every code PR gets a disposable preview environment.** CI deploys a full app + API stack per pull request at deterministic URLs, and tears it down when the PR closes. Reviewing against a real deployment — not just reading the diff — is a core part of the workflow (see [CI](#ci-the-test-gate-preview-environments-and-deployment)).
 8. **Document the repo for agents.** An `AGENTS.md` at the repo root is the operating manual LLM coding agents read before working; keeping it current is part of the definition of done (see [AGENTS.md](#agentsmd--make-the-repo-legible-to-llms)).
@@ -34,7 +34,7 @@ project/
 │   ├── handlers/      # Endpoint handlers (thin: attach services to endpoints)
 │   ├── services/      # Domain behaviour (the actual work)
 │   ├── config/        # Server-side configuration (processors, mappings)
-│   └── util/          # Server-only utilities: secrets env, middleware, test helpers
+│   └── util/          # Server-only utilities: DI context, secrets env, middleware, test helpers
 ├── app/               # Client package
 │   ├── index.html     # HTML shell (production build input)
 │   ├── start.html     # HTML shell (local dev, without third-party scripts)
@@ -140,22 +140,94 @@ The `satisfies` clause is the pattern to copy: barrels that aggregate config use
 
 A domain area that needs classes/logic on both sides (e.g. a schema subclass for multi-step forms plus a processor that validates and forwards submissions) gets its own folder: one class per file, named after the class (`FooSchema.ts` exports `FooSchema`), plus a barrel `index.ts`.
 
+Any shared class that receives providers at call time (a processor, a forwarder-style "port" class) is **generic over a context type `C`** — it never names the application's full context. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
+
 ### `shared/integration/` — external API adapters
 
 One folder per third-party service: `shared/integration/<service>/` containing the provider class (`<Service>Provider.ts`), a `types.ts` for the wire types, optional `util.ts`, tests, and a barrel `index.ts`. Integrations that hold secrets take them as **constructor arguments** — the secret values themselves are read only in `api/` (see env split below).
 
+Each integration also exports its **context slice**: a small interface declaring only the piece of the DI context this integration needs at call time. A forwarder class that sends submissions to the service extends the shared base class parameterised by that slice, never by the application's full context:
+
+```ts
+// shared/integration/crm/index.ts (excerpt)
+import { BaseForwarder } from "shared/order";
+import type { APIProvider, Data } from "shelving";
+
+/** Slice of the DI context that the CRM integration requires. */
+export interface CRMContext {
+	crm: APIProvider<Data, string>;
+}
+
+export class CRMForwarder<I extends Data, O> extends BaseForwarder<I, O, CRMContext> {
+	// ...reads `context.crm` and nothing else.
+}
+```
+
+The composition root's `APIContext` satisfies `CRMContext` structurally, so the forwarder plugs in with zero casts — see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
+
 ### `shared/util/` — shared utilities
 
-Flat folder, one file per topic (`phone.ts`, `cookie.ts`, `env.ts`, …), each with a co-located `<topic>.test.ts`. Two files deserve special mention:
+Flat folder, one file per topic (`phone.ts`, `cookie.ts`, `env.ts`, …), each with a co-located `<topic>.test.ts`. One file deserves special mention:
 
 - **`shared/util/env.ts`** — parses *public* environment variables only. It starts with a comment warning that these values are inlined into client bundles. Required values throw at module load: `if (!process.env.API_URL) throw new ReferenceError(...)`. Export parsed values (e.g. `URL` objects via `requireURL`), not raw strings.
-- **`shared/util/context.ts`** — defines the `ProviderContext` interface: the single dependency-injection object holding every provider the server needs (database provider, external API providers, config processors). Also defines `ProviderHandlers = EndpointHandlers<ProviderContext>`. Both types are used throughout `api/`; defining them in `shared/` keeps handler signatures importable without touching server code.
+
+Note there is deliberately **no `shared/util/context.ts`** — the server's DI context type lives in `api/util/context.ts`, because nothing in `app/` ever imports it, and defining it in `shared/` forces generic shared code to depend on the whole application environment. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
+
+## Dependency injection: context slices and the composition root
+
+Everything server-side receives its dependencies through a single context object, but **who names that object's type matters as much as the injection itself**. The rules:
+
+### The composition root owns the context type
+
+The server's DI context is defined in **`api/util/context.ts`**, named `APIContext`, with `APIHandlers = EndpointHandlers<APIContext>` alongside. It does **not** live in `shared/`. This mirrors `app/util/context.ts` — each side owns its own context file. Nothing in `app/` ever imports the server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment.
+
+### Shared code never names the full context
+
+Any shared class that receives providers at call time — a forwarder-style "port" class, a processor — is **generic over a context type `C`**. This is exactly the idiom Shelving itself uses for `EndpointHandlers<C>` and `Endpoint.handler<C>()`. The rule: **if a shared module hard-codes the application's context type, it is mis-layered** — make it generic over `C`.
+
+### Adapters declare their own context slice
+
+Each integration exports a small interface stating only what it needs — e.g. `shared/integration/crm` exports `CRMContext { crm: APIProvider<Data, string> }` and its forwarder extends `BaseForwarder<I, O, CRMContext>`. The composition root then composes the full context **by extension**:
+
+```ts
+// api/util/context.ts
+import type { OrderProcessors, OrderRedirectContext } from "shared/order";
+import type { CRMContext } from "shared/integration/crm";
+import type { AsyncProvider, EndpointHandlers } from "shelving";
+
+/** Dependency-injection context assembled at each API entry point. */
+export interface APIContext extends CRMContext, OrderRedirectContext {
+	db: AsyncProvider;
+	processors: OrderProcessors<APIContext>;
+}
+export type APIHandlers = EndpointHandlers<APIContext>;
+```
+
+Structural typing plus contravariance does the assembly with **zero casts**: a `Forwarder<I, CRMContext>` is assignable wherever a `Forwarder<I, APIContext>` is expected, because `APIContext` satisfies the slice.
+
+Note the self-referential `processors: OrderProcessors<APIContext>` — a context containing consumers of itself is a genuinely recursive relationship, and stating it once at the root keeps it out of the shared files, where the same relationship degenerates into an import cycle.
+
+### Method-specific requirements accumulate as intersections
+
+When one method needs more context than the class's `C` — e.g. redirect resolution needs `{ websiteURL: URL }` — declare a slice for it (`OrderRedirectContext`, exported next to the code that needs it) and type **that method's parameter** as `C & OrderRedirectContext`. Do **not** constrain the whole class: `C` is inferred from constructor arguments (the list of forwarders), and the inferred slice won't satisfy an unrelated constraint, so a class-level constraint breaks inference.
+
+### Default generic contexts to `C = unknown`, never `C = void`
+
+When a class is constructed with an empty list (a processor with no forwarders), there is no inference site, so `C` falls back to the default — and `void` fails assignability against any real context, while `unknown` correctly means "works with any context".
+
+### Keep mapper/transform callbacks pure
+
+Mapping callback types stay `input → output`. Don't thread the context through mapping callbacks speculatively — in practice no mapper uses it, and pure mappers are a stronger contract. Add the context parameter only when a real need appears.
+
+### Make required-ness honest
+
+A context field that every real composition root sets (like `websiteURL`) is **required, not optional**. If only tests omit a field, the field isn't optional — the tests are incomplete; have them supply mocks instead.
 
 ## The `api/` package
 
 ### Entry points — three composition roots
 
-The API has **no global state**. All providers are assembled into a `ProviderContext` at an entry point and passed down. There are exactly three places that construct a context:
+The API has **no global state**. All providers are assembled into an `APIContext` (defined in `api/util/context.ts` — see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root)) at an entry point and passed down. There are exactly three places that construct a context:
 
 1. **`api/start.ts`** — local dev server. Runs `Bun.serve` on the port derived from the `API_URL` env var. Builds a context from debug/in-memory providers (`MemoryDBProvider` wrapped in `DebugDBProvider`, mock external APIs wrapped in `DebugAPIProvider`), wraps the handler in logging + CORS middleware.
 2. **`api/worker.ts`** — production serverless/edge entry. Builds a context from real providers (persistent KV/database provider, real external API clients wrapped in `LoggingAPIProvider`) using secrets from `api/util/env.ts`.
@@ -174,17 +246,17 @@ One file per domain area plus an `index.ts` that assembles the master list. A ha
 ```ts
 // api/handlers/order.ts
 import { ORDER_ENDPOINT } from "shared/endpoint";
-import type { ProviderHandlers } from "shared/util/context";
 import { createOrder } from "../services/order.js";
+import type { APIHandlers } from "../util/context.js";
 
-export const ORDER_HANDLERS: ProviderHandlers = [
+export const ORDER_HANDLERS: APIHandlers = [
 	ORDER_ENDPOINT.handler((create, _request, context) => {
 		return createOrder(create, context);
 	}),
 ];
 ```
 
-`api/handlers/index.ts` exports `HANDLERS: ProviderHandlers` — a flat array spreading each area's handlers, plus tiny inline handlers for infrastructure routes (`GET("/")` health check, `robots.txt`, `favicon.ico`).
+`api/handlers/index.ts` exports `HANDLERS: APIHandlers` — a flat array spreading each area's handlers, plus tiny inline handlers for infrastructure routes (`GET("/")` health check, `robots.txt`, `favicon.ico`).
 
 Rules:
 
@@ -194,7 +266,7 @@ Rules:
 
 ### `api/services/` — domain behaviour
 
-One file per domain entity; functions named as verbs (`createOrder`, not `orderCreate`). A service receives validated payload + `ProviderContext`, performs the work (validate deeper, write via `context.db`, forward via context providers), and returns the response-shape data. Co-located `*.test.ts` files test services through `createMockAPIContext()`.
+One file per domain entity; functions named as verbs (`createOrder`, not `orderCreate`). A service receives validated payload + `APIContext`, performs the work (validate deeper, write via `context.db`, forward via context providers), and returns the response-shape data. Co-located `*.test.ts` files test services through `createMockAPIContext()`.
 
 ### `api/config/` — server-side configuration
 
@@ -202,6 +274,7 @@ Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` define
 
 ### `api/util/` — server-only utilities
 
+- **`api/util/context.ts`** — defines `APIContext` (the DI context interface, composed by extending each adapter's context slice) and `APIHandlers = EndpointHandlers<APIContext>`. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
 - **`api/util/env.ts`** — parses *secret* environment variables (API keys etc.). Starts with a comment: "these values are server-side secrets — only import this file in API code, never in APP code."
 - **`api/util/middleware.ts`** — request middleware as higher-order functions named `with*`: `withCORS(handler)`, `withLogging(handler)`. Each takes a `RequestHandler` and returns a new one.
 - **`api/util/test.ts`** — the mock-context factory described above, plus shared test fixtures.
@@ -270,6 +343,7 @@ Three mechanisms keep the packages honest:
 	"shared/collection": ["./shared/collection/index.ts"],
 	"shared/config/*": ["./shared/config/*/index.ts"],
 	"shared/endpoint": ["./shared/endpoint/index.ts"],
+	"shared/<domain>": ["./shared/<domain>/index.ts"], // one alias per shared domain folder, e.g. "shared/order"
 	"shared/integration/*": ["./shared/integration/*/index.ts"],
 	"shared/img/*": ["./shared/img/*"],
 	"shared/font/*": ["./shared/font/*.css"],
