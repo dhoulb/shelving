@@ -41,6 +41,11 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends DBPro
 		this.memory = cache;
 	}
 
+	/** Run the transaction directly against `source` — transactional reads and writes bypass the cache, so cached items may be stale until next read. */
+	override transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		return this.source.transact(callback);
+	}
+
 	/** Read from `source`, then refresh the cache. */
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		const item = await this.source.getItem(collection, id);

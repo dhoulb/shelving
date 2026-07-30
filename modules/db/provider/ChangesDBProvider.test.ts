@@ -23,4 +23,33 @@ describe("ChangesDBProvider", () => {
 			{ action: "delete", collection: "basics", query: { id: ["basic1"] } },
 		]);
 	});
+
+	test("records transact() writes after the transaction commits", async () => {
+		const provider = new ChangesDBProvider(new MockDBProvider());
+
+		await provider.transact(async tx => {
+			await tx.setItem(BASICS_COLLECTION, "basic1", basic1);
+			await tx.updateItem(BASICS_COLLECTION, "basic1", { str: "NEW" });
+		});
+
+		expect(provider.changes).toEqual([
+			{ action: "set", collection: "basics", id: "basic1", data: basic1 },
+			{ action: "update", collection: "basics", id: "basic1", updates: { str: "NEW" } },
+		]);
+	});
+
+	test("records nothing when a transact() callback throws", async () => {
+		const provider = new ChangesDBProvider(new MockDBProvider());
+
+		try {
+			await provider.transact(async tx => {
+				await tx.setItem(BASICS_COLLECTION, "basic1", basic1);
+				throw new Error("nope");
+			});
+			expect.unreachable();
+		} catch (thrown) {
+			expect((thrown as Error).message).toBe("nope");
+		}
+		expect(provider.changes).toEqual([]);
+	});
 });

@@ -1,6 +1,7 @@
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { StringSchema } from "../../schema/StringSchema.js";
 import { DeferredSequence } from "../../sequence/DeferredSequence.js";
-import { requireArray } from "../../util/array.js";
+import { type MutableArray, requireArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import { awaitDispose } from "../../util/dispose.js";
 import { isArrayEqual } from "../../util/equal.js";
@@ -136,6 +137,19 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 */
 	setItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, items: Items<II, TT>): void {
 		this.getTable(collection).setItems(items);
+	}
+
+	/**
+	 * Writes are buffered while the callback runs, then applied synchronously when it resolves, so the commit is atomic.
+	 * - Reads see the live table state, which does not include the transaction's own buffered writes.
+	 * - Query writes (`setQuery()` etc.) select their matching items when called, not at commit.
+	 * - There is no conflict detection — concurrent writes interleaved with the callback's `await`s are kept, and the commit applies on top.
+	 */
+	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		const transaction = new _MemoryTransaction<I, T>(this);
+		const result = await callback(transaction);
+		transaction.commit();
+		return result;
 	}
 
 	// Implement `AsyncDisposable`
@@ -400,5 +414,113 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		await awaitDispose(
 			// Empty by default.
 		);
+	}
+}
+
+/** Transaction-scoped provider for `MemoryDBProvider.transact()` — reads hit the live tables, writes buffer until `commit()`. */
+class _MemoryTransaction<I extends Identifier, T extends Data> extends DBProvider<I, T> {
+	private readonly _memory: MemoryDBProvider<I, T>;
+	private readonly _writes: MutableArray<() => void> = [];
+
+	constructor(memory: MemoryDBProvider<I, T>) {
+		super();
+		this._memory = memory;
+	}
+
+	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+		return this._memory.getTable(collection).getItem(id);
+	}
+
+	/** Not supported inside a transaction — always throws `UnsupportedError`. */
+	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
+		throw new UnsupportedError("MemoryDBProvider does not support realtime subscriptions in transactions");
+	}
+
+	/** Generates the new item's id immediately, but buffers the write until commit. */
+	override async addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+		const table = this._memory.getTable(collection);
+		const id = table.generateUniqueID();
+		this._writes.push(() => table.setItem(id, data));
+		return id;
+	}
+
+	override async setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+		const table = this._memory.getTable(collection);
+		this._writes.push(() => table.setItem(id, data));
+	}
+
+	override async updateItem<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+		updates: Updates<Item<II, TT>>,
+	): Promise<void> {
+		const table = this._memory.getTable(collection);
+		this._writes.push(() => table.updateItem(id, updates));
+	}
+
+	override async deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+		const table = this._memory.getTable(collection);
+		this._writes.push(() => table.deleteItem(id));
+	}
+
+	override async countQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<number> {
+		return this._memory.getTable(collection).countQuery(query);
+	}
+
+	override async getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
+		return this._memory.getTable(collection).getQuery(query);
+	}
+
+	/** Not supported inside a transaction — always throws `UnsupportedError`. */
+	override getQuerySequence<II extends I, TT extends T>(
+		_collection: Collection<string, II, TT>,
+		_query?: Query<Item<II, TT>>,
+	): ItemsSequence<II, TT> {
+		throw new UnsupportedError("MemoryDBProvider does not support realtime subscriptions in transactions");
+	}
+
+	/** Selects the matching items now, but buffers the writes until commit. */
+	override async setQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		data: TT,
+	): Promise<void> {
+		const table = this._memory.getTable(collection);
+		for (const { id } of table.getQuery(query)) this._writes.push(() => table.setItem(id, data));
+	}
+
+	/** Selects the matching items now, but buffers the writes until commit. */
+	override async updateQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+		updates: Updates<TT>,
+	): Promise<void> {
+		const table = this._memory.getTable(collection);
+		for (const { id } of table.getQuery(query)) this._writes.push(() => table.updateItem(id, updates as Updates<Item<II, TT>>));
+	}
+
+	/** Selects the matching items now, but buffers the writes until commit. */
+	override async deleteQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query: Query<Item<II, TT>>,
+	): Promise<void> {
+		const table = this._memory.getTable(collection);
+		for (const { id } of table.getQuery(query)) this._writes.push(() => table.deleteItem(id));
+	}
+
+	/** Not supported inside a transaction — always throws `UnsupportedError`. */
+	override transact<X>(_callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		throw new UnsupportedError("MemoryDBProvider does not support nested transactions");
+	}
+
+	/** Apply the buffered writes to the tables (synchronous, so the commit is atomic). */
+	commit(): void {
+		for (const write of this._writes) write();
 	}
 }

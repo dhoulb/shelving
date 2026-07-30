@@ -4,6 +4,7 @@ import type { Identifier, Item } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
+import type { DBProvider } from "./DBProvider.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /**
@@ -97,5 +98,16 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	): Promise<void> {
 		await super.deleteQuery(collection, query);
 		this._changes.push({ action: "delete", collection: collection.name, query });
+	}
+
+	/** Log the transaction's writes after it commits — a failed transaction logs nothing. */
+	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		let transaction: ChangesDBProvider<I, T> | undefined;
+		const result = await this.source.transact(provider => {
+			transaction = new ChangesDBProvider<I, T>(provider); // Recreated if the backend retries, so only the committed attempt is logged.
+			return callback(transaction);
+		});
+		if (transaction) this._changes.push(...transaction.changes);
+		return result;
 	}
 }

@@ -56,4 +56,19 @@ describe("CacheDBProvider", () => {
 		expectOrderedItems(calls[1] ?? [], ["basic1", "basic2"]);
 		stop();
 	});
+
+	test("transact() writes to the source and bypasses the cache", async () => {
+		const source = new MemoryDBProvider();
+		const provider = new CacheDBProvider(source);
+
+		await provider.transact(async tx => {
+			await tx.setItem(BASICS_COLLECTION, "basic1", basic1);
+		});
+
+		// The write reached the source, but the cache stays stale until the item is next read through the provider.
+		expect(await source.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+		expect(await provider.memory.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
+		expect(await provider.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+		expect(await provider.memory.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+	});
 });

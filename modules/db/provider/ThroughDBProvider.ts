@@ -91,6 +91,11 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 		return this.source.requireFirst(collection, query);
 	}
 
+	/** Run the transaction against the wrapped `source` provider. */
+	transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		return this.source.transact(callback);
+	}
+
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose]() {
 		await awaitDispose(

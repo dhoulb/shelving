@@ -52,4 +52,31 @@ describe("ValidationDBProvider", () => {
 		}
 		expect(source.calls).toHaveLength(0);
 	});
+
+	test("commits validated writes inside transact()", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		await provider.transact(async tx => {
+			await tx.setItem(BASICS_COLLECTION, "basic1", basic999);
+		});
+
+		expect(await source.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic999);
+	});
+
+	test("validates writes inside transact() and commits nothing on failure", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		try {
+			await provider.transact(async tx => {
+				await tx.setItem(BASICS_COLLECTION, "basic1", basic999);
+				await tx.setItem(BASICS_COLLECTION, "basic2", { ...basic999, num: "bad" } as never);
+			});
+			expect.unreachable();
+		} catch (thrown) {
+			expect(thrown).toBe("num: Must be number");
+		}
+		expect(await source.countQuery(BASICS_COLLECTION, {})).toBe(0);
+	});
 });
