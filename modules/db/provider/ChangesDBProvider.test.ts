@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { ChangesDBProvider, MockDBProvider } from "shelving/db";
-import { BASICS_COLLECTION, basic1, basic999 } from "../../test/index.js";
+import { BASICS_COLLECTION, basic1, basic999, TransactionTestDBProvider } from "../../test/index.js";
 
 describe("ChangesDBProvider", () => {
 	test("records addItem() with an add action", async () => {
@@ -25,7 +25,7 @@ describe("ChangesDBProvider", () => {
 	});
 
 	test("records transact() writes after the transaction commits", async () => {
-		const provider = new ChangesDBProvider(new MockDBProvider());
+		const provider = new ChangesDBProvider(new TransactionTestDBProvider());
 
 		await provider.transact(async tx => {
 			await tx.setItem(BASICS_COLLECTION, "basic1", basic1);
@@ -39,7 +39,7 @@ describe("ChangesDBProvider", () => {
 	});
 
 	test("records nothing when a transact() callback throws", async () => {
-		const provider = new ChangesDBProvider(new MockDBProvider());
+		const provider = new ChangesDBProvider(new TransactionTestDBProvider());
 
 		try {
 			await provider.transact(async tx => {

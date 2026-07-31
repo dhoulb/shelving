@@ -291,75 +291,7 @@ test("MemoryDBProvider: subscribing to sort and limit query", async () => {
 	await runMicrotasks();
 	expectUnorderedItems(await db.getQuery(BASICS_COLLECTION, {}), []);
 });
-test("MemoryDBProvider: transact() commits writes atomically after the callback resolves", async () => {
-	// Setup.
+test("MemoryDBProvider: transact() is not supported", () => {
 	const db = new MemoryDBProvider<string>();
-	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
-	await db.setItem(BASICS_COLLECTION, "basic2", basic2);
-	// Run a transaction that reads and writes.
-	const addedId = await db.transact(async tx => {
-		// Reads see the pre-transaction state.
-		expect(await tx.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
-		// Writes are buffered.
-		await tx.setItem(BASICS_COLLECTION, "basic3", basic3);
-		await tx.updateItem(BASICS_COLLECTION, "basic1", { str: "NEW" });
-		await tx.deleteItem(BASICS_COLLECTION, "basic2");
-		const id = await tx.addItem(BASICS_COLLECTION, basic999);
-		// Buffered writes are not visible to reads inside or outside the transaction.
-		expect<Item<string, BasicData> | undefined>(await tx.getItem(BASICS_COLLECTION, "basic3")).toBe(undefined);
-		expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic3")).toBe(undefined);
-		expect(await db.getItem(BASICS_COLLECTION, "basic2")).toMatchObject(basic2);
-		return id;
-	});
-	// Check every write applied.
-	expect(typeof addedId).toBe("string");
-	expect(await db.getItem(BASICS_COLLECTION, "basic3")).toMatchObject(basic3);
-	expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject({ ...basic1, str: "NEW" });
-	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic2")).toBe(undefined);
-	expect(await db.getItem(BASICS_COLLECTION, addedId)).toMatchObject(basic999);
-});
-test("MemoryDBProvider: transact() discards writes when the callback throws", async () => {
-	// Setup.
-	const db = new MemoryDBProvider<string>();
-	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
-	// Run a transaction that fails.
-	try {
-		await db.transact(async tx => {
-			await tx.setItem(BASICS_COLLECTION, "basic2", basic2);
-			await tx.deleteItem(BASICS_COLLECTION, "basic1");
-			throw new Error("nope");
-		});
-		expect.unreachable();
-	} catch (thrown) {
-		expect(thrown).toBeInstanceOf(Error);
-		expect((thrown as Error).message).toBe("nope");
-	}
-	// Check nothing changed.
-	expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
-	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic2")).toBe(undefined);
-});
-test("MemoryDBProvider: transact() supports query writes", async () => {
-	// Setup.
-	const db = new MemoryDBProvider<string>();
-	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
-	await db.setItem(BASICS_COLLECTION, "basic2", basic2);
-	await db.setItem(BASICS_COLLECTION, "basic3", basic3);
-	// Run a transaction with query writes.
-	await db.transact(async tx => {
-		await tx.updateQuery(BASICS_COLLECTION, { id: ["basic1", "basic2"] }, { str: "AAA" });
-		await tx.deleteQuery(BASICS_COLLECTION, { id: ["basic3"] });
-	});
-	// Check the query writes applied.
-	expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject({ ...basic1, str: "AAA" });
-	expect(await db.getItem(BASICS_COLLECTION, "basic2")).toMatchObject({ ...basic2, str: "AAA" });
-	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic3")).toBe(undefined);
-});
-test("MemoryDBProvider: transact() rejects sequences and nested transactions", async () => {
-	const db = new MemoryDBProvider<string>();
-	expect(await db.transact(async () => 123)).toBe(123);
-	await db.transact(async tx => {
-		expect(() => tx.getItemSequence(BASICS_COLLECTION, "basic1")).toThrow(UnsupportedError);
-		expect(() => tx.getQuerySequence(BASICS_COLLECTION, {})).toThrow(UnsupportedError);
-		expect(() => tx.transact(async () => undefined)).toThrow(UnsupportedError);
-	});
+	expect(() => db.transact(async () => undefined)).toThrow(UnsupportedError);
 });

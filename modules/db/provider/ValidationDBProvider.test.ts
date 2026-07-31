@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { MockDBProvider, ValidationDBProvider } from "shelving/db";
 import { ValueError } from "shelving/error";
-import { BASICS_COLLECTION, basic1, basic2, basic999 } from "../../test/index.js";
+import { BASICS_COLLECTION, basic1, basic2, basic999, TransactionTestDBProvider } from "../../test/index.js";
 
 describe("ValidationDBProvider", () => {
 	test("rejects invalid items returned by the source provider", async () => {
@@ -54,7 +54,7 @@ describe("ValidationDBProvider", () => {
 	});
 
 	test("validates reads inside transact()", async () => {
-		const source = new MockDBProvider();
+		const source = new TransactionTestDBProvider();
 		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
 		const provider = new ValidationDBProvider(source);
 
@@ -63,30 +63,24 @@ describe("ValidationDBProvider", () => {
 		});
 	});
 
-	test("commits validated writes inside transact()", async () => {
-		const source = new MockDBProvider();
+	test("validates writes inside transact()", async () => {
+		const source = new TransactionTestDBProvider();
 		const provider = new ValidationDBProvider(source);
 
 		await provider.transact(async tx => {
 			await tx.setItem(BASICS_COLLECTION, "basic1", basic999);
 		});
-
 		expect(await source.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic999);
-	});
-
-	test("validates writes inside transact() and commits nothing on failure", async () => {
-		const source = new MockDBProvider();
-		const provider = new ValidationDBProvider(source);
 
 		try {
 			await provider.transact(async tx => {
-				await tx.setItem(BASICS_COLLECTION, "basic1", basic999);
 				await tx.setItem(BASICS_COLLECTION, "basic2", { ...basic999, num: "bad" } as never);
 			});
 			expect.unreachable();
 		} catch (thrown) {
 			expect(thrown).toBe("num: Must be number");
 		}
-		expect(await source.countQuery(BASICS_COLLECTION, {})).toBe(0);
+		// The invalid write never reached the source.
+		expect(await source.countQuery(BASICS_COLLECTION, {})).toBe(1);
 	});
 });

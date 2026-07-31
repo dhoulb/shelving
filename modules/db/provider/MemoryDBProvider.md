@@ -4,8 +4,6 @@ A fully in-memory `DBProvider`. `MemoryDBProvider` stores every collection in pl
 
 Unlike the SQL providers, `MemoryDBProvider` supports realtime sequences (`getItemSequence`, `getQuerySequence`).
 
-It also supports `DBProvider.transact()`: writes made in the callback are buffered, then applied synchronously when the callback resolves, so the commit is atomic and a thrown callback changes nothing. There is no conflict detection — commits from overlapping transactions apply in completion order.
-
 ## Usage
 
 ```ts
