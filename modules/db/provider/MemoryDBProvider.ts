@@ -514,11 +514,6 @@ class _MemoryTransaction<I extends Identifier, T extends Data> extends DBProvide
 		for (const { id } of table.getQuery(query)) this._writes.push(() => table.deleteItem(id));
 	}
 
-	/** Not supported inside a transaction — always throws `UnsupportedError`. */
-	override transact<X>(_callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		throw new UnsupportedError("MemoryDBProvider does not support nested transactions");
-	}
-
 	/** Apply the buffered writes to the tables (synchronous, so the commit is atomic). */
 	commit(): void {
 		for (const write of this._writes) write();
