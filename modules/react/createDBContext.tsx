@@ -79,7 +79,7 @@ export function createDBContext<I extends Identifier, T extends Data>(provider: 
 	}
 
 	function DBContext({ children }: { children: ReactNode }): ReactElement {
-		const cache = useInstance(DBCache as new (p: DBProvider<I, T>) => DBCache<I, T>, provider);
+		const cache = useInstance(DBCache, provider);
 		return <CacheContext value={cache}>{children}</CacheContext>;
 	}
 
