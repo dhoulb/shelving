@@ -20,3 +20,9 @@ class TimingDBProvider extends ThroughDBProvider {
   }
 }
 ```
+
+## Transactions
+
+`ThroughDBProvider.transact()` keeps the wrapper's behaviour inside the transaction: the callback receives a copy of the wrapping provider whose `source` is swapped for the source's transaction provider, so overridden methods (validation, timing, logging, etc.) still apply to every read and write in the callback. Subclasses get this for free — `TimingDBProvider` above times operations inside transactions without any extra code.
+
+The copy is made by the protected `_withSource()` method and shares the wrapper's prototype and state. Override `_withSource()` if a subclass holds per-instance mutable state that must not be shared with transaction copies — `ChangesDBProvider` does this to give each transaction its own log, so only a committed transaction's writes are merged into the main `changes` log.

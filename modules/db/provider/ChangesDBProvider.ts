@@ -100,14 +100,21 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 		this._changes.push({ action: "delete", collection: collection.name, query });
 	}
 
+	/** Gives each copy its own empty log, so a transaction's writes can be merged into this log only after it commits. */
+	protected override _withSource(source: DBProvider<I, T>): this {
+		const provider = super._withSource(source);
+		Object.defineProperty(provider, "_changes", { value: [], enumerable: true });
+		return provider;
+	}
+
 	/** Log the transaction's writes after it commits — a failed transaction logs nothing. */
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		let transaction: ChangesDBProvider<I, T> | undefined;
+		let transaction: this | undefined;
 		const result = await this.source.transact(provider => {
-			transaction = new ChangesDBProvider<I, T>(provider); // Recreated if the backend retries, so only the committed attempt is logged.
+			transaction = this._withSource(provider); // Recreated if the backend retries, so only the committed attempt is logged.
 			return callback(transaction);
 		});
-		if (transaction) this._changes.push(...transaction.changes);
+		if (transaction) this._changes.push(...transaction._changes);
 		return result;
 	}
 }

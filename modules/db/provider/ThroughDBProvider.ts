@@ -91,9 +91,21 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 		return this.source.requireFirst(collection, query);
 	}
 
-	/** Run the transaction against the wrapped `source` provider. */
+	/**
+	 * Run the transaction against the wrapped `source` provider, keeping this provider's behaviour inside the transaction.
+	 * - The callback receives a copy of this provider (via `_withSource()`) that reads and writes through the source's transaction, so overridden methods (validation, logging, etc.) still apply to every operation in the callback.
+	 */
 	transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		return this.source.transact(callback);
+		return this.source.transact(transaction => callback(this._withSource(transaction)));
+	}
+
+	/**
+	 * Create a copy of this provider that wraps a different `source`.
+	 * - The copy shares this provider's prototype and state — only `source` is swapped — so subclass overrides keep applying without the subclass needing its own `transact()`.
+	 * - Override point for subclasses whose per-instance state must not be shared with transaction copies (e.g. `ChangesDBProvider` gives each copy its own log).
+	 */
+	protected _withSource(source: DBProvider<I, T>): this {
+		return Object.create(this, { source: { value: source, enumerable: true } }) as this;
 	}
 
 	// Implement `AsyncDisposable`

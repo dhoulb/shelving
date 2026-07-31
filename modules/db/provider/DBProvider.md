@@ -39,4 +39,4 @@ The contract is the weakest guarantee shared by all backends, so transactional c
 - Realtime sequences and nested `transact()` calls throw `UnsupportedError` inside a transaction.
 - Providers that cannot support transactions (e.g. `CloudflareKVProvider`) throw `UnsupportedError` from `transact()` itself.
 
-`MemoryDBProvider` and `FirestoreServerProvider` implement transactions; wrapping providers (`ValidationDBProvider`, `CacheDBProvider`, `ChangesDBProvider`, `DebugDBProvider`) support them whenever their `source` does.
+`MemoryDBProvider` and `FirestoreServerProvider` implement transactions. Wrapping providers built on `ThroughDBProvider` (`ValidationDBProvider`, `ChangesDBProvider`, `DebugDBProvider`) support them whenever their `source` does, and keep their own behaviour inside the transaction — e.g. reads and writes in a `ValidationDBProvider` transaction are still validated. The exception is `CacheDBProvider`, whose transactions bypass the cache entirely: buffered writes must not be mirrored before they commit, so cached items may be stale until next read.

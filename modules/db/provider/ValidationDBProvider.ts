@@ -8,7 +8,6 @@ import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItem
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
-import type { DBProvider } from "./DBProvider.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /**
@@ -17,6 +16,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  * - Wraps a `source` provider (which may have any type, because validation guarantees the type) and runs every value through the relevant `Collection` schema before writing and after reading.
  * - Written data is validated against the collection's data schema; read data is validated against the item schema, so trusted, correctly-typed values reach the rest of the app.
  * - Validation failures here are program-state errors, so they throw a typed `ValueError` rather than a raw validation `string`.
+ * - Applies inside `transact()` too — the transaction provider the callback receives validates its reads and writes the same way.
  *
  * @see https://shelving.cc/db/ValidationDBProvider
  */
@@ -93,11 +93,6 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 
 	override deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
 		return super.deleteQuery(collection, query);
-	}
-
-	/** Run the transaction against `source`, wrapping the transaction provider so reads and writes inside it are validated too. */
-	override transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		return this.source.transact(transaction => callback(new ValidationDBProvider<I, T>(transaction)));
 	}
 }
 

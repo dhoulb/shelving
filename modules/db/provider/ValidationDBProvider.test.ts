@@ -53,6 +53,16 @@ describe("ValidationDBProvider", () => {
 		expect(source.calls).toHaveLength(0);
 	});
 
+	test("validates reads inside transact()", async () => {
+		const source = new MockDBProvider();
+		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
+		const provider = new ValidationDBProvider(source);
+
+		await provider.transact(async tx => {
+			await expect(tx.getItem(BASICS_COLLECTION, "basic1")).rejects.toBeInstanceOf(ValueError);
+		});
+	});
+
 	test("commits validated writes inside transact()", async () => {
 		const source = new MockDBProvider();
 		const provider = new ValidationDBProvider(source);

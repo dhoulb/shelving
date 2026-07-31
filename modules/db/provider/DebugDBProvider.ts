@@ -187,11 +187,11 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 		}
 	}
 
-	/** Wraps the transaction provider in another `DebugDBProvider`, so operations inside the transaction are logged too. */
+	/** Adds TRANSACT logging around the base behaviour, which re-wraps so operations inside the transaction are logged too. */
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
 		try {
 			console.debug(`${ANSI_RIGHT} TRANSACT`);
-			const result = await this.source.transact(provider => callback(new DebugDBProvider<I, T>(provider)));
+			const result = await super.transact(callback);
 			console.debug(`${ANSI_SUCCESS} TRANSACT`);
 			return result;
 		} catch (reason) {
