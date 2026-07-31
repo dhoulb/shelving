@@ -100,12 +100,19 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 		this._changes.push({ action: "delete", collection: collection.name, query });
 	}
 
-	/** Log the transaction's writes after it commits — a failed transaction logs nothing. */
+	// Override so that transaction copies get their own log.
+	override cloneWith(source: DBProvider<I, T>): this {
+		const clone = super.cloneWith(source);
+		Object.defineProperty(clone, "_changes", { value: [], enumerable: false });
+		return clone;
+	}
+
+	// Override to log the transaction's writes after it commits — a failed transaction logs nothing. */
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
 		return await this.source.transact(async provider => {
-			const transaction = new ChangesDBProvider(provider);
+			const transaction = this.cloneWith(provider);
 			const result = await callback(transaction);
-			this._changes.push(...transaction._changes);
+			this._changes.push(...transaction.changes);
 			return result;
 		});
 	}
