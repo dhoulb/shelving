@@ -10,6 +10,8 @@
 
 All three support filtering, sorting, pagination, partial updates, and `DBProvider.countQuery()`. The difference is in realtime support, SDK size, and where the code runs.
 
+Only `FirestoreServerProvider` currently implements `DBProvider.transact()` — the client and lite providers throw `UnsupportedError`.
+
 ## Client SDK (`FirestoreClientProvider`)
 
 Use in the browser or in any environment where the full Firebase JS SDK is appropriate. Supports offline persistence and realtime subscriptions via `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()`.
