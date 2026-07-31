@@ -1,3 +1,4 @@
+import { Collection } from "../db/collection/Collection.js";
 import { ARRAY } from "../schema/ArraySchema.js";
 import { BOOLEAN } from "../schema/BooleanSchema.js";
 import { CHOICE } from "../schema/ChoiceSchema.js";
@@ -193,3 +194,10 @@ export const basic999: BasicData = {
 	tags: ["odd", "prime"],
 	sub: { str: "zzz", num: 999, even: false, odd: true },
 };
+
+/**
+ * Collection of `BasicData` items keyed by string id, for testing database providers.
+ *
+ * @see https://shelving.cc/test/BASICS_COLLECTION
+ */
+export const BASICS_COLLECTION = new Collection<"basics", string, BasicData>("basics", STRING, BASIC_SCHEMA);
