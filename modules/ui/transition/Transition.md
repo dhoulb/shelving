@@ -7,6 +7,7 @@ The base View Transition wrapper. It wraps its children in React 19's `<ViewTran
 - Set `default` for the base transition; `forward` and `back` default to it and let you pick a direction-aware variant. The class names must correspond to `::view-transition-old(.className)` / `::view-transition-new(.className)` rules in your CSS.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`, from `Transition.css`).
 - Direction is driven by the active view-transition type. Call `setTransitionType("forward")` (or `"back"`) inside a `startTransition()` callback before navigating; the variants read that type to choose the correct slide.
+- The preset variants honour `prefers-reduced-motion: reduce` — positional movement (slides, collapse) is removed while opacity-only fades are kept (see each preset's page). Custom transition classes should ship their own `@media (prefers-reduced-motion: reduce)` override; `animation: none` on the `::view-transition-*` pseudo-elements makes the swap an instant cut while the DOM update still happens.
 
 ## Usage
 

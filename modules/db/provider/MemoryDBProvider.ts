@@ -2,6 +2,7 @@ import { StringSchema } from "../../schema/StringSchema.js";
 import { DeferredSequence } from "../../sequence/DeferredSequence.js";
 import { requireArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
+import { awaitDispose } from "../../util/dispose.js";
 import { isArrayEqual } from "../../util/equal.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
@@ -25,7 +26,7 @@ import { DBProvider } from "./DBProvider.js";
  */
 export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data = Data> extends DBProvider<I, T> {
 	/** List of tables in `{ name: MemoryTable }` format. */
-	private _tables: { [K in string]?: MemoryTable<I, T> } = {};
+	protected _tables: { [K in string]?: MemoryTable<I, T> } = {};
 
 	/**
 	 * Get (or lazily create) the `MemoryTable` backing a collection.
@@ -35,7 +36,19 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	 * @see https://shelving.cc/db/MemoryDBProvider/getTable
 	 */
 	getTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
-		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= new MemoryTable<II, TT>(collection));
+		return ((this._tables[collection.name] as MemoryTable<II, TT>) ||= this.createTable(collection));
+	}
+
+	/**
+	 * Create a new `MemoryTable` for a collection (without registering it — use `getTable()` for that).
+	 * - Override point for subclasses that back collections with a specialised table, e.g. `StorageDBProvider`.
+	 *
+	 * @param collection Collection to create a table for.
+	 * @example provider.createTable(users) // MemoryTable
+	 * @see https://shelving.cc/db/MemoryDBProvider/createTable
+	 */
+	createTable<II extends I, TT extends T>(collection: Collection<string, II, TT>): MemoryTable<II, TT> {
+		return new MemoryTable<II, TT>(collection);
 	}
 
 	override async getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
@@ -124,6 +137,14 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	setItems<II extends I, TT extends T>(collection: Collection<string, II, TT>, items: Items<II, TT>): void {
 		this.getTable(collection).setItems(items);
 	}
+
+	// Implement `AsyncDisposable`
+	override async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			...Object.values(this._tables), // Dispose all tables.
+			super[Symbol.asyncDispose](), // Chain.
+		);
+	}
 }
 
 /**
@@ -138,7 +159,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  *
  * @see https://shelving.cc/db/MemoryTable
  */
-export class MemoryTable<I extends Identifier, T extends Data> {
+export class MemoryTable<I extends Identifier, T extends Data> implements AsyncDisposable {
 	/** Actual data in this table. */
 	protected readonly _data = new Map<I, Item<I, T>>();
 
@@ -270,11 +291,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	updateItem(id: I, updates: Updates<Item<I, T>>): void {
 		const oldItem = this._data.get(id);
 		if (!oldItem) return;
-		const nextItem = updateData(oldItem, updates);
-		if (this._data.get(id) !== nextItem) {
-			this._data.set(id, nextItem);
-			this.next.resolve();
-		}
+		this.setItem(id, updateData(oldItem, updates));
 	}
 
 	/**
@@ -348,15 +365,7 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/setQuery
 	 */
 	setQuery(query: Query<Item<I, T>>, data: T): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			const item = getItem(id, data);
-			if (this._data.get(id) !== item) {
-				this._data.set(id, item);
-				changed = true;
-			}
-		}
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.setItem(id, data);
 	}
 
 	/**
@@ -368,39 +377,15 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 	 * @see https://shelving.cc/db/MemoryTable/updateQuery
 	 */
 	updateQuery(query: Query<Item<I, T>>, updates: Updates<T>): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			const oldItem = this._data.get(id);
-			if (!oldItem) continue;
-			const nextItem = updateData<Item<I, T>>(oldItem, updates);
-			if (this._data.get(id) !== nextItem) {
-				this._data.set(id, nextItem);
-				changed = true;
-			}
-		}
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.updateItem(id, updates as Updates<Item<I, T>>);
 	}
 
 	deleteQuery(query: Query<Item<I, T>>): void {
-		let changed = false;
-		for (const { id } of queryWritableItems(this._data.values(), query)) {
-			if (this._data.has(id)) {
-				this._data.delete(id);
-				changed = true;
-			}
-		}
-		if (changed) this.next.resolve();
+		for (const { id } of queryWritableItems(this._data.values(), query)) this.deleteItem(id);
 	}
 
 	setItems(items: Items<I, T>): void {
-		let changed = false;
-		for (const item of items) {
-			if (this._data.get(item.id) !== item) {
-				this._data.set(item.id, item);
-				changed = true;
-			}
-		}
-		if (changed) this.next.resolve();
+		for (const item of items) this.setItem(item.id, item);
 	}
 
 	async *setItemsSequence(sequence: AsyncIterable<Items<I, T>>): AsyncIterable<Items<I, T>> {
@@ -408,5 +393,12 @@ export class MemoryTable<I extends Identifier, T extends Data> {
 			this.setItems(items);
 			yield items;
 		}
+	}
+
+	// Implement `AsyncDisposable`
+	async [Symbol.asyncDispose](): Promise<void> {
+		await awaitDispose(
+			// Empty by default.
+		);
 	}
 }

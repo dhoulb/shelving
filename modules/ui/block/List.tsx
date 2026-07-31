@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
+import type { ImmutableArray } from "../../util/array.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type GapVariants, getGapClass } from "../style/Gap.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -13,8 +14,8 @@ const LIST_UNORDERED_CLASS = getModuleClass(LIST_CSS, "unordered");
  * @see https://shelving.cc/ui/ListProps
  */
 export interface ListProps extends GapVariants, BlockVariants {
-	children: ReactNode[];
-	ordered?: boolean;
+	readonly children: ImmutableArray<ReactNode>;
+	readonly ordered?: boolean | undefined;
 }
 
 /**

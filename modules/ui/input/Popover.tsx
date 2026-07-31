@@ -15,7 +15,7 @@ import styles from "./Popover.module.css";
  *
  * @see https://shelving.cc/ui/PopoverChildren
  */
-export type PopoverChildren = [
+export type PopoverChildren = readonly [
 	/**
 	 * First child of the <Popover> is element that activates the popover.
 	 * - Should be a `<Button>` or `<Input>` that activates or provides the children.

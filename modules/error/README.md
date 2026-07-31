@@ -34,7 +34,7 @@ function requirePositive(n: number): number {
 | `RequestError` | The request was malformed or unacceptable (HTTP 4xx range; `RequestError.code` defaults to `400`) |
 | `ResponseError` | The received response indicated an error (HTTP 4xx/5xx; `ResponseError.code` defaults to `400`) |
 | `UnexpectedError` | Something that should never happen did — an invariant was violated |
-| `UnimplementedError` | A method or feature is not implemented, e.g. in a provider stub |
+| `UnsupportedError` | A method or feature is not supported — by a backend, an environment, or an implementation |
 
 `RequestError` has named subclasses for common HTTP status codes: `UnauthorizedError` (401), `ForbiddenError` (403), `NotFoundError` (404), `MethodNotAllowedError` (405), and `UnprocessableError` (422).
 

@@ -33,7 +33,7 @@ Note the import path: `firebase/firestore/lite`, not `firebase/firestore`.
 
 ## Limitations
 
-- **No realtime.** `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnimplementedError`.
+- **No realtime.** `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 - **No offline persistence.** The Lite SDK does not cache documents locally.
 
 All other operations — `DBProvider.getItem()`, `DBProvider.addItem()`, `DBProvider.setItem()`, `DBProvider.updateItem()`, `DBProvider.deleteItem()`, `DBProvider.getQuery()`, `DBProvider.setQuery()`, `DBProvider.updateQuery()`, `DBProvider.deleteQuery()`, and `DBProvider.countQuery()` — work the same as the full client provider.

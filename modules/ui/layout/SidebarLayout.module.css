@@ -211,4 +211,11 @@
 			visibility: visible;
 		}
 	}
+
+	/* Reduced motion: snap the drawer open/closed instead of sliding it off-canvas. The overlay keeps its fade — an opacity-only fade is reduced-motion-safe, and `visibility` must stay transitioned so the overlay still flips hidden at the end of the fade-out. */
+	@media (width <= 48rem) and (prefers-reduced-motion: reduce) {
+		.sidebar {
+			transition: none;
+		}
+	}
 }

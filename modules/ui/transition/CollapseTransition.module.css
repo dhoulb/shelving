@@ -1,3 +1,13 @@
 ::view-transition-image-pair(.collapse) {
 	overflow: hidden;
 }
+
+/* Reduced motion: the collapse IS a positional size morph (the default view-transition group animation), so disable it entirely — the swap becomes an instant cut while the DOM update still happens. */
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(.collapse),
+	::view-transition-image-pair(.collapse),
+	::view-transition-old(.collapse),
+	::view-transition-new(.collapse) {
+		animation: none;
+	}
+}

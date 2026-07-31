@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CacheDBProvider, CollectionCache, DBCache, MockDBProvider } from "shelving/db";
+import { CacheDBProvider, CollectionCache, DBCache, MockDBProvider, ThroughDBProvider } from "shelving/db";
 import { runMicrotasks } from "shelving/util/async";
 import { BASICS_COLLECTION, basic1, basic2, PEOPLE_COLLECTION, person1 } from "../../test/index.js";
 
@@ -120,8 +120,14 @@ describe("DBCache", () => {
 		expect(store.value).toMatchObject(basic1);
 	});
 
-	test("memory is undefined when no CacheDBProvider is present", () => {
+	test("memory is the provider itself when the provider is in-memory", () => {
 		const provider = new MockDBProvider();
+		const cache = new DBCache(provider);
+		expect(cache.memory).toBe(provider);
+	});
+
+	test("memory is undefined when neither an in-memory provider nor a CacheDBProvider is present", () => {
+		const provider = new ThroughDBProvider(new MockDBProvider());
 		const cache = new DBCache(provider);
 		expect(cache.memory).toBeUndefined();
 	});

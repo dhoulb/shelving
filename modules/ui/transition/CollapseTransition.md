@@ -6,6 +6,7 @@ A `<Transition>` preset that collapses its children in and out by animating thei
 
 - Uses the `collapse` transition class — there is no direction-aware variant, so forward and back animate identically.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
+- Under `prefers-reduced-motion: reduce` the collapse animation is disabled entirely — the size morph is positional movement, so the content swap happens as an instant cut (the DOM update still applies).
 
 ## Usage
 

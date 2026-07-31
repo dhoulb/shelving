@@ -1,4 +1,4 @@
-import { UnimplementedError } from "../../error/UnimplementedError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { ArraySchema } from "../../schema/ArraySchema.js";
 import { BooleanSchema } from "../../schema/BooleanSchema.js";
 import { ChoiceSchema } from "../../schema/ChoiceSchema.js";
@@ -134,12 +134,12 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	}
 
 	protected getAddColumnQuery(tableName: string, column: SQLTableColumn): string {
-		if (column.name === "id") throw new UnimplementedError(`Cannot add primary key column to existing table "${tableName}"`);
+		if (column.name === "id") throw new UnsupportedError(`Cannot add primary key column to existing table "${tableName}"`);
 		return `ALTER TABLE ${this.quoteIdentifier(tableName)} ADD COLUMN ${this.getTableColumnDefinition(column)};`;
 	}
 
 	protected getDropColumnQuery(tableName: string, columnName: string): string {
-		if (columnName === "id") throw new UnimplementedError(`Cannot drop primary key column from existing table "${tableName}"`);
+		if (columnName === "id") throw new UnsupportedError(`Cannot drop primary key column from existing table "${tableName}"`);
 		return `ALTER TABLE ${this.quoteIdentifier(tableName)} DROP COLUMN ${this.quoteIdentifier(columnName)};`;
 	}
 
@@ -169,7 +169,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	): SQLTableColumn {
 		const schema = _getColumnSchema(collection, key);
 		const definition = this.definition(schema);
-		if (!definition) throw new UnimplementedError(`Cannot generate SQL column for "${key}"`, { received: schema });
+		if (!definition) throw new UnsupportedError(`Cannot generate SQL column for "${key}"`, { received: schema });
 		return { name: column, statement: this.getGeneratedColumnDefinition(column, path, definition) };
 	}
 
@@ -230,9 +230,9 @@ function _getColumnSchema<T extends Data>(collection: Collection<string, number,
 	let schema: Schema<unknown> = collection;
 	for (const part of key.split(".")) {
 		const current = _unwrapSchema(schema);
-		if (!(current instanceof DataSchema)) throw new UnimplementedError(`Cannot resolve schema path "${key}"`);
+		if (!(current instanceof DataSchema)) throw new UnsupportedError(`Cannot resolve schema path "${key}"`);
 		const next = current.props[part];
-		if (!next) throw new UnimplementedError(`Cannot resolve schema path "${key}"`);
+		if (!next) throw new UnsupportedError(`Cannot resolve schema path "${key}"`);
 		schema = next;
 	}
 	return schema;

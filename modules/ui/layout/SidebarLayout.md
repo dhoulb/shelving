@@ -7,6 +7,7 @@ A full-viewport layout with a fixed-width side column next to a scrollable main 
 - Pass `right` to place the sidebar on the right rather than the left.
 - The sidebar renders as `<nav>`, so it is a navigation landmark without extra markup — drop a `<Menu>` inside it.
 - While the drawer is open an overlay dims the page; clicking the overlay closes it.
+- Under `prefers-reduced-motion: reduce` the drawer snaps open/closed instead of sliding off-canvas; the overlay keeps its dimming fade, which is opacity-only and therefore reduced-motion-safe.
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - The layout owns scroll, padding, and safe-area insets so individual pages don't have to.
 

@@ -1,5 +1,5 @@
 import { RequiredError } from "../../error/RequiredError.js";
-import { UnimplementedError } from "../../error/UnimplementedError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import type { Segments } from "../../util/index.js";
@@ -27,7 +27,7 @@ type CountRow = {
  *
  * - Subclasses implement `exec()` to run a query against a concrete database (e.g. SQLite, PostgreSQL).
  * - The `sql*` helpers build composable `SQLFragment` objects so dialect differences can be overridden.
- * - Realtime subscriptions are unsupported and throw `UnimplementedError`.
+ * - Realtime subscriptions are unsupported and throw `UnsupportedError`.
  *
  * @see https://shelving.cc/db/SQLProvider
  */
@@ -51,9 +51,9 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		return rows[0];
 	}
 
-	/** Unsupported by SQL providers — always throws `UnimplementedError`. */
+	/** Unsupported by SQL providers — always throws `UnsupportedError`. */
 	override getItemSequence<II extends I, TT extends T>(_collection: Collection<string, II, TT>, _id: II): OptionalItemSequence<II, TT> {
-		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
+		throw new UnsupportedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
 	/** Insert via `INSERT ... RETURNING`; throws `RequiredError` if no id comes back. */
@@ -111,12 +111,12 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		`;
 	}
 
-	/** Unsupported by SQL providers — always throws `UnimplementedError`. */
+	/** Unsupported by SQL providers — always throws `UnsupportedError`. */
 	override getQuerySequence<II extends I, TT extends T>(
 		_collection: Collection<string, II, TT>,
 		_query?: Query<Item<II, TT>>,
 	): ItemsSequence<II, TT> {
-		throw new UnimplementedError(`SQLProvider does not support realtime subscriptions`);
+		throw new UnsupportedError(`SQLProvider does not support realtime subscriptions`);
 	}
 
 	override async setQuery<II extends I, TT extends T>(
@@ -170,12 +170,12 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * - Base implementation only supports flat (single-segment) keys; subclasses override for nested JSON paths.
 	 *
 	 * @param key The key segments identifying the column (and any nested path).
-	 * @throws `UnimplementedError` if the key is nested (multi-segment).
+	 * @throws `UnsupportedError` if the key is nested (multi-segment).
 	 * @example this.sqlExtract(["name"]); // "name"
 	 * @see https://shelving.cc/db/SQLProvider/sqlExtract
 	 */
 	sqlExtract(key: Segments): SQLFragment {
-		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested filter keys");
+		if (key.length > 1) throw new UnsupportedError("SQLProvider does not support nested filter keys");
 		return this.sqlIdentifier(key[0]);
 	}
 
@@ -226,20 +226,20 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	/**
 	 * Define an SQL fragment for a single update action.
 	 * - Handles flat `set` and `sum` only (single-segment key).
-	 * - Nested keys (multi-segment) and `with`/`omit` actions throw `UnimplementedError`.
+	 * - Nested keys (multi-segment) and `with`/`omit` actions throw `UnsupportedError`.
 	 * - Subclasses should override to support nested keys and array mutation actions.
 	 *
 	 * @param update The update action (`action`, `key`, `value`) to convert.
-	 * @throws `UnimplementedError` if the key is nested or the action is unsupported.
+	 * @throws `UnsupportedError` if the key is nested or the action is unsupported.
 	 * @example this.sqlUpdate({ action: "set", key: ["a"], value: 1 }); // "a" = 1
 	 * @see https://shelving.cc/db/SQLProvider/sqlUpdate
 	 */
 	sqlUpdate({ action, key, value }: Update): SQLFragment {
-		if (key.length > 1) throw new UnimplementedError("SQLProvider does not support nested update keys");
+		if (key.length > 1) throw new UnsupportedError("SQLProvider does not support nested update keys");
 		const column = this.sqlIdentifier(key[0]);
 		if (action === "set") return this.sql`${column} = ${value}`;
 		if (action === "sum") return this.sql`${column} = ${column} + ${value}`;
-		throw new UnimplementedError(`SQLProvider does not support "${action}" updates`);
+		throw new UnsupportedError(`SQLProvider does not support "${action}" updates`);
 	}
 
 	/**
@@ -295,7 +295,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * Define an SQL fragment for a single filter clause on a column, e.g. `x = 1` or `x IN (1, 2)`.
 	 *
 	 * @param filter The filter (`key`, `operator`, `value`) to translate.
-	 * @throws `UnimplementedError` if the operator is unsupported.
+	 * @throws `UnsupportedError` if the operator is unsupported.
 	 * @example this.sqlFilter({ key: ["x"], operator: "is", value: 1 }); // "x" = 1
 	 * @see https://shelving.cc/db/SQLProvider/sqlFilter
 	 */
@@ -315,16 +315,16 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		if (operator === "lte") return this.sql`${path} <= ${value}`;
 		if (operator === "gt") return this.sql`${path} > ${value}`;
 		if (operator === "gte") return this.sql`${path} >= ${value}`;
-		throw new UnimplementedError(`SQLProvider does not support "${operator}" filters`);
+		throw new UnsupportedError(`SQLProvider does not support "${operator}" filters`);
 	}
 
 	/**
 	 * Define an SQL fragment for an `ORDER BY` clause, e.g. ` ORDER BY "a" ASC, "b" DESC`.
 	 * - Returns an empty fragment when the query has no orders.
-	 * - Nested keys (multi-segment) throw `UnimplementedError`.
+	 * - Nested keys (multi-segment) throw `UnsupportedError`.
 	 *
 	 * @param query The query whose orders become the `ORDER BY` clause.
-	 * @throws `UnimplementedError` if an order key is nested (multi-segment).
+	 * @throws `UnsupportedError` if an order key is nested (multi-segment).
 	 * @example this.sqlOrder(query); // ORDER BY "a" ASC
 	 * @see https://shelving.cc/db/SQLProvider/sqlOrder
 	 */

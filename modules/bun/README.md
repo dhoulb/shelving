@@ -6,7 +6,7 @@
 
 **Bun only.** This module uses `Bun.sql` and `SQL` from `bun`, which are not available in Node.js or other runtimes.
 
-There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnimplementedError`.
+There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 
 ## PostgreSQL (`BunPostgreSQLProvider`)
 

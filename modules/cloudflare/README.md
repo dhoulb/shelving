@@ -12,9 +12,9 @@ Items are stored as JSON under keys formatted as `collection:id`. `DBProvider.ad
 
 **Limitations:**
 
-- No queries — `DBProvider.getQuery()`, `DBProvider.setQuery()`, `DBProvider.deleteQuery()`, and `DBProvider.countQuery()` throw `UnimplementedError`.
-- No partial updates — `DBProvider.updateItem()` and `DBProvider.updateQuery()` throw `UnimplementedError`.
-- No realtime — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnimplementedError`.
+- No queries — `DBProvider.getQuery()`, `DBProvider.setQuery()`, `DBProvider.deleteQuery()`, and `DBProvider.countQuery()` throw `UnsupportedError`.
+- No partial updates — `DBProvider.updateItem()` and `DBProvider.updateQuery()` throw `UnsupportedError`.
+- No realtime — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 - Eventual consistency — reads may briefly return stale data after a write.
 
 **Install:**
@@ -44,7 +44,7 @@ export default {
 
 D1 is Cloudflare's edge SQLite database. It supports collection queries with filtering, sorting, and pagination. Use it when you need structured data and the ability to query across items.
 
-`CloudflareD1Provider` extends the shared `SQLiteProvider`, so it inherits standard SQL-based CRUD and query behaviour. There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnimplementedError`.
+`CloudflareD1Provider` extends the shared `SQLiteProvider`, so it inherits standard SQL-based CRUD and query behaviour. There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 
 Tables must exist before the provider can read or write. Use `SQLiteMigrator` from `shelving/db` to create and migrate tables from your collection definitions.
 

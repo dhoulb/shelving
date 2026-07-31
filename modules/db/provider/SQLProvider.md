@@ -2,7 +2,7 @@
 
 The abstract SQL base provider. `SQLProvider` implements the `DBProvider` surface in terms of SQL, leaving one method for concrete subclasses to provide: `exec<X>(strings, ...values)`, which runs a parameterised query and returns rows as plain objects.
 
-Each scalar field in a collection schema maps to a **generated column** extracted from the `data` JSON blob, so queries use indexed column comparisons. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnimplementedError`.
+Each scalar field in a collection schema maps to a **generated column** extracted from the `data` JSON blob, so queries use indexed column comparisons. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnsupportedError`.
 
 ## Usage
 

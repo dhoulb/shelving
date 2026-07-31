@@ -2,6 +2,12 @@
 
 TypeScript data toolkit with modules for schema validation, database providers, state stores, React integration, and more.
 
+## Code style
+
+All code-style conventions — naming, function prefixes, imports/exports, types, functions, classes, variables, control flow, async patterns, error handling, React component patterns, testing style, and docblock standards — live in [`guides/styleguide.md`](./guides/styleguide.md).
+
+**Before writing any code, read `guides/styleguide.md` and follow it exactly.** The sections below cover only what is specific to this repository.
+
 ## Modules
 
 Source lives under `modules/`:
@@ -78,6 +84,7 @@ bun run build
 Before writing new code, find what already exists. The codebase deliberately exposes shared primitives — components, utility functions, types, classes — and most new work should compose them rather than reinvent.
 
 - **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or closely enough that a parameter or variant would cover the difference. AI agents tend to write fresh code when an existing helper would do; the explicit pre-write check is the cure
+- **Prefer existing helpers** like `withProp`, `withProps`, `omitProps`, `updateData`, `getFilters`, `getOrders`, `getUpdates`, and `validateData` over open-coded object/query/update logic
 - **Compose, don't restyle.** A "complex" component bound to a content type (e.g. a `*Page` or `*Card` for a specific kind of content) should rarely ship its own CSS module. It picks up its visual identity from existing library components (`Card`, `Page`, `Button`, `Tag`, `Notice`, etc.). A small handful of genuinely custom small components per app may legitimately need their own styling; everything else reuses
 - **Propose, don't silently modify.** If an existing component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — stop and propose the targeted change. Wait for input on how it should be designed. Never silently extend existing code in this project; modifications to existing modules require explicit discussion every time
 - **Propose, don't invent.** If nothing in the library covers a need, propose the new component/utility/type and how it would slot in. Wait for input before building it. Don't add new shared primitives unannounced
@@ -96,199 +103,14 @@ Before writing new code, find what already exists. The codebase deliberately exp
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
 - **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
 
-## Naming
-
-All naming conventions for the codebase are consolidated here. Pick the prefix that matches the contract — these are not interchangeable.
-
-### General
-
-- Prefer single-word names; use `s` suffix for plurals: `item` / `items`, `key` / `keys`
-- Module-private functions and constants are prefixed with `_`: `function _helper(...)`, `const _CACHE = ...`. They are not exported
-- Prefix unused function arguments with `_` to avoid lint errors: `_event`, `_value`
-- Inside small scopes, very short names are preferred: `n`, `nn`, `cc`, `k`, `v`, `i`, `r`, `e`, `el`. Outer / exported scope names stay descriptive (`hostname`, `cookieData`) — the terseness is an inside-the-function thing
-- Event-handler parameters are `e`, never `event` or `evt`
-- Pre-validation values are prefixed `unsafe` or `raw`: `unsafeData`, `unsafeValue`, `rawName`. The validated counterpart drops the prefix: `const data = validateData(unsafeData)`
-- Constants use `UPPER_SNAKE_CASE` only when truly constant (config, schemas, fixed data). Otherwise `camelCase`
-
-### Function prefixes
-
-The codebase uses a tight, consistent prefix system. Pick the one that matches the contract.
-
-| Prefix | Contract | Examples |
-|---|---|---|
-| `is*` | Boolean type guard returning `value is T` | `isArray`, `isString` |
-| `has*` | Boolean predicate (possession / state, not type) | `hasItems` |
-| `assert*` | Throws if invalid; uses `asserts value is T` | `assertArray`, `assertString` |
-| `validate*` | Throws on invalid; returns the validated value (also strips/coerces) | `validateData` |
-| `get*` | Returns value or `undefined` — never throws for "missing"; may return input unchanged when already valid | `getString`, `getData` |
-| `require*` | Returns value or throws `RequiredError` | `requireFirst`, `requireString` |
-| `create*` | Always returns a freshly constructed instance — never returns the input unchanged and never returns `undefined` | `createDeferred`, `createMarkupRule`, `createJSONRequest` |
-| `with*` | Returns immutable updated copy with a value set | `withProp`, `withArrayItem` |
-| `omit*` | Returns immutable updated copy with keys removed | `omitProp`, `omitArrayItem` |
-| `add*` | Returns immutable updated copy with an item added | `addArrayItem`, `addSetItem` |
-| `update*` | Returns immutable updated copy with changes applied | `updateData` |
-| `toggle*` | Returns immutable updated copy with a value toggled | `toggleArrayItem` |
-| `merge*` | Returns a new value combining multiple inputs | `mergeArray`, `mergeObject` |
-| `to*` | Pure conversion to another shape | `toStringValue` |
-| `format*` | Value → display string | `formatNumber`, `formatDate`, `formatUnit` |
-| `parse*` | String → structured value (inverse of `format*`) | `parseRequest` |
-| `match*` | Result of matching / filtering | `matchQuery`, `matchTemplate` |
-| `await*` | Async counterpart of an otherwise-sync helper | `awaitArray` |
-| `run*` | Executes a callback or sequence | `runSequence` |
-
-**Pairing rule:** `get*` / `require*` and `is*` / `assert*` come as pairs over the same target. Choosing between them is a contract decision the caller depends on. If you add a new `require*`, consider whether a sibling `get*` belongs alongside it; same for `assert*` / `is*`.
-
-**`get*` vs `create*`:** if a helper unconditionally constructs and returns a brand-new instance (e.g. always calls `new X(...)` or always returns a fresh object literal), name it `create*`. Reserve `get*` for "look up, coerce, or normalise" — helpers that may return the input unchanged when it's already valid, or return `undefined` when there's nothing to return. Most factories the codebase needs are written inline as `new X(...)`; the `create*` prefix is for the few cases where a helper wraps construction (typing, defaulting, composing).
-
-### Reserved prefixes (UI / event layer)
-
-These prefixes are reserved for the upcoming UI / component layer. Don't repurpose them for unrelated helpers.
-
-| Prefix | Contract | Examples |
-|---|---|---|
-| `notify*` | Dispatches a notice / `notice` CustomEvent | `notify`, `notifySuccess`, `notifyError`, `notifyThrown` |
-| `call*` | Runs a callback, dispatches notices on its return / throw | `callNotified`, `callNotifiedForm` |
-| `handle*` | Top-level request / event entry point | `handleAPI`, `handleEndpoints` |
-| `on*` | Event-handler **prop** name on a component (not a function name) | `onClick`, `onValue`, `onSubmit` |
-
-## Imports & Exports
-
-- Always use `.js` extension in import paths: `import { x } from "./x.js"`
-- Named exports only — no default exports (CSS modules excepted, see React Components)
-- Barrel files (`index.ts`) re-export with `export * from "./X.js"`, alphabetically sorted
-- Keep barrel exports in sync when moving or adding files
-- In source files, always import from the declaration file directly (e.g. `../../util/array.js`), never from a barrel
-- In test files, always import from the public `shelving/*` barrel, not a relative source path (e.g. `shelving/schema` not `../StringSchema.js`, `shelving/util/array` not `../../util/array.js`) — this verifies the barrel actually re-exports the token. Enforced by a Biome `noRestrictedImports` rule; fixtures under `modules/test` are exempt and stay relative. Resolution of `shelving/*` to source in dev is wired via `tsconfig.json` `paths`
-- `verbatimModuleSyntax` is on — `import type { ... }` is mandatory for type-only imports. Inline `type` in mixed imports: `import { type Foo, bar }`
-
-## Types
-
-- `readonly` on properties and arrays by default
-- Type guards use `value is T` return type
-- Assertion functions use `asserts value is T` return type
-- `exactOptionalPropertyTypes` is on — use `| undefined` explicitly in optional property types
-- Prefer `type` aliases over `interface` for simple shapes. Use `interface` when extending or representing a props / options object
-- Use union types for discriminated unions
-- Generic constraints use the named types from `shelving` (`Data`, `Arguments`, etc.), not raw `Record<string, unknown>`
-- Props interfaces use a `*Props` suffix; no `I` prefix on interfaces
-
-## Functions
-
-- Regular `function` declarations for public API exports
-- Arrow functions for short utilities, callbacks, and one-liners
-- File-local helper functions are commonly prefixed with `_` (see Naming)
-- Public exports usually have short JSDoc comments; keep them updated when changing behaviour
-- Default parameter values used heavily in destructured props: `{ required = false, disabled = false }`
-- Prefer early returns and guard clauses over deeply nested conditionals
-- Prefer existing helpers like `withProp`, `withProps`, `omitProps`, `updateData`, `getFilters`, `getOrders`, `getUpdates`, and `validateData` over open-coded object/query/update logic
-- Many immutable helpers intentionally return the original reference when nothing changed. Preserve that behaviour where possible instead of always cloning
-
-### `caller: AnyCaller = thisFunction` for attributable errors
-
-Throw-capable helpers (e.g. `assertArray`, `requireArray`) accept `caller: AnyCaller` as their last parameter, defaulting to the function itself.
-
-- Default value is the function itself: `caller: AnyCaller = assertArray`
-- When the helper throws, the caller chain attributes the error to the user's call site instead of the internal plumbing
-- When forwarding to another `caller`-aware helper, pass `caller` through: `assertArray(value, min, max, caller)`
-- New helpers that throw `RequiredError` / `AssertionError` should accept this parameter and follow the same default pattern
-
-## Classes
-
-- Every `_`-prefixed class member is also marked `private` or `protected` — and vice versa. Never `private foo` without an underscore, never bare `_foo` without an access modifier
-- The two travel together as a single signal: "this is internal"
-- This applies only to class members. Module-private functions and constants use just the `_` prefix (see Naming)
-
-## Variables
-
-### Destructuring
-
-- Always destructure when reading 2+ properties from the same object: `const { method, url } = request`, not `request.method` and `request.url` separately
-- Destructure even single properties when the source name is long: `const { requireSource } = require...()`
-- Rename on destructure with `:` to disambiguate or to mark validation state: `const { data: unsafeData } = ...`
-- Function parameters destructure inline in the signature, including renames: `function foo({ key, data: unsafeData }: Args) { ... }`
-- Methods on a class destructure `this`: `const { state, props } = this`
-
-### Coercion
-
-- Use `.toString()` on values, not `String(value)`
-- Use `Number.parseInt` / `Number.parseFloat` over the global `Number(...)`; only use `Number(...)` when no method-form alternative exists
-- Use `!!x` for boolean coercion
-- Use `Number.POSITIVE_INFINITY` not `Infinity`, `Number.isFinite()` not the global `isFinite()` (Biome's `useNumberNamespace`)
-
-### Truthy and nullish
-
-- Prefer truthy checks over explicit `=== undefined` / `=== null` / `=== ""`: write `if (!value) return ...`, not `if (value === undefined || value === "")`
-- Use `||` (not `??`) when empty string and zero should also fall through to the default — this is the common case
-- Reserve `??` for narrow null / undefined defaults, especially `process.env.X ?? ""`
-- Use optional chaining + truthiness liberally: `if (items?.length) ...`
-
-### Object spreads
-
-- Merge defaults with object spread, defaults first: `{ ...DEFAULTS, ...options }`
-- Order of spreads matters and is intentional — don't reorder
-- Forward props with rest spread; preserve the existing order
-
-## Control Flow
-
-### Guard clauses
-
-Guard clauses are written as one-line `if (...) return ...;` without braces, stacked at the top of the function:
-
-```ts
-if (!n.length) return "";
-if (n.startsWith("44")) return formatUK(n.slice(2));
-```
-
-- Module-scope throw guards use the same form: `if (!process.env.API_URL) throw new ReferenceError("...")`
-- Combine a `for` loop with a one-line `if` body when filtering: `for (const [k, v] of Object.entries(data)) if (v) ...`
-
-### Loops
-
-- Use `for...of` over `.forEach()`
-- Use `Array.from(iter).join(...)` over `[...iter].join(...)`
-- Use `function*` generators when assembling a sequence with conditional yields
-
-### Comments
-
-- Use short single-line `//` comments to label sections of a function. Sentence case, ending in a period: `// Stop the page reloading.`, `// Get relevant elements.`
-- Group constants under a `// Constants.` label at the top of the file when there are several
-- Avoid comments that restate what the code says — comment the *why* or the section purpose
-- The trailing-empty-comment trick — `Foo, //` — is used deliberately to force Biome's formatter to keep an argument list multi-line for readability:
-  ```ts
-  return getClass(
-      ELEMENTS_BUTTON_CLASS, //
-      getModuleClass(BUTTON_CSS, variants),
-  );
-  ```
-  Preserve these when editing nearby code; don't strip them
-
-## Async Patterns
-
-### `BLACKHOLE` for intentionally-swallowed promise rejections
-
-`BLACKHOLE` is exported from `modules/util/function.ts`. Use `.catch(BLACKHOLE)` to mark a promise rejection as deliberately ignored.
-
-Two patterns:
-
-- `_promise.catch(BLACKHOLE)` — a promise we don't await here but whose error will resurface when something else awaits it. The catch stops the unhandled-rejection warning
-- `await flakyOp().catch(BLACKHOLE)` — a known-flaky operation whose rejection is expected and harmless
-
-Don't replace with empty `() => {}` or omit the catch. The named symbol documents intent.
-
 ## Schemas, Queries, and Updates
 
 - Schema classes usually export both the class and ready-made constants or factories, for example `StringSchema` plus `STRING`, or `DataSchema` plus `DATA` / `PARTIAL` / `ITEM`
 - Schema defaults and coercions are part of the intended behaviour. Before changing them, check the colocated tests for the current contract
+- `validateData()` strips excess keys and removes `undefined` outputs. Keep that behaviour unless you are intentionally changing the validation contract
 - Query and update APIs use encoded key syntax like `$order`, `$limit`, `!key`, `key[]`, `key>`, `=key`, `+=key`, and `+[]key`. Extend these via shared helpers rather than bespoke parsing in each provider
 - Collections are defined with `Collection` / `COLLECTION` from a collection name, an id schema, and a data schema. Provider code should operate in terms of `Collection`, not loose strings plus ad-hoc validators
-
-## Error Handling
-
-- Schema validation errors throw a `string` (human-readable message like `"name: Must be 5-50 characters"`). Let these propagate as-is when they represent user input errors — form handlers and UI layers consume these strings directly
-- Only wrap validation strings in a typed error (e.g. `ResponseError`, `ValueError`) when the error is a system / transport problem rather than a user input problem. For example, a bad API response body is a server error (`ResponseError` code 422), not a user error
-- Aggregated validation failures use `"key: message"` lines joined by `\n`. Preserve that format for multi-field and nested validation errors
-- `validateData()` strips excess keys and removes `undefined` outputs. Keep that behaviour unless you are intentionally changing the validation contract
-- The pattern `const message = getMessage(thrown); if (!message) throw thrown;` re-throws non-string errors while handling string messages gracefully
+- Error-handling style (string throws for user-input validation, typed error classes for system/transport problems) is in the styleguide. One worked example: a bad API response body is a server error (`ResponseError` code 422), not a user error
 
 ## Providers, Stores, and React
 
@@ -298,39 +120,13 @@ Don't replace with empty `() => {}` or omit the catch. The named symbol document
 - Store implementations suppress duplicate emissions when values are equal and use the `NONE` sentinel for loading state. Preserve those semantics in new store types
 - React context helpers return both a provider component and typed hooks, for example `createDataContext()` and `createCacheContext()`. Follow that pattern for new React integrations
 
-## React Components
+## UI Components
 
-Conventions for the upcoming reusable component layer.
+General component and CSS-module patterns (function-declaration components, `ReactElement`, variants, `getModuleClass`, the `--file-name-*` CSS custom property ownership rule, sentence-case copy) are in the styleguide. What follows is specific to this repo's `modules/ui` layer.
 
-### File and naming
-
-- Component files are named after the component they export: `Button.tsx` exports `Button`, `FormStore.tsx` exports `FormStore`
-- CSS modules are named to match their component: `Button.module.css` for `Button.tsx`
-- Layout components: `*Layout` suffix (e.g. `DashboardLayout`) — provide structural layout for a page
-- Page components: `*Page` suffix (e.g. `SettingsPage`) — top-level router entries that compose existing components; they should not need custom-styled elements
-- Reusable components live in a shared component library and expose styling options as **variants**
-
-### Component patterns
-
-- Components are plain named function declarations, not arrow functions: `export function Button(...): ReactElement { }`
-- Return type is `ReactElement`, not `JSX.Element`
-- Props are destructured in the function signature with defaults
-- The `{ children, ...variants }` destructuring pattern separates content from styling variants, which are passed as a dictionary to `getModuleClass(styles, variants)`
-- Conditional rendering uses `&&` and ternary operators inline in JSX — not separate variables or early returns for JSX fragments
-- Inline arrow handlers in JSX are the default — even multi-line ones
-- Hoist a handler to a `function _name(...)` only when it's pure, doesn't close over state, and is reused
-- Components that wrap clickable elements delegate to `getClickable()` which returns `<a>` or `<button>` based on `href` vs `onClick`
 - Every reusable component carries a `@kind component` tag in its docblock so the docs extractor labels it as a `component` rather than a `function` (it's grouped and colour-coded separately on the docs site). See the Documentation section. Helper functions that happen to live in a component file (e.g. `getButtonClass`) stay plain functions — no `@kind`
-
-### CSS Modules and variants
-
-- Never use inline `style` props — all styling lives in a `.module.css` file colocated with the component
-- Styling options are props on the component. Mutually-exclusive scales are enumerated props (`color="red"`, `size="large"`, `space="none"`, `padding`, `gap`, `tint`, `status`) defined in `modules/ui/style/`; on/off options are boolean props (`small`, `strong`, `plain`, `column`, `wrap`, `narrow`). Both map to class names in the CSS module via the `getXxxClass(props)` helpers and `getModuleClass(styles, "base", variants)`
-- CSS custom properties (variables) are used for theming with fallback chains: `var(--button-background, var(--tint-90))`
-- CSS nesting is used for variants (`&.small { ... }`), pseudo-classes (`&:hover { ... }`), and child selectors (`:where(& > *) { ... }`)
-- `:where()` is used to keep specificity low for default child styles
-- CSS modules are imported as default: `import styles from "./Foo.module.css"`, or with a `_CSS` suffix for named-export style: `import BUTTON_CSS from "./Button.module.css"`. CSS modules are the one exception to the named-exports-only rule
-- **CSS custom property naming.** Variables owned by a specific module file (theme hooks consumers can set, internal runtime variables the module writes and reads) must start with the file's kebab-case name. So `Card.module.css` owns `--card-background`, `--card-padding`, `--card-radius`; `Flex.module.css` owns `--flex-gap`, `--flex-icon-size`. This makes the originating file obvious from any `var(--...)` reference. Exempt: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`.
+- Styling-scale props (`color`, `size`, `space`, `padding`, `gap`, `tint`, `status`) are defined in `modules/ui/style/` and map to class names via the `getXxxClass(props)` helpers
+- **CSS custom property naming exemptions.** The styleguide's rule that a `.module.css` file owns every `--file-name-*` variable it reads has two repo-level exemptions: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`
 - **Paint from the ladder; don't rebind the anchor.** A painted component paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`), reading whatever tint is ambient in its scope. A component must **not** set `--tint-50` itself — the anchor is moved only by `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root`, so a component never carries a stale ladder and a raw element in `.prose` behaves identically to its component. A component with a fixed semantic colour (`<Deleted>`, `<Inserted>`, `<Link>`) reads its palette token directly (`color: var(--deleted-color, var(--color-red))`) instead of the ladder. Do **not** reintroduce a per-component `--x-tint` anchor hook (removed — tinting is done with the `color=` / `status=` variants), nor the older five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). Both were tried and removed; older issue comments describing them are stale. The tint ladder is documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
 
 ### Writing a new component
@@ -393,31 +189,25 @@ Checklist:
 
 - [ ] `@import "../style/base.css";` at the top of the `.module.css`.
 - [ ] All component rules inside `@layer components { … }`.
-- [ ] All custom properties owned by this file start with the file name (`--address-*`, etc.) — see the CSS custom property naming rule above.
+- [ ] All custom properties owned by this file start with the file name (`--address-*`, etc.) — see the CSS custom property naming rule in the styleguide.
 - [ ] If the component paints colour, paint from ladder steps with a per-property hook in front (`background: var(--address-background, var(--tint-90))`) — don't set `--tint-50`; the tint flows in from `color=` / `status=` or an ancestor scope. Read a palette token directly (`var(--color-red)`) only for a fixed semantic colour.
 - [ ] `:first-child` / `:last-child` overrides in a separate `@layer overrides { … }` block.
 - [ ] TSX extends the styling-prop interfaces (`ColorProps`, `SpacingProps`, `TypographyProps`, etc.) you want to expose and composes the matching `getXxxClass(props)` calls.
 - [ ] `@kind component` in the docblock, and a sibling `Address.md` with usage examples and a Styling section (see the Documentation section).
 
-### Copy
-
-- Titles, headings, and button labels use sentence case — only the first word capitalised, plus proper nouns. E.g. "Change details", not "Change Details"
-
 ## Testing
 
-- Use `bun:test` and place tests next to the module they cover
+Test style (lowercase sentence-fragment descriptions, compile-time type checks, `expect.unreachable()`, colocated `*.test.ts`) is in the styleguide. Repo specifics:
+
 - When changing runtime behaviour, update or add the closest colocated `*.test.ts`
-- When changing TypeScript inference or public generic behaviour, include compile-time assignment checks in tests in addition to runtime assertions
 - Reuse fixtures and helpers from `modules/test/` when they fit, especially for collection, provider, and query tests
-- Test files always import from the public `shelving/*` barrel (never a relative `../` source path), so the test also ensures the barrel export — enforced by a Biome `noRestrictedImports` rule (`modules/test` fixtures exempt)
-- Test descriptions are lowercase sentence fragments: `test("formats from leading 0", ...)`
-- Use `expect.unreachable()` to assert that a code path should not be reached (in catch blocks testing thrown errors)
+- Test files always import from the public `shelving/*` barrel, not a relative source path (e.g. `shelving/schema` not `../StringSchema.js`, `shelving/util/array` not `../../util/array.js`) — this verifies the barrel actually re-exports the token. Enforced by a Biome `noRestrictedImports` rule; fixtures under `modules/test` are exempt and stay relative. Resolution of `shelving/*` to source in dev is wired via `tsconfig.json` `paths`
 
 ## Documentation
 
+General docblock standards (strong first line, `@example` / `@param` / `@returns` / `@throws` usage, when to write less) are in the styleguide. This section covers the docs site and its repo-specific conventions.
+
 - Every public class, function, and type must have a JSDoc comment. Keep comments updated when behaviour changes — a stale comment is worse than none
-- Classes: one-sentence summary, bullet points for notable behaviour and caveats, `@example` for short inline usage
-- Functions: one-sentence summary, 0–2 behaviour bullets for anything surprising, `@param` / `@returns` / `@throws`, one `@example`
 - When you add, remove, or meaningfully change a class or function, check and update its docblock in the same commit
 - Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
@@ -502,7 +292,7 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
 
   When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and name the wrapped sugar instance as a plain backtick reference (`` `TITLE` ``).
 
-**Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
+**Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the styleguide's Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
 
   ```ts
   /**
@@ -519,14 +309,11 @@ For convenience the `schema` module ships **sugar** — pre-built shortcuts that
 
 ### Docblock standards
 
-Every public token now ships as a page on the docs site, so docblock quality directly determines docs quality. Hold every class, function, method, interface, type, and constant to this standard, and match the voice and rigour of the existing well-written docblocks (terse, declarative, backtick-quoted type names, bullet caveats) rather than inventing a new style.
-
-These are guidelines, not a checklist to maximise. The project has tended towards **over-documentation**, so favour clarity over completeness: a docblock that genuinely helps a reader beats one that mechanically hits every tag. When in doubt, write less — and don't repeat in a docblock what a sibling `.md` page already says.
+General docblock voice and tag standards are in the styleguide. These points are specific to this repo's docs extractor and site:
 
 - **Overridden methods and constructors don't get their own pages.** The extractor publishes a page per public token, but a method that `override`s a base-class method, and every class `constructor`, are not among them. Keep their docblocks minimal or omit them entirely, and **never give them a `@see` tag** — it would point at a page that doesn't exist. Document the behaviour once on the base method; an `override` only needs a short line when it changes the contract in a way worth noting, and a constructor rarely needs anything (its options bag is documented on the `*Options` interface, which flattens onto the class page).
-- **Strong first line (becomes the `description`).** Open with one short, clear line stating the token's purpose — what it's for and how it relates to the rest of the module. The extractor lifts this first paragraph as the `description` shown on cards and `<meta>` tags, so it must stand alone. Imperative or declarative voice, no hedging. Put further detail — behaviour, caveats, gotchas — on later lines or bullets.
-- **`@example`.** A **class**, **function**, or **method** may carry an `@example` showing the shortest call site that conveys real usage — but it's not mandatory, and an example that earns its keep beats one added to satisfy a rule. **Skip it** when the token is micro / self-evident (e.g. a one-line type guard), and **delete it** when a sibling `.md` page already carries usage examples for the token (don't maintain the same example in two places — the `.md` wins). **Properties** don't need examples.
-- **`@param` / `@returns` / `@throws`.** Document parameters, return value, and thrown errors on every class constructor, method, and standalone function. These feed the docs site's Parameters / Returns / Throws sections. (Schema validation throws a `string` message — document those with `@throws` too.) But don't duplicate a documented token's own docs — see the next bullet.
+- **Strong first line (becomes the `description`).** The extractor lifts the first paragraph as the `description` shown on cards and `<meta>` tags, so it must stand alone.
+- **`@example`.** Delete an `@example` when a sibling `.md` page already carries usage examples for the token (don't maintain the same example in two places — the `.md` wins).
 - **Don't duplicate a documented token's docs at the call site.** The docs renderer resolves each `@param` / `@returns` / `@throws` *type* by exact name against the docs tree. When that type is a **documented ("internal") token**, the row already links it and falls back to the token's own `description`; an **options-bag / props parameter** additionally **flattens** into one row per interface member, each carrying that member's own description and `@default`. (Heritage is **not** flattened — only the interface's directly-declared members appear.) So a JSDoc rule that merely restates what the token already says is redundant noise.
   - **Drop** the rule when its type is a documented token and the prose adds nothing beyond that token's own description. The flagship cases are the **`@param options` umbrella line and every `@param options.x` sub-line** of an options bag whose type is a documented interface (e.g. a `*SchemaOptions` or a `*Props`), and any `@returns` / `@throws` whose text just restates its documented token.
   - **Keep** the rule when its type is **not** a documented token (primitives / builtins like `string`, `number`, `boolean`, `RegExp`, `URL`, `unknown`, plain arrays / unions — there's no page to fall back to), when it gives a **positional parameter its role** (e.g. `@param arr The array to read from` stays even though `ImmutableArray` is documented), or when it explains **custom usage** the token can't (e.g. a schema `@throws` enumerating the specific `string` validation messages).

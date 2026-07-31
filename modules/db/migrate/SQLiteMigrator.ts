@@ -1,4 +1,4 @@
-import { UnimplementedError } from "../../error/UnimplementedError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { ChoiceSchema } from "../../schema/ChoiceSchema.js";
 import { DateSchema } from "../../schema/DateSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
@@ -55,7 +55,7 @@ export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigr
 		const id = collection.id;
 		if (id instanceof NumberSchema) {
 			if (id.step === 1) return "INTEGER PRIMARY KEY";
-			throw new UnimplementedError("SQLiteMigrator only supports string and integer identifiers", { received: id });
+			throw new UnsupportedError("SQLiteMigrator only supports string and integer identifiers", { received: id });
 		}
 		if (id instanceof ChoiceSchema || id instanceof DateSchema) return "TEXT PRIMARY KEY";
 		switch (typeof id.value) {
@@ -69,7 +69,7 @@ export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigr
 
 	protected override getAlterColumnQueries(tableName: string, from: SQLTableColumn, to: SQLTableColumn): readonly string[] {
 		if (from.name === "id" || from.name === "data") {
-			throw new UnimplementedError(`Cannot alter SQLite column "${from.name}" in existing table "${tableName}"`);
+			throw new UnsupportedError(`Cannot alter SQLite column "${from.name}" in existing table "${tableName}"`);
 		}
 		return super.getAlterColumnQueries(tableName, from, to);
 	}

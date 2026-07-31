@@ -10,7 +10,7 @@ This directory contains `DBProvider` — the abstract base every backend impleme
 
 `DBProvider` implements `AsyncDisposable`. Use `await using provider = …` or `await provider[Symbol.asyncDispose]()` to release underlying connections.
 
-SQLite realtime sequences (`DBProvider.getItemSequence()`, `DBProvider.getQuerySequence()`) are not supported by `SQLProvider` — they throw `UnimplementedError`. Realtime is available from `MemoryDBProvider` and cloud providers.
+SQLite realtime sequences (`DBProvider.getItemSequence()`, `DBProvider.getQuerySequence()`) are not supported by `SQLProvider` — they throw `UnsupportedError`. Realtime is available from `MemoryDBProvider` and cloud providers.
 
 ### Provider chain
 
@@ -19,6 +19,7 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | Provider | Role |
 |---|---|
 | `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests and as the cache layer. |
+| `StorageDBProvider` | Extends `MemoryDBProvider` and persists every collection to a required `Storage` (`localStorage` / `sessionStorage`), with cross-tab sync. |
 | `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws `ValueError` on bad backend data. |
 | `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. |
 | `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |

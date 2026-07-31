@@ -8,7 +8,7 @@
 @keyframes slide-in-from-top {
 	from {
 		opacity: 0;
-		transform: translateY(calc(0 - var(--vertical-transition-size)));
+		transform: translateY(calc(0px - var(--vertical-transition-size)));
 	}
 
 	to {
@@ -37,7 +37,7 @@
 
 	to {
 		opacity: 0;
-		transform: translateY(calc(0 - var(--vertical-transition-size)));
+		transform: translateY(calc(0px - var(--vertical-transition-size)));
 	}
 }
 
@@ -67,4 +67,16 @@
 
 ::view-transition-old(.slide-down) {
 	animation: slide-out-to-bottom var(--vertical-transition-duration) ease-in-out both;
+}
+
+/* Reduced motion: null the slide distance so the keyframes above degrade to an opacity-only crossfade (reduced-motion-safe), and disable the group's default positional morph. Unlayered so it wins over app-level overrides of the distance hook. */
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--vertical-transition-size: 0px;
+	}
+
+	::view-transition-group(.slide-up),
+	::view-transition-group(.slide-down) {
+		animation: none;
+	}
 }
