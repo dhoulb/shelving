@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { CacheDBProvider, MemoryDBProvider } from "shelving/db";
+import { UnsupportedError } from "shelving/error";
 import { runMicrotasks } from "shelving/util/async";
 import { runSequence } from "shelving/util/sequence";
 import { BASICS_COLLECTION, basic1, basic2, expectOrderedItems } from "../../test/index.js";
@@ -55,5 +56,10 @@ describe("CacheDBProvider", () => {
 		expectOrderedItems(calls[0] ?? [], ["basic1"]);
 		expectOrderedItems(calls[1] ?? [], ["basic1", "basic2"]);
 		stop();
+	});
+
+	test("transact() is not supported", () => {
+		const provider = new CacheDBProvider(new MemoryDBProvider());
+		expect(() => provider.transact(async () => undefined)).toThrow(UnsupportedError);
 	});
 });

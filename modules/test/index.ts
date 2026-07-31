@@ -5,6 +5,7 @@ import { PERSON_SCHEMA, type PersonData } from "./people.js";
 
 export * from "./basics.js";
 export * from "./people.js";
+export * from "./TransactionTestDBProvider.js";
 export * from "./util.js";
 
 export const BASICS_COLLECTION = new Collection<"basics", string, BasicData>("basics", STRING, BASIC_SCHEMA);

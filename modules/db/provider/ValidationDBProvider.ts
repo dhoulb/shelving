@@ -16,6 +16,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  * - Wraps a `source` provider (which may have any type, because validation guarantees the type) and runs every value through the relevant `Collection` schema before writing and after reading.
  * - Written data is validated against the collection's data schema; read data is validated against the item schema, so trusted, correctly-typed values reach the rest of the app.
  * - Validation failures here are program-state errors, so they throw a typed `ValueError` rather than a raw validation `string`.
+ * - Applies inside `transact()` too — the transaction provider the callback receives validates its reads and writes the same way.
  *
  * @see https://shelving.cc/db/ValidationDBProvider
  */

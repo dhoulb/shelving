@@ -4,6 +4,7 @@ import type { Identifier, Item } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
+import type { DBProvider } from "./DBProvider.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /**
@@ -97,5 +98,21 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	): Promise<void> {
 		await super.deleteQuery(collection, query);
 		this._changes.push({ action: "delete", collection: collection.name, query });
+	}
+
+	// Override so that transaction copies get their own log.
+	override cloneWith(source: DBProvider<I, T>): this {
+		const clone = super.cloneWith(source);
+		Object.defineProperty(clone, "_changes", { value: [], enumerable: false });
+		return clone;
+	}
+
+	// Override to log the transaction's writes after it commits — a failed transaction logs nothing.
+	// The merge must happen after `source.transact()` resolves: backends may retry the callback or fail the commit itself, and only the committed attempt's writes belong in the log.
+	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		let transaction: this | undefined;
+		const result = await this.source.transact(provider => callback((transaction = this.cloneWith(provider))));
+		if (transaction) this._changes.push(...transaction.changes);
+		return result;
 	}
 }

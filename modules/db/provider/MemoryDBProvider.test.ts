@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import { MemoryDBProvider } from "shelving/db";
+import { UnsupportedError } from "shelving/error";
 import type { ImmutableArray } from "shelving/util/array";
 import { runMicrotasks } from "shelving/util/async";
 import type { Item, OptionalItem } from "shelving/util/item";
@@ -289,4 +290,8 @@ test("MemoryDBProvider: subscribing to sort and limit query", async () => {
 	// Check end result.
 	await runMicrotasks();
 	expectUnorderedItems(await db.getQuery(BASICS_COLLECTION, {}), []);
+});
+test("MemoryDBProvider: transact() is not supported", () => {
+	const db = new MemoryDBProvider<string>();
+	expect(() => db.transact(async () => undefined)).toThrow(UnsupportedError);
 });

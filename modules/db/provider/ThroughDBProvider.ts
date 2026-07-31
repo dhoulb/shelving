@@ -91,6 +91,16 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 		return this.source.requireFirst(collection, query);
 	}
 
+	// Run the transaction against the wrapped `source` provider, keeping this provider's behaviour inside the transaction.
+	transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		return this.source.transact(transaction => callback(this.cloneWith(transaction)));
+	}
+
+	/** Clone this provider with different `source`. */
+	cloneWith(source: DBProvider<I, T>): this {
+		return Object.create(this, { source: { value: source, enumerable: true } });
+	}
+
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose]() {
 		await awaitDispose(

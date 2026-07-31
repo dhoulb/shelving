@@ -1,4 +1,5 @@
 import { RequiredError } from "../../error/RequiredError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { countArray, getFirst } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import { awaitDispose } from "../../util/dispose.js";
@@ -232,6 +233,30 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 				caller: this.requireFirst,
 			});
 		return first;
+	}
+
+	/**
+	 * Run a callback as a single atomic transaction — every write made through the callback's provider is committed together, or not at all.
+	 *
+	 * - The callback receives a transaction-scoped `DBProvider`; reads and writes made through it belong to the transaction.
+	 * - Reads see a consistent snapshot of the data from before the transaction, and do not see the transaction's own uncommitted writes.
+	 * - If the callback throws, nothing is committed and the error is rethrown.
+	 * - The callback may run more than once if the backend retries on contention, so it must have no side effects other than through its provider.
+	 * - Inside a transaction, realtime sequences and nested `transact()` calls throw `UnsupportedError`.
+	 * - Not every provider supports transactions — the base implementation throws `UnsupportedError`.
+	 *
+	 * @param callback Function that performs the transaction's reads and writes through the provider it receives.
+	 * @returns The value returned by the callback.
+	 * @throws `UnsupportedError` if this provider does not support transactions.
+	 * @example await provider.transact(async db => void (await db.updateItem(users, 123, { logins: { sum: 1 } })));
+	 * @see https://shelving.cc/db/DBProvider/transact
+	 */
+	transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		throw new UnsupportedError(`${this.constructor.name} does not support transactions`, {
+			provider: this,
+			received: callback,
+			caller: this.transact,
+		});
 	}
 
 	// Implement `AsyncDisposable`

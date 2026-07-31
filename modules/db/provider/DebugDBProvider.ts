@@ -4,6 +4,7 @@ import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItem
 import type { Query } from "../../util/query.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
+import type { DBProvider } from "./DBProvider.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
 /**
@@ -182,6 +183,19 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 			console.debug(`${ANSI_SUCCESS} DELETE QUERY`, collection.name, query);
 		} catch (reason) {
 			console.error(`${ANSI_FAILURE} DELETE QUERY`, collection.name, query, reason);
+			throw reason;
+		}
+	}
+
+	/** Adds TRANSACT logging around the base behaviour, which re-wraps so operations inside the transaction are logged too. */
+	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		try {
+			console.debug(`${ANSI_RIGHT} TRANSACT`);
+			const result = await super.transact(callback);
+			console.debug(`${ANSI_SUCCESS} TRANSACT`);
+			return result;
+		} catch (reason) {
+			console.error(`${ANSI_FAILURE} TRANSACT`, reason);
 			throw reason;
 		}
 	}
