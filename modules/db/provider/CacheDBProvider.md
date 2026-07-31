@@ -18,3 +18,5 @@ await provider.getItem(POSTS, "abc"); // served synchronously from the mirror
 ```
 
 `DBCache` finds the `CacheDBProvider` in a chain automatically and reuses its mirror to seed reactive stores.
+
+`DBProvider.transact()` is not supported and throws `UnsupportedError`. A correct implementation would need to capture the changes written during the transaction and play them back into the mirror only once the transaction commits (abandoning them on a throw) — mirroring writes as they happen would populate the cache with uncommitted data.

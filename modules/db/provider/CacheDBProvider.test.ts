@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { CacheDBProvider, MemoryDBProvider } from "shelving/db";
+import { UnsupportedError } from "shelving/error";
 import { runMicrotasks } from "shelving/util/async";
 import { runSequence } from "shelving/util/sequence";
 import { BASICS_COLLECTION, basic1, basic2, expectOrderedItems } from "../../test/index.js";
@@ -57,18 +58,8 @@ describe("CacheDBProvider", () => {
 		stop();
 	});
 
-	test("transact() writes to the source and bypasses the cache", async () => {
-		const source = new MemoryDBProvider();
-		const provider = new CacheDBProvider(source);
-
-		await provider.transact(async tx => {
-			await tx.setItem(BASICS_COLLECTION, "basic1", basic1);
-		});
-
-		// The write reached the source, but the cache stays stale until the item is next read through the provider.
-		expect(await source.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
-		expect(await provider.memory.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
-		expect(await provider.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
-		expect(await provider.memory.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+	test("transact() is not supported", () => {
+		const provider = new CacheDBProvider(new MemoryDBProvider());
+		expect(() => provider.transact(async () => undefined)).toThrow(UnsupportedError);
 	});
 });
