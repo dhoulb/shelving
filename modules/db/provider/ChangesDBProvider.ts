@@ -107,13 +107,12 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 		return clone;
 	}
 
-	// Override to log the transaction's writes after it commits — a failed transaction logs nothing. */
+	// Override to log the transaction's writes after it commits — a failed transaction logs nothing.
+	// The merge must happen after `source.transact()` resolves: backends may retry the callback or fail the commit itself, and only the committed attempt's writes belong in the log.
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		return await this.source.transact(async provider => {
-			const transaction = this.cloneWith(provider);
-			const result = await callback(transaction);
-			this._changes.push(...transaction.changes);
-			return result;
-		});
+		let transaction: this | undefined;
+		const result = await this.source.transact(provider => callback((transaction = this.cloneWith(provider))));
+		if (transaction) this._changes.push(...transaction.changes);
+		return result;
 	}
 }
