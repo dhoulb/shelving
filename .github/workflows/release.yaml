@@ -33,6 +33,8 @@ jobs:
         run: bun install
       - name: test
         run: bun run test
+      - name: test-firebase
+        run: bun run test-firebase
       - name: build
         run: bun run build
       - name: git config
