@@ -18,7 +18,6 @@ Source lives under `modules/`:
 - `db` — Database abstraction (providers, collections, stores, migrations)
 - `error` — Error classes
 - `firebase` — Firebase providers (Firestore via the REST API)
-- `firestore` — Firestore providers (client, lite, server)
 - `markup` — Markdown renderer for user-facing content
 - `react` — React hooks and context
 - `schema` — Schema validation
@@ -78,7 +77,7 @@ bun run build
 
 - When adding or removing a public export, update the nearest barrel file in `modules/**/index.ts`
 - If you add or remove a public package subpath, also update `package.json` `exports`
-- `modules/index.ts` intentionally excludes peer-dependency modules like `react` and `firestore/*`, plus internal `test` helpers, from the root package export. Preserve that split unless you are intentionally changing the public package surface
+- `modules/index.ts` intentionally excludes peer-dependency and backend modules like `react` and `firebase`, plus internal `test` helpers, from the root package export. Preserve that split unless you are intentionally changing the public package surface
 
 ## Reuse and Composition
 
@@ -243,11 +242,11 @@ This applies to **"See also" lists** and **inline references** alike. There's no
 | Property | qualified | `Store.value` |
 | Component | angle brackets | `<Section>` |
 | Class / interface / type / constant | bare name | `BooleanSchema`, `STRING` |
-| Module | `shelving/` package prefix | `shelving/schema`, `shelving/firestore/client` |
+| Module | `shelving/` package prefix | `shelving/schema`, `shelving/firebase` |
 
 - **Methods and properties use the qualified `Owner.member` form** — `` `Store.get()` ``, `` `Store.value` `` — never a bare leading-dot `` `.get()` ``. A bare member has no owner to resolve against; the qualified form resolves to the member's page, or falls back to the owner's page when the member has none of its own.
 - **Generics stay in the backtick text** as one span — `` `Schema<T>` ``, `` `ItemStore<I, T>` `` — not split into a name plus a trailing `` `<T>` `` chip. The resolver trims the generics for lookup.
-- **Modules carry the `shelving/` package prefix** — `` `shelving/schema` ``, `` `shelving/firestore/client` ``, `` `shelving/util/array` `` — matching the `import { … } from "shelving/schema"` specifier and the module page's own title. The prefix is what distinguishes a module reference from a same-named token; the resolver maps it to the module's canonical path.
+- **Modules carry the `shelving/` package prefix** — `` `shelving/schema` ``, `` `shelving/firebase` ``, `` `shelving/util/array` `` — matching the `import { … } from "shelving/schema"` specifier and the module page's own title. The prefix is what distinguishes a module reference from a same-named token; the resolver maps it to the module's canonical path.
 
 **What still uses real markdown links.** Auto-linking only covers internal tokens written as backtick code spans, so keep an explicit `[text](target)` link for everything else:
 
@@ -327,7 +326,7 @@ General docblock voice and tag standards are in the styleguide. These points are
   @see https://shelving.cc/<package>/<name>
   ```
 
-  where `<package>` is the symbol's **package export subpath** — the entry it's published under in `package.json` `exports`, which is the top-level module folder (`schema`, `db`, `store`, `ui`, …) for single-index packages, or `util/<file>` and `firestore/<client|lite|server>` for the wildcard / multi-entry exports — and `<name>` is the exported symbol. The deeper source-file path collapses to that package subpath. So `modules/schema/BooleanSchema.ts`'s `BooleanSchema` class → `https://shelving.cc/schema/BooleanSchema`; `modules/db/store/QueryStore.ts`'s `QueryStore` → `https://shelving.cc/db/QueryStore`; `modules/util/array.ts`'s `getArray` → `https://shelving.cc/util/array/getArray`; a class member appends its own name → `https://shelving.cc/schema/BooleanSchema/validate`.
+  where `<package>` is the symbol's **package export subpath** — the entry it's published under in `package.json` `exports`, which is the top-level module folder (`schema`, `db`, `store`, `ui`, …) for single-index packages, or `util/<file>` for the wildcard exports — and `<name>` is the exported symbol. The deeper source-file path collapses to that package subpath. So `modules/schema/BooleanSchema.ts`'s `BooleanSchema` class → `https://shelving.cc/schema/BooleanSchema`; `modules/db/store/QueryStore.ts`'s `QueryStore` → `https://shelving.cc/db/QueryStore`; `modules/util/array.ts`'s `getArray` → `https://shelving.cc/util/array/getArray`; a class member appends its own name → `https://shelving.cc/schema/BooleanSchema/validate`.
 
 Example shape:
 

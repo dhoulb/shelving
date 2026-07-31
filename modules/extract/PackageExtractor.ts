@@ -48,7 +48,7 @@ export interface PackageExtractorOptions {
 /**
  * Extractor that reads a `package.json` and produces a flat tree of modules — one `kind: "module"`
  * `DocumentationElement` per export entry, in declaration order.
- * - Static export keys (e.g. `"./api"`, `"./firestore/client"`) become one module each.
+ * - Static export keys (e.g. `"./api"`, `"./firebase"`) become one module each.
  * - Wildcard export keys (e.g. `"./util/*"`) expand against the source tree — one module per matching child file or subdirectory.
  * - Each export's *target* extension (e.g. the `.js` in `"./util/*.js"`) is mapped to source extensions via `extensions`, so built `.js` paths resolve to their `.ts` sources.
  * - Each module's `title` is prefixed with the package `name` (e.g. `ui` → `shelving/ui`) so listings read as package subpaths.
@@ -124,7 +124,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 		return this._extensions[ext] ?? (ext ? [ext] : []);
 	}
 
-	/** Resolve a static export subpath (e.g. `"firestore/client"`) to a file or directory element in the tree. */
+	/** Resolve a static export subpath (e.g. `"nested/client"`) to a file or directory element in the tree. */
 	private _resolve(subpath: string, sourceExtensions: readonly string[]): TreeElement | undefined {
 		const segments = subpath.split("/");
 		let current: TreeElement = this._tree;

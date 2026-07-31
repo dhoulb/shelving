@@ -9,7 +9,7 @@ import { Extractor } from "./Extractor.js";
  * @see https://shelving.cc/extract/ModuleExtractorInput
  */
 export interface ModuleExtractorInput {
-	/** Display name for the module, derived from the package.json export key (e.g. `"util/string"`, `"firestore/client"`). */
+	/** Display name for the module, derived from the package.json export key (e.g. `"util/string"`, `"firebase"`). */
 	readonly name: string;
 	/**
 	 * The source element this module is built from.

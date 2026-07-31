@@ -39,8 +39,8 @@ async function _basicLayout(root: string): Promise<void> {
 	await writeFile(join(root, "util", "array.ts"), "export const ARR = [];");
 	await mkdir(join(root, "api"), { recursive: true });
 	await writeFile(join(root, "api", "index.ts"), "/** API. */ export const API = 1;");
-	await mkdir(join(root, "firestore"), { recursive: true });
-	await writeFile(join(root, "firestore", "client.ts"), "/** FS Client. */ export const C = 1;");
+	await mkdir(join(root, "nested"), { recursive: true });
+	await writeFile(join(root, "nested", "client.ts"), "/** FS Client. */ export const C = 1;");
 }
 
 describe("PackageExtractor", () => {
@@ -50,11 +50,11 @@ describe("PackageExtractor", () => {
 			const pkg = await _writePackageJson(root, {
 				".": "./index.js",
 				"./api": "./api/index.js",
-				"./firestore/client": "./firestore/client.js",
+				"./nested/client": "./nested/client.js",
 			});
 			const out = await new PackageExtractor({ tree }).extract(pkg);
 			const kids = Array.from(out.props.children as Iterable<TreeElement>);
-			expect(kids.map(k => k.props.name)).toEqual(["api", "firestore/client"]);
+			expect(kids.map(k => k.props.name)).toEqual(["api", "nested/client"]);
 			for (const k of kids) {
 				expect(k.type).toBe("tree-documentation");
 				expect((k as { props: { kind?: string } }).props.kind).toBe("module");

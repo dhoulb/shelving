@@ -57,7 +57,7 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 - **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
 - **`SQLiteProvider`** / **`PostgreSQLProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
-Cloud providers live in the `shelving/cloudflare` and `shelving/firestore/client` sibling modules.
+Cloud providers live in the `shelving/cloudflare` and `shelving/firebase` sibling modules.
 
 ### Migrations
 
