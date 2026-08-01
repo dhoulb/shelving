@@ -1,6 +1,7 @@
+import { Collection } from "../db/collection/Collection.js";
 import { DATA } from "../schema/DataSchema.js";
 import { NULLABLE_DATE } from "../schema/DateSchema.js";
-import { REQUIRED_STRING } from "../schema/StringSchema.js";
+import { REQUIRED_STRING, STRING } from "../schema/StringSchema.js";
 import type { Item } from "../util/item.js";
 import type { ValidatorType } from "../util/validate.js";
 
@@ -69,3 +70,10 @@ export const person5: PersonItem = { id: "person5", name: { first: "Terry", last
  * @see https://shelving.cc/test/people
  */
 export const people: ReadonlyArray<PersonItem> = [person1, person2, person3, person4, person5];
+
+/**
+ * Collection of `PersonData` items keyed by string id, for testing database providers.
+ *
+ * @see https://shelving.cc/test/PEOPLE_COLLECTION
+ */
+export const PEOPLE_COLLECTION = new Collection<"people", string, PersonData>("people", STRING, PERSON_SCHEMA);

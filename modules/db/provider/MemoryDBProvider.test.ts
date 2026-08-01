@@ -28,7 +28,11 @@ import {
 	person3,
 	person4,
 	person5,
+	testDBProvider,
 } from "../../test/index.js";
+
+// Run the universal DBProvider contract suite against MemoryDBProvider.
+testDBProvider("MemoryDBProvider", () => new MemoryDBProvider<string>());
 
 test("MemoryDBProvider: set/get/delete documents", async () => {
 	// Setup.
