@@ -57,4 +57,4 @@ Unit tests (value codec and request protocol) run offline in the normal test sui
 bun run test-firebase
 ```
 
-This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
+This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java 21+), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
