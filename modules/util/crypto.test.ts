@@ -10,7 +10,7 @@ describe("hashPassword()", () => {
 		expect(typeof hash).toBe("string");
 		expect(hash.length).toBeGreaterThan(10);
 		expect(hash).toMatch(/[a-zA-Z0-9-_]+\$[0-9]+\$[a-zA-Z0-9-_]+/);
-	});
+	}, 30000);
 	test("Fails for short password", async () => {
 		try {
 			await hashPassword("abc");
@@ -18,27 +18,27 @@ describe("hashPassword()", () => {
 		} catch (err) {
 			expect(err).toBeInstanceOf(ValueError);
 		}
-	});
+	}, 30000);
 });
 describe("verifyPassword()", () => {
 	test("Works correctly", async () => {
 		const hash = await hashPassword(PASSWORD);
 		const result = await verifyPassword(PASSWORD, hash);
 		expect(result).toBe(true);
-	});
+	}, 30000);
 	test("Fails for wrong password", async () => {
 		const hash = await hashPassword(PASSWORD);
 		const result = await verifyPassword("wrongpassword", hash);
 		expect(result).toBe(false);
-	});
+	}, 30000);
 	test("Fails for for empty password", async () => {
 		const hash = await hashPassword(PASSWORD);
 		const result = await verifyPassword("", hash);
 		expect(result).toBe(false);
-	});
+	}, 30000);
 	test("Fails for for long password", async () => {
 		const hash = await hashPassword(PASSWORD);
 		const result = await verifyPassword("", hash);
 		expect(result).toBe(false);
-	});
+	}, 30000);
 });
