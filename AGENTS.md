@@ -17,6 +17,7 @@ Source lives under `modules/`:
 - `cloudflare` — Cloudflare Workers providers (KV, D1)
 - `db` — Database abstraction (providers, collections, stores, migrations)
 - `error` — Error classes
+- `firebase` — Firebase providers (Firestore via the REST API)
 - `firestore` — Firestore providers (client, lite, server)
 - `markup` — Markdown renderer for user-facing content
 - `react` — React hooks and context

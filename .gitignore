@@ -8,4 +8,4 @@
 .DS_Store
 /*/*.js
 .eslintcache
-*.tsbuildinfo
+*.tsbuildinfofirestore-debug.log
