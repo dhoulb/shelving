@@ -10,3 +10,4 @@
 .eslintcache
 *.tsbuildinfo
 firestore-debug.log
+firebase-debug.log
