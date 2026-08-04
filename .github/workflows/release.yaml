@@ -29,12 +29,14 @@ jobs:
         with:
           node-version: 24
       - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
       - name: install
         run: bun install
       - name: test
         run: bun run test
-      - name: test-firebase
-        run: bun run test-firebase
       - name: build
         run: bun run build
       - name: git config

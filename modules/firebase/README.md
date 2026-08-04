@@ -51,10 +51,10 @@ const provider = new FirestoreProvider({
 
 ## Testing
 
-Unit tests (value codec and request protocol) run offline in the normal test suite. The universal `DBProvider` contract suite runs against the real Firestore emulator:
+Unit tests (value codec and request protocol) run offline in the normal test suite. The universal `DBProvider` contract suite runs against the real Firestore emulator as part of `bun run test` (via the `test:firebase` script), or on its own:
 
 ```sh
-bun run test-firebase
+bun run test:firebase
 ```
 
-This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
+This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java 21+), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
