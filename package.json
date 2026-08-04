@@ -64,7 +64,7 @@
 		"test:lint": "biome check .",
 		"test:type": "tsc --noEmit",
 		"test:style": "stylelint \"modules/**/*.css\"",
-		"test:unit": "bun test ./modules --concurrent --only-failures",
+		"test:unit": "GITHUB_ACTIONS=false bun test ./modules --concurrent --only-failures",
 		"fix": "bun run --sequential fix:*",
 		"fix:0:lint": "biome check --write .",
 		"fix:1:style": "stylelint \"modules/**/*.css\" --fix",
@@ -76,7 +76,7 @@
 		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",
 		"build:2:emit": "tsc -p tsconfig.build.json",
 		"build:3:syntax": "bun run ./dist/index.js",
-		"build:4:unit": "bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
+		"build:4:unit": "GITHUB_ACTIONS=false bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
 	},
 	"sideEffects": [
 		"*.css"
