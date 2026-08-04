@@ -1,4 +1,3 @@
-import type { UnionToIntersection } from "@google-cloud/firestore";
 import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import type { EntryObject } from "./entry.js";
@@ -158,6 +157,9 @@ export type NestedData = { readonly [key: string]: Data };
  *
  * @see https://shelving.cc/util/data/FlatData
  */
+/** Convert a union of types into the intersection of those types. */
+type UnionToIntersection<U> = (U extends unknown ? (u: U) => void : never) extends (i: infer I) => void ? I : never;
+
 export type FlatData<T extends NestedData> = Resolve<UnionToIntersection<T[keyof T]>>;
 
 /**
