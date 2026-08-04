@@ -47,7 +47,7 @@ const provider = new FirestoreProvider({
 - **Updates**: `DBProvider.updateItem()` uses an update mask plus field transforms — `+=` maps to `increment`, `+[]` to `appendMissingElements`, `-[]` to `removeAllFromArray` — and fails if the item does not exist.
 - **Query writes**: `setQuery()` / `updateQuery()` / `deleteQuery()` read the matching document names (a `__name__`-only query) then commit writes in batches of 500.
 - **Values**: safe integers store as Firestore integers, other finite numbers as doubles; integers beyond `Number.MAX_SAFE_INTEGER` lose precision when read back. Foreign types written by other clients (timestamps, references, bytes) read back as their string form. Data read from Firestore is unvalidated — wrap the provider in `ValidationDBProvider` to guarantee types.
-- **Transactions**: retried up to 5 times on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
+- **Transactions**: retried up to 5 times with jittered exponential backoff on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
 
 ## Testing
 
