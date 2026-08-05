@@ -3,6 +3,7 @@ import { DBProvider } from "../db/provider/DBProvider.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { UnsupportedError } from "../error/UnsupportedError.js";
 import type { ImmutableArray, MutableArray } from "../util/array.js";
+import { getDelay } from "../util/async.js";
 import type { Data } from "../util/data.js";
 import { joinDataPath } from "../util/data.js";
 import type { AnyCaller } from "../util/function.js";
@@ -11,7 +12,7 @@ import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } f
 import { getItem } from "../util/item.js";
 import { isPlainObject } from "../util/object.js";
 import { getQueryFilters, getQueryLimit, getQueryOrders, type Query } from "../util/query.js";
-import { getRandomKey } from "../util/random.js";
+import { getRandom, getRandomKey } from "../util/random.js";
 import type { Updates } from "../util/update.js";
 import { getUpdates } from "../util/update.js";
 import type { FirestoreFields, FirestoreValue } from "./value.js";
@@ -371,7 +372,7 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 
 	/**
 	 * Runs the callback in a Firestore transaction: begin → reads with the transaction id → buffered writes committed atomically.
-	 * - Retries the whole callback (up to 5 attempts) when the commit is aborted by contention, so the callback must have no side effects other than through its provider.
+	 * - Retries the whole callback (up to 5 attempts, with jittered exponential backoff) when the commit is aborted by contention, so the callback must have no side effects other than through its provider.
 	 * - Rolls back and rethrows if the callback throws.
 	 * - Reads see a consistent snapshot and never the transaction's own buffered writes.
 	 */
@@ -379,6 +380,8 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 		let retryTransaction: string | undefined;
 		let aborted: unknown;
 		for (let attempt = 0; attempt < TRANSACTION_ATTEMPTS; attempt++) {
+			// Back off with jitter before each retry so contending transactions de-synchronise instead of re-aborting each other in lockstep.
+			if (attempt) await getDelay(getRandom(0, 100 * 2 ** attempt));
 			const { transaction } = (await this._request("beginTransaction", {
 				options: { readWrite: retryTransaction ? { retryTransaction } : {} },
 			})) as { transaction: string };

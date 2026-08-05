@@ -47,7 +47,7 @@ const provider = new FirestoreProvider({
 - **Updates**: `DBProvider.updateItem()` uses an update mask plus field transforms — `+=` maps to `increment`, `+[]` to `appendMissingElements`, `-[]` to `removeAllFromArray` — and fails if the item does not exist.
 - **Query writes**: `setQuery()` / `updateQuery()` / `deleteQuery()` read the matching document names (a `__name__`-only query) then commit writes in batches of 500.
 - **Values**: safe integers store as Firestore integers, other finite numbers as doubles; integers beyond `Number.MAX_SAFE_INTEGER` lose precision when read back. Foreign types written by other clients (timestamps, references, bytes) read back as their string form. Data read from Firestore is unvalidated — wrap the provider in `ValidationDBProvider` to guarantee types.
-- **Transactions**: retried up to 5 times on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
+- **Transactions**: retried up to 5 times with jittered exponential backoff on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
 
 ## Testing
 
@@ -59,4 +59,4 @@ bun run test:firebase
 
 This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java 21+), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
 
-The emulator host is pinned to `127.0.0.1` (not `localhost`) in `firebase.json`: the emulator's socket is IPv4-only, and Bun's `fetch` resolves `localhost` to `::1` without falling back to IPv4, which fails with `ECONNRESET`.
+`firebase.json` pins the emulator to `127.0.0.1` (not `localhost`, whose IPv6-first resolution depends on client fallback behaviour) and to port `8981` rather than the default `8080`. The port matters on macOS: when Screen Time's "Web content" filtering is enabled, Apple's `webfilterproxyd` transparently proxies loopback connections on well-known HTTP ports (including `8080`). The emulator's REST front-end opens an internal loopback connection back to its own port for every data request; the filter captures that connection and cannot relay it, so every read and write hangs forever (or resets, e.g. the historical `ECONNRESET` from `fetch` on `localhost:8080`). Ports outside the filter's watch list, like `8981`, are untouched.
