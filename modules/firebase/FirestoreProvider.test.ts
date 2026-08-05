@@ -240,17 +240,6 @@ describe("FirestoreProvider (protocol)", () => {
 // Start one with: bun run test-firebase (or `firebase emulators:exec --only firestore --project shelving-test "bun test ./modules/firebase"`).
 const EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST;
 if (EMULATOR_HOST) {
-	// Wait for the emulator to actually accept connections — it can report ready slightly before its socket binds, and a fetch that races it fails with instant connection resets.
-	for (let attempt = 0; ; attempt++) {
-		try {
-			await fetch(`http://${EMULATOR_HOST}/`);
-			break;
-		} catch (thrown) {
-			if (attempt >= 100) throw new Error(`Firestore emulator at ${EMULATOR_HOST} is not accepting connections`, { cause: thrown });
-			await new Promise(resolve => setTimeout(resolve, 100));
-		}
-	}
-
 	const createProvider = () => new FirestoreProvider<string, Data>({ project: "shelving-test", host: `http://${EMULATOR_HOST}` });
 
 	testDBProvider("FirestoreProvider", createProvider, { realtime: false, transactions: true });
