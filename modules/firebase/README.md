@@ -58,3 +58,5 @@ bun run test:firebase
 ```
 
 This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which starts the emulator (requires Java 21+), sets `FIRESTORE_EMULATOR_HOST`, and shuts it down afterwards. Without that env var the emulator-backed tests don't register, so the offline suite stays green.
+
+The emulator host is pinned to `127.0.0.1` (not `localhost`) in `firebase.json`: the emulator's socket is IPv4-only, and Bun's `fetch` resolves `localhost` to `::1` without falling back to IPv4, which fails with `ECONNRESET`.
