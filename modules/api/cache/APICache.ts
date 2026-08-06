@@ -105,8 +105,8 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @example cache.refresh(getUser, { id: "abc" })
 	 * @see https://shelving.cc/api/APICache/refresh
 	 */
-	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, maxAge?: number): void {
-		this._get(endpoint)?.refresh(payload, maxAge);
+	async refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, maxAge?: number): Promise<void> {
+		await this._get(endpoint)?.refresh(payload, maxAge);
 	}
 
 	/**
@@ -117,8 +117,8 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @example cache.refreshAll(getUser)
 	 * @see https://shelving.cc/api/APICache/refreshAll
 	 */
-	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, maxAge?: number): void {
-		this._get(endpoint)?.refreshAll(maxAge);
+	async refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, maxAge?: number): Promise<void> {
+		await this._get(endpoint)?.refreshAll(maxAge);
 	}
 
 	// Implement `AsyncDisposable`

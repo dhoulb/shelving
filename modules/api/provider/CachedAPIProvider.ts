@@ -67,8 +67,8 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 * @param payload The payload identifying the cached result.
 	 * @see https://shelving.cc/api/CachedAPIProvider/refresh
 	 */
-	refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): void {
-		this._cache.refresh(endpoint, payload, this.maxAge);
+	async refresh<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP): Promise<void> {
+		await this._cache.refresh(endpoint, payload, this.maxAge);
 	}
 
 	/**
@@ -77,8 +77,8 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 	 * @param endpoint The endpoint whose cached results should be refreshed.
 	 * @see https://shelving.cc/api/CachedAPIProvider/refreshAll
 	 */
-	refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): void {
-		this._cache.refreshAll(endpoint, this.maxAge);
+	async refreshAll<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>): Promise<void> {
+		await this._cache.refreshAll(endpoint, this.maxAge);
 	}
 
 	// Implement `AsyncDisposable`

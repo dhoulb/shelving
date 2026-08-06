@@ -73,7 +73,7 @@ describe("APICache", () => {
 		expect(first.value).toBe("123:1");
 		expect(second.value).toBe("456:1");
 
-		cache.refreshAll(endpoint);
+		void cache.refreshAll(endpoint);
 		await runMicrotasks();
 
 		expect(first.value).toBe("123:2");
