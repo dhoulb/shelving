@@ -74,7 +74,7 @@ export class ChangesDBProvider<I extends Identifier, T extends Data> extends Thr
 	/**
 	 * Replay the `changes` log onto another provider, re-issuing each write in order.
 	 *
-	 * - Useful for audit replay or syncing a secondary store.
+	 * - Useful for audit replay or syncing a secondary store — and the commit mechanism for `MemoryDBProvider.transact()`.
 	 * - `"add"` changes replay as `DBProvider.setItem()` with the logged id, so the target keeps the same generated ids.
 	 * - The changes replay as a sequence of awaited writes — the replay itself is not atomic.
 	 *

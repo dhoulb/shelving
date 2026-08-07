@@ -19,3 +19,21 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
   console.log(next);
 }
 ```
+
+## Transactions
+
+`MemoryDBProvider.transact()` hands the callback a shallow snapshot clone of the provider (see `MemoryDBProvider.clone()`) wrapped in a `ChangesDBProvider` to capture its writes, then replays the captured changes onto the real provider with `ChangesDBProvider.replay()` when the callback resolves — so live subscriptions fire naturally on commit, and a thrown callback commits nothing:
+
+```ts
+await provider.transact(async db => {
+  const post = await db.requireItem(POSTS, id);
+  await db.updateItem(POSTS, id, { title: `${post.title}!` });
+});
+```
+
+Things to know:
+
+- The clone is a full provider, so everything works inside the callback: reads see a snapshot from when the transaction began plus the transaction's own writes, realtime sequences observe the transaction's state, and nested `transact()` commits into the outer transaction. Portable code must not rely on any of this — see `DBProvider.transact()` for the weakest shared contract.
+- The clone is disposed when the transaction completes or fails, ending any sequences opened inside the callback.
+- Writes made to the provider while the callback is running are kept — the captured changes replay on top in order (updates apply as deltas, sets and deletes overwrite), with no conflict detection. Overlapping transactions replay in completion order, last write wins per item.
+- Query writes (`setQuery`, `updateQuery`, `deleteQuery`) resolve two-step against the clone, so they commit to exactly the items they matched inside the transaction, even if concurrent writes changed which items match.

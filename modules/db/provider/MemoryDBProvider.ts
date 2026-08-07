@@ -13,6 +13,7 @@ import { getRandom, getRandomKey } from "../../util/random.js";
 import type { Updates } from "../../util/update.js";
 import { updateData } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
+import { ChangesDBProvider } from "./ChangesDBProvider.js";
 import { DBProvider } from "./DBProvider.js";
 
 /**
@@ -21,6 +22,7 @@ import { DBProvider } from "./DBProvider.js";
  * - Extremely fast (ideal as the cache behind `CacheDBProvider`!), but does not persist data after the process or browser window closes.
  * - Identity-preserving: `getItem()` etc. return the exact same object instance that was passed into `setItem()`.
  * - Supports live subscriptions, so it can back `ItemStore` / `QueryStore` reads.
+ * - Supports transactions: `transact()` runs the callback against a snapshot clone, captures its writes with `ChangesDBProvider`, and replays them onto this provider on success — sequences and nested transactions work inside the callback, scoped to the transaction.
  *
  * @see https://shelving.cc/db/MemoryDBProvider
  */
@@ -138,6 +140,41 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 		this.getTable(collection).setItems(items);
 	}
 
+	/**
+	 * Clone this provider into a new plain `MemoryDBProvider` containing the same items.
+	 *
+	 * - Shallow: new tables and maps sharing the same (immutable) item instances, so cloning is cheap and unchanged items keep their identity.
+	 * - The clone is always a plain `MemoryDBProvider` with plain `MemoryTable`s, even when called on a subclass — writes to the clone only touch its own memory, never a subclass's backing store (e.g. `StorageDBProvider` persistence).
+	 *
+	 * @example provider.clone() // MemoryDBProvider
+	 * @see https://shelving.cc/db/MemoryDBProvider/clone
+	 */
+	clone(): MemoryDBProvider<I, T> {
+		const clone = new MemoryDBProvider<I, T>();
+		for (const [name, table] of Object.entries(this._tables)) if (table) clone._tables[name] = table.clone();
+		return clone;
+	}
+
+	/**
+	 * Runs the callback against a shallow clone of this provider, capturing its writes with `ChangesDBProvider`, then replays them onto this provider when the callback resolves.
+	 * - If the callback throws, the clone and its captured changes are discarded and nothing is committed.
+	 * - Reads inside the callback see a snapshot from when the transaction began, plus the transaction's own writes. Realtime sequences and nested `transact()` also work inside the callback, scoped to the transaction — portable code must not rely on any of this (see `DBProvider.transact()`).
+	 * - The clone is disposed when the transaction completes or fails, ending any sequences opened inside the callback.
+	 * - Writes made to this provider while the callback is running are kept — the captured changes replay on top in order (updates apply as deltas, sets and deletes overwrite), with no conflict detection; overlapping transactions replay in completion order (last write wins per item).
+	 * - Query writes resolve two-step against the clone, so they commit to exactly the items they matched inside the transaction, even if concurrent writes changed which items match.
+	 */
+	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+		const clone = this.clone();
+		try {
+			const transaction = new ChangesDBProvider<I, T>(clone);
+			const result = await callback(transaction);
+			await transaction.replay(this); // Commit the captured changes.
+			return result;
+		} finally {
+			await clone[Symbol.asyncDispose](); // End any sequences opened inside the callback.
+		}
+	}
+
 	// Implement `AsyncDisposable`
 	override async [Symbol.asyncDispose](): Promise<void> {
 		await awaitDispose(
@@ -151,7 +188,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  * In-memory table holding the items of a single collection for a `MemoryDBProvider`.
  *
  * - Keys items by id in a `Map`, preserving the exact object instance passed in.
- * - Exposes a `next` `DeferredSequence` that resolves on every change, powering the live `*Sequence` subscriptions.
+ * - An internal `DeferredSequence` resolves on every change, powering the live `*Sequence` subscriptions.
  *
  * @example
  *  const table = provider.getTable(users);
@@ -161,14 +198,10 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  */
 export class MemoryTable<I extends Identifier, T extends Data> implements AsyncDisposable {
 	/** Actual data in this table. */
-	protected readonly _data = new Map<I, Item<I, T>>();
+	protected readonly _data: Map<I, Item<I, T>>;
 
-	/**
-	 * Deferred sequence that resolves on every change to this table.
-	 *
-	 * @see https://shelving.cc/db/MemoryTable/next
-	 */
-	public readonly next = new DeferredSequence();
+	/** Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end. */
+	protected readonly _next = new DeferredSequence<boolean>();
 
 	/**
 	 * Collection this table stores the items of.
@@ -177,8 +210,10 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 */
 	readonly collection: Collection<string, I, T>;
 
-	constructor(collection: Collection<string, I, T>) {
+	/** @param items Optional initial `[id, item]` entries to seed the table with. */
+	constructor(collection: Collection<string, I, T>, items?: Iterable<readonly [I, Item<I, T>]>) {
 		this.collection = collection;
+		this._data = new Map(items);
 	}
 
 	/**
@@ -207,7 +242,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastValue = this.getItem(id);
 		yield lastValue;
 		while (true) {
-			await this.next;
+			const done = await this._next;
+			if (done) return;
 			const nextValue = this.getItem(id);
 			if (nextValue !== lastValue) {
 				yield nextValue;
@@ -258,7 +294,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		const item = getItem(id, data);
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
-			this.next.resolve();
+			this._next.resolve(false);
 		}
 	}
 
@@ -305,7 +341,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	deleteItem(id: I): void {
 		if (this._data.has(id)) {
 			this._data.delete(id);
-			this.next.resolve();
+			this._next.resolve(false);
 		}
 	}
 
@@ -347,7 +383,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastItems = this.getQuery(query);
 		yield lastItems;
 		while (true) {
-			await this.next;
+			const done = await this._next;
+			if (done) return;
 			const nextItems = this.getQuery(query);
 			if (!isArrayEqual(lastItems, nextItems)) {
 				yield nextItems;
@@ -395,10 +432,23 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		}
 	}
 
+	/**
+	 * Clone this table into a new plain `MemoryTable` containing the same items.
+	 *
+	 * - Shallow: a new map sharing the same (immutable) item instances, so cloning is cheap.
+	 * - The clone is always a plain `MemoryTable`, even when called on a subclass — writes to the clone have no side effects (e.g. `StorageTable` persistence).
+	 *
+	 * @example table.clone() // MemoryTable
+	 * @see https://shelving.cc/db/MemoryTable/clone
+	 */
+	clone(): MemoryTable<I, T> {
+		return new MemoryTable<I, T>(this.collection, this._data);
+	}
+
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose](): Promise<void> {
 		await awaitDispose(
-			// Empty by default.
+			() => this._next.resolve(true), // Wake every open sequence with doneness, so it ends.
 		);
 	}
 }
