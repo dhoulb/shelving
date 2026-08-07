@@ -73,26 +73,33 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		for await (const items of super.getQuerySequence(collection, query)) yield _validateItems(collection, items, this.getQuerySequence);
 	}
 
-	/** Validate the data before writing; throws `ValueError` if it fails the collection schema. */
+	/**
+	 * Validate the data before writing; throws `ValueError` if it fails the collection schema.
+	 * - Passthrough, not two-step: validation applies to the query write's own inputs up front, so per-item routing adds nothing — pass through to keep the source's native query write.
+	 */
 	override setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		data: TT,
 	): Promise<void> {
-		return super.setQuery(collection, query, collection.validate(data));
+		return this.source.setQuery(collection, query, collection.validate(data));
 	}
 
-	/** Validate the updates before writing; throws `ValueError` if they fail the collection schema. */
+	/**
+	 * Validate the updates before writing; throws `ValueError` if they fail the collection schema.
+	 * - Passthrough, not two-step: validation applies to the query write's own inputs up front, so per-item routing adds nothing — pass through to keep the source's native query write.
+	 */
 	override updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
 	): Promise<void> {
-		return super.updateQuery(collection, query, _validateUpdates(collection, updates, this.updateQuery));
+		return this.source.updateQuery(collection, query, _validateUpdates(collection, updates, this.updateQuery));
 	}
 
+	/** Passthrough, not two-step: there are no inputs to validate per item, so keep the source's native query write. */
 	override deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		return super.deleteQuery(collection, query);
+		return this.source.deleteQuery(collection, query);
 	}
 }
 
