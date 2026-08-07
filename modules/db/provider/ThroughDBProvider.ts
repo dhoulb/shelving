@@ -1,3 +1,4 @@
+import { awaitValues } from "../../util/async.js";
 import type { Data } from "../../util/data.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -71,24 +72,28 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	/**
 	 * Two-step: resolve the query to its matching items with `getQuery()`, then set each one with `setItem()`.
 	 * - Routes every implied write through this provider's own item methods, so wrapper behaviour applies to each item — the same theory as `transact()` re-wrapping the transaction provider.
+	 * - The per-item writes run concurrently (`awaitValues()`), so a batch over a remote source costs one round-trip of latency, not one per item.
 	 * - The resolve and the writes are separate steps, so this is only atomic inside `transact()`.
 	 */
 	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
-		for (const { id } of await this.getQuery(collection, query)) await this.setItem(collection, id, data);
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.setItem(collection, id, data)));
 	}
 
-	/** Two-step: resolve the query to its matching items with `getQuery()`, then update each one with `updateItem()` — see `ThroughDBProvider.setQuery()`. */
+	/** Two-step: resolve the query to its matching items with `getQuery()`, then update each one concurrently with `updateItem()` — see `ThroughDBProvider.setQuery()`. */
 	async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
 	): Promise<void> {
-		for (const { id } of await this.getQuery(collection, query)) await this.updateItem(collection, id, updates as Updates<Item<II, TT>>);
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.updateItem(collection, id, updates as Updates<Item<II, TT>>)));
 	}
 
-	/** Two-step: resolve the query to its matching items with `getQuery()`, then delete each one with `deleteItem()` — see `ThroughDBProvider.setQuery()`. */
+	/** Two-step: resolve the query to its matching items with `getQuery()`, then delete each one concurrently with `deleteItem()` — see `ThroughDBProvider.setQuery()`. */
 	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		for (const { id } of await this.getQuery(collection, query)) await this.deleteItem(collection, id);
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.deleteItem(collection, id)));
 	}
 
 	getFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<OptionalItem<II, TT>> {
