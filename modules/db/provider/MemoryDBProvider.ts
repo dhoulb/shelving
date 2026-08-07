@@ -188,7 +188,7 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
  * In-memory table holding the items of a single collection for a `MemoryDBProvider`.
  *
  * - Keys items by id in a `Map`, preserving the exact object instance passed in.
- * - Exposes a `next` `DeferredSequence` that resolves on every change, powering the live `*Sequence` subscriptions.
+ * - An internal `DeferredSequence` resolves on every change, powering the live `*Sequence` subscriptions.
  *
  * @example
  *  const table = provider.getTable(users);
@@ -200,12 +200,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/** Actual data in this table. */
 	protected readonly _data: Map<I, Item<I, T>>;
 
-	/**
-	 * Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end.
-	 *
-	 * @see https://shelving.cc/db/MemoryTable/next
-	 */
-	public readonly next = new DeferredSequence<boolean>();
+	/** Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end. */
+	protected readonly _next = new DeferredSequence<boolean>();
 
 	/**
 	 * Collection this table stores the items of.
@@ -246,7 +242,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastValue = this.getItem(id);
 		yield lastValue;
 		while (true) {
-			const done = await this.next;
+			const done = await this._next;
 			if (done) return;
 			const nextValue = this.getItem(id);
 			if (nextValue !== lastValue) {
@@ -298,7 +294,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		const item = getItem(id, data);
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
-			this.next.resolve(false);
+			this._next.resolve(false);
 		}
 	}
 
@@ -345,7 +341,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	deleteItem(id: I): void {
 		if (this._data.has(id)) {
 			this._data.delete(id);
-			this.next.resolve(false);
+			this._next.resolve(false);
 		}
 	}
 
@@ -387,7 +383,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastItems = this.getQuery(query);
 		yield lastItems;
 		while (true) {
-			const done = await this.next;
+			const done = await this._next;
 			if (done) return;
 			const nextItems = this.getQuery(query);
 			if (!isArrayEqual(lastItems, nextItems)) {
@@ -452,7 +448,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose](): Promise<void> {
 		await awaitDispose(
-			() => this.next.resolve(true), // Wake every open sequence with doneness, so it ends.
+			() => this._next.resolve(true), // Wake every open sequence with doneness, so it ends.
 		);
 	}
 }
