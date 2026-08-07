@@ -15,11 +15,7 @@ import {
 } from "../../test/index.js";
 
 // Run the universal DBProvider contract suite against MemoryDBProvider.
-testDBProvider("MemoryDBProvider", () => new MemoryDBProvider<string>(), {
-	transactions: true,
-	transactionSequences: true,
-	nestedTransactions: true,
-});
+testDBProvider("MemoryDBProvider", () => new MemoryDBProvider<string>(), { transactions: true, nestedTransactions: true });
 
 describe("MemoryDBProvider.transact()", () => {
 	test("keeps writes made to the provider while the transaction is running", async () => {

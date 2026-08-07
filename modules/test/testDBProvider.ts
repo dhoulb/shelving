@@ -12,12 +12,10 @@ import { expectOrderedItems, expectUnorderedItems } from "./util.js";
 
 /** Options for `testDBProvider()`, declaring the capabilities of the provider under test. */
 export interface TestDBProviderOptions {
-	/** Whether the provider supports realtime sequences — when `false`, sequences are asserted to throw `UnsupportedError`. @default true */
+	/** Whether the provider supports realtime sequences — when `false`, sequences are asserted to throw `UnsupportedError` (including inside `transact()`); when `true` combined with `transactions`, sequences inside a transaction are asserted to observe the transaction and end with it. @default true */
 	readonly realtime?: boolean;
 	/** Whether the provider supports `transact()` — when `false`, it is asserted to throw `UnsupportedError`. @default false */
 	readonly transactions?: boolean;
-	/** Whether realtime sequences work inside `transact()`, observing the transaction's own state — when `false`, they are asserted to throw `UnsupportedError` inside a transaction. @default false */
-	readonly transactionSequences?: boolean;
 	/** Whether `transact()` can be nested, committing the inner transaction into the outer — when `false`, nested calls are asserted to throw `UnsupportedError`. @default false */
 	readonly nestedTransactions?: boolean;
 }
@@ -37,7 +35,7 @@ export interface TestDBProviderOptions {
 export function testDBProvider(
 	name: string,
 	createProvider: () => DBProvider<string, Data> | PromiseLike<DBProvider<string, Data>>,
-	{ realtime = true, transactions = false, transactionSequences = false, nestedTransactions = false }: TestDBProviderOptions = {},
+	{ realtime = true, transactions = false, nestedTransactions = false }: TestDBProviderOptions = {},
 ): void {
 	// Create the provider and wipe both fixture collections so each test starts clean.
 	async function init(): Promise<DBProvider<string, Data>> {
@@ -277,7 +275,8 @@ export function testDBProvider(
 				expect(await db.countQuery(BASICS_COLLECTION, {})).toBe(6);
 			});
 
-			if (transactionSequences) {
+			// Sequence support inside a transaction follows the `realtime` flag — a provider that supports both capabilities supports them together.
+			if (realtime) {
 				test("transact(): sequences inside a transaction observe the transaction and end with it", async () => {
 					const db = await init();
 					await db.setItem(BASICS_COLLECTION, "basic1", basic1);
