@@ -200,15 +200,12 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/** Actual data in this table. */
 	protected readonly _data: Map<I, Item<I, T>>;
 
-	/** Set on disposal, so open sequences end instead of waiting for the next change. */
-	private _disposed = false;
-
 	/**
-	 * Deferred sequence that resolves on every change to this table.
+	 * Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end.
 	 *
 	 * @see https://shelving.cc/db/MemoryTable/next
 	 */
-	public readonly next = new DeferredSequence();
+	public readonly next = new DeferredSequence<boolean>();
 
 	/**
 	 * Collection this table stores the items of.
@@ -249,8 +246,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastValue = this.getItem(id);
 		yield lastValue;
 		while (true) {
-			await this.next;
-			if (this._disposed) return;
+			const done = await this.next;
+			if (done) return;
 			const nextValue = this.getItem(id);
 			if (nextValue !== lastValue) {
 				yield nextValue;
@@ -301,7 +298,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		const item = getItem(id, data);
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
-			this.next.resolve();
+			this.next.resolve(false);
 		}
 	}
 
@@ -348,7 +345,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	deleteItem(id: I): void {
 		if (this._data.has(id)) {
 			this._data.delete(id);
-			this.next.resolve();
+			this.next.resolve(false);
 		}
 	}
 
@@ -390,8 +387,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 		let lastItems = this.getQuery(query);
 		yield lastItems;
 		while (true) {
-			await this.next;
-			if (this._disposed) return;
+			const done = await this.next;
+			if (done) return;
 			const nextItems = this.getQuery(query);
 			if (!isArrayEqual(lastItems, nextItems)) {
 				yield nextItems;
@@ -454,10 +451,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 
 	// Implement `AsyncDisposable`
 	async [Symbol.asyncDispose](): Promise<void> {
-		await awaitDispose(() => {
-			// Wake every open sequence so it sees `_disposed` and ends.
-			this._disposed = true;
-			this.next.resolve();
-		});
+		await awaitDispose(
+			() => this.next.resolve(true), // Wake every open sequence with doneness, so it ends.
+		);
 	}
 }
