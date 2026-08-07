@@ -156,6 +156,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 
 	/**
 	 * Set (overwrite) the data for every item matching a query.
+	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then write per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to set.
@@ -171,6 +172,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 
 	/**
 	 * Apply partial updates to every item matching a query.
+	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then write per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to update.
@@ -186,6 +188,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 
 	/**
 	 * Delete every item matching a query.
+	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then delete per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.

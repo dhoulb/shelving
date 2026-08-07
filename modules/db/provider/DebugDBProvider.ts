@@ -143,6 +143,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 		}
 	}
 
+	/** Passthrough, not two-step: log the query write the caller made, not the per-item writes it implies. */
 	override async setQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -150,7 +151,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	): Promise<void> {
 		try {
 			console.debug(`${ANSI_RIGHT} SET QUERY`, collection.name, query, data);
-			await super.setQuery(collection, query, data);
+			await this.source.setQuery(collection, query, data);
 			console.debug(`${ANSI_SUCCESS} SET QUERY`, collection.name, query, data);
 		} catch (reason) {
 			console.error(`${ANSI_FAILURE} SET QUERY`, collection.name, query, data, reason);
@@ -158,6 +159,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 		}
 	}
 
+	/** Passthrough, not two-step: log the query write the caller made, not the per-item writes it implies. */
 	override async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
@@ -165,7 +167,7 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 	): Promise<void> {
 		try {
 			console.debug(`${ANSI_RIGHT} UPDATE QUERY`, collection.name, query, updates);
-			await super.updateQuery(collection, query, updates);
+			await this.source.updateQuery(collection, query, updates);
 			console.debug(`${ANSI_SUCCESS} UPDATE QUERY`, collection.name, query, updates);
 		} catch (reason) {
 			console.error(`${ANSI_FAILURE} UPDATE QUERY`, collection.name, query, updates, reason);
@@ -173,13 +175,14 @@ export class DebugDBProvider<I extends Identifier, T extends Data> extends Throu
 		}
 	}
 
+	/** Passthrough, not two-step: log the query write the caller made, not the per-item writes it implies. */
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 	): Promise<void> {
 		try {
 			console.debug(`${ANSI_RIGHT} DELETE QUERY`, collection.name, query);
-			await super.deleteQuery(collection, query);
+			await this.source.deleteQuery(collection, query);
 			console.debug(`${ANSI_SUCCESS} DELETE QUERY`, collection.name, query);
 		} catch (reason) {
 			console.error(`${ANSI_FAILURE} DELETE QUERY`, collection.name, query, reason);

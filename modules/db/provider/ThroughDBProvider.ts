@@ -11,6 +11,7 @@ import type { DBProvider } from "./DBProvider.js";
  * Database provider that passes every operation straight through to a wrapped `source` provider.
  *
  * - Base for the layered `Through*Provider` family (validation, caching, logging, change tracking); subclasses override individual methods to add behaviour and call `super` to delegate.
+ * - Query writes (`setQuery()`, `updateQuery()`, `deleteQuery()`) are two-step by default — resolved to their matching items with `getQuery()`, then written per item through this provider's own item methods — so wrapper behaviour applies to every implied write. Subclasses that don't need per-item behaviour override them to pass through to `source` directly.
  * - Exposes `source` and implements `Sourceable`, so wrapped providers can be discovered with `getSource()` / `requireSource()`.
  *
  * @see https://shelving.cc/db/ThroughDBProvider
@@ -67,20 +68,27 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 		return this.source.getQuerySequence(collection, query);
 	}
 
-	setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
-		return this.source.setQuery(collection, query, data);
+	/**
+	 * Two-step: resolve the query to its matching items with `getQuery()`, then set each one with `setItem()`.
+	 * - Routes every implied write through this provider's own item methods, so wrapper behaviour applies to each item — the same theory as `transact()` re-wrapping the transaction provider.
+	 * - The resolve and the writes are separate steps, so this is only atomic inside `transact()`.
+	 */
+	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+		for (const { id } of await this.getQuery(collection, query)) await this.setItem(collection, id, data);
 	}
 
-	updateQuery<II extends I, TT extends T>(
+	/** Two-step: resolve the query to its matching items with `getQuery()`, then update each one with `updateItem()` — see `ThroughDBProvider.setQuery()`. */
+	async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
 	): Promise<void> {
-		return this.source.updateQuery(collection, query, updates);
+		for (const { id } of await this.getQuery(collection, query)) await this.updateItem(collection, id, updates as Updates<Item<II, TT>>);
 	}
 
-	deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		return this.source.deleteQuery(collection, query);
+	/** Two-step: resolve the query to its matching items with `getQuery()`, then delete each one with `deleteItem()` — see `ThroughDBProvider.setQuery()`. */
+	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+		for (const { id } of await this.getQuery(collection, query)) await this.deleteItem(collection, id);
 	}
 
 	getFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<OptionalItem<II, TT>> {

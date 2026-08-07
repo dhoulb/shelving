@@ -18,6 +18,8 @@ async function publishPost(provider: DBProvider, id: string) {
 
 The method surface covers single items (`getItem`, `requireItem`, `addItem`, `setItem`, `updateItem`, `deleteItem`), queries (`getQuery`, `countQuery`, `setQuery`, `updateQuery`, `deleteQuery`, `getFirst`, `requireFirst`), realtime (`getItemSequence`, `getQuerySequence` — iterate with `for await...of`), and transactions (`transact`).
 
+Query writes (`setQuery`, `updateQuery`, `deleteQuery`) have a deliberately weak portable contract: an engine may execute them natively in a single call (SQL's `UPDATE … WHERE`), or resolve the matching items first and then write per item — "two-step", the default for wrapping providers (see `ThroughDBProvider`). Either way they are only guaranteed atomic inside `transact()`.
+
 ## Transactions
 
 `transact()` runs a callback as a single atomic transaction — every write made through the provider the callback receives is committed together, or not at all:

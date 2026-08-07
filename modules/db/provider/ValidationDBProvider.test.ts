@@ -53,6 +53,33 @@ describe("ValidationDBProvider", () => {
 		expect(source.calls).toHaveLength(0);
 	});
 
+	test("query writes are passthrough: the source receives the query write itself", async () => {
+		const source = new MockDBProvider();
+		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
+		source.calls.length = 0;
+		const provider = new ValidationDBProvider(source);
+
+		await provider.setQuery(BASICS_COLLECTION, { group: "a" }, basic999);
+		await provider.updateQuery(BASICS_COLLECTION, { group: "a" }, { str: "NEW" });
+		await provider.deleteQuery(BASICS_COLLECTION, { group: "a" });
+
+		// One native query write each — no resolve reads, no per-item writes.
+		expect(source.calls.map(({ type }) => type)).toEqual(["setQuery", "updateQuery", "deleteQuery"]);
+	});
+
+	test("validates updateQuery() updates before calling the source provider", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		try {
+			await provider.updateQuery(BASICS_COLLECTION, {}, { num: "bad" } as never);
+			expect.unreachable();
+		} catch (thrown) {
+			expect(thrown).toBeInstanceOf(ValueError);
+		}
+		expect(source.calls).toHaveLength(0);
+	});
+
 	test("validates reads inside transact()", async () => {
 		const source = new TransactionTestDBProvider();
 		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
