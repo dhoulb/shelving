@@ -116,6 +116,34 @@ test("StorageDBProvider: a failed storage write throws and leaves memory unchang
 	expect(map.has("test:basics:basic1")).toBe(false);
 });
 
+test("StorageDBProvider: transactions persist on commit and never touch storage before it", async () => {
+	const map = new Map<string, string>();
+	await using db = new StorageDBProvider<string>(createStorage(map), "test:");
+	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
+
+	// A thrown transaction leaves memory and storage untouched — the snapshot clone never shares the storage.
+	try {
+		await db.transact(async tx => {
+			await tx.setItem(BASICS_COLLECTION, "basic2", basic2);
+			expect(map.has("test:basics:basic2")).toBe(false); // Uncommitted writes never persist.
+			await tx.deleteItem(BASICS_COLLECTION, "basic1");
+			throw new Error("nope");
+		});
+		expect.unreachable();
+	} catch (thrown) {
+		expect((thrown as Error).message).toBe("nope");
+	}
+	expect(map.has("test:basics:basic2")).toBe(false);
+	expect(JSON.parse(map.get("test:basics:basic1") as string)).toEqual(basic1);
+
+	// A committed transaction persists its writes.
+	await db.transact(async tx => {
+		await tx.setItem(BASICS_COLLECTION, "basic2", basic2);
+		expect(map.has("test:basics:basic2")).toBe(false); // Still uncommitted.
+	});
+	expect(JSON.parse(map.get("test:basics:basic2") as string)).toEqual(basic2);
+});
+
 test("StorageDBProvider: unusable storage degrades to memory-only", async () => {
 	const storage = createStorage();
 	storage.setItem = () => {

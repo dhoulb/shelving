@@ -16,6 +16,10 @@ export interface TestDBProviderOptions {
 	readonly realtime?: boolean;
 	/** Whether the provider supports `transact()` — when `false`, it is asserted to throw `UnsupportedError`. @default false */
 	readonly transactions?: boolean;
+	/** Whether realtime sequences work inside `transact()`, observing the transaction's own state — when `false`, they are asserted to throw `UnsupportedError` inside a transaction. @default false */
+	readonly transactionSequences?: boolean;
+	/** Whether `transact()` can be nested, committing the inner transaction into the outer — when `false`, nested calls are asserted to throw `UnsupportedError`. @default false */
+	readonly nestedTransactions?: boolean;
 }
 
 /**
@@ -33,7 +37,7 @@ export interface TestDBProviderOptions {
 export function testDBProvider(
 	name: string,
 	createProvider: () => DBProvider<string, Data> | PromiseLike<DBProvider<string, Data>>,
-	{ realtime = true, transactions = false }: TestDBProviderOptions = {},
+	{ realtime = true, transactions = false, transactionSequences = false, nestedTransactions = false }: TestDBProviderOptions = {},
 ): void {
 	// Create the provider and wipe both fixture collections so each test starts clean.
 	async function init(): Promise<DBProvider<string, Data>> {
@@ -223,6 +227,7 @@ export function testDBProvider(
 		if (transactions) {
 			test("transact(): commits reads and writes atomically", async () => {
 				const db = await init();
+				expect(await db.transact(async () => 123)).toBe(123); // The callback's value is returned.
 				await db.setItem(BASICS_COLLECTION, "basic1", basic1);
 				await db.setItem(BASICS_COLLECTION, "basic2", basic2);
 				const id = await db.transact(async tx => {
@@ -272,15 +277,55 @@ export function testDBProvider(
 				expect(await db.countQuery(BASICS_COLLECTION, {})).toBe(6);
 			});
 
-			test("transact(): sequences and nested transactions are unsupported inside a transaction", async () => {
-				const db = await init();
-				expect(await db.transact(async () => 123)).toBe(123);
-				await db.transact(async tx => {
-					expect(() => tx.getItemSequence(BASICS_COLLECTION, "basic1")).toThrow(UnsupportedError);
-					expect(() => tx.getQuerySequence(BASICS_COLLECTION, {})).toThrow(UnsupportedError);
-					expect(() => tx.transact(async () => undefined)).toThrow(UnsupportedError);
+			if (transactionSequences) {
+				test("transact(): sequences inside a transaction observe the transaction and end with it", async () => {
+					const db = await init();
+					await db.setItem(BASICS_COLLECTION, "basic1", basic1);
+					const emissions: OptionalItem<string, Data>[] = [];
+					let sequence: Promise<void> | undefined;
+					await db.transact(async tx => {
+						sequence = (async () => {
+							for await (const item of tx.getItemSequence(BASICS_COLLECTION, "basic1")) emissions.push(item);
+						})();
+						await runMicrotasks();
+						await tx.updateItem(BASICS_COLLECTION, "basic1", { str: "TX" });
+						await runMicrotasks();
+					});
+					await sequence; // The sequence ends when the transaction completes (this would hang otherwise).
+					expect(emissions[0]).toMatchObject(basic1);
+					expect(emissions[1]).toMatchObject({ ...basic1, str: "TX" });
+					expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject({ ...basic1, str: "TX" });
 				});
-			});
+			} else {
+				test("transact(): sequences are unsupported inside a transaction", async () => {
+					const db = await init();
+					await db.transact(async tx => {
+						expect(() => tx.getItemSequence(BASICS_COLLECTION, "basic1")).toThrow(UnsupportedError);
+						expect(() => tx.getQuerySequence(BASICS_COLLECTION, {})).toThrow(UnsupportedError);
+					});
+				});
+			}
+
+			if (nestedTransactions) {
+				test("transact(): nested transactions commit into the outer transaction", async () => {
+					const db = await init();
+					await db.transact(async tx => {
+						await tx.transact(async nested => {
+							await nested.setItem(BASICS_COLLECTION, "basic1", basic1);
+						});
+						expect(await tx.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1); // The inner commit is visible to the outer transaction…
+						expect(await db.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined); // …but not yet committed to the provider.
+					});
+					expect(await db.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
+				});
+			} else {
+				test("transact(): nested transactions are unsupported", async () => {
+					const db = await init();
+					await db.transact(async tx => {
+						expect(() => tx.transact(async () => undefined)).toThrow(UnsupportedError);
+					});
+				});
+			}
 		} else {
 			test("transactions are not supported", async () => {
 				const db = await init();

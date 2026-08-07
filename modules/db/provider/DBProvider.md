@@ -38,7 +38,7 @@ The contract is the weakest guarantee shared by all backends, so transactional c
 - Reads see a consistent snapshot of the data from before the transaction, and do **not** see the transaction's own uncommitted writes.
 - If the callback throws, nothing is committed and the error is rethrown.
 - The callback may run more than once if the backend retries on contention, so it must have no side effects other than through its provider.
-- Realtime sequences and nested `transact()` calls throw `UnsupportedError` inside a transaction.
+- Portable code must not use realtime sequences or nested `transact()` calls inside a transaction — most backends throw `UnsupportedError`, though some (e.g. `MemoryDBProvider`) support them scoped to the transaction.
 - Providers that cannot support transactions (e.g. `CloudflareKVProvider`) throw `UnsupportedError` from `transact()` itself.
 
-Transactions are opt-in per backend — `FirestoreProvider` (`shelving/firebase`) implements them. Wrapping providers built on `ThroughDBProvider` (`ValidationDBProvider`, `ChangesDBProvider`, `DebugDBProvider`) support them whenever their `source` does, and keep their own behaviour inside the transaction — e.g. reads and writes in a `ValidationDBProvider` transaction are still validated. `MemoryDBProvider` and `CacheDBProvider` do not support transactions yet and throw `UnsupportedError`.
+Transactions are opt-in per backend — `FirestoreProvider` (`shelving/firebase`) implements them, and `MemoryDBProvider` runs the callback against a snapshot clone and replays its captured changes on success. Wrapping providers built on `ThroughDBProvider` (`ValidationDBProvider`, `ChangesDBProvider`, `DebugDBProvider`) support them whenever their `source` does, and keep their own behaviour inside the transaction — e.g. reads and writes in a `ValidationDBProvider` transaction are still validated. `CacheDBProvider` does not support transactions yet and throws `UnsupportedError`.

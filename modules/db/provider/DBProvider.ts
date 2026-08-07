@@ -245,7 +245,7 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * - Reads see a consistent snapshot of the data from before the transaction, and do not see the transaction's own uncommitted writes.
 	 * - If the callback throws, nothing is committed and the error is rethrown.
 	 * - The callback may run more than once if the backend retries on contention, so it must have no side effects other than through its provider.
-	 * - Inside a transaction, realtime sequences and nested `transact()` calls throw `UnsupportedError`.
+	 * - Portable code must not use realtime sequences or nested `transact()` calls inside a transaction — most backends throw `UnsupportedError`, though some (e.g. `MemoryDBProvider`) support them scoped to the transaction.
 	 * - Not every provider supports transactions — the base implementation throws `UnsupportedError`.
 	 *
 	 * @param callback Function that performs the transaction's reads and writes through the provider it receives.
