@@ -90,13 +90,16 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)} WHERE ${this.sqlIdentifier("id")} = ${id}`;
 	}
 
+	/** Counts via a subquery so a `$limit` in the query caps the counted rows rather than the (single) result row. */
 	override async countQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): Promise<number> {
 		const rows = await this.exec<CountRow>`
-			SELECT COUNT(*) AS "count" FROM ${this.sqlIdentifier(collection.name)}
-			${query ? this.sqlClauses(query) : this.sql``}
+			SELECT COUNT(*) AS "count" FROM (
+				SELECT 1 FROM ${this.sqlIdentifier(collection.name)}
+				${query ? this.sqlClauses(query) : this.sql``}
+			) AS ${this.sqlIdentifier("items")}
 		`;
 		return rows[0]?.count ?? 0;
 	}
