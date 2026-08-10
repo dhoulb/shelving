@@ -8,9 +8,9 @@ import { type SQLFragment, SQLProvider } from "./SQLProvider.js";
 /**
  * Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations.
  *
- * @see https://shelving.cc/db/PostgreSQLProvider
+ * @see https://shelving.cc/db/PostgresProvider
  */
-export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
+export abstract class PostgresProvider<I extends Identifier = Identifier, T extends Data = Data> extends SQLProvider<I, T> {
 	/** Get the Postgres JSONB path for the nested segments of a key, e.g. `{"b","c"}`. */
 	private sqlPath(key: Segments): SQLFragment {
 		return this.sqlConcat(

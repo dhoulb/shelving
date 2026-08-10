@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { PostgreSQLMigrator, SQLProvider } from "shelving/db";
+import { PostgresMigrator, SQLProvider } from "shelving/db";
 import { DATA, INTEGER, type Schema, STRING } from "shelving/schema";
 
 class TestSQLProvider extends SQLProvider {
@@ -13,7 +13,7 @@ class TestSQLProvider extends SQLProvider {
 	}
 }
 
-class TestPostgresMigrator extends PostgreSQLMigrator<TestSQLProvider> {
+class TestPostgresMigrator extends PostgresMigrator<TestSQLProvider> {
 	exposeDefinition(schema: Schema<unknown>): string | undefined {
 		return this.definition(schema);
 	}

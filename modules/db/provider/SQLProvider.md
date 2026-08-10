@@ -6,7 +6,7 @@ Each scalar field in a collection schema maps to a **generated column** extracte
 
 ## Usage
 
-`SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in `SQLiteProvider` and `PostgreSQLProvider` extend it with dialect-specific JSON path syntax; concrete drivers live in the `shelving/cloudflare` and `shelving/bun` modules.
+`SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in `SQLiteProvider` and `PostgresProvider` extend it with dialect-specific JSON path syntax; concrete drivers live in the `shelving/cloudflare` and `shelving/bun` modules.
 
 ```ts
 import { SQLiteProvider } from "shelving/db";

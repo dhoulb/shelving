@@ -2,7 +2,7 @@
 
 `DBProvider` implementation for PostgreSQL using Bun's built-in `Bun.sql` API. No external database driver is required.
 
-`BunPostgresProvider` extends the shared `PostgreSQLProvider`, which handles SQL generation, filtering, sorting, pagination, JSONB nested key access, and partial updates. The Bun-specific layer provides the tagged-template SQL execution and wraps identifier quoting through Bun's native SQL engine for additional safety.
+`BunPostgresProvider` extends the shared `PostgresProvider`, which handles SQL generation, filtering, sorting, pagination, JSONB nested key access, and partial updates. The Bun-specific layer provides the tagged-template SQL execution and wraps identifier quoting through Bun's native SQL engine for additional safety.
 
 **Bun only.** This module uses `Bun.sql` and `SQL` from `bun`, which are not available in Node.js or other runtimes.
 
@@ -19,7 +19,7 @@ Bun is the runtime — no extra packages are needed.
 ```ts
 import { SQL } from "bun";
 import { BunPostgresProvider } from "shelving/bun";
-import { PostgreSQLMigrator } from "shelving/db";
+import { PostgresMigrator } from "shelving/db";
 import { USERS } from "./collections.js";
 
 const sql = new SQL({
@@ -33,7 +33,7 @@ const sql = new SQL({
 const provider = new BunPostgresProvider(sql);
 
 // Create or migrate tables from your collection definitions before first use.
-const migrator = new PostgreSQLMigrator(provider);
+const migrator = new PostgresMigrator(provider);
 await migrator.migrate(USERS);
 ```
 
@@ -67,4 +67,4 @@ bun run postgres
 
 `scripts/postgres.ts` connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database and the fixture tables, runs `bun test ./modules/bun`, then drops the database.
 
-Tables must exist before the provider can read or write. `PostgreSQLMigrator.migrate()` inspects the live schema and issues the minimum `CREATE TABLE` or `ALTER TABLE` statements needed to match your collection definitions.
+Tables must exist before the provider can read or write. `PostgresMigrator.migrate()` inspects the live schema and issues the minimum `CREATE TABLE` or `ALTER TABLE` statements needed to match your collection definitions.

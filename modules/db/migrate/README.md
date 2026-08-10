@@ -23,7 +23,7 @@ Schema migration for SQL-backed database providers. `DBMigrator` and its subclas
 
 Targets SQLite and Cloudflare D1. Tables are created with `STRICT` mode. The `data` column is `TEXT NOT NULL CHECK (json_valid(data))`. Generated columns use `json_extract`. Reads the live schema from `sqlite_master`.
 
-### PostgreSQLMigrator
+### PostgresMigrator
 
 Targets PostgreSQL. The `data` column is `jsonb NOT NULL`. Generated columns use the `#>>` operator with a cast. Reads the live schema from `pg_catalog`. Supports in-place `ALTER COLUMN TYPE` for compatible numeric and string type changes rather than drop-and-add.
 

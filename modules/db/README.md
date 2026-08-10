@@ -55,13 +55,13 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 - **`ValidationDBProvider`** — validates data in and out using the collection's schema. Throws `ValueError` on bad data from the backend.
 - **`CacheDBProvider`** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the [React integration](#react-integration).
 - **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
-- **`SQLiteProvider`** / **`PostgreSQLProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
+- **`SQLiteProvider`** / **`PostgresProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
 Cloud providers live in the `shelving/cloudflare` and `shelving/firebase` sibling modules.
 
 ### Migrations
 
-`DBMigrator` is an abstract base for schema migrations. SQL-backed providers ship `SQLiteMigrator` and `PostgreSQLMigrator`, which implement `DBMigrator.migrate()` to create or alter tables to match the current collection schemas.
+`DBMigrator` is an abstract base for schema migrations. SQL-backed providers ship `SQLiteMigrator` and `PostgresMigrator`, which implement `DBMigrator.migrate()` to create or alter tables to match the current collection schemas.
 
 ## Usage
 

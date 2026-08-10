@@ -35,9 +35,9 @@ type PostgreSQLColumnRow = {
 /**
  * PostgreSQL migrator that inspects the live schema via `pg_catalog` tables to diff and migrate columns.
  *
- * @see https://shelving.cc/db/PostgreSQLMigrator
+ * @see https://shelving.cc/db/PostgresMigrator
  */
-export class PostgreSQLMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
+export class PostgresMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {
 		const rows = await this.provider.exec<{ name: string }>`
 			SELECT c.relname AS ${this.provider.sqlIdentifier("name")}

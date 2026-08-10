@@ -28,7 +28,7 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | `MockDBProvider` | Extends `MemoryDBProvider` and records every call in `MockDBProvider.calls`. Use in tests to assert operations. |
 | `SQLProvider` | Abstract SQL base — concrete subclasses bind it to a driver. |
 | `SQLiteProvider` | Abstract SQL backend targeting SQLite / D1 with JSON1 support for nested keys and array operations. |
-| `PostgreSQLProvider` | Abstract SQL backend targeting PostgreSQL with JSONB support. |
+| `PostgresProvider` | Abstract SQL backend targeting PostgreSQL with JSONB support. |
 
 ## Usage
 
