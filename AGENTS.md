@@ -61,6 +61,15 @@ bun run test:type     # TypeScript type check only
 bun run test:unit     # Bun unit tests only
 ```
 
+**To run the backend service suites** (deliberately excluded from `bun run test` because they need a real backend; each provisions its own):
+
+```sh
+bun run firebase      # DBProvider contract suite against the Firestore emulator
+bun run postgres      # DBProvider contract suite against a real PostgreSQL
+```
+
+`bun run postgres` (`scripts/postgres.ts`) connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database and fixture tables, runs the suite, then drops the database. Both service suites run in CI on every PR (`fix.yaml`) and before every release (`release.yaml`), in parallel with `bun run test`.
+
 **To build the dist:**
 
 ```sh

@@ -237,7 +237,7 @@ describe("FirestoreProvider (protocol)", () => {
 });
 
 // Run the universal DBProvider contract suite (and Firestore-specific integration tests) against the Firestore emulator when one is running.
-// Start one with: bun run test-firebase (or `firebase emulators:exec --only firestore --project shelving-test "bun test ./modules/firebase"`).
+// Start one with: bun run firebase (or `firebase emulators:exec --only firestore --project shelving-test "bun test ./modules/firebase"`).
 const EMULATOR_HOST = process.env.FIRESTORE_EMULATOR_HOST;
 if (EMULATOR_HOST) {
 	const createProvider = () => new FirestoreProvider<string, Data>({ project: "shelving-test", host: `http://${EMULATOR_HOST}` });

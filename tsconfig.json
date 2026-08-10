@@ -21,6 +21,6 @@
 			"shelving/*": ["./modules/*/index.ts"]
 		}
 	},
-	"include": ["./modules/**/*", "./docs/**/*", "./**/*.json"],
+	"include": ["./modules/**/*", "./docs/**/*", "./scripts/**/*", "./**/*.json"],
 	"exclude": ["node_modules", "dist"]
 }

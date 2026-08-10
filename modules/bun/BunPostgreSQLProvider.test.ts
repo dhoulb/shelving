@@ -151,36 +151,12 @@ describe("BunPostgreSQLProvider (mock)", () => {
 });
 
 // Run the universal DBProvider contract suite (and Postgres-specific integration tests) against a real PostgreSQL when one is available.
-// Start one with: bun run postgres:test (expects postgres://postgres:postgres@127.0.0.1:5432/shelving-test).
+// Run via: bun run postgres — scripts/postgres.ts provisions the test database and fixture tables, runs this file with POSTGRES_URL set, then tears down.
 const POSTGRES_URL = process.env.POSTGRES_URL;
 if (POSTGRES_URL) {
 	const sql = new SQL(POSTGRES_URL);
 	const provider = new BunPostgreSQLProvider<string, Data>(sql);
-
-	// The fixture collections use string ids, so create their tables directly with a generated id default for `addItem()` (`PostgreSQLMigrator` targets numeric identity ids).
-	async function _createTables(): Promise<void> {
-		await provider.exec`CREATE TABLE IF NOT EXISTS ${provider.sqlIdentifier("basics")} (
-			${provider.sqlIdentifier("id")} text PRIMARY KEY DEFAULT gen_random_uuid()::text,
-			${provider.sqlIdentifier("str")} text,
-			${provider.sqlIdentifier("num")} double precision,
-			${provider.sqlIdentifier("group")} text,
-			${provider.sqlIdentifier("tags")} jsonb,
-			${provider.sqlIdentifier("odd")} boolean,
-			${provider.sqlIdentifier("even")} boolean,
-			${provider.sqlIdentifier("sub")} jsonb
-		)`;
-		await provider.exec`CREATE TABLE IF NOT EXISTS ${provider.sqlIdentifier("people")} (
-			${provider.sqlIdentifier("id")} text PRIMARY KEY DEFAULT gen_random_uuid()::text,
-			${provider.sqlIdentifier("name")} jsonb,
-			${provider.sqlIdentifier("birthday")} text
-		)`;
-	}
-
-	let created: Promise<void> | undefined;
-	const createProvider = async () => {
-		await (created ||= _createTables());
-		return provider;
-	};
+	const createProvider = () => provider;
 
 	testDBProvider("BunPostgreSQLProvider", createProvider, { realtime: false, transactions: true });
 

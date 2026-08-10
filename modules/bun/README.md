@@ -57,4 +57,14 @@ await provider.transact(async tx => {
 - `SERIALIZABLE` isolation is set explicitly on every transaction, overriding any `default_transaction_isolation` configured on the database, so the `DBProvider.transact()` contract holds regardless of server configuration.
 - Nested `transact()` calls throw `UnsupportedError`.
 
+## Testing
+
+The universal `DBProvider` contract suite runs against a real PostgreSQL via its own command (excluded from `bun run test`; run in CI on every PR and release):
+
+```sh
+bun run postgres
+```
+
+`scripts/postgres.ts` connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database and the fixture tables, runs `bun test ./modules/bun`, then drops the database.
+
 Tables must exist before the provider can read or write. `PostgreSQLMigrator.migrate()` inspects the live schema and issues the minimum `CREATE TABLE` or `ALTER TABLE` statements needed to match your collection definitions.
