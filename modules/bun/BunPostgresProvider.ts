@@ -1,6 +1,6 @@
 import { SQL } from "bun";
 import type { Collection } from "../db/collection/Collection.js";
-import { PostgreSQLProvider, type SQLFragment } from "../db/index.js";
+import { PostgresProvider, type SQLFragment } from "../db/index.js";
 import type { DBProvider } from "../db/provider/DBProvider.js";
 import { UnsupportedError } from "../error/UnsupportedError.js";
 import type { ImmutableArray } from "../util/array.js";
@@ -17,14 +17,14 @@ const RETRYABLE_SQLSTATES = ["40001", "40P01"]; // Serialization failure and dea
 /**
  * PostgreSQL database provider backed by Bun's built-in `Bun.SQL` driver.
  *
- * Implements the `PostgreSQLProvider` SQL abstraction by executing tagged-template queries against a `Bun.SQL` connection.
+ * Implements the `PostgresProvider` SQL abstraction by executing tagged-template queries against a `Bun.SQL` connection.
  * - Identifiers are escaped through `Bun.SQL`'s own `sql()` helper rather than naive string quoting, which is more secure.
  * - Supports transactions via `transact()` — the callback runs in a `SERIALIZABLE` Postgres transaction, and contention aborts are retried automatically.
  * - Requires the `bun` peer dependency and a running Bun environment.
  *
  * @see https://shelving.cc/bun/BunPostgresProvider
  */
-export class BunPostgresProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgreSQLProvider<I, T> {
+export class BunPostgresProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgresProvider<I, T> {
 	private _sql: SQL;
 
 	constructor(sql: SQL) {
