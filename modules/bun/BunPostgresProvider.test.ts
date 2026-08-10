@@ -18,7 +18,7 @@ function _createMockSQL({ rows = [], failures = [] }: _MockSQLOptions = {}) {
 		return (strings: TemplateStringsArray | string, ...values: unknown[]): unknown => {
 			if (typeof strings === "string") return { identifier: strings };
 			const params: unknown[] = [];
-			const text = _flatten(strings, values, params).replaceAll(/\s+/g, " ").trim();
+			const text = _render(strings, values, params).replaceAll(/\s+/g, " ").trim();
 			queries.push({ text, values: params, tx });
 			return Promise.resolve(rows.shift() ?? []);
 		};
@@ -44,23 +44,19 @@ function _createMockSQL({ rows = [], failures = [] }: _MockSQLOptions = {}) {
 	return { sql, queries, begins, state };
 }
 
-/** Flatten a tagged-template query (including embedded `SQLFragment` and mock identifier values) into text plus bound params. */
-function _flatten(strings: readonly string[], values: readonly unknown[], params: unknown[]): string {
+/** Render a flat tagged-template query (values are bindable parameters or mock identifier tokens — `SQLFragment` pre-flattens everything else) into text plus bound params. */
+function _render(strings: readonly string[], values: readonly unknown[], params: unknown[]): string {
 	let text = strings[0] ?? "";
-	values.forEach((value, i) => {
-		if (_isFragment(value)) text += _flatten(value.strings, value.values, params);
-		else if (_isIdentifier(value)) text += `"${value.identifier}"`;
+	for (const [i, value] of values.entries()) {
+		if (_isIdentifier(value)) text += `"${value.identifier}"`;
 		else {
 			params.push(value);
 			text += `$${params.length}`;
 		}
 		text += strings[i + 1] ?? "";
-	});
+	}
 	return text;
 }
-
-const _isFragment = (value: unknown): value is { strings: readonly string[]; values: readonly unknown[] } =>
-	!!value && typeof value === "object" && "strings" in value && "values" in value;
 
 const _isIdentifier = (value: unknown): value is _MockIdentifier => !!value && typeof value === "object" && "identifier" in value;
 

@@ -11,11 +11,35 @@ import { DBProvider } from "./DBProvider.js";
 
 /**
  * SQL fragment made from template strings plus embedded expressions, ready to be composed into a query.
+ *
+ * - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
+ * - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+ *
  * @see https://shelving.cc/db/SQLFragment
  */
-export interface SQLFragment {
+export class SQLFragment {
 	readonly strings: ImmutableArray<string>;
 	readonly values: ImmutableArray<unknown>;
+	constructor(strings: ImmutableArray<string>, values: ImmutableArray<unknown>) {
+		const outStrings: string[] = [strings[0] ?? ""];
+		const outValues: unknown[] = [];
+		for (const [i, value] of values.entries()) {
+			if (value instanceof SQLFragment) {
+				// Splice the (already flat) fragment inline.
+				outStrings[outStrings.length - 1] += value.strings[0] ?? "";
+				for (let n = 0; n < value.values.length; n++) {
+					outValues.push(value.values[n]);
+					outStrings.push(value.strings[n + 1] ?? "");
+				}
+			} else {
+				outValues.push(value);
+				outStrings.push("");
+			}
+			outStrings[outStrings.length - 1] += strings[i + 1] ?? "";
+		}
+		this.strings = outStrings;
+		this.values = outValues;
+	}
 }
 
 type CountRow = {
@@ -154,7 +178,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @see https://shelving.cc/db/SQLProvider/sql
 	 */
 	sql(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): SQLFragment {
-		return { strings, values };
+		return new SQLFragment(strings, values);
 	}
 
 	/**
@@ -165,7 +189,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * @see https://shelving.cc/db/SQLProvider/sqlIdentifier
 	 */
 	sqlIdentifier(name: string): SQLFragment {
-		return { strings: [_escapeIdentifier(name)], values: [] };
+		return new SQLFragment([_escapeIdentifier(name)], []);
 	}
 
 	/**
@@ -194,7 +218,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 */
 	sqlConcat(values: ImmutableArray<SQLFragment>, separator = ", ", before = "", after = ""): SQLFragment {
 		const strings = [before, ...new Array(Math.max(0, values.length - 1)).fill(separator), after];
-		return { strings, values };
+		return new SQLFragment(strings, values);
 	}
 
 	/**
