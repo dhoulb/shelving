@@ -1,6 +1,6 @@
 import { SQL } from "bun";
 import type { Collection } from "../db/collection/Collection.js";
-import { PostgresProvider, type SQLFragment } from "../db/index.js";
+import { PostgresProvider, SQLFragment } from "../db/index.js";
 import type { DBProvider } from "../db/provider/DBProvider.js";
 import { UnsupportedError } from "../error/UnsupportedError.js";
 import type { ImmutableArray } from "../util/array.js";
@@ -32,9 +32,9 @@ export class BunPostgresProvider<I extends Identifier = Identifier, T extends Da
 		this._sql = sql;
 	}
 
-	/** Flattens nested `SQLFragment` values into a single flat query, since `Bun.SQL` would otherwise bind them as `$n` parameters. */
+	/** Composes via `SQLFragment` (which flattens embedded fragments at construction), since `Bun.SQL` would otherwise bind them as `$n` parameters. */
 	override exec<X extends Data>(strings: TemplateStringsArray, ...values: ImmutableArray<unknown>): Promise<ImmutableArray<X>> {
-		const flat = _flattenSQL(strings, values);
+		const flat = new SQLFragment(strings, values);
 		return this._sql(_getTemplateStrings(flat.strings), ...flat.values);
 	}
 
@@ -88,41 +88,8 @@ function _isRetryableError(thrown: unknown): boolean {
 	return thrown instanceof SQL.PostgresError && RETRYABLE_SQLSTATES.includes(thrown.errno ?? thrown.code);
 }
 
-/** Is a value an `SQLFragment` produced by the provider's `sql*` builders (rather than a bindable parameter)? */
-function _isSQLFragment(value: unknown): value is SQLFragment {
-	return (
-		!!value &&
-		typeof value === "object" &&
-		"strings" in value &&
-		"values" in value &&
-		Array.isArray(value.strings) &&
-		Array.isArray(value.values) &&
-		value.strings.length === value.values.length + 1
-	);
-}
-
-/** Flatten nested `SQLFragment` values into one flat strings/values pair, leaving other values (parameters and `Bun.SQL` identifier helpers) to interpolate normally. */
-function _flattenSQL(strings: ImmutableArray<string>, values: ImmutableArray<unknown>): { strings: string[]; values: unknown[] } {
-	const outStrings: string[] = [strings[0] ?? ""];
-	const outValues: unknown[] = [];
-	values.forEach((value, i) => {
-		if (_isSQLFragment(value)) {
-			const nested = _flattenSQL(value.strings, value.values);
-			outStrings[outStrings.length - 1] += nested.strings[0] ?? "";
-			for (let n = 0; n < nested.values.length; n++) {
-				outValues.push(nested.values[n]);
-				outStrings.push(nested.strings[n + 1] ?? "");
-			}
-		} else {
-			outValues.push(value);
-			outStrings.push("");
-		}
-		outStrings[outStrings.length - 1] += strings[i + 1] ?? "";
-	});
-	return { strings: outStrings, values: outValues };
-}
-
-/** Convert a plain strings array into the `TemplateStringsArray` shape `Bun.SQL` expects. */
-function _getTemplateStrings(strings: string[]): TemplateStringsArray {
-	return Object.assign(strings, { raw: strings }) as unknown as TemplateStringsArray;
+/** Convert a strings array into the `TemplateStringsArray` shape `Bun.SQL` expects. */
+function _getTemplateStrings(strings: ImmutableArray<string>): TemplateStringsArray {
+	const raw = [...strings];
+	return Object.assign(raw, { raw }) as unknown as TemplateStringsArray;
 }
