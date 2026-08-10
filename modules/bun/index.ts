@@ -1,1 +1,1 @@
-export * from "./BunPostgreSQLProvider.js";
+export * from "./BunPostgresProvider.js";

@@ -82,12 +82,16 @@ export abstract class PostgreSQLProvider<I extends Identifier = Identifier, T ex
 		return super.sqlUpdate(update);
 	}
 
-	/** Add Postgres JSONB support for `contains` filters and deeply-nested queries. */
+	/** Add Postgres JSONB support for `contains` filters, and boolean literals for empty `in` / `out` filters. */
 	override sqlFilter(filter: QueryFilter): SQLFragment {
 		const { key, operator, value } = filter;
 
 		// Implement `contains` filters.
 		if (operator === "contains") return this.sql`${this.sqlExtract(key)} @> ${[value]}`;
+
+		// Postgres `WHERE` requires a boolean, so empty `in` / `out` filters can't use the base class's `0` / `1` integer literals.
+		if (operator === "in" && !value.length) return this.sql`FALSE`;
+		if (operator === "out" && !value.length) return this.sql`TRUE`;
 
 		return super.sqlFilter(filter);
 	}
