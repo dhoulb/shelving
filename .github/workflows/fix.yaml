@@ -1,5 +1,5 @@
-# Run `npm run fix` on any push or pull request.
-# If changes were made and the tests pass, commit the changes back.
+# Run `bun run fix` on any push or pull request — if changes were made and the tests pass, commit the changes back.
+# Also runs both backend service suites as parallel jobs, so every PR proves the Firebase and PostgreSQL providers.
 name: Fix
 on:
   push:
@@ -21,10 +21,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
       - uses: oven-sh/setup-bun@v2
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
       - name: install
         run: bun install
       - name: fix
@@ -51,3 +47,43 @@ jobs:
       - name: git commit
         run: |
           git commit -am "style: Fix" && git push || echo "Nothing to commit"
+  firebase:
+    name: Firebase
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: install
+        run: bun install
+      - name: firebase
+        run: bun run firebase
+  postgres:
+    name: PostgreSQL
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: oven-sh/setup-bun@v2
+      - name: install
+        run: bun install
+      - name: postgres
+        run: bun run postgres
