@@ -2,13 +2,13 @@
 
 `DBProvider` implementation for PostgreSQL using Bun's built-in `Bun.sql` API. No external database driver is required.
 
-`BunPostgreSQLProvider` extends the shared `PostgreSQLProvider`, which handles SQL generation, filtering, sorting, pagination, JSONB nested key access, and partial updates. The Bun-specific layer provides the tagged-template SQL execution and wraps identifier quoting through Bun's native SQL engine for additional safety.
+`BunPostgresProvider` extends the shared `PostgreSQLProvider`, which handles SQL generation, filtering, sorting, pagination, JSONB nested key access, and partial updates. The Bun-specific layer provides the tagged-template SQL execution and wraps identifier quoting through Bun's native SQL engine for additional safety.
 
 **Bun only.** This module uses `Bun.sql` and `SQL` from `bun`, which are not available in Node.js or other runtimes.
 
 There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 
-## PostgreSQL (`BunPostgreSQLProvider`)
+## PostgreSQL (`BunPostgresProvider`)
 
 **Install:**
 
@@ -18,7 +18,7 @@ Bun is the runtime — no extra packages are needed.
 
 ```ts
 import { SQL } from "bun";
-import { BunPostgreSQLProvider } from "shelving/bun";
+import { BunPostgresProvider } from "shelving/bun";
 import { PostgreSQLMigrator } from "shelving/db";
 import { USERS } from "./collections.js";
 
@@ -30,7 +30,7 @@ const sql = new SQL({
   password: "secret",
 });
 
-const provider = new BunPostgreSQLProvider(sql);
+const provider = new BunPostgresProvider(sql);
 
 // Create or migrate tables from your collection definitions before first use.
 const migrator = new PostgreSQLMigrator(provider);
@@ -41,7 +41,7 @@ await migrator.migrate(USERS);
 
 ## Transactions
 
-`BunPostgreSQLProvider` supports `DBProvider.transact()` — the callback runs in a `SERIALIZABLE` Postgres transaction on a reserved connection, so every write commits together or not at all:
+`BunPostgresProvider` supports `DBProvider.transact()` — the callback runs in a `SERIALIZABLE` Postgres transaction on a reserved connection, so every write commits together or not at all:
 
 ```ts
 await provider.transact(async tx => {

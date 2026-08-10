@@ -9,7 +9,7 @@ It is abstract — a concrete subclass implements `exec()` against a specific Po
 ```ts
 import { PostgreSQLProvider } from "shelving/db";
 
-class BunPostgreSQLProvider extends PostgreSQLProvider {
+class BunPostgresProvider extends PostgreSQLProvider {
   constructor(private sql: Bun.SQL) { super(); }
   async exec(strings, ...values) {
     return this.sql(strings, ...values);

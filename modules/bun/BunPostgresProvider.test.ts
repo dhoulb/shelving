@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { SQL } from "bun";
-import { BunPostgreSQLProvider } from "shelving/bun";
+import { BunPostgresProvider } from "shelving/bun";
 import { UnsupportedError } from "shelving/error";
 import type { Data } from "shelving/util/data";
 import { BASICS_COLLECTION, basic1, basic2, basic999, testDBProvider } from "../test/index.js";
@@ -69,10 +69,10 @@ function _createPostgresError(errno: string): SQL.PostgresError {
 	return new SQL.PostgresError(`postgres error ${errno}`, { code: "ERR_POSTGRES_SERVER_ERROR", errno });
 }
 
-describe("BunPostgreSQLProvider (mock)", () => {
+describe("BunPostgresProvider (mock)", () => {
 	test("transact() runs the callback's queries on the transaction connection and commits", async () => {
 		const mock = _createMockSQL({ rows: [[basic1], []] });
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		const result = await provider.transact(async tx => {
 			expect(await tx.getItem(BASICS_COLLECTION, "basic1")).toMatchObject(basic1);
 			await tx.setItem(BASICS_COLLECTION, "basic2", basic2);
@@ -91,7 +91,7 @@ describe("BunPostgreSQLProvider (mock)", () => {
 
 	test("transact() rolls back and rethrows when the callback throws", async () => {
 		const mock = _createMockSQL();
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		try {
 			await provider.transact(async tx => {
 				await tx.setItem(BASICS_COLLECTION, "basic2", basic2);
@@ -109,7 +109,7 @@ describe("BunPostgreSQLProvider (mock)", () => {
 
 	test("transact() retries serialization failures and deadlocks then succeeds", async () => {
 		const mock = _createMockSQL({ failures: [_createPostgresError("40001"), _createPostgresError("40P01")] });
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		expect(await provider.transact(async () => 123)).toBe(123);
 		expect(mock.begins.length).toBe(3);
 		expect(mock.state).toEqual({ commits: 1, rollbacks: 2 });
@@ -118,7 +118,7 @@ describe("BunPostgreSQLProvider (mock)", () => {
 	test("transact() throws the final contention error after exhausting retries", async () => {
 		const failure = _createPostgresError("40001");
 		const mock = _createMockSQL({ failures: [failure, failure, failure, failure, failure] });
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		try {
 			await provider.transact(async () => 123);
 			expect.unreachable();
@@ -131,7 +131,7 @@ describe("BunPostgreSQLProvider (mock)", () => {
 	test("transact() rethrows non-retryable errors immediately", async () => {
 		const failure = _createPostgresError("23505"); // Unique violation is not contention.
 		const mock = _createMockSQL({ failures: [failure] });
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		try {
 			await provider.transact(async () => 123);
 			expect.unreachable();
@@ -143,7 +143,7 @@ describe("BunPostgreSQLProvider (mock)", () => {
 
 	test("transact() rejects nested transactions", async () => {
 		const mock = _createMockSQL();
-		const provider = new BunPostgreSQLProvider<string, Data>(mock.sql);
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
 		await provider.transact(async tx => {
 			expect(() => tx.transact(async () => undefined)).toThrow(UnsupportedError);
 		});
@@ -155,12 +155,12 @@ describe("BunPostgreSQLProvider (mock)", () => {
 const POSTGRES_URL = process.env.POSTGRES_URL;
 if (POSTGRES_URL) {
 	const sql = new SQL(POSTGRES_URL);
-	const provider = new BunPostgreSQLProvider<string, Data>(sql);
+	const provider = new BunPostgresProvider<string, Data>(sql);
 	const createProvider = () => provider;
 
-	testDBProvider("BunPostgreSQLProvider", createProvider, { realtime: false, transactions: true });
+	testDBProvider("BunPostgresProvider", createProvider, { realtime: false, transactions: true });
 
-	test("BunPostgreSQLProvider: concurrent transactions retry and preserve every increment", async () => {
+	test("BunPostgresProvider: concurrent transactions retry and preserve every increment", async () => {
 		await createProvider();
 		await provider.deleteQuery(BASICS_COLLECTION, {});
 		await provider.setItem(BASICS_COLLECTION, "counter", { ...basic999, num: 0 });

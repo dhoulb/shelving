@@ -22,9 +22,9 @@ const RETRYABLE_SQLSTATES = ["40001", "40P01"]; // Serialization failure and dea
  * - Supports transactions via `transact()` — the callback runs in a `SERIALIZABLE` Postgres transaction, and contention aborts are retried automatically.
  * - Requires the `bun` peer dependency and a running Bun environment.
  *
- * @see https://shelving.cc/bun/BunPostgreSQLProvider
+ * @see https://shelving.cc/bun/BunPostgresProvider
  */
-export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgreSQLProvider<I, T> {
+export class BunPostgresProvider<I extends Identifier = Identifier, T extends Data = Data> extends PostgreSQLProvider<I, T> {
 	private _sql: SQL;
 
 	constructor(sql: SQL) {
@@ -61,7 +61,7 @@ export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends 
 			// Back off with jitter before each retry so contending transactions de-synchronise instead of re-aborting each other in lockstep.
 			if (attempt) await getDelay(getRandom(0, 100 * 2 ** attempt));
 			try {
-				return await this._sql.begin("isolation level serializable", tx => callback(new _BunPostgreSQLTransaction<I, T>(tx)));
+				return await this._sql.begin("isolation level serializable", tx => callback(new _BunPostgresTransaction<I, T>(tx)));
 			} catch (thrown) {
 				if (!_isRetryableError(thrown)) throw thrown;
 				aborted = thrown; // Retry the transaction after contention.
@@ -71,11 +71,11 @@ export class BunPostgreSQLProvider<I extends Identifier = Identifier, T extends 
 	}
 }
 
-/** Transaction-scoped provider for `BunPostgreSQLProvider.transact()` — every query runs on the transaction's reserved connection. */
-class _BunPostgreSQLTransaction<I extends Identifier, T extends Data> extends BunPostgreSQLProvider<I, T> {
+/** Transaction-scoped provider for `BunPostgresProvider.transact()` — every query runs on the transaction's reserved connection. */
+class _BunPostgresTransaction<I extends Identifier, T extends Data> extends BunPostgresProvider<I, T> {
 	/** Not supported inside a transaction — always throws `UnsupportedError`. */
 	override transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
-		throw new UnsupportedError("BunPostgreSQLProvider does not support nested transactions", {
+		throw new UnsupportedError("BunPostgresProvider does not support nested transactions", {
 			provider: this,
 			received: callback,
 			caller: this.transact,
