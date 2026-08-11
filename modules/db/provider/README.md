@@ -21,7 +21,7 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests and as the cache layer. |
 | `StorageDBProvider` | Extends `MemoryDBProvider` and persists every collection to a required `Storage` (`localStorage` / `sessionStorage`), with cross-tab sync. |
 | `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws `ValueError` on bad backend data. |
-| `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. |
+| `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. Extends `ThroughDBProvider`. |
 | `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |
 | `DebugDBProvider` | Logs all operations to the console (ANSI-formatted). Extends `ThroughDBProvider`. |
 | `RecordingDBProvider` | Accumulates a `RecordingDBProvider.operations` log of every read and write, replayable onto other providers. Useful for audit trails, optimistic updates, and testing. Extends `ThroughDBProvider`. |
