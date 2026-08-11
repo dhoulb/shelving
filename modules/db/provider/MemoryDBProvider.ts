@@ -13,8 +13,8 @@ import { getRandom, getRandomKey } from "../../util/random.js";
 import type { Updates } from "../../util/update.js";
 import { updateData } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
-import { ChangesDBProvider } from "./ChangesDBProvider.js";
 import { DBProvider } from "./DBProvider.js";
+import { RecordingDBProvider } from "./RecordingDBProvider.js";
 
 /**
  * Synchronous in-memory database provider, storing each collection in a `MemoryTable`.
@@ -22,7 +22,7 @@ import { DBProvider } from "./DBProvider.js";
  * - Extremely fast (ideal as the cache behind `CacheDBProvider`!), but does not persist data after the process or browser window closes.
  * - Identity-preserving: `getItem()` etc. return the exact same object instance that was passed into `setItem()`.
  * - Supports live subscriptions, so it can back `ItemStore` / `QueryStore` reads.
- * - Supports transactions: `transact()` runs the callback against a snapshot clone, captures its writes with `ChangesDBProvider`, and replays them onto this provider on success — sequences and nested transactions work inside the callback, scoped to the transaction.
+ * - Supports transactions: `transact()` runs the callback against a snapshot clone, records its operations with `RecordingDBProvider`, and replays the recorded writes onto this provider on success — sequences and nested transactions work inside the callback, scoped to the transaction.
  *
  * @see https://shelving.cc/db/MemoryDBProvider
  */
@@ -156,19 +156,19 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	}
 
 	/**
-	 * Runs the callback against a shallow clone of this provider, capturing its writes with `ChangesDBProvider`, then replays them onto this provider when the callback resolves.
-	 * - If the callback throws, the clone and its captured changes are discarded and nothing is committed.
+	 * Runs the callback against a shallow clone of this provider, recording its operations with `RecordingDBProvider`, then replays the recorded writes onto this provider when the callback resolves.
+	 * - If the callback throws, the clone and its recorded operations are discarded and nothing is committed.
 	 * - Reads inside the callback see a snapshot from when the transaction began, plus the transaction's own writes. Realtime sequences and nested `transact()` also work inside the callback, scoped to the transaction — portable code must not rely on any of this (see `DBProvider.transact()`).
 	 * - The clone is disposed when the transaction completes or fails, ending any sequences opened inside the callback.
-	 * - Writes made to this provider while the callback is running are kept — the captured changes replay on top in order (updates apply as deltas, sets and deletes overwrite), with no conflict detection; overlapping transactions replay in completion order (last write wins per item).
+	 * - Writes made to this provider while the callback is running are kept — the recorded writes replay on top in order (updates apply as deltas, sets and deletes overwrite), with no conflict detection; overlapping transactions replay in completion order (last write wins per item).
 	 * - Query writes resolve two-step against the clone, so they commit to exactly the items they matched inside the transaction, even if concurrent writes changed which items match.
 	 */
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
 		const clone = this.clone();
 		try {
-			const transaction = new ChangesDBProvider<I, T>(clone);
+			const transaction = new RecordingDBProvider<I, T>(clone);
 			const result = await callback(transaction);
-			await transaction.replay(this); // Commit the captured changes.
+			await transaction.replayWrites(this); // Commit the recorded writes.
 			return result;
 		} finally {
 			await clone[Symbol.asyncDispose](); // End any sequences opened inside the callback.

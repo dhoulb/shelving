@@ -24,7 +24,8 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 | `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. |
 | `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |
 | `DebugDBProvider` | Logs all operations to the console (ANSI-formatted). Extends `ThroughDBProvider`. |
-| `ChangesDBProvider` | Accumulates a `ChangesDBProvider.changes` log of every write. Useful for audit trails and testing. Extends `ThroughDBProvider`. |
+| `RecordingDBProvider` | Accumulates a `RecordingDBProvider.operations` log of every read and write, replayable onto other providers. Useful for audit trails, optimistic updates, and testing. Extends `ThroughDBProvider`. |
+| `UndoDBProvider` | A `RecordingDBProvider` that reads each item before first writing it, so `UndoDBProvider.undo()` can restore the original state. |
 | `MockDBProvider` | Extends `MemoryDBProvider` and records every call in `MockDBProvider.calls`. Use in tests to assert operations. |
 | `SQLProvider` | Abstract SQL base — concrete subclasses bind it to a driver. |
 | `SQLiteProvider` | Abstract SQL backend targeting SQLite / D1 with JSON1 support for nested keys and array operations. |
