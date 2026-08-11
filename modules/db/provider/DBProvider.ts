@@ -1,6 +1,7 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { countArray, getFirst } from "../../util/array.js";
+import { awaitValues } from "../../util/async.js";
 import type { Data } from "../../util/data.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -156,7 +157,8 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 
 	/**
 	 * Set (overwrite) the data for every item matching a query.
-	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then write per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
+	 * - Two-step by default: resolves the query to its matching items with `getQuery()`, then sets each one concurrently with `setItem()`. Engine providers override this with a native query write where one exists (e.g. SQL `UPDATE … WHERE`).
+	 * - Not guaranteed atomic: the resolve and the writes are separate steps, so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to set.
@@ -164,15 +166,15 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @example await provider.setQuery(users, { age: 40 }, { active: true });
 	 * @see https://shelving.cc/db/DBProvider/setQuery
 	 */
-	abstract setQuery<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		query: Query<Item<II, TT>>,
-		data: TT,
-	): Promise<void>;
+	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.setItem(collection, id, data)));
+	}
 
 	/**
 	 * Apply partial updates to every item matching a query.
-	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then write per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
+	 * - Two-step by default: resolves the query to its matching items with `getQuery()`, then updates each one concurrently with `updateItem()`. Engine providers override this with a native query write where one exists (e.g. SQL `UPDATE … WHERE`).
+	 * - Not guaranteed atomic: the resolve and the writes are separate steps, so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to write to.
 	 * @param query Query selecting the items to update.
@@ -180,22 +182,29 @@ export abstract class DBProvider<I extends Identifier = Identifier, T extends Da
 	 * @example await provider.updateQuery(users, { age: 40 }, { active: true });
 	 * @see https://shelving.cc/db/DBProvider/updateQuery
 	 */
-	abstract updateQuery<II extends I, TT extends T>(
+	async updateQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
-	): Promise<void>;
+	): Promise<void> {
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.updateItem(collection, id, updates as Updates<Item<II, TT>>)));
+	}
 
 	/**
 	 * Delete every item matching a query.
-	 * - Not guaranteed atomic: an implementation may resolve the matching items first and then delete per item (two-step — see `ThroughDBProvider`), so wrap the call in `transact()` when atomicity matters.
+	 * - Two-step by default: resolves the query to its matching items with `getQuery()`, then deletes each one concurrently with `deleteItem()`. Engine providers override this with a native query write where one exists (e.g. SQL `DELETE … WHERE`).
+	 * - Not guaranteed atomic: the resolve and the writes are separate steps, so wrap the call in `transact()` when atomicity matters.
 	 *
 	 * @param collection Collection to delete from.
 	 * @param query Query selecting the items to delete.
 	 * @example await provider.deleteQuery(users, { active: false });
 	 * @see https://shelving.cc/db/DBProvider/deleteQuery
 	 */
-	abstract deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void>;
+	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
+		const items = await this.getQuery(collection, query);
+		await awaitValues(...items.map(({ id }) => this.deleteItem(collection, id)));
+	}
 
 	/**
 	 * Get the first item matching a query, or `undefined` if there are none.
