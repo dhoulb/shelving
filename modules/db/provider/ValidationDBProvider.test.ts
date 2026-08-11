@@ -12,6 +12,17 @@ describe("ValidationDBProvider", () => {
 		await expect(provider.getItem(BASICS_COLLECTION, "basic1")).rejects.toBeInstanceOf(ValueError);
 	});
 
+	test("rejects invalid items returned via derived reads", async () => {
+		const source = new MockDBProvider();
+		source.getTable(BASICS_COLLECTION).setItem("basic1", { ...basic1, num: "bad" } as never);
+		const provider = new ValidationDBProvider(source);
+
+		// Derived reads route through the wrapper's getItem()/getQuery(), so they validate too.
+		await expect(provider.requireItem(BASICS_COLLECTION, "basic1")).rejects.toBeInstanceOf(ValueError);
+		await expect(provider.getFirst(BASICS_COLLECTION, {})).rejects.toBeInstanceOf(ValueError);
+		await expect(provider.requireFirst(BASICS_COLLECTION, {})).rejects.toBeInstanceOf(ValueError);
+	});
+
 	test("rejects invalid query results returned by the source provider", async () => {
 		const source = new MockDBProvider();
 		source.getTable(BASICS_COLLECTION).setItem("basic1", basic1);

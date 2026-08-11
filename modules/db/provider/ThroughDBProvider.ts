@@ -1,4 +1,3 @@
-import { awaitValues } from "../../util/async.js";
 import type { Data } from "../../util/data.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
@@ -6,18 +5,18 @@ import type { Query } from "../../util/query.js";
 import type { Sourceable } from "../../util/source.js";
 import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
-import type { DBProvider } from "./DBProvider.js";
+import { DBProvider } from "./DBProvider.js";
 
 /**
- * Database provider that passes every operation straight through to a wrapped `source` provider.
+ * Database provider that passes every core operation straight through to a wrapped `source` provider.
  *
  * - Base for the layered `Through*Provider` family (validation, caching, logging, change tracking); subclasses override individual methods to add behaviour and call `super` to delegate.
- * - Query writes (`setQuery()`, `updateQuery()`, `deleteQuery()`) are two-step by default — resolved to their matching items with `getQuery()`, then written per item through this provider's own item methods — so wrapper behaviour applies to every implied write. Subclasses that don't need per-item behaviour override them to pass through to `source` directly.
+ * - Only the core operations delegate to `source` — derived reads (`DBProvider.requireItem()`, `DBProvider.getFirst()`, `DBProvider.requireFirst()`) and two-step query writes are inherited from `DBProvider`, so they route through this provider's own overridden methods and wrapper behaviour applies to everything they do. Wrappers that don't need per-item behaviour override the query writes to pass through to `source` directly.
  * - Exposes `source` and implements `Sourceable`, so wrapped providers can be discovered with `getSource()` / `requireSource()`.
  *
  * @see https://shelving.cc/db/ThroughDBProvider
  */
-export class ThroughDBProvider<I extends Identifier, T extends Data> implements DBProvider<I, T>, Sourceable<DBProvider<I, T>> {
+export class ThroughDBProvider<I extends Identifier, T extends Data> extends DBProvider<I, T> implements Sourceable<DBProvider<I, T>> {
 	/**
 	 * The wrapped source provider that every operation is delegated to.
 	 *
@@ -26,86 +25,59 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	readonly source: DBProvider<I, T>;
 
 	constructor(source: DBProvider<I, T>) {
+		super();
 		this.source = source;
 	}
 
-	getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
+	override getItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<OptionalItem<II, TT>> {
 		return this.source.getItem(collection, id);
 	}
 
-	requireItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<Item<II, TT>> {
-		return this.source.requireItem(collection, id);
-	}
-
-	getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
+	override getItemSequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): OptionalItemSequence<II, TT> {
 		return this.source.getItemSequence(collection, id);
 	}
 
-	addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
+	override addItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, data: TT): Promise<II> {
 		return this.source.addItem(collection, data);
 	}
 
-	setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
+	override setItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, data: TT): Promise<void> {
 		return this.source.setItem(collection, id, data);
 	}
 
-	updateItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II, updates: Updates<Item<II, TT>>): Promise<void> {
+	override updateItem<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		id: II,
+		updates: Updates<Item<II, TT>>,
+	): Promise<void> {
 		return this.source.updateItem(collection, id, updates);
 	}
 
-	deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
+	override deleteItem<II extends I, TT extends T>(collection: Collection<string, II, TT>, id: II): Promise<void> {
 		return this.source.deleteItem(collection, id);
 	}
 
-	countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
+	/** Delegates to `source` so its native counting is kept (the base implementation would fetch the items and count them). */
+	override countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
 		return this.source.countQuery(collection, query);
 	}
 
-	getQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<Items<II, TT>> {
+	override getQuery<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): Promise<Items<II, TT>> {
 		return this.source.getQuery(collection, query);
 	}
 
-	getQuerySequence<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): ItemsSequence<II, TT> {
+	override getQuerySequence<II extends I, TT extends T>(
+		collection: Collection<string, II, TT>,
+		query?: Query<Item<II, TT>>,
+	): ItemsSequence<II, TT> {
 		return this.source.getQuerySequence(collection, query);
 	}
 
-	/**
-	 * Two-step: resolve the query to its matching items with `getQuery()`, then set each one with `setItem()`.
-	 * - Routes every implied write through this provider's own item methods, so wrapper behaviour applies to each item — the same theory as `transact()` re-wrapping the transaction provider.
-	 * - The per-item writes run concurrently (`awaitValues()`), so a batch over a remote source costs one round-trip of latency, not one per item.
-	 * - The resolve and the writes are separate steps, so this is only atomic inside `transact()`.
-	 */
-	async setQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>, data: TT): Promise<void> {
-		const items = await this.getQuery(collection, query);
-		await awaitValues(...items.map(({ id }) => this.setItem(collection, id, data)));
-	}
-
-	/** Two-step: resolve the query to its matching items with `getQuery()`, then update each one concurrently with `updateItem()` — see `ThroughDBProvider.setQuery()`. */
-	async updateQuery<II extends I, TT extends T>(
-		collection: Collection<string, II, TT>,
-		query: Query<Item<II, TT>>,
-		updates: Updates<TT>,
-	): Promise<void> {
-		const items = await this.getQuery(collection, query);
-		await awaitValues(...items.map(({ id }) => this.updateItem(collection, id, updates as Updates<Item<II, TT>>)));
-	}
-
-	/** Two-step: resolve the query to its matching items with `getQuery()`, then delete each one concurrently with `deleteItem()` — see `ThroughDBProvider.setQuery()`. */
-	async deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		const items = await this.getQuery(collection, query);
-		await awaitValues(...items.map(({ id }) => this.deleteItem(collection, id)));
-	}
-
-	getFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<OptionalItem<II, TT>> {
-		return this.source.getFirst(collection, query);
-	}
-
-	requireFirst<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<Item<II, TT>> {
-		return this.source.requireFirst(collection, query);
-	}
-
 	// Run the transaction against the wrapped `source` provider, keeping this provider's behaviour inside the transaction.
-	transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
+	override transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
 		return this.source.transact(transaction => callback(this.cloneWith(transaction)));
 	}
 
@@ -115,9 +87,10 @@ export class ThroughDBProvider<I extends Identifier, T extends Data> implements 
 	}
 
 	// Implement `AsyncDisposable`
-	async [Symbol.asyncDispose]() {
+	override async [Symbol.asyncDispose]() {
 		await awaitDispose(
 			this.source, // Dispose the source API provider.
+			super[Symbol.asyncDispose](), // Chain.
 		);
 	}
 }

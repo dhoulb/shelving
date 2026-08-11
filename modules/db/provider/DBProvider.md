@@ -18,7 +18,9 @@ async function publishPost(provider: DBProvider, id: string) {
 
 The method surface covers single items (`getItem`, `requireItem`, `addItem`, `setItem`, `updateItem`, `deleteItem`), queries (`getQuery`, `countQuery`, `setQuery`, `updateQuery`, `deleteQuery`, `getFirst`, `requireFirst`), realtime (`getItemSequence`, `getQuerySequence` — iterate with `for await...of`), and transactions (`transact`).
 
-Query writes (`setQuery`, `updateQuery`, `deleteQuery`) have a deliberately weak portable contract: an engine may execute them natively in a single call (SQL's `UPDATE … WHERE`), or resolve the matching items first and then write per item — "two-step", the default for wrapping providers (see `ThroughDBProvider`). Either way they are only guaranteed atomic inside `transact()`.
+Query writes (`setQuery`, `updateQuery`, `deleteQuery`) have a deliberately weak portable contract: `DBProvider` itself implements them "two-step" — resolve the matching items with `getQuery()`, then write each one concurrently through the item methods — and engines override them with a native single call where one exists (SQL's `UPDATE … WHERE`). Either way they are only guaranteed atomic inside `transact()`.
+
+The derived reads (`requireItem`, `getFirst`, `requireFirst`) and the default `countQuery` are sugar built on `getItem()` / `getQuery()`, so a provider only ever has to implement the core operations — and behaviour added by a wrapping provider (see `ThroughDBProvider`) automatically applies to them too.
 
 ## Transactions
 

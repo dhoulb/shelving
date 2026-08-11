@@ -62,6 +62,15 @@ describe("ThroughDBProvider", () => {
 		expect(await source.getItem(BASICS_COLLECTION, "basic4")).toBe(undefined);
 	});
 
+	test("derived reads flow through the wrapping provider", async () => {
+		const source = new TransactionTestDBProvider<string>();
+		const provider = new _TestDBProvider(source);
+		await provider.setItem(BASICS_COLLECTION, "basic1", basic1);
+
+		await provider.requireItem(BASICS_COLLECTION, "basic1");
+		expect(provider.reads).toEqual(["basic1"]); // requireItem() derives via the wrapper's getItem().
+	});
+
 	test("transact() propagates callback errors", async () => {
 		const provider = new _TestDBProvider(new TransactionTestDBProvider<string>());
 
