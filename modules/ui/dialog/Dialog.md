@@ -58,7 +58,7 @@ function DeleteButton({ id }: { id: string }) {
 |---|---|---|
 | `--dialog-padding` | Padding around the centred content | `var(--space-normal)` (16px) |
 | `--dialog-color-overlay` | Backdrop fill behind the content | `var(--color-shadow)` |
-| `--dialog-transition` | Open / close transition | `all var(--duration-fast)` (150ms) |
+| `--dialog-transition` | Open / close transition (a fixed discrete `display` transition runs alongside it so the fade animates across the show / hide toggle) | `all var(--duration-fast)` (150ms) |
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (8px) |
 
 **Global tokens it reads** — move these to retheme broadly: `--space-normal`, `--space-small`, `--color-shadow`, and `--duration-fast`.
