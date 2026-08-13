@@ -21,9 +21,12 @@
 		/* Style */
 		background: var(--dialog-color-overlay, var(--shadow-color));
 		opacity: 0;
-		transition: var(--dialog-transition, all var(--duration-fast));
+		transition:
+			var(--dialog-transition, all var(--duration-fast)),
+			display var(--duration-fast) allow-discrete;
 
 		&[open] {
+			display: flex;
 			opacity: 1;
 		}
 
