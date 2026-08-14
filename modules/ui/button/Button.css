@@ -1,0 +1,39 @@
+/*
+* Keyframes for the `Button` press-feedback (`springy`) and attention (`sparkle`) animations.
+*
+* These live in a plain (non-module) CSS file, not `Button.module.css`, because Bun's CSS-modules
+* transform renames the `@keyframes` identifier (appends the module hash) but does *not* rewrite the
+* matching `animation` reference, so a keyframes block defined in the module file animates against a
+* name that no longer exists. Keeping the declarations global here leaves the names stable, and the
+* un-rewritten `animation: button-press` / `animation: button-sparkle` references in
+* `Button.module.css` resolve to them. This mirrors `Progress.css` and the `transition` components.
+*
+* Tracked in dhoulb/shelving#259 (revert once Bun ships the fix for oven-sh/bun#18921).
+*/
+
+/* Squash the button on activation, rebound past its resting size, then settle — the "spongy" press. Animates the `scale` property rather than `transform` so it composes with (instead of clobbering) the `--button-active-transform` hook, which the same press may be using to sink the button into its shadow edge. */
+@keyframes button-press {
+	0% {
+		scale: var(--button-press-scale, 0.9);
+	}
+
+	60% {
+		scale: var(--button-press-overshoot, 1.05);
+	}
+
+	100% {
+		scale: 1;
+	}
+}
+
+/* Sweep a band of light across the button, then hold it off the right edge for the rest of the cycle so the shimmer repeats as periodic flashes rather than a continuous scroll. `-100%`/`100%` clear the full-width band at both ends. */
+@keyframes button-sparkle {
+	0% {
+		translate: -100% 0;
+	}
+
+	60%,
+	100% {
+		translate: 100% 0;
+	}
+}

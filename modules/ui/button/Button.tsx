@@ -3,6 +3,7 @@ import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import "./Button.css";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
@@ -22,6 +23,10 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, Typography
 	small?: boolean | undefined;
 	/** Fill the available width instead of sizing to content (buttons are content-width by default). */
 	full?: boolean | undefined;
+	/** Add springy press feedback (the button squashes, rebounds, and settles when it's activated). */
+	springy?: boolean | undefined;
+	/** Add a repeating shimmer sweep to draw attention to a single call-to-action button. */
+	sparkle?: boolean | undefined;
 }
 
 /**
@@ -51,6 +56,7 @@ export interface ButtonProps extends ButtonVariants, ClickableProps {}
  * Render either a `<button>` or an `<a href="">` styled as a button, based on whether an `onClick` or `href` prop is provided.
  * - Content-width by default (never grows); it won't shrink below its label. Pass `full` to fill the available width.
  * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
+ * - `springy` and `sparkle` add the opt-in press-feedback and attention animations, both of which degrade under `prefers-reduced-motion`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Button

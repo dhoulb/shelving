@@ -32,6 +32,7 @@
 		/* Style. */
 		background: var(--button-background, var(--tint-90));
 		color: var(--button-text, var(--tint-50));
+		box-shadow: var(--button-shadow, none);
 		transition: var(--button-transition, all var(--duration-fast));
 		cursor: pointer;
 		outline: var(--button-focus-border, var(--stroke-focus) solid var(--color-focus));
@@ -58,6 +59,13 @@
 			background: var(--button-hover-background, var(--tint-95));
 		}
 
+		/* Pressed — no movement by default, but the hooks let a theme sink the button into an offset shadow "edge" so it reads as a physical 3D press (`--button-shadow: 0 0.25rem 0 …` at rest, a shorter shadow plus a matching `translateY` here). */
+		&:enabled:active,
+		&:any-link:active {
+			transform: var(--button-active-transform, none);
+			box-shadow: var(--button-active-shadow, var(--button-shadow, none));
+		}
+
 		/* Variants */
 		&.small {
 			gap: var(--button-small-gap, var(--space-xxsmall));
@@ -78,6 +86,54 @@
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
 				background: var(--button-strong-hover-background, var(--tint-55));
+			}
+		}
+
+		/* Press feedback — squash and settle each time the button is activated. Only a live button/link presses; a disabled one has nothing to feel. */
+		&.springy:enabled:active,
+		&.springy:any-link:active {
+			animation: button-press var(--button-press-duration, var(--duration-normal)) var(--button-press-easing, ease-out);
+		}
+
+		&.sparkle {
+			/* Contain the shimmer overlay (the base `.button` already clips it with `overflow: hidden`). */
+			position: relative;
+
+			/* Shimmer sweep — a band of light travelling across the button on a loop to draw the eye to a single call to action. Painted from the ladder so it stays a highlight whatever the button is tinted. */
+			&::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+				background-image: linear-gradient(
+					var(--button-sparkle-angle, 100deg),
+					transparent 35%,
+					var(--button-sparkle-color, var(--tint-100)) 50%,
+					transparent 65%
+				);
+				opacity: var(--button-sparkle-opacity, 0.6);
+				animation: button-sparkle var(--button-sparkle-duration, 2.5s) linear infinite;
+			}
+
+			/* A button that can't be pressed isn't a call to action, so it doesn't shimmer. */
+			&:disabled::before,
+			&:where(a:not(:any-link))::before {
+				display: none;
+			}
+		}
+	}
+
+	/* Reduced motion — the press collapses to a flat opacity change (immediate feedback, no movement) and the shimmer stops travelling, holding its band still as a static sheen so the call to action still stands out. */
+	@media (prefers-reduced-motion: reduce) {
+		.button {
+			&.springy:enabled:active,
+			&.springy:any-link:active {
+				animation: none;
+				opacity: var(--button-press-opacity, 0.8);
+			}
+
+			&.sparkle::before {
+				animation: none;
 			}
 		}
 	}
