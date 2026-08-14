@@ -17,8 +17,7 @@
 		max-inline-size: 100%;
 		border-radius: var(--button-radius, var(--radius-xsmall));
 		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--button-padding, var(--space-small));
-		padding-inline: var(--button-padding, var(--space-small));
+		padding: var(--button-padding, var(--space-small));
 		margin-inline: 0;
 		margin-block: var(--button-space, var(--space-small));
 
@@ -61,8 +60,7 @@
 		/* Variants */
 		&.small {
 			gap: var(--button-small-gap, var(--space-xxsmall));
-			padding-block: var(--button-small-padding, var(--space-xxsmall));
-			padding-inline: var(--button-small-padding, var(--space-xxsmall));
+			padding: var(--button-small-padding, var(--space-xxsmall));
 		}
 
 		&.full {

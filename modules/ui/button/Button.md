@@ -48,6 +48,8 @@ import { getButtonClass } from "shelving/ui";
 
 `Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
 
+`--button-padding` and `--button-small-padding` set the `padding` shorthand, so a single value pads both axes equally and a two-value override pads block and inline separately (e.g. `var(--space-small) var(--space-normal)`).
+
 | Variable | Styles | Default |
 |---|---|---|
 | `--button-background` | Surface fill | `var(--tint-90)` |
@@ -76,8 +78,9 @@ import { getButtonClass } from "shelving/ui";
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90` / `--tint-95` / `--tint-100` / `--tint-55`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
-/* Theme: pill-shaped buttons. */
+/* Theme: pill-shaped buttons, with roomier inline padding. */
 :root {
   --button-radius: 999px;
+  --button-padding: var(--space-small) var(--space-normal);
 }
 ```
