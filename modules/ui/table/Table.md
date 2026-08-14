@@ -34,10 +34,12 @@ import { Table } from "shelving/ui";
 
 `Table` exposes hooks for its rhythm, cell padding, and border; it paints no surface of its own, so it inherits the surrounding tint.
 
+`--table-padding` sets the `padding` shorthand on each cell, so a single value pads both axes equally and a two-value override pads block and inline separately (e.g. `var(--space-xxsmall) var(--space-small)`). The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
+
 | Variable | Styles | Default |
 |---|---|---|
 | `--table-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-| `--table-padding` | Cell padding (block + inline) | `var(--space-xsmall)` |
+| `--table-padding` | Cell padding | `var(--space-xsmall)` |
 | `--table-border` | Cell border shorthand | `var(--table-stroke)` |
 | `--table-stroke` | Cell border thickness/colour | `var(--stroke-normal) solid var(--tint-80)` |
 | `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)` |

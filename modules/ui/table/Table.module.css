@@ -20,8 +20,7 @@
 		/* Children */
 		th,
 		td {
-			padding-block: var(--table-padding, var(--space-xsmall));
-			padding-inline: var(--table-padding, var(--space-xsmall));
+			padding: var(--table-padding, var(--space-xsmall));
 			border-block: var(--table-border, var(--table-stroke, var(--stroke-normal) solid var(--tint-80)));
 		}
 
