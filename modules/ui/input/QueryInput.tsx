@@ -68,9 +68,10 @@ export function QueryInput<I, O>({
 	};
 
 	return (
-		<Popover open={isOpen} onClose={close} className={className}>
+		<Popover open={isOpen} onClose={close}>
 			<SchemaInput
 				{...props}
+				className={className}
 				value={value as I}
 				onValue={v => {
 					if (v) store.payload.value = v;

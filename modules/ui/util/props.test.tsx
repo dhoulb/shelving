@@ -1,7 +1,21 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Button, Card, Cell, createMeta, Field, Loading, MetaContext, Paragraph, Popover, Span, Tag, TextInput } from "shelving/ui";
+import {
+	Button,
+	Card,
+	Cell,
+	createMeta,
+	Field,
+	Loading,
+	MetaContext,
+	Paragraph,
+	Popover,
+	PopoverButtonInput,
+	Span,
+	Tag,
+	TextInput,
+} from "shelving/ui";
 
 /** Render `children` inside the meta context that link-rendering components need. */
 function render(children: ReactNode): string {
@@ -25,6 +39,13 @@ describe("ClassProps", () => {
 		expect(render(<Button className="spongy" onClick={() => undefined} />)).toContain('<button type="button" class="spongy"');
 		expect(render(<Button className="spongy" href="/about" />)).toContain('class="spongy"');
 		expect(render(<Tag className="spongy">New</Tag>)).toContain('class="spongy"');
+	});
+
+	test("clickable wrapper renders a working `<button>` when only `onClick` is set", () => {
+		// `Card` spreads `href={href}` into `Clickable` even when unset — dispatch must pick `<button>` from the defined `onClick`, not a dead `<a>`.
+		const html = render(<Card onClick={() => undefined}>Hi</Card>);
+		expect(html).toContain("<button");
+		expect(html).not.toContain("<a ");
 	});
 
 	test("`className` lands on the component's own root, not on its inner elements", () => {
@@ -52,8 +73,25 @@ describe("ClassProps", () => {
 		expect(render(<TextInput className="spongy" name="name" onValue={() => undefined} />)).toContain('class="spongy"');
 	});
 
-	test("omitted `className` changes nothing", () => {
-		expect(render(<Field title="Name">Hi</Field>)).toBe(render(<Field title="Name">Hi</Field>));
+	test("popover wrapper components render their `className` on the trigger, not the floating panel", () => {
+		// `PopoverButtonInput` (and `PopoverButton`/`QueryInput`) style their always-visible trigger — only a bare `<Popover>` styles the panel.
+		const html = render(
+			<PopoverButtonInput name="pick" className="spongy">
+				{["Pick", "Panel"]}
+			</PopoverButtonInput>,
+		);
+		expect(html).toContain('class="spongy"');
+		expect(html).toContain("<button");
+	});
+
+	test("omitted `className` renders the same markup as `className={undefined}`", () => {
+		expect(render(<Field title="Name">Hi</Field>)).toBe(
+			render(
+				<Field title="Name" className={undefined}>
+					Hi
+				</Field>,
+			),
+		);
 		expect(render(<Paragraph>Hi</Paragraph>)).not.toContain("spongy");
 		// A component with no class of its own renders no `class` attribute at all, rather than an empty one.
 		expect(render(<Loading />)).not.toContain("class=");
