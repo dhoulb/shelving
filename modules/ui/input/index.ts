@@ -1,8 +1,6 @@
 export * from "./ArrayInput.js";
 export * from "./ArrayRadioInputs.js";
 export * from "./ButtonInput.js";
-export * from "./ButtonInputPopover.js";
-export * from "./ButtonPopover.js";
 export * from "./CheckboxInput.js";
 export * from "./ChoiceRadioInputs.js";
 export * from "./DataInput.js";
@@ -13,6 +11,8 @@ export * from "./Input.js";
 export * from "./NumberInput.js";
 export * from "./OutputInput.js";
 export * from "./Popover.js";
+export * from "./PopoverButton.js";
+export * from "./PopoverButtonInput.js";
 export * from "./QueryInput.js";
 export * from "./RadioInput.js";
 export * from "./SchemaInput.js";

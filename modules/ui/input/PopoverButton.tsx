@@ -7,33 +7,35 @@ import type { ClassProps } from "../util/props.js";
 import { Popover, type PopoverChildren } from "./Popover.js";
 
 /**
- * Props for `ButtonPopover`, a button that toggles an adjacent popover.
+ * Props for `PopoverButton` — all the `Button` styling variants, plus `children` whose first node is the button label and the rest the popover contents.
  *
- * @see https://shelving.cc/ui/ButtonPopoverProps
+ * @see https://shelving.cc/ui/PopoverButtonProps
  */
-export interface ButtonPopoverProps extends ButtonVariants, ClassProps {
+export interface PopoverButtonProps extends ButtonVariants, ClassProps {
 	children: PopoverChildren;
 }
 
 /**
- * A button that, when clicked, shows a popover next to it when clicked or focused.
- * - The first element passed to `children` is used as the content for the button, the rest is the content of the popover.
+ * Popover variant of `<Button>` — a button that reveals floating popover content beside it when clicked.
+ * - The button is the primary element: it takes all the `ButtonVariants` styling props, and `className` lands on it (not the popover panel).
+ * - The first element passed to `children` is the button label; the rest become the popover contents.
  *
  * DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  *
- * @returns A `Popover` wrapping a `Button` that toggles it open and closed.
- * @example <ButtonPopover>{label}{panel}</ButtonPopover>
- * @see https://shelving.cc/ui/ButtonPopover
+ * @returns A `Button` that toggles its attached `Popover` open and closed.
+ * @example <PopoverButton>{label}{panel}</PopoverButton>
+ * @kind component
+ * @see https://shelving.cc/ui/PopoverButton
  */
-export function ButtonPopover({
+export function PopoverButton({
 	children: [buttonChildren, ...popoverChildren], //
 	className,
 	...props
-}: ButtonPopoverProps): ReactElement {
+}: PopoverButtonProps): ReactElement {
 	const [open, setOpen] = useState(false);
 	return (
-		<Popover open={open} onClose={() => setOpen(false)} className={className}>
-			<Button onClick={() => setOpen(!open)} {...props}>
+		<Popover open={open} onClose={() => setOpen(false)}>
+			<Button onClick={() => setOpen(!open)} {...props} className={className}>
 				{buttonChildren}
 			</Button>
 			{popoverChildren}
