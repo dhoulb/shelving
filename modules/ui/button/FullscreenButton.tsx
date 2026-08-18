@@ -29,7 +29,7 @@ export interface FullscreenButtonProps extends ButtonVariants, ClassProps {
  * @example <Video><video src="/clip.mp4" /><FullscreenButton /></Video>
  * @see https://shelving.cc/ui/FullscreenButton
  */
-export function FullscreenButton({ target = "body, figure", ...props }): ReactElement | null {
+export function FullscreenButton({ target = "body, figure", ...props }: FullscreenButtonProps): ReactElement | null {
 	const [isFull, setFull] = useState(() => typeof document !== "undefined" && !!document.fullscreenElement);
 
 	useEffect(() => {
