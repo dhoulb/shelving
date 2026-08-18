@@ -8,6 +8,10 @@ All code-style conventions — naming, function prefixes, imports/exports, types
 
 **Before writing any code, read `guides/styleguide.md` and follow it exactly.** The sections below cover only what is specific to this repository.
 
+## Writing style
+
+Write in **Simplified Technical English** and follow Zinsser's four principles of quality writing: **simplicity, brevity, clarity, humanity**. Applies to every piece of prose the project produces — docblocks, READMEs, per-symbol `.md` pages, commit messages, PR descriptions, and issue bodies.
+
 ## Modules
 
 Source lives under `modules/`:
