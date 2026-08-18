@@ -4,7 +4,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/index.js";
 import CAPTION_CSS from "./Caption.module.css";
 
-const CAPTION_CLASS = getModuleClass(CAPTION_CSS, "divider");
+const CAPTION_CLASS = getModuleClass(CAPTION_CSS, "caption");
 
 /**
  * Props for `Caption` — colour, space, and typography variants plus optional children.
