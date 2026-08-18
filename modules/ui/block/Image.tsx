@@ -3,6 +3,7 @@ import { getBlockClass } from "../style/Block.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import IMAGE_CSS from "./Image.module.css";
 
 const IMAGE_CLASS = getModuleClass(IMAGE_CSS, "image");
@@ -12,7 +13,7 @@ const IMAGE_CLASS = getModuleClass(IMAGE_CSS, "image");
  *
  * @see https://shelving.cc/ui/ImageProps
  */
-export interface ImageProps extends SpaceVariants, WidthVariants {
+export interface ImageProps extends SpaceVariants, WidthVariants, ClassProps {
 	src: string;
 	alt?: string;
 }
@@ -24,7 +25,7 @@ export interface ImageProps extends SpaceVariants, WidthVariants {
  * @example <Image src="/logo.png" alt="Logo" width="narrow" />
  * @see https://shelving.cc/ui/Image
  */
-export function Image({ src, alt, ...props }: ImageProps): ReactElement {
+export function Image({ src, alt, className, ...props }: ImageProps): ReactElement {
 	return (
 		<img
 			src={src}
@@ -32,6 +33,7 @@ export function Image({ src, alt, ...props }: ImageProps): ReactElement {
 			className={getClass(
 				IMAGE_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		/>
 	);

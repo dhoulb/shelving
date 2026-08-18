@@ -20,13 +20,14 @@ export type SubheadingProps = HeadingProps;
  * @kind component
  * @see https://shelving.cc/ui/Subheading
  */
-export function Subheading({ level = "3", children, ...props }: SubheadingProps): ReactElement {
+export function Subheading({ level = "3", children, className, ...props }: SubheadingProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
 	return (
 		<Element
 			className={getClass(
 				SUBHEADING_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

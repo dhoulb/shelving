@@ -4,7 +4,7 @@ import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import LAYOUT_CSS from "./CenteredLayout.module.css";
 
 const LAYOUT_MAIN_CLASS = getModuleClass(LAYOUT_CSS, "main");
@@ -16,7 +16,7 @@ const LAYOUT_INNER_CLASS = getModuleClass(LAYOUT_CSS, "inner");
  *
  * @see https://shelving.cc/ui/CenteredLayoutProps
  */
-export interface CenteredLayoutProps extends WidthVariants, PaddingVariants, IndentVariants, OptionalChildProps {}
+export interface CenteredLayoutProps extends WidthVariants, PaddingVariants, IndentVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Layout that centres its content with no header/footer and a narrow max-width.
@@ -25,7 +25,7 @@ export interface CenteredLayoutProps extends WidthVariants, PaddingVariants, Ind
  * @kind component
  * @see https://shelving.cc/ui/CenteredLayout
  */
-export function CenteredLayout({ children, ...props }: CenteredLayoutProps): ReactElement {
+export function CenteredLayout({ children, className, ...props }: CenteredLayoutProps): ReactElement {
 	// Wrap the scrolling `<main>` in `<RouteCache>` so recently-visited pages stay mounted but hidden,
 	// keeping their scroll position and state intact across back/forward navigation.
 	//
@@ -40,6 +40,7 @@ export function CenteredLayout({ children, ...props }: CenteredLayoutProps): Rea
 					LAYOUT_MAIN_CLASS, //
 					getPaddingClass(props),
 					getIndentClass(props),
+					className,
 				)}
 			>
 				<div

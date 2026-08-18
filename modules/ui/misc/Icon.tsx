@@ -6,6 +6,7 @@ import { getStatusClass, type Status, type StatusVariants } from "../style/Statu
 import type { TintVariant } from "../style/Tint.js";
 import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import ICON_CSS from "./Icon.module.css";
 import { Loading } from "./Loading.js";
 
@@ -24,7 +25,7 @@ const STATUS_ICONS: {
  *
  * @see https://shelving.cc/ui/IconProps
  */
-export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants {
+export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants, ClassProps {
 	/**
 	 * Set the icon to use. Defaults to appropriate icon for `status`
 	 */
@@ -57,6 +58,7 @@ export function Icon(props: IconProps): ReactElement {
 				getModuleClass(ICON_CSS, "icon"), //
 				getStatusClass(props),
 				getTypographyClass(props), // Used for colour, size, and tint.
+				props.className,
 			)}
 		/>
 	);

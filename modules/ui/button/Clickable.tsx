@@ -8,8 +8,9 @@ import type { Path } from "../../util/path.js";
 import type { ImmutableURI, URIString } from "../../util/uri.js";
 import { LOADING } from "../misc/Loading.js";
 import { requireMeta } from "../misc/MetaContext.js";
+import { getClass } from "../util/css.js";
 import { callNotifiedElement } from "../util/notice.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 
 /**
  * Handler for a clickable `onClick` event.
@@ -47,9 +48,7 @@ export interface ClickableProps extends OptionalChildProps {
  *
  * @see https://shelving.cc/ui/StylableClickableProps
  */
-export interface StylableClickableProps extends ClickableProps {
-	className?: string | undefined;
-}
+export interface StylableClickableProps extends ClickableProps, ClassProps {}
 
 /**
  * Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
@@ -100,7 +99,7 @@ export function LinkClickable({
 			title={title}
 			download={download}
 			target={target}
-			className={className}
+			className={getClass(className) || undefined}
 			aria-current={active ? "page" : undefined}
 		>
 			{children}
@@ -134,7 +133,7 @@ export function ButtonClickable({
 			type="button"
 			title={title}
 			disabled={busy || disabled}
-			className={className}
+			className={getClass(className) || undefined}
 			onClick={
 				disabled
 					? undefined
@@ -165,7 +164,7 @@ export function SpanClickable({
 	return (
 		<span //
 			title={title}
-			className={className}
+			className={getClass(className) || undefined}
 		>
 			{children}
 		</span>

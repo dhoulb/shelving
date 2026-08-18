@@ -34,6 +34,7 @@ export function SelectInput({
 	value = "",
 	onValue,
 	options,
+	className,
 	...variants
 }: SelectProps<string>): ReactElement {
 	return (
@@ -41,7 +42,7 @@ export function SelectInput({
 			name={name}
 			defaultValue={value}
 			onChange={e => onValue(e.currentTarget.value || undefined)}
-			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "select"))}
+			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "select"), className)}
 			title={message}
 			aria-invalid={!!message}
 			disabled={disabled}

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Modal.module.css";
 
 /**
@@ -8,7 +8,7 @@ import styles from "./Modal.module.css";
  *
  * @see https://shelving.cc/ui/ModalProps
  */
-export interface ModalProps extends OptionalChildProps {}
+export interface ModalProps extends OptionalChildProps, ClassProps {}
 
 /**
  * Styled `<aside>` overlay container for modal content.
@@ -16,6 +16,6 @@ export interface ModalProps extends OptionalChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Modal
  */
-export function Modal({ children }: ModalProps): ReactElement {
-	return <aside className={getModuleClass(styles, "modal")}>{children}</aside>;
+export function Modal({ children, className }: ModalProps): ReactElement {
+	return <aside className={getClass(getModuleClass(styles, "modal"), className)}>{children}</aside>;
 }

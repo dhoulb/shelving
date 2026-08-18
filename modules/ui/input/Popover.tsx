@@ -5,9 +5,10 @@ import type { ReactElement, ReactNode } from "react";
 
 import { isTruthy } from "../../util/boolean.js";
 import type { Callback } from "../../util/function.js";
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { eventPreventDefault } from "../util/event.js";
 import { eventLoopFocus } from "../util/focus.js";
+import type { ClassProps } from "../util/props.js";
 import styles from "./Popover.module.css";
 
 /**
@@ -32,7 +33,7 @@ export type PopoverChildren = readonly [
  *
  * @see https://shelving.cc/ui/PopoverProps
  */
-export interface PopoverProps {
+export interface PopoverProps extends ClassProps {
 	/** Children for the popover. */
 	children: PopoverChildren;
 	/** Callback that gets called when the Popover closes. */
@@ -56,10 +57,11 @@ export function Popover({
 	children: [trigger, ...popover], //
 	onClose,
 	open = popover.flat().some(isTruthy),
+	className,
 }: PopoverProps): ReactElement {
 	return (
 		<div
-			className={getModuleClass(styles, "wrap")}
+			className={getClass(getModuleClass(styles, "wrap"), className)}
 			onBlur={e => {
 				if (e.relatedTarget) eventLoopFocus(e);
 				else onClose?.();

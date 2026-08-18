@@ -3,6 +3,7 @@
 
 import { type ReactElement, useState } from "react";
 import { Button, type ButtonVariants } from "../button/Button.js";
+import type { ClassProps } from "../util/props.js";
 import { Popover, type PopoverChildren } from "./Popover.js";
 
 /**
@@ -10,7 +11,7 @@ import { Popover, type PopoverChildren } from "./Popover.js";
  *
  * @see https://shelving.cc/ui/ButtonPopoverProps
  */
-export interface ButtonPopoverProps extends ButtonVariants {
+export interface ButtonPopoverProps extends ButtonVariants, ClassProps {
 	children: PopoverChildren;
 }
 
@@ -26,11 +27,12 @@ export interface ButtonPopoverProps extends ButtonVariants {
  */
 export function ButtonPopover({
 	children: [buttonChildren, ...popoverChildren], //
+	className,
 	...props
 }: ButtonPopoverProps): ReactElement {
 	const [open, setOpen] = useState(false);
 	return (
-		<Popover open={open} onClose={() => setOpen(false)}>
+		<Popover open={open} onClose={() => setOpen(false)} className={className}>
 			<Button onClick={() => setOpen(!open)} {...props}>
 				{buttonChildren}
 			</Button>

@@ -45,6 +45,7 @@ export function DateInput({
 	max,
 	input = "date",
 	step,
+	className,
 	...variants
 }: DateInputProps): ReactElement {
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
@@ -63,7 +64,7 @@ export function DateInput({
 			required={required}
 			defaultValue={dateToString(value)}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"))}
+			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
 			onChange={onChange}
 			onInput={onChange}
 			title={message}

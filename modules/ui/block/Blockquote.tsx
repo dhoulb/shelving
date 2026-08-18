@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import BLOCKQUOTE_CSS from "./Blockquote.module.css";
 
 const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
@@ -11,7 +11,7 @@ const BLOCKQUOTE_CLASS = getModuleClass(BLOCKQUOTE_CSS, "blockquote");
  *
  * @see https://shelving.cc/ui/BlockquoteProps
  */
-export interface BlockquoteProps extends BlockVariants, OptionalChildProps {}
+export interface BlockquoteProps extends BlockVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Quoted block of text — rendered as `<blockquote>`.
@@ -20,12 +20,13 @@ export interface BlockquoteProps extends BlockVariants, OptionalChildProps {}
  * @example <Blockquote>To be or not to be.</Blockquote>
  * @see https://shelving.cc/ui/Blockquote
  */
-export function Blockquote({ children, ...props }: BlockquoteProps): ReactElement {
+export function Blockquote({ children, className, ...props }: BlockquoteProps): ReactElement {
 	return (
 		<blockquote
 			className={getClass(
 				BLOCKQUOTE_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

@@ -39,6 +39,7 @@ export function NumberInput({
 	// min = Number.NEGATIVE_INFINITY,
 	// max = Number.POSITIVE_INFINITY,
 	formatter = formatNumber,
+	className,
 	...variants
 }: NumberInputProps): ReactElement {
 	const onChange = ({ currentTarget }: SyntheticEvent<HTMLInputElement>) => {
@@ -59,7 +60,7 @@ export function NumberInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"))}
+			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
 			onChange={onChange}
 			onInput={onChange}
 			onBlur={onBlur}

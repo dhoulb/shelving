@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import type { SpaceVariants } from "../style/Space.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import PREFORMATTED_CSS from "./Preformatted.module.css";
 
 /**
@@ -10,7 +10,7 @@ import PREFORMATTED_CSS from "./Preformatted.module.css";
  *
  * @see https://shelving.cc/ui/PreformattedProps
  */
-export interface PreformattedProps extends SpaceVariants, BlockVariants, OptionalChildProps {
+export interface PreformattedProps extends SpaceVariants, BlockVariants, OptionalChildProps, ClassProps {
 	/** Enable line wrapping (default is nowrap). */
 	wrap?: boolean | undefined;
 }
@@ -24,12 +24,13 @@ export interface PreformattedProps extends SpaceVariants, BlockVariants, Optiona
  * @example <Preformatted>{"line one\nline two"}</Preformatted>
  * @see https://shelving.cc/ui/Preformatted
  */
-export function Preformatted({ children, ...variants }: PreformattedProps): ReactElement {
+export function Preformatted({ children, className, ...variants }: PreformattedProps): ReactElement {
 	return (
 		<pre
 			className={getClass(
 				getModuleClass(PREFORMATTED_CSS, "preformatted", variants), //
 				getBlockClass(variants),
+				className,
 			)}
 		>
 			{children}

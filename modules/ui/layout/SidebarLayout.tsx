@@ -4,7 +4,7 @@ import { Button } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import LAYOUT_CSS from "./SidebarLayout.module.css";
 
 const LAYOUT_SIDEBAR_CLASS = getModuleClass(LAYOUT_CSS, "sidebar");
@@ -20,7 +20,7 @@ const LAYOUT_RIGHT_CLASS = getModuleClass(LAYOUT_CSS, "right");
  *
  * @see https://shelving.cc/ui/SidebarLayoutProps
  */
-export interface SidebarLayoutProps extends OptionalChildProps {
+export interface SidebarLayoutProps extends OptionalChildProps, ClassProps {
 	/** Content rendered in the fixed-width side column. */
 	sidebar: ReactNode;
 	/** Render the sidebar on the right rather than the left. */
@@ -38,7 +38,7 @@ export interface SidebarLayoutProps extends OptionalChildProps {
  * @kind component
  * @see https://shelving.cc/ui/SidebarLayout
  */
-export function SidebarLayout({ sidebar, children, right = false }: SidebarLayoutProps): ReactElement {
+export function SidebarLayout({ sidebar, children, right = false, className }: SidebarLayoutProps): ReactElement {
 	const { path } = requireMetaURL();
 	const [open, setOpen] = useState(false);
 
@@ -49,7 +49,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 
 	// DOM order is always sidebar → content → overlay; the `right` variant flips the visual column order in CSS, so the markup never reshuffles.
 	return (
-		<main className={getClass(LAYOUT_MAIN_CLASS, right && LAYOUT_RIGHT_CLASS)}>
+		<main className={getClass(LAYOUT_MAIN_CLASS, right && LAYOUT_RIGHT_CLASS, className)}>
 			<nav
 				className={getClass(
 					LAYOUT_SIDEBAR_CLASS, //

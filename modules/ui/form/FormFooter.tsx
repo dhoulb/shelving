@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { Row } from "../block/Row.js";
 import { Footer } from "../block/Section.js";
 import { SubmitButton } from "../button/SubmitButton.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import { FormMessage } from "./FormMessage.js";
 
 /**
@@ -10,7 +10,7 @@ import { FormMessage } from "./FormMessage.js";
  *
  * @see https://shelving.cc/ui/FormFooterProps
  */
-export interface FormFooterProps extends OptionalChildProps {
+export interface FormFooterProps extends OptionalChildProps, ClassProps {
 	submit?: ReactNode | undefined;
 }
 
@@ -24,9 +24,9 @@ export interface FormFooterProps extends OptionalChildProps {
  * @example <FormFooter submit="Save" />
  * @see https://shelving.cc/ui/FormFooter
  */
-export function FormFooter({ children, submit }: FormFooterProps): ReactElement {
+export function FormFooter({ children, submit, className }: FormFooterProps): ReactElement {
 	return (
-		<Footer>
+		<Footer className={className}>
 			<Row reverse>
 				<SubmitButton>{submit}</SubmitButton>
 				{children}

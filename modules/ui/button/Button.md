@@ -8,6 +8,7 @@ A clickable styled as a solid button. Renders an `<a href="">` when given `href`
 - `strong` marks the default action in a form — a filled background instead of an outline. `plain` and `outline` drop the background until hover/focus.
 - `color=` / `status=` move the tint anchor, so the background, border and label re-derive from the same ladder; `small` tightens the padding.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
+- `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
 
 ## Usage
 
@@ -31,6 +32,15 @@ import { Row } from "shelving/ui";
   <Button plain onClick={cancel}>Cancel</Button>
   <Button strong onClick={submit}>Continue</Button>
 </Row>
+```
+
+### A one-off treatment
+
+```tsx
+import { Button } from "shelving/ui";
+
+// `.spongy-press` lives in the app's own stylesheet — use it for what the theme hooks below can't express.
+<Button className="spongy-press" strong onClick={claim}>Claim</Button>
 ```
 
 ### Reusing the button class

@@ -274,9 +274,9 @@ export interface SchemaFieldProps extends SchemaInputProps<Schema, unknown>, Opt
  * @kind component
  * @see https://shelving.cc/ui/SchemaField
  */
-export function SchemaField({ schema, children, ...props }: SchemaFieldProps): ReactElement {
+export function SchemaField({ schema, children, className, ...props }: SchemaFieldProps): ReactElement {
 	return (
-		<Field {...props} {...schema}>
+		<Field {...props} {...schema} className={className}>
 			{children ?? <SchemaInput schema={schema} {...props} />}
 		</Field>
 	);

@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/index.js";
+import type { ClassProps, OptionalChildProps } from "../util/index.js";
 import CODE_CSS from "./Code.module.css";
 
 const CODE_CLASS = getModuleClass(CODE_CSS, "code");
@@ -13,7 +13,7 @@ const CODE_PLAIN_CLASS = getModuleClass(CODE_CSS, "plain");
  *
  * @see https://shelving.cc/ui/CodeProps
  */
-export interface CodeProps extends TypographyVariants, OptionalChildProps {
+export interface CodeProps extends TypographyVariants, OptionalChildProps, ClassProps {
 	plain?: boolean | undefined;
 }
 
@@ -24,13 +24,14 @@ export interface CodeProps extends TypographyVariants, OptionalChildProps {
  * @kind component
  * @see https://shelving.cc/ui/Code
  */
-export function Code({ children, plain, ...props }: CodeProps): ReactElement {
+export function Code({ children, plain, className, ...props }: CodeProps): ReactElement {
 	return (
 		<code
 			className={getClass(
 				CODE_CLASS, //
 				plain && CODE_PLAIN_CLASS,
 				getTypographyClass(props),
+				className,
 			)}
 		>
 			{children}

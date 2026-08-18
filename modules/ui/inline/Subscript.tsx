@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import SUBSCRIPT_CSS from "./Subscript.module.css";
 
 const SUBSCRIPT_CLASS = getModuleClass(SUBSCRIPT_CSS, "subscript");
@@ -10,7 +10,7 @@ const SUBSCRIPT_CLASS = getModuleClass(SUBSCRIPT_CSS, "subscript");
  *
  * @see https://shelving.cc/ui/SubscriptProps
  */
-export interface SubscriptProps extends OptionalChildProps {}
+export interface SubscriptProps extends OptionalChildProps, ClassProps {}
 
 /**
  * Subscript text — renders a `<sub>` element for typographically lowered text (e.g. chemical formulae).
@@ -19,6 +19,6 @@ export interface SubscriptProps extends OptionalChildProps {}
  * @example <>H<Subscript>2</Subscript>O</>
  * @see https://shelving.cc/ui/Subscript
  */
-export function Subscript({ children }: SubscriptProps): ReactElement {
-	return <sub className={SUBSCRIPT_CLASS}>{children}</sub>;
+export function Subscript({ children, className }: SubscriptProps): ReactElement {
+	return <sub className={getClass(SUBSCRIPT_CLASS, className)}>{children}</sub>;
 }

@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { Message } from "../notice/Message.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { ChildProps } from "../util/index.js";
+import type { ChildProps, ClassProps } from "../util/index.js";
 import FIELD_CSS from "./Field.module.css";
 
 const FIELD_CLASS = getModuleClass(FIELD_CSS, "field");
@@ -14,7 +14,7 @@ const FIELD_DESCRIPTION_CLASS = getModuleClass(FIELD_CSS, "description");
  *
  * @see https://shelving.cc/ui/FieldProps
  */
-export interface FieldProps extends BlockVariants, ChildProps {
+export interface FieldProps extends BlockVariants, ChildProps, ClassProps {
 	title?: ReactNode | undefined;
 	description?: ReactNode | undefined;
 	message?: ReactNode | undefined;
@@ -27,13 +27,14 @@ export interface FieldProps extends BlockVariants, ChildProps {
  * @kind component
  * @see https://shelving.cc/ui/Field
  */
-export function Field({ title, description, message, children, ...props }: FieldProps): ReactElement {
+export function Field({ title, description, message, children, className, ...props }: FieldProps): ReactElement {
 	return (
 		// biome-ignore lint/a11y/noLabelWithoutControl: Generally `children` will contain a field.
 		<label
 			className={getClass(
 				FIELD_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{(title || description) && (

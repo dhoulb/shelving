@@ -52,13 +52,14 @@ export function DictionaryInput({
 	min = 0,
 	max = Number.POSITIVE_INFINITY,
 	items,
+	className,
 }: DictionaryInputProps<unknown>): ReactElement {
 	const messages = splitMessage(message);
 	const length = Object.keys(value).length;
 	const disableRemove = disabled || length <= min;
 	const addNewItem = () => onValue({ ...value, [one]: items.value });
 	return (
-		<Row column>
+		<Row column className={className}>
 			{length ? (
 				Object.entries(value).map(([k, v], i) => {
 					const r = i.toString();

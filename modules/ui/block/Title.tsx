@@ -20,13 +20,14 @@ export type TitleProps = HeadingProps;
  * @kind component
  * @see https://shelving.cc/ui/Title
  */
-export function Title({ level = "1", children, ...props }: TitleProps): ReactElement {
+export function Title({ level = "1", children, className, ...props }: TitleProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
 	return (
 		<Element
 			className={getClass(
 				TITLE_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

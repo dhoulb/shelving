@@ -7,8 +7,9 @@ import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
+import { getClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
 import { FormFooter } from "./FormFooter.js";
@@ -31,7 +32,7 @@ export type FormCallback<T extends Data> = (
  *
  * @see https://shelving.cc/ui/FormProps
  */
-export interface FormProps<T extends Data> extends BlockVariants, OptionalChildProps {
+export interface FormProps<T extends Data> extends BlockVariants, OptionalChildProps, ClassProps {
 	/** Schema for the form. */
 	schema: DataSchema<T>;
 	/** Initial data for the form. */
@@ -60,6 +61,7 @@ export function Form({
 	onSubmit,
 	submit,
 	messages,
+	className,
 	children = (
 		<>
 			<FormFields />
@@ -90,7 +92,7 @@ export function Form({
 				// Close the parent dialog on successful submit.
 				if (result) dialog?.close();
 			}}
-			className={getBlockClass(props)}
+			className={getClass(getBlockClass(props), className)}
 			noValidate={true}
 		>
 			<fieldset className={getBlockClass({})} disabled={busy}>

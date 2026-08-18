@@ -3,7 +3,7 @@ import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import type { BlockElement } from "./Block.js";
 import PANEL_CSS from "./Panel.module.css";
 
@@ -14,7 +14,7 @@ const PANEL_CLASS = getModuleClass(PANEL_CSS, "panel");
  *
  * @see https://shelving.cc/ui/PanelProps
  */
-export interface PanelProps extends BlockVariants, PaddingVariants, StatusVariants, OptionalChildProps {
+export interface PanelProps extends BlockVariants, PaddingVariants, StatusVariants, OptionalChildProps, ClassProps {
 	/**
 	 * Element this `<Panel>` renders as, e.g. "header" to output a "<header>"
 	 * @default "section"
@@ -32,7 +32,7 @@ export interface PanelProps extends BlockVariants, PaddingVariants, StatusVarian
  * @kind component
  * @see https://shelving.cc/ui/Panel
  */
-export function Panel({ as: Element = "section", children, ...props }: PanelProps): ReactElement {
+export function Panel({ as: Element = "section", children, className, ...props }: PanelProps): ReactElement {
 	return (
 		<Element
 			className={getClass(
@@ -40,6 +40,7 @@ export function Panel({ as: Element = "section", children, ...props }: PanelProp
 				getStatusClass(props),
 				getPaddingClass(props),
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

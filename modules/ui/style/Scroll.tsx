@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { ChildProps } from "../util/index.js";
+import type { ChildProps, ClassProps } from "../util/index.js";
 import SCROLLABLE_CSS from "./Scroll.module.css";
 
 const SCROLL_HORIZONTAL_CLASS = getModuleClass(SCROLLABLE_CSS, "horizontal");
@@ -37,7 +37,7 @@ export function getScrollClass({ horizontal, vertical }: ScrollVariants): string
  *
  * @see https://shelving.cc/ui/ScrollComponentProps
  */
-export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
+export interface ScrollComponentProps extends ChildProps, ScrollVariants, ClassProps {}
 
 /**
  * Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
@@ -47,6 +47,6 @@ export interface ScrollComponentProps extends ChildProps, ScrollVariants {}
  * @example <Scroll horizontal>{wideContent}</Scroll>
  * @see https://shelving.cc/ui/Scroll
  */
-export function Scroll({ children, ...props }: ScrollComponentProps): ReactElement {
-	return <div className={getScrollClass(props)}>{children}</div>;
+export function Scroll({ children, className, ...props }: ScrollComponentProps): ReactElement {
+	return <div className={getClass(getScrollClass(props), className)}>{children}</div>;
 }

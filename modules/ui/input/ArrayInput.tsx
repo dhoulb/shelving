@@ -50,13 +50,14 @@ export function ArrayInput({
 	min = 0,
 	max = Number.POSITIVE_INFINITY,
 	items,
+	className,
 }: ArrayInputProps<unknown>): ReactElement {
 	const messages = splitMessage(message);
 	const length = value.length;
 	const disableRemove = disabled || length <= min;
 	const addNewItem = () => onValue([...value, items.value]);
 	return (
-		<Column>
+		<Column className={className}>
 			{length ? (
 				value.map((v, i) => {
 					const k = i.toString();

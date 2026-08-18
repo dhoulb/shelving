@@ -40,12 +40,13 @@ export function ChoiceRadioInputs({
 	wrap = false,
 	column,
 	options,
+	className,
 	...props
 }: ChoiceRadioInputsProps<string>): ReactElement {
 	const entries = getProps(options);
 	const hasMany = entries.length > MAX_ROW_OPTIONS;
 	return (
-		<Row wrap={wrap} column={column ?? hasMany}>
+		<Row wrap={wrap} column={column ?? hasMany} className={className}>
 			{entries.map(([k, t]) => (
 				<RadioInput //
 					key={k}

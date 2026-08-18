@@ -2,7 +2,7 @@ import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/index.js";
+import type { ClassProps, OptionalChildProps } from "../util/index.js";
 import type { BlockElement } from "./Block.js";
 
 /**
@@ -10,7 +10,7 @@ import type { BlockElement } from "./Block.js";
  *
  * @see https://shelving.cc/ui/ColumnProps
  */
-export interface ColumnProps extends BlockVariants, FlexVariants, OptionalChildProps {
+export interface ColumnProps extends BlockVariants, FlexVariants, OptionalChildProps, ClassProps {
 	/**
 	 * Element this `<Column>` renders as, e.g. "header" to output a "<header>"
 	 * @default "div"
@@ -25,12 +25,13 @@ export interface ColumnProps extends BlockVariants, FlexVariants, OptionalChildP
  * @example <Column gap="small">{items}</Column>
  * @see https://shelving.cc/ui/Column
  */
-export function Column({ as: Element = "div", children, column = true, ...props }: ColumnProps): ReactElement {
+export function Column({ as: Element = "div", children, column = true, className, ...props }: ColumnProps): ReactElement {
 	return (
 		<Element
 			className={getClass(
 				getBlockClass(props), //
 				getFlexClass({ column, ...props }),
+				className,
 			)}
 		>
 			{children}

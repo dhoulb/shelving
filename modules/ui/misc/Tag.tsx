@@ -3,6 +3,7 @@ import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import TAG_CSS from "./Tag.module.css";
 
 const TAG_CLASS = getModuleClass(TAG_CSS, "tag");
@@ -35,7 +36,7 @@ export function getTagClass(variants: TagVariants) {
  *
  * @see https://shelving.cc/ui/TagProps
  */
-export interface TagProps extends TagVariants, ClickableProps {}
+export interface TagProps extends TagVariants, ClickableProps, ClassProps {}
 
 /**
  * Small inline label used to annotate other content.
@@ -45,6 +46,6 @@ export interface TagProps extends TagVariants, ClickableProps {}
  * @kind component
  * @see https://shelving.cc/ui/Tag
  */
-export function Tag(props: TagProps): ReactElement {
-	return <Clickable {...props} className={getTagClass(props)} />;
+export function Tag({ className, ...props }: TagProps): ReactElement {
+	return <Clickable {...props} className={getClass(getTagClass(props), className)} />;
 }

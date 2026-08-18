@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import { Icon } from "./Icon.js";
 import LOADING_CSS from "./Loading.module.css";
 
@@ -16,9 +17,15 @@ const LOADING_INDICATOR_CLASS = getModuleClass(LOADING_CSS, "indicator");
  * @kind component
  * @see https://shelving.cc/ui/Loading
  */
-export function Loading({ className }: { className?: string | undefined }): ReactElement {
+export function Loading({ className }: ClassProps): ReactElement {
 	return (
-		<svg aria-hidden="true" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className={className} data-slot="icon">
+		<svg
+			aria-hidden="true"
+			viewBox="0 0 24 24"
+			xmlns="http://www.w3.org/2000/svg"
+			className={getClass(className) || undefined}
+			data-slot="icon"
+		>
 			<title>Loading...</title>
 			<circle className={LOADING_TRACK_CLASS} cx="12" cy="12" r="9" pathLength="100" />
 			<g>

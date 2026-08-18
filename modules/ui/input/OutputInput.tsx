@@ -21,12 +21,12 @@ export interface OutputInputProps extends InputProps, OptionalChildProps, FlexVa
  * @example <OutputInput title="Status">Active</OutputInput>
  * @see https://shelving.cc/ui/OutputInput
  */
-export function OutputInput({ title, placeholder, children = title, ...props }: OutputInputProps): ReactElement {
+export function OutputInput({ title, placeholder, children = title, className, ...props }: OutputInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
 		<output
 			{...props}
-			className={getClass(getInputClass(props), getFlexClass(props), hasChildren && getModuleClass(INPUT_CSS, "placeholder"))}
+			className={getClass(getInputClass(props), getFlexClass(props), hasChildren && getModuleClass(INPUT_CSS, "placeholder"), className)}
 		>
 			{hasChildren ? children : placeholder}
 		</output>

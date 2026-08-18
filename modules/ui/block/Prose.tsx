@@ -13,7 +13,7 @@ import SUPERSCRIPT_CSS from "../inline/Superscript.module.css";
 import BLOCK_CSS from "../style/Block.module.css";
 import TABLE_CSS from "../table/Table.module.css";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
 import BLOCKQUOTE_CSS from "./Blockquote.module.css";
 import CAPTION_CSS from "./Caption.module.css";
@@ -65,7 +65,7 @@ const PROSE_STYLES = getClass(
  *
  * @see https://shelving.cc/ui/ProseProps
  */
-export interface ProseProps extends OptionalChildProps {}
+export interface ProseProps extends OptionalChildProps, ClassProps {}
 
 /**
  * A section of longform text containing lots of `<p>` or `<ul>` style elements.
@@ -74,6 +74,6 @@ export interface ProseProps extends OptionalChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Prose
  */
-export function Prose({ children }: ProseProps): ReactElement {
-	return <div className={PROSE_STYLES}>{children}</div>;
+export function Prose({ children, className }: ProseProps): ReactElement {
+	return <div className={getClass(PROSE_STYLES, className)}>{children}</div>;
 }
