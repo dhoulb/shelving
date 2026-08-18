@@ -46,6 +46,7 @@ export interface PopoverProps extends ClassProps {
  * Trigger element that reveals a floating popover panel beside it when active or focused.
  * - The first `children` node is the trigger; the rest become the popover contents.
  * - Closes on blur away or `Escape`, calling `onClose`.
+ * - `className` lands on the floating panel rather than the wrapper, since the panel is the surface worth styling.
  *
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
  * @example <Popover>{trigger}{panelContent}</Popover>
@@ -61,7 +62,7 @@ export function Popover({
 }: PopoverProps): ReactElement {
 	return (
 		<div
-			className={getClass(getModuleClass(styles, "wrap"), className)}
+			className={getModuleClass(styles, "wrap")}
 			onBlur={e => {
 				if (e.relatedTarget) eventLoopFocus(e);
 				else onClose?.();
@@ -70,7 +71,7 @@ export function Popover({
 		>
 			{trigger}
 			{open ? (
-				<section className={getModuleClass(styles, "panel")} onMouseDown={eventPreventDefault}>
+				<section className={getClass(getModuleClass(styles, "panel"), className)} onMouseDown={eventPreventDefault}>
 					{popover}
 				</section>
 			) : null}

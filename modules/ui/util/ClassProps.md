@@ -1,13 +1,14 @@
 # ClassProps
 
-The shared `className` prop every component accepts — an app class merged *after* the classes the component computes for itself.
+The shared `className` prop most components accept — an app class merged *after* the classes the component computes for itself.
 
 **Things to know:**
 
 - CSS-module class names are hashed, so an app stylesheet can't target a component instance on its own. `className` is the sanctioned way to attach an app class to a specific instance.
 - It's merged **last**, and an app's global stylesheet is unlayered, so its rules beat the library's `@layer components` rules without a specificity fight.
 - It accepts any `Classes` value — a string, a nested array, or a dictionary whose `true` keys become class names — because it goes through `getClass()` like every other class the component composes.
-- It lands on the component's **own root element**. A component that renders more than one element (`<Card>`'s stretched overlay link, `<Field>`'s inner input) keeps the class on the outer one.
+- It lands on the component's **own root element**. A component that renders more than one element (`<Card>`'s stretched overlay link, `<Field>`'s inner input) keeps the class on the outer one. `<Popover>` is the one deliberate exception: its class goes on the floating panel, not the wrapper that anchors it.
+- **Not every component takes one.** Formatting-only components (`<When>`, `<Prose>`, `<Scroll>`) exist to format what's already there, the `*Layout` components are structural (write a new layout rather than bending an existing one), and `<Dialog>` is nearly always rendered from the dialogs state object. Style the content inside them instead.
 - Tokens and per-property hooks (`--card-background`, `--button-radius`, …) remain the primary theming surface. Reach for `className` for a composed one-off treatment those can't express — a keyframe animation, a bespoke gradient, a transform on press — not to restyle a component everywhere.
 
 ## Usage

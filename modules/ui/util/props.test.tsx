@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Button, Card, Cell, createMeta, Field, MetaContext, Paragraph, Span, Tag, TextInput, Until } from "shelving/ui";
+import { Button, Card, Cell, createMeta, Field, Loading, MetaContext, Paragraph, Popover, Span, Tag, TextInput } from "shelving/ui";
 
 /** Render `children` inside the meta context that link-rendering components need. */
 function render(children: ReactNode): string {
@@ -38,6 +38,16 @@ describe("ClassProps", () => {
 		expect(html).not.toContain('<a class="spongy"');
 	});
 
+	test("`Popover` styles its floating panel rather than its wrapper", () => {
+		const html = render(
+			<Popover className="spongy">
+				<button type="button">Open</button>
+				<div>Panel</div>
+			</Popover>,
+		);
+		expect(html).toContain('<section class="spongy"');
+	});
+
 	test("input component renders its `className` on the input element", () => {
 		expect(render(<TextInput className="spongy" name="name" onValue={() => undefined} />)).toContain('class="spongy"');
 	});
@@ -46,7 +56,7 @@ describe("ClassProps", () => {
 		expect(render(<Field title="Name">Hi</Field>)).toBe(render(<Field title="Name">Hi</Field>));
 		expect(render(<Paragraph>Hi</Paragraph>)).not.toContain("spongy");
 		// A component with no class of its own renders no `class` attribute at all, rather than an empty one.
-		expect(render(<Until target="2030-01-01" />)).not.toContain("class");
-		expect(render(<Until target="2030-01-01" className="spongy" />)).toContain('class="spongy"');
+		expect(render(<Loading />)).not.toContain("class=");
+		expect(render(<Loading className="spongy" />)).toContain('class="spongy"');
 	});
 });

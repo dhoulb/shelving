@@ -11,7 +11,7 @@ import styles from "./Dialog.module.css";
  *
  * @see https://shelving.cc/ui/DialogProps
  */
-export interface DialogProps extends OptionalChildProps, ClassProps {
+export interface DialogProps extends OptionalChildProps {
 	onClose?: Callback;
 }
 
@@ -24,7 +24,7 @@ export interface DialogProps extends OptionalChildProps, ClassProps {
  * @kind component
  * @see https://shelving.cc/ui/Dialog
  */
-export const Dialog = memo(({ children, onClose, className, ...props }: DialogProps) => {
+export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	const ref = useRef<HTMLDialogElement>(null);
 
 	useEffect(() => {
@@ -34,13 +34,7 @@ export const Dialog = memo(({ children, onClose, className, ...props }: DialogPr
 	return (
 		<Suspense fallback={null}>
 			{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
-			<dialog
-				ref={ref}
-				className={getClass(getModuleClass(styles, "dialog"), className)}
-				onClick={_closeOnBackdropClick}
-				onClose={onClose}
-				{...props}
-			>
+			<dialog ref={ref} className={getModuleClass(styles, "dialog")} onClick={_closeOnBackdropClick} onClose={onClose} {...props}>
 				{children}
 				<div className={getModuleClass(styles, "close")}>
 					<DialogCloseButton plain />

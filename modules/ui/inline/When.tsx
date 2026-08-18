@@ -3,14 +3,13 @@ import { type PossibleDate, requireDate } from "../../util/date.js";
 import { formatAgo, formatUntil, formatWhen, getSecondsAgo } from "../../util/duration.js";
 import { formatDateTime } from "../../util/format.js";
 import type { AnyCaller } from "../../util/function.js";
-import { getClass } from "../util/css.js";
-import type { ClassProps, OptionalChildProps } from "../util/props.js";
+import type { OptionalChildProps } from "../util/props.js";
 
 const _OPTIONS: Intl.NumberFormatOptions = { unitDisplay: "narrow" };
 
 function _getWhen(
 	formatter: typeof formatWhen,
-	{ target: possibleTarget, current: possibleCurrent = "now", full = false, children, className }: WhenProps,
+	{ target: possibleTarget, current: possibleCurrent = "now", full = false, children }: WhenProps,
 	caller: AnyCaller,
 ): ReactElement {
 	const target = requireDate(possibleTarget, caller);
@@ -18,11 +17,7 @@ function _getWhen(
 	const title = possibleCurrent === "now" ? formatDateTime(target) : `${formatDateTime(target)} to ${formatDateTime(current)}`;
 	const formatted = children ?? (full ? `${title} (${formatter(target, current, _OPTIONS)})` : formatter(target, current, _OPTIONS));
 	return (
-		<time
-			dateTime={possibleCurrent === "now" ? target.toISOString() : `PT${getSecondsAgo(target, current)}S`}
-			title={title}
-			className={getClass(className) || undefined}
-		>
+		<time dateTime={possibleCurrent === "now" ? target.toISOString() : `PT${getSecondsAgo(target, current)}S`} title={title}>
 			{formatted}
 		</time>
 	);
@@ -33,7 +28,7 @@ function _getWhen(
  *
  * @see https://shelving.cc/ui/WhenProps
  */
-export interface WhenProps extends OptionalChildProps, ClassProps {
+export interface WhenProps extends OptionalChildProps {
 	target: PossibleDate | undefined;
 	/** Reference date the relative time is measured against.
 	 * @default "now" */
