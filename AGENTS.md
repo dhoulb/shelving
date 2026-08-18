@@ -37,11 +37,11 @@ Source lives under `modules/`:
 - Tests are colocated with source files as `*.test.ts`
 - Utility files are typically lowercase (`modules/util/object.ts`), while class and schema files are typically PascalCase (`modules/schema/StringSchema.ts`, `modules/db/provider/CacheDBProvider.ts`)
 - React files only use `.tsx` when they contain JSX; typed React helpers without JSX stay in `.ts`
-- Public docs can lag behind the implementation. If `README.md` or older module docs conflict with code, trust source, tests, `package.json`, and this file
+- When public docs and code conflict, trust source, tests, `package.json`, and this file
 
 ## Project Tasks
 
-Outstanding todos, known gaps, and deferred decisions are tracked as **GitHub issues** on the [`dhoulb/shelving`](https://github.com/dhoulb/shelving/issues) repository. There is no in-repo task list — this replaces the former `PROJECT.md`.
+Todos, gaps, and deferred decisions live as **GitHub issues** on the [`dhoulb/shelving`](https://github.com/dhoulb/shelving/issues) repository. There is no in-repo task list.
 
 - Each issue is labelled with the module folder name(s) it relates to — `util`, `markup`, `ui`, `db`, `api`, `extract`, `bun`, `test`, etc.
 - When a PR resolves an issue, link it with a `Closes #123` / `Fixes #123` keyword so it closes automatically on merge — see the [Pull Requests](#pull-requests) section.
@@ -73,7 +73,7 @@ bun run firebase      # DBProvider contract suite against the Firestore emulator
 bun run postgres      # DBProvider contract suite against a real PostgreSQL
 ```
 
-`bun run postgres` (`scripts/postgres.ts`) connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database and fixture tables, runs the suite, then drops the database. Both service suites run in CI on every PR (`fix.yaml`) and before every release (`release.yaml`), in parallel with `bun run test`.
+`bun run postgres` (`scripts/postgres.ts`) connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database with fixture tables, runs the suite, then drops the database. Both service suites run in CI on every PR (`fix.yaml`) and before every release (`release.yaml`), in parallel with `bun run test`.
 
 **To build the dist:**
 
@@ -95,12 +95,12 @@ bun run build
 
 ## Reuse and Composition
 
-Before writing new code, find what already exists. The codebase deliberately exposes shared primitives — components, utility functions, types, classes — and most new work should compose them rather than reinvent.
+Before writing new code, find what already exists. The codebase exposes shared primitives — components, utility functions, types, classes — and most new work should compose them, not reinvent.
 
-- **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or closely enough that a parameter or variant would cover the difference. AI agents tend to write fresh code when an existing helper would do; the explicit pre-write check is the cure
+- **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or close enough that a parameter or variant would cover the difference. AI agents tend to write fresh code when an existing helper would do — check first.
 - **Prefer existing helpers** like `withProp`, `withProps`, `omitProps`, `updateData`, `getFilters`, `getOrders`, `getUpdates`, and `validateData` over open-coded object/query/update logic
-- **Compose, don't restyle.** A "complex" component bound to a content type (e.g. a `*Page` or `*Card` for a specific kind of content) should rarely ship its own CSS module. It picks up its visual identity from existing library components (`Card`, `Page`, `Button`, `Tag`, `Notice`, etc.). A small handful of genuinely custom small components per app may legitimately need their own styling; everything else reuses
-- **Propose, don't silently modify.** If an existing component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — stop and propose the targeted change. Wait for input on how it should be designed. Never silently extend existing code in this project; modifications to existing modules require explicit discussion every time
+- **Compose, don't restyle.** A "complex" component bound to a content type (a `*Page` or `*Card` for one kind of content) should rarely ship its own CSS module — it picks up its visual identity from existing library components (`Card`, `Page`, `Button`, `Tag`, `Notice`, etc.). A handful of genuinely custom components per app may need their own styling; everything else reuses
+- **Propose, don't silently modify.** If an existing component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — stop and propose the targeted change. Wait for input on the design. Never silently extend existing code; modifications to existing modules require explicit discussion every time
 - **Propose, don't invent.** If nothing in the library covers a need, propose the new component/utility/type and how it would slot in. Wait for input before building it. Don't add new shared primitives unannounced
 
 ## Commits
@@ -115,13 +115,13 @@ Before writing new code, find what already exists. The codebase deliberately exp
 ## Pull Requests
 
 - Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
-- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This is the normal way work is shared here, and it's especially important for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is generated.
+- **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This especially matters for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is built.
 
 ## Schemas, Queries, and Updates
 
 - Schema classes usually export both the class and ready-made constants or factories, for example `StringSchema` plus `STRING`, or `DataSchema` plus `DATA` / `PARTIAL` / `ITEM`
 - Schema defaults and coercions are part of the intended behaviour. Before changing them, check the colocated tests for the current contract
-- `validateData()` strips excess keys and removes `undefined` outputs. Keep that behaviour unless you are intentionally changing the validation contract
+- `validateData()` strips excess keys and removes `undefined` outputs. Keep that behaviour unless intentionally changing the validation contract
 - Query and update APIs use encoded key syntax like `$order`, `$limit`, `!key`, `key[]`, `key>`, `=key`, `+=key`, and `+[]key`. Extend these via shared helpers rather than bespoke parsing in each provider
 - Collections are defined with `Collection` / `COLLECTION` from a collection name, an id schema, and a data schema. Provider code should operate in terms of `Collection`, not loose strings plus ad-hoc validators
 - Error-handling style (string throws for user-input validation, typed error classes for system/transport problems) is in the styleguide. One worked example: a bad API response body is a server error (`ResponseError` code 422), not a user error
@@ -138,10 +138,15 @@ Before writing new code, find what already exists. The codebase deliberately exp
 
 General component and CSS-module patterns (function-declaration components, `ReactElement`, variants, `getModuleClass`, the `--file-name-*` CSS custom property ownership rule, sentence-case copy) are in the styleguide. What follows is specific to this repo's `modules/ui` layer.
 
-- Every reusable component carries a `@kind component` tag in its docblock so the docs extractor labels it as a `component` rather than a `function` (it's grouped and colour-coded separately on the docs site). See the Documentation section. Helper functions that happen to live in a component file (e.g. `getButtonClass`) stay plain functions — no `@kind`
+- Every reusable component carries a `@kind component` tag in its docblock so the docs extractor labels it as a `component` rather than a `function` — components are grouped and colour-coded separately on the docs site (see [Documentation](#documentation)). Helper functions that live alongside a component (`getButtonClass` etc.) stay plain functions with no `@kind`
 - Styling-scale props (`color`, `size`, `space`, `padding`, `gap`, `tint`, `status`) are defined in `modules/ui/style/` and map to class names via the `getXxxClass(props)` helpers
 - **CSS custom property naming exemptions.** The styleguide's rule that a `.module.css` file owns every `--file-name-*` variable it reads has two repo-level exemptions: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`
-- **Paint from the ladder; don't rebind the anchor.** A painted component paints every property from a ladder step with a per-property hook in front (`background: var(--card-background, var(--tint-90))`), reading whatever tint is ambient in its scope. A component must **not** set `--tint-50` itself — the anchor is moved only by `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root`, so a component never carries a stale ladder and a raw element in `.prose` behaves identically to its component. A component with a fixed semantic colour (`<Deleted>`, `<Inserted>`, `<Link>`) reads its palette token directly (`color: var(--deleted-color, var(--color-red))`) instead of the ladder. Do **not** reintroduce a per-component `--x-tint` anchor hook (removed — tinting is done with the `color=` / `status=` variants), nor the older five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and the matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). Both were tried and removed; older issue comments describing them are stale. The tint ladder is documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
+- **Paint from the ladder; don't rebind the anchor.**
+  - Paint every property from a ladder step, with a per-property hook in front — `background: var(--card-background, var(--tint-90))`. The component reads whatever tint is ambient in its scope.
+  - **Never** set `--tint-50` on a component. The anchor moves only via `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root` — so a component never carries a stale ladder, and a raw element in `.prose` behaves identically to its component.
+  - Fixed semantic colours (`<Deleted>`, `<Inserted>`, `<Link>`) read their palette token directly (`color: var(--deleted-color, var(--color-red))`) instead of the ladder.
+  - Do **not** reintroduce a per-component `--x-tint` anchor hook, or the older five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). Both were tried and removed; older issue comments describing them are stale.
+  - The tint ladder is documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
 
 ### Writing a new component
 
@@ -197,7 +202,7 @@ export function Address({ children, ...props }: AddressProps) {
 }
 ```
 
-The `:first-child` / `:last-child` margin overrides live in a separate `@layer overrides` block because they must beat variant-set margins: every paragraph-level component zeros its outer margins at the top or bottom of its container, so a `Heading` at the top of a `Card` doesn't leave a strip of unwanted space. `@layer overrides` beats every other layer, so a `<Paragraph space="large">` still collapses its abutting edges correctly.
+The `:first-child` / `:last-child` margin overrides live in a separate `@layer overrides` block so they beat variant-set margins. Every paragraph-level component zeros its outer margins at the top or bottom of its container — so a `Heading` at the top of a `Card` doesn't leave a strip of unwanted space, and a `<Paragraph space="large">` still collapses its abutting edges correctly.
 
 Checklist:
 
@@ -215,7 +220,7 @@ Test style (lowercase sentence-fragment descriptions, compile-time type checks, 
 
 - When changing runtime behaviour, update or add the closest colocated `*.test.ts`
 - Reuse fixtures and helpers from `modules/test/` when they fit, especially for collection, provider, and query tests
-- Test files always import from the public `shelving/*` barrel, not a relative source path (e.g. `shelving/schema` not `../StringSchema.js`, `shelving/util/array` not `../../util/array.js`) — this verifies the barrel actually re-exports the token. Enforced by a Biome `noRestrictedImports` rule; fixtures under `modules/test` are exempt and stay relative. Resolution of `shelving/*` to source in dev is wired via `tsconfig.json` `paths`
+- Test files import from the public `shelving/*` barrel, never a relative source path (`shelving/schema` not `../StringSchema.js`; `shelving/util/array` not `../../util/array.js`) — this verifies the barrel actually re-exports the token. Enforced by a Biome `noRestrictedImports` rule; fixtures under `modules/test` are exempt. `shelving/*` resolves to source in dev via `tsconfig.json` `paths`
 
 ## Documentation
 
@@ -243,9 +248,9 @@ Whenever a README, per-symbol `.md` page, or docblock names another module or to
 `BooleanSchema`
 ```
 
-Documentation content renders through `<TreeMarkup>`, whose code-span rule resolves each backtick token against the surrounding tree (`getTreeElement()`) and **auto-links it to its canonical page at render time**. A token that resolves becomes a link; one that doesn't (a builtin like `string`, a shell snippet like `bun run fix`) stays plain code. This means cross-references are automatic and maintenance-free — never hand-write ``[`name`](/path)`` link syntax for an internal token. It is liable to rot, and the auto-linker does a better job.
+Documentation content renders through `<TreeMarkup>`, whose code-span rule resolves each backtick token against the surrounding tree (`getTreeElement()`) and **auto-links it to its canonical page at render time**. A token that resolves becomes a link; one that doesn't (a builtin like `string`, a shell snippet like `bun run fix`) stays plain code. Never hand-write ``[`name`](/path)`` for an internal token — the auto-linker won't rot and does a better job.
 
-This applies to **"See also" lists** and **inline references** alike. There's no need to link "the first mention only" — repeat the plain backtick reference as often as it reads naturally; the renderer decides what links.
+This applies to **"See also" lists** and **inline references** alike. Don't limit to "the first mention only" — repeat the plain backtick reference as often as it reads naturally; the renderer decides what links.
 
 **Token display style.** Format a token so its kind reads from the text. The resolver strips these decorations before lookup, so the styled form resolves directly:
 
@@ -287,7 +292,7 @@ The TypeScript extractor infers a symbol's `kind` from its declaration (`functio
 
 ### Sugar instances and factories
 
-For convenience the `schema` module ships **sugar** — pre-built shortcuts that improve the readability of code that creates schemas. There are two kinds, named consistently:
+The `schema` module ships **sugar** — pre-built shortcuts that make schema-creating code read more clearly. Two kinds:
 
 - A **sugar instance** is a pre-instantiated copy of a `Schema` class exported as an `ALL_CAPS` constant — e.g. `STRING` is `new StringSchema({})`, `REQUIRED_STRING` is `new StringSchema({ min: 1 })`.
 - A **sugar factory** is a `function` whose purpose is to call `new SomeClass(...)` with sensible defaults — e.g. `DATA` builds a `DataSchema`, `NULLABLE` a `NullableSchema`.
