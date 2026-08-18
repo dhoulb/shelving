@@ -1,7 +1,7 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, memo, type ReactElement, Suspense, useEffect, useRef } from "react";
 import type { Callback } from "../../util/function.js";
-import type { ButtonVariants } from "../button/Button.js";
+import { type ButtonVariants, getButtonClass } from "../button/Button.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
@@ -37,7 +37,7 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 			<dialog ref={ref} className={getModuleClass(styles, "dialog")} onClick={_closeOnBackdropClick} onClose={onClose} {...props}>
 				{children}
 				<div className={getModuleClass(styles, "close")}>
-					<DialogCloseButton plain />
+					<DialogCloseButton />
 				</div>
 			</dialog>
 		</Suspense>
@@ -62,16 +62,23 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
 
 /**
  * Button that closes its wrapping `<dialog>`, showing an X icon by default.
+ * - Styled with the shared `Button` classes (positioning comes from the `<Dialog>`'s own `.close` wrapper rules).
+ * - `plain` by default so only the icon shows until hover or focus — pass `plain={false}` for a solid button.
  *
  * @kind component
  * @see https://shelving.cc/ui/DialogCloseButton
  */
-export function DialogCloseButton({ children = <XMarkIcon />, className, ...variants }: DialogCloseButtonProps): ReactElement {
+export function DialogCloseButton({
+	children = <XMarkIcon />,
+	plain = true,
+	className,
+	...variants
+}: DialogCloseButtonProps): ReactElement {
 	return (
 		<button
 			type="button"
 			title="Close"
-			className={getClass(getModuleClass(styles, "button", variants), className)}
+			className={getClass(getButtonClass({ plain, ...variants }), className)}
 			onClick={_closeOnButtonClick}
 		>
 			{children}
