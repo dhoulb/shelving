@@ -31,10 +31,11 @@ export function ArrayRadioInputs<T>({
 	required = false,
 	items,
 	formatter = formatValue,
+	className,
 	...props
 }: ArrayRadioInputsProps<T>): ReactElement {
 	return (
-		<Column>
+		<Column className={className}>
 			{items.map((v, i) => {
 				return (
 					<RadioInput //

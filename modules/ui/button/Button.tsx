@@ -3,6 +3,7 @@ import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
@@ -45,7 +46,7 @@ export function getButtonClass(variants: ButtonVariants): string {
  *
  * @see https://shelving.cc/ui/ButtonProps
  */
-export interface ButtonProps extends ButtonVariants, ClickableProps {}
+export interface ButtonProps extends ButtonVariants, ClickableProps, ClassProps {}
 
 /**
  * Render either a `<button>` or an `<a href="">` styled as a button, based on whether an `onClick` or `href` prop is provided.
@@ -55,6 +56,6 @@ export interface ButtonProps extends ButtonVariants, ClickableProps {}
  * @kind component
  * @see https://shelving.cc/ui/Button
  */
-export function Button(props: ButtonProps): ReactElement {
-	return <Clickable {...props} className={getButtonClass(props)} />;
+export function Button({ className, ...props }: ButtonProps): ReactElement {
+	return <Clickable {...props} className={getClass(getButtonClass(props), className)} />;
 }

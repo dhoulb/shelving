@@ -1,7 +1,7 @@
 import { ArrowPathIcon } from "@heroicons/react/16/solid";
 import { createContext, type ReactElement, use } from "react";
 import type { Callback } from "../../util/function.js";
-import type { OptionalChildProps } from "../util/index.js";
+import type { ClassProps, OptionalChildProps } from "../util/index.js";
 import { Button, type ButtonVariants } from "./Button.js";
 
 /**
@@ -19,7 +19,7 @@ RetryContext.displayName = "RetryContext";
  *
  * @see https://shelving.cc/ui/RetryButtonProps
  */
-export interface RetryButtonProps extends ButtonVariants, OptionalChildProps {}
+export interface RetryButtonProps extends ButtonVariants, OptionalChildProps, ClassProps {}
 
 const _RETRY_CHILDREN = (
 	<>

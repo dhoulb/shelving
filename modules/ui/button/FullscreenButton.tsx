@@ -1,5 +1,6 @@
 import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/16/solid";
 import { type ReactElement, useEffect, useState } from "react";
+import type { ClassProps } from "../util/props.js";
 import { Button, type ButtonVariants } from "./Button.js";
 
 /**
@@ -7,7 +8,7 @@ import { Button, type ButtonVariants } from "./Button.js";
  *
  * @see https://shelving.cc/ui/FullscreenButtonProps
  */
-export interface FullscreenButtonProps extends ButtonVariants {
+export interface FullscreenButtonProps extends ButtonVariants, ClassProps {
 	/**
 	 * CSS selector to identify the parent element to toggle fullscreen status on.
 	 * @default "body, figure"

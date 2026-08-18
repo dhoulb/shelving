@@ -4,7 +4,7 @@ import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import NOTICE_CSS from "./Notice.module.css";
 
 const NOTICE_CLASS = getModuleClass(NOTICE_CSS, "notice");
@@ -14,7 +14,7 @@ const NOTICE_CLASS = getModuleClass(NOTICE_CSS, "notice");
  *
  * @see https://shelving.cc/ui/NoticeProps
  */
-export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants, OptionalChildProps {
+export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants, OptionalChildProps, ClassProps {
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
 }
@@ -31,6 +31,7 @@ export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants
 export function Notice({
 	children, //
 	icon,
+	className,
 	...props
 }: NoticeProps) {
 	const { status } = props;
@@ -42,6 +43,7 @@ export function Notice({
 				getBlockClass(props),
 				getFlexClass(props),
 				getStatusClass(props),
+				className,
 			)}
 		>
 			{icon !== undefined ? icon : status && <Icon status={status} />}

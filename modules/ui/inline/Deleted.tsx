@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import DELETED_CSS from "./Deleted.module.css";
 
 const DELETED_CLASS = getModuleClass(DELETED_CSS, "deleted");
@@ -11,7 +11,7 @@ const DELETED_CLASS = getModuleClass(DELETED_CSS, "deleted");
  *
  * @see https://shelving.cc/ui/DeletedProps
  */
-export interface DeletedProps extends OptionalChildProps, TypographyVariants {}
+export interface DeletedProps extends OptionalChildProps, TypographyVariants, ClassProps {}
 
 /**
  * Deleted text — renders a `<del>` element to mark content removed from a document.
@@ -20,12 +20,13 @@ export interface DeletedProps extends OptionalChildProps, TypographyVariants {}
  * @example <Deleted>old price</Deleted>
  * @see https://shelving.cc/ui/Deleted
  */
-export function Deleted({ children, ...props }: DeletedProps): ReactElement {
+export function Deleted({ children, className, ...props }: DeletedProps): ReactElement {
 	return (
 		<del
 			className={getClass(
 				DELETED_CLASS, //
 				getTypographyClass(props),
+				className,
 			)}
 		>
 			{children}

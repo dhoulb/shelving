@@ -37,11 +37,12 @@ export function DataInput({
 	value = {},
 	onValue,
 	props,
+	className,
 }: DataInputProps<Data>): ReactElement {
 	const messages = splitMessage(message);
 	const entries = getProps(props);
 	return (
-		<Row column={entries.length > 2}>
+		<Row column={entries.length > 2} className={className}>
 			{entries.map(([k, s]) => (
 				<SchemaInput //
 					key={k}

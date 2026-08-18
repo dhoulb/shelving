@@ -45,6 +45,7 @@ export function TextInput({
 	max = Number.POSITIVE_INFINITY,
 	rows = 1,
 	formatter = PASSTHROUGH,
+	className,
 	...variants
 }: TextInputProps): ReactElement {
 	const onBlur = ({ currentTarget }: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -68,7 +69,7 @@ export function TextInput({
 				required={required && min > 0}
 				disabled={disabled}
 				placeholder={placeholder || " "}
-				className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), getModuleClass(INPUT_CSS, "multiline"))}
+				className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), getModuleClass(INPUT_CSS, "multiline"), className)}
 				onInput={onChange}
 				onChange={onChange}
 				onBlur={onBlur}
@@ -92,7 +93,7 @@ export function TextInput({
 			required={required && min > 0}
 			disabled={disabled}
 			placeholder={placeholder || " "}
-			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"))}
+			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
 			onInput={onChange}
 			onChange={onChange}
 			onBlur={onBlur}

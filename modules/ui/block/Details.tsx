@@ -2,13 +2,14 @@ import { ChevronUpIcon } from "@heroicons/react/24/outline";
 import type { ReactElement, ReactNode } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import DETAILS_CSS from "./Details.module.css";
 
 const DETAILS_CLASS = DETAILS_CSS.details;
 const DETAILS_SUMMARY_CLASS = DETAILS_CSS.summary;
 
 /** Props for `DetailsItem` — a single collapsible disclosure. */
-export interface DetailsProps extends BlockVariants {
+export interface DetailsProps extends BlockVariants, ClassProps {
 	/** Content of the always-visible summary (e.g. a question). */
 	title: ReactNode;
 	/** Whether the item starts expanded. */
@@ -26,9 +27,9 @@ export interface DetailsProps extends BlockVariants {
  *
  * @kind component
  */
-export function Details({ title, open = false, name, children, ...props }: DetailsProps): ReactElement {
+export function Details({ title, open = false, name, children, className, ...props }: DetailsProps): ReactElement {
 	return (
-		<details className={getClass(DETAILS_CLASS, getBlockClass(props))} open={open} name={name}>
+		<details className={getClass(DETAILS_CLASS, getBlockClass(props), className)} open={open} name={name}>
 			<summary className={DETAILS_SUMMARY_CLASS}>
 				<span>{title}</span>
 				<ChevronUpIcon />

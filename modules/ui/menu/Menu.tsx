@@ -5,7 +5,7 @@ import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import MENU_CSS from "./Menu.module.css";
 
 const MENU_CLASS = getModuleClass(MENU_CSS, "menu");
@@ -19,7 +19,7 @@ const MENU_ACTIVE_CLASS = getModuleClass(MENU_CSS, "active");
  *
  * @see https://shelving.cc/ui/MenuProps
  */
-export interface MenuProps extends BlockVariants, OptionalChildProps {}
+export interface MenuProps extends BlockVariants, OptionalChildProps, ClassProps {}
 
 /**
  * A `<menu>` list of `<MenuItem>` children.
@@ -29,12 +29,13 @@ export interface MenuProps extends BlockVariants, OptionalChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Menu
  */
-export function Menu({ children, ...props }: MenuProps): ReactNode {
+export function Menu({ children, className, ...props }: MenuProps): ReactNode {
 	return (
 		<menu
 			className={getClass(
 				MENU_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}
@@ -47,7 +48,7 @@ export function Menu({ children, ...props }: MenuProps): ReactNode {
  *
  * @see https://shelving.cc/ui/MenuItemProps
  */
-export interface MenuItemProps extends ClickableProps {
+export interface MenuItemProps extends ClickableProps, ClassProps {
 	/**
 	 * The first child becomes the link label (rendered inside the `<a>`).
 	 * - Any additional children form the submenu — only rendered when this item is "proud" (an ancestor of the current page). The caller is responsible for wrapping the submenu in a nested `<Menu>` if it wants the CSS `.menu .menu` descendant rules to apply.
@@ -63,14 +64,14 @@ export interface MenuItemProps extends ClickableProps {
  * @kind component
  * @see https://shelving.cc/ui/MenuItem
  */
-export function MenuItem({ href, children, ...props }: MenuItemProps): ReactNode {
+export function MenuItem({ href, children, className, ...props }: MenuItemProps): ReactNode {
 	const { url, root } = requireMeta();
 	const link = getLink(href, url, root);
 	const proud = isURLProud(url, link);
 	const active = isURLActive(url, link);
 	const [label, ...after] = isArray(children) ? children : [children];
 	return (
-		<li className={MENU_ITEM_CLASS}>
+		<li className={getClass(MENU_ITEM_CLASS, className)}>
 			<Clickable
 				href={href}
 				{...props}

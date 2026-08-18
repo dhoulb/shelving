@@ -1,13 +1,14 @@
 import type { ReactElement } from "react";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 
 /**
  * Props for `Span` — colour and typography variants, plus optional `children`.
  *
  * @see https://shelving.cc/ui/SpanProps
  */
-export interface SpanProps extends OptionalChildProps, TypographyVariants {}
+export interface SpanProps extends OptionalChildProps, TypographyVariants, ClassProps {}
 
 /**
  * Styled inline text — renders a `<span>` carrying only the colour and typography variant classes, with no styling of its own.
@@ -17,6 +18,6 @@ export interface SpanProps extends OptionalChildProps, TypographyVariants {}
  * @example <Span weight="strong" tint="30">label</Span>
  * @see https://shelving.cc/ui/Span
  */
-export function Span({ children, ...props }: SpanProps): ReactElement {
-	return <span className={getTypographyClass(props)}>{children}</span>;
+export function Span({ children, className, ...props }: SpanProps): ReactElement {
+	return <span className={getClass(getTypographyClass(props), className)}>{children}</span>;
 }

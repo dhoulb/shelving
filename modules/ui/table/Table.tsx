@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { ChildProps } from "../util/props.js";
+import type { ChildProps, ClassProps } from "../util/props.js";
 import TABLE_CSS from "./Table.module.css";
 
 const TABLE_CLASS = getModuleClass(TABLE_CSS, "table");
@@ -11,7 +11,7 @@ const TABLE_CLASS = getModuleClass(TABLE_CSS, "table");
  *
  * @see https://shelving.cc/ui/TableProps
  */
-export interface TableProps extends BlockVariants, ChildProps {}
+export interface TableProps extends BlockVariants, ChildProps, ClassProps {}
 
 /**
  * Table block — rendered as `<table>`.
@@ -21,12 +21,13 @@ export interface TableProps extends BlockVariants, ChildProps {}
  * @kind component
  * @see https://shelving.cc/ui/Table
  */
-export function Table({ children, ...props }: TableProps): ReactElement {
+export function Table({ children, className, ...props }: TableProps): ReactElement {
 	return (
 		<table
 			className={getClass(
 				TABLE_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

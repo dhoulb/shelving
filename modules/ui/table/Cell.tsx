@@ -2,14 +2,14 @@ import type { ReactElement } from "react";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/index.js";
+import type { ClassProps, OptionalChildProps } from "../util/index.js";
 
 /**
  * Props for `Cell` — width and typography variants plus `children`.
  *
  * @see https://shelving.cc/ui/CellProps
  */
-export interface CellProps extends WidthVariants, TypographyVariants, OptionalChildProps {
+export interface CellProps extends WidthVariants, TypographyVariants, OptionalChildProps, ClassProps {
 	header?: boolean | undefined;
 }
 
@@ -22,13 +22,14 @@ export interface CellProps extends WidthVariants, TypographyVariants, OptionalCh
  * @kind component
  * @see https://shelving.cc/ui/Cell
  */
-export function Cell({ header = false, children, ...props }: CellProps): ReactElement {
+export function Cell({ header = false, children, className, ...props }: CellProps): ReactElement {
 	const Component = header ? "th" : "td";
 	return (
 		<Component
 			className={getClass(
 				getWidthClass(props), //
 				getTypographyClass(props),
+				className,
 			)}
 		>
 			{children}

@@ -3,7 +3,7 @@ import { getBlockClass } from "../style/Block.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import VIDEO_CSS from "./Video.module.css";
 
 const VIDEO_CLASS = getModuleClass(VIDEO_CSS, "video");
@@ -13,7 +13,7 @@ const VIDEO_CLASS = getModuleClass(VIDEO_CSS, "video");
  *
  * @see https://shelving.cc/ui/VideoProps
  */
-export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildProps {}
+export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Video container element.
@@ -24,7 +24,7 @@ export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildP
  * @example <Video><video src="/clip.mp4" /></Video>
  * @see https://shelving.cc/ui/Video
  */
-export function Video({ children, ...props }: VideoProps): ReactElement {
+export function Video({ children, className, ...props }: VideoProps): ReactElement {
 	const ref = useRef<HTMLElement | null>(null);
 
 	return (
@@ -33,6 +33,7 @@ export function Video({ children, ...props }: VideoProps): ReactElement {
 			className={getClass(
 				VIDEO_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

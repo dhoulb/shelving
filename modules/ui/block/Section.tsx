@@ -24,6 +24,7 @@ function _getSectionClass(props: SectionProps): string {
 	return getClass(
 		SECTION_CLASS, //
 		getBlockClass(props),
+		props.className,
 	);
 }
 

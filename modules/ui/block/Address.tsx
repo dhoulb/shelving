@@ -5,7 +5,7 @@ import { Small } from "../inline/Small.js";
 import { Strong } from "../inline/Strong.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { ChildProps } from "../util/props.js";
+import type { ChildProps, ClassProps } from "../util/props.js";
 import ADDRESS_CSS from "./Address.module.css";
 
 const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
@@ -15,14 +15,14 @@ const ADDRESS_CLASS = getModuleClass(ADDRESS_CSS, "address");
  *
  * @see https://shelving.cc/ui/AddressProps
  */
-export interface AddressProps extends BlockVariants, ChildProps {}
+export interface AddressProps extends BlockVariants, ChildProps, ClassProps {}
 
 /**
  * Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
  *
  * @see https://shelving.cc/ui/PhysicalAddressProps
  */
-export interface PhysicalAddressProps {
+export interface PhysicalAddressProps extends ClassProps {
 	name?: Nullish<string>;
 	address: Nullish<AddressData>;
 }
@@ -32,7 +32,7 @@ export interface PhysicalAddressProps {
  *
  * @see https://shelving.cc/ui/EmailAddressProps
  */
-export interface EmailAddressProps {
+export interface EmailAddressProps extends ClassProps {
 	name?: Nullish<string>;
 	email: Nullish<string>;
 }
@@ -43,12 +43,13 @@ export interface EmailAddressProps {
  * @example <Address><Strong>Acme</Strong>{"\n"}1 Example St</Address>
  * @see https://shelving.cc/ui/Address
  */
-export function Address({ children, ...props }: AddressProps) {
+export function Address({ children, className, ...props }: AddressProps) {
 	return (
 		<address
 			className={getClass(
 				ADDRESS_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}
@@ -64,9 +65,9 @@ export function Address({ children, ...props }: AddressProps) {
  * @example <PhysicalAddress name="Acme" address={addressData} />
  * @see https://shelving.cc/ui/PhysicalAddress
  */
-export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactElement {
+export function PhysicalAddress({ name, address, className }: PhysicalAddressProps): ReactElement {
 	return (
-		<Address>
+		<Address className={className}>
 			{name && <Strong>{name}</Strong>}
 			{name && "\n"}
 			{address ? formatAddress(address) : <Small>No address</Small>}
@@ -82,9 +83,9 @@ export function PhysicalAddress({ name, address }: PhysicalAddressProps): ReactE
  * @example <EmailAddress name="Acme" email="hi@example.com" />
  * @see https://shelving.cc/ui/EmailAddress
  */
-export function EmailAddress({ name, email }: EmailAddressProps): ReactElement {
+export function EmailAddress({ name, email, className }: EmailAddressProps): ReactElement {
 	return (
-		<Address>
+		<Address className={className}>
 			{name && <Strong>{name}</Strong>}
 			{name && "\n"}
 			{email ? <a href={`mailto:${email}`}>{email}</a> : <Small>No email</Small>}

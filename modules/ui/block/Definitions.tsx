@@ -4,7 +4,7 @@ import type { GapVariants } from "../style/Gap.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import DEFINITIONS_CSS from "./Definitions.module.css";
 
 const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
@@ -14,7 +14,7 @@ const DEFINITIONS_CLASS = getModuleClass(DEFINITIONS_CSS, "definitions");
  *
  * @see https://shelving.cc/ui/DefinitionsProps
  */
-export interface DefinitionsProps extends GapVariants, SpaceVariants, TypographyVariants, OptionalChildProps {}
+export interface DefinitionsProps extends GapVariants, SpaceVariants, TypographyVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Description list — a sequence of term/value pairs rendered as a `<dl>`.
@@ -25,12 +25,13 @@ export interface DefinitionsProps extends GapVariants, SpaceVariants, Typography
  * @example <Definitions><dt>Name</dt><dd>Acme</dd></Definitions>
  * @see https://shelving.cc/ui/Definitions
  */
-export function Definitions({ children, ...props }: DefinitionsProps): ReactElement {
+export function Definitions({ children, className, ...props }: DefinitionsProps): ReactElement {
 	return (
 		<dl
 			className={getClass(
 				DEFINITIONS_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}

@@ -2,8 +2,8 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, memo, type ReactElement, Suspense, useEffect, useRef } from "react";
 import type { Callback } from "../../util/function.js";
 import type { ButtonVariants } from "../button/Button.js";
-import { getModuleClass } from "../util/css.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
 
 /**
@@ -58,7 +58,7 @@ function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogE
  *
  * @see https://shelving.cc/ui/DialogCloseButtonProps
  */
-export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildProps {}
+export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Button that closes its wrapping `<dialog>`, showing an X icon by default.
@@ -66,9 +66,14 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
  * @kind component
  * @see https://shelving.cc/ui/DialogCloseButton
  */
-export function DialogCloseButton({ children = <XMarkIcon />, ...variants }: DialogCloseButtonProps): ReactElement {
+export function DialogCloseButton({ children = <XMarkIcon />, className, ...variants }: DialogCloseButtonProps): ReactElement {
 	return (
-		<button type="button" title="Close" className={getModuleClass(styles, "button", variants)} onClick={_closeOnButtonClick}>
+		<button
+			type="button"
+			title="Close"
+			className={getClass(getModuleClass(styles, "button", variants), className)}
+			onClick={_closeOnButtonClick}
+		>
 			{children}
 		</button>
 	);

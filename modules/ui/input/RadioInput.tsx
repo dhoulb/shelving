@@ -32,6 +32,7 @@ export function RadioInput({
 	value = false,
 	onValue,
 	children = placeholder,
+	className,
 	...props
 }: RadioInputProps): ReactElement {
 	return (
@@ -40,6 +41,7 @@ export function RadioInput({
 				getInputClass(props), //
 				getFlexClass(props),
 				INPUT_LABEL_CLASS,
+				className,
 			)}
 		>
 			<input

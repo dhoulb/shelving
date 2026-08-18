@@ -4,12 +4,13 @@ import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { TreeButton } from "../tree/TreeButton.js";
 import { getClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 /**
  * Props for `DocumentationButtons` — the relational metadata of a documented symbol (`class`, `extends`, `implements`), plus block-space and flex overrides.
  *
  * @see https://shelving.cc/ui/DocumentationButtonsProps
  */
-export interface DocumentationButtonsProps extends BlockVariants, FlexVariants {
+export interface DocumentationButtonsProps extends BlockVariants, FlexVariants, ClassProps {
 	/** Name of the class/interface this member belongs to (e.g. `"Store"` for `Store.get()`). Set only on methods and properties. */
 	readonly class?: string | undefined;
 	/** Full type text of the class/interface this extends, including any generic arguments (e.g. `"AbstractStore<string>"`, `"Omit<StringSchemaOptions, 'value'>"`). Resolved to a link at render time, trimming generics to the bare name; builtins/wrappers that don't resolve stay as text. */
@@ -44,6 +45,7 @@ export function DocumentationButtons({
 	wrap = true,
 	left = true,
 	gap = "none",
+	className,
 	...props
 }: DocumentationButtonsProps): ReactElement | null {
 	const relations = Array.from(_relations(props));
@@ -54,6 +56,7 @@ export function DocumentationButtons({
 			className={getClass(
 				getBlockClass(variants), //
 				getFlexClass(variants),
+				className,
 			)}
 		>
 			{relations.map(([label, to]) => (

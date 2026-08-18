@@ -4,6 +4,7 @@ import { type Nullish, notNullish } from "../../util/null.js";
 import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import "./Progress.css";
 import styles from "./Progress.module.css";
 
@@ -12,7 +13,7 @@ import styles from "./Progress.module.css";
  *
  * @see https://shelving.cc/ui/ProgressProps
  */
-export interface ProgressProps extends ColorVariants, StatusVariants {
+export interface ProgressProps extends ColorVariants, StatusVariants, ClassProps {
 	/** Position within the `min`–`max` range, or `null`/`undefined`/omitted for an indeterminate bar. */
 	value?: Nullish<number>;
 	min?: number;
@@ -34,7 +35,7 @@ export interface ProgressProps extends ColorVariants, StatusVariants {
  * @example <Progress />
  * @see https://shelving.cc/ui/Progress
  */
-export function Progress({ value, min = 0, max = 100, ...props }: ProgressProps): ReactElement {
+export function Progress({ value, min = 0, max = 100, className, ...props }: ProgressProps): ReactElement {
 	// `<progress>` has no `min`, so shift the range to a `0`-based one. A non-positive span would make `<progress>` indeterminate, so fall back to an empty determinate bar.
 	const span = max - min;
 
@@ -44,6 +45,7 @@ export function Progress({ value, min = 0, max = 100, ...props }: ProgressProps)
 				getModuleClass(styles, "progress"), //
 				getColorClass(props),
 				getStatusClass(props),
+				className,
 			)}
 			// A nullish `value` drops the attribute (and its announced text) so the element is natively `:indeterminate` and the flowing animation styled off that pseudo-class takes over.
 			value={notNullish(value) ? (span > 0 ? value - min : 0) : undefined}

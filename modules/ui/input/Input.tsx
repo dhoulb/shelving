@@ -3,7 +3,7 @@ import { LOADING } from "../misc/Loading.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import type { ChildProps } from "../util/props.js";
+import type { ChildProps, ClassProps } from "../util/props.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
@@ -31,7 +31,7 @@ export function getInputClass(props: InputVariants): string {
  *
  * @see https://shelving.cc/ui/InputProps
  */
-export interface InputProps {
+export interface InputProps extends ClassProps {
 	/** The `name=""` prop of the input. */
 	name: string;
 	/** Friendly title for the input. */
@@ -58,10 +58,17 @@ export interface ValueInputProps<O, I = never> extends InputProps {
 export const LOADING_INPUT = <div className={getClass(getInputClass({}), getFlexClass({}))}>{LOADING}</div>;
 
 /**
+ * Props for `InputWrapper` — the wrapped `children` plus an optional `className`.
+ *
+ * @see https://shelving.cc/ui/InputWrapperProps
+ */
+export interface InputWrapperProps extends ChildProps, ClassProps {}
+
+/**
  * Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
  * - This is so you can put an icon before or after an input.
  * @kind component
  */
-export function InputWrapper({ children }: ChildProps): ReactElement {
-	return <div className={getClass(getInputClass({}), getModuleClass(INPUT_CSS, "wrapper"))}>{children}</div>;
+export function InputWrapper({ children, className }: InputWrapperProps): ReactElement {
+	return <div className={getClass(getInputClass({}), getModuleClass(INPUT_CSS, "wrapper"), className)}>{children}</div>;
 }

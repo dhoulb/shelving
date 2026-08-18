@@ -1,5 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { Button, type ButtonVariants } from "../button/Button.js";
+import type { ClassProps } from "../util/props.js";
 import { getTreeElement, useTreeMap } from "./TreeContext.js";
 
 /**
@@ -7,7 +8,7 @@ import { getTreeElement, useTreeMap } from "./TreeContext.js";
  *
  * @see https://shelving.cc/ui/TreeButtonProps
  */
-export interface TreeButtonProps extends ButtonVariants {
+export interface TreeButtonProps extends ButtonVariants, ClassProps {
 	/** Reference to an element in the tree — a flat key (`"Store"`, `"Store.get"`) or a canonical path (`"/schema/BooleanSchema"`). */
 	readonly name: string;
 	/** Visible label — defaults to the resolved element's `title`, falling back to `name`. */

@@ -27,11 +27,12 @@ export interface ButtonInputPopoverProps extends InputProps {
  */
 export function ButtonInputPopover({
 	children: [buttonChildren, ...popoverChildren], //
+	className,
 	...props
 }: ButtonInputPopoverProps): ReactElement {
 	const [open, setOpen] = useState(false);
 	return (
-		<Popover open={open} onClose={() => setOpen(false)}>
+		<Popover open={open} onClose={() => setOpen(false)} className={className}>
 			<ButtonInput onClick={() => setOpen(!open)} {...props}>
 				{buttonChildren}
 			</ButtonInput>

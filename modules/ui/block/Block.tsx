@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 
 /**
  * Semantic element names a block element may render as via its `as` prop.
@@ -14,7 +15,7 @@ export type BlockElement = "div" | "section" | "header" | "footer" | "article" |
  *
  * @see https://shelving.cc/ui/BlockProps
  */
-export interface BlockProps extends BlockVariants, OptionalChildProps {
+export interface BlockProps extends BlockVariants, OptionalChildProps, ClassProps {
 	/**
 	 * Element this `<Block>` renders as, e.g. "header" to output a "<header>"
 	 * @default "div"
@@ -30,6 +31,6 @@ export interface BlockProps extends BlockVariants, OptionalChildProps {
  * @example <Block as="aside" width="narrow"><Paragraph>Sidebar</Paragraph></Block>
  * @see https://shelving.cc/ui/Block
  */
-export function Block({ as: Element = "div", children, ...props }: BlockProps): ReactElement {
-	return <Element className={getBlockClass(props)}>{children}</Element>;
+export function Block({ as: Element = "div", children, className, ...props }: BlockProps): ReactElement {
+	return <Element className={getClass(getBlockClass(props), className)}>{children}</Element>;
 }

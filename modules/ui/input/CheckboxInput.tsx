@@ -32,6 +32,7 @@ export function CheckboxInput({
 	value = false,
 	onValue,
 	children = placeholder,
+	className,
 	...props
 }: CheckboxProps): ReactElement {
 	return (
@@ -40,6 +41,7 @@ export function CheckboxInput({
 				getInputClass(props), //
 				getFlexClass(props),
 				INPUT_LABEL_CLASS,
+				className,
 			)}
 		>
 			<input

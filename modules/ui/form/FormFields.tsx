@@ -13,12 +13,12 @@ import { requireForm, useField } from "./FormContext.js";
  * @example <FormField name="email" />
  * @see https://shelving.cc/ui/FormField
  */
-export function FormField({ name, ...props }: InputProps): ReactElement {
+export function FormField({ name, className, ...props }: InputProps): ReactElement {
 	const field = useField(name);
 	const { schema, message } = field;
 
 	return (
-		<Field {...schema} message={message} required={props.required}>
+		<Field {...schema} message={message} required={props.required} className={className}>
 			<SchemaInput {...field} {...props} />
 		</Field>
 	);

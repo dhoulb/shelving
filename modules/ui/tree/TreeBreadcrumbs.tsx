@@ -7,6 +7,7 @@ import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import type { SpaceVariants } from "../style/Space.js";
 import type { TypographyVariants } from "../style/Typography.js";
 import { getClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import { TreeButton } from "./TreeButton.js";
 import { useTreeMap } from "./TreeContext.js";
 
@@ -15,7 +16,7 @@ import { useTreeMap } from "./TreeContext.js";
  *
  * @see https://shelving.cc/ui/TreeBreadcrumbsProps
  */
-export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants, FlexVariants {}
+export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants, FlexVariants, ClassProps {}
 
 /**
  * Breadcrumb trail of links to a tree page's ancestors, separated by `›` arrow icons.
@@ -30,7 +31,7 @@ export interface TreeBreadcrumbsProps extends TypographyVariants, SpaceVariants,
  * @example <TreeBreadcrumbs />
  * @see https://shelving.cc/ui/TreeBreadcrumbs
  */
-export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, ...props }: TreeBreadcrumbsProps): ReactElement | null {
+export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, className, ...props }: TreeBreadcrumbsProps): ReactElement | null {
 	const map = useTreeMap();
 	const segments = splitPath(requireMetaURL().path).slice(0, -1); // Don't include the element itself.
 	// Cumulative ancestor paths (`/util`, `/util/string`, …); skip prefixes with no element (e.g. the partial `/util` half of a `"util/string"` module name).
@@ -42,6 +43,7 @@ export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, ...prop
 			className={getClass(
 				getBlockClass(variants), //
 				getFlexClass(variants),
+				className,
 			)}
 		>
 			<TreeButton small plain name="/" />

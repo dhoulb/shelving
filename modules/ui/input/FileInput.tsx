@@ -1,5 +1,6 @@
 import type { ReactElement, SyntheticEvent } from "react";
 import type { FileTypes } from "../../util/file.js";
+import { getClass } from "../util/css.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "./Input.js";
 
 /**
@@ -29,6 +30,7 @@ export function FileInput({
 	// value,
 	onValue,
 	types = {},
+	className,
 	...variants
 }: FileInputProps): ReactElement {
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
@@ -44,7 +46,7 @@ export function FileInput({
 			required={required}
 			disabled={disabled}
 			placeholder={placeholder}
-			className={getInputClass(variants)}
+			className={getClass(getInputClass(variants), className)}
 			onChange={onChange}
 			onInput={onChange}
 			multiple={false}

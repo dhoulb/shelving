@@ -3,6 +3,7 @@ import { useStore } from "../../react/useStore.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
+import type { ClassProps } from "../util/props.js";
 import { Notice } from "./Notice.js";
 import NOTICES_CSS from "./Notices.module.css";
 import { NOTICES } from "./NoticesStore.js";
@@ -14,7 +15,7 @@ const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
  *
  * @see https://shelving.cc/ui/NoticesProps
  */
-export interface NoticesProps extends FlexVariants {}
+export interface NoticesProps extends FlexVariants, ClassProps {}
 
 /**
  * Render the global list of notices and subscribe to incoming `"notice"` events.
@@ -24,14 +25,14 @@ export interface NoticesProps extends FlexVariants {}
  * @kind component
  * @see https://shelving.cc/ui/Notices
  */
-export function Notices(props: NoticesProps): ReactElement {
+export function Notices({ className, ...props }: NoticesProps): ReactElement {
 	const notices = useStore(NOTICES).value;
 	useEffect(() => {
 		// Subscribe to global notices.
 		return subscribeNotices((message, status) => NOTICES.show(message, status));
 	});
 	return (
-		<aside className={getClass(NOTICES_CLASS, getFlexClass(props))}>
+		<aside className={getClass(NOTICES_CLASS, getFlexClass(props), className)}>
 			{notices.map(({ key, value }) => (
 				<Notice key={key} {...value} />
 			))}

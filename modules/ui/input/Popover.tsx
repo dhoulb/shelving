@@ -5,9 +5,10 @@ import type { ReactElement, ReactNode } from "react";
 
 import { isTruthy } from "../../util/boolean.js";
 import type { Callback } from "../../util/function.js";
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { eventPreventDefault } from "../util/event.js";
 import { eventLoopFocus } from "../util/focus.js";
+import type { ClassProps } from "../util/props.js";
 import styles from "./Popover.module.css";
 
 /**
@@ -32,7 +33,7 @@ export type PopoverChildren = readonly [
  *
  * @see https://shelving.cc/ui/PopoverProps
  */
-export interface PopoverProps {
+export interface PopoverProps extends ClassProps {
 	/** Children for the popover. */
 	children: PopoverChildren;
 	/** Callback that gets called when the Popover closes. */
@@ -45,6 +46,7 @@ export interface PopoverProps {
  * Trigger element that reveals a floating popover panel beside it when active or focused.
  * - The first `children` node is the trigger; the rest become the popover contents.
  * - Closes on blur away or `Escape`, calling `onClose`.
+ * - `className` lands on the floating panel rather than the wrapper, since the panel is the surface worth styling.
  *
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
  * @example <Popover>{trigger}{panelContent}</Popover>
@@ -56,6 +58,7 @@ export function Popover({
 	children: [trigger, ...popover], //
 	onClose,
 	open = popover.flat().some(isTruthy),
+	className,
 }: PopoverProps): ReactElement {
 	return (
 		<div
@@ -68,7 +71,7 @@ export function Popover({
 		>
 			{trigger}
 			{open ? (
-				<section className={getModuleClass(styles, "panel")} onMouseDown={eventPreventDefault}>
+				<section className={getClass(getModuleClass(styles, "panel"), className)} onMouseDown={eventPreventDefault}>
 					{popover}
 				</section>
 			) : null}

@@ -22,7 +22,7 @@ export interface ButtonInputProps extends InputProps, ClickableProps, FlexVarian
  * @example <ButtonInput name="choose" onClick={open}>Choose…</ButtonInput>
  * @see https://shelving.cc/ui/ButtonInput
  */
-export function ButtonInput({ title, placeholder, children = title, ...props }: ButtonInputProps): ReactElement {
+export function ButtonInput({ title, placeholder, children = title, className, ...props }: ButtonInputProps): ReactElement {
 	const hasChildren = notNullish(children);
 	return (
 		<Clickable
@@ -32,6 +32,7 @@ export function ButtonInput({ title, placeholder, children = title, ...props }: 
 				getModuleClass(INPUT_CSS, "button"),
 				getFlexClass(props),
 				hasChildren && getModuleClass(INPUT_CSS, "placeholder"),
+				className,
 			)}
 		>
 			{hasChildren ? children : placeholder}

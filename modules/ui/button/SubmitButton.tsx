@@ -3,7 +3,8 @@ import type { ReactElement } from "react";
 import { useStore } from "../../react/useStore.js";
 import { requireForm } from "../form/FormContext.js";
 import { LOADING } from "../misc/Loading.js";
-import type { OptionalChildProps } from "../util/props.js";
+import { getClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
 
 /**
@@ -15,7 +16,7 @@ import { type ButtonVariants, getButtonClass } from "./Button.js";
  *
  * @see https://shelving.cc/ui/SubmitButtonProps
  */
-export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps {}
+export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps, ClassProps {}
 
 const _SUBMIT_CHILDREN = (
 	<>
@@ -37,12 +38,13 @@ export function SubmitButton({
 	strong = true,
 	color = "primary",
 	full = true,
+	className,
 	...props
 }: SubmitButtonProps): ReactElement {
 	const form = requireForm();
 	const busy = useStore(form.busy).value;
 	return (
-		<button type="submit" disabled={busy} className={getButtonClass({ strong, color, full, ...props })}>
+		<button type="submit" disabled={busy} className={getClass(getButtonClass({ strong, color, full, ...props }), className)}>
 			{busy ? LOADING : children}
 		</button>
 	);

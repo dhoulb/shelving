@@ -53,6 +53,7 @@ export function QueryInput<I, O>({
 	onValue,
 	onQuery,
 	formatter = formatValue,
+	className,
 	...props
 }: QueryInputProps<I, O>): ReactElement {
 	const store = useStore(useInstance(PayloadFetchStore, NONE, undefined, onQuery, SECOND));
@@ -67,7 +68,7 @@ export function QueryInput<I, O>({
 	};
 
 	return (
-		<Popover open={isOpen} onClose={close}>
+		<Popover open={isOpen} onClose={close} className={className}>
 			<SchemaInput
 				{...props}
 				value={value as I}

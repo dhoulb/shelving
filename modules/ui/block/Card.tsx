@@ -4,6 +4,7 @@ import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps } from "../util/props.js";
 import type { BlockElement } from "./Block.js";
 import CARD_CSS from "./Card.module.css";
 
@@ -12,7 +13,7 @@ import CARD_CSS from "./Card.module.css";
  *
  * @see https://shelving.cc/ui/CardProps
  */
-export interface CardProps extends ClickableProps, StatusVariants, BlockVariants, ShadowVariants {
+export interface CardProps extends ClickableProps, StatusVariants, BlockVariants, ShadowVariants, ClassProps {
 	/**
 	 * Element this `<Card>` renders as, e.g. "header" to output a "<header>"
 	 * @default "article"
@@ -31,7 +32,7 @@ export interface CardProps extends ClickableProps, StatusVariants, BlockVariants
  * @kind component
  * @see https://shelving.cc/ui/Card
  */
-export function Card({ as: Element = "article", children, href, onClick, title = "Open", ...props }: CardProps): ReactElement {
+export function Card({ as: Element = "article", children, href, onClick, title = "Open", className, ...props }: CardProps): ReactElement {
 	const overlay = (href || onClick) && (
 		<Clickable title={title} href={href} onClick={onClick} {...props} className={getModuleClass(CARD_CSS, "overlay")} />
 	);
@@ -42,6 +43,7 @@ export function Card({ as: Element = "article", children, href, onClick, title =
 				getStatusClass(props),
 				getBlockClass(props),
 				getShadowClass(props),
+				className,
 			)}
 		>
 			{overlay}

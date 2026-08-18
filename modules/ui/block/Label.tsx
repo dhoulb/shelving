@@ -22,13 +22,14 @@ export interface LabelProps extends HeadingProps {}
  * @example <Label>Email address</Label>
  * @see https://shelving.cc/ui/Label
  */
-export function Label({ level = "3", children, ...props }: LabelProps): ReactElement {
+export function Label({ level = "3", children, className, ...props }: LabelProps): ReactElement {
 	const Element: `h${typeof level}` = `h${level}`;
 	return (
 		<Element
 			className={getClass(
 				LABEL_CLASS, //
 				getBlockClass(props),
+				className,
 			)}
 		>
 			{children}
