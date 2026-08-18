@@ -2,6 +2,11 @@
 
 TypeScript data toolkit with modules for schema validation, database providers, state stores, React integration, and more.
 
+## Hard rules
+
+- Write in **Simplified Technical English**; follow Zinsser's four principles of quality writing — **simplicity, brevity, clarity, humanity** — in every piece of prose (docblocks, READMEs, `.md` pages, commit messages, PR descriptions, issue bodies).
+- **`.md`-only changes commit directly to `main` — no PR needed.**
+
 ## Code style
 
 All code-style conventions — naming, function prefixes, imports/exports, types, functions, classes, variables, control flow, async patterns, error handling, React component patterns, testing style, and docblock standards — live in [`guides/styleguide.md`](./guides/styleguide.md).
