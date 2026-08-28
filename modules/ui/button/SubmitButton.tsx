@@ -11,7 +11,6 @@ import { type ButtonVariants, getButtonClass } from "./Button.js";
  * Component props for `<SubmitButton>`, a form submit button.
  *
  * @property children - The content of the button. Defaults to `"Save"` with a right-pointing arrow icon.
- * @property strong - Whether the button should have strong styling. Defaults to `true`
  * @property color - The color variant of the button. Defaults to `"primary"`
  *
  * @see https://shelving.cc/ui/SubmitButtonProps
@@ -27,7 +26,7 @@ const _SUBMIT_CHILDREN = (
 
 /**
  * Submit button for a form that disables itself and shows a spinner while the form is busy.
- * - Defaults to strong, full-width, primary styling and a "Save" label.
+ * - Defaults to full-width, primary styling and a "Save" label.
  *
  * @returns A `<button type="submit">` element bound to the current form.
  * @example <SubmitButton>Save changes</SubmitButton>
@@ -35,7 +34,6 @@ const _SUBMIT_CHILDREN = (
  */
 export function SubmitButton({
 	children = _SUBMIT_CHILDREN,
-	strong = true,
 	color = "primary",
 	full = true,
 	className,
@@ -44,7 +42,7 @@ export function SubmitButton({
 	const form = requireForm();
 	const busy = useStore(form.busy).value;
 	return (
-		<button type="submit" disabled={busy} className={getClass(getButtonClass({ strong, color, full, ...props }), className)}>
+		<button type="submit" disabled={busy} className={getClass(getButtonClass({ color, full, ...props }), className)}>
 			{busy ? LOADING : children}
 		</button>
 	);

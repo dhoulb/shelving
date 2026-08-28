@@ -19,7 +19,7 @@ The shared `className` prop most components accept — an app class merged *afte
 import { Button } from "shelving/ui";
 
 // `.spongy-press` lives in the app's own global stylesheet.
-<Button className="spongy-press" strong onClick={claim}>
+<Button className="spongy-press" onClick={claim}>
 	Claim
 </Button>;
 ```

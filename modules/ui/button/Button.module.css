@@ -16,7 +16,7 @@
 		min-inline-size: fit-content;
 		max-inline-size: 100%;
 		border-radius: var(--button-radius, var(--radius-xsmall));
-		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
+		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
 		padding: var(--button-padding, var(--space-small));
 		margin-inline: 0;
 		margin-block: var(--button-space, var(--space-small));
@@ -29,8 +29,8 @@
 		align-items: center;
 
 		/* Style. */
-		background: var(--button-background, var(--tint-90));
-		color: var(--button-text, var(--tint-50));
+		background: var(--button-background, var(--tint-50));
+		color: var(--button-text, var(--tint-100));
 		box-shadow: var(--button-shadow, none);
 		transition: var(--button-transition, all var(--duration-fast));
 		cursor: pointer;
@@ -54,15 +54,15 @@
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
-			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-90));
-			background: var(--button-hover-background, var(--tint-95));
+			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
+			background: var(--button-hover-background, var(--tint-55));
 			transform: var(--button-hover-transform, none);
 		}
 
 		&:enabled:active,
 		&:any-link:active {
-			border: var(--button-active-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-90)));
-			background: var(--button-active-background, var(--button-hover-background, var(--tint-95)));
+			border: var(--button-active-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
+			background: var(--button-active-background, var(--button-hover-background, var(--tint-55)));
 			transform: var(--button-active-transform, var(--button-hover-transform, none));
 			box-shadow: var(--button-active-shadow, var(--button-shadow, none));
 		}
@@ -78,23 +78,17 @@
 			inline-size: 100%;
 		}
 
-		&.strong {
-			background: var(--button-strong-background, var(--tint-50));
-			color: var(--button-strong-text, var(--tint-100));
-			box-shadow: var(--button-strong-shadow, var(--button-shadow, none));
+		&.plain {
+			color: var(--button-plain-text, var(--tint-50));
 
+			/* Plain includes plain `:focus` so a keyboard-focused button paints its fill and stays legible. */
 			&:enabled:hover,
 			&:any-link:hover,
-			&:focus:not(:focus-visible) {
-				background: var(--button-strong-hover-background, var(--tint-55));
-			}
-
 			&:enabled:active,
-			&:any-link:active {
-				box-shadow: var(
-					--button-strong-active-shadow,
-					var(--button-active-shadow, var(--button-strong-shadow, var(--button-shadow, none)))
-				);
+			&:any-link:active,
+			&:focus {
+				border: var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
+				background: var(--button-plain-hover-background, var(--tint-95));
 			}
 		}
 	}
@@ -116,23 +110,11 @@
 		}
 
 		/* Variants */
-		&.strong {
-			border-color: transparent;
-		}
-
 		&.plain {
 			box-shadow: none;
 
-			&:not(:enabled:hover, :any-link:hover, :focus) {
-				border-color: transparent;
-				background: transparent;
-			}
-		}
-
-		&.outline {
-			box-shadow: none;
-
-			&:not(:enabled:hover, :any-link:hover, :focus) {
+			&:not(:enabled:hover, :any-link:hover, :active, :focus) {
+				border: var(--button-plain-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
 				background: transparent;
 			}
 		}
