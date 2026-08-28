@@ -62,6 +62,8 @@ import { getButtonClass } from "shelving/ui";
 
 `--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — they have no fill until hover, so a raised edge under them reads broken. The hover and pressed transforms still apply to them, so all buttons move together. `--button-transition` already covers animating the press and release.
 
+`strong` can carry its own shadow: `--button-strong-shadow` replaces `--button-shadow` for `strong` buttons only, and `--button-strong-active-shadow` does the same while pressed. Both fall back to the shared hooks, so a theme that sets only `--button-shadow` still shades every filled button the same way.
+
 | Variable | Styles | Default |
 |---|---|---|
 | `--button-background` | Surface fill | `var(--tint-90)` |
@@ -92,6 +94,8 @@ import { getButtonClass } from "shelving/ui";
 | `--button-strong-background` | Fill when `strong` | `var(--tint-50)` |
 | `--button-strong-text` | Label colour when `strong` | `var(--tint-100)` |
 | `--button-strong-hover-background` | Hover fill when `strong` | `var(--tint-55)` |
+| `--button-strong-shadow` | Box shadow when `strong` | `var(--button-shadow)` |
+| `--button-strong-active-shadow` | Box shadow while pressed when `strong` | `var(--button-active-shadow)` |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90` / `--tint-95` / `--tint-100` / `--tint-55`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.
 
