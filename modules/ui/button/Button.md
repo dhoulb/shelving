@@ -60,11 +60,14 @@ import { getButtonClass } from "shelving/ui";
 
 `--button-padding` and `--button-small-padding` set the `padding` shorthand, so a single value pads both axes equally and a two-value override pads block and inline separately (e.g. `var(--space-small) var(--space-normal)`).
 
+`--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — they have no fill until hover, so a raised edge under them reads broken. The hover and pressed transforms still apply to them, so all buttons move together. `--button-transition` already covers animating the press and release.
+
 | Variable | Styles | Default |
 |---|---|---|
 | `--button-background` | Surface fill | `var(--tint-90)` |
 | `--button-hover-background` | Surface fill on hover / focus | `var(--tint-95)` |
 | `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid var(--tint-90)` |
+| `--button-hover-transform` | Transform on hover / focus | `none` |
 | `--button-text` | Label colour | `var(--tint-50)` |
 | `--button-border` | Border shorthand | `var(--button-stroke) solid var(--tint-80)` |
 | `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
@@ -78,6 +81,11 @@ import { getButtonClass } from "shelving/ui";
 | `--button-weight` | Font weight | `var(--weight-strong)` (700) |
 | `--button-size` | Font size | `var(--size-normal)` |
 | `--button-leading` | Line height | `var(--leading)` |
+| `--button-shadow` | Box shadow (never on `plain` / `outline`) | `none` |
+| `--button-active-background` | Surface fill while pressed | `var(--button-hover-background)` |
+| `--button-active-border` | Border while pressed | `var(--button-hover-border)` |
+| `--button-active-shadow` | Box shadow while pressed | `var(--button-shadow)` |
+| `--button-active-transform` | Transform while pressed | `var(--button-hover-transform)` |
 | `--button-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--button-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 | `--button-disabled-opacity` | Opacity when disabled | `0.5` |
@@ -92,5 +100,15 @@ import { getButtonClass } from "shelving/ui";
 :root {
   --button-radius: 999px;
   --button-padding: var(--space-small) var(--space-normal);
+}
+```
+
+```css
+/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never cast a shadow. */
+:root {
+  --button-shadow: 0 0.25rem 0 var(--tint-80);
+  --button-active-transform: translateY(0.2rem);
+  --button-active-shadow: 0 0.05rem 0 var(--tint-80);
+  --button-transition: all var(--duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 ```

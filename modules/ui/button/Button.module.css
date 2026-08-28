@@ -31,6 +31,7 @@
 		/* Style. */
 		background: var(--button-background, var(--tint-90));
 		color: var(--button-text, var(--tint-50));
+		box-shadow: var(--button-shadow, none);
 		transition: var(--button-transition, all var(--duration-fast));
 		cursor: pointer;
 		outline: var(--button-focus-border, var(--stroke-focus) solid var(--color-focus));
@@ -55,6 +56,15 @@
 		&:focus:not(:focus-visible) {
 			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-90));
 			background: var(--button-hover-background, var(--tint-95));
+			transform: var(--button-hover-transform, none);
+		}
+
+		&:enabled:active,
+		&:any-link:active {
+			border: var(--button-active-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-90)));
+			background: var(--button-active-background, var(--button-hover-background, var(--tint-95)));
+			transform: var(--button-active-transform, var(--button-hover-transform, none));
+			box-shadow: var(--button-active-shadow, var(--button-shadow, none));
 		}
 
 		/* Variants */
@@ -101,13 +111,21 @@
 			border-color: transparent;
 		}
 
-		&.plain:not(:enabled:hover, :any-link:hover, :focus) {
-			border-color: transparent;
-			background: transparent;
+		&.plain {
+			box-shadow: none;
+
+			&:not(:enabled:hover, :any-link:hover, :focus) {
+				border-color: transparent;
+				background: transparent;
+			}
 		}
 
-		&.outline:not(:enabled:hover, :any-link:hover, :focus) {
-			background: transparent;
+		&.outline {
+			box-shadow: none;
+
+			&:not(:enabled:hover, :any-link:hover, :focus) {
+				background: transparent;
+			}
 		}
 	}
 }
