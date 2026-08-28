@@ -77,11 +77,11 @@ function* getClasses(classes: unknown): Iterable<string> {
  * - This allows this situation to be handled gracefully and classes will be silently ignored in this environment.
  *
  * @param classes Class keys/values to merge.
- * @returns The merged string classname, or `undefined` when `module` is a string (unprocessed CSS module).
+ * @returns The merged string classname, or `undefined` when `module` is a string (unprocessed CSS module) or no classes match.
  * @see https://shelving.cc/ui/getModuleClass
  */
 export function getModuleClass(module: CSSModule | string, ...classes: unknown[]): string | undefined {
-	if (isDictionary(module)) return Array.from(getModuleClasses(module, classes)).join(" ");
+	if (isDictionary(module)) return Array.from(getModuleClasses(module, classes)).join(" ") || undefined;
 }
 
 /** Yield the items in a list of possible `className` strings that match a `CSSModule` dictionary. */
