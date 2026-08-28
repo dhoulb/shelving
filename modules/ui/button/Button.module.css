@@ -81,11 +81,20 @@
 		&.strong {
 			background: var(--button-strong-background, var(--tint-50));
 			color: var(--button-strong-text, var(--tint-100));
+			box-shadow: var(--button-strong-shadow, var(--button-shadow, none));
 
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
 				background: var(--button-strong-hover-background, var(--tint-55));
+			}
+
+			&:enabled:active,
+			&:any-link:active {
+				box-shadow: var(
+					--button-strong-active-shadow,
+					var(--button-active-shadow, var(--button-strong-shadow, var(--button-shadow, none)))
+				);
 			}
 		}
 	}
