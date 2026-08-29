@@ -63,7 +63,9 @@ import { getButtonClass } from "shelving/ui";
 
 `--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` never paints a box shadow in any state — it has no fill until hover, so a raised edge under it reads broken. The hover and pressed transforms still apply to it, so all buttons move together. `--button-transition` already covers animating the press and release.
 
-`plain` carries its own hooks for where it differs: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and `--button-plain-border` sets the resting border — transparent by default, so a theme where plain buttons should keep a visible edge (an "outline" button) sets it once. The hover border falls back through `--button-hover-border`, so a theme that borders every hovered button also borders hovered plain ones.
+`plain` carries its own hooks for where it differs: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, the `--button-plain-active-*` pair paints the pressed state (falling back to the plain hover hooks), and `--button-plain-border` sets the resting border — transparent by default, so a theme where plain buttons should keep a visible edge (an "outline" button) sets it once. The hover border falls back through `--button-hover-border`, so a theme that borders every hovered button also borders hovered plain ones.
+
+Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
 
 | Variable | Styles | Default |
 |---|---|---|
@@ -96,6 +98,8 @@ import { getButtonClass } from "shelving/ui";
 | `--button-plain-border` | Resting border when `plain` | `var(--button-stroke) solid transparent` |
 | `--button-plain-hover-background` | Fill on hover / focus when `plain` | `var(--tint-95)` |
 | `--button-plain-hover-border` | Border on hover / focus when `plain` | `var(--button-hover-border)` (transparent) |
+| `--button-plain-active-background` | Fill while pressed when `plain` | `var(--button-plain-hover-background)` |
+| `--button-plain-active-border` | Border while pressed when `plain` | `var(--button-plain-hover-border)` |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-95` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.
 

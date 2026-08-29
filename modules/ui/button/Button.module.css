@@ -84,11 +84,18 @@
 			/* Plain includes plain `:focus` so a keyboard-focused button paints its fill and stays legible. */
 			&:enabled:hover,
 			&:any-link:hover,
-			&:enabled:active,
-			&:any-link:active,
 			&:focus {
 				border: var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
 				background: var(--button-plain-hover-background, var(--tint-95));
+			}
+
+			&:enabled:active,
+			&:any-link:active {
+				border: var(
+					--button-plain-active-border,
+					var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent))
+				);
+				background: var(--button-plain-active-background, var(--button-plain-hover-background, var(--tint-95)));
 			}
 		}
 	}
@@ -96,6 +103,9 @@
 
 @layer overrides {
 	.button {
+		/* The border is transparent by default, so background images/gradients must size to the border box to reach the button's edge. Lives in the overrides layer because every state's `background` shorthand resets the origin to `padding-box`. */
+		background-origin: border-box;
+
 		&:first-child {
 			margin-block-start: 0;
 		}
