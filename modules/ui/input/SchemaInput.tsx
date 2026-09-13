@@ -192,14 +192,23 @@ export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, u
 
 /**
  * Show a `TextInput` for a `StringSchema`, sanitising and formatting values with the schema.
+ * - Publishes the sanitized value through `onValue`; the schema's `format()` only shapes what the input displays (on first render and on blur).
  *
  * @returns A `TextInput` element bound to the schema.
  * @kind component
  * @example <StringSchemaInput name="email" schema={EMAIL} />
  * @see https://shelving.cc/ui/StringSchemaInput
  */
-export function StringSchemaInput({ schema, value, ...props }: StringSchemaInputProps): ReactElement {
-	return <TextInput {...schema} value={getString(value)} formatter={str => schema.format(schema.sanitize(str))} {...props} />;
+export function StringSchemaInput({ schema, value, onValue, ...props }: StringSchemaInputProps): ReactElement {
+	return (
+		<TextInput
+			{...schema}
+			value={getString(value)}
+			onValue={str => onValue(str === undefined ? undefined : schema.sanitize(str))}
+			formatter={str => schema.format(schema.sanitize(str))}
+			{...props}
+		/>
+	);
 }
 
 /**
