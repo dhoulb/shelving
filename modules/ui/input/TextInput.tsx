@@ -18,13 +18,13 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
 	input?: StringInputType;
 	min?: number | undefined;
 	max?: number | undefined;
-	/** Optional formatter — when provided the value is reformatted on blur and when initially displayed. */
+	/** Optional formatter — when provided the value is reformatted on blur and when initially displayed (the value published through `onValue` is never formatted). */
 	formatter?: TextFormatter | undefined;
 }
 
 /**
  * Text input bound to a `string` value, rendered as an `<input>` or a `<textarea>` when `rows > 1`.
- * - Applies an optional `formatter` on initial display and on blur.
+ * - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
  * - Multiline mode auto-grows the textarea to fit its content.
  *
  * @returns A text `<input>` or `<textarea>` element.
@@ -54,7 +54,7 @@ export function TextInput({
 
 	if (rows > 1) {
 		const onChange = (e: SyntheticEvent<HTMLTextAreaElement>) => {
-			onValue?.(formatter(e.currentTarget.value));
+			onValue?.(e.currentTarget.value);
 			_resize(e.currentTarget, rows);
 		};
 
@@ -80,7 +80,7 @@ export function TextInput({
 	}
 
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
-		onValue?.(formatter(e.currentTarget.value));
+		onValue?.(e.currentTarget.value);
 	};
 
 	return (

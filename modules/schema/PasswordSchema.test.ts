@@ -16,6 +16,6 @@ test("allows the input hint to be overridden (e.g. show-password toggle)", () =>
 test("validates a password string", () => {
 	expect(PASSWORD.validate("hunter2")).toBe("hunter2");
 });
-test("never formats a password for display", () => {
-	expect(PASSWORD.format()).toBe("");
+test("formats the password unchanged so a password input can hold and mask it", () => {
+	expect(PASSWORD.format("hunter2")).toBe("hunter2");
 });
