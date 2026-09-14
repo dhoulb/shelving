@@ -115,9 +115,10 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends Throu
 	 */
 	override async transact<X>(callback: (provider: DBProvider<I, T>) => Promise<X>): Promise<X> {
 		let transaction: RecordingDBProvider<I, T> | undefined;
-		const result = await this.source.transact(provider =>
-			callback((transaction = new RecordingDBProvider<I, T>(this.cloneWith(provider)))),
-		);
+		const result = await this.source.transact(provider => {
+			transaction = new RecordingDBProvider<I, T>(this.cloneWith(provider));
+			return callback(transaction);
+		});
 		if (transaction) await transaction.replayWrites(this.memory); // Commit the recorded writes into the cache.
 		return result;
 	}

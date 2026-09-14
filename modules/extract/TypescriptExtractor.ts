@@ -151,7 +151,7 @@ function _getServer(): _Server {
 }
 
 /** Close the shared compiler server after a short idle, so the process can exit without callers managing the lifecycle. */
-function _scheduleClose(): void {
+async function _scheduleClose(): Promise<void> {
 	if (_timer) clearTimeout(_timer);
 	_timer = setTimeout(() => {
 		const server = _server;
@@ -159,7 +159,7 @@ function _scheduleClose(): void {
 		_previous = undefined;
 		_timer = undefined;
 		try {
-			server?.api.close();
+			void server?.api.close();
 		} catch {
 			// Closing can reject in-flight bookkeeping requests — harmless on shutdown.
 		}
@@ -192,8 +192,8 @@ function _parseSourceFile(text: string): Promise<SourceFile> {
 			if (!source) throw new ValueError("Unable to parse TypeScript source", { received: text });
 			return source;
 		} finally {
-			snapshot.dispose();
-			_scheduleClose();
+			await snapshot.dispose();
+			await _scheduleClose();
 		}
 	};
 	const result = _queue.then(task, task);
