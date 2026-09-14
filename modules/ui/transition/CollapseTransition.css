@@ -1,3 +1,4 @@
+/* Global CSS, not a CSS module. Bun hashes a class inside `::view-transition-*()` from the file basename, but hashes the exported names from the file path, so a module-scoped view-transition class can never match the name that JS passes to `view-transition-class`. Keep these names global until Bun fixes this — see dhoulb/shelving#325. */
 ::view-transition-image-pair(.collapse) {
 	overflow: hidden;
 }

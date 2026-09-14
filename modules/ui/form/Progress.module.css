@@ -39,6 +39,17 @@
 		background: var(--progress-color, var(--tint-50));
 	}
 
+	/* Conveyor the block fully off the left edge, across, and fully off the right — then it loops back round unseen. `-70%`/`170%` fully clear a `40%`-wide block, and `linear` timing keeps a constant speed with no ease-out stall at the ends. */
+	@keyframes progress-flow {
+		from {
+			background-position: -70% 0;
+		}
+
+		to {
+			background-position: 170% 0;
+		}
+	}
+
 	/* Indeterminate — a native `<progress>` with no `value`, so a solid block of fill colour slides across the track on a loop for a task of unknown duration. */
 	.progress:indeterminate,
 	.prose progress:indeterminate {
@@ -47,7 +58,12 @@
 		background-image: linear-gradient(90deg, var(--progress-color, var(--tint-50)), var(--progress-color, var(--tint-50)));
 		background-repeat: no-repeat;
 		background-size: 40% 100%;
-		animation: progress-flow var(--progress-duration, 1.5s) linear infinite;
+
+		/* Longhands, not the `animation` shorthand: Bun rewrites `animation-name` to the hashed keyframes name but leaves a shorthand that holds a `var()` untouched. See dhoulb/shelving#259. */
+		animation-name: progress-flow;
+		animation-duration: var(--progress-duration, 1.5s);
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
 	}
 
 	/* The native track/fill pseudo-elements would paint over the sliding block, so make them transparent and let the element's own background show through. */
@@ -65,5 +81,3 @@
 
 	/* No `prefers-reduced-motion` override — movement is the indeterminate bar's only signal, so freezing it reads as a stalled determinate bar rather than "working". The animation is a small element-sized loop, not a large vestibular-trigger transition. */
 }
-
-/* The `progress-flow` keyframes referenced above live in the sibling non-module `Progress.css` — see the note there for why they can't be defined in this module file. */

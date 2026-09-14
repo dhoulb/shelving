@@ -93,7 +93,7 @@
 				}
 			},
 			"javascript": {
-				"globals": ["test", "describe", "expect"]
+				"globals": ["Bun", "test", "describe", "expect"]
 			}
 		},
 		{

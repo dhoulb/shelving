@@ -1,10 +1,11 @@
 /// <reference types="react/canary" />
 import { type ReactElement, ViewTransition } from "react";
-import { getClass, getModuleClass } from "../util/css.js";
+import { getClass } from "../util/css.js";
 import type { ChildProps } from "../util/props.js";
-import TRANSITION_CSS from "./Transition.module.css";
+import "./Transition.css";
 
-const TRANSITION_OVERLAY_CLASS = getModuleClass(TRANSITION_CSS, "overlay");
+// A global class name, not a CSS-module export — see the note in `Transition.css`.
+const TRANSITION_OVERLAY_CLASS = "overlay";
 
 /**
  * Variant props shared by every transition component.
@@ -35,7 +36,7 @@ export interface TransitionProps extends ChildProps, TransitionVariants {
  *
  * - Allows known view transition types in `TransitionClasses` (`default`/`forward`/`back`) to be overridden.
  *   - These must correspond to a `::view-transition(.className)` that is set in CSS.
- * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition(.overlay)` from `Transition.css`.
+ * - Supports variant classes, e.g. `<Transition overlay>` applies `::view-transition-group(.overlay)` from `Transition.css`.
  *
  * @kind component
  * @returns A `<ViewTransition>` element wrapping the children.

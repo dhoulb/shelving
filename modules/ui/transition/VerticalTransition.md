@@ -4,7 +4,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 
 **Things to know:**
 
-- Defaults to `slideDown`; with the type set to `"forward"` it slides down (`slideDown`), and to `"back"` it slides up (`slideUp`).
+- Slides down by default and when the type is `"forward"`; slides up when the type is `"back"`.
 - Set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback before navigating — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - Under `prefers-reduced-motion: reduce` the slide distance is forced to `0`, so the transition degrades to an opacity-only crossfade with no positional movement (large viewport-level slides are exactly what the preference exists to suppress).

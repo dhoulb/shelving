@@ -24,11 +24,11 @@ import { Transition } from "shelving/ui";
 ### Overlay
 
 ```tsx
-import { Transition } from "shelving/ui";
+import { FadeTransition } from "shelving/ui";
 
-<Transition default="fade" overlay>
+<FadeTransition overlay>
   <Notification/>
-</Transition>
+</FadeTransition>
 ```
 
 ### Setting the direction with `setTransitionType()`

@@ -5,7 +5,6 @@ import { type ColorVariants, getColorClass } from "../style/Color.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
-import "./Progress.css";
 import styles from "./Progress.module.css";
 
 /**
