@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import "./FadeTransition.css";
 import { Transition, type TransitionProps } from "./Transition.js";
 
 /**
