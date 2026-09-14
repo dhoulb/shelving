@@ -42,6 +42,7 @@
 	"description": "Toolkit for using data in JavaScript.",
 	"engineStrict": true,
 	"engines": {
+		"bun": ">=1.4.0",
 		"node": ">=16.0.0"
 	},
 	"keywords": [

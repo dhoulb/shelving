@@ -47,7 +47,11 @@ jobs:
       url: ${{ steps.url.outputs.url }}
     steps:
       - uses: actions/checkout@v6
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       # Resolve the URL the build is served from — the single source for both the deployment

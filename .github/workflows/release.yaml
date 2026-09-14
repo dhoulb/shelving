@@ -17,7 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       - name: test
@@ -27,7 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -53,7 +61,11 @@ jobs:
           --health-retries 10
     steps:
       - uses: actions/checkout@v6
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       - name: postgres
@@ -75,7 +87,11 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       - name: build

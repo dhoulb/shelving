@@ -85,7 +85,12 @@ bun run build
 
 - **Biome** — linting and formatting (`biome.json`)
 - **TypeScript** — strict mode with `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, etc. (`tsconfig.json`)
-- **Bun** — test runner (`bun test`)
+- **Bun** — runtime, package manager and test runner (`bun test`). The project needs **Bun 1.4 or later**;
+  earlier versions do not hash `animation-name` to match its `@keyframes`, so `bun run test` fails.
+  The floor lives in one place — `engines.bun` in `package.json`:
+  - GitHub Actions reads it through `bun-version-file: package.json` on every `oven-sh/setup-bun` step
+  - Remote Claude Code containers read it in `.claude/hooks/session-start.sh`, which runs `bun upgrade` when the container ships an older Bun
+  - Bun itself does **not** enforce `engines`, so check `bun --version` if a local run behaves oddly
 
 ## Public API
 
