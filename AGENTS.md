@@ -89,7 +89,7 @@ bun run build
   earlier versions do not hash `animation-name` to match its `@keyframes`, so `bun run test` fails.
   The floor lives in one place — `engines.bun` in `package.json`:
   - GitHub Actions reads it through `bun-version-file: package.json` on every `oven-sh/setup-bun` step
-  - Remote Claude Code containers read it in `.claude/hooks/session-start.sh`, which runs `bun upgrade` when the container ships an older Bun
+  - Remote Claude Code containers read it in `.claude/hooks/session-start.sh`, which re-runs the Bun install script when the container ships an older Bun (`bun upgrade` does not work there — the proxy blocks its release endpoint and `BUN_OPTIONS` breaks its argument parsing)
   - Bun itself does **not** enforce `engines`, so check `bun --version` if a local run behaves oddly
 
 ## Public API
