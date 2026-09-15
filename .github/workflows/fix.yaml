@@ -20,7 +20,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       - name: fix
@@ -54,7 +58,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -82,7 +90,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
       - name: install
         run: bun install
       - name: postgres
