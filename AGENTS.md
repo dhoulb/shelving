@@ -22,6 +22,7 @@ Source lives under `modules/`:
 - `cloudflare` — Cloudflare Workers providers (KV, D1)
 - `db` — Database abstraction (providers, collections, stores, migrations)
 - `error` — Error classes
+- `extract` — Docs extractors that build the docs tree from source and `.md` files
 - `firebase` — Firebase providers (Firestore via the REST API)
 - `markup` — Markdown renderer for user-facing content
 - `react` — React hooks and context
@@ -29,6 +30,7 @@ Source lives under `modules/`:
 - `sequence` — Async-iterable utilities
 - `store` — State stores
 - `test` — Test utilities
+- `ui` — React UI components, styling system, and docs-site pages
 - `util` — General utilities (arrays, objects, strings, functions, etc.)
 
 ## Repository Structure
@@ -55,13 +57,14 @@ Todos, gaps, and deferred decisions live as **GitHub issues** on the [`dhoulb/sh
 bun run fix
 ```
 
-This runs Biome to auto-fix lint errors and reformat code.
+This runs Biome (lint fix + format) and Stylelint (CSS fix).
 
 **To check for errors:**
 
 ```sh
 bun run test          # run all checks in parallel
 bun run test:lint     # Biome lint check only
+bun run test:style    # Stylelint CSS check only
 bun run test:type     # TypeScript type check only
 bun run test:unit     # Bun unit tests only
 ```
@@ -102,10 +105,10 @@ bun run build
 
 Before writing new code, find what already exists. The codebase exposes shared primitives — components, utility functions, types, classes — and most new work should compose them, not reinvent.
 
-- **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or close enough that a parameter or variant would cover the difference. AI agents tend to write fresh code when an existing helper would do — check first.
-- **Prefer existing helpers** like `withProp`, `withProps`, `omitProps`, `updateData`, `getFilters`, `getOrders`, `getUpdates`, and `validateData` over open-coded object/query/update logic
+- **Scan first.** Before writing a new component, utility, or type, check the relevant module(s) for something that already does the job — exactly, or close enough that a parameter or variant would cover the difference.
+- **Prefer existing helpers** like `withProp`, `withProps`, `omitProps`, `updateData`, `getQueryFilters`, `getQueryOrders`, `getUpdates`, and `validateData` over open-coded object/query/update logic
 - **Compose, don't restyle.** A "complex" component bound to a content type (a `*Page` or `*Card` for one kind of content) should rarely ship its own CSS module — it picks up its visual identity from existing library components (`Card`, `Page`, `Button`, `Tag`, `Notice`, etc.). A handful of genuinely custom components per app may need their own styling; everything else reuses
-- **Propose, don't silently modify.** If an existing component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — stop and propose the targeted change. Wait for input on the design. Never silently extend existing code; modifications to existing modules require explicit discussion every time
+- **Propose, don't silently modify.** If an existing shared component, utility, or type is missing a needed capability — a prop, a variant, a parameter, a return-shape tweak — propose the targeted change and wait for agreement on the design before you extend it
 - **Propose, don't invent.** If nothing in the library covers a need, propose the new component/utility/type and how it would slot in. Wait for input before building it. Don't add new shared primitives unannounced
 
 ## Commits
@@ -119,7 +122,7 @@ Before writing new code, find what already exists. The codebase exposes shared p
 
 ## Pull Requests
 
-- Every PR that resolves a tracked issue **must** link it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — so GitHub closes the issue automatically when the PR merges. List every issue the PR resolves, one keyword each. This is mandatory: never rely on closing issues by hand after merge.
+- Every PR that resolves a tracked issue links it in the PR description with a [closing keyword](https://docs.github.com/articles/closing-issues-using-keywords) — `Closes #123` / `Fixes #123` — one per issue, so GitHub closes each issue when the PR merges.
 - **Open a PR proactively** once a change is in a reviewable state — don't wait to be asked. This especially matters for **documentation-site changes**: the `docs.yaml` workflow builds a live preview for every PR at `https://shelving.cc/pr-<number>/` (and comments the link on the PR), which is the only way to eyeball the rendered docs. Any change touching `modules/ui/**`, `modules/extract/**`, `modules/markup/**`, the per-symbol `.md` pages, or docblocks should go up as a PR so the preview is built.
 
 ## Schemas, Queries, and Updates
@@ -137,7 +140,7 @@ Before writing new code, find what already exists. The codebase exposes shared p
 - Wrapped providers are discovered through `source` and helpers like `getSource()` / `requireSource()`, not by reaching into private internals
 - `Store.value` intentionally supports suspense-like reads: it can throw a `Promise` while loading or throw `reason` on failure. Do not simplify this into nullable return values
 - Store implementations suppress duplicate emissions when values are equal and use the `NONE` sentinel for loading state. Preserve those semantics in new store types
-- React context helpers return both a provider component and typed hooks, for example `createDataContext()` and `createCacheContext()`. Follow that pattern for new React integrations
+- React context helpers return both a provider component and typed hooks, for example `createAPIContext()` and `createDBContext()`. Follow that pattern for new React integrations
 
 ## UI Components
 
@@ -145,7 +148,7 @@ General component and CSS-module patterns (function-declaration components, `Rea
 
 - Every reusable component carries a `@kind component` tag in its docblock so the docs extractor labels it as a `component` rather than a `function` — components are grouped and colour-coded separately on the docs site (see [Documentation](#documentation)). Helper functions that live alongside a component (`getButtonClass` etc.) stay plain functions with no `@kind`
 - Styling-scale props (`color`, `size`, `space`, `padding`, `gap`, `tint`, `status`) are defined in `modules/ui/style/` and map to class names via the `getXxxClass(props)` helpers
-- **CSS custom property naming exemptions.** The styleguide's rule that a `.module.css` file owns every `--file-name-*` variable it reads has two repo-level exemptions: design-token constants declared at `:root` in `style/base.css` (`--color-*` / `--space-*` / `--size-*` etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`
+- **CSS custom property naming exemptions.** The styleguide's rule that a `.module.css` file owns every `--file-name-*` variable it reads has two repo-level exemptions: design-token constants declared at `:root` in the themed token modules under `style/` (`Color.module.css`, `Space.module.css`, etc.) and the tint ladder (`--tint-00` … `--tint-100`) computed in `style/Tint.module.css`
 - **Paint from the ladder; don't rebind the anchor.**
   - Paint every property from a ladder step, with a per-property hook in front — `background: var(--card-background, var(--tint-90))`. The component reads whatever tint is ambient in its scope.
   - **Never** set `--tint-50` on a component. The anchor moves only via `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root` — so a component never carries a stale ladder, and a raw element in `.prose` behaves identically to its component.
@@ -155,68 +158,43 @@ General component and CSS-module patterns (function-declaration components, `Rea
 
 ### Writing a new component
 
-A typical new block-level component looks like:
+A simple block-level component (`modules/ui/block/Paragraph.tsx`) looks like:
 
 ```tsx
-// Address.tsx
-import { type ColorProps, getColorClass } from "../style/Color.js";
-import { getSpacingClass, type SpacingProps } from "../style/Spacing.js";
-import { getTypographyClass, type TypographyProps } from "../style/Typography.js";
+import type { ReactElement } from "react";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
+import { getClass, getModuleClass } from "../util/css.js";
+import type { ClassProps, OptionalChildProps } from "../util/props.js";
+import PARAGRAPH_CSS from "./Paragraph.module.css";
 
-export interface AddressProps extends ColorProps, SpacingProps, TypographyProps, ChildProps {}
+const PARAGRAPH_CLASS = getModuleClass(PARAGRAPH_CSS, "paragraph");
 
-export function Address({ children, ...props }: AddressProps) {
-  return (
-    <address
-      className={getClass(
-        getModuleClass(styles, "address"),
-        getColorClass(props),
-        getSpacingClass(props),
-        getTypographyClass(props),
-      )}
-    >
-      {children}
-    </address>
-  );
+export interface ParagraphProps extends BlockVariants, OptionalChildProps, ClassProps {}
+
+export function Paragraph({ children, className, ...props }: ParagraphProps): ReactElement {
+	return (
+		<p
+			className={getClass(
+				PARAGRAPH_CLASS, //
+				getBlockClass(props),
+				className,
+			)}
+		>
+			{children}
+		</p>
+	);
 }
 ```
 
-```css
-/* Address.module.css */
-@import "../style/base.css";
-
-@layer components {
-  .address {
-    /* Box */
-    display: block;
-    margin-inline: 0;
-    margin-block: var(--address-space, var(--space-paragraph));
-
-    /* Text — paint from the ladder, with a per-property hook in front. */
-    color: var(--address-color, var(--tint-00));
-    font-family: var(--address-font, inherit);
-    font-size: var(--address-size, inherit);
-  }
-}
-
-@layer overrides {
-  .address {
-    &:first-child { margin-block-start: 0; }
-    &:last-child { margin-block-end: 0; }
-  }
-}
-```
-
-The `:first-child` / `:last-child` margin overrides live in a separate `@layer overrides` block so they beat variant-set margins. Every paragraph-level component zeros its outer margins at the top or bottom of its container — so a `Heading` at the top of a `Card` doesn't leave a strip of unwanted space, and a `<Paragraph space="large">` still collapses its abutting edges correctly.
+`getBlockClass()` adds the shared `.block` class, which resets display and margins and collapses `:first-child` / `:last-child` outer margins in `@layer overrides` (see `style/Block.module.css`). A block component therefore needs no margin overrides of its own. `modules/ui/block/Address.module.css` shows the CSS module shape.
 
 Checklist:
 
-- [ ] `@import "../style/base.css";` at the top of the `.module.css`.
+- [ ] `@import url("../style/layers.css");` first in the `.module.css`, then each token module the file reads (`Color.module.css`, `Space.module.css`, …).
 - [ ] All component rules inside `@layer components { … }`.
 - [ ] All custom properties owned by this file start with the file name (`--address-*`, etc.) — see the CSS custom property naming rule in the styleguide.
 - [ ] If the component paints colour, paint from ladder steps with a per-property hook in front (`background: var(--address-background, var(--tint-90))`) — don't set `--tint-50`; the tint flows in from `color=` / `status=` or an ancestor scope. Read a palette token directly (`var(--color-red)`) only for a fixed semantic colour.
-- [ ] `:first-child` / `:last-child` overrides in a separate `@layer overrides { … }` block.
-- [ ] TSX extends the styling-prop interfaces (`ColorProps`, `SpacingProps`, `TypographyProps`, etc.) you want to expose and composes the matching `getXxxClass(props)` calls.
+- [ ] TSX extends `BlockVariants` (or the narrower `*Variants` interfaces you want to expose) and composes `getBlockClass(props)` or the matching `getXxxClass(props)` calls.
 - [ ] `@kind component` in the docblock, and a sibling `Address.md` with usage examples and a Styling section (see the Documentation section).
 
 ## Testing
@@ -356,11 +334,11 @@ Example shape:
 
 ```ts
 /**
- * Get the first item of an array, or `undefined` if it's empty.
+ * Get the first item from an array or iterable, or `undefined` if it's empty.
  *
- * @param arr The array to read from.
+ * @param items The array or iterable to read from.
  * @returns The first item, or `undefined` when the array is empty.
- * @example getArray(["a", "b"]) // "a"
- * @see https://shelving.cc/util/array/getArray
+ * @example getFirst(["a", "b"]) // "a"
+ * @see https://shelving.cc/util/array/getFirst
  */
 ```
