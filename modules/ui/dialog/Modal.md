@@ -87,7 +87,7 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-padding` | Inner padding | `var(--space-normal)` (16px) |
 | `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-max-height` | Maximum height of a `top` or `bottom` panel (it scrolls past this) | `100%` |
-| `--modal-transition-duration` | Length of the slide for a pinned panel | `var(--duration-normal)` (300ms) |
+| `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
 | `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-50` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--stroke-normal`, `--shadow-normal`, and `--duration-normal`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-50` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--stroke-normal`, `--shadow-normal`, and `--duration-fast`.

@@ -124,14 +124,14 @@
 ::view-transition-new(.modal-right),
 ::view-transition-new(.modal-bottom),
 ::view-transition-new(.modal-left) {
-	animation: var(--modal-transition-duration, var(--duration-normal)) ease-out both;
+	animation: var(--modal-transition-duration, var(--duration-fast)) ease-out both;
 }
 
 ::view-transition-old(.modal-top),
 ::view-transition-old(.modal-right),
 ::view-transition-old(.modal-bottom),
 ::view-transition-old(.modal-left) {
-	animation: var(--modal-transition-duration, var(--duration-normal)) ease-in reverse both;
+	animation: var(--modal-transition-duration, var(--duration-fast)) ease-in reverse both;
 }
 
 ::view-transition-new(.modal-top),
