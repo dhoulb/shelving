@@ -1,20 +1,23 @@
 # Modal
 
-A non-blocking `<aside>` overlay for persistent panels — drawers, toasts, and side-sheets that coexist with the page rather than blocking interaction with it. Unlike `<Dialog>`, it is not a native `<dialog>` and does not trap focus or dim the page.
+The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a bordered, shadowed surface with dark text on a light fill.
 
 **Things to know:**
 
-- Reach for `Modal` when the overlay should sit alongside the page (a notification panel, a side drawer); reach for `<Dialog>` when it should block interaction until dismissed.
+- A native `<dialog>` does both jobs. Shelving splits them: `<Dialog>` is the overlay and `Modal` is the panel. Content placed directly in a `<Dialog>` shows as white text on the dark overlay.
+- `Modal` sets its text back to `--tint-00`, so it reads on its own `--tint-100` surface.
 - It only styles the box — lay out its contents with the usual block components.
 
 ## Usage
 
 ```tsx
-import { Modal } from "shelving/ui";
+import { Dialog, Modal } from "shelving/ui";
 
-<Modal>
-  <NotificationPanel />
-</Modal>
+<Dialog onClose={onClose}>
+  <Modal>
+    <p>Delete this item?</p>
+  </Modal>
+</Dialog>
 ```
 
 ## Styling

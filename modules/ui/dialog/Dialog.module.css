@@ -3,6 +3,7 @@
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Shadow.module.css");
+@import url("../style/Tint.module.css");
 
 @layer components {
 	.dialog {
@@ -12,14 +13,18 @@
 		inset: 0;
 		z-index: 1000;
 		margin: 0;
-		width: 100vw;
-		height: 100vh;
+		width: auto;
+		height: auto;
+		max-width: none;
+		max-height: none;
 		align-items: center;
 		justify-content: center;
 		padding: var(--dialog-padding, var(--space-normal));
+		border: none;
 
 		/* Style */
-		background: var(--dialog-color-overlay, var(--shadow-color));
+		color: var(--dialog-color, var(--tint-100));
+		background: var(--dialog-background, var(--shadow-color));
 		opacity: 0;
 		transition:
 			var(--dialog-transition, all var(--duration-fast)),
@@ -32,6 +37,11 @@
 
 		@starting-style {
 			opacity: 0;
+		}
+
+		/* The overlay is painted by `.dialog` itself, so the browser's own backdrop must not add a second shade. */
+		&::backdrop {
+			background: transparent;
 		}
 	}
 

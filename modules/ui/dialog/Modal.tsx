@@ -11,7 +11,7 @@ import styles from "./Modal.module.css";
 export interface ModalProps extends OptionalChildProps, ClassProps {}
 
 /**
- * Styled `<aside>` overlay container for modal content.
+ * Styled `<aside>` panel for content inside a `<Dialog>`, with dark text on a light surface.
  *
  * @kind component
  * @see https://shelving.cc/ui/Modal
