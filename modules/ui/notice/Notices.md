@@ -63,6 +63,6 @@ notice.close(); // Or close it immediately.
 | `--notices-offset` | Distance of the list from the bottom and right edges | `var(--space-normal)` (16px) |
 | `--notices-width` | Maximum width of the list | `var(--width-narrow)` |
 | `--notices-gap` | Gap between notices | `var(--space-small)` (12px) |
-| `--notices-transition-duration` | Length of the slide in, slide out, and move | `var(--duration-normal)` (300ms) |
+| `--notices-transition-duration` | Length of the slide in, slide out, and move | `var(--duration-fast)` (150ms) |
 
-**Global tokens it reads** — move these to retheme broadly: `--space-normal`, `--space-small`, `--width-narrow`, and `--duration-normal`.
+**Global tokens it reads** — move these to retheme broadly: `--space-normal`, `--space-small`, `--width-narrow`, and `--duration-fast`.
