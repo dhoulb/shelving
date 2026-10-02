@@ -6,18 +6,48 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 
 - A native `<dialog>` does both jobs. Shelving splits them: `<Dialog>` is the overlay and `Modal` is the panel. Content placed directly in a `<Dialog>` shows as white text on the dark overlay.
 - `Modal` sets its text back to `--tint-00`, so it reads on its own `--tint-100` surface.
-- It only styles the box — lay out its contents with the usual block components.
+- `DialogsStore.show()` wraps its content in a `<Dialog>` only. It does not add a `Modal`, so put the `Modal` in the content yourself.
+- `Modal` only styles the box. Lay out its contents with the usual block components.
 
 ## Usage
+
+### Declarative
+
+Put the `Modal` inside a `<Dialog>` that you mount from React state.
 
 ```tsx
 import { Dialog, Modal } from "shelving/ui";
 
-<Dialog onClose={onClose}>
-  <Modal>
-    <p>Delete this item?</p>
-  </Modal>
-</Dialog>
+function ConfirmDelete({ onConfirm, onClose }: { onConfirm: () => void; onClose: () => void }) {
+  return (
+    <Dialog onClose={onClose}>
+      <Modal>
+        <p>Delete this item?</p>
+        <button type="button" onClick={onConfirm}>Delete</button>
+      </Modal>
+    </Dialog>
+  );
+}
+```
+
+### Imperative
+
+Pass the `Modal` to `DialogsStore.show()`. The store adds the `<Dialog>` for you. See `<DialogsContext>` and `<Dialogs>` for the setup.
+
+```tsx
+import { Modal, requireDialogs } from "shelving/ui";
+
+function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
+  const dialogs = requireDialogs();
+  const open = () =>
+    dialogs.show(
+      <Modal>
+        <p>Delete this item?</p>
+        <button type="button" onClick={onConfirm}>Delete</button>
+      </Modal>,
+    );
+  return <button type="button" onClick={open}>Delete</button>;
+}
 ```
 
 ## Styling
@@ -29,9 +59,9 @@ import { Dialog, Modal } from "shelving/ui";
 | `--modal-width` | Box width | `var(--width-narrow)` |
 | `--modal-border` | Border shorthand | `var(--stroke-normal)` solid, 50% of `--tint-50` |
 | `--modal-radius` | Corner radius | `var(--radius-normal)` (16px) |
-| `--modal-color-bg` | Surface fill | `var(--tint-100)` |
+| `--modal-background` | Surface fill | `var(--tint-100)` |
 | `--modal-padding` | Inner padding | `var(--space-normal)` (16px) |
-| `--modal-color-text` | Text colour | `var(--tint-00)` |
+| `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
 

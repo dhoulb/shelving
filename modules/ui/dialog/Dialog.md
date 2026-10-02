@@ -39,18 +39,22 @@ function ConfirmDelete({ onConfirm, onClose }: { onConfirm: () => void; onClose:
 Set up the context once near the app root (see `<DialogsContext>` and `<Dialogs>`), then push a `<Dialog>` from anywhere with `requireDialogs()`.
 
 ```tsx
-import { requireDialogs } from "shelving/ui";
+import { Modal, requireDialogs } from "shelving/ui";
 
-function DeleteButton({ id }: { id: string }) {
+function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
   const dialogs = requireDialogs();
-  const open = () => dialogs.show(
-    <ConfirmDelete id={id} onConfirm={() => handleDelete(id)} />,
-  );
+  const open = () =>
+    dialogs.show(
+      <Modal>
+        <p>Delete this item?</p>
+        <button type="button" onClick={onConfirm}>Delete</button>
+      </Modal>,
+    );
   return <button type="button" onClick={open}>Delete</button>;
 }
 ```
 
-`dialogs.show()` wraps the content in a `<Dialog>` for you, so you pass plain children rather than a `<Dialog>` element.
+`dialogs.show()` wraps the content in a `<Dialog>` for you, so you pass plain children rather than a `<Dialog>` element. It does not add a `<Modal>`; include one in the content if you want a panel.
 
 ## Styling
 
