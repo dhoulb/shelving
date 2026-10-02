@@ -37,14 +37,20 @@
 	}
 
 	.link {
-		/* Box */
+		/* Box — `inline-size` and `border` also reset the `<button>` an `onClick` item renders. */
 		display: block;
+		inline-size: 100%;
 		padding: var(--menu-padding, var(--space-xxsmall));
+		border: none;
 		border-radius: var(--menu-radius, var(--radius-xxsmall));
 
-		/* Style */
+		/* Style — `background`, `font`, `text-align` and `cursor` reset the native button look. */
+		background: none;
 		color: inherit;
+		font: inherit;
+		text-align: start;
 		text-decoration: none;
+		cursor: pointer;
 		transition: all 120ms ease-in-out;
 		outline: var(--menu-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-normal));
