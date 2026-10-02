@@ -20,7 +20,150 @@
 
 		/* Style */
 		color: var(--modal-color, var(--tint-00));
-		transition: var(--modal-transition, all var(--duration-fast));
 		box-shadow: var(--modal-shadow, var(--shadow-normal));
+
+		/* Pinned to an edge: fixed to the viewport, flush with the edge, and scrolls when its content is too tall. */
+		&.top,
+		&.right,
+		&.bottom,
+		&.left {
+			position: fixed;
+			margin: 0;
+			overflow: auto;
+
+			/* Take a separate layer in any view transition, so the panel can slide while the `<Dialog>` around it fades. `match-element` gives each panel a unique name. */
+			view-transition-name: match-element;
+		}
+
+		&.top,
+		&.bottom {
+			inset-inline: 0;
+			width: auto;
+			max-height: var(--modal-max-height, 100%);
+		}
+
+		&.left,
+		&.right {
+			inset-block: 0;
+		}
+
+		/* Keep only the border on the inner side, because the other sides touch the edges of the screen. */
+		&.top {
+			top: 0;
+			border-top: none;
+			border-inline: none;
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+			view-transition-class: modal-top;
+		}
+
+		&.bottom {
+			bottom: 0;
+			border-bottom: none;
+			border-inline: none;
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+			view-transition-class: modal-bottom;
+		}
+
+		/* Side panels are full height, so all their corners touch an edge and are square. */
+		&.left {
+			left: 0;
+			border-left: none;
+			border-block: none;
+			border-radius: 0;
+			view-transition-class: modal-left;
+		}
+
+		&.right {
+			right: 0;
+			border-right: none;
+			border-block: none;
+			border-radius: 0;
+			view-transition-class: modal-right;
+		}
+	}
+}
+
+/*
+ * View transitions for panels pinned to an edge.
+ * - These rules must stay in this file. Bun hashes the `view-transition-class` values above and the class names in the selectors below the same way only when both are in the same file.
+ * - Each keyframe only sets `from`, so it ends at the panel's own position. The exit plays the same keyframe in reverse.
+ */
+@keyframes modal-from-top {
+	from {
+		transform: translateY(-100%);
+	}
+}
+
+@keyframes modal-from-right {
+	from {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes modal-from-bottom {
+	from {
+		transform: translateY(100%);
+	}
+}
+
+@keyframes modal-from-left {
+	from {
+		transform: translateX(-100%);
+	}
+}
+
+@keyframes modal-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+::view-transition-new(.modal-top),
+::view-transition-new(.modal-right),
+::view-transition-new(.modal-bottom),
+::view-transition-new(.modal-left) {
+	animation: var(--modal-transition-duration, var(--duration-normal)) ease-out both;
+}
+
+::view-transition-old(.modal-top),
+::view-transition-old(.modal-right),
+::view-transition-old(.modal-bottom),
+::view-transition-old(.modal-left) {
+	animation: var(--modal-transition-duration, var(--duration-normal)) ease-in reverse both;
+}
+
+::view-transition-new(.modal-top),
+::view-transition-old(.modal-top) {
+	animation-name: modal-from-top;
+}
+
+::view-transition-new(.modal-right),
+::view-transition-old(.modal-right) {
+	animation-name: modal-from-right;
+}
+
+::view-transition-new(.modal-bottom),
+::view-transition-old(.modal-bottom) {
+	animation-name: modal-from-bottom;
+}
+
+::view-transition-new(.modal-left),
+::view-transition-old(.modal-left) {
+	animation-name: modal-from-left;
+}
+
+/* Reduced motion: fade the panel in and out in place of the slide. */
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-new(.modal-top),
+	::view-transition-old(.modal-top),
+	::view-transition-new(.modal-right),
+	::view-transition-old(.modal-right),
+	::view-transition-new(.modal-bottom),
+	::view-transition-old(.modal-bottom),
+	::view-transition-new(.modal-left),
+	::view-transition-old(.modal-left) {
+		animation-name: modal-fade;
 	}
 }

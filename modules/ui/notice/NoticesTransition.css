@@ -1,0 +1,50 @@
+/* Global CSS, not a CSS module. Bun hashes a class inside `::view-transition-*()` from the file basename, but hashes the exported names from the file path, so a module-scoped view-transition class can never match the name that JS passes to `view-transition-class`. Keep these names global until Bun fixes this — see dhoulb/shelving#325. */
+@import url("../style/layers.css");
+@import url("../style/Duration.module.css");
+
+@layer defaults {
+	:root {
+		--notices-transition-duration: var(--duration-normal);
+	}
+}
+
+/* Only `from` is set, so the keyframe ends at the snapshot's own position. The exit plays it in reverse. */
+@keyframes notice-from-right {
+	from {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+}
+
+@keyframes notice-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+/* A new notice slides in from the right. */
+::view-transition-new(.notice) {
+	animation: notice-from-right var(--notices-transition-duration) ease-out both;
+}
+
+/* A closed notice slides out to the right. */
+::view-transition-old(.notice) {
+	animation: notice-from-right var(--notices-transition-duration) ease-in reverse both;
+}
+
+/* The other notices move to their new places (the default group morph), and a notice that changes in place cross-fades. */
+::view-transition-group(.notice-update) {
+	animation-duration: var(--notices-transition-duration);
+}
+
+/* Reduced motion: fade new and closed notices in place, and move the others at once. */
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-new(.notice),
+	::view-transition-old(.notice) {
+		animation-name: notice-fade;
+	}
+
+	::view-transition-group(.notice-update) {
+		animation: none;
+	}
+}

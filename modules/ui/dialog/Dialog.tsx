@@ -1,7 +1,8 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { type MouseEvent, memo, type ReactElement, Suspense, useEffect, useRef } from "react";
+import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, useLayoutEffect, useRef } from "react";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
+import { FadeTransition } from "../transition/FadeTransition.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
@@ -12,13 +13,16 @@ import styles from "./Dialog.module.css";
  * @see https://shelving.cc/ui/DialogProps
  */
 export interface DialogProps extends OptionalChildProps {
+	/** Called when the user closes the dialog. It must unmount the `<Dialog>`, and it runs inside `startTransition()` so the dialog animates out. */
 	onClose?: Callback;
 }
 
 /**
  * Modal `<dialog>` element that opens on mount and includes a close button.
  *
- * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, or the close button.
+ * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, the close button, or the Escape key.
+ * - The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
+ * - With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
  *
  * @kind component
@@ -27,19 +31,35 @@ export interface DialogProps extends OptionalChildProps {
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	const ref = useRef<HTMLDialogElement>(null);
 
-	useEffect(() => {
+	// Open in a layout effect, not a passive effect. React runs layout effects inside the view transition's update, so the new snapshot shows the open dialog.
+	useLayoutEffect(() => {
 		ref.current?.showModal();
 	}, []);
 
 	return (
 		<Suspense fallback={null}>
-			{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
-			<dialog ref={ref} className={getModuleClass(styles, "dialog")} onClick={_closeOnBackdropClick} onClose={onClose} {...props}>
-				{children}
-				<div className={getModuleClass(styles, "close")}>
-					<DialogCloseButton />
-				</div>
-			</dialog>
+			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. */}
+			<FadeTransition>
+				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
+				<dialog
+					ref={ref}
+					className={getModuleClass(styles, "dialog")}
+					onClick={_closeOnBackdropClick}
+					onCancel={e => {
+						// Keep the dialog open and let the parent unmount it in a transition. An uncancelable request closes natively and fires `onClose` from the `close` event.
+						if (!onClose || !e.cancelable) return;
+						e.preventDefault();
+						startTransition(() => onClose());
+					}}
+					onClose={onClose}
+					{...props}
+				>
+					{children}
+					<div className={getModuleClass(styles, "close")}>
+						<DialogCloseButton />
+					</div>
+				</dialog>
+			</FadeTransition>
 		</Suspense>
 	);
 });
@@ -47,10 +67,16 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 /** When the user clicks anywhere on a `<dialog>` element (and the click isn't on a link etc), then close the dialog. */
 function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>): void {
 	// Close the dialog when clicking on the dialog itself (but not its children).
-	if (currentTarget === target) currentTarget.close();
+	if (currentTarget === target) _requestClose(currentTarget);
 
 	// Close the dialog when clicking on links or buttons in a `<nav>` element.
-	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) currentTarget.close();
+	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) _requestClose(currentTarget);
+}
+
+/** Ask a `<dialog>` to close. `requestClose()` fires a cancelable `cancel` event, so `<Dialog>` can run `onClose` in a transition. Older browsers close at once. */
+function _requestClose(dialog: HTMLDialogElement): void {
+	if (typeof dialog.requestClose === "function") dialog.requestClose();
+	else dialog.close();
 }
 
 /**
@@ -87,5 +113,6 @@ export function DialogCloseButton({
 }
 
 function _closeOnButtonClick({ currentTarget }: MouseEvent<HTMLButtonElement>): void {
-	currentTarget.closest("dialog")?.close();
+	const dialog = currentTarget.closest("dialog");
+	if (dialog) _requestClose(dialog);
 }

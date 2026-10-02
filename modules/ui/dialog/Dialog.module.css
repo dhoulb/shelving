@@ -1,6 +1,5 @@
 @import url("../style/layers.css");
 @import url("../style/Color.module.css");
-@import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Shadow.module.css");
 @import url("../style/Tint.module.css");
@@ -25,21 +24,12 @@
 		/* Style */
 		color: var(--dialog-color, var(--tint-100));
 		background: var(--dialog-background, var(--shadow-color));
-		opacity: 0;
-		transition:
-			var(--dialog-transition, all var(--duration-fast)),
-			display var(--duration-fast) allow-discrete;
 
 		&[open] {
 			display: flex;
-			opacity: 1;
 		}
 
-		@starting-style {
-			opacity: 0;
-		}
-
-		/* The overlay is painted by `.dialog` itself, so the browser's own backdrop must not add a second shade. */
+		/* `.dialog` paints the overlay itself, so the browser's own backdrop must not add a second shade. */
 		&::backdrop {
 			background: transparent;
 		}
