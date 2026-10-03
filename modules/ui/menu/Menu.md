@@ -29,13 +29,13 @@ import { Menu, MenuItem } from "shelving/ui";
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--menu-gap` | Vertical gap between items | `var(--space-xxsmall)` |
+| `--menu-gap` | Vertical gap between items | `0` |
 | `--menu-font` | Font family | `var(--font-body)` |
 | `--menu-size` | Font size | `var(--size-normal)` |
 | `--menu-leading` | Line height | `var(--leading)` |
 | `--menu-color` | Text colour | `var(--tint-00)` |
 | `--menu-nested-space` | Block margin around a nested submenu | `var(--space-xxsmall)` |
-| `--menu-padding` | Item link padding (also insets the nested border) | `var(--space-xxsmall)` |
+| `--menu-padding` | Item link padding (also insets the nested border) | `var(--space-xsmall)` |
 | `--menu-nested-border` | Nested submenu left-border width | `var(--stroke-focus)` |
 | `--menu-nested-color-border` | Nested submenu left-border colour | `var(--tint-50)` |
 | `--menu-nested-indent` | Nested submenu left padding | `var(--space-xsmall)` |

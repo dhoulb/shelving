@@ -7,8 +7,8 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - A panel always spans the full width of its container. To constrain the content inside, compose a `<Block>` `width="narrow"` (or `width="wide"`) within it.
 - Block margin is always zero so panels stack flush; control the vertical breathing room with the `padding` variant (`<Panel padding="large">`, `<Panel padding="none">`).
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
-- `color=` / `status=` move the tint anchor for the whole panel scope, so the surface, border, and text re-derive together and cascade into nested content.
-- The top and bottom borders are dropped on the first and last panel so the page doesn't gain stray edge lines.
+- `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
+- Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
 
 ## Usage
 
@@ -31,15 +31,15 @@ import { Panel, Block, Title, Paragraph } from "shelving/ui";
 
 ## Styling
 
-`Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface, border, and text re-derive together — or reach for a per-property hook for a single change.
+`Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
 | Variable | Styles | Default |
 |---|---|---|
 | `--panel-background` | Surface fill | `var(--tint-90)` |
 | `--panel-color` | Text colour | `var(--tint-00)` |
 | `--panel-border` | Top/bottom border shorthand | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
+| `--panel-stroke` | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0` |
 | `--panel-padding` | Block padding (top + bottom) | `var(--space-section)` (2rem) |
 | `--panel-indent` | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px) |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal`, `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-80` / `--tint-90`, plus `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
