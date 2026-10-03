@@ -17,6 +17,9 @@
 		max-width: none;
 		max-height: none;
 		overflow: auto;
+
+		/* A scroll that reaches the top or bottom of the dialog stops there, and does not pass on to the page. */
+		overscroll-behavior: contain;
 		padding: var(--dialog-padding, var(--space-normal));
 		border: none;
 
@@ -33,6 +36,15 @@
 		&::backdrop {
 			background: transparent;
 		}
+	}
+
+	/*
+	 * Lock the page while a dialog is open, so the page behind never scrolls, even when the dialog itself has nothing to scroll.
+	 * - `scrollbar-gutter: stable` keeps the space of the page scrollbar, so the page does not move sideways as the scrollbar goes.
+	 */
+	:root:has(.dialog[open]) {
+		overflow: hidden;
+		scrollbar-gutter: stable;
 	}
 
 	/*

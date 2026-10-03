@@ -31,6 +31,7 @@
 			position: fixed;
 			margin: 0;
 			overflow: auto;
+			overscroll-behavior: contain;
 
 			/* Take a separate layer in any view transition, so the panel can slide while the `<Dialog>` around it fades. `match-element` gives each panel a unique name. */
 			view-transition-name: match-element;
