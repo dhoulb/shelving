@@ -16,8 +16,7 @@
 		height: auto;
 		max-width: none;
 		max-height: none;
-		align-items: center;
-		justify-content: center;
+		overflow: auto;
 		padding: var(--dialog-padding, var(--space-normal));
 		border: none;
 
@@ -25,6 +24,7 @@
 		color: var(--dialog-color, var(--tint-100));
 		background: var(--dialog-background, var(--shadow-color));
 
+		/* Flex only to centre `.content`, its one in-flow child. */
 		&[open] {
 			display: flex;
 		}
@@ -33,6 +33,17 @@
 		&::backdrop {
 			background: transparent;
 		}
+	}
+
+	/*
+	 * The children, in normal block layout.
+	 * - `margin: auto` centres it on both axes. When it is taller than the screen, the margins drop to 0, so it starts at the top and the dialog scrolls. (`align-items: center` would push the top out of reach.)
+	 * - A pinned `<Modal>` and the close button are `position: fixed`, so this wrapper does not affect them.
+	 */
+	.content {
+		margin: auto;
+		min-width: 0;
+		max-width: 100%;
 	}
 
 	.close {
