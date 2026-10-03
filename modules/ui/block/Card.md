@@ -63,8 +63,8 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-background` | Surface fill | `var(--tint-90)` |
 | `--card-hover-background` | Surface fill when a navigable card is hovered | `var(--tint-95)` |
 | `--card-color` | Text colour | `var(--tint-00)` |
-| `--card-border` | Border shorthand, e.g. `2px solid var(--tint-80)` | `none` |
-| `--card-hover-border` | Border when a navigable card is hovered | `var(--card-border)` |
+| `--card-border` | Border shorthand | `var(--card-stroke) solid var(--tint-80)` |
+| `--card-stroke` | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0` |
 | `--card-radius` | Corner radius | `var(--radius-normal)` (16px) |
 | `--card-padding` | Inner padding | `var(--space-normal)` (16px) |
 | `--card-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
@@ -72,7 +72,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--card-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--shadow-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--shadow-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 
 ```css
 /* Theme: flat cards with tighter corners. */
