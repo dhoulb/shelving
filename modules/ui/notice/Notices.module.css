@@ -5,12 +5,25 @@
 @layer components {
 	.notices {
 		position: fixed;
-		bottom: var(--notices-offset, var(--space-normal));
 		right: var(--notices-offset, var(--space-normal));
+		bottom: var(--notices-offset, var(--space-normal));
+		left: var(--notices-offset, var(--space-normal));
 		z-index: 1000;
 		display: flex;
+		margin-left: auto;
 		max-width: var(--notices-width, var(--width-narrow));
 		flex-direction: column;
+		align-items: flex-end;
 		gap: var(--notices-gap, var(--space-small));
+
+		/* The list is as wide as `--notices-width`, so let clicks pass through the gaps to the page. */
+		pointer-events: none;
+
+		/* Each notice is only as wide as its content, and stays on the right. */
+		& > * {
+			inline-size: auto;
+			max-width: 100%;
+			pointer-events: auto;
+		}
 	}
 }

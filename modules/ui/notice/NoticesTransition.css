@@ -32,9 +32,26 @@
 	animation: notice-from-right var(--notices-transition-duration) ease-in reverse both;
 }
 
-/* The other notices move to their new places (the default group morph), and a notice that changes in place cross-fades. */
+/* The other notices move to their new places (the default group morph). */
 ::view-transition-group(.notice-update) {
 	animation-duration: var(--notices-transition-duration);
+}
+
+/*
+ * A notice that changes in place does not animate: hide the old image, and show the new image at once at its own size.
+ * - The group still morphs between the old and new size, so the new image is drawn unscaled from the bottom-right corner, which does not move.
+ * - For a notice that only moves, the old and new images are the same, so this changes nothing.
+ */
+::view-transition-old(.notice-update) {
+	animation: none;
+	opacity: 0;
+}
+
+::view-transition-new(.notice-update) {
+	animation: none;
+	inset: auto 0 0 auto;
+	width: auto;
+	height: auto;
 }
 
 /* Reduced motion: fade new and closed notices in place, and move the others at once. */

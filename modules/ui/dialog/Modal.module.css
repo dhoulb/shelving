@@ -89,6 +89,7 @@
  * View transitions for panels pinned to an edge.
  * - These rules must stay in this file. Bun hashes the `view-transition-class` values above and the class names in the selectors below the same way only when both are in the same file.
  * - Each keyframe only sets `from`, so it ends at the panel's own position. The exit plays the same keyframe in reverse.
+ * - `:only-child` limits the slide to enter (a new image with no old one) and exit (an old image with no new one). A panel that stays open is in every view transition on the page as an old and a new image, and must not move.
  */
 @keyframes modal-from-top {
 	from {
@@ -120,50 +121,50 @@
 	}
 }
 
-::view-transition-new(.modal-top),
-::view-transition-new(.modal-right),
-::view-transition-new(.modal-bottom),
-::view-transition-new(.modal-left) {
+::view-transition-new(.modal-top):only-child,
+::view-transition-new(.modal-right):only-child,
+::view-transition-new(.modal-bottom):only-child,
+::view-transition-new(.modal-left):only-child {
 	animation: var(--modal-transition-duration, var(--duration-fast)) ease-out both;
 }
 
-::view-transition-old(.modal-top),
-::view-transition-old(.modal-right),
-::view-transition-old(.modal-bottom),
-::view-transition-old(.modal-left) {
+::view-transition-old(.modal-top):only-child,
+::view-transition-old(.modal-right):only-child,
+::view-transition-old(.modal-bottom):only-child,
+::view-transition-old(.modal-left):only-child {
 	animation: var(--modal-transition-duration, var(--duration-fast)) ease-in reverse both;
 }
 
-::view-transition-new(.modal-top),
-::view-transition-old(.modal-top) {
+::view-transition-new(.modal-top):only-child,
+::view-transition-old(.modal-top):only-child {
 	animation-name: modal-from-top;
 }
 
-::view-transition-new(.modal-right),
-::view-transition-old(.modal-right) {
+::view-transition-new(.modal-right):only-child,
+::view-transition-old(.modal-right):only-child {
 	animation-name: modal-from-right;
 }
 
-::view-transition-new(.modal-bottom),
-::view-transition-old(.modal-bottom) {
+::view-transition-new(.modal-bottom):only-child,
+::view-transition-old(.modal-bottom):only-child {
 	animation-name: modal-from-bottom;
 }
 
-::view-transition-new(.modal-left),
-::view-transition-old(.modal-left) {
+::view-transition-new(.modal-left):only-child,
+::view-transition-old(.modal-left):only-child {
 	animation-name: modal-from-left;
 }
 
 /* Reduced motion: fade the panel in and out in place of the slide. */
 @media (prefers-reduced-motion: reduce) {
-	::view-transition-new(.modal-top),
-	::view-transition-old(.modal-top),
-	::view-transition-new(.modal-right),
-	::view-transition-old(.modal-right),
-	::view-transition-new(.modal-bottom),
-	::view-transition-old(.modal-bottom),
-	::view-transition-new(.modal-left),
-	::view-transition-old(.modal-left) {
+	::view-transition-new(.modal-top):only-child,
+	::view-transition-old(.modal-top):only-child,
+	::view-transition-new(.modal-right):only-child,
+	::view-transition-old(.modal-right):only-child,
+	::view-transition-new(.modal-bottom):only-child,
+	::view-transition-old(.modal-bottom):only-child,
+	::view-transition-new(.modal-left):only-child,
+	::view-transition-old(.modal-left):only-child {
 		animation-name: modal-fade;
 	}
 }

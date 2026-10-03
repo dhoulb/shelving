@@ -1,10 +1,10 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, useLayoutEffect, useRef } from "react";
+import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, useLayoutEffect, useRef, ViewTransition } from "react";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
-import { FadeTransition } from "../transition/FadeTransition.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
+import "../transition/FadeTransition.css";
 import styles from "./Dialog.module.css";
 
 /**
@@ -38,8 +38,8 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 
 	return (
 		<Suspense fallback={null}>
-			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. */}
-			<FadeTransition>
+			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. */}
+			<ViewTransition enter="fade" exit="fade">
 				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
 				<dialog
 					ref={ref}
@@ -59,7 +59,7 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 						<DialogCloseButton />
 					</div>
 				</dialog>
-			</FadeTransition>
+			</ViewTransition>
 		</Suspense>
 	);
 });

@@ -71,6 +71,6 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 | `--dialog-color` | Text colour directly on the overlay | `var(--tint-100)` (white) |
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (12px) |
 
-The fade comes from `<FadeTransition>`, so `--fade-transition-duration` sets its length.
+The fade uses the `fade` class from `<FadeTransition>`, so `--fade-transition-duration` sets its length. It runs only as the dialog opens and closes; an open dialog stays still while other dialogs open and close.
 
 **Global tokens it reads** — move these to retheme broadly: `--tint-100`, `--space-normal`, `--space-small`, `--shadow-color`, and `--duration-fast` (through `<FadeTransition>`).
