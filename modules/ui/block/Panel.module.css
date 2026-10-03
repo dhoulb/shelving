@@ -1,5 +1,4 @@
 @import url("../style/layers.css");
-@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Space.module.css");
 
@@ -18,8 +17,8 @@
 		position: relative;
 		padding-block: var(--panel-padding, var(--space-section));
 		padding-inline: var(--panel-indent, var(--space-normal));
-		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
-		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
+		border-top: var(--panel-border, var(--panel-stroke, 0) solid var(--tint-80));
+		border-bottom: var(--panel-border, var(--panel-stroke, 0) solid var(--tint-80));
 
 		/* Style */
 		background: var(--panel-background, var(--tint-90));

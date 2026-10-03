@@ -13,7 +13,7 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--menu-gap, var(--space-xxsmall));
+		gap: var(--menu-gap, 0);
 
 		/* Text */
 		font-family: var(--menu-font, var(--font-body));
@@ -26,7 +26,7 @@
 			margin-block: var(--menu-nested-space, var(--space-xxsmall));
 
 			/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
-			margin-inline-start: var(--menu-padding, var(--space-xxsmall));
+			margin-inline-start: var(--menu-padding, var(--space-xsmall));
 			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
 			padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
 		}
@@ -37,12 +37,13 @@
 	}
 
 	.link {
-		/* Box — `inline-size` and `border` also reset the `<button>` an `onClick` item renders. */
+		/* Box — `inline-size` and `border` also reset the `<button>` an `onClick` item renders. `border-box` keeps the padding inside the full width. */
 		display: block;
+		box-sizing: border-box;
 		inline-size: 100%;
-		padding: var(--menu-padding, var(--space-xxsmall));
+		padding: var(--menu-padding, var(--space-xsmall));
 		border: none;
-		border-radius: var(--menu-radius, var(--radius-xxsmall));
+		border-radius: var(--menu-radius, var(--radius-xsmall));
 
 		/* Style — `background`, `font`, `text-align` and `cursor` reset the native button look. */
 		background: none;
@@ -53,11 +54,11 @@
 		cursor: pointer;
 		transition: all 120ms ease-in-out;
 		outline: var(--menu-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--stroke-normal));
+		outline-offset: calc(0px - var(--stroke-focus)); /* Fully inset, so a neighbouring item's background can't paint over it. */
 
-		/* Pseudo-classes */
-		&:hover,
-		&:focus:not(:focus-visible) {
+		/* Pseudo-classes — skip the active item, so it keeps its own background while hovered or focused. */
+		&:not(.active):hover,
+		&:not(.active):focus:not(:focus-visible) {
 			background: var(--menu-hover-background, var(--tint-90));
 			color: var(--menu-hover-color, var(--tint-00));
 		}

@@ -43,8 +43,8 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 | `--sidebar-layout-color` | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black) |
 | `--sidebar-layout-sidebar-background` | Sidebar column fill | `var(--tint-90)` (one shade darker than the page) |
 | `--sidebar-layout-sidebar-color` | Sidebar column text colour | `var(--tint-00)` (black) |
-| `--sidebar-layout-border` | Divider between sidebar and content | `var(--stroke-normal) solid var(--tint-80)` |
+| `--sidebar-layout-border` | Divider between sidebar and content, e.g. `1px solid var(--tint-80)` | `none` |
 
 The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class).
 
-**Global tokens it reads** — `--tint-00` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--stroke-normal`, `--duration-normal`, and `--color-shadow`.
+**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, and `--color-shadow`.

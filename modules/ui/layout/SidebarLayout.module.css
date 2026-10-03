@@ -2,7 +2,6 @@
 @import url("../style/Color.module.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
-@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Shadow.module.css");
 
@@ -74,7 +73,7 @@
 	.sidebar {
 		/* Box */
 		display: flow-root;
-		border-right: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-80));
+		border-right: var(--sidebar-layout-border, none);
 
 		/* Scrolling */
 		overflow-y: auto;
@@ -118,7 +117,7 @@
 	.main.right .sidebar {
 		grid-column: 2;
 		border-right: none;
-		border-left: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-80));
+		border-left: var(--sidebar-layout-border, none);
 	}
 
 	.main.right .content {

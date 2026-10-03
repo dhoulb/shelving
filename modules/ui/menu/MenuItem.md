@@ -31,18 +31,18 @@ The item link's hooks (defined in `Menu.module.css`):
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--menu-padding` | Link inner padding | `var(--space-xxsmall)` |
-| `--menu-radius` | Link corner radius | `var(--radius-xxsmall)` |
+| `--menu-padding` | Link inner padding | `var(--space-xsmall)` |
+| `--menu-radius` | Link corner radius | `var(--radius-xsmall)` |
 | `--menu-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 | `--menu-hover-background` | Link fill on hover/focus | `var(--tint-90)` |
 | `--menu-hover-color` | Link text colour on hover/focus | `var(--tint-00)` |
 | `--menu-proud-background` | Fill when proud (ancestor of current page) | `transparent` |
 | `--menu-proud` | Text colour when proud | `var(--tint-00)` |
 | `--menu-proud-weight` | Font weight when proud | `var(--weight-strong)` |
-| `--menu-active-background` | Fill when active (current page) | `var(--tint-100)` |
+| `--menu-active-background` | Fill when active (current page), also while hovered or focused | `var(--tint-100)` |
 | `--menu-active-color` | Text colour when active | `var(--tint-00)` |
 | `--menu-active-weight` | Font weight when active | `var(--weight-strong)` |
 
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on `<Menu>`.
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--stroke-focus`, `--stroke-normal`, `--color-focus`, and `--weight-strong`.
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xsmall`, `--radius-xsmall`, `--stroke-focus`, `--color-focus`, and `--weight-strong`.

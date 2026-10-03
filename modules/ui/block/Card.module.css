@@ -2,7 +2,6 @@
 @import url("../style/Color.module.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Radius.module.css");
-@import url("../style/Shadow.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
@@ -24,22 +23,22 @@
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-space, var(--space-paragraph));
-		border: var(--card-border, var(--card-stroke, var(--stroke-normal) solid var(--tint-80)));
+		border: var(--card-border, var(--card-stroke, 0) solid var(--tint-80));
 		padding: var(--card-padding, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 
 		/* Style */
 		background: var(--card-background, var(--tint-90));
 		color: var(--card-color, var(--tint-00));
-		box-shadow: var(--card-shadow, var(--shadow-normal));
+		box-shadow: var(--card-shadow, none);
 		transition: var(--card-transition, all var(--duration-fast));
 		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--card-stroke, var(--stroke-normal)));
+		outline-offset: calc(0px - var(--stroke-focus)); /* Fully inset, so it sits inside the card edge. */
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
 			background: var(--card-hover-background, var(--tint-95));
-			border: var(--card-hover-border, var(--card-stroke, var(--stroke-normal)) solid var(--tint-90));
+			border: var(--card-hover-border, var(--card-stroke, 0) solid var(--tint-90));
 		}
 	}
 
