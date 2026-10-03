@@ -39,7 +39,7 @@
 
 		/* Text */
 		font-family: var(--button-font, var(--font-body));
-		font-weight: var(--button-weight, var(--weight-strong));
+		font-weight: var(--button-weight, var(--weight-normal));
 		font-size: var(--button-size, var(--size-normal));
 		line-height: var(--button-leading, var(--leading));
 		text-decoration: none;
