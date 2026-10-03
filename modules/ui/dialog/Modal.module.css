@@ -54,8 +54,6 @@
 			top: 0;
 			border-top: none;
 			border-inline: none;
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
 			view-transition-class: modal-top;
 		}
 
@@ -63,17 +61,13 @@
 			bottom: 0;
 			border-bottom: none;
 			border-inline: none;
-			border-bottom-left-radius: 0;
-			border-bottom-right-radius: 0;
 			view-transition-class: modal-bottom;
 		}
 
-		/* Side panels are full height, so all their corners touch an edge and are square. */
 		&.left {
 			left: 0;
 			border-left: none;
 			border-block: none;
-			border-radius: 0;
 			view-transition-class: modal-left;
 		}
 
@@ -81,8 +75,28 @@
 			right: 0;
 			border-right: none;
 			border-block: none;
-			border-radius: 0;
 			view-transition-class: modal-right;
+		}
+	}
+}
+
+/* Corners that touch a screen edge are square. This is in `overrides` so it beats the `radius` variant, which then sets only the inner corners. */
+@layer overrides {
+	.modal {
+		&.top {
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+		}
+
+		&.bottom {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+		}
+
+		/* Side panels are full height, so all their corners touch an edge. */
+		&.left,
+		&.right {
+			border-radius: 0;
 		}
 	}
 }

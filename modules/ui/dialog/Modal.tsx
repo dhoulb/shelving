@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
+import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
+import { getRadiusClass, type RadiusVariants } from "../style/Radius.js";
 import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
@@ -25,11 +27,18 @@ export interface ModalVariants {
 }
 
 /**
- * Props for `<Modal>` — edge, padding, and shadow variants, optional `children` content, and an optional `className`.
+ * Props for `<Modal>` — edge, padding, indent, radius, and shadow variants, optional `children` content, and an optional `className`.
  *
  * @see https://shelving.cc/ui/ModalProps
  */
-export interface ModalProps extends ModalVariants, PaddingVariants, ShadowVariants, OptionalChildProps, ClassProps {}
+export interface ModalProps
+	extends ModalVariants,
+		PaddingVariants,
+		IndentVariants,
+		RadiusVariants,
+		ShadowVariants,
+		OptionalChildProps,
+		ClassProps {}
 
 /**
  * Styled `<aside>` panel for content inside a `<Dialog>`, with dark text on a light surface.
@@ -49,6 +58,8 @@ export function Modal({ children, className, ...props }: ModalProps): ReactEleme
 				getModuleClass(styles, "modal"), //
 				side && getModuleClass(styles, side),
 				getPaddingClass(props),
+				getIndentClass(props),
+				getRadiusClass(props),
 				getShadowClass(props),
 				className,
 			)}

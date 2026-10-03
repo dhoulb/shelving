@@ -9,7 +9,8 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - `DialogsStore.show()` wraps its content in a `<Dialog>` only. It does not add a `Modal`, so put the `Modal` in the content yourself.
 - `Modal` only styles the box. Lay out its contents with the usual block components.
 - A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel.
-- The `padding` variant (for example `padding="large"`) sets the top and bottom padding, the same as on `<Panel>`.
+- The `padding` variant (for example `padding="large"`) sets the top and bottom padding, and the `indent` variant sets the left and right padding, the same as on `<Panel>`.
+- The `radius` variant sets the corner radius. On a pinned panel, corners that touch a screen edge stay square.
 - It has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width; a left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place.
@@ -55,11 +56,11 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 }
 ```
 
-### Padding
+### Padding, indent, and radius
 
 ```tsx
-<Modal padding="large">
-  <p>More space above and below.</p>
+<Modal padding="large" indent="large" radius="large">
+  <p>More space on all sides, and rounder corners.</p>
 </Modal>
 ```
 
@@ -102,9 +103,9 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-width` | Width of a `left` or `right` panel (a centred panel takes `--dialog-width`) | `var(--width-narrow)` |
 | `--modal-stroke` | Border width | `0` (no border) |
 | `--modal-border` | Border shorthand | `var(--modal-stroke)` solid `--tint-80` |
-| `--modal-radius` | Corner radius | `var(--radius-normal)` (16px) |
+| `--modal-radius` | Corner radius (the `radius` variant wins over it) | `var(--radius-normal)` (16px) |
 | `--modal-background` | Surface fill | `var(--tint-100)` |
-| `--modal-padding` | Inner padding (the `padding` variant overrides the top and bottom) | `var(--space-normal)` (16px) |
+| `--modal-padding` | Inner padding (the `padding` variant overrides the top and bottom, and `indent` the left and right) | `var(--space-normal)` (16px) |
 | `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-max-height` | Maximum height of a `top` or `bottom` panel (it scrolls past this) | `100%` |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
