@@ -44,7 +44,7 @@ export interface ModalProps
  * Styled `<aside>` panel for content inside a `<Dialog>`, with dark text on a light surface.
  *
  * - Centred by default. It fades in and out with its `<Dialog>`.
- * - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise it.
+ * - Has a `--shadow-normal` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="large"` to change it.
  * - `top`, `right`, `bottom`, or `left` pins it to that edge. It then takes its own layer in the `<Dialog>` view transition, and slides in from that edge and out to it.
  *
  * @kind component
