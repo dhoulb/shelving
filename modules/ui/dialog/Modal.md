@@ -1,6 +1,6 @@
 # Modal
 
-The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a bordered, shadowed surface with dark text on a light fill.
+The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a shadowed surface with dark text on a light fill.
 
 **Things to know:**
 
@@ -76,12 +76,12 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 
 ## Styling
 
-`Modal` paints a bordered, shadowed surface. A pinned panel keeps only the border on its inner side, and only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Modal` paints a shadowed surface with no border. Set `--modal-border` to add one; a pinned panel then keeps only the border on its inner side. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|
 | `--modal-width` | Box width | `var(--width-narrow)` |
-| `--modal-border` | Border shorthand | `var(--stroke-normal)` solid, 50% of `--tint-50` |
+| `--modal-border` | Border shorthand. Set it to add a border, for example `var(--stroke-normal) solid var(--tint-80)` | `none` |
 | `--modal-radius` | Corner radius | `var(--radius-normal)` (16px) |
 | `--modal-background` | Surface fill | `var(--tint-100)` |
 | `--modal-padding` | Inner padding | `var(--space-normal)` (16px) |
@@ -90,4 +90,4 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
 | `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-50` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--stroke-normal`, `--shadow-normal`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-normal`, and `--duration-fast`.

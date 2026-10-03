@@ -3,7 +3,6 @@
 @import url("../style/Radius.module.css");
 @import url("../style/Shadow.module.css");
 @import url("../style/Space.module.css");
-@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
 
@@ -13,7 +12,7 @@
 		margin: auto;
 		width: var(--modal-width, var(--width-narrow));
 		max-width: 100%;
-		border: var(--modal-border, var(--stroke-normal) solid color-mix(in oklch, var(--tint-50) 50%, transparent));
+		border: var(--modal-border, none);
 		border-radius: var(--modal-radius, var(--radius-normal));
 		background: var(--modal-background, var(--tint-100));
 		padding: var(--modal-padding, var(--space-normal));
@@ -47,7 +46,7 @@
 			inset-block: 0;
 		}
 
-		/* Keep only the border on the inner side, because the other sides touch the edges of the screen. */
+		/* If a theme sets `--modal-border`, keep only the border on the inner side, because the other sides touch the edges of the screen. */
 		&.top {
 			top: 0;
 			border-top: none;
