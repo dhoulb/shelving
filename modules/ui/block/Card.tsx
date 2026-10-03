@@ -27,7 +27,7 @@ export interface CardProps extends ClickableProps, StatusVariants, BlockVariants
  * - When `href` or `onClick` is set the card becomes navigable: a stretched overlay `<a>` / `<button>` covers the entire card while the children render normally inside.
  * - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
  * - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
- * - Carries a `normal` drop shadow by default — set `shadow="none"` to flatten a card, or `shadow="small"` / `shadow="large"` to adjust its elevation.
+ * - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise a card.
  *
  * @kind component
  * @see https://shelving.cc/ui/Card

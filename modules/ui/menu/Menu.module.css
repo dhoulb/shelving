@@ -43,7 +43,7 @@
 		inline-size: 100%;
 		padding: var(--menu-padding, var(--space-xsmall));
 		border: none;
-		border-radius: var(--menu-radius, var(--radius-xxsmall));
+		border-radius: var(--menu-radius, var(--radius-xsmall));
 
 		/* Style — `background`, `font`, `text-align` and `cursor` reset the native button look. */
 		background: none;
