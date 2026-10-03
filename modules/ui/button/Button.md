@@ -83,7 +83,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-small-gap` | Gap between icon and label when `small` | `var(--space-xxsmall)` (4px) |
 | `--button-space` | Outer block margin | `var(--space-small)` (12px) |
 | `--button-font` | Font family | `var(--font-body)` |
-| `--button-weight` | Font weight | `var(--weight-strong)` (700) |
+| `--button-weight` | Font weight | `var(--weight-normal)` (400) |
 | `--button-size` | Font size | `var(--size-normal)` |
 | `--button-leading` | Line height | `var(--leading)` |
 | `--button-shadow` | Box shadow (never on `plain`) | `none` |
@@ -101,7 +101,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-active-background` | Fill while pressed when `plain` | `var(--button-plain-hover-background)` |
 | `--button-plain-active-border` | Border while pressed when `plain` | `var(--button-plain-hover-border)` |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-95` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-strong`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-95` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
