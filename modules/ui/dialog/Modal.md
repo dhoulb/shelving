@@ -1,6 +1,6 @@
 # Modal
 
-The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a shadowed surface with dark text on a light fill.
+The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a surface with dark text on a light fill.
 
 **Things to know:**
 
@@ -8,6 +8,9 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - `Modal` sets its text back to `--tint-00`, so it reads on its own `--tint-100` surface.
 - `DialogsStore.show()` wraps its content in a `<Dialog>` only. It does not add a `Modal`, so put the `Modal` in the content yourself.
 - `Modal` only styles the box. Lay out its contents with the usual block components.
+- A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel.
+- The `padding` variant (for example `padding="large"`) sets the top and bottom padding, the same as on `<Panel>`.
+- It has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width; a left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place.
 
@@ -52,6 +55,22 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 }
 ```
 
+### Padding
+
+```tsx
+<Modal padding="large">
+  <p>More space above and below.</p>
+</Modal>
+```
+
+### Shadow
+
+```tsx
+<Modal shadow="large">
+  <p>Raised above the overlay.</p>
+</Modal>
+```
+
 ### Pinned to an edge
 
 ```tsx
@@ -76,18 +95,19 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 
 ## Styling
 
-`Modal` paints a shadowed surface with no border. Set `--modal-border` to add one; a pinned panel then keeps only the border on its inner side. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Modal` paints a surface with no border and no shadow. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then keeps only the border on its inner side. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--modal-width` | Box width | `var(--width-narrow)` |
-| `--modal-border` | Border shorthand. Set it to add a border, for example `var(--stroke-normal) solid var(--tint-80)` | `none` |
+| `--modal-width` | Width of a `left` or `right` panel (a centred panel takes `--dialog-width`) | `var(--width-narrow)` |
+| `--modal-stroke` | Border width | `0` (no border) |
+| `--modal-border` | Border shorthand | `var(--modal-stroke)` solid `--tint-80` |
 | `--modal-radius` | Corner radius | `var(--radius-normal)` (16px) |
 | `--modal-background` | Surface fill | `var(--tint-100)` |
-| `--modal-padding` | Inner padding | `var(--space-normal)` (16px) |
+| `--modal-padding` | Inner padding (the `padding` variant overrides the top and bottom) | `var(--space-normal)` (16px) |
 | `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-max-height` | Maximum height of a `top` or `bottom` panel (it scrolls past this) | `100%` |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
-| `--modal-shadow` | Drop shadow | `var(--shadow-normal)` |
+| `--modal-shadow` | Drop shadow (the `shadow` variant wins over it) | `none` |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-normal`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, and `--duration-fast`.

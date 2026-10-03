@@ -1,4 +1,6 @@
 import type { ReactElement } from "react";
+import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
+import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Modal.module.css";
@@ -23,28 +25,31 @@ export interface ModalVariants {
 }
 
 /**
- * Props for `<Modal>` — edge variants, optional `children` content, and an optional `className`.
+ * Props for `<Modal>` — edge, padding, and shadow variants, optional `children` content, and an optional `className`.
  *
  * @see https://shelving.cc/ui/ModalProps
  */
-export interface ModalProps extends ModalVariants, OptionalChildProps, ClassProps {}
+export interface ModalProps extends ModalVariants, PaddingVariants, ShadowVariants, OptionalChildProps, ClassProps {}
 
 /**
  * Styled `<aside>` panel for content inside a `<Dialog>`, with dark text on a light surface.
  *
  * - Centred by default. It fades in and out with its `<Dialog>`.
+ * - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise it.
  * - `top`, `right`, `bottom`, or `left` pins it to that edge. It then takes its own layer in the `<Dialog>` view transition, and slides in from that edge and out to it.
  *
  * @kind component
  * @see https://shelving.cc/ui/Modal
  */
-export function Modal({ children, className, ...variants }: ModalProps): ReactElement {
-	const side = _getSide(variants);
+export function Modal({ children, className, ...props }: ModalProps): ReactElement {
+	const side = _getSide(props);
 	return (
 		<aside
 			className={getClass(
 				getModuleClass(styles, "modal"), //
 				side && getModuleClass(styles, side),
+				getPaddingClass(props),
+				getShadowClass(props),
 				className,
 			)}
 		>

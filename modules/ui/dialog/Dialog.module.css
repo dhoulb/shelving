@@ -3,6 +3,7 @@
 @import url("../style/Space.module.css");
 @import url("../style/Shadow.module.css");
 @import url("../style/Tint.module.css");
+@import url("../style/Width.module.css");
 
 @layer components {
 	.dialog {
@@ -40,20 +41,20 @@
 
 	/*
 	 * Lock the page while a dialog is open, so the page behind never scrolls, even when the dialog itself has nothing to scroll.
-	 * - `scrollbar-gutter: stable` keeps the space of the page scrollbar, so the page does not move sideways as the scrollbar goes.
+	 * - No `scrollbar-gutter: stable` here: fixed elements stop at the root gutter, so the overlay would leave a bare strip at the side.
 	 */
 	:root:has(.dialog[open]) {
 		overflow: hidden;
-		scrollbar-gutter: stable;
 	}
 
 	/*
-	 * The children, in normal block layout.
+	 * The children, in normal block layout, `--dialog-width` wide.
 	 * - `margin: auto` centres it on both axes. When it is taller than the screen, the margins drop to 0, so it starts at the top and the dialog scrolls. (`align-items: center` would push the top out of reach.)
 	 * - A pinned `<Modal>` and the close button are `position: fixed`, so this wrapper does not affect them.
 	 */
 	.content {
 		margin: auto;
+		width: var(--dialog-width, var(--width-narrow));
 		min-width: 0;
 		max-width: 100%;
 	}

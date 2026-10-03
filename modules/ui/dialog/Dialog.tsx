@@ -23,7 +23,7 @@ export interface DialogProps extends OptionalChildProps {
  * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, the close button, or the Escape key.
  * - The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
  * - With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
- * - Children sit in one wrapper in normal block layout, centred on the screen. Content taller than the screen scrolls from its top.
+ * - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
  *
  * @kind component

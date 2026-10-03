@@ -6,7 +6,7 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 
 - Closes on a backdrop click, the Escape key, any link or `<nav>` button clicked inside it, or the built-in `<DialogCloseButton>` (an X icon, top-right).
 - Children render inside a `<Suspense>` boundary, so lazy content can stream in.
-- Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is centred on the screen. Content taller than the screen starts at the top, and the dialog scrolls.
+- Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is `--dialog-width` wide (never wider than the screen) and centred on the screen. A centred `<Modal>` fills it. Content taller than the screen starts at the top, and the dialog scrolls.
 - While a dialog is open, the page behind it does not scroll. A scroll inside the dialog never passes on to the page.
 - `Dialog` only dims the page. Its text is white (`--tint-100`) so it reads on the dark overlay. Wrap the content in `<Modal>` to give it a panel with dark text on a light surface.
 - `onClose` fires when the user closes the dialog. It must unmount the `Dialog`: clear the React state that mounts it, or (when pushed via a store) remove it from the list. `Dialog` calls `onClose` inside `startTransition()`, and the dialog stays open until it unmounts.
@@ -69,10 +69,11 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 | Variable | Styles | Default |
 |---|---|---|
 | `--dialog-padding` | Padding around the centred content | `var(--space-normal)` (16px) |
+| `--dialog-width` | Width of the centred content, and so of a centred `<Modal>` | `var(--width-narrow)` (36rem) |
 | `--dialog-background` | Overlay fill behind the content | `var(--shadow-color)` |
 | `--dialog-color` | Text colour directly on the overlay | `var(--tint-100)` (white) |
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (12px) |
 
 The fade uses the `fade` class from `<FadeTransition>`, so `--fade-transition-duration` sets its length. It runs only as the dialog opens and closes; an open dialog stays still while other dialogs open and close.
 
-**Global tokens it reads** — move these to retheme broadly: `--tint-100`, `--space-normal`, `--space-small`, `--shadow-color`, and `--duration-fast` (through `<FadeTransition>`).
+**Global tokens it reads** — move these to retheme broadly: `--tint-100`, `--width-narrow`, `--space-normal`, `--space-small`, `--shadow-color`, and `--duration-fast` (through `<FadeTransition>`).

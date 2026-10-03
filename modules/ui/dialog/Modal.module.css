@@ -1,7 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Radius.module.css");
-@import url("../style/Shadow.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
@@ -11,17 +10,16 @@
 		/* Box: `border-box` keeps the padding inside `max-width`, and `min-width: 0` lets the panel shrink below its content in the flex `<Dialog>`, so it never goes wider than the screen. */
 		box-sizing: border-box;
 		margin: auto;
-		width: var(--modal-width, var(--width-narrow));
 		min-width: 0;
 		max-width: 100%;
-		border: var(--modal-border, none);
+		border: var(--modal-border, var(--modal-stroke, 0) solid var(--tint-80));
 		border-radius: var(--modal-radius, var(--radius-normal));
 		background: var(--modal-background, var(--tint-100));
 		padding: var(--modal-padding, var(--space-normal));
 
 		/* Style */
 		color: var(--modal-color, var(--tint-00));
-		box-shadow: var(--modal-shadow, var(--shadow-normal));
+		box-shadow: var(--modal-shadow, none);
 
 		/* Pinned to an edge: fixed to the viewport, flush with the edge, and scrolls when its content is too tall. */
 		&.top,
@@ -44,12 +42,14 @@
 			max-height: var(--modal-max-height, 100%);
 		}
 
+		/* Side panels are not inside the `<Dialog>` wrapper's width, so they set their own. */
 		&.left,
 		&.right {
 			inset-block: 0;
+			width: var(--modal-width, var(--width-narrow));
 		}
 
-		/* If a theme sets `--modal-border`, keep only the border on the inner side, because the other sides touch the edges of the screen. */
+		/* If a theme sets `--modal-stroke` or `--modal-border`, keep only the border on the inner side, because the other sides touch the edges of the screen. */
 		&.top {
 			top: 0;
 			border-top: none;
