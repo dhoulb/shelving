@@ -31,7 +31,7 @@ The item link's hooks (defined in `Menu.module.css`):
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--menu-padding` | Link inner padding | `var(--space-xxsmall)` |
+| `--menu-padding` | Link inner padding | `var(--space-xsmall)` |
 | `--menu-radius` | Link corner radius | `var(--radius-xxsmall)` |
 | `--menu-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 | `--menu-hover-background` | Link fill on hover/focus | `var(--tint-90)` |
@@ -45,4 +45,4 @@ The item link's hooks (defined in `Menu.module.css`):
 
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on `<Menu>`.
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--stroke-focus`, `--stroke-normal`, `--color-focus`, and `--weight-strong`.
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-xsmall`, `--radius-xxsmall`, `--stroke-focus`, `--color-focus`, and `--weight-strong`.
