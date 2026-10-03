@@ -8,9 +8,11 @@
 
 @layer components {
 	.modal {
-		/* Box */
+		/* Box: `border-box` keeps the padding inside `max-width`, and `min-width: 0` lets the panel shrink below its content in the flex `<Dialog>`, so it never goes wider than the screen. */
+		box-sizing: border-box;
 		margin: auto;
 		width: var(--modal-width, var(--width-narrow));
+		min-width: 0;
 		max-width: 100%;
 		border: var(--modal-border, none);
 		border-radius: var(--modal-radius, var(--radius-normal));
