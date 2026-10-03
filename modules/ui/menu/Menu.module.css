@@ -56,9 +56,9 @@
 		outline: var(--menu-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-focus)); /* Fully inset, so a neighbouring item's background can't paint over it. */
 
-		/* Pseudo-classes */
-		&:hover,
-		&:focus:not(:focus-visible) {
+		/* Pseudo-classes — skip the active item, so it keeps its own background while hovered or focused. */
+		&:not(.active):hover,
+		&:not(.active):focus:not(:focus-visible) {
 			background: var(--menu-hover-background, var(--tint-90));
 			color: var(--menu-hover-color, var(--tint-00));
 		}

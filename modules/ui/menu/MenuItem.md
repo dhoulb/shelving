@@ -39,7 +39,7 @@ The item link's hooks (defined in `Menu.module.css`):
 | `--menu-proud-background` | Fill when proud (ancestor of current page) | `transparent` |
 | `--menu-proud` | Text colour when proud | `var(--tint-00)` |
 | `--menu-proud-weight` | Font weight when proud | `var(--weight-strong)` |
-| `--menu-active-background` | Fill when active (current page) | `var(--tint-100)` |
+| `--menu-active-background` | Fill when active (current page), also while hovered or focused | `var(--tint-100)` |
 | `--menu-active-color` | Text colour when active | `var(--tint-00)` |
 | `--menu-active-weight` | Font weight when active | `var(--weight-strong)` |
 
