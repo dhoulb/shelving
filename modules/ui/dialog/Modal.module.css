@@ -3,24 +3,185 @@
 @import url("../style/Radius.module.css");
 @import url("../style/Shadow.module.css");
 @import url("../style/Space.module.css");
-@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
 
 @layer components {
 	.modal {
-		/* Box */
+		/* Box: `border-box` keeps the padding inside `max-width`, and `min-width: 0` lets the panel shrink below its content in the flex `<Dialog>`, so it never goes wider than the screen. */
+		box-sizing: border-box;
 		margin: auto;
-		width: var(--modal-width, var(--width-narrow));
+		min-width: 0;
 		max-width: 100%;
-		border: var(--modal-border, var(--stroke-normal) solid color-mix(in oklch, var(--tint-50) 50%, transparent));
+		border: var(--modal-border, var(--modal-stroke, 0) solid var(--tint-80));
 		border-radius: var(--modal-radius, var(--radius-normal));
-		background: var(--modal-color-bg, var(--tint-100));
+		background: var(--modal-background, var(--tint-100));
 		padding: var(--modal-padding, var(--space-normal));
 
 		/* Style */
-		color: var(--modal-color-text, var(--tint-00));
-		transition: var(--modal-transition, all var(--duration-fast));
+		color: var(--modal-color, var(--tint-00));
 		box-shadow: var(--modal-shadow, var(--shadow-normal));
+
+		/* Pinned to an edge: fixed to the viewport, flush with the edge, and scrolls when its content is too tall. */
+		&.top,
+		&.right,
+		&.bottom,
+		&.left {
+			position: fixed;
+			margin: 0;
+			overflow: auto;
+			overscroll-behavior: contain;
+
+			/* Take a separate layer in any view transition, so the panel can slide while the `<Dialog>` around it fades. `match-element` gives each panel a unique name. */
+			view-transition-name: match-element;
+		}
+
+		&.top,
+		&.bottom {
+			inset-inline: 0;
+			width: auto;
+			max-height: var(--modal-max-height, 100%);
+		}
+
+		/* Side panels are not inside the `<Dialog>` wrapper's width, so they set their own. */
+		&.left,
+		&.right {
+			inset-block: 0;
+			width: var(--modal-width, var(--width-narrow));
+		}
+
+		/* If a theme sets `--modal-stroke` or `--modal-border`, keep only the border on the inner side, because the other sides touch the edges of the screen. */
+		&.top {
+			top: 0;
+			border-top: none;
+			border-inline: none;
+			view-transition-class: modal-top;
+		}
+
+		&.bottom {
+			bottom: 0;
+			border-bottom: none;
+			border-inline: none;
+			view-transition-class: modal-bottom;
+		}
+
+		&.left {
+			left: 0;
+			border-left: none;
+			border-block: none;
+			view-transition-class: modal-left;
+		}
+
+		&.right {
+			right: 0;
+			border-right: none;
+			border-block: none;
+			view-transition-class: modal-right;
+		}
+	}
+}
+
+/* Corners that touch a screen edge are square. This is in `overrides` so it beats the `radius` variant, which then sets only the inner corners. */
+@layer overrides {
+	.modal {
+		&.top {
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+		}
+
+		&.bottom {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+		}
+
+		/* Side panels are full height, so all their corners touch an edge. */
+		&.left,
+		&.right {
+			border-radius: 0;
+		}
+	}
+}
+
+/*
+ * View transitions for panels pinned to an edge.
+ * - These rules must stay in this file. Bun hashes the `view-transition-class` values above and the class names in the selectors below the same way only when both are in the same file.
+ * - Each keyframe only sets `from`, so it ends at the panel's own position. The exit plays the same keyframe in reverse.
+ * - `:only-child` limits the slide to enter (a new image with no old one) and exit (an old image with no new one). A panel that stays open is in every view transition on the page as an old and a new image, and must not move.
+ */
+@keyframes modal-from-top {
+	from {
+		transform: translateY(-100%);
+	}
+}
+
+@keyframes modal-from-right {
+	from {
+		transform: translateX(100%);
+	}
+}
+
+@keyframes modal-from-bottom {
+	from {
+		transform: translateY(100%);
+	}
+}
+
+@keyframes modal-from-left {
+	from {
+		transform: translateX(-100%);
+	}
+}
+
+@keyframes modal-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+::view-transition-new(.modal-top):only-child,
+::view-transition-new(.modal-right):only-child,
+::view-transition-new(.modal-bottom):only-child,
+::view-transition-new(.modal-left):only-child {
+	animation: var(--modal-transition-duration, var(--duration-fast)) ease-out both;
+}
+
+::view-transition-old(.modal-top):only-child,
+::view-transition-old(.modal-right):only-child,
+::view-transition-old(.modal-bottom):only-child,
+::view-transition-old(.modal-left):only-child {
+	animation: var(--modal-transition-duration, var(--duration-fast)) ease-in reverse both;
+}
+
+::view-transition-new(.modal-top):only-child,
+::view-transition-old(.modal-top):only-child {
+	animation-name: modal-from-top;
+}
+
+::view-transition-new(.modal-right):only-child,
+::view-transition-old(.modal-right):only-child {
+	animation-name: modal-from-right;
+}
+
+::view-transition-new(.modal-bottom):only-child,
+::view-transition-old(.modal-bottom):only-child {
+	animation-name: modal-from-bottom;
+}
+
+::view-transition-new(.modal-left):only-child,
+::view-transition-old(.modal-left):only-child {
+	animation-name: modal-from-left;
+}
+
+/* Reduced motion: fade the panel in and out in place of the slide. */
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-new(.modal-top):only-child,
+	::view-transition-old(.modal-top):only-child,
+	::view-transition-new(.modal-right):only-child,
+	::view-transition-old(.modal-right):only-child,
+	::view-transition-new(.modal-bottom):only-child,
+	::view-transition-old(.modal-bottom):only-child,
+	::view-transition-new(.modal-left):only-child,
+	::view-transition-old(.modal-left):only-child {
+		animation-name: modal-fade;
 	}
 }

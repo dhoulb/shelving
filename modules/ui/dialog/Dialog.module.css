@@ -1,8 +1,9 @@
 @import url("../style/layers.css");
 @import url("../style/Color.module.css");
-@import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Shadow.module.css");
+@import url("../style/Tint.module.css");
+@import url("../style/Width.module.css");
 
 @layer components {
 	.dialog {
@@ -12,27 +13,50 @@
 		inset: 0;
 		z-index: 1000;
 		margin: 0;
-		width: 100vw;
-		height: 100vh;
-		align-items: center;
-		justify-content: center;
+		width: auto;
+		height: auto;
+		max-width: none;
+		max-height: none;
+		overflow: auto;
+
+		/* A scroll that reaches the top or bottom of the dialog stops there, and does not pass on to the page. */
+		overscroll-behavior: contain;
 		padding: var(--dialog-padding, var(--space-normal));
+		border: none;
 
 		/* Style */
-		background: var(--dialog-color-overlay, var(--shadow-color));
-		opacity: 0;
-		transition:
-			var(--dialog-transition, all var(--duration-fast)),
-			display var(--duration-fast) allow-discrete;
+		color: var(--dialog-color, var(--tint-100));
+		background: var(--dialog-background, var(--shadow-color));
 
+		/* Flex only to centre `.content`, its one in-flow child. */
 		&[open] {
 			display: flex;
-			opacity: 1;
 		}
 
-		@starting-style {
-			opacity: 0;
+		/* `.dialog` paints the overlay itself, so the browser's own backdrop must not add a second shade. */
+		&::backdrop {
+			background: transparent;
 		}
+	}
+
+	/*
+	 * Lock the page while a dialog is open, so the page behind never scrolls, even when the dialog itself has nothing to scroll.
+	 * - No `scrollbar-gutter: stable` here: fixed elements stop at the root gutter, so the overlay would leave a bare strip at the side.
+	 */
+	:root:has(.dialog[open]) {
+		overflow: hidden;
+	}
+
+	/*
+	 * The children, in normal block layout, `--dialog-width` wide.
+	 * - `margin: auto` centres it on both axes. When it is taller than the screen, the margins drop to 0, so it starts at the top and the dialog scrolls. (`align-items: center` would push the top out of reach.)
+	 * - A pinned `<Modal>` and the close button are `position: fixed`, so this wrapper does not affect them.
+	 */
+	.content {
+		margin: auto;
+		width: var(--dialog-width, var(--width-narrow));
+		min-width: 0;
+		max-width: 100%;
 	}
 
 	.close {

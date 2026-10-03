@@ -1,18 +1,16 @@
 import { createContext, type ReactElement, type ReactNode, use } from "react";
 import { useInstance } from "../../react/useInstance.js";
-import { useStore } from "../../react/useStore.js";
 import { ArrayStore } from "../../store/ArrayStore.js";
 import { getRandomKey } from "../../util/random.js";
+import { useTransitionValue } from "../transition/useTransitionValue.js";
 import type { ChildProps } from "../util/props.js";
 import { Dialog } from "./Dialog.js";
-
-/** How long before a hidden dialogs are removed from the DOM (allow time for animates to complete). */
-const REMOVE_DELAY = 500;
 
 /**
  * Store holding the live list of open `<Dialog>` elements.
  *
- * - `show()` opens a new dialog; closed dialogs are removed after an animation delay.
+ * - `show()` opens a new dialog. A dialog is removed from the list as soon as it closes.
+ * - `<Dialogs>` renders the list inside a transition, so dialogs animate in and out with view transitions.
  *
  * @see https://shelving.cc/ui/DialogsStore
  */
@@ -28,10 +26,8 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 			<Dialog
 				// Add a `key=""` so dialogs can be rendered directly and added/removed in any order.
 				key={getRandomKey()}
-				// When the `<dialog>` is closed, wait for the animation to finish then remove the dialog from the list.
-				onClose={() => {
-					setTimeout(() => this.delete(dialog), REMOVE_DELAY);
-				}}
+				// When the `<dialog>` closes, remove it from the list. The view transition animates it out.
+				onClose={() => this.delete(dialog)}
 			>
 				{children}
 			</Dialog>
@@ -97,7 +93,6 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
  * @kind component
  * @see https://shelving.cc/ui/Dialogs
  */
-export function Dialogs(): ReactNode | null {
-	const dialogs = useStore(requireDialogs());
-	return dialogs ? dialogs.value : null;
+export function Dialogs(): ReactNode {
+	return useTransitionValue(requireDialogs());
 }
