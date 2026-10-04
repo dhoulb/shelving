@@ -1,4 +1,4 @@
-import { ArrowPathIcon } from "@heroicons/react/16/solid";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { createContext, type ReactElement, use } from "react";
 import type { Callback } from "../../util/function.js";
 import type { ClassProps, OptionalChildProps } from "../util/index.js";
