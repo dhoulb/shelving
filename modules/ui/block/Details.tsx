@@ -1,4 +1,4 @@
-import { ChevronUpIcon } from "@heroicons/react/24/outline";
+import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import type { ReactElement, ReactNode } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass } from "../util/css.js";

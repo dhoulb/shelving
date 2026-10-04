@@ -62,7 +62,7 @@
 			[data-slot="icon"] {
 				width: var(--size-icon);
 				height: var(--size-icon);
-				color: var(--color-gray);
+				color: var(--tint-50);
 				transform: rotate(180deg);
 				transition: var(--details-transition, all var(--duration-fast));
 				border-radius: var(--radius-xxsmall);
