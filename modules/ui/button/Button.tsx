@@ -13,8 +13,12 @@ import { Clickable, type ClickableProps } from "./Clickable.js";
  * @see https://shelving.cc/ui/ButtonVariants
  */
 export interface ButtonVariants extends FlexVariants, StatusVariants, TypographyVariants {
-	/** Add plain styling (no background or border until hover or focus). */
+	/** Solid styling: a strong fill of the tint colour with white text. Use it for the main action. */
+	solid?: boolean | undefined;
+	/** Plain styling: no fill or border until hover or focus. */
 	plain?: boolean | undefined;
+	/** Outline styling: like `plain`, but with a border until hover or focus. */
+	outline?: boolean | undefined;
 	/** Make the button appear smaller. */
 	small?: boolean | undefined;
 	/** Fill the available width instead of sizing to content (buttons are content-width by default). */
@@ -47,7 +51,8 @@ export interface ButtonProps extends ButtonVariants, ClickableProps, ClassProps 
 /**
  * Render either a `<button>` or an `<a href="">` styled as a button, based on whether an `onClick` or `href` prop is provided.
  * - Content-width by default (never grows); it won't shrink below its label. Pass `full` to fill the available width.
- * - Filled by default — use `color=` / `status=` for emphasis, or `plain` to de-emphasise.
+ * - Light by default (a pale fill with dark text). Use `solid` for the main action, or `plain` / `outline` to de-emphasise.
+ * - `color=` / `status=` set the colour of every look.
  * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
  *
  * @kind component

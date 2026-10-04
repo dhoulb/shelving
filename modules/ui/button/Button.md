@@ -1,12 +1,17 @@
 # Button
 
-A clickable styled as a solid button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared `<Clickable>` primitive picks the element, so a button is always the right semantics for what it does.
+A clickable styled as a button. Renders an `<a href="">` when given `href`, or a `<button>` when given `onClick` — the shared `<Clickable>` primitive picks the element, so a button is always the right semantics for what it does.
 
 **Things to know:**
 
 - Content-width by default: it sizes to its label and never grows. Pass `full` to fill the available width (it then shrinks to share a row, down to the content floor).
-- Every button is filled. Emphasis comes from colour: `color=` / `status=` move the tint anchor, so `color="primary"` marks the main action and a colourless button stays a neutral grey.
-- `plain` de-emphasises — no fill or border until hover/focus, for chrome-level actions like breadcrumbs and a dialog's close button. Set `--button-plain-border` to give plain buttons a resting edge when they need to hold their shape.
+- There are four looks:
+  - **Default** — a pale fill of the tint colour with dark text. Use it for most actions.
+  - **`solid`** — a strong fill of the tint colour with white text. Use it for the main action on a screen, such as a form's submit button.
+  - **`plain`** — no fill or border until hover or focus. Use it for chrome-level actions, such as breadcrumbs and a dialog's close button.
+  - **`outline`** — like `plain`, but with a border until hover or focus.
+- On hover, `plain` and `outline` take the same fill as a hovered default button.
+- `color=` / `status=` move the tint anchor, so they set the colour of every look. A colourless button stays a neutral grey.
 - `small` tightens the padding.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 - `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
@@ -18,9 +23,10 @@ A clickable styled as a solid button. Renders an `<a href="">` when given `href`
 ```tsx
 import { Button } from "shelving/ui";
 
-<Button onClick={save} color="primary">Save</Button>
+<Button onClick={save} solid color="primary">Save</Button>
 <Button href="/about">About</Button>
 <Button onClick={remove} status="error">Delete</Button>
+<Button onClick={share} outline>Share</Button>
 ```
 
 ### A row of buttons
@@ -31,7 +37,7 @@ import { Row } from "shelving/ui";
 
 <Row gap="small" right>
   <Button plain onClick={cancel}>Cancel</Button>
-  <Button color="primary" onClick={submit}>Continue</Button>
+  <Button solid color="primary" onClick={submit}>Continue</Button>
 </Row>
 ```
 
@@ -50,7 +56,7 @@ import { Button } from "shelving/ui";
 import { getButtonClass } from "shelving/ui";
 
 // Style an arbitrary element as a button.
-<label className={getButtonClass({ color: "primary", small: true })}>
+<label className={getButtonClass({ color: "primary", solid: true, small: true })}>
   Upload<input type="file" hidden />
 </label>
 ```
@@ -61,19 +67,21 @@ import { getButtonClass } from "shelving/ui";
 
 `--button-padding` and `--button-small-padding` set the `padding` shorthand, so a single value pads both axes equally and a two-value override pads block and inline separately (e.g. `var(--space-small) var(--space-normal)`).
 
-`--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` never paints a box shadow in any state — it has no fill until hover, so a raised edge under it reads broken. The hover and pressed transforms still apply to it, so all buttons move together. `--button-transition` already covers animating the press and release.
+The `--button-*` colour hooks without a look in their name paint the default look. `solid` has its own `--button-solid-*` colour hooks.
 
-`plain` carries its own hooks for where it differs: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, the `--button-plain-active-*` pair paints the pressed state (falling back to the plain hover hooks), and `--button-plain-border` sets the resting border — transparent by default, so a theme where plain buttons should keep a visible edge (an "outline" button) sets it once. The hover border falls back through `--button-hover-border`, so a theme that borders every hovered button also borders hovered plain ones.
+`--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — it has no fill until hover, so a raised edge under it reads broken. The hover and pressed transforms still apply to it, so all buttons move together. `--button-transition` already covers animating the press and release.
+
+`plain` and `outline` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
 
 Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--button-background` | Surface fill | `var(--tint-50)` |
-| `--button-hover-background` | Surface fill on hover / focus | `var(--tint-55)` |
+| `--button-background` | Surface fill | `var(--tint-80)` |
+| `--button-hover-background` | Surface fill on hover / focus | `var(--tint-75)` |
 | `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid transparent` |
 | `--button-hover-transform` | Transform on hover / focus | `none` |
-| `--button-text` | Label colour | `var(--tint-100)` |
+| `--button-text` | Label colour | `var(--tint-00)` (black) |
 | `--button-border` | Border shorthand | `var(--button-stroke) solid transparent` |
 | `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
 | `--button-radius` | Corner radius | `var(--radius-xsmall)` (8px) |
@@ -94,14 +102,19 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-transition` | Transition | `all var(--duration-fast)` (150ms) |
 | `--button-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 | `--button-disabled-opacity` | Opacity when disabled | `0.5` |
-| `--button-plain-text` | Label colour when `plain` | `var(--tint-50)` |
+| `--button-solid-background` | Surface fill when `solid` | `var(--tint-50)` |
+| `--button-solid-text` | Label colour when `solid` | `var(--tint-100)` (white) |
+| `--button-solid-hover-background` | Surface fill on hover / focus when `solid` | `var(--tint-55)` |
+| `--button-solid-active-background` | Surface fill while pressed when `solid` | `var(--button-solid-hover-background)` |
+| `--button-plain-text` | Label colour when `plain` or `outline` | `var(--tint-50)` |
 | `--button-plain-border` | Resting border when `plain` | `var(--button-stroke) solid transparent` |
-| `--button-plain-hover-background` | Fill on hover / focus when `plain` | `var(--tint-95)` |
-| `--button-plain-hover-border` | Border on hover / focus when `plain` | `var(--button-hover-border)` (transparent) |
-| `--button-plain-active-background` | Fill while pressed when `plain` | `var(--button-plain-hover-background)` |
-| `--button-plain-active-border` | Border while pressed when `plain` | `var(--button-plain-hover-border)` |
+| `--button-outline-border` | Resting border when `outline` | `var(--button-stroke) solid var(--tint-50)` |
+| `--button-plain-hover-background` | Fill on hover / focus when `plain` or `outline` | `var(--button-hover-background)` |
+| `--button-plain-hover-border` | Border on hover / focus when `plain` or `outline` | `var(--button-hover-border)` (transparent) |
+| `--button-plain-active-background` | Fill while pressed when `plain` or `outline` | `var(--button-plain-hover-background)` |
+| `--button-plain-active-border` | Border while pressed when `plain` or `outline` | `var(--button-plain-hover-border)` |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-95` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-00` / `--tint-50` / `--tint-55` / `--tint-75` / `--tint-80` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
@@ -112,15 +125,14 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 ```
 
 ```css
-/* Theme: plain buttons keep an edge, so a quiet button holds its shape next to a filled one. */
+/* Theme: outline buttons use a softer edge than the label colour. */
 :root {
-  --button-plain-border: var(--stroke-normal) solid var(--tint-80);
-  --button-plain-hover-border: var(--stroke-normal) solid var(--tint-80);
+  --button-outline-border: var(--stroke-normal) solid var(--tint-80);
 }
 ```
 
 ```css
-/* Theme: buttons are raised and press down flat — `plain` presses down too but never casts a shadow. */
+/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. */
 :root {
   --button-shadow: 0 0.25rem 0 var(--tint-30);
   --button-active-transform: translateY(0.2rem);
