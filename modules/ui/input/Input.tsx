@@ -1,19 +1,19 @@
 import type { ReactElement } from "react";
 import { LOADING } from "../misc/Loading.js";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getFlexClass } from "../style/Flex.js";
-import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ChildProps, ClassProps } from "../util/props.js";
 import INPUT_CSS from "./Input.module.css";
 
 /**
- * Styling variants shared by every form input — currently the `width` variant (`width="narrow"`, `"normal"`, `"wide"`, `"full"`, `"fit"`).
- * - Extends `WidthVariants` so any input can be sized (e.g. `<CheckboxInput width="fit">` to shrink to its content).
- * - Designed to grow: new cross-cutting input styling props (e.g. spacing) should be added here so every input picks them up consistently.
+ * Styling variants shared by every form input — the block variants: `space`, `padding`, `indent`, `width`, and typography.
+ * - Any input can be spaced and sized like a block (e.g. `<TextInput space="none">`, `<CheckboxInput width="fit">`).
+ * - Designed to grow: new cross-cutting input styling props should be added here so every input picks them up consistently.
  *
  * @see https://shelving.cc/ui/InputVariants
  */
-export interface InputVariants extends WidthVariants {}
+export interface InputVariants extends BlockVariants {}
 
 /**
  * Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
@@ -23,7 +23,7 @@ export interface InputVariants extends WidthVariants {}
  * @see https://shelving.cc/ui/getInputClass
  */
 export function getInputClass(props: InputVariants): string {
-	return getClass(getModuleClass(INPUT_CSS, "input"), getWidthClass(props));
+	return getClass(getBlockClass(props), getModuleClass(INPUT_CSS, "input"));
 }
 
 /**
