@@ -24,7 +24,8 @@
 		margin-inline: 0;
 		margin-block: var(--card-space, var(--space-paragraph));
 		border: var(--card-border, var(--card-stroke, 0) solid var(--tint-80));
-		padding: var(--card-padding, var(--space-normal));
+		padding-block: var(--card-padding, var(--space-normal));
+		padding-inline: var(--card-indent, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
 
 		/* Style */

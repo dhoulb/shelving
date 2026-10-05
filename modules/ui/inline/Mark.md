@@ -27,7 +27,7 @@ import { Mark } from "shelving/ui";
 | `--mark-tint` | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)` |
 | `--mark-background` | Background fill | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
 | `--mark-color` | Text colour | `var(--tint-00)` |
-| `--mark-padding` | Inline padding | `var(--space-xxsmall)` |
+| `--mark-indent` | Left and right padding (one length) | `var(--space-xxsmall)` |
 | `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--mark-weight` | Font weight | `var(--weight-strong)` |
 

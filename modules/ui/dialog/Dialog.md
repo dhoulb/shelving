@@ -68,7 +68,8 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--dialog-padding` | Padding around the centred content | `var(--space-normal)` (16px) |
+| `--dialog-padding` | Top and bottom padding around the centred content (one length) | `var(--space-normal)` (16px) |
+| `--dialog-indent` | Left and right padding around the centred content (one length) | `var(--space-normal)` (16px) |
 | `--dialog-width` | Width of the centred content, and so of a centred `<Modal>` | `var(--width-narrow)` (36rem) |
 | `--dialog-background` | Overlay fill behind the content | `var(--shadow-color)` |
 | `--dialog-color` | Text colour directly on the overlay | `var(--tint-100)` (white) |

@@ -15,7 +15,8 @@
 		margin-inline: 0;
 		margin-block: var(--preformatted-space, var(--space-paragraph));
 		border: var(--preformatted-border, var(--preformatted-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding: var(--preformatted-padding, var(--space-normal));
+		padding-block: var(--preformatted-padding, var(--space-normal));
+		padding-inline: var(--preformatted-indent, var(--space-normal));
 		border-radius: var(--preformatted-radius, var(--radius-normal));
 		width: 100%;
 		box-sizing: border-box;

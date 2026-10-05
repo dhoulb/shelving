@@ -35,7 +35,8 @@ import { Menu, MenuItem } from "shelving/ui";
 | `--menu-leading` | Line height | `var(--leading)` |
 | `--menu-color` | Text colour | `var(--tint-00)` |
 | `--menu-nested-space` | Block margin around a nested submenu | `var(--space-xxsmall)` |
-| `--menu-padding` | Item link padding (also insets the nested border) | `var(--space-xsmall)` |
+| `--menu-padding` | Item link top and bottom padding (one length) | `var(--space-xsmall)` |
+| `--menu-indent` | Item link left and right padding (one length; also insets the nested border) | `var(--space-xsmall)` |
 | `--menu-nested-border` | Nested submenu left-border width | `var(--stroke-focus)` |
 | `--menu-nested-color-border` | Nested submenu left-border colour | `var(--tint-50)` |
 | `--menu-nested-indent` | Nested submenu left padding | `var(--space-xsmall)` |

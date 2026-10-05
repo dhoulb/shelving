@@ -17,7 +17,18 @@
 		max-inline-size: 100%;
 		border-radius: var(--button-radius, var(--radius-xsmall));
 		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
-		padding: var(--button-padding, var(--space-small));
+		padding-block: var(--button-padding, var(--space-small));
+		padding-inline: var(--button-indent, var(--space-small));
+		min-block-size: var(
+			--button-height,
+			calc(
+				var(--button-icon-size, var(--size-icon)) +
+				2 *
+				var(--button-padding, var(--space-small)) +
+				2 *
+				var(--button-stroke, var(--stroke-normal))
+			)
+		);
 		margin-inline: 0;
 		margin-block: var(--button-space, var(--space-small));
 
@@ -70,7 +81,23 @@
 		/* Variants */
 		&.small {
 			gap: var(--button-small-gap, var(--space-xxsmall));
-			padding: var(--button-small-padding, var(--space-xxsmall));
+			padding-block: var(--button-small-padding, var(--space-xxsmall));
+			padding-inline: var(--button-small-indent, var(--space-xxsmall));
+			min-block-size: var(
+				--button-small-height,
+				calc(
+					var(--button-icon-size, var(--size-icon)) +
+					2 *
+					var(--button-small-padding, var(--space-xxsmall)) +
+					2 *
+					var(--button-stroke, var(--stroke-normal))
+				)
+			);
+		}
+
+		/* Icons follow `--button-icon-size`, which also sets the minimum height. */
+		> [data-slot="icon"] {
+			font-size: var(--button-icon-size, var(--size-icon));
 		}
 
 		&.full {

@@ -105,7 +105,8 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-border` | Border shorthand | `var(--modal-stroke)` solid `--tint-80` |
 | `--modal-radius` | Corner radius (the `radius` variant wins over it) | `var(--radius-normal)` (16px) |
 | `--modal-background` | Surface fill | `var(--tint-100)` |
-| `--modal-padding` | Inner padding (the `padding` variant overrides the top and bottom, and `indent` the left and right) | `var(--space-normal)` (16px) |
+| `--modal-padding` | Inner top and bottom padding (one length; the `padding` variant overrides it) | `var(--space-normal)` (16px) |
+| `--modal-indent` | Inner left and right padding (one length; the `indent` variant overrides it) | `var(--space-normal)` (16px) |
 | `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-max-height` | Maximum height of a `top` or `bottom` panel (it scrolls past this) | `100%` |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
