@@ -162,17 +162,17 @@
 		&:is(.plain, .outline, .unselected) {
 			box-shadow: none;
 
-			&:not(:enabled:hover, :any-link:hover, :active, :focus) {
+			&:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
 				border: var(--button-plain-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
 				background: transparent;
 			}
 		}
 
-		&.unselected:not(:enabled:hover, :any-link:hover, :active, :focus) {
+		&.unselected:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
 			background: var(--button-unselected-background, transparent);
 		}
 
-		&.outline:not(:enabled:hover, :any-link:hover, :active, :focus) {
+		&.outline:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
 			border: var(--button-outline-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
 		}
 	}
