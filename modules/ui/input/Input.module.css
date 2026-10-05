@@ -143,45 +143,48 @@
 
 		/* Children */
 		> .input {
-			/* Nested inputs don't double up border or padding. */
+			/* Nested inputs don't double up border, padding, or minimum height. */
 			padding: 0;
 			border: 0;
 			margin: 0;
 			outline: 0;
+			min-block-size: 0;
 		}
 
 		&.wrapper {
 			position: relative;
 
-			/* Absolutely position any slotted element and center it vertically. */
+			/* Absolutely position any slotted element as an icon-sized square, centred vertically. Auto block margins centre it, which also works for a bare `<svg>`. */
 			& > [data-slot] {
 				position: absolute;
 				inset-block: 0;
+				margin-block: auto;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				inline-size: calc(var(--input-indent, var(--space-small)) + var(--input-icon-size, var(--size-icon)));
+				inline-size: var(--input-icon-size, var(--size-icon));
+				block-size: var(--input-icon-size, var(--size-icon));
 				pointer-events: none;
 			}
 
-			/* First [data-slot] child anchors to the left. */
+			/* First [data-slot] child sits one indent from the start, where the text of a plain input starts. */
 			& > [data-slot]:first-child {
-				inset-inline-start: 0;
+				inset-inline-start: var(--input-indent, var(--space-small));
 			}
 
-			/* Last [data-slot] child anchors to the right. */
+			/* Last [data-slot] child sits one indent from the end. */
 			& > [data-slot]:last-child {
-				inset-inline-end: 0;
+				inset-inline-end: var(--input-indent, var(--space-small));
 			}
 
-			/* Push the inner .input left padding to clear the left slot. */
+			/* Push the inner .input text past the start slot, with one indent gap. */
 			&:has(> [data-slot]:first-child) > .input {
-				padding-inline-start: var(--input-icon-size, var(--size-icon));
+				padding-inline-start: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 
-			/* Push the inner .input right padding to clear the right slot. */
+			/* Push the inner .input text clear of the end slot, with one indent gap. */
 			&:has(> [data-slot]:last-child) > .input {
-				padding-inline-end: var(--input-icon-size, var(--size-icon));
+				padding-inline-end: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 		}
 	}
