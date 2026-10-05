@@ -16,7 +16,8 @@
 		border: var(--modal-border, var(--modal-stroke, 0) solid var(--tint-80));
 		border-radius: var(--modal-radius, var(--radius-normal));
 		background: var(--modal-background, var(--tint-100));
-		padding: var(--modal-padding, var(--space-normal));
+		padding-block: var(--modal-padding, var(--space-normal));
+		padding-inline: var(--modal-indent, var(--space-normal));
 
 		/* Style */
 		color: var(--modal-color, var(--tint-00));

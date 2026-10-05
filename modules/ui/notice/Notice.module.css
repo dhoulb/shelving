@@ -10,7 +10,8 @@
 		margin-block: var(--notice-space, var(--space-paragraph));
 		border-radius: var(--notice-radius, var(--radius-xsmall));
 		border: var(--notice-border, var(--notice-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding: var(--notice-padding, var(--space-small));
+		padding-block: var(--notice-padding, var(--space-small));
+		padding-inline: var(--notice-indent, var(--space-small));
 
 		/* Style */
 		background: var(--notice-background, var(--tint-90));

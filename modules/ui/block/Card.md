@@ -66,7 +66,8 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-border` | Border shorthand | `var(--card-stroke) solid var(--tint-80)` |
 | `--card-stroke` | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0` |
 | `--card-radius` | Corner radius | `var(--radius-normal)` (16px) |
-| `--card-padding` | Inner padding | `var(--space-normal)` (16px) |
+| `--card-padding` | Inner top and bottom padding (one length) | `var(--space-normal)` (16px) |
+| `--card-indent` | Inner left and right padding (one length) | `var(--space-normal)` (16px) |
 | `--card-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 | `--card-shadow` | Drop shadow | `none` |
 | `--card-transition` | Transition | `all var(--duration-fast)` (150ms) |

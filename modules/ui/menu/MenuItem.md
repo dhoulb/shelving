@@ -31,7 +31,8 @@ The item link's hooks (defined in `Menu.module.css`):
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--menu-padding` | Link inner padding | `var(--space-xsmall)` |
+| `--menu-padding` | Link top and bottom padding (one length) | `var(--space-xsmall)` |
+| `--menu-indent` | Link left and right padding (one length) | `var(--space-xsmall)` |
 | `--menu-radius` | Link corner radius | `var(--radius-xsmall)` |
 | `--menu-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
 | `--menu-hover-background` | Link fill on hover/focus | `var(--tint-90)` |

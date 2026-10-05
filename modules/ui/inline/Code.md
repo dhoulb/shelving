@@ -45,7 +45,7 @@ import { Code } from "shelving/ui";
 | `--code-weight` | Font weight | `var(--weight-code)` |
 | `--code-size` | Font size | `var(--size-smaller)` |
 | `--code-leading` | Line height | `var(--leading)` |
-| `--code-padding` | Inline padding (non-`plain`) | `var(--space-xxsmall)` |
+| `--code-indent` | Left and right padding (one length; non-`plain`) | `var(--space-xxsmall)` |
 | `--code-radius` | Corner radius (non-`plain`) | `var(--radius-xxsmall)` |
 | `--code-background` | Background fill (non-`plain`) | `var(--tint-90)` |
 | `--code-color` | Text colour (non-`plain`) | `var(--tint-00)` |

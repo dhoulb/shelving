@@ -15,7 +15,8 @@
 		inline-size: fit-content;
 		min-inline-size: fit-content;
 		max-inline-size: 100%;
-		padding: var(--tag-padding, 0 var(--space-xxsmall));
+		padding-block: var(--tag-padding, 0);
+		padding-inline: var(--tag-indent, var(--space-xxsmall));
 		border: var(--tag-border, 0);
 		border-radius: var(--tag-radius, var(--radius-xxsmall));
 

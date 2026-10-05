@@ -9,7 +9,7 @@
 	.prose mark {
 		/* Box */
 		display: inline-block;
-		padding-inline: var(--mark-padding, var(--space-xxsmall));
+		padding-inline: var(--mark-indent, var(--space-xxsmall));
 		border-radius: var(--mark-radius, var(--radius-xxsmall));
 		vertical-align: baseline;
 
