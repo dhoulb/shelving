@@ -14,7 +14,8 @@
 		margin-block: var(--video-space, var(--space-paragraph));
 		border: var(--video-border, none);
 		border-radius: var(--video-radius, var(--radius-normal));
-		padding: var(--video-padding, var(--space-normal));
+		padding-block: var(--video-padding, var(--space-normal));
+		padding-inline: var(--video-indent, var(--space-normal));
 
 		/* Contents */
 		display: flex;

@@ -80,11 +80,13 @@ import { getButtonClass } from "shelving/ui";
 
 `Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
 
-`--button-padding` and `--button-small-padding` set the `padding` shorthand, so a single value pads both axes equally and a two-value override pads block and inline separately (e.g. `var(--space-small) var(--space-normal)`).
+`--button-padding` sets the top and bottom padding, and `--button-indent` the left and right. Each takes one length, not a shorthand.
+
+Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It reads those hooks, so it stays correct when a theme changes them. Set `--button-height` to replace it. The `small` variant has its own minimum, `--button-small-height`. Inputs use the same formula (`--input-height`), so an input and a button sit at the same height by default.
 
 The `--button-*` colour hooks without a look in their name paint the default look. `solid` has its own `--button-solid-*` colour hooks.
 
-`--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — it has no fill until hover, so a raised edge under it reads broken. The hover and pressed transforms still apply to it, so all buttons move together. `--button-transition` already covers animating the press and release.
+`--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — they have no fill until hover, so a raised edge under them reads broken. The hover and pressed transforms still apply to them, so all buttons move together. `--button-transition` already covers animating the press and release.
 
 `plain`, `outline` and `selected={false}` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
 
@@ -100,8 +102,13 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-border` | Border shorthand | `var(--button-stroke) solid transparent` |
 | `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
 | `--button-radius` | Corner radius | `var(--radius-xsmall)` (8px) |
-| `--button-padding` | Inner padding | `var(--space-small)` (12px) |
-| `--button-small-padding` | Inner padding when `small` | `var(--space-xxsmall)` (4px) |
+| `--button-padding` | Top and bottom padding (one length) | `var(--space-small)` (12px) |
+| `--button-indent` | Left and right padding (one length) | `var(--space-small)` (12px) |
+| `--button-small-padding` | Top and bottom padding when `small` (one length) | `var(--space-xxsmall)` (4px) |
+| `--button-small-indent` | Left and right padding when `small` (one length) | `var(--space-xxsmall)` (4px) |
+| `--button-icon-size` | Icon size, and the base of the minimum height | `var(--size-icon)` (24px) |
+| `--button-height` | Minimum height | `--button-icon-size` + 2 × `--button-padding` + 2 × `--button-stroke` (52px) |
+| `--button-small-height` | Minimum height when `small` | `--button-icon-size` + 2 × `--button-small-padding` + 2 × `--button-stroke` (36px) |
 | `--button-gap` | Gap between icon and label | `var(--space-small)` (12px) |
 | `--button-small-gap` | Gap between icon and label when `small` | `var(--space-xxsmall)` (4px) |
 | `--button-space` | Outer block margin | `var(--space-small)` (12px) |
@@ -130,13 +137,13 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline` | `var(--button-plain-hover-background)` |
 | `--button-plain-active-border` | Border while pressed when `plain` or `outline` | `var(--button-plain-hover-border)` |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
 :root {
   --button-radius: 999px;
-  --button-padding: var(--space-small) var(--space-normal);
+  --button-indent: var(--space-normal);
 }
 ```
 

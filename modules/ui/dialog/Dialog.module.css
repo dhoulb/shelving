@@ -21,7 +21,8 @@
 
 		/* A scroll that reaches the top or bottom of the dialog stops there, and does not pass on to the page. */
 		overscroll-behavior: contain;
-		padding: var(--dialog-padding, var(--space-normal));
+		padding-block: var(--dialog-padding, var(--space-normal));
+		padding-inline: var(--dialog-indent, var(--space-normal));
 		border: none;
 
 		/* Style */

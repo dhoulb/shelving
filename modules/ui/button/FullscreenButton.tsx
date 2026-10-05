@@ -1,4 +1,4 @@
-import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/16/solid";
+import { ArrowsPointingInIcon, ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, useEffect, useState } from "react";
 import type { ClassProps } from "../util/props.js";
 import { Button, type ButtonVariants } from "./Button.js";

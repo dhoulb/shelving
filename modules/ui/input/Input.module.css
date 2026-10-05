@@ -16,7 +16,20 @@
 		margin-block: var(--input-space, var(--space-small));
 		border-radius: var(--input-radius, var(--radius-xsmall));
 		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding: var(--input-padding, var(--space-small));
+		padding-block: var(--input-padding, var(--space-small));
+		padding-inline: var(--input-indent, var(--space-small));
+
+		/* Match `--button-height`, so an input and a button with an icon sit at the same height. */
+		min-block-size: var(
+			--input-height,
+			calc(
+				var(--input-icon-size, var(--size-icon)) +
+				2 *
+				var(--input-padding, var(--space-small)) +
+				2 *
+				var(--input-stroke, var(--stroke-normal))
+			)
+		);
 
 		/* Style */
 		background: var(--input-background, var(--tint-100));
@@ -45,7 +58,7 @@
 			background-repeat: no-repeat;
 			background-size: var(--input-icon-size, var(--size-icon));
 			padding-right: 2.5em;
-			background-position: right var(--input-padding, var(--space-small)) center;
+			background-position: right var(--input-indent, var(--space-small)) center;
 			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
 
 			/* Placeholder colour if contains checked empty option. */
@@ -130,45 +143,48 @@
 
 		/* Children */
 		> .input {
-			/* Nested inputs don't double up border or padding. */
+			/* Nested inputs don't double up border, padding, or minimum height. */
 			padding: 0;
 			border: 0;
 			margin: 0;
 			outline: 0;
+			min-block-size: 0;
 		}
 
 		&.wrapper {
 			position: relative;
 
-			/* Absolutely position any slotted element and center it vertically. */
+			/* Absolutely position any slotted element as an icon-sized square, centred vertically. Auto block margins centre it, which also works for a bare `<svg>`. */
 			& > [data-slot] {
 				position: absolute;
 				inset-block: 0;
+				margin-block: auto;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				inline-size: calc(var(--input-padding, var(--space-small)) + var(--input-icon-size, var(--size-icon)));
+				inline-size: var(--input-icon-size, var(--size-icon));
+				block-size: var(--input-icon-size, var(--size-icon));
 				pointer-events: none;
 			}
 
-			/* First [data-slot] child anchors to the left. */
+			/* First [data-slot] child sits one indent from the start, where the text of a plain input starts. */
 			& > [data-slot]:first-child {
-				inset-inline-start: 0;
+				inset-inline-start: var(--input-indent, var(--space-small));
 			}
 
-			/* Last [data-slot] child anchors to the right. */
+			/* Last [data-slot] child sits one indent from the end. */
 			& > [data-slot]:last-child {
-				inset-inline-end: 0;
+				inset-inline-end: var(--input-indent, var(--space-small));
 			}
 
-			/* Push the inner .input left padding to clear the left slot. */
+			/* Push the inner .input text past the start slot, with one indent gap. */
 			&:has(> [data-slot]:first-child) > .input {
-				padding-inline-start: var(--input-icon-size, var(--size-icon));
+				padding-inline-start: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 
-			/* Push the inner .input right padding to clear the right slot. */
+			/* Push the inner .input text clear of the end slot, with one indent gap. */
 			&:has(> [data-slot]:last-child) > .input {
-				padding-inline-end: var(--input-icon-size, var(--size-icon));
+				padding-inline-end: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 		}
 	}

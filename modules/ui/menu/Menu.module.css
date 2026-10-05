@@ -26,7 +26,7 @@
 			margin-block: var(--menu-nested-space, var(--space-xxsmall));
 
 			/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
-			margin-inline-start: var(--menu-padding, var(--space-xsmall));
+			margin-inline-start: var(--menu-indent, var(--space-xsmall));
 			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
 			padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
 		}
@@ -41,7 +41,8 @@
 		display: block;
 		box-sizing: border-box;
 		inline-size: 100%;
-		padding: var(--menu-padding, var(--space-xsmall));
+		padding-block: var(--menu-padding, var(--space-xsmall));
+		padding-inline: var(--menu-indent, var(--space-xsmall));
 		border: none;
 		border-radius: var(--menu-radius, var(--radius-xsmall));
 

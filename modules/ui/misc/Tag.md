@@ -27,7 +27,8 @@ import { Tag } from "shelving/ui";
 | `--tag-background` | Surface fill | `var(--tint-50)` |
 | `--tag-hover-background` | Surface fill when an interactive tag is hovered | `var(--tint-55)` |
 | `--tag-color` | Text colour | `var(--tint-100)` |
-| `--tag-padding` | Inner padding | `0 var(--space-xxsmall)` |
+| `--tag-padding` | Inner top and bottom padding (one length) | `0` |
+| `--tag-indent` | Inner left and right padding (one length) | `var(--space-xxsmall)` (4px) |
 | `--tag-border` | Border shorthand | `0` |
 | `--tag-radius` | Corner radius | `var(--radius-xxsmall)` |
 | `--tag-font` | Font family | `var(--font-body)` |
