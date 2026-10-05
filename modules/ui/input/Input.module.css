@@ -167,24 +167,25 @@
 				pointer-events: none;
 			}
 
-			/* First [data-slot] child sits one indent from the start, where the text of a plain input starts. */
+			/* First [data-slot] child sits one indent from the left, where the text of a plain input starts. Physical, not
+			   logical: `inset-inline-start` makes bundlers emit a `:lang()` selector for every right-to-left language. */
 			& > [data-slot]:first-child {
-				inset-inline-start: var(--input-indent, var(--space-small));
+				left: var(--input-indent, var(--space-small));
 			}
 
-			/* Last [data-slot] child sits one indent from the end. */
+			/* Last [data-slot] child sits one indent from the right. */
 			& > [data-slot]:last-child {
-				inset-inline-end: var(--input-indent, var(--space-small));
+				right: var(--input-indent, var(--space-small));
 			}
 
-			/* Push the inner .input text past the start slot, with one indent gap. */
+			/* Push the inner .input text past the left slot, with one indent gap. */
 			&:has(> [data-slot]:first-child) > .input {
-				padding-inline-start: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
+				padding-left: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 
-			/* Push the inner .input text clear of the end slot, with one indent gap. */
+			/* Push the inner .input text clear of the right slot, with one indent gap. */
 			&:has(> [data-slot]:last-child) > .input {
-				padding-inline-end: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
+				padding-right: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
 			}
 		}
 	}
