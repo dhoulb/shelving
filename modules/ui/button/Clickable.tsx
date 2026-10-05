@@ -41,6 +41,8 @@ export interface ClickableProps extends OptionalChildProps {
 	download?: string | undefined;
 	/** Title shown on hover. */
 	title?: string | undefined;
+	/** Whether this is the selected item in a group. Sets `aria-pressed` on a `<button>`, or `aria-current` on an `<a>`. */
+	selected?: boolean | undefined;
 }
 
 /**
@@ -84,6 +86,7 @@ export function LinkClickable({
 	target,
 	download,
 	title,
+	selected,
 	children = "Go",
 	className,
 }: StylableClickableProps): ReactElement {
@@ -101,7 +104,7 @@ export function LinkClickable({
 			download={download}
 			target={target}
 			className={getClass(className) || undefined}
-			aria-current={active ? "page" : undefined}
+			aria-current={active ? "page" : selected ? "true" : undefined}
 		>
 			{children}
 		</a>
@@ -120,6 +123,7 @@ export function ButtonClickable({
 	onClick,
 	disabled = !onClick,
 	title,
+	selected,
 	children = "Click",
 	className,
 }: StylableClickableProps): ReactElement {
@@ -133,6 +137,7 @@ export function ButtonClickable({
 		<button //
 			type="button"
 			title={title}
+			aria-pressed={selected}
 			disabled={busy || disabled}
 			className={getClass(className) || undefined}
 			onClick={
