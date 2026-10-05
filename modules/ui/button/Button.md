@@ -6,12 +6,13 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 
 - Content-width by default: it sizes to its label and never grows. Pass `full` to fill the available width (it then shrinks to share a row, down to the content floor).
 - There are four looks:
-  - **Default** — a pale fill of the tint colour with dark text. Use it for most actions.
+  - **Default** — a pale fill of the tint colour with the tint colour as text. Use it for most actions.
   - **`solid`** — a strong fill of the tint colour with white text. Use it for the main action on a screen, such as a form's submit button.
   - **`plain`** — no fill or border until hover or focus. Use it for chrome-level actions, such as breadcrumbs and a dialog's close button.
   - **`outline`** — like `plain`, but with a border until hover or focus.
 - On hover, `plain` and `outline` take the same fill as a hovered default button.
 - `color=` / `status=` move the tint anchor, so they set the colour of every look. A colourless button stays a neutral grey.
+- `selected` makes a group of buttons, such as tabs. `selected={true}` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. `selected={false}` also drops the fill until hover or focus, like `plain`, so the selected button stands out. Leave it `undefined` for a button that is not in a group.
 - `small` tightens the padding.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 - `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
@@ -38,6 +39,20 @@ import { Row } from "shelving/ui";
 <Row gap="small" right>
   <Button plain onClick={cancel}>Cancel</Button>
   <Button solid color="primary" onClick={submit}>Continue</Button>
+</Row>
+```
+
+### Tabs
+
+```tsx
+import { Button, Row } from "shelving/ui";
+
+<Row gap="xsmall">
+  {SECTIONS.map(({ key, label }) => (
+    <Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
+      {label}
+    </Button>
+  ))}
 </Row>
 ```
 
@@ -71,7 +86,7 @@ The `--button-*` colour hooks without a look in their name paint the default loo
 
 `--button-shadow`, `--button-hover-transform` and the `--button-active-*` pressed-state hooks are static and apply to every button, with one exception: `plain` and `outline` never paint a box shadow in any state — it has no fill until hover, so a raised edge under it reads broken. The hover and pressed transforms still apply to it, so all buttons move together. `--button-transition` already covers animating the press and release.
 
-`plain` and `outline` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
+`plain`, `outline` and `selected={false}` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
 
 Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
 
@@ -81,7 +96,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-hover-background` | Surface fill on hover / focus | `var(--tint-75)` |
 | `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid transparent` |
 | `--button-hover-transform` | Transform on hover / focus | `none` |
-| `--button-text` | Label colour | `var(--tint-00)` (black) |
+| `--button-text` | Label colour | `var(--tint-50)` |
 | `--button-border` | Border shorthand | `var(--button-stroke) solid transparent` |
 | `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
 | `--button-radius` | Corner radius | `var(--radius-xsmall)` (8px) |
@@ -109,12 +124,13 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-text` | Label colour when `plain` or `outline` | `var(--tint-50)` |
 | `--button-plain-border` | Resting border when `plain` | `var(--button-stroke) solid transparent` |
 | `--button-outline-border` | Resting border when `outline` | `var(--button-stroke) solid var(--tint-50)` |
+| `--button-unselected-background` | Resting fill when `selected={false}` | `transparent` |
 | `--button-plain-hover-background` | Fill on hover / focus when `plain` or `outline` | `var(--button-hover-background)` |
 | `--button-plain-hover-border` | Border on hover / focus when `plain` or `outline` | `var(--button-hover-border)` (transparent) |
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline` | `var(--button-plain-hover-background)` |
 | `--button-plain-active-border` | Border while pressed when `plain` or `outline` | `var(--button-plain-hover-border)` |
 
-**Global tokens it reads:** the tint ladder `--tint-00` / `--tint-50` / `--tint-55` / `--tint-75` / `--tint-80` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-75` / `--tint-80` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */

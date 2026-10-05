@@ -30,7 +30,7 @@
 
 		/* Style. */
 		background: var(--button-background, var(--tint-80));
-		color: var(--button-text, var(--tint-00));
+		color: var(--button-text, var(--tint-50));
 		box-shadow: var(--button-shadow, none);
 		transition: var(--button-transition, all var(--duration-fast));
 		cursor: pointer;
@@ -94,8 +94,8 @@
 			}
 		}
 
-		/* Plain and outline share one look: no fill until hover, then the default button's hover fill. */
-		&:is(.plain, .outline) {
+		/* Plain, outline and unselected share one look: no fill until hover, then the default button's hover fill. */
+		&:is(.plain, .outline, .unselected) {
 			color: var(--button-plain-text, var(--tint-50));
 
 			/* Includes plain `:focus` so a keyboard-focused button paints its fill and stays legible. */
@@ -140,13 +140,17 @@
 		}
 
 		/* Variants */
-		&:is(.plain, .outline) {
+		&:is(.plain, .outline, .unselected) {
 			box-shadow: none;
 
 			&:not(:enabled:hover, :any-link:hover, :active, :focus) {
 				border: var(--button-plain-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
 				background: transparent;
 			}
+		}
+
+		&.unselected:not(:enabled:hover, :any-link:hover, :active, :focus) {
+			background: var(--button-unselected-background, transparent);
 		}
 
 		&.outline:not(:enabled:hover, :any-link:hover, :active, :focus) {
