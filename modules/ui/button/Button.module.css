@@ -153,14 +153,6 @@
 		/* The border is transparent by default, so background images/gradients must size to the border box to reach the button's edge. Lives in the overrides layer because every state's `background` shorthand resets the origin to `padding-box`. */
 		background-origin: border-box;
 
-		&:first-child {
-			margin-block-start: 0;
-		}
-
-		&:last-child {
-			margin-block-end: 0;
-		}
-
 		/* Pseudo-classes */
 		&:not(:focus-visible) {
 			outline-color: transparent;

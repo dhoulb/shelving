@@ -14,6 +14,7 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 - `color=` / `status=` move the tint anchor, so they set the colour of every look. A colourless button stays a neutral grey.
 - `selected` makes a group of buttons, such as tabs. `selected={true}` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. `selected={false}` also drops the fill until hover or focus, like `plain`, so the selected button stands out. Leave it `undefined` for a button that is not in a group.
 - `small` tightens the padding.
+- It takes the block variants, like any block: `space` sets its outer margin (`space="none"` removes it), `padding` and `indent` set its inner padding, and `width` sizes it. A `padding` variant sets the padding but not the minimum height, which `--button-padding` and `--button-height` set.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 - `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
 
@@ -28,6 +29,15 @@ import { Button } from "shelving/ui";
 <Button href="/about">About</Button>
 <Button onClick={remove} status="error">Delete</Button>
 <Button onClick={share} outline>Share</Button>
+```
+
+### Spacing and size
+
+```tsx
+import { Button } from "shelving/ui";
+
+// No outer margin: it sits flush with the content around it.
+<Button full space="none" onClick={start}>Start</Button>
 ```
 
 ### A row of buttons

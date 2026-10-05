@@ -1,18 +1,18 @@
 import type { ReactElement } from "react";
+import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
-import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
 import BUTTON_CSS from "./Button.module.css";
 import { Clickable, type ClickableProps } from "./Clickable.js";
 
 /**
- * Styling variants for a `Button`, combining flex, color, status, and typography options with button-specific toggles.
+ * Styling variants for a `Button`: the block variants (space, padding, indent, width, typography), flex, and status, plus button-specific toggles.
  *
  * @see https://shelving.cc/ui/ButtonVariants
  */
-export interface ButtonVariants extends FlexVariants, StatusVariants, TypographyVariants {
+export interface ButtonVariants extends BlockVariants, FlexVariants, StatusVariants {
 	/** Solid styling: a strong fill of the tint colour with white text. Use it for the main action. */
 	solid?: boolean | undefined;
 	/** Plain styling: no fill or border until hover or focus. */
@@ -35,16 +35,16 @@ export interface ButtonVariants extends FlexVariants, StatusVariants, Typography
 /**
  * Get the full combined `className` string for a button from its styling variants.
  *
- * @param variants The button styling variants (flex, color, status, typography, plus button toggles).
+ * @param variants The button styling variants (block, flex, status, plus button toggles).
  * @returns A space-separated `className` string combining all the resolved variant classes.
  * @see https://shelving.cc/ui/getButtonClass
  */
 export function getButtonClass(variants: ButtonVariants): string {
 	return getClass(
+		getBlockClass(variants),
 		getModuleClass(BUTTON_CSS, "button", variants, variants.selected === false && "unselected"),
 		getFlexClass(variants),
 		getStatusClass(variants),
-		getTypographyClass(variants),
 	);
 }
 
