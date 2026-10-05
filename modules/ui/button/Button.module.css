@@ -29,7 +29,7 @@
 		align-items: center;
 
 		/* Style. */
-		background: var(--button-background, var(--tint-80));
+		background: var(--button-background, var(--tint-90));
 		color: var(--button-text, var(--tint-50));
 		box-shadow: var(--button-shadow, none);
 		transition: var(--button-transition, all var(--duration-fast));
@@ -55,14 +55,14 @@
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
 			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
-			background: var(--button-hover-background, var(--tint-75));
+			background: var(--button-hover-background, var(--tint-85));
 			transform: var(--button-hover-transform, none);
 		}
 
 		&:enabled:active,
 		&:any-link:active {
 			border: var(--button-active-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
-			background: var(--button-active-background, var(--button-hover-background, var(--tint-75)));
+			background: var(--button-active-background, var(--button-hover-background, var(--tint-85)));
 			transform: var(--button-active-transform, var(--button-hover-transform, none));
 			box-shadow: var(--button-active-shadow, var(--button-shadow, none));
 		}
@@ -103,7 +103,7 @@
 			&:any-link:hover,
 			&:focus {
 				border: var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
-				background: var(--button-plain-hover-background, var(--button-hover-background, var(--tint-75)));
+				background: var(--button-plain-hover-background, var(--button-hover-background, var(--tint-85)));
 			}
 
 			&:enabled:active,
@@ -114,7 +114,7 @@
 				);
 				background: var(
 					--button-plain-active-background,
-					var(--button-plain-hover-background, var(--button-active-background, var(--button-hover-background, var(--tint-75))))
+					var(--button-plain-hover-background, var(--button-active-background, var(--button-hover-background, var(--tint-85))))
 				);
 			}
 		}
@@ -154,7 +154,7 @@
 		}
 
 		&.outline:not(:enabled:hover, :any-link:hover, :active, :focus) {
-			border: var(--button-outline-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-50));
+			border: var(--button-outline-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
 		}
 	}
 }

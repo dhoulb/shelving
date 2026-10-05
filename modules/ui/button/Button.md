@@ -92,8 +92,8 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--button-background` | Surface fill | `var(--tint-80)` |
-| `--button-hover-background` | Surface fill on hover / focus | `var(--tint-75)` |
+| `--button-background` | Surface fill | `var(--tint-90)` |
+| `--button-hover-background` | Surface fill on hover / focus | `var(--tint-85)` |
 | `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid transparent` |
 | `--button-hover-transform` | Transform on hover / focus | `none` |
 | `--button-text` | Label colour | `var(--tint-50)` |
@@ -123,14 +123,14 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-solid-active-background` | Surface fill while pressed when `solid` | `var(--button-solid-hover-background)` |
 | `--button-plain-text` | Label colour when `plain` or `outline` | `var(--tint-50)` |
 | `--button-plain-border` | Resting border when `plain` | `var(--button-stroke) solid transparent` |
-| `--button-outline-border` | Resting border when `outline` | `var(--button-stroke) solid var(--tint-50)` |
+| `--button-outline-border` | Resting border when `outline` | `var(--button-stroke) solid var(--tint-80)` |
 | `--button-unselected-background` | Resting fill when `selected={false}` | `transparent` |
 | `--button-plain-hover-background` | Fill on hover / focus when `plain` or `outline` | `var(--button-hover-background)` |
 | `--button-plain-hover-border` | Border on hover / focus when `plain` or `outline` | `var(--button-hover-border)` (transparent) |
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline` | `var(--button-plain-hover-background)` |
 | `--button-plain-active-border` | Border while pressed when `plain` or `outline` | `var(--button-plain-hover-border)` |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-75` / `--tint-80` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
@@ -141,9 +141,9 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 ```
 
 ```css
-/* Theme: outline buttons use a softer edge than the label colour. */
+/* Theme: outline buttons use the label colour for their edge. */
 :root {
-  --button-outline-border: var(--stroke-normal) solid var(--tint-80);
+  --button-outline-border: var(--stroke-normal) solid var(--tint-50);
 }
 ```
 
