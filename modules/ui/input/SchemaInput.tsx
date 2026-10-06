@@ -148,8 +148,10 @@ export function NumberSchemaInput({ schema, value, ...props }: NumberSchemaInput
 export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<string>, unknown> {}
 
 /**
- * Show a choice input for a `ChoiceSchema` — radio inputs for up to 8 options, otherwise a select.
+ * Show a choice input for a `ChoiceSchema` — radio inputs or a select.
  *
+ * - The schema's `input` picks the control: `"radio"` for radio inputs, `"select"` for a select.
+ * - When `input` is not set, it shows radio inputs for up to 8 options, otherwise a select.
  * - The value is normalised through the schema's `get()`, so invalid or sentinel values (e.g. a `CountrySchema`'s `"detect"`) resolve to a real option or fall back to the placeholder rather than mis-selecting the first option.
  *
  * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
@@ -160,7 +162,8 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
 export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInputProps): ReactElement {
 	const choice = requireSource(ChoiceSchema, schema);
 	const string = choice.get(value);
-	if (getKeys(choice.options).length <= 8) return <ChoiceRadioInputs {...schema} value={string} {...props} />;
+	const input = choice.input ?? (getKeys(choice.options).length <= 8 ? "radio" : "select");
+	if (input === "radio") return <ChoiceRadioInputs {...schema} value={string} {...props} />;
 	return <SelectInput {...schema} value={string} {...props} />;
 }
 
