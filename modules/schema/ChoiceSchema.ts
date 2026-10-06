@@ -29,10 +29,18 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
 }
 
 /**
+ * Input control hint for a `ChoiceSchema`: `"radio"` for radio inputs, or `"select"` for a `<select>`.
+ *
+ * @see https://shelving.cc/schema/ChoiceInputType
+ */
+export type ChoiceInputType = "radio" | "select";
+
+/**
  * Options for `ChoiceSchema`.
  *
  * - `options` — the allowed choices, as a `{ key: title }` dictionary or an array of keys.
  * - `value` — default option used when the input is `undefined`.
+ * - `input` — control hint for downstream UIs (radios or a select).
  *
  * @see https://shelving.cc/schema/ChoiceSchemaOptions
  */
@@ -41,6 +49,11 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
 	readonly options: PossibleChoiceOptions<O>;
 	/** Default option for the value. */
 	readonly value?: O | I;
+	/**
+	 * Input control hint for downstream UIs.
+	 * - When not set, a UI picks the control from the number of options.
+	 */
+	readonly input?: ChoiceInputType | undefined;
 }
 
 /**
@@ -54,10 +67,12 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
 export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	declare readonly value: O | I | undefined;
 	readonly options: ChoiceOptions<O>;
+	readonly input: ChoiceInputType | undefined;
 
-	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, ...rest }: ChoiceSchemaOptions<O, I>) {
+	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, input, ...rest }: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = _getChoiceOptions(options);
+		this.input = input;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { renderToStaticMarkup } from "react-dom/server";
-import { PASSWORD, StringSchema, URL_SCHEMA } from "shelving/schema";
-import { StringSchemaInput, TextInput, type TextInputProps } from "shelving/ui";
+import { ChoiceSchema, PASSWORD, StringSchema, URL_SCHEMA } from "shelving/schema";
+import { ChoiceSchemaInput, StringSchemaInput, TextInput, type TextInputProps } from "shelving/ui";
 import { PASSTHROUGH } from "shelving/util/function";
 
 /** A `StringSchema` with a non-identity `format()` (wraps in brackets) so display and published values differ. */
@@ -98,5 +98,33 @@ describe("StringSchemaInput", () => {
 		expect(values).toEqual(["https://example.com/path"]);
 		expect(URL_SCHEMA.validate(values[0])).toBe("https://example.com/path");
 		expect(currentTarget.value).toBe("example.com/path");
+	});
+});
+
+describe("ChoiceSchemaInput", () => {
+	const FEW = ["a", "b", "c"];
+	const MANY = ["a", "b", "c", "d", "e", "f", "g", "h", "i"];
+
+	test("shows radios for 8 or fewer options when input is not set", () => {
+		const html = renderToStaticMarkup(<ChoiceSchemaInput name="x" schema={new ChoiceSchema({ options: FEW })} onValue={PASSTHROUGH} />);
+		expect(html).toContain('type="radio"');
+		expect(html).not.toContain("<select");
+	});
+	test("shows a select for more than 8 options when input is not set", () => {
+		const html = renderToStaticMarkup(<ChoiceSchemaInput name="x" schema={new ChoiceSchema({ options: MANY })} onValue={PASSTHROUGH} />);
+		expect(html).toContain("<select");
+		expect(html).not.toContain('type="radio"');
+	});
+	test("shows a select for few options when input is select", () => {
+		const schema = new ChoiceSchema({ options: FEW, input: "select" });
+		const html = renderToStaticMarkup(<ChoiceSchemaInput name="x" schema={schema} onValue={PASSTHROUGH} />);
+		expect(html).toContain("<select");
+		expect(html).not.toContain('type="radio"');
+	});
+	test("shows radios for many options when input is radio", () => {
+		const schema = new ChoiceSchema({ options: MANY, input: "radio" });
+		const html = renderToStaticMarkup(<ChoiceSchemaInput name="x" schema={schema} onValue={PASSTHROUGH} />);
+		expect(html).toContain('type="radio"');
+		expect(html).not.toContain("<select");
 	});
 });

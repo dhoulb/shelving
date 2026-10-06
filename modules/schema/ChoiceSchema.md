@@ -19,3 +19,14 @@ const Priority = CHOICE({ low: "Low priority", high: "High priority" });
 ```
 
 `ChoiceSchema` is iterable and exposes `.keys()` and `.entries()` for building select menus. It does not implicitly default to the first option; pass `value` if you want a preselected choice.
+
+## Input control
+
+A form UI picks the control from the number of options: radio inputs for 8 or fewer, a `<select>` for more. Set `input` to always use one control:
+
+```ts
+import { ChoiceSchema } from "shelving/schema";
+
+const UNIT = new ChoiceSchema({ options: ["kg", "g", "lb"], input: "select" }); // Always a <select>.
+const SIZE = new ChoiceSchema({ options: ["s", "m", "l", "xl"], input: "radio" }); // Always radios.
+```

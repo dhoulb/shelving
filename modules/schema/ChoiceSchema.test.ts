@@ -67,3 +67,10 @@ test("get() falls back to the default value", () => {
 	const schema = new ChoiceSchema<"a" | "b" | "c">({ options: { a: "A", b: "B", c: "C" }, value: "b" });
 	expect(schema.get(undefined)).toBe("b");
 });
+test("input is undefined when none is provided", () => {
+	expect(new ChoiceSchema({ options: ["a", "b"] }).input).toBeUndefined();
+});
+test("input is preserved", () => {
+	expect(new ChoiceSchema({ options: ["a", "b"], input: "select" }).input).toBe("select");
+	expect(new ChoiceSchema({ options: ["a", "b"], input: "radio" }).input).toBe("radio");
+});
