@@ -116,14 +116,47 @@ export interface UnitFormatOptions
  */
 export function formatUnit(num: number, unit: string, options?: UnitFormatOptions): string {
 	// Check if the unit is supported by the browser.
-	if (Intl.supportedValuesOf("unit").includes(unit))
-		return Intl.NumberFormat(options?.locale, { ...options, style: "unit", unit }).format(num);
+	if (_isIntlUnit(unit)) return Intl.NumberFormat(options?.locale, { ...options, style: "unit", unit }).format(num);
 
 	// Otherwise, use the default number format.
 	const str = Intl.NumberFormat(options?.locale, { ...options, style: "decimal" }).format(num);
 	const { unitDisplay, abbr = unit, one = unit, many = `${one}s` } = options ?? {};
 	if (unitDisplay === "long") return `${str} ${str === "1" ? one : many}`;
 	return `${str}${unitDisplay === "narrow" ? "" : " "}${abbr}`; // "short" is the default.
+}
+
+/**
+ * Format the short name of a unit on its own, e.g. `"km"` or `"min"`, with no number.
+ *
+ * - Uses the `Intl.NumberFormat` short name when the browser supports the unit, so the name is translated (e.g. `"Std."` for `hour` in German).
+ * - Falls back to `options.abbr`, then to the unit reference itself, when the browser does not support the unit.
+ * - Gives the name for an amount of one, so some units in some locales differ from their plural form (e.g. `"day"` not `"days"`).
+ *
+ * @param unit Unit reference, e.g. `"minute"` or `"product"`.
+ * @returns The short name of the unit, e.g. `"min"`.
+ * @example formatUnitAbbr("kilometer") // "km"
+ * @example formatUnitAbbr("dog", { abbr: "🐶" }) // "🐶"
+ * @see https://shelving.cc/util/format/formatUnitAbbr
+ */
+export function formatUnitAbbr(unit: string, options?: UnitFormatOptions): string {
+	if (_isIntlUnit(unit)) {
+		const parts = Intl.NumberFormat(options?.locale, { style: "unit", unit, unitDisplay: "short" }).formatToParts(1);
+		const abbr = parts
+			.filter(p => p.type === "unit")
+			.map(p => p.value)
+			.join("");
+		if (abbr) return abbr;
+	}
+	return options?.abbr ?? unit;
+}
+
+/** Units that `Intl.NumberFormat` supports in this environment (created on first use). */
+let _INTL_UNITS: ReadonlySet<string> | undefined;
+
+/** Is a unit supported by `Intl.NumberFormat` in this environment? Returns `false` where `Intl.supportedValuesOf()` does not exist. */
+function _isIntlUnit(unit: string): boolean {
+	_INTL_UNITS ??= new Set(typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("unit") : []);
+	return _INTL_UNITS.has(unit);
 }
 
 /**

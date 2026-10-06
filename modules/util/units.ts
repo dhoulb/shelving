@@ -1,7 +1,7 @@
 import { RequiredError } from "../error/RequiredError.js";
 import { ValueError } from "../error/ValueError.js";
 import { HOUR, MILLION, NNBSP } from "./constants.js";
-import { formatUnit, type UnitFormatOptions } from "./format.js";
+import { type FormatOptions, formatUnit, formatUnitAbbr, type UnitFormatOptions } from "./format.js";
 import type { AnyFunction } from "./function.js";
 import { ImmutableMap, type MapKey } from "./map.js";
 import type { ImmutableObject } from "./object.js";
@@ -135,6 +135,20 @@ export class Unit<K extends string> {
 	 */
 	format(amount: number, options?: UnitFormatOptions): string {
 		return formatUnit(amount, this.key, { ...this.options, ...options });
+	}
+
+	/**
+	 * Format the short name of this unit on its own, e.g. `km` or `min`, with no number.
+	 * - Uses `Intl.NumberFormat` if this is a supported unit, so the name is translated.
+	 * - Falls back to this unit's `abbr` option, then to its key.
+	 *
+	 * @param options Formatting options, e.g. `locale`.
+	 * @returns The short name of this unit.
+	 * @example LENGTH_UNITS.require("kilometer").formatAbbr() // "km"
+	 * @see https://shelving.cc/util/units/Unit/formatAbbr
+	 */
+	formatAbbr(options?: FormatOptions): string {
+		return formatUnitAbbr(this.key, { ...this.options, ...options });
 	}
 }
 

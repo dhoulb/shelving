@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { DAY, HOUR, YEAR } from "shelving/util/constants";
 import { formatAgo, formatDuration, formatUntil, formatWhen } from "shelving/util/duration";
-import { formatNumber, formatPercent, formatUnit, formatValue } from "shelving/util/format";
+import { formatNumber, formatPercent, formatUnit, formatUnitAbbr, formatValue } from "shelving/util/format";
 
 describe("formatNumber()", () => {
 	test("Works correctly", () => {
@@ -50,6 +50,18 @@ describe("formatUnit()", () => {
 		expect(formatUnit(1000, "dog", { abbr: "🐶", one: "puppy", many: "puppies", unitDisplay: "narrow" })).toBe("1,000🐶");
 		expect(formatUnit(1, "dog", { abbr: "🐶", one: "puppy", many: "puppies", unitDisplay: "long" })).toBe("1 puppy");
 		expect(formatUnit(1000, "dog", { abbr: "🐶", one: "puppy", many: "puppies", unitDisplay: "long" })).toBe("1,000 puppies");
+	});
+});
+describe("formatUnitAbbr()", () => {
+	test("units that work with Intl.NumberFormat", () => {
+		expect(formatUnitAbbr("kilometer")).toBe("km");
+		expect(formatUnitAbbr("minute")).toBe("min");
+		expect(formatUnitAbbr("hour", { locale: new Intl.Locale("de") })).toBe("Std.");
+		expect(formatUnitAbbr("kilometer", { abbr: "KM" })).toBe("km");
+	});
+	test("other units", () => {
+		expect(formatUnitAbbr("dog")).toBe("dog");
+		expect(formatUnitAbbr("dog", { abbr: "🐶" })).toBe("🐶");
 	});
 });
 describe("formatValue()", () => {

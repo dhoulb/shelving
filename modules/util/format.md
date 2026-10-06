@@ -5,7 +5,7 @@ A collection of helpers for converting typed values into user-readable strings. 
 **Things to know:**
 
 - `formatPercent()` takes a 0–100 numerator (not 0–1 like the raw `Intl` API), defaults to zero decimal places, and rounds toward zero so "99.99%" shows as "99%".
-- `formatUnit()` falls back gracefully when the browser does not support a given unit in `Intl.NumberFormat`.
+- `formatUnit()` and `formatUnitAbbr()` fall back gracefully when the browser does not support a given unit in `Intl.NumberFormat`, or does not support `Intl.supportedValuesOf()` at all.
 - `formatValue()` is the catch-all: `null`/`undefined` → `"None"`, booleans → `"Yes"`/`"No"`, arrays → locale list, objects → `name`/`title`/`id` property.
 - `formatURI()` strips the scheme and query string — `mailto:dave@shax.com` → `dave@shax.com`.
 
@@ -26,11 +26,15 @@ formatPercent(33.3, 100, { maximumFractionDigits: 1 }); // "33.3%"
 ### Units
 
 ```ts
-import { formatUnit } from "shelving/util";
+import { formatUnit, formatUnitAbbr } from "shelving/util";
 
 formatUnit(5, "kilometer");                   // "5 km"  (browser-supported unit)
 formatUnit(12, "widget", { unitDisplay: "long", one: "widget", many: "widgets" });
 // "12 widgets"
+
+// Short name on its own, with no number.
+formatUnitAbbr("kilometer");                  // "km"
+formatUnitAbbr("widget", { abbr: "wdg" });    // "wdg"
 ```
 
 ### Dates and times

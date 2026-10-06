@@ -94,6 +94,16 @@ describe("to()", () => {
 		expect(TEMPERATURE_UNITS.require("fahrenheit").to(-40, "celsius")).toBe(-40);
 	});
 });
+describe("formatAbbr()", () => {
+	test("formatAbbr() returns the short name of a unit", () => {
+		expect(LENGTH_UNITS.require("meter").formatAbbr()).toBe("m");
+		expect(LENGTH_UNITS.require("mile").formatAbbr()).toBe("mi");
+		expect(DURATION_UNITS.require("minute").formatAbbr()).toBe("min");
+		expect(DURATION_UNITS.require("hour").formatAbbr({ locale: new Intl.Locale("de") })).toBe("Std.");
+		expect(SPEED_UNITS.require("kilometer-per-hour").formatAbbr()).toBe("kph");
+		expect(ANGLE_UNITS.require("radian").formatAbbr()).toBe("rad");
+	});
+});
 describe("format()", () => {
 	test("format() short units that work with Intl.NumberFormat", () => {
 		expect(LENGTH_UNITS.require("meter").format(123)).toBe("123 m");
