@@ -35,6 +35,9 @@ import { MASS_UNITS, VOLUME_UNITS } from "shelving/util";
 
 MASS_UNITS.require("kilogram").format(2.5);                   // "2.5 kg"
 VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
+
+// Short name on its own, e.g. for a dropdown of units.
+MASS_UNITS.require("kilogram").formatAbbr();                  // "kg"
 ```
 
 ### Available unit lists and key types
