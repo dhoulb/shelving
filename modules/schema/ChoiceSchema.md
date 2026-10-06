@@ -22,7 +22,7 @@ const Priority = CHOICE({ low: "Low priority", high: "High priority" });
 
 ## Input control
 
-A form UI picks the control from the number of options: radio inputs for 8 or fewer, a `<select>` for more. Set `input` to always use one control:
+`input` tells a form UI which control to show. It defaults from the number of options: `"radio"` for 8 or fewer, `"select"` for more. Set it to always use one control:
 
 ```ts
 import { ChoiceSchema } from "shelving/schema";

@@ -1,5 +1,5 @@
 import { type ImmutableArray, isArray } from "../util/array.js";
-import { isProp } from "../util/object.js";
+import { getKeys, isProp } from "../util/object.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 
@@ -28,6 +28,9 @@ function _getChoiceOption<K extends string>(k: K): readonly [title: K, title: st
 	return [k, k];
 }
 
+/** Maximum number of options for which a `ChoiceSchema` defaults to radio inputs. */
+const MAX_RADIO_OPTIONS = 8;
+
 /**
  * Input control hint for a `ChoiceSchema`: `"radio"` for radio inputs, or `"select"` for a `<select>`.
  *
@@ -51,7 +54,7 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
 	readonly value?: O | I;
 	/**
 	 * Input control hint for downstream UIs.
-	 * - When not set, a UI picks the control from the number of options.
+	 * @default "radio" for 8 or fewer options, otherwise "select"
 	 */
 	readonly input?: ChoiceInputType | undefined;
 }
@@ -67,12 +70,12 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
 export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	declare readonly value: O | I | undefined;
 	readonly options: ChoiceOptions<O>;
-	readonly input: ChoiceInputType | undefined;
+	readonly input: ChoiceInputType;
 
 	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, input, ...rest }: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = _getChoiceOptions(options);
-		this.input = input;
+		this.input = input ?? (getKeys(this.options).length <= MAX_RADIO_OPTIONS ? "radio" : "select");
 	}
 
 	/**
