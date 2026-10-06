@@ -216,7 +216,6 @@ const IN_PER_MI = 63360;
 const FT_PER_YD = 3;
 const FT_PER_MI = 5280;
 const YD_PER_MI = 1760;
-const YD_PER_FUR = 220;
 const MM_PER_CM = 10;
 const MM_PER_M = 1000;
 const MM_PER_KM = MILLION;
@@ -306,7 +305,6 @@ export const LENGTH_UNITS = new UnitList({
 	inch: { abbr: "in", many: "inches", to: { millimeter: MM_PER_IN } },
 	foot: { abbr: "ft", many: "feet", to: { millimeter: IN_PER_FT * MM_PER_IN, inch: IN_PER_FT } },
 	yard: { abbr: "yd", to: { millimeter: IN_PER_YD * MM_PER_IN, inch: IN_PER_YD, foot: FT_PER_YD } },
-	furlong: { abbr: "fur", to: { millimeter: IN_PER_YD * MM_PER_IN * YD_PER_FUR, foot: YD_PER_FUR * FT_PER_YD, yard: YD_PER_FUR } },
 	mile: { abbr: "mi", to: { millimeter: MM_PER_MI, yard: YD_PER_MI, foot: FT_PER_MI, inch: IN_PER_MI } },
 });
 export type LengthUnitKey = MapKey<typeof LENGTH_UNITS>;
@@ -316,7 +314,7 @@ export const SPEED_UNITS = new UnitList({
 	// Metric.
 	"meter-per-second": { abbr: "m/s", one: "meter per second", many: "meters per second", to: { "kilometer-per-hour": 3.6 } },
 	"kilometer-per-hour": {
-		abbr: "kph",
+		abbr: "km/h",
 		one: "kilometer per hour",
 		many: "kilometers per hour",
 		to: { "meter-per-second": MM_PER_KM / HOUR },
@@ -361,28 +359,43 @@ export const VOLUME_UNITS = new UnitList({
 	"cubic-meter": { abbr: "m³", to: { milliliter: MILLION } },
 	// US.
 	"us-fluid-ounce": {
-		abbr: `fl${NNBSP}oz`,
+		abbr: `US${NNBSP}fl${NNBSP}oz`,
 		one: "US fluid ounce",
 		many: "US fluid ounces",
 		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 128 },
 	},
-	"us-pint": { abbr: "pt", one: "US pint", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-fluid-ounce": 16 } },
+	"us-cup": { abbr: `US${NNBSP}cup`, one: "US cup", to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 16, "us-fluid-ounce": 8 } },
+	"us-pint": {
+		abbr: `US${NNBSP}pt`,
+		one: "US pint",
+		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 8, "us-cup": 2, "us-fluid-ounce": 16 },
+	},
 	"us-quart": {
-		abbr: "qt",
+		abbr: `US${NNBSP}qt`,
 		one: "US quart",
-		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 4, "us-pint": 2, "us-fluid-ounce": 32 },
+		to: { milliliter: (US_IN3_PER_GAL * ML_PER_IN3) / 4, "us-pint": 2, "us-cup": 4, "us-fluid-ounce": 32 },
 	},
 	"us-gallon": {
-		abbr: "gal",
+		abbr: `US${NNBSP}gal`,
 		one: "US gallon",
-		to: { milliliter: US_IN3_PER_GAL * ML_PER_IN3, "us-quart": 4, "us-pint": 8, "us-fluid-ounce": 128 },
+		to: { milliliter: US_IN3_PER_GAL * ML_PER_IN3, "us-quart": 4, "us-pint": 8, "us-cup": 16, "us-fluid-ounce": 128 },
 	},
 	// Imperial.
-	"imperial-fluid-ounce": { abbr: `fl${NNBSP}oz`, to: { milliliter: IMP_ML_PER_GAL / 160 } },
-	"imperial-pint": { abbr: "pt", to: { milliliter: IMP_ML_PER_GAL / 8, "imperial-fluid-ounce": 20 } },
-	"imperial-quart": { abbr: "qt", to: { milliliter: IMP_ML_PER_GAL / 4, "imperial-pint": 2, "imperial-fluid-ounce": 40 } },
+	"imperial-fluid-ounce": {
+		abbr: `fl${NNBSP}oz${NNBSP}Imp.`,
+		one: "imperial fluid ounce",
+		many: "imperial fluid ounces",
+		to: { milliliter: IMP_ML_PER_GAL / 160 },
+	},
+	"imperial-pint": { abbr: `pt${NNBSP}Imp.`, one: "imperial pint", to: { milliliter: IMP_ML_PER_GAL / 8, "imperial-fluid-ounce": 20 } },
+	"imperial-quart": {
+		abbr: `qt${NNBSP}Imp.`,
+		one: "imperial quart",
+		to: { milliliter: IMP_ML_PER_GAL / 4, "imperial-pint": 2, "imperial-fluid-ounce": 40 },
+	},
 	"imperial-gallon": {
-		abbr: "gal",
+		abbr: `gal${NNBSP}Imp.`,
+		one: "imperial gallon",
 		to: { milliliter: IMP_ML_PER_GAL, "imperial-quart": 4, "imperial-pint": 8, "imperial-fluid-ounce": 160 },
 	},
 	"cubic-inch": { abbr: "in³", many: "cubic inches", to: { milliliter: ML_PER_IN3 } },

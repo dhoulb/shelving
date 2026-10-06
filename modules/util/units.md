@@ -36,6 +36,9 @@ import { MASS_UNITS, VOLUME_UNITS } from "shelving/util";
 MASS_UNITS.require("kilogram").format(2.5);                   // "2.5 kg"
 VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
 
+// US and imperial volume units are marked, e.g. "1 US pt" and "1 pt Imp.".
+VOLUME_UNITS.require("imperial-pint").format(1);              // "1 pt Imp."
+
 // Short name on its own, e.g. for a dropdown of units.
 MASS_UNITS.require("kilogram").formatAbbr();                  // "kg"
 ```

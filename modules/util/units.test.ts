@@ -75,6 +75,9 @@ describe("to()", () => {
 		expect(VOLUME_UNITS.require("us-gallon").to(1, "us-pint")).toBe(8);
 		expect(VOLUME_UNITS.require("us-gallon").to(1, "us-fluid-ounce")).toBe(128);
 		expect(VOLUME_UNITS.require("imperial-fluid-ounce").to(12, "milliliter")).toBeCloseTo(340.957);
+		expect(VOLUME_UNITS.require("us-cup").to(1, "milliliter")).toBeCloseTo(236.588);
+		expect(VOLUME_UNITS.require("us-cup").to(1, "us-fluid-ounce")).toBe(8);
+		expect(VOLUME_UNITS.require("us-gallon").to(1, "us-cup")).toBe(16);
 		expect(VOLUME_UNITS.require("imperial-pint").to(1, "milliliter")).toBeCloseTo(568.261);
 		expect(VOLUME_UNITS.require("imperial-pint").to(1, "imperial-fluid-ounce")).toBe(20);
 		expect(VOLUME_UNITS.require("imperial-gallon").to(1, "milliliter")).toBeCloseTo(4546.09);
@@ -100,11 +103,25 @@ describe("formatAbbr()", () => {
 		expect(LENGTH_UNITS.require("mile").formatAbbr()).toBe("mi");
 		expect(DURATION_UNITS.require("minute").formatAbbr()).toBe("min");
 		expect(DURATION_UNITS.require("hour").formatAbbr({ locale: new Intl.Locale("de") })).toBe("Std.");
-		expect(SPEED_UNITS.require("kilometer-per-hour").formatAbbr()).toBe("kph");
+		expect(SPEED_UNITS.require("kilometer-per-hour").formatAbbr()).toBe("km/h");
 		expect(ANGLE_UNITS.require("radian").formatAbbr()).toBe("rad");
 	});
 });
 describe("format()", () => {
+	test("format() compound units with Intl.NumberFormat", () => {
+		expect(SPEED_UNITS.require("kilometer-per-hour").format(50)).toBe("50 km/h");
+		expect(SPEED_UNITS.require("meter-per-second").format(2, { unitDisplay: "long" })).toBe("2 meters per second");
+		expect(SPEED_UNITS.require("mile-per-hour").format(30)).toBe("30 mph");
+		expect(SPEED_UNITS.require("kilometer-per-hour").format(1, { locale: new Intl.Locale("de"), unitDisplay: "long" })).toBe(
+			"1 Kilometer pro Stunde",
+		);
+	});
+	test("format() marks US and imperial volume units", () => {
+		expect(VOLUME_UNITS.require("us-pint").format(1)).toBe("1 US\u202Fpt");
+		expect(VOLUME_UNITS.require("us-cup").format(2)).toBe("2 US\u202Fcup");
+		expect(VOLUME_UNITS.require("imperial-pint").format(1)).toBe("1 pt\u202FImp.");
+		expect(VOLUME_UNITS.require("imperial-gallon").format(2, { unitDisplay: "long" })).toBe("2 imperial gallons");
+	});
 	test("format() short units that work with Intl.NumberFormat", () => {
 		expect(LENGTH_UNITS.require("meter").format(123)).toBe("123 m");
 		expect(LENGTH_UNITS.require("centimeter").format(1234)).toBe("1,234 cm");
