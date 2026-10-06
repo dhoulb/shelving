@@ -67,8 +67,12 @@ test("get() falls back to the default value", () => {
 	const schema = new ChoiceSchema<"a" | "b" | "c">({ options: { a: "A", b: "B", c: "C" }, value: "b" });
 	expect(schema.get(undefined)).toBe("b");
 });
-test("input is undefined when none is provided", () => {
-	expect(new ChoiceSchema({ options: ["a", "b"] }).input).toBeUndefined();
+test("input defaults to radio for 8 or fewer options", () => {
+	expect(new ChoiceSchema({ options: ["a", "b"] }).input).toBe("radio");
+	expect(new ChoiceSchema({ options: ["a", "b", "c", "d", "e", "f", "g", "h"] }).input).toBe("radio");
+});
+test("input defaults to select for more than 8 options", () => {
+	expect(new ChoiceSchema({ options: ["a", "b", "c", "d", "e", "f", "g", "h", "i"] }).input).toBe("select");
 });
 test("input is preserved", () => {
 	expect(new ChoiceSchema({ options: ["a", "b"], input: "select" }).input).toBe("select");

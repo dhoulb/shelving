@@ -17,8 +17,8 @@ The schema-to-input mapping:
 | `NumberSchema` | `<NumberInput>` (formatted on blur) |
 | `DateSchema` | `<DateInput>` |
 | `BooleanSchema` | `<CheckboxInput>` |
-| `ChoiceSchema` (`input: "radio"`, or ≤ 8 options) | `<ChoiceRadioInputs>` |
-| `ChoiceSchema` (`input: "select"`, or > 8 options) | `<SelectInput>` |
+| `ChoiceSchema` (`input: "radio"`, the default for ≤ 8 options) | `<ChoiceRadioInputs>` |
+| `ChoiceSchema` (`input: "select"`, the default for > 8 options) | `<SelectInput>` |
 | `ArraySchema` | `<ArrayInput>` |
 | `DictionarySchema` | `<DictionaryInput>` |
 | `DataSchema` | `<DataInput>` |

@@ -15,7 +15,6 @@ import { isArray } from "../../util/array.js";
 import { type Data, isData } from "../../util/data.js";
 import { isDictionary } from "../../util/dictionary.js";
 import { getNumber } from "../../util/number.js";
-import { getKeys } from "../../util/object.js";
 import { getSource, requireSource } from "../../util/source.js";
 import { getString } from "../../util/string.js";
 import type { ValidatorType } from "../../util/validate.js";
@@ -151,7 +150,6 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
  * Show a choice input for a `ChoiceSchema` — radio inputs or a select.
  *
  * - The schema's `input` picks the control: `"radio"` for radio inputs, `"select"` for a select.
- * - When `input` is not set, it shows radio inputs for up to 8 options, otherwise a select.
  * - The value is normalised through the schema's `get()`, so invalid or sentinel values (e.g. a `CountrySchema`'s `"detect"`) resolve to a real option or fall back to the placeholder rather than mis-selecting the first option.
  *
  * @returns A `ChoiceRadioInputs` or `SelectInput` element bound to the schema.
@@ -162,8 +160,7 @@ export interface ChoiceSchemaInputProps extends SchemaInputProps<ChoiceSchema<st
 export function ChoiceSchemaInput({ schema, value, ...props }: ChoiceSchemaInputProps): ReactElement {
 	const choice = requireSource(ChoiceSchema, schema);
 	const string = choice.get(value);
-	const input = choice.input ?? (getKeys(choice.options).length <= 8 ? "radio" : "select");
-	if (input === "radio") return <ChoiceRadioInputs {...schema} value={string} {...props} />;
+	if (choice.input === "radio") return <ChoiceRadioInputs {...schema} value={string} {...props} />;
 	return <SelectInput {...schema} value={string} {...props} />;
 }
 
