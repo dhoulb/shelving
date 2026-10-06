@@ -107,6 +107,7 @@ export interface UnitFormatOptions
  * - Unfortunately the list of supported units changes in different browsers.
  * - Ideally we want to format units using the built-in formatting so things like translation and internationalisation are covered.
  * - But we want provide fallback formatting for unsupported units, and do something _good enough_ job in most cases.
+ * - Compound units like `kilometer-per-hour` use the built-in formatting when both parts are supported.
  *
  * @param num Quantity to format.
  * @param unit Unit reference to format the quantity as, e.g. `"minute"` or `"product"`.
@@ -153,10 +154,15 @@ export function formatUnitAbbr(unit: string, options?: UnitFormatOptions): strin
 /** Units that `Intl.NumberFormat` supports in this environment (created on first use). */
 let _INTL_UNITS: ReadonlySet<string> | undefined;
 
-/** Is a unit supported by `Intl.NumberFormat` in this environment? Returns `false` where `Intl.supportedValuesOf()` does not exist. */
+/**
+ * Is a unit supported by `Intl.NumberFormat` in this environment?
+ * - Compound units like `kilometer-per-hour` are supported when both parts are supported.
+ * - Returns `false` where `Intl.supportedValuesOf()` does not exist.
+ */
 function _isIntlUnit(unit: string): boolean {
 	_INTL_UNITS ??= new Set(typeof Intl.supportedValuesOf === "function" ? Intl.supportedValuesOf("unit") : []);
-	return _INTL_UNITS.has(unit);
+	const parts = unit.split("-per-");
+	return parts.length <= 2 && parts.every(part => _INTL_UNITS?.has(part));
 }
 
 /**
