@@ -37,10 +37,13 @@
 			view-transition-name: match-element;
 		}
 
+		/* Top and bottom panels fill the screen width up to `--modal-width`, and stay centred when the screen is wider. */
 		&.top,
 		&.bottom {
 			inset-inline: 0;
+			margin-inline: auto;
 			width: auto;
+			max-width: var(--modal-width, var(--width-narrow));
 			max-height: var(--modal-max-height, 100%);
 		}
 
@@ -51,18 +54,16 @@
 			width: var(--modal-width, var(--width-narrow));
 		}
 
-		/* If a theme sets `--modal-stroke` or `--modal-border`, keep only the border on the inner side, because the other sides touch the edges of the screen. */
+		/* If a theme sets `--modal-stroke` or `--modal-border`, remove the border on each side that touches the edge of the screen. */
 		&.top {
 			top: 0;
 			border-top: none;
-			border-inline: none;
 			view-transition-class: modal-top;
 		}
 
 		&.bottom {
 			bottom: 0;
 			border-bottom: none;
-			border-inline: none;
 			view-transition-class: modal-bottom;
 		}
 

@@ -8,11 +8,11 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - `Modal` sets its text back to `--tint-00`, so it reads on its own `--tint-100` surface.
 - `DialogsStore.show()` wraps its content in a `<Dialog>` only. It does not add a `Modal`, so put the `Modal` in the content yourself.
 - `Modal` only styles the box. Lay out its contents with the usual block components.
-- A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel.
+- A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel, and the maximum width of a `top` or `bottom` panel.
 - The `padding` variant (for example `padding="large"`) sets the top and bottom padding, and the `indent` variant sets the left and right padding, the same as on `<Panel>`.
 - The `radius` variant sets the corner radius. On a pinned panel, corners that touch a screen edge stay square.
 - It has a `--shadow-normal` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="large"` to change it, the same as on `<Card>`.
-- Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width; a left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
+- Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width up to `--modal-width`, and centred on a wider screen. A left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place.
 
 ## Usage
@@ -96,11 +96,11 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 
 ## Styling
 
-`Modal` paints a shadowed surface with no border. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then keeps only the border on its inner side. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Modal` paints a shadowed surface with no border. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then has no border on the side that touches the screen edge. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--modal-width` | Width of a `left` or `right` panel (a centred panel takes `--dialog-width`) | `var(--width-narrow)` |
+| `--modal-width` | Width of a `left` or `right` panel, and maximum width of a `top` or `bottom` panel (a centred panel takes `--dialog-width`) | `var(--width-narrow)` |
 | `--modal-stroke` | Border width | `0` (no border) |
 | `--modal-border` | Border shorthand | `var(--modal-stroke)` solid `--tint-80` |
 | `--modal-radius` | Corner radius (the `radius` variant wins over it) | `var(--radius-normal)` (16px) |
