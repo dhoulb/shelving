@@ -43,7 +43,8 @@
 		}
 	}
 
-	.overlay {
+	/* Under `.card` so it beats the `.prose a` link rule, and the hidden link text stays hidden inside `<Prose>`. */
+	.card > .overlay {
 		/* Box */
 		position: absolute;
 		inset: 0;
