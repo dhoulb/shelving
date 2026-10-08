@@ -5,7 +5,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 **Things to know:**
 
 - Slides down by default and when the type is `"forward"`; slides up when the type is `"back"`.
-- Set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback before navigating — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` type, and the browser back or forward button sets `"back"`. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.

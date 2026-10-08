@@ -1,7 +1,7 @@
-import { type ReactElement, useEffect } from "react";
+import { type ReactElement, startTransition, useEffect, useState } from "react";
 import { useInstance } from "../../react/useInstance.js";
-import { useStore } from "../../react/useStore.js";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
+import { setTransitionType, type TransitionType } from "../transition/util.js";
 import { mergeMeta, type PossibleMeta } from "../util/index.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { NavigationContext } from "./NavigationContext.js";
@@ -20,6 +20,8 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  * - Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls.
  * - Listens for `popstate` to sync the store with browser back/forward.
  * - Publishes the live URL into the `Meta` context via `mergeMeta()`, so descendant `<Router>`s re-render on navigation and merge invariants hold (e.g. `root` defaults to the live URL's origin when unset).
+ * - Publishes each URL change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition.
+ * - Skips the transition when the browser already animated the change (`PopStateEvent.hasUAVisualTransition`, e.g. a swipe-back gesture).
  *
  * Exactly one `<Navigation>` per app — nested routers share this single store.
  *
@@ -31,10 +33,29 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 export function Navigation({ children, ...meta }: NavigationProps): ReactElement {
 	const current = requireMeta(meta);
 	const nav = useInstance(NavigationStore, current.url, current.root);
-	useStore(nav);
+
+	// React runs a `<ViewTransition>` only for a transition update, and `useSyncExternalStore()` always renders a sync update.
+	// So keep the published URL in state and copy each store change into it inside `startTransition()`.
+	const [url, setURL] = useState(nav.value);
 
 	useEffect(() => {
 		if (typeof document === "undefined" || typeof window === "undefined") return;
+
+		// Type of the next transition: `"back"` for a `popstate`, else `"forward"` (link click, `forward()`, `redirect()`).
+		// `null` means no transition, because the browser already animated the change (e.g. a swipe-back gesture).
+		let type: TransitionType | null = "forward";
+		const stop = nav.subscribe(value => {
+			const t = type;
+			type = "forward";
+			if (!t) return setURL(value);
+			// React renders a transition that starts inside a `popstate` event as a sync update with no view transition, so leave the event first.
+			setTimeout(() =>
+				startTransition(() => {
+					setTransitionType(t);
+					setURL(value);
+				}),
+			);
+		});
 
 		const onClick = (e: MouseEvent) => {
 			if (e.target instanceof Element) {
@@ -48,8 +69,10 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 				}
 			}
 		};
-		const onPopState = () => {
-			nav.value = window.location.href;
+		const onPopState = (e: PopStateEvent) => {
+			const href = window.location.href;
+			if (href !== nav.value.href) type = e.hasUAVisualTransition ? null : "back";
+			nav.value = href;
 		};
 
 		document.addEventListener("click", onClick);
@@ -58,12 +81,13 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 		return () => {
 			document.removeEventListener("click", onClick);
 			window.removeEventListener("popstate", onPopState);
+			stop();
 		};
 	}, [nav]);
 
 	return (
 		<NavigationContext value={nav}>
-			<MetaContext value={mergeMeta(current, { url: nav.value }, Navigation)}>{children}</MetaContext>
+			<MetaContext value={mergeMeta(current, { url }, Navigation)}>{children}</MetaContext>
 		</NavigationContext>
 	);
 }
