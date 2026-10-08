@@ -7,6 +7,7 @@ The top-level navigation provider for a client-side app. It owns a single `Navig
 - Same-origin anchor clicks are intercepted automatically and turned into `forward()` calls. Add a `download` attribute to an anchor to opt out.
 - It listens for `popstate` so the store stays in sync with browser back/forward.
 - It publishes each page change inside `startTransition()`, so a `<Transition>` around the routes animates it. A link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` transition type. The browser back or forward button sets `"back"` (`popstate` does not say which way it went).
+- When the browser already animated the change, for example a swipe-back gesture on a phone, there is no view transition, so the page does not slide twice. The browser says so with `hasUAVisualTransition` on the `popstate` event. Other browsers still slide.
 - The `popstate` update waits for the next task (`setTimeout()`). React renders a transition that starts inside `popstate` as a sync update with no view transition.
 - It initialises the store from the surrounding `<Meta>` url/base, so set those on an ancestor `<App>` / `<HTML>` / `<Page>`. In the browser the store falls back to `window.location.href` when no url is set.
 - The meta it publishes always has a `root` — when none is set anywhere, `root` defaults to the live URL's origin. Setting `root` explicitly on `<App>` / `<HTML>` is still strongly recommended, especially for apps served under a sub-path.

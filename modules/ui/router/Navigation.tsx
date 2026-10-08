@@ -21,6 +21,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
  * - Listens for `popstate` to sync the store with browser back/forward.
  * - Publishes the live URL into the `Meta` context via `mergeMeta()`, so descendant `<Router>`s re-render on navigation and merge invariants hold (e.g. `root` defaults to the live URL's origin when unset).
  * - Publishes each URL change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition.
+ * - Skips the transition when the browser already animated the change (`PopStateEvent.hasUAVisualTransition`, e.g. a swipe-back gesture).
  *
  * Exactly one `<Navigation>` per app — nested routers share this single store.
  *
@@ -41,10 +42,12 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 		if (typeof document === "undefined" || typeof window === "undefined") return;
 
 		// Type of the next transition: `"back"` for a `popstate`, else `"forward"` (link click, `forward()`, `redirect()`).
-		let type: TransitionType = "forward";
+		// `null` means no transition, because the browser already animated the change (e.g. a swipe-back gesture).
+		let type: TransitionType | null = "forward";
 		const stop = nav.subscribe(value => {
 			const t = type;
 			type = "forward";
+			if (!t) return setURL(value);
 			// React renders a transition that starts inside a `popstate` event as a sync update with no view transition, so leave the event first.
 			setTimeout(() =>
 				startTransition(() => {
@@ -66,9 +69,9 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 				}
 			}
 		};
-		const onPopState = () => {
+		const onPopState = (e: PopStateEvent) => {
 			const href = window.location.href;
-			if (href !== nav.value.href) type = "back";
+			if (href !== nav.value.href) type = e.hasUAVisualTransition ? null : "back";
 			nav.value = href;
 		};
 
