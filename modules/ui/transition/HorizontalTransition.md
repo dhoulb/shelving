@@ -5,7 +5,7 @@ A direction-aware `<Transition>` preset that slides its children horizontally â€
 **Things to know:**
 
 - Slides right by default and when the type is `"forward"`; slides left when the type is `"back"`.
-- Set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback before navigating â€” see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` type, and the browser back or forward button sets `"back"`. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback â€” see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full width apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
@@ -23,21 +23,14 @@ A direction-aware `<Transition>` preset that slides its children horizontally â€
 ## Usage
 
 ```tsx
-import { HorizontalTransition, setTransitionType, requireNavigation } from "shelving/ui";
-import { startTransition } from "react";
+import { HorizontalTransition, Navigation, Router } from "shelving/ui";
 
-function navigate(direction: "forward" | "back", url: string) {
-  const nav = requireNavigation();
-  startTransition(() => {
-    setTransitionType(direction);
-    nav.forward(url);
-  });
-}
-
-// In the layout:
-<HorizontalTransition>
-  <Router routes={ROUTES}/>
-</HorizontalTransition>
+// Links slide right, the browser back button slides left.
+<Navigation>
+  <HorizontalTransition>
+    <Router routes={ROUTES}/>
+  </HorizontalTransition>
+</Navigation>
 ```
 
 ## Styling
