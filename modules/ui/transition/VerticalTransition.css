@@ -1,6 +1,11 @@
-@layer base {
+@import url("../style/layers.css");
+@import url("../style/Duration.module.css");
+
+/* Global CSS, not a CSS module — see `Transition.css` for why. */
+@layer defaults {
 	:root {
-		--vertical-transition-size: 25vh;
+		/* A percentage is of the snapshot's own size, so the old and new content sit edge to edge and never overlap. */
+		--vertical-transition-size: 100%;
 		--vertical-transition-duration: var(--duration-normal);
 	}
 }
@@ -51,6 +56,12 @@
 		opacity: 0;
 		transform: translateY(var(--vertical-transition-size));
 	}
+}
+
+/* Clip the slide to the element's own box, so it does not paint over the content around it. */
+::view-transition-group(.slide-up),
+::view-transition-group(.slide-down) {
+	overflow: clip;
 }
 
 ::view-transition-new(.slide-up) {
