@@ -43,6 +43,8 @@ export interface ClickableProps extends OptionalChildProps {
 	title?: string | undefined;
 	/** Whether this is the selected item in a group. Sets `aria-pressed` on a `<button>`, or `aria-current` on an `<a>`. */
 	selected?: boolean | undefined;
+	/** If `href` is present, then `<Navigation>` opens the link with a back transition. Use it for a "back to" link. Sets `data-back` on the `<a>`. */
+	back?: boolean | undefined;
 }
 
 /**
@@ -87,6 +89,7 @@ export function LinkClickable({
 	download,
 	title,
 	selected,
+	back,
 	children = "Go",
 	className,
 }: StylableClickableProps): ReactElement {
@@ -105,6 +108,7 @@ export function LinkClickable({
 			target={target}
 			className={getClass(className) || undefined}
 			aria-current={active ? "page" : selected ? "true" : undefined}
+			data-back={back || undefined}
 		>
 			{children}
 		</a>

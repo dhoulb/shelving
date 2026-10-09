@@ -5,6 +5,7 @@ The store holding the current navigation URL and driving browser history. It ext
 **Things to know:**
 
 - `forward()` pushes a new browser history entry; `redirect()` replaces the current one. Both resolve the destination against the store's `base`.
+- `back()` pushes a new browser history entry like `forward()`, but `<Navigation>` gives it the `"back"` transition type, so the page slides back. It does not go back in the browser history, so it works when the page was opened directly.
 - It is a `shelving/store` `URLStore`, so components can subscribe to it for re-renders.
 
 ## Usage

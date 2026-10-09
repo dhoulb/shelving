@@ -5,8 +5,9 @@ The top-level navigation provider for a client-side app. It owns a single `Navig
 **Things to know:**
 
 - Same-origin anchor clicks are intercepted automatically and turned into `forward()` calls. Add a `download` attribute to an anchor to opt out.
+- An anchor with a `data-back` attribute calls `back()` instead, so the page slides back. Set it with the `back` prop on `<Button>` or `<Link>`, e.g. on a "Back to profile" button.
 - It listens for `popstate` so the store stays in sync with browser back/forward.
-- It publishes each page change inside `startTransition()`, so a `<Transition>` around the routes animates it. A link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` transition type. The browser back or forward button sets `"back"` (`popstate` does not say which way it went).
+- It publishes each page change inside `startTransition()`, so a `<Transition>` around the routes animates it. A link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` transition type. A `data-back` link click, `NavigationStore.back()`, and the browser back or forward button set `"back"` (`popstate` does not say which way it went).
 - When the browser already animated the change, for example a swipe-back gesture on a phone, there is no view transition, so the page does not slide twice. The browser says so with `hasUAVisualTransition` on the `popstate` event. Other browsers still slide.
 - The `popstate` update waits for the next task (`setTimeout()`). React renders a transition that starts inside `popstate` as a sync update with no view transition.
 - It initialises the store from the surrounding `<Meta>` url/base, so set those on an ancestor `<App>` / `<HTML>` / `<Page>`. In the browser the store falls back to `window.location.href` when no url is set.
@@ -30,12 +31,15 @@ import { HTML, Navigation, Router } from "shelving/ui";
 ```tsx
 import { HorizontalTransition, Navigation, Router } from "shelving/ui";
 
-// Links slide right, the browser back button slides left.
+// Links slide right. Back links and the browser back button slide left.
 <Navigation>
   <HorizontalTransition>
     <Router routes={ROUTES}/>
   </HorizontalTransition>
 </Navigation>
+
+// A "back to" link slides left too.
+<Button href="/profile" back>Back to profile</Button>
 ```
 
 ### Imperative navigation
@@ -48,4 +52,5 @@ import { requireNavigation } from "shelving/ui";
 const nav = requireNavigation();
 nav.forward("/users/123");   // push a new history entry
 nav.redirect("/login");      // replace the current history entry
+nav.back("/users");          // push a new history entry that slides back
 ```
