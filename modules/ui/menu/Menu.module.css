@@ -25,10 +25,16 @@
 		.menu {
 			margin-block: var(--menu-nested-space, var(--space-xxsmall));
 
-			/* Inset the border by the link's inline padding so it lines up with the parent item's label. */
-			margin-inline-start: var(--menu-indent, var(--space-xsmall));
+			/* Inset the border by the link's border and inline padding so it lines up with the parent item's label. */
+			margin-inline-start: calc(var(--menu-stroke, var(--stroke-normal)) + var(--menu-indent, var(--space-small)));
 			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
 			padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
+		}
+
+		/* A small parent item has no border and a smaller indent. */
+		&.small .menu,
+		.link.small ~ .menu {
+			margin-inline-start: var(--menu-small-indent, var(--space-xsmall));
 		}
 	}
 
@@ -41,10 +47,22 @@
 		display: block;
 		box-sizing: border-box;
 		inline-size: 100%;
-		padding-block: var(--menu-padding, var(--space-xsmall));
-		padding-inline: var(--menu-indent, var(--space-xsmall));
-		border: none;
+		padding-block: var(--menu-padding, var(--space-small));
+		padding-inline: var(--menu-indent, var(--space-small));
+		border: var(--menu-stroke, var(--stroke-normal)) solid transparent;
 		border-radius: var(--menu-radius, var(--radius-xsmall));
+
+		/* Match `--button-height` and `--input-height`, so an item is as easy to tap as a button. */
+		min-block-size: var(
+			--menu-height,
+			calc(
+				var(--menu-icon-size, var(--size-icon)) +
+				2 *
+				var(--menu-padding, var(--space-small)) +
+				2 *
+				var(--menu-stroke, var(--stroke-normal))
+			)
+		);
 
 		/* Style — `background`, `font`, `text-align` and `cursor` reset the native button look. */
 		background: none;
@@ -68,7 +86,15 @@
 			outline-color: transparent;
 		}
 
-		/* Variants */
+		/* Variants — `small` applies to one item, or to every item inside a small `<Menu>`. */
+		&.small,
+		:where(.menu.small) & {
+			padding-block: var(--menu-small-padding, var(--space-xsmall));
+			padding-inline: var(--menu-small-indent, var(--space-xsmall));
+			border: none;
+			min-block-size: var(--menu-small-height, 0);
+		}
+
 		&.proud {
 			background: var(--menu-proud-background, transparent);
 			color: var(--menu-proud, var(--tint-00));

@@ -15,7 +15,7 @@ export function DocumentationApp({
 	},
 	sidebar = (
 		<TreeSidebar>
-			<Menu>
+			<Menu small>
 				<MenuItem href="/search">Search</MenuItem>
 			</Menu>
 		</TreeSidebar>
