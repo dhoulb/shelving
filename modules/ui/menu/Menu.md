@@ -6,6 +6,7 @@ A `<menu>` list of `<MenuItem>` children — the container for URL-aware navigat
 
 - Renders as a bare `<menu>` element (semantically equivalent to `<ul>` but more meaningful for menus). Place it inside a `<nav>` — or a `<SidebarLayout>` sidebar, which is already a `<nav>` landmark — if a navigation landmark is needed.
 - Nesting a `<Menu>` inside a `<MenuItem>` gets indented automatically via the `.menu .menu` descendant rule.
+- Pass `small` to make every item inside it small, including items in nested menus. See `<MenuItem>`.
 
 ## Usage
 
@@ -35,12 +36,13 @@ import { Menu, MenuItem } from "shelving/ui";
 | `--menu-leading` | Line height | `var(--leading)` |
 | `--menu-color` | Text colour | `var(--tint-00)` |
 | `--menu-nested-space` | Block margin around a nested submenu | `var(--space-xxsmall)` |
-| `--menu-padding` | Item link top and bottom padding (one length) | `var(--space-xsmall)` |
-| `--menu-indent` | Item link left and right padding (one length; also insets the nested border) | `var(--space-xsmall)` |
+| `--menu-padding` | Item link top and bottom padding (one length) | `var(--space-small)` |
+| `--menu-indent` | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)` |
+| `--menu-small-indent` | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)` |
 | `--menu-nested-border` | Nested submenu left-border width | `var(--stroke-focus)` |
 | `--menu-nested-color-border` | Nested submenu left-border colour | `var(--tint-50)` |
 | `--menu-nested-indent` | Nested submenu left padding | `var(--space-xsmall)` |
 
-Item-state hooks (`--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
+Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall`, `--font-body`, `--size-normal`, `--leading`, and `--stroke-focus`.
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading`, and `--stroke-focus`.

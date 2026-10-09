@@ -20,6 +20,7 @@ export interface TreeSidebarProps extends OptionalChildProps {}
  *
  * - **Middle:** a `<TextInput>` search-as-you-type filter.
  * - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
+ * - Both menus are `small`, so the long list of pages stays dense.
  *
  * Reads the flattened tree from the surrounding `<TreeProvider>` (`useTreeMap().get("/")`), so child and result hrefs use each element's stamped canonical `path`. To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
  *
@@ -36,14 +37,14 @@ export function TreeSidebar({ children }: TreeSidebarProps): ReactNode {
 
 	return (
 		<>
-			<Menu>
+			<Menu small>
 				<MenuItem href="/">Home</MenuItem>
 			</Menu>
 			{children}
 			<Divider />
 			<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
 			<Divider />
-			<Menu>
+			<Menu small>
 				{results ? (
 					results.map(el => (
 						<MenuItem key={el.key} href={el.props.path ?? "/"}>
