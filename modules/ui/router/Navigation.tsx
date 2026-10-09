@@ -1,7 +1,7 @@
 import { type ReactElement, startTransition, useEffect, useState } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { MetaContext, requireMeta } from "../misc/MetaContext.js";
-import { setTransitionType, type TransitionType } from "../transition/util.js";
+import { setTransitionType } from "../transition/util.js";
 import { mergeMeta, type PossibleMeta } from "../util/index.js";
 import type { OptionalChildProps } from "../util/props.js";
 import { NavigationContext } from "./NavigationContext.js";
@@ -17,7 +17,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {}
 /**
  * Top-level navigation provider.
  * - Owns a single `NavigationStore` initialised from the surrounding `<Meta>` url/base.
- * - Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls.
+ * - Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls, or `back()` calls for an anchor with a `data-back` attribute.
  * - Listens for `popstate` to sync the store with browser back/forward.
  * - Publishes the live URL into the `Meta` context via `mergeMeta()`, so descendant `<Router>`s re-render on navigation and merge invariants hold (e.g. `root` defaults to the live URL's origin when unset).
  * - Publishes each URL change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition.
@@ -41,12 +41,10 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 	useEffect(() => {
 		if (typeof document === "undefined" || typeof window === "undefined") return;
 
-		// Type of the next transition: `"back"` for a `popstate`, else `"forward"` (link click, `forward()`, `redirect()`).
-		// `null` means no transition, because the browser already animated the change (e.g. a swipe-back gesture).
-		let type: TransitionType | null = "forward";
+		// Read the transition type the store set for this change, then reset it.
 		const stop = nav.subscribe(value => {
-			const t = type;
-			type = "forward";
+			const t = nav.transition;
+			nav.transition = "forward";
 			if (!t) return setURL(value);
 			// React renders a transition that starts inside a `popstate` event as a sync update with no view transition, so leave the event first.
 			setTimeout(() =>
@@ -64,14 +62,16 @@ export function Navigation({ children, ...meta }: NavigationProps): ReactElement
 					(!e.target.closest("button, label") && e.target.closest(".targeted")?.querySelector<HTMLAnchorElement>("a.target[href]"));
 				if (anchor instanceof HTMLAnchorElement && anchor.origin === window.location.origin && !anchor.hasAttribute("download")) {
 					e.preventDefault();
-					nav.forward(anchor.href);
+					if (anchor.hasAttribute("data-back")) nav.back(anchor.href);
+					else nav.forward(anchor.href);
 					return false; // `return false` stops iOS web app opening every link in a new window.
 				}
 			}
 		};
 		const onPopState = (e: PopStateEvent) => {
 			const href = window.location.href;
-			if (href !== nav.value.href) type = e.hasUAVisualTransition ? null : "back";
+			// `"back"` for a `popstate`. `null` means no transition, because the browser already animated the change (e.g. a swipe-back gesture).
+			if (href !== nav.value.href) nav.transition = e.hasUAVisualTransition ? null : "back";
 			nav.value = href;
 		};
 

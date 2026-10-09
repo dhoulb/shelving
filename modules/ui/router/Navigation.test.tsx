@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { Navigation, requireMetaURL } from "shelving/ui";
+import { Button, Navigation, requireMetaURL } from "shelving/ui";
 
 /** Render `requireMetaURL().path` from inside a component so its `use(MetaContext)` call is valid. */
 function Probe(): ReactNode {
@@ -25,5 +25,16 @@ describe("Navigation", () => {
 			</Navigation>,
 		);
 		expect(html).toBe("/sub");
+	});
+
+	test("marks a back link with a data-back attribute", () => {
+		const html = renderToStaticMarkup(
+			<Navigation url="http://x.com/a">
+				<Button href="/b" back>
+					Back
+				</Button>
+			</Navigation>,
+		);
+		expect(html).toContain('data-back="true"');
 	});
 });
