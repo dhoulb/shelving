@@ -33,6 +33,9 @@
 		--tint-90: color-mix(in oklch, var(--tint-50), white 80%);
 		--tint-95: color-mix(in oklch, var(--tint-50), white 90%);
 		--tint-100: white;
+
+		/* Black or white, whichever reads better on `--tint-50`. */
+		--tint-contrast: oklch(from var(--tint-50) calc(clamp(0, (0.72 - l) * 1000, 1)) 0 0deg);
 	}
 
 	.tint {

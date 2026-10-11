@@ -4,6 +4,8 @@ import THEME_CSS from "./Tint.module.css";
 /**
  * Shades of the currently selected tint color, from `"00"` (black) through `"50"` (the hue itself) to `"100"` (white).
  *
+ * - `"contrast"` is black or white, whichever reads better on `"50"`.
+ *
  * @see https://shelving.cc/ui/TintVariant
  */
 export type TintVariant =
@@ -27,7 +29,8 @@ export type TintVariant =
 	| "85"
 	| "90"
 	| "95"
-	| "100";
+	| "100"
+	| "contrast";
 
 /**
  * CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
