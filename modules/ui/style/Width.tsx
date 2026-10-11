@@ -52,5 +52,5 @@ export interface WidthVariants {
  * @see https://shelving.cc/ui/getWidthClass
  */
 export function getWidthClass({ width, grow }: WidthVariants): string | undefined {
-	if (width || grow) return getModuleClass(WIDTH_CSS, "width", width && `width-${width}`, grow && "grow");
+	if (width || grow) return getModuleClass(WIDTH_CSS, width && "width", width && `width-${width}`, grow && "grow");
 }

@@ -107,6 +107,7 @@
 	/* Grow modifier — turn the chosen width into a floor and expand to fill (flex items + table columns). */
 	.grow {
 		flex-grow: 1;
+		min-inline-size: 0; /* Let long content shrink, so it can wrap. */
 
 		&:where(td, th) {
 			/* Table layouts don't grow unless forced with `width: 100%` */
