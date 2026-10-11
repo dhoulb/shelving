@@ -349,4 +349,10 @@
 	.nowrap {
 		white-space: nowrap;
 	}
+
+	.truncate {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 }

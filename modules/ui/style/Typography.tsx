@@ -50,7 +50,7 @@ export type CaseVariant = "title" | "body" | "label" | "code" | "upper" | "lower
 export type FontVariant = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
 
 /**
- * Typographic variant props — colour, font-family, weight, case, size, tint, alignment, and wrap, applied via `getTypographyClass()`
+ * Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
  *
  * - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
  *
@@ -77,12 +77,14 @@ export interface TypographyVariants extends ColorVariants {
 	wrap?: boolean | undefined;
 	/** Disable wrapping. */
 	nowrap?: boolean | undefined;
+	/** Cut overflowing text to one line with an ellipsis (on a block or a flex item). */
+	truncate?: boolean | undefined;
 }
 
 /**
  * Get the typography class for a component from its typographic variant props.
  *
- * Maps the colour, size, weight, font, case, tint, alignment, and wrap variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
+ * Maps the colour, size, weight, font, case, tint, alignment, wrap, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
  *
  * @returns The combined typography class string (empty when no variants apply).
  * @example getTypographyClass({ font: "title", size: "large", center: true })

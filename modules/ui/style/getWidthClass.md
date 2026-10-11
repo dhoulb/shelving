@@ -13,7 +13,7 @@ The `width` variant prop sets a component's inline-size — `<Card width="narrow
 
 **The `grow` flag** lets the element expand past its `width`:
 
-- On a flex item it adds `flex-grow: 1`, so the item fills the free space. It also sets `min-inline-size: 0`, so long content can shrink the item and wrap.
+- On a flex item it adds `flex-grow: 1`, so the item fills the free space. It also sets `min-inline-size: 0`, so long content can shrink the item and wrap or truncate (see `truncate` in `getTypographyClass()`).
 - `grow` works without `width`. On its own it adds only the grow class, so the element does not pick up a `--width` from an ancestor.
 - On a `<Cell>` it turns the chosen `width` into a floor: it applies the value as `min-width`. Set `width="12x" grow` to give that column a 192px minimum that absorbs the remaining width and keeps the table from collapsing the column on a narrow viewport — cells honour `min-width`, so the table scrolls instead.
 
