@@ -7,6 +7,7 @@ export * from "./Column.js";
 export * from "./Definitions.js";
 export * from "./Details.js";
 export * from "./Divider.js";
+export * from "./Grid.js";
 export * from "./Heading.js";
 export * from "./Image.js";
 export * from "./Label.js";
