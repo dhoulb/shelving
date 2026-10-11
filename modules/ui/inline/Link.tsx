@@ -5,14 +5,15 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
 import LINK_CSS from "./Link.module.css";
 
-const LINK_CLASS = getModuleClass(LINK_CSS, "link");
-
 /**
  * Props for `Link` — `ClickableProps` (`href` for navigation or `onClick` for actions) plus colour and typography variants.
  *
  * @see https://shelving.cc/ui/LinkProps
  */
-export interface LinkProps extends ClickableProps, TypographyVariants, ClassProps {}
+export interface LinkProps extends ClickableProps, TypographyVariants, ClassProps {
+	/** Remove the link colour, weight, and underline, e.g. for a link around a block of content. */
+	plain?: boolean | undefined;
+}
 
 /**
  * Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
@@ -20,12 +21,12 @@ export interface LinkProps extends ClickableProps, TypographyVariants, ClassProp
  * @kind component
  * @see https://shelving.cc/ui/Link
  */
-export function Link({ className, ...props }: LinkProps): ReactElement {
+export function Link({ className, plain, ...props }: LinkProps): ReactElement {
 	return (
 		<Clickable
 			{...props}
 			className={getClass(
-				LINK_CLASS, //
+				getModuleClass(LINK_CSS, "link", { plain }), //
 				getTypographyClass(props),
 				className,
 			)}

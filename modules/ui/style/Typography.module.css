@@ -328,6 +328,10 @@
 		color: var(--tint-100);
 	}
 
+	.tint-contrast {
+		color: var(--tint-contrast);
+	}
+
 	/* Text-alignment variants. */
 	.left {
 		text-align: left;
@@ -348,5 +352,11 @@
 
 	.nowrap {
 		white-space: nowrap;
+	}
+
+	.truncate {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }

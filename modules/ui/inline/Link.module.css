@@ -22,5 +22,15 @@
 				text-decoration: none;
 			}
 		}
+
+		/* Plain: no link colour, weight, or underline, for a link around a block of content. */
+		&.plain {
+			color: inherit;
+			font-weight: inherit;
+
+			&:any-link {
+				text-decoration: none;
+			}
+		}
 	}
 }

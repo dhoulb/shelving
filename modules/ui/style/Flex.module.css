@@ -117,8 +117,8 @@
 			}
 		}
 
-		/* Children */
-		> * {
+		/* Children (doubled class, so it beats a child's `space` variant in the same layer in any bundle order). */
+		&& > * {
 			margin: 0;
 		}
 	}

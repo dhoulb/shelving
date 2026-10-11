@@ -3,6 +3,7 @@ export * from "./Color.js";
 export * from "./Duration.js";
 export * from "./Flex.js";
 export * from "./Gap.js";
+export * from "./Grid.js";
 export * from "./Indent.js";
 export * from "./Padding.js";
 export * from "./Radius.js";

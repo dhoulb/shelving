@@ -1,0 +1,60 @@
+@import url("layers.css");
+@import url("Space.module.css");
+
+@layer defaults {
+	.grid {
+		/* Contents */
+		gap: var(--grid-gap, var(--space-small));
+
+		/* Allow `as="ul"` and `as="ol"` without list markers. */
+		list-style: none;
+	}
+}
+
+@layer variants {
+	.grid {
+		/* Box */
+		display: grid;
+
+		/* Contents */
+		grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+
+		/* Children (doubled class, so it beats a child's `space` variant in the same layer in any bundle order). */
+		&& > * {
+			margin: 0;
+		}
+	}
+
+	/* Columns. */
+	.columns-1 {
+		--grid-columns: 1;
+	}
+
+	.columns-2 {
+		--grid-columns: 2;
+	}
+
+	.columns-3 {
+		--grid-columns: 3;
+	}
+
+	.columns-4 {
+		--grid-columns: 4;
+	}
+
+	.columns-5 {
+		--grid-columns: 5;
+	}
+
+	.columns-6 {
+		--grid-columns: 6;
+	}
+
+	.columns-7 {
+		--grid-columns: 7;
+	}
+
+	.columns-8 {
+		--grid-columns: 8;
+	}
+}

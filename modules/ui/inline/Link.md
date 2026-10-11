@@ -7,6 +7,7 @@ An inline link or action. Delegates to `<Clickable>`, rendering an `<a>` when `h
 - It handles busy state, URL resolution, and active-page highlighting automatically via the shared `<Clickable>` helper.
 - An `<a>` (any actual link) shows an underline that disappears on hover; a `<button>` variant carries no underline.
 - Reach for `Link` for inline text links; for standalone calls to action use a button-styled component instead.
+- Set `plain` to remove the link colour, weight, and underline. Use it for a link around a block of content, such as a card or a profile row. The link keeps URL resolution and active-page highlighting.
 - Inside `<Prose>` a raw `<a>` picks up the same styling, so Markdown-rendered links match component ones.
 
 ## Usage
@@ -29,9 +30,22 @@ import { Link } from "shelving/ui";
 <Link onClick={() => save()}>Save now</Link>
 ```
 
+### Plain link around a block
+
+```tsx
+import { Link, Row, Span } from "shelving/ui";
+
+<Link plain href="/jane">
+  <Row left>
+    <Span weight="strong">Jane Smith</Span>
+    <Span tint="60">@jane</Span>
+  </Row>
+</Link>
+```
+
 ## Styling
 
-`Link` colours itself from the global `--color-link` token by default. Inside a tinted scope (`color=` / `status=` on an ancestor) `--color-link` resolves to `inherit`, so links adopt the surrounding tinted text colour. Override `--link-color` to set it directly.
+`Link` colours itself from the global `--color-link` token by default. Inside a tinted scope (`color=` / `status=` on an ancestor) `--color-link` resolves to `inherit`, so links adopt the surrounding tinted text colour. Override `--link-color` to set it directly. A `plain` link ignores both hooks and inherits the colour and weight of its parent.
 
 | Variable | Styles | Default |
 |---|---|---|
