@@ -70,7 +70,6 @@ export function TextInput({
 				disabled={disabled}
 				placeholder={placeholder || " "}
 				className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), getModuleClass(INPUT_CSS, "multiline"), className)}
-				onInput={onChange}
 				onChange={onChange}
 				onBlur={onBlur}
 				title={message}
@@ -94,7 +93,6 @@ export function TextInput({
 			disabled={disabled}
 			placeholder={placeholder || " "}
 			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
-			onInput={onChange}
 			onChange={onChange}
 			onBlur={onBlur}
 			title={message}

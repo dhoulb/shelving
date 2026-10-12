@@ -62,7 +62,6 @@ export function NumberInput({
 			placeholder={placeholder || " "}
 			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
 			onChange={onChange}
-			onInput={onChange}
 			onBlur={onBlur}
 			title={message}
 			aria-invalid={!!message}

@@ -66,7 +66,6 @@ export function DateInput({
 			placeholder={placeholder || " "}
 			className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), className)}
 			onChange={onChange}
-			onInput={onChange}
 			title={message}
 			aria-invalid={!!message}
 			step={step}

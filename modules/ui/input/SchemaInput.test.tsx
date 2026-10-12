@@ -25,7 +25,7 @@ function _getInputProps(schema: StringSchema, onValue: (value: string | undefine
 interface _InputProps {
 	readonly type?: string;
 	readonly defaultValue?: string;
-	onInput(e: { currentTarget: { value: string } }): void;
+	onChange(e: { currentTarget: { value: string } }): void;
 	onBlur(e: { currentTarget: { value: string } }): void;
 }
 
@@ -58,7 +58,7 @@ describe("StringSchemaInput", () => {
 		// `format()` is for display only — the store must receive a value that re-validates.
 		const values: (string | undefined)[] = [];
 		const input = _getInputProps(new BracketSchema({}), v => void values.push(v));
-		input.onInput({ currentTarget: { value: "  abc  " } });
+		input.onChange({ currentTarget: { value: "  abc  " } });
 
 		expect(values).toEqual(["abc"]);
 	});
@@ -77,7 +77,7 @@ describe("StringSchemaInput", () => {
 		// A `PasswordSchema` field must submit the typed password; masking is the `type="password"` input's job.
 		const values: (string | undefined)[] = [];
 		const input = _getInputProps(PASSWORD, v => void values.push(v), "hunter2");
-		input.onInput({ currentTarget: { value: "hunter22" } });
+		input.onChange({ currentTarget: { value: "hunter22" } });
 		const currentTarget = { value: "hunter22" };
 		input.onBlur({ currentTarget });
 
@@ -91,7 +91,7 @@ describe("StringSchemaInput", () => {
 		// `URLSchema.format()` strips the scheme for display; publishing that form would fail re-validation.
 		const values: (string | undefined)[] = [];
 		const input = _getInputProps(URL_SCHEMA, v => void values.push(v));
-		input.onInput({ currentTarget: { value: " https://example.com/path " } });
+		input.onChange({ currentTarget: { value: " https://example.com/path " } });
 		const currentTarget = { value: "https://example.com/path" };
 		input.onBlur({ currentTarget });
 
