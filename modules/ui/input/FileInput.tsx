@@ -48,7 +48,6 @@ export function FileInput({
 			placeholder={placeholder}
 			className={getClass(getInputClass(variants), className)}
 			onChange={onChange}
-			onInput={onChange}
 			multiple={false}
 			title={message}
 			aria-invalid={!!message}
