@@ -15,6 +15,7 @@
 
 		/* Style */
 		background: var(--notice-background, var(--tint-90));
+		box-shadow: var(--notice-shadow, none);
 		color: var(--notice-color, var(--tint-50));
 
 		/* Text */

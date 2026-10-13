@@ -5,25 +5,41 @@
 @layer components {
 	.notices {
 		position: fixed;
-		right: var(--notices-offset, var(--space-normal));
-		bottom: var(--notices-offset, var(--space-normal));
-		left: var(--notices-offset, var(--space-normal));
+		right: calc(var(--notices-offset, var(--space-normal)) + env(safe-area-inset-right, 0px));
+		left: calc(var(--notices-offset, var(--space-normal)) + env(safe-area-inset-left, 0px));
 		z-index: 1000;
 		display: flex;
-		margin-left: auto;
 		max-width: var(--notices-width, var(--width-narrow));
 		flex-direction: column;
-		align-items: flex-end;
 		gap: var(--notices-gap, var(--space-small));
 
 		/* The list is as wide as `--notices-width`, so let clicks pass through the gaps to the page. */
 		pointer-events: none;
 
-		/* Each notice is only as wide as its content, and stays on the right. */
+		/* Each notice is only as wide as its content, and stays on the side of the list's corner. */
 		& > * {
 			inline-size: auto;
 			max-width: 100%;
 			pointer-events: auto;
 		}
+	}
+
+	/* Corners. The list keeps `--notices-offset` clear of the edges, plus the safe area of the device. */
+	.top {
+		top: calc(var(--notices-offset, var(--space-normal)) + env(safe-area-inset-top, 0px));
+	}
+
+	.bottom {
+		bottom: calc(var(--notices-offset, var(--space-normal)) + env(safe-area-inset-bottom, 0px));
+	}
+
+	.left {
+		margin-right: auto;
+		align-items: flex-start;
+	}
+
+	.right {
+		margin-left: auto;
+		align-items: flex-end;
 	}
 }

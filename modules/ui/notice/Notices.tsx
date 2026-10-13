@@ -14,31 +14,46 @@ import { NOTICES } from "./NoticesStore.js";
 const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
 
 /**
- * Props for `<Notices>` — flex styling variants for the notices container.
+ * Corner of the screen where `<Notices>` shows the list of notices.
+ *
+ * @see https://shelving.cc/ui/NoticesPosition
+ */
+export type NoticesPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
+/**
+ * Props for `<Notices>` — the corner for the list, and flex styling variants for the notices container.
  *
  * @see https://shelving.cc/ui/NoticesProps
  */
-export interface NoticesProps extends FlexVariants, ClassProps {}
+export interface NoticesProps extends FlexVariants, ClassProps {
+	/**
+	 * Corner of the screen for the list. New notices slide in from this side.
+	 * @default "bottom-right"
+	 */
+	position?: NoticesPosition | undefined;
+}
 
 /**
  * Render the global list of notices and subscribe to incoming `"notice"` events.
  * - Listens for `"notice"` events on `window` (or that bubble up to `window`) and shows them in the global notice list.
  * - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
- * - Each notice slides in and out in its own view transition. The other notices move to their new places in the same transition.
+ * - Shows the list in the bottom-right corner, or in the corner that `position` sets.
+ * - Each notice slides in and out in its own view transition, from the side of its corner. The other notices move to their new places in the same transition.
  *
  * @kind component
  * @see https://shelving.cc/ui/Notices
  */
-export function Notices({ className, ...props }: NoticesProps): ReactElement {
+export function Notices({ position = "bottom-right", className, ...props }: NoticesProps): ReactElement {
 	const notices = useTransitionValue(NOTICES);
 	useEffect(() => {
 		// Subscribe to global notices.
 		return subscribeNotices((message, status) => NOTICES.show(message, status));
 	});
+	const [vertical, horizontal] = position.split("-");
 	return (
-		<aside className={getClass(NOTICES_CLASS, getFlexClass(props), className)}>
+		<aside className={getClass(NOTICES_CLASS, getModuleClass(NOTICES_CSS, vertical, horizontal), getFlexClass(props), className)}>
 			{notices.map(notice => (
-				<NoticeItem key={notice.key} notice={notice} />
+				<NoticeItem key={notice.key} notice={notice} position={position} />
 			))}
 		</aside>
 	);
@@ -48,10 +63,12 @@ export function Notices({ className, ...props }: NoticesProps): ReactElement {
  * Render one notice in its own view transition, and re-render when the notice changes in place.
  * - Module-private, but named without the `_` prefix: React and the hooks lint rule only treat a capitalised name as a component.
  */
-function NoticeItem({ notice }: { notice: NoticeStore<Status> }): ReactElement {
+function NoticeItem({ notice, position }: { notice: NoticeStore<Status>; position: NoticesPosition }): ReactElement {
 	const { children, status } = useTransitionValue(notice);
+	// New and closed notices slide from the side of the corner. A notice that changes in place is drawn from the corner itself.
+	const side = position.endsWith("left") ? "left" : "right";
 	return (
-		<ViewTransition enter="notice" exit="notice" update="notice-update">
+		<ViewTransition enter={`notice-${side}`} exit={`notice-${side}`} update={`notice-update-${position}`}>
 			<Notice status={status}>{children}</Notice>
 		</ViewTransition>
 	);
