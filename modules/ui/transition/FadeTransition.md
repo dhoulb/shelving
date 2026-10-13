@@ -26,6 +26,6 @@ function Panel({ visible }: { visible: boolean }) {
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--fade-transition-duration` | Duration of the fade-in and fade-out keyframes | `var(--duration-fast)` |
+| `--fade-transition-duration` | Duration of the fade in, the fade out, and the crossfade when content changes in place (also the group's size and position morph) | `var(--duration-fast)` |
 
 **Global tokens it reads** — `--duration-fast`.
