@@ -36,6 +36,7 @@ import { LOADING_NOTICE } from "shelving/ui";
 | `--notice-color` | Text colour | `var(--tint-50)` |
 | `--notice-border` | Border shorthand | `var(--notice-stroke) solid var(--tint-80)` |
 | `--notice-stroke` | Border thickness | `var(--stroke-normal)` (2px) |
+| `--notice-shadow` | Drop shadow, for example `var(--shadow-small)` | `none` |
 | `--notice-radius` | Corner radius | `var(--radius-xsmall)` |
 | `--notice-padding` | Inner top and bottom padding (one length) | `var(--space-small)` (12px) |
 | `--notice-indent` | Inner left and right padding (one length) | `var(--space-small)` (12px) |
