@@ -74,10 +74,12 @@ function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogE
 	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) _requestClose(currentTarget);
 }
 
-/** Ask a `<dialog>` to close. `requestClose()` fires a cancelable `cancel` event, so `<Dialog>` can run `onClose` in a transition. Older browsers close at once. */
+/**
+ * Ask a `<dialog>` to close: fire a cancelable `cancel` event, so `<Dialog>` can run `onClose` in a transition. Close it at once only when nothing cancels the event.
+ * - Not `requestClose()`: some browsers lack it, and Safari fires its `cancel` event as not cancelable. Both close the dialog at once, so it vanishes with no fade.
+ */
 function _requestClose(dialog: HTMLDialogElement): void {
-	if (typeof dialog.requestClose === "function") dialog.requestClose();
-	else dialog.close();
+	if (dialog.dispatchEvent(new Event("cancel", { cancelable: true }))) dialog.close();
 }
 
 /**
