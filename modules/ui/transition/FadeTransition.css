@@ -18,17 +18,26 @@
 	}
 }
 
-::view-transition-new(.fade) {
+/*
+ * Enter and exit: an image with no partner fades in or out.
+ * - `:only-child` is necessary. Without it, Safari also starts the animation on the missing image (for example `fade-out` on the old image when the element enters). Then it does not start that animation again on the same image name, so the element does not fade out when it leaves.
+ */
+::view-transition-new(.fade):only-child {
 	animation: fade-in var(--fade-transition-duration, var(--duration-fast)) ease-in-out both;
 }
 
-::view-transition-old(.fade) {
+::view-transition-old(.fade):only-child {
 	animation: fade-out var(--fade-transition-duration, var(--duration-fast)) ease-in-out both;
 }
 
-/* Reduced motion: keep the opacity-only crossfade — a fade moves nothing spatially, so it is reduced-motion-safe — but disable the group's default positional morph so content never slides between layouts. */
+/* Update: the old and new images use the browser's own crossfade. Its images take their duration from the group. */
+::view-transition-group(.fade) {
+	animation-duration: var(--fade-transition-duration, var(--duration-fast));
+}
+
+/* Reduced motion: keep the opacity-only crossfade — a fade moves nothing spatially, so it is reduced-motion-safe — but disable the group's default positional morph so content never slides between layouts. Only the name is removed, so the images keep the group's duration. */
 @media (prefers-reduced-motion: reduce) {
 	::view-transition-group(.fade) {
-		animation: none;
+		animation-name: none;
 	}
 }

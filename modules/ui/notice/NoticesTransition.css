@@ -22,13 +22,13 @@
 	}
 }
 
-/* A new notice slides in from the right. */
-::view-transition-new(.notice) {
+/* A new notice slides in from the right. `:only-child` stops Safari from also starting the animation on the missing image, which stops it later on the real one (see `FadeTransition.css`). */
+::view-transition-new(.notice):only-child {
 	animation: notice-from-right var(--notices-transition-duration) ease-out both;
 }
 
 /* A closed notice slides out to the right. */
-::view-transition-old(.notice) {
+::view-transition-old(.notice):only-child {
 	animation: notice-from-right var(--notices-transition-duration) ease-in reverse both;
 }
 
@@ -56,8 +56,8 @@
 
 /* Reduced motion: fade new and closed notices in place, and move the others at once. */
 @media (prefers-reduced-motion: reduce) {
-	::view-transition-new(.notice),
-	::view-transition-old(.notice) {
+	::view-transition-new(.notice):only-child,
+	::view-transition-old(.notice):only-child {
 		animation-name: notice-fade;
 	}
 
