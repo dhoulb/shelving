@@ -11,7 +11,7 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel, and the maximum width of a `top` or `bottom` panel.
 - The `padding` variant (for example `padding="large"`) sets the top and bottom padding, and the `indent` variant sets the left and right padding, the same as on `<Panel>`.
 - The `radius` variant sets the corner radius. On a pinned panel, corners that touch a screen edge stay square.
-- It has a `--shadow-normal` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="large"` to change it, the same as on `<Card>`.
+- It has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width up to `--modal-width`, and centred on a wider screen. A left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place.
 
@@ -67,8 +67,8 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 ### Shadow
 
 ```tsx
-<Modal shadow="large">
-  <p>Raised above the overlay.</p>
+<Modal shadow="small">
+  <p>Sits closer to the page.</p>
 </Modal>
 ```
 
@@ -110,6 +110,6 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-color` | Text colour | `var(--tint-00)` |
 | `--modal-max-height` | Maximum height of a `top` or `bottom` panel (it scrolls past this) | `100%` |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
-| `--modal-shadow` | Drop shadow (the `shadow` variant wins over it) | `var(--shadow-normal)` |
+| `--modal-shadow` | Drop shadow (the `shadow` variant wins over it) | `var(--shadow-large)` |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-normal`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.

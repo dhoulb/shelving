@@ -21,7 +21,7 @@
 
 		/* Style */
 		color: var(--modal-color, var(--tint-00));
-		box-shadow: var(--modal-shadow, var(--shadow-normal));
+		box-shadow: var(--modal-shadow, var(--shadow-large));
 
 		/* Pinned to an edge: fixed to the viewport, flush with the edge, and scrolls when its content is too tall. */
 		&.top,

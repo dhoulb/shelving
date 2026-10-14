@@ -31,6 +31,7 @@ The following `:root` variables are defined by this module and can be overridden
 | `--color-success` | `var(--color-green)` | `status="success"`. |
 | `--color-warning` | `var(--color-orange)` | `status="warning"`. |
 | `--color-failure` | `var(--color-red)` | `status="error"` / `status="danger"`. |
+| `--color-backdrop` | `#0006` | The backdrop that dims the page behind `<Dialog>` and an open `<SidebarLayout>` drawer. |
 
 ### Brand
 

@@ -1,7 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Color.module.css");
 @import url("../style/Space.module.css");
-@import url("../style/Shadow.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
 
@@ -27,7 +26,7 @@
 
 		/* Style */
 		color: var(--dialog-color, var(--tint-100));
-		background: var(--dialog-background, var(--shadow-color));
+		background: var(--dialog-background, var(--color-backdrop));
 
 		/* Flex only to centre `.content`, its one in-flow child. */
 		&[open] {

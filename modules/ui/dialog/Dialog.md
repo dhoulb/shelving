@@ -71,10 +71,10 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 | `--dialog-padding` | Top and bottom padding around the centred content (one length) | `var(--space-normal)` (16px) |
 | `--dialog-indent` | Left and right padding around the centred content (one length) | `var(--space-normal)` (16px) |
 | `--dialog-width` | Width of the centred content, and so of a centred `<Modal>` | `var(--width-narrow)` (36rem) |
-| `--dialog-background` | Overlay fill behind the content | `var(--shadow-color)` |
+| `--dialog-background` | Overlay fill behind the content | `var(--color-backdrop)` |
 | `--dialog-color` | Text colour directly on the overlay | `var(--tint-100)` (white) |
 | `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (12px) |
 
 The fade uses the `fade` class from `<FadeTransition>`, so `--fade-transition-duration` sets its length. It runs only as the dialog opens and closes; an open dialog stays still while other dialogs open and close.
 
-**Global tokens it reads** — move these to retheme broadly: `--tint-100`, `--width-narrow`, `--space-normal`, `--space-small`, `--shadow-color`, and `--duration-fast` (through `<FadeTransition>`).
+**Global tokens it reads** — move these to retheme broadly: `--tint-100`, `--width-narrow`, `--space-normal`, `--space-small`, `--color-backdrop`, and `--duration-fast` (through `<FadeTransition>`).

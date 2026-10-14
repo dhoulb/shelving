@@ -24,7 +24,7 @@
 			pointer-events: auto;
 
 			/* Floating notices sit above the page, so give each one a shadow. */
-			--notice-shadow: var(--notices-shadow, var(--shadow-small));
+			--notice-shadow: var(--notices-shadow, var(--shadow-normal));
 		}
 	}
 
