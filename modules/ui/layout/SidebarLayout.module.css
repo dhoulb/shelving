@@ -3,6 +3,7 @@
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Tint.module.css");
+@import url("../style/Shadow.module.css");
 
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
@@ -158,7 +159,7 @@
 
 		.sidebar.open {
 			transform: translateX(0);
-			box-shadow: 0 0 1.5rem #0006;
+			box-shadow: var(--sidebar-layout-shadow, var(--shadow-large));
 		}
 
 		/* Right variant: dock the drawer to the right edge and slide it in from the right instead. */

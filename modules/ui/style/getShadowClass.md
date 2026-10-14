@@ -11,7 +11,7 @@ The following `:root` variables are defined by this module and can be overridden
 | `--shadow-color` | `#0003` (20% black) | Every layer of every shadow below. |
 | `--shadow-small` | `0 2px 6px -1px`, `0 1px 4px -2px` | `<Popover>` |
 | `--shadow-normal` | `0 5px 15px -3px`, `0 2px 6px -4px` | Floating `<Notices>` |
-| `--shadow-large` | `0 10px 25px -5px`, `0 4px 10px -6px` | `<Modal>` |
+| `--shadow-large` | `0 10px 25px -5px`, `0 4px 10px -6px` | `<Modal>`, the open `<SidebarLayout>` drawer |
 
 The table shows the values in pixels. The source uses `rem`.
 
