@@ -3,12 +3,12 @@
 @layer defaults {
 	:root {
 		/* Colors */
-		--shadow-color: #0006;
+		--shadow-color: #0003;
 
-		/* Shadows — elevation drop-shadows. */
-		--shadow-small: 0 0.375rem 1.5rem -0.75rem var(--shadow-color);
-		--shadow-normal: 0 0.5rem 2rem -1rem var(--shadow-color);
-		--shadow-large: 0 0.75rem 3rem -1.5rem var(--shadow-color);
+		/* Shadows — elevation drop-shadows. Each has two layers with a negative spread, so no dark line shows under the bottom edge. The Y offset is small enough that a sliver of shadow also shows at the top. */
+		--shadow-small: 0 0.125rem 0.375rem -0.0625rem var(--shadow-color), 0 0.0625rem 0.25rem -0.125rem var(--shadow-color);
+		--shadow-normal: 0 0.3125rem 0.9375rem -0.1875rem var(--shadow-color), 0 0.125rem 0.375rem -0.25rem var(--shadow-color);
+		--shadow-large: 0 0.625rem 1.5625rem -0.3125rem var(--shadow-color), 0 0.25rem 0.625rem -0.375rem var(--shadow-color);
 	}
 }
 

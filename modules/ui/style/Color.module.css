@@ -20,6 +20,7 @@
 		--color-success: var(--color-green);
 		--color-warning: var(--color-orange);
 		--color-failure: var(--color-red);
+		--color-backdrop: #0006; /* Dims the page behind a dialog or an open sidebar drawer. */
 
 		/* Brand colors */
 		--color-primary: var(--color-blue); /* Primary brand color */

@@ -3,7 +3,6 @@
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
 @import url("../style/Tint.module.css");
-@import url("../style/Shadow.module.css");
 
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
@@ -194,7 +193,7 @@
 			border: 0;
 
 			/* Style */
-			background: var(--shadow-color);
+			background: var(--color-backdrop);
 			cursor: pointer;
 
 			/* Hidden and non-interactive until open. Transition `visibility` alongside `opacity` so the overlay stays in the a11y tree (and clickable) only while shown, then flips hidden at the end of the fade-out. */

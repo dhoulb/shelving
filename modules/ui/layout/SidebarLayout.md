@@ -47,4 +47,4 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 
 The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class).
 
-**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, and `--color-shadow`.
+**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, and `--color-backdrop`.
