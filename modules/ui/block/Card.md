@@ -71,7 +71,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 | `--card-shadow` | Drop shadow | `none` |
 | `--card-transition` | Transition | `all var(--duration-fast)` (150ms) |
-| `--card-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
+| `--card-focus-border` | Focus outline, drawn on the navigable overlay so it shows above children like `<Panel>` | `var(--stroke-focus) solid var(--color-focus)` |
 
 **Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 

@@ -33,8 +33,6 @@
 		color: var(--card-color, var(--tint-00));
 		box-shadow: var(--card-shadow, none);
 		transition: var(--card-transition, all var(--duration-fast));
-		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--stroke-focus)); /* Fully inset, so it sits inside the card edge. */
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
@@ -50,11 +48,15 @@
 		inset: 0;
 		z-index: 1;
 		border: 0;
+		border-radius: inherit;
 
 		/* Style */
 		background: transparent;
 		cursor: pointer;
-		outline: 0;
+
+		/* Focus ring — drawn on the overlay so it paints above positioned children (e.g. `.panel`). The offset pushes it out over the card border, so it sits fully inside the card edge. */
+		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline-offset: calc(var(--card-stroke, 0px) - var(--stroke-focus));
 
 		/* Typography — hide the link's text visually but keep it in the accessibility tree. */
 		color: transparent;
@@ -67,9 +69,9 @@
 }
 
 @layer overrides {
-	.card {
-		/* Show the focus ring only while the navigable overlay is keyboard-focused; hide it otherwise (including non-clickable cards, which have no overlay). */
-		&:not(:has(.overlay:focus-visible)) {
+	.card > .overlay {
+		/* Show the focus ring only while the overlay is keyboard-focused. */
+		&:not(:focus-visible) {
 			outline-color: transparent;
 		}
 	}
