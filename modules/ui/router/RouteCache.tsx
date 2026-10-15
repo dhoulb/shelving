@@ -1,11 +1,14 @@
 import { Activity, type ReactNode, useRef } from "react";
 import type { AbsolutePath } from "../../util/path.js";
+import { matchPathTemplate } from "../../util/template.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
+import { RouteContext, type RouteState } from "./RouteContext.js";
 
 /** A cached page: the rendered node plus a monotonic `used` tick for least-recently-used eviction. */
 interface CacheEntry {
 	node: ReactNode;
 	used: number;
+	readonly state: RouteState;
 }
 
 /**
@@ -33,6 +36,7 @@ export interface RouteCacheProps {
  *   pages mounted but hidden (via React's `<Activity>`), so navigating back/forward to a page restores its
  *   entire DOM and component state — scroll position, toggles, searches, inputs, focus — untouched.
  * - Pages are kept in a least-recently-used map keyed by `path`; the oldest is unmounted past the limit.
+ * - A page that owns other paths with `<RoutePath>` stays mounted when the URL changes to one of them.
  * - Each snapshot is frozen under its own `<MetaContext>`, so the same single `children` element resolves a
  *   different page per path and a hidden page never re-renders for someone else's URL.
  * - `<Activity mode="hidden">` preserves a hidden page's state while unmounting its effects, so its
@@ -51,32 +55,46 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	const mapRef = useRef<Map<AbsolutePath, CacheEntry>>(undefined);
 	const usedRef = useRef(0);
 
+	// Caching disabled — render the page directly so it unmounts as soon as you leave it.
+	if (maxCached <= 0) return <MetaContext value={meta}>{children}</MetaContext>;
+
+	// Find the page for this path: its own entry, else the most recent page that owns the path with `<RoutePath>`.
+	const map = (mapRef.current ??= new Map());
+	const key = map.has(meta.path) ? meta.path : (_findOwner(map, meta.path) ?? meta.path);
+	const entry = map.get(key) ?? { node: null, used: 0, state: {} };
+	map.set(key, entry);
+
 	// Snapshot the children under the live URL (frozen) so each kept-alive copy keeps rendering for the URL
 	// it was captured at — the same `children` element resolves a different page per path.
-	const node = <MetaContext value={meta}>{children}</MetaContext>;
+	entry.node = (
+		<RouteContext value={entry.state}>
+			<MetaContext value={meta}>{children}</MetaContext>
+		</RouteContext>
+	);
+	entry.used = ++usedRef.current;
 
-	// Caching disabled — render the page directly so it unmounts as soon as you leave it.
-	if (maxCached <= 0) return node;
-
-	// Insert or refresh the current page, then evict the least-recently-used pages beyond the limit.
-	const { path } = meta;
-	const map = (mapRef.current ??= new Map());
-	const used = ++usedRef.current;
-	const entry = map.get(path);
-	if (entry) {
-		entry.node = node;
-		entry.used = used;
-	} else {
-		map.set(path, { node, used });
-	}
+	// Evict the least-recently-used pages beyond the limit.
 	while (map.size > maxCached) map.delete(_findLeastRecentlyUsed(map));
 
-	// Render every cached page; only the current `path` is visible, the rest are kept alive but hidden.
-	return Array.from(map, ([key, cached]) => (
-		<Activity key={key} mode={key === path ? "visible" : "hidden"}>
+	// Render every cached page; only the current one is visible, the rest are kept alive but hidden.
+	return Array.from(map, ([k, cached]) => (
+		<Activity key={k} mode={k === key ? "visible" : "hidden"}>
 			{cached.node}
 		</Activity>
 	));
+}
+
+/** Find the key of the most-recently-used entry whose `<RoutePath>` owns a path, or `undefined` if none does. */
+function _findOwner(map: Map<AbsolutePath, CacheEntry>, path: AbsolutePath): AbsolutePath | undefined {
+	let ownerKey: AbsolutePath | undefined;
+	let ownerUsed = Number.NEGATIVE_INFINITY;
+	for (const [key, { state, used }] of map) {
+		if (state.path && used > ownerUsed && matchPathTemplate(state.path, path)) {
+			ownerUsed = used;
+			ownerKey = key;
+		}
+	}
+	return ownerKey;
 }
 
 /** Find the key of the least-recently-used (lowest `used` tick) entry in the cache map. */
