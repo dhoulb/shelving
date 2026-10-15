@@ -58,18 +58,17 @@ describe("Bun CSS modules", () => {
 		expect(css).toContain(`animation-name: ${name};`);
 	});
 
-	// Before Bun 1.4.3, Bun hashed a class inside `::view-transition-*()` from the file basename but hashed exports from the path, so the two never matched in a real build. Bun 1.4.3 fixes it, so the view-transition classes can move into their `.module.css` files (see dhoulb/shelving#325).
-	test("hashes a view-transition class to match its export from Bun 1.4.3", async () => {
+	// Before Bun 1.4.3, Bun hashed a class inside `::view-transition-*()` from the file basename but hashed exports from the path, so the two never matched (see dhoulb/shelving#325).
+	test("exports a view-transition class with the same hash as its selector", async () => {
 		const dir = await mkdtemp(join(tmpdir(), "shelving-css-"));
 		try {
 			const path = join(dir, "sub", "canary.module.css");
-			await Bun.write(path, ".plain { color: red; }\n.vt {}\n::view-transition-group(.vt) { z-index: 1; }\n");
+			await Bun.write(path, ".plain { color: red; }\n::view-transition-group(.vt) { z-index: 1; }\n");
 			const { exports, css } = await _bundle(path);
 			expect(exports.plain).toBeString();
 			expect(exports.vt).toBeString();
 			expect(css).toContain(`.${exports.plain}`);
-			if (Bun.semver.satisfies(Bun.version, ">=1.4.3")) expect(css).toContain(`(.${exports.vt})`);
-			else expect(css).not.toContain(`(.${exports.vt})`);
+			expect(css).toContain(`(.${exports.vt})`);
 		} finally {
 			await rm(dir, { recursive: true, force: true });
 		}

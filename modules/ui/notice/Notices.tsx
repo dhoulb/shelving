@@ -7,9 +7,9 @@ import { subscribeNotices } from "../util/notice.js";
 import type { ClassProps } from "../util/props.js";
 import { Notice } from "./Notice.js";
 import type { NoticeStore } from "./NoticeStore.js";
-import "./NoticesTransition.css";
 import NOTICES_CSS from "./Notices.module.css";
 import { NOTICES } from "./NoticesStore.js";
+import NOTICES_TRANSITION_CSS from "./NoticesTransition.module.css";
 
 const NOTICES_CLASS = getModuleClass(NOTICES_CSS, "notices");
 
@@ -68,7 +68,11 @@ function NoticeItem({ notice, position }: { notice: NoticeStore<Status>; positio
 	// New and closed notices slide from the side of the corner. A notice that changes in place is drawn from the corner itself.
 	const side = position.endsWith("left") ? "left" : "right";
 	return (
-		<ViewTransition enter={`notice-${side}`} exit={`notice-${side}`} update={`notice-update-${position}`}>
+		<ViewTransition
+			enter={getModuleClass(NOTICES_TRANSITION_CSS, `notice-${side}`)}
+			exit={getModuleClass(NOTICES_TRANSITION_CSS, `notice-${side}`)}
+			update={getModuleClass(NOTICES_TRANSITION_CSS, `notice-update-${position}`)}
+		>
 			<Notice status={status}>{children}</Notice>
 		</ViewTransition>
 	);

@@ -24,6 +24,6 @@ function Details({ open }: { open: boolean }) {
 
 ## Styling
 
-This preset exposes no own `--collapse-transition-*` hooks. Its `CollapseTransition.css` only sets `overflow: hidden` on `::view-transition-image-pair(.collapse)` so the collapsing content is clipped.
+This preset exposes no own `--collapse-transition-*` hooks. Its `CollapseTransition.module.css` only sets `overflow: hidden` on `::view-transition-image-pair(.collapse)` so the collapsing content is clipped.
 
 **Global tokens it reads** — none.

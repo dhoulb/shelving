@@ -1,7 +1,7 @@
 @import url("../style/layers.css");
 @import url("../style/Duration.module.css");
 
-/* Global CSS, not a CSS module — see `Transition.css` for why. */
+/* Global CSS, not a CSS module yet — see dhoulb/shelving#259. */
 @layer defaults {
 	:root {
 		/* A percentage is of the snapshot's own size, so the old and new content sit edge to edge and never overlap. */
