@@ -6,7 +6,8 @@ Shelving's `<SidebarLayout>` and `<CenteredLayout>` already wrap their scrollabl
 
 **Things to know:**
 
-- Pages are kept in a least-recently-used map keyed by `path`. Once `maxCached` pages are retained the least-recently-visited one is unmounted (and loses its state). A never-seen or evicted page mounts fresh at the top.
+- Pages are kept in a least-recently-used map keyed by `path`, or by `getKey(path)` when set. Once `maxCached` pages are retained the least-recently-visited one is unmounted (and loses its state). A never-seen or evicted page mounts fresh at the top.
+- Pass `getKey` to let several paths share one cached page. For example, a profile whose tabs each have their own path (`/dave`, `/dave/followers`) can use `/dave` as the key for all of them. A tab change then updates the page in place: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide.
 - Pass `maxCached={0}` (or less) to disable caching entirely — the page renders directly and unmounts as soon as you leave it.
 - `<Activity mode="hidden">` preserves a hidden page's *state* while unmounting its *effects*, so subscriptions, observers (e.g. infinite-scroll), and timers pause and resume cleanly as the page is hidden and shown.
 - Each snapshot is frozen under its own `<Meta>` context, so the same single `children` element resolves a different page per path and a hidden page never re-renders for someone else's URL.
