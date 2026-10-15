@@ -40,6 +40,7 @@ import { ImageInput } from "shelving/ui";
 | `--image-input-space` | Space above and below the square | `var(--space-small)` (12px) |
 | `--image-input-radius` | Corner radius of the square | `var(--radius-small)` (12px) |
 | `--image-input-background` | Square background when empty | `var(--tint-90)` |
+| `--image-input-preview-background` | Background behind the picked image, seen through a transparent image | `#000` |
 | `--image-input-focus-border` | Outline when the input has focus | `var(--stroke-focus) solid var(--color-focus)` |
 | `--image-input-invalid-border` | Outline when `message` is set | `var(--stroke-focus) solid var(--color-failure)` |
 | `--image-input-clear-inset` | Distance of the X button from the top and end edges | `var(--space-small)` (12px) |

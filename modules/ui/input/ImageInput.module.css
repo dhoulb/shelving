@@ -49,6 +49,9 @@
 		inline-size: 100%;
 		block-size: 100%;
 		object-fit: cover;
+
+		/* A transparent image shows on black, not on the empty square's tint. */
+		background: var(--image-input-preview-background, #000);
 	}
 
 	/* The native file input: still focusable and opened by its label, but not seen. */
