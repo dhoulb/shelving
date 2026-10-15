@@ -1,0 +1,76 @@
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+
+@layer components {
+	.image-input {
+		/* Box: a square as wide as its container. */
+		position: relative;
+		box-sizing: border-box;
+		inline-size: 100%;
+		aspect-ratio: 1;
+		margin-block: var(--image-input-space, var(--space-small));
+	}
+
+	/* The square itself: a tap anywhere opens the file picker. */
+	.picker {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		overflow: hidden;
+		border-radius: var(--image-input-radius, var(--radius-small));
+		background: var(--image-input-background, var(--tint-90));
+		cursor: pointer;
+
+		/* The native file input is not seen, so show its focus ring on the square. */
+		&:has(:focus-visible) {
+			outline: var(--image-input-focus-border, var(--stroke-focus) solid var(--color-focus));
+		}
+
+		&[aria-invalid="true"] {
+			outline: var(--image-input-invalid-border, var(--stroke-focus) solid var(--color-failure));
+		}
+
+		&:has(:disabled) {
+			cursor: default;
+			opacity: 0.5;
+		}
+	}
+
+	/* The picked image, covering the whole square. */
+	.preview {
+		position: absolute;
+		inset: 0;
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+
+	/* The native file input: still focusable and opened by its label, but not seen. */
+	.file {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	/* The "Choose…" button only shows the label's action, so taps go through to the label. */
+	.choose {
+		pointer-events: none;
+	}
+
+	/* The X button that clears the image, in the top corner. */
+	.clear {
+		position: absolute;
+		inset-block-start: var(--image-input-clear-inset, var(--space-small));
+		inset-inline-end: var(--image-input-clear-inset, var(--space-small));
+		margin: 0;
+	}
+}

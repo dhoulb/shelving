@@ -7,6 +7,7 @@ export * from "./DataInput.js";
 export * from "./DateInput.js";
 export * from "./DictionaryInput.js";
 export * from "./FileInput.js";
+export * from "./ImageInput.js";
 export * from "./Input.js";
 export * from "./NumberInput.js";
 export * from "./OutputInput.js";

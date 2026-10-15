@@ -101,7 +101,16 @@
 				white-space: pre-wrap;
 				overflow-wrap: break-word;
 				field-sizing: content;
-				min-height: calc(1lh * attr(rows number, 2));
+
+				/* `field-sizing` ignores `rows`, so set the minimum height from `--input-rows` (set inline from the `rows` prop). */
+				min-block-size: calc(
+					var(--input-rows, 2) *
+					1lh +
+					2 *
+					var(--input-padding, var(--space-small)) +
+					2 *
+					var(--input-stroke, var(--stroke-normal))
+				);
 			}
 		}
 
