@@ -2,13 +2,13 @@ import { Activity, type ReactNode, useRef } from "react";
 import type { AbsolutePath } from "../../util/path.js";
 import { matchPathTemplate } from "../../util/template.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
-import { RoutePathContext, type RoutePathOwner } from "./RoutePath.js";
+import { RouteContext, type RouteState } from "./RouteContext.js";
 
 /** A cached page: the rendered node plus a monotonic `used` tick for least-recently-used eviction. */
 interface CacheEntry {
 	node: ReactNode;
 	used: number;
-	readonly owner: RoutePathOwner;
+	readonly state: RouteState;
 }
 
 /**
@@ -61,15 +61,15 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	// Find the page for this path: its own entry, else the most recent page that owns the path with `<RoutePath>`.
 	const map = (mapRef.current ??= new Map());
 	const key = map.has(meta.path) ? meta.path : (_findOwner(map, meta.path) ?? meta.path);
-	const entry = map.get(key) ?? { node: null, used: 0, owner: {} };
+	const entry = map.get(key) ?? { node: null, used: 0, state: {} };
 	map.set(key, entry);
 
 	// Snapshot the children under the live URL (frozen) so each kept-alive copy keeps rendering for the URL
 	// it was captured at — the same `children` element resolves a different page per path.
 	entry.node = (
-		<RoutePathContext value={entry.owner}>
+		<RouteContext value={entry.state}>
 			<MetaContext value={meta}>{children}</MetaContext>
-		</RoutePathContext>
+		</RouteContext>
 	);
 	entry.used = ++usedRef.current;
 
@@ -88,8 +88,8 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 function _findOwner(map: Map<AbsolutePath, CacheEntry>, path: AbsolutePath): AbsolutePath | undefined {
 	let ownerKey: AbsolutePath | undefined;
 	let ownerUsed = Number.NEGATIVE_INFINITY;
-	for (const [key, { owner, used }] of map) {
-		if (owner.path && used > ownerUsed && matchPathTemplate(owner.path, path)) {
+	for (const [key, { state, used }] of map) {
+		if (state.path && used > ownerUsed && matchPathTemplate(state.path, path)) {
 			ownerUsed = used;
 			ownerKey = key;
 		}
