@@ -1,5 +1,5 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, useLayoutEffect, useRef, ViewTransition } from "react";
+import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, ViewTransition } from "react";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -30,20 +30,13 @@ export interface DialogProps extends OptionalChildProps {
  * @see https://shelving.cc/ui/Dialog
  */
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
-	const ref = useRef<HTMLDialogElement>(null);
-
-	// Open in a layout effect, not a passive effect. React runs layout effects inside the view transition's update, so the new snapshot shows the open dialog.
-	useLayoutEffect(() => {
-		ref.current?.showModal();
-	}, []);
-
 	return (
 		<Suspense fallback={null}>
 			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. */}
 			<ViewTransition enter="fade" exit="fade">
 				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
 				<dialog
-					ref={ref}
+					ref={_showModal}
 					className={getModuleClass(styles, "dialog")}
 					onClick={_closeOnBackdropClick}
 					onCancel={e => {
@@ -64,6 +57,15 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 		</Suspense>
 	);
 });
+
+/**
+ * Open a `<dialog>` as a modal when React attaches it.
+ * - A ref callback, not a layout effect. React holds the layout effects of a view transition until its images are ready, and an image in a closed `<dialog>` is never ready, so a layout effect would never open a dialog with an image in it.
+ * - The ref callback still runs inside the view transition's update, so the new snapshot shows the open dialog.
+ */
+function _showModal(dialog: HTMLDialogElement | null): void {
+	if (dialog && !dialog.open) dialog.showModal();
+}
 
 /** When the user clicks anywhere on a `<dialog>` element (and the click isn't on a link etc), then close the dialog. */
 function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>): void {
