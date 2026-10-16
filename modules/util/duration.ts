@@ -1,6 +1,6 @@
 import { DAY, HOUR, MINUTE, MONTH, SECOND, WEEK, YEAR } from "./constants.js";
 import { getMidnight, type PossibleDate, requireDate } from "./date.js";
-import { type FormatOptions, formatNumber, type UnitFormatOptions } from "./format.js";
+import type { FormatOptions, UnitFormatOptions } from "./format.js";
 import type { AnyCaller } from "./function.js";
 import type { MapKey } from "./map.js";
 import { type Unit, UnitList } from "./units.js";
@@ -416,7 +416,6 @@ export function getBestDurationUnit(ms: number): Unit<DurationUnitKey> {
  * Format a compact best-fit description of when a date happens or happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now`
  * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
  * - But: anything under a minute will show `just now`, which makes more sense in most UIs.
- * - Narrow months show as `mo` (e.g. `6mo ago`), so they do not read as minutes.
  *
  * @param target Date the duration is measured to.
  * @param current Date the duration is measured from (defaults to now).
@@ -436,7 +435,7 @@ export function formatWhen(
 	const abs = Math.abs(ms);
 	if (abs < MINUTE) return "just now";
 	const unit = getBestDurationUnit(ms);
-	const str = _formatDurationUnit(unit, unit.from(abs), options);
+	const str = unit.format(unit.from(abs), options);
 	return ms > 0 ? `in ${str}` : `${str} ago`;
 }
 
@@ -460,14 +459,13 @@ export function formatUntil(
 ): string {
 	const ms = getMilliseconds(current, target, caller);
 	const unit = getBestDurationUnit(ms);
-	return _formatDurationUnit(unit, unit.from(ms), options);
+	return unit.format(unit.from(ms), options);
 }
 
 /**
- * Format a compact best-fit description of how long since a date, e.g. `10d` or `2h` or `6mo` or `just now`
+ * Format a compact best-fit description of how long since a date, e.g. `10d` or `2h` or `just now`
  * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
  * - Anything under a minute (either way) shows `just now`.
- * - Narrow months show as `mo` (e.g. `6mo`), so they do not read as minutes.
  *
  * @param target Date to count back from.
  * @param current Date to count to (defaults to now).
@@ -486,14 +484,7 @@ export function formatAgo(
 	const ms = getMilliseconds(target, current, caller);
 	if (Math.abs(ms) < MINUTE) return "just now";
 	const unit = getBestDurationUnit(ms);
-	return _formatDurationUnit(unit, unit.from(ms), options);
-}
-
-/** Format an amount of a duration unit. Narrow months show as `mo` (e.g. `6mo`), because `Intl` shows `6m`, which reads as minutes. */
-function _formatDurationUnit(unit: Unit<DurationUnitKey>, amount: number, options: UnitFormatOptions | undefined): string {
-	const merged = { ...unit.options, ...options };
-	if (unit.key === "month" && merged.unitDisplay === "narrow") return `${formatNumber(amount, merged)}mo`;
-	return unit.format(amount, options);
+	return unit.format(unit.from(ms), options);
 }
 
 /** Options for formatting a `DurationData` object with `formatDuration()`. */

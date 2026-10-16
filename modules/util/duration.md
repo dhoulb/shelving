@@ -9,7 +9,6 @@ These helpers measure the distance between two dates — in milliseconds, second
 - Whole-unit helpers (`getSecondsUntil()`, `getMinutesUntil()`, `getHoursUntil()`) **round** to the nearest unit; `getWeeksUntil()` truncates.
 - `"now"` is accepted anywhere a `PossibleDate` is expected and resolves to the current time.
 - `formatWhen()` and `formatAgo()` collapse anything under a minute to `"just now"`.
-- Narrow months show as `mo` (e.g. `"6mo"`), so they do not read as minutes (`"6m"`).
 
 ## Usage
 
