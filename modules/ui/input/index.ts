@@ -21,4 +21,5 @@ export * from "./QueryRadiosInput.js";
 export * from "./RadioInput.js";
 export * from "./SchemaInput.js";
 export * from "./SelectInput.js";
+export * from "./TextareaInput.js";
 export * from "./TextInput.js";

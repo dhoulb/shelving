@@ -43,7 +43,7 @@ export class UUIDSchema extends StringSchema {
 			...rest,
 			max, // 36 chars including hyphens (which get stripped by sanitize for appearances).
 			min: 32,
-			rows: 1,
+			multiline: false,
 		});
 	}
 

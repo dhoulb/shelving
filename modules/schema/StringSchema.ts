@@ -32,8 +32,13 @@ export interface StringSchemaOptions extends SchemaOptions {
 	 */
 	readonly max?: number | undefined;
 	/**
-	 * Number of rows; more than one enables multiline sanitization.
-	 * @default 1
+	 * Whether the string keeps line breaks (multiline sanitization). An input for it is a `<textarea>` that grows.
+	 * @default false
+	 */
+	readonly multiline?: boolean | undefined;
+	/**
+	 * Rows a multiline input shows at first. Set `1` for a box that starts one line high, like a chat message. Single-line inputs ignore it.
+	 * @default `2` when `multiline`, else `1`
 	 */
 	readonly rows?: number | undefined;
 	/** Regular expression the sanitized string must match. */
@@ -61,6 +66,7 @@ export class StringSchema extends Schema<string> {
 	readonly min: number;
 	readonly max: number;
 	readonly rows: number;
+	readonly multiline: boolean;
 	readonly match: RegExp | undefined;
 	readonly case: "upper" | "lower" | undefined;
 
@@ -69,7 +75,8 @@ export class StringSchema extends Schema<string> {
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
 		value = "",
-		rows = 1,
+		multiline = false,
+		rows = multiline ? 2 : 1,
 		match,
 		case: _case,
 		input = "text",
@@ -79,6 +86,7 @@ export class StringSchema extends Schema<string> {
 		this.min = min;
 		this.max = max;
 		this.rows = rows;
+		this.multiline = multiline;
 		this.match = match;
 		this.case = _case;
 		this.input = input;
@@ -101,7 +109,7 @@ export class StringSchema extends Schema<string> {
 	/**
 	 * Sanitize the string by removing unwanted characters.
 	 *
-	 * - Uses multiline sanitization when `rows` is greater than one, otherwise single-line sanitization.
+	 * - Uses multiline sanitization when `multiline` is set, otherwise single-line sanitization.
 	 * - Applies the configured `case` folding (`"upper"` or `"lower"`) if set.
 	 *
 	 * @param str String to sanitize.
@@ -110,7 +118,7 @@ export class StringSchema extends Schema<string> {
 	 * @see https://shelving.cc/schema/StringSchema/sanitize
 	 */
 	sanitize(str: string): string {
-		const sane = this.rows > 1 ? sanitizeMultilineText(str) : sanitizeText(str);
+		const sane = this.multiline ? sanitizeMultilineText(str) : sanitizeText(str);
 		if (this.case === "upper") return sane.toUpperCase();
 		if (this.case === "lower") return sane.toLowerCase();
 		return sane;

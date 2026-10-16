@@ -55,7 +55,7 @@ export class CurrencyCodeSchema extends StringSchema {
 			...options,
 			max, // Valid currency code is 3 uppercase letters.
 			min: 3,
-			rows: 1,
+			multiline: false,
 			case: "upper",
 			match: /^[A-Z]{3}$/, // Valid currency code is 3 uppercase letters.
 		});

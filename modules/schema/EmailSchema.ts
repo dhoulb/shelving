@@ -59,7 +59,7 @@ export class EmailSchema extends StringSchema {
 			input,
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 			match: R_MATCH,
 		});
 	}

@@ -29,6 +29,7 @@ import { DictionaryInput } from "./DictionaryInput.js";
 import type { ValueInputProps } from "./Input.js";
 import { NumberInput } from "./NumberInput.js";
 import { SelectInput } from "./SelectInput.js";
+import { TextareaInput } from "./TextareaInput.js";
 import { TextInput } from "./TextInput.js";
 
 /**
@@ -54,7 +55,7 @@ export interface SchemaInputProps<T extends Schema, I = never> extends ValueInpu
 
 /**
  * Show the appropriate input control for a schema, dispatching on the schema's concrete type.
- * - Picks `DateInput`, `NumberInput`, choice radios/select, `CheckboxInput`, `TextInput`, `ArrayInput`, `DictionaryInput`, or `DataInput`.
+ * - Picks `DateInput`, `NumberInput`, choice radios/select, `CheckboxInput`, `TextInput` or `TextareaInput`, `ArrayInput`, `DictionaryInput`, or `DataInput`.
  * - `required` defaults to whether the schema is required.
  *
  * @returns The matching input element for the schema.
@@ -191,17 +192,19 @@ export function BooleanSchemaInput({ schema, value, ...props }: BooleanSchemaInp
 export interface StringSchemaInputProps extends SchemaInputProps<StringSchema, unknown> {}
 
 /**
- * Show a `TextInput` for a `StringSchema`, sanitising and formatting values with the schema.
+ * Show a `TextInput` for a `StringSchema`, or a `TextareaInput` when the schema is `multiline`, sanitising and formatting values with the schema.
  * - Publishes the sanitized value through `onValue`; the schema's `format()` only shapes what the input displays (on first render and on blur).
+ * - A `TextareaInput` starts at the schema's `rows` (2 by default for a multiline schema).
  *
- * @returns A `TextInput` element bound to the schema.
+ * @returns A `TextInput` or `TextareaInput` element bound to the schema.
  * @kind component
  * @example <StringSchemaInput name="email" schema={EMAIL} />
  * @see https://shelving.cc/ui/StringSchemaInput
  */
 export function StringSchemaInput({ schema, value, onValue, ...props }: StringSchemaInputProps): ReactElement {
+	const Input = schema.multiline ? TextareaInput : TextInput;
 	return (
-		<TextInput
+		<Input
 			{...schema}
 			value={getString(value)}
 			onValue={str => onValue(str === undefined ? undefined : schema.sanitize(str))}

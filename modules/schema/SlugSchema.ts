@@ -44,7 +44,7 @@ export class SlugSchema extends StringSchema {
 			...options,
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 		});
 	}
 

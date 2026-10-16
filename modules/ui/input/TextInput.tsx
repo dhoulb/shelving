@@ -1,20 +1,19 @@
-import type { CSSProperties, ReactElement, SyntheticEvent } from "react";
+import type { ReactElement, SyntheticEvent } from "react";
 import type { StringInputType } from "../../schema/StringSchema.js";
 import { PASSTHROUGH } from "../../util/function.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "../input/Input.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import INPUT_CSS from "./Input.module.css";
 
-type TextFormatter = (str: string) => string;
+/** Formats a string for display in a text input. */
+export type TextFormatter = (str: string) => string;
 
 /**
- * Props for `TextInput`, a single- or multi-line text input bound to a `string` value.
+ * Props for `TextInput`, a single-line text input bound to a `string` value.
  *
  * @see https://shelving.cc/ui/TextInputProps
  */
 export interface TextInputProps extends ValueInputProps<string>, InputVariants {
-	rows?: number | undefined;
-	multiline?: boolean;
 	input?: StringInputType;
 	min?: number | undefined;
 	max?: number | undefined;
@@ -23,11 +22,10 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
 }
 
 /**
- * Text input bound to a `string` value, rendered as an `<input>` or a `<textarea>` when `rows > 1`.
+ * Single-line text input bound to a `string` value, rendered as an `<input>`. Use `TextareaInput` for multiline text.
  * - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
- * - Multiline mode auto-grows the textarea to fit its content.
  *
- * @returns A text `<input>` or `<textarea>` element.
+ * @returns A text `<input>` element.
  * @example <TextInput name="name" value={name} onValue={setName} />
  * @see https://shelving.cc/ui/TextInput
  */
@@ -43,46 +41,16 @@ export function TextInput({
 	input = "text",
 	min = 0,
 	max = Number.POSITIVE_INFINITY,
-	rows = 1,
 	formatter = PASSTHROUGH,
 	className,
 	...variants
 }: TextInputProps): ReactElement {
-	const onBlur = ({ currentTarget }: SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+	const onBlur = ({ currentTarget }: SyntheticEvent<HTMLInputElement>) => {
 		currentTarget.value = formatter(currentTarget.value);
 	};
-
-	if (rows > 1) {
-		const onChange = (e: SyntheticEvent<HTMLTextAreaElement>) => {
-			onValue?.(e.currentTarget.value);
-			_resize(e.currentTarget, rows);
-		};
-
-		return (
-			<textarea
-				ref={el => void (el && _resize(el, rows))}
-				name={name}
-				defaultValue={value !== undefined ? formatter(value) : ""}
-				minLength={Number.isFinite(min) ? min : 0}
-				maxLength={Number.isFinite(max) ? max : undefined}
-				rows={rows}
-				style={{ "--input-rows": rows } as CSSProperties}
-				required={required && min > 0}
-				disabled={disabled}
-				placeholder={placeholder || " "}
-				className={getClass(getInputClass(variants), getModuleClass(INPUT_CSS, "text"), getModuleClass(INPUT_CSS, "multiline"), className)}
-				onChange={onChange}
-				onBlur={onBlur}
-				title={message}
-				aria-invalid={!!message}
-			/>
-		);
-	}
-
 	const onChange = (e: SyntheticEvent<HTMLInputElement>) => {
 		onValue?.(e.currentTarget.value);
 	};
-
 	return (
 		<input
 			name={name}
@@ -100,15 +68,4 @@ export function TextInput({
 			aria-invalid={!!message}
 		/>
 	);
-}
-
-/**
- * @todo This can be removed when Firefox supports `field-sizing:` in CSS.
- *   https://caniuse.com/wf-field-sizing
- */
-function _resize(el: HTMLTextAreaElement, minRows: number): void {
-	if (el && !CSS.supports("field-sizing", "content")) {
-		el.rows = minRows;
-		while (el.scrollHeight > el.clientHeight) el.rows++;
-	}
 }
