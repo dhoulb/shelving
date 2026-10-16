@@ -102,10 +102,9 @@
 				overflow-wrap: break-word;
 				field-sizing: content;
 
-				/* `field-sizing` ignores `rows`, so set the minimum height from `--input-rows` (set inline from the `rows` prop). */
+				/* `field-sizing` ignores `rows`, so set the minimum height from `--input-rows` (set inline from the `rows` prop). Never shorter than a single-line input, so a one-row textarea matches a button with an icon. */
 				min-block-size: calc(
-					var(--input-rows, 2) *
-					1lh +
+					max(var(--input-icon-size, var(--size-icon)), var(--input-rows, 2) * 1lh) +
 					2 *
 					var(--input-padding, var(--space-small)) +
 					2 *
