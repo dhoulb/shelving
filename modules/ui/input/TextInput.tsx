@@ -1,4 +1,4 @@
-import type { ReactElement, SyntheticEvent } from "react";
+import type { CSSProperties, ReactElement, SyntheticEvent } from "react";
 import type { StringInputType } from "../../schema/StringSchema.js";
 import { PASSTHROUGH } from "../../util/function.js";
 import { getInputClass, type InputVariants, type ValueInputProps } from "../input/Input.js";
@@ -66,6 +66,7 @@ export function TextInput({
 				minLength={Number.isFinite(min) ? min : 0}
 				maxLength={Number.isFinite(max) ? max : undefined}
 				rows={rows}
+				style={{ "--input-rows": rows } as CSSProperties}
 				required={required && min > 0}
 				disabled={disabled}
 				placeholder={placeholder || " "}
