@@ -45,7 +45,7 @@ export class PhoneSchema extends StringSchema {
 			// Valid phone number is 16 digits or fewer (15 numerals with a leading `+` plus).
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 			// Valid phone number is max 16 digits made up of:
 			// - Country code (`+` plus character and 1-3 digits, e.g. `+44` or `+1`).
 			// - Subscriber number (5-12 digits — the Solomon Islands have five-digit phone numbers apparently).

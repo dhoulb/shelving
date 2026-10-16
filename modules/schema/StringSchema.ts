@@ -32,16 +32,15 @@ export interface StringSchemaOptions extends SchemaOptions {
 	 */
 	readonly max?: number | undefined;
 	/**
-	 * Number of rows an input shows; more than one also makes the string multiline.
-	 * @default 1
-	 */
-	readonly rows?: number | undefined;
-	/**
-	 * Whether the string keeps line breaks (multiline sanitization), and an input shows a `<textarea>` that grows.
-	 * - Set it with `rows: 1` for a box that starts one line high, like a chat message.
-	 * @default `rows > 1`
+	 * Whether the string keeps line breaks (multiline sanitization). An input for it is a `<textarea>` that grows.
+	 * @default false
 	 */
 	readonly multiline?: boolean | undefined;
+	/**
+	 * Rows a multiline input shows at first. Set `1` for a box that starts one line high, like a chat message. Single-line inputs ignore it.
+	 * @default `2` when `multiline`, else `1`
+	 */
+	readonly rows?: number | undefined;
 	/** Regular expression the sanitized string must match. */
 	readonly match?: RegExp | undefined;
 	/** Force the result to `"upper"` or `"lower"` case. */
@@ -76,8 +75,8 @@ export class StringSchema extends Schema<string> {
 		min = 0,
 		max = Number.POSITIVE_INFINITY,
 		value = "",
-		rows = 1,
-		multiline = rows > 1,
+		multiline = false,
+		rows = multiline ? 2 : 1,
 		match,
 		case: _case,
 		input = "text",
@@ -110,7 +109,7 @@ export class StringSchema extends Schema<string> {
 	/**
 	 * Sanitize the string by removing unwanted characters.
 	 *
-	 * - Uses multiline sanitization when `multiline` is set (by default when `rows` is greater than one), otherwise single-line sanitization.
+	 * - Uses multiline sanitization when `multiline` is set, otherwise single-line sanitization.
 	 * - Applies the configured `case` folding (`"upper"` or `"lower"`) if set.
 	 *
 	 * @param str String to sanitize.

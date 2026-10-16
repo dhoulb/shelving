@@ -51,7 +51,7 @@ export class ColorSchema extends StringSchema {
 			input,
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 			match: COLOR_REGEXP,
 		});
 	}

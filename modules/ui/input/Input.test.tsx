@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement } from "react";
-import { DateInput, FileInput, ImageInput, NumberInput, TextInput } from "shelving/ui";
+import { DateInput, FileInput, ImageInput, NumberInput, TextareaInput, TextInput } from "shelving/ui";
 import { PASSTHROUGH } from "shelving/util/function";
 
 /** The props of the rendered element that the tests read. */
@@ -13,7 +13,7 @@ describe("value inputs", () => {
 	// React's `onChange` already fires for each native `input` event, so a second `onInput` handler would call `onValue()` twice.
 	const elements: [string, ReactElement][] = [
 		["TextInput", TextInput({ name: "x", onValue: PASSTHROUGH })],
-		["TextInput (multiline)", TextInput({ name: "x", rows: 3, onValue: PASSTHROUGH })],
+		["TextareaInput", TextareaInput({ name: "x", rows: 3, onValue: PASSTHROUGH })],
 		["NumberInput", NumberInput({ name: "x", onValue: PASSTHROUGH })],
 		["DateInput", DateInput({ name: "x", onValue: PASSTHROUGH })],
 		["FileInput", FileInput({ name: "x", onValue: PASSTHROUGH })],

@@ -100,12 +100,20 @@ describe("StringSchemaInput", () => {
 		expect(currentTarget.value).toBe("example.com/path");
 	});
 	test("renders a one-row textarea when the schema is multiline", () => {
-		// `multiline` makes a `<textarea>` even when `rows` is one.
-		const schema = new StringSchema({ rows: 1, multiline: true });
+		// `multiline` makes a `<textarea>`, and `rows` sets its first height.
+		const schema = new StringSchema({ multiline: true, rows: 1 });
 		const html = renderToStaticMarkup(<StringSchemaInput name="text" schema={schema} value="" onValue={PASSTHROUGH} />);
 
 		expect(html).toContain("<textarea");
 		expect(html).toContain('rows="1"');
+	});
+
+	test("renders an input when the schema is not multiline, whatever its rows", () => {
+		const schema = new StringSchema({ rows: 3 });
+		const html = renderToStaticMarkup(<StringSchemaInput name="text" schema={schema} value="" onValue={PASSTHROUGH} />);
+
+		expect(html).toContain("<input");
+		expect(html).not.toContain("<textarea");
 	});
 });
 

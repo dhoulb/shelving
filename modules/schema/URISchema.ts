@@ -59,7 +59,7 @@ export class URISchema extends StringSchema {
 			input,
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 		});
 		this.schemes = schemes;
 	}

@@ -64,7 +64,7 @@ export class URLSchema extends StringSchema {
 			input,
 			max,
 			min: 1,
-			rows: 1,
+			multiline: false,
 		});
 		this.base = getURL(base)?.href;
 		this.schemes = schemes;
