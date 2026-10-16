@@ -8,7 +8,7 @@ These helpers measure the distance between two dates — in milliseconds, second
 - `getMonthsUntil()` / `getYearsUntil()` are also calendar-based: March 31 → April 1 is 1 month regardless of the number of hours.
 - Whole-unit helpers (`getSecondsUntil()`, `getMinutesUntil()`, `getHoursUntil()`) **round** to the nearest unit; `getWeeksUntil()` truncates.
 - `"now"` is accepted anywhere a `PossibleDate` is expected and resolves to the current time.
-- `formatWhen()` collapses anything under 30 seconds to `"just now"`.
+- `formatWhen()` and `formatAgo()` collapse anything under a minute to `"just now"`.
 
 ## Usage
 

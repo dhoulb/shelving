@@ -415,7 +415,7 @@ export function getBestDurationUnit(ms: number): Unit<DurationUnitKey> {
 /**
  * Format a compact best-fit description of when a date happens or happened, e.g. `in 10d` or `2h ago` or `in 1w` or `just now`
  * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
- * - But: anything under 30 seconds will show `just now`, which makes more sense in most UIs.
+ * - But: anything under a minute will show `just now`, which makes more sense in most UIs.
  *
  * @param target Date the duration is measured to.
  * @param current Date the duration is measured from (defaults to now).
@@ -433,9 +433,10 @@ export function formatWhen(
 ): string {
 	const ms = getMilliseconds(current, target, caller);
 	const abs = Math.abs(ms);
-	if (abs < 30 * SECOND) return "just now";
+	if (abs < MINUTE) return "just now";
 	const unit = getBestDurationUnit(ms);
-	return ms > 0 ? `in ${unit.format(unit.from(abs), options)}` : `${unit.format(unit.from(abs), options)} ago`;
+	const str = unit.format(unit.from(abs), options);
+	return ms > 0 ? `in ${str}` : `${str} ago`;
 }
 
 /**
@@ -462,14 +463,15 @@ export function formatUntil(
 }
 
 /**
- * Format a compact best-fit description of how long since a date, e.g. `10d` or `2h` or `-1w`
+ * Format a compact best-fit description of how long since a date, e.g. `10d` or `2h` or `just now`
  * - See `getBestDurationUnit()` for details on how the best-fit unit is chosen.
+ * - Anything under a minute (either way) shows `just now`.
  *
  * @param target Date to count back from.
  * @param current Date to count to (defaults to now).
  * @param options Formatting options for the chosen duration unit.
  * @param caller Function to attribute a thrown error to (defaults to `formatAgo` itself).
- * @returns Compact string like `10d` or `2h` (negative if `target` is in the future).
+ * @returns Compact string like `10d`, `2h` or `just now` (negative if `target` is in the future).
  * @throws {RequiredError} If `target` or `current` cannot be converted to a valid date.
  * @see https://shelving.cc/util/duration/formatAgo
  */
@@ -480,6 +482,7 @@ export function formatAgo(
 	caller: AnyCaller = formatAgo,
 ): string {
 	const ms = getMilliseconds(target, current, caller);
+	if (Math.abs(ms) < MINUTE) return "just now";
 	const unit = getBestDurationUnit(ms);
 	return unit.format(unit.from(ms), options);
 }
