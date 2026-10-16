@@ -74,7 +74,7 @@ describe("ClassProps", () => {
 	});
 
 	test("popover wrapper components render their `className` on the trigger, not the floating panel", () => {
-		// `PopoverButtonInput` (and `PopoverButton`/`QueryInput`) style their always-visible trigger — only a bare `<Popover>` styles the panel.
+		// `PopoverButtonInput` (and `PopoverButton`/`QueryRadiosInput`) style their always-visible trigger — only a bare `<Popover>` styles the panel.
 		const html = render(
 			<PopoverButtonInput name="pick" className="spongy">
 				{["Pick", "Panel"]}
