@@ -99,6 +99,14 @@ describe("StringSchemaInput", () => {
 		expect(URL_SCHEMA.validate(values[0])).toBe("https://example.com/path");
 		expect(currentTarget.value).toBe("example.com/path");
 	});
+	test("renders a one-row textarea when the schema is multiline", () => {
+		// `multiline` makes a `<textarea>` even when `rows` is one.
+		const schema = new StringSchema({ rows: 1, multiline: true });
+		const html = renderToStaticMarkup(<StringSchemaInput name="text" schema={schema} value="" onValue={PASSTHROUGH} />);
+
+		expect(html).toContain("<textarea");
+		expect(html).toContain('rows="1"');
+	});
 });
 
 describe("ChoiceSchemaInput", () => {

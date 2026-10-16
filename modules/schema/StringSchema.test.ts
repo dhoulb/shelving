@@ -70,3 +70,13 @@ describe("options.max", () => {
 		expect(() => schema.validate("abcdef")).toThrow();
 	});
 });
+describe("options.multiline", () => {
+	test("Defaults to true when rows is more than one", () => {
+		expect(new StringSchema({}).multiline).toBe(false);
+		expect(new StringSchema({ rows: 3 }).multiline).toBe(true);
+	});
+	test("Keeps line breaks with one row when set", () => {
+		expect(new StringSchema({ rows: 1, multiline: true }).validate("a\nb")).toBe("a\nb");
+		expect(new StringSchema({ rows: 1 }).validate("a\nb")).toBe("a b");
+	});
+});

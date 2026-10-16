@@ -13,8 +13,10 @@ type TextFormatter = (str: string) => string;
  * @see https://shelving.cc/ui/TextInputProps
  */
 export interface TextInputProps extends ValueInputProps<string>, InputVariants {
+	/** Rows the input shows (the textarea's minimum height). */
 	rows?: number | undefined;
-	multiline?: boolean;
+	/** Show a `<textarea>` that keeps line breaks. Defaults to `rows > 1`, so a one-row textarea needs `multiline`. */
+	multiline?: boolean | undefined;
 	input?: StringInputType;
 	min?: number | undefined;
 	max?: number | undefined;
@@ -23,7 +25,7 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
 }
 
 /**
- * Text input bound to a `string` value, rendered as an `<input>` or a `<textarea>` when `rows > 1`.
+ * Text input bound to a `string` value, rendered as an `<input>`, or a `<textarea>` when `multiline` (by default when `rows > 1`).
  * - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
  * - Multiline mode auto-grows the textarea to fit its content.
  *
@@ -44,6 +46,7 @@ export function TextInput({
 	min = 0,
 	max = Number.POSITIVE_INFINITY,
 	rows = 1,
+	multiline = rows > 1,
 	formatter = PASSTHROUGH,
 	className,
 	...variants
@@ -52,7 +55,7 @@ export function TextInput({
 		currentTarget.value = formatter(currentTarget.value);
 	};
 
-	if (rows > 1) {
+	if (multiline) {
 		const onChange = (e: SyntheticEvent<HTMLTextAreaElement>) => {
 			onValue?.(e.currentTarget.value);
 			_resize(e.currentTarget, rows);
