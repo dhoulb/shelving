@@ -9,7 +9,8 @@ A large square image picker. With no image, it shows a "Choose…" button in the
 - `value` is the image to show: a picked `File`, or the URL of the current image (for example, a saved profile photo).
 - The square is as wide as its container. Put it in a narrow container to make it smaller.
 - `placeholder` sets the button text (default "Choose…"). `title` labels the input for screen readers.
-- `types` sets the image types the picker accepts (default JPEG, PNG, WebP, and GIF).
+- `types` sets the image types the picker accepts (default `IMAGE_TYPES`).
+- `capture` opens the front (`"user"`) or back (`"environment"`) camera straight away. On phones this skips the photo library, so people can only take a new photo. Leave it out to get the normal picker, which on a phone also offers to take a photo.
 
 ## Usage
 

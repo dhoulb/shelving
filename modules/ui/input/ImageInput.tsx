@@ -1,6 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, type ReactElement, type SyntheticEvent, useEffect, useMemo } from "react";
-import type { FileTypes } from "../../util/file.js";
+import { type FileCapture, type FileTypes, getFileAccept, IMAGE_TYPES } from "../../util/file.js";
 import { getButtonClass } from "../button/Button.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -14,9 +14,6 @@ const IMAGE_INPUT_FILE_CLASS = getModuleClass(IMAGE_INPUT_CSS, "file");
 const IMAGE_INPUT_CHOOSE_CLASS = getClass(getButtonClass({ solid: true }), getModuleClass(IMAGE_INPUT_CSS, "choose"));
 const IMAGE_INPUT_CLEAR_CLASS = getClass(getButtonClass({ solid: true, small: true }), getModuleClass(IMAGE_INPUT_CSS, "clear"));
 
-/** The image types the picker accepts by default. */
-const IMAGE_TYPES: FileTypes = { jpg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif" };
-
 /**
  * Props for `<ImageInput>`, a square image picker that emits the picked `File`.
  *
@@ -25,9 +22,11 @@ const IMAGE_TYPES: FileTypes = { jpg: "image/jpeg", png: "image/png", webp: "ima
 export interface ImageInputProps extends ValueInputProps<File, string>, BlockVariants {
 	/**
 	 * The image types the picker accepts.
-	 * @default { jpg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif" }
+	 * @default IMAGE_TYPES
 	 */
 	types?: FileTypes | undefined;
+	/** Which camera the picker opens straight away. On phones this skips the photo library. */
+	capture?: FileCapture | undefined;
 }
 
 /**
@@ -50,6 +49,7 @@ export function ImageInput({
 	value,
 	onValue,
 	types = IMAGE_TYPES,
+	capture,
 	className,
 	...variants
 }: ImageInputProps): ReactElement {
@@ -70,7 +70,8 @@ export function ImageInput({
 				<input
 					name={name}
 					type="file"
-					accept={Object.values(types).join(",")}
+					accept={getFileAccept(types)}
+					capture={capture}
 					required={required && !value}
 					disabled={disabled}
 					aria-label={title}
