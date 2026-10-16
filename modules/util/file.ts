@@ -10,6 +10,60 @@ import type { Nullish } from "./null.js";
 export type FileTypes = { [extension: string]: string };
 
 /**
+ * Which camera a file picker opens straight away: `"user"` is the front (selfie) camera, `"environment"` the back camera.
+ * - Sets the `capture` attribute of `<input type="file">`.
+ * - On phones, the picker then opens the camera only, with no photo library.
+ *
+ * @see https://shelving.cc/util/file/FileCapture
+ */
+export type FileCapture = "user" | "environment";
+
+/**
+ * Image file types in `extension: mime` format: JPEG, PNG, WebP, GIF, and AVIF.
+ *
+ * @see https://shelving.cc/util/file/IMAGE_TYPES
+ */
+export const IMAGE_TYPES: FileTypes = {
+	jpg: "image/jpeg",
+	jpeg: "image/jpeg",
+	png: "image/png",
+	webp: "image/webp",
+	gif: "image/gif",
+	avif: "image/avif",
+};
+
+/**
+ * Video file types in `extension: mime` format: MP4, QuickTime, and WebM.
+ *
+ * @see https://shelving.cc/util/file/VIDEO_TYPES
+ */
+export const VIDEO_TYPES: FileTypes = {
+	mp4: "video/mp4",
+	m4v: "video/mp4",
+	mov: "video/quicktime",
+	webm: "video/webm",
+};
+
+/**
+ * Media file types in `extension: mime` format: every type in `IMAGE_TYPES` and `VIDEO_TYPES`.
+ *
+ * @see https://shelving.cc/util/file/MEDIA_TYPES
+ */
+export const MEDIA_TYPES: FileTypes = { ...IMAGE_TYPES, ...VIDEO_TYPES };
+
+/**
+ * Get the `accept` attribute of a file input for a set of file types, e.g. `"image/jpeg,image/png"`.
+ * - Each MIME type shows once, even when two extensions share it.
+ *
+ * @param types The allowed file types.
+ * @returns A comma-separated list of MIME types.
+ * @see https://shelving.cc/util/file/getFileAccept
+ */
+export function getFileAccept(types: FileTypes): string {
+	return Array.from(new Set(Object.values(types))).join(",");
+}
+
+/**
  * Split a filename into its base name and extension in a single pass.
  * - Extension with no leading dot, e.g. `"ts"`.
  * - Returns `undefined` for either part if the filename has no dot or starts with a dot only.

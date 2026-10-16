@@ -1,6 +1,14 @@
 import { expect, test } from "bun:test";
 import { RequiredError } from "shelving/error";
-import { getFileExtension, requireFileExtension, splitFileExtension } from "shelving/util/file";
+import {
+	getFileAccept,
+	getFileExtension,
+	IMAGE_TYPES,
+	MEDIA_TYPES,
+	requireFileExtension,
+	splitFileExtension,
+	VIDEO_TYPES,
+} from "shelving/util/file";
 
 test("getOptionalFileExtension()", () => {
 	expect(getFileExtension("abc.jpg")).toBe("jpg");
@@ -23,4 +31,14 @@ test("splitFileExtension()", () => {
 	expect(splitFileExtension("")).toEqual([undefined, undefined]);
 	expect(splitFileExtension(null)).toEqual([undefined, undefined]);
 	expect(splitFileExtension(undefined)).toEqual([undefined, undefined]);
+});
+
+test("MEDIA_TYPES", () => {
+	expect(MEDIA_TYPES).toEqual({ ...IMAGE_TYPES, ...VIDEO_TYPES });
+	expect(Object.values(IMAGE_TYPES).every(mime => mime.startsWith("image/"))).toBe(true);
+	expect(Object.values(VIDEO_TYPES).every(mime => mime.startsWith("video/"))).toBe(true);
+});
+test("getFileAccept()", () => {
+	expect(getFileAccept({})).toBe("");
+	expect(getFileAccept({ jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png" })).toBe("image/jpeg,image/png");
 });
