@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DAY, HOUR, YEAR } from "shelving/util/constants";
+import { DAY, HOUR, MINUTE, MONTH, SECOND, YEAR } from "shelving/util/constants";
 import { formatAgo, formatDuration, formatUntil, formatWhen } from "shelving/util/duration";
 import { formatNumber, formatPercent, formatUnit, formatUnitAbbr, formatValue } from "shelving/util/format";
 
@@ -95,14 +95,24 @@ test("formatWhen()", () => {
 
 	// Rounding tests.
 	expect(formatWhen(DAY, YEAR * 1 + DAY * 10, { unitDisplay: "long" })).toBe("12 months ago");
+
+	// Under a minute is "just now", and narrow months are "mo".
+	expect(formatWhen(0, SECOND * 59, { unitDisplay: "narrow" })).toBe("just now");
+	expect(formatWhen(0, MINUTE * 3, { unitDisplay: "narrow" })).toBe("3m ago");
+	expect(formatWhen(0, MONTH * 6, { unitDisplay: "narrow" })).toBe("6mo ago");
 });
 test("formatAgo()", () => {
 	expect(formatAgo(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("1d");
 	expect(formatAgo(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("-9h");
+	expect(formatAgo(0, SECOND * 5, { unitDisplay: "narrow" })).toBe("just now");
+	expect(formatAgo(0, MINUTE * 3, { unitDisplay: "narrow" })).toBe("3m");
+	expect(formatAgo(0, MONTH * 6, { unitDisplay: "narrow" })).toBe("6mo");
+	expect(formatAgo(0, MONTH * 6, { unitDisplay: "long" })).toBe("6 months");
 });
 test("formatUntil()", () => {
 	expect(formatUntil(DAY, DAY * 2, { unitDisplay: "narrow" })).toBe("-1d");
 	expect(formatUntil(HOUR * 10, HOUR, { unitDisplay: "narrow" })).toBe("9h");
+	expect(formatUntil(MONTH * 6, 0, { unitDisplay: "narrow" })).toBe("6mo");
 });
 test("formatDuration()", () => {
 	// Default.

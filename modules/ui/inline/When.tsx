@@ -37,7 +37,7 @@ export interface WhenProps extends OptionalChildProps {
 }
 
 /**
- * Relative time — shows a signed string like `in 6d` or `3w ago` wrapped in a `<time>` element carrying the machine-readable date.
+ * Relative time — shows a signed string like `in 6d`, `3w ago` or `just now` wrapped in a `<time>` element carrying the machine-readable date.
  *
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @kind component
@@ -56,7 +56,7 @@ export function When(props: WhenProps): ReactElement {
 export interface AgoProps extends WhenProps {}
 
 /**
- * Elapsed time — shows an unsigned string like `6d` or `3w` for a past date wrapped in a `<time>` element carrying the machine-readable date.
+ * Elapsed time — shows an unsigned string like `3m`, `6mo` or `just now` for a past date wrapped in a `<time>` element carrying the machine-readable date.
  *
  * @throws {RequiredError} If `target` (or `current`) cannot be coerced to a valid date.
  * @kind component
