@@ -7,8 +7,8 @@ describe("Ago", () => {
 	test("shows narrow units by default", () => {
 		expect(renderToStaticMarkup(<Ago target={0} current={HOUR * 3} />)).toContain(">3h<");
 	});
-	test("takes format options", () => {
-		expect(renderToStaticMarkup(<Ago target={0} current={HOUR * 3} options={{ unitDisplay: "short" }} />)).toContain(">3 hr<");
+	test("takes format options as props", () => {
+		expect(renderToStaticMarkup(<Ago target={0} current={HOUR * 3} unitDisplay="short" />)).toContain(">3 hr<");
 	});
 	test("shows just now under a minute", () => {
 		expect(renderToStaticMarkup(<Ago target={0} current={SECOND * 5} />)).toContain(">just now<");
@@ -16,7 +16,7 @@ describe("Ago", () => {
 });
 
 describe("When", () => {
-	test("takes format options", () => {
-		expect(renderToStaticMarkup(<When target={0} current={MINUTE * 3} options={{ unitDisplay: "long" }} />)).toContain(">3 minutes ago<");
+	test("takes format options as props", () => {
+		expect(renderToStaticMarkup(<When target={0} current={MINUTE * 3} unitDisplay="long" />)).toContain(">3 minutes ago<");
 	});
 });

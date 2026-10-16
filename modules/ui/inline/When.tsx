@@ -5,17 +5,15 @@ import { formatDateTime, type UnitFormatOptions } from "../../util/format.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { OptionalChildProps } from "../util/props.js";
 
-/** Default format options: narrow units, e.g. `3h`. */
-const _OPTIONS: UnitFormatOptions = { unitDisplay: "narrow" };
-
 function _getWhen(
 	formatter: typeof formatWhen,
-	{ target: possibleTarget, current: possibleCurrent = "now", full = false, options = _OPTIONS, children }: WhenProps,
+	{ target: possibleTarget, current: possibleCurrent = "now", full = false, children, unitDisplay = "narrow", ...rest }: WhenProps,
 	caller: AnyCaller,
 ): ReactElement {
 	const target = requireDate(possibleTarget, caller);
 	const current = requireDate(possibleCurrent, caller);
 	const title = possibleCurrent === "now" ? formatDateTime(target) : `${formatDateTime(target)} to ${formatDateTime(current)}`;
+	const options: UnitFormatOptions = { ...rest, unitDisplay };
 	const formatted = children ?? (full ? `${title} (${formatter(target, current, options)})` : formatter(target, current, options));
 	return (
 		<time dateTime={possibleCurrent === "now" ? target.toISOString() : `PT${getSecondsAgo(target, current)}S`} title={title}>
@@ -26,20 +24,16 @@ function _getWhen(
 
 /**
  * Props for `When`, `Ago`, and `Until` — a `target` date plus an optional `current` reference date and `full` toggle.
+ * - Unit format options go straight on the props, e.g. `<Ago target={when} unitDisplay="short" />`. `unitDisplay` defaults to `"narrow"` (e.g. `3h`).
  *
  * @see https://shelving.cc/ui/WhenProps
  */
-export interface WhenProps extends OptionalChildProps {
+export interface WhenProps extends OptionalChildProps, Omit<UnitFormatOptions, "one" | "many" | "abbr"> {
 	target: PossibleDate | undefined;
 	/** Reference date the relative time is measured against.
 	 * @default "now" */
 	current?: PossibleDate | undefined;
 	full?: boolean | undefined;
-	/**
-	 * Format options for the time unit, e.g. `{ unitDisplay: "short" }` for `3 hr`.
-	 * @default { unitDisplay: "narrow" }
-	 */
-	options?: UnitFormatOptions | undefined;
 }
 
 /**
