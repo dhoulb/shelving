@@ -54,30 +54,36 @@
 			width: var(--modal-width, var(--width-narrow));
 		}
 
-		/* If a theme sets `--modal-stroke` or `--modal-border`, remove the border on each side that touches the edge of the screen. */
+		/*
+		 * On each side that touches the edge of the screen, a transparent border replaces any `--modal-stroke` or `--modal-border`.
+		 * - The border is as wide as the screen's safe area on that side (notch, rounded corners, home bar), so the content stays clear of it.
+		 * - The panel's background paints under the border, so it fills the safe area, and the padding stays even.
+		 */
 		&.top {
 			top: 0;
-			border-top: none;
+			border-top: env(safe-area-inset-top, 0) solid transparent;
 			view-transition-class: modal-top;
 		}
 
 		&.bottom {
 			bottom: 0;
-			border-bottom: none;
+			border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
 			view-transition-class: modal-bottom;
 		}
 
 		&.left {
 			left: 0;
-			border-left: none;
-			border-block: none;
+			border-top: env(safe-area-inset-top, 0) solid transparent;
+			border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
+			border-left: env(safe-area-inset-left, 0) solid transparent;
 			view-transition-class: modal-left;
 		}
 
 		&.right {
 			right: 0;
-			border-right: none;
-			border-block: none;
+			border-top: env(safe-area-inset-top, 0) solid transparent;
+			border-right: env(safe-area-inset-right, 0) solid transparent;
+			border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
 			view-transition-class: modal-right;
 		}
 	}

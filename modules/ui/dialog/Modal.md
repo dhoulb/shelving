@@ -96,7 +96,7 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 
 ## Styling
 
-`Modal` paints a shadowed surface with no border. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then has no border on the side that touches the screen edge. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Modal` paints a shadowed surface with no border. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then has no visible border on the side that touches the screen edge. That side has a transparent border as wide as the screen's safe area (notch, rounded corners, home bar), so the content stays clear of it and the background fills it. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|

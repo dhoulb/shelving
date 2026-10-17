@@ -64,7 +64,7 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 ## Styling
 
-`Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. Transparent borders as wide as the screen's safe areas keep the content and the close button clear of the notch, rounded corners and home bar. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|
