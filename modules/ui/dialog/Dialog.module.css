@@ -22,7 +22,12 @@
 		overscroll-behavior: contain;
 		padding-block: var(--dialog-padding, var(--space-normal));
 		padding-inline: var(--dialog-indent, var(--space-normal));
-		border: none;
+
+		/* Transparent borders keep the content out of the screen's safe areas (notch, rounded corners, home bar). The overlay paints under them, so the padding stays even. */
+		border-top: env(safe-area-inset-top, 0) solid transparent;
+		border-right: env(safe-area-inset-right, 0) solid transparent;
+		border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
+		border-left: env(safe-area-inset-left, 0) solid transparent;
 
 		/* Style */
 		color: var(--dialog-color, var(--tint-100));
@@ -61,7 +66,7 @@
 
 	.close {
 		position: fixed;
-		top: var(--dialog-close-offset, var(--space-small));
-		right: var(--dialog-close-offset, var(--space-small));
+		top: calc(var(--dialog-close-offset, var(--space-small)) + env(safe-area-inset-top, 0px));
+		right: calc(var(--dialog-close-offset, var(--space-small)) + env(safe-area-inset-right, 0px));
 	}
 }
