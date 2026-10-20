@@ -10,6 +10,8 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 - Like the other block components it collapses its outer block margin when it is the first or last child.
 - Spans the full width of its container by default; set the `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) to constrain it.
 - Size columns with `<Cell>` and the `width` variant — `width="fit"` hugs the content, and `width="12x" grow` gives a column a hard minimum it can grow past (cells honour `min-width`, so the table scrolls rather than collapsing the column on a narrow screen). A column's width is the widest of its cells.
+- Set cell padding for the whole table with the `padding` (top and bottom) and `indent` (left and right) variants — `<Table padding="small" indent="normal">`. These pad every cell, not the `<table>` itself.
+- A `<Cell>` takes the same `padding` and `indent` variants, which override the table's values for that cell — for example `<Cell width="fit" padding="none">` around a button that already has its own padding.
 - Inside `<Prose>` a raw `<table>` picks up the same styling, so Markdown-rendered tables match component ones.
 
 ## Usage
@@ -30,11 +32,26 @@ import { Table } from "shelving/ui";
 </Table>
 ```
 
+### Cell padding
+
+```tsx
+import { Button, Cell, Table } from "shelving/ui";
+
+<Table padding="small">
+  <tbody>
+    <tr>
+      <Cell width="full">Alice</Cell>
+      <Cell width="fit" padding="none"><Button small>Remove</Button></Cell>
+    </tr>
+  </tbody>
+</Table>
+```
+
 ## Styling
 
 `Table` exposes hooks for its rhythm, cell padding, and border; it paints no surface of its own, so it inherits the surrounding tint.
 
-`--table-padding` sets the top and bottom padding of each cell, and `--table-indent` the left and right. Each takes one length. The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
+`--table-padding` sets the top and bottom padding of each cell, and `--table-indent` the left and right. Each takes one length. The table's `padding` and `indent` variants set these hooks. The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
 
 | Variable | Styles | Default |
 |---|---|---|
@@ -56,7 +73,7 @@ import { Table } from "shelving/ui";
 
 Defining contents for the `<Table>` is done with standard `<tr>`, `<th>`, `<td>`, `<thead>`, `<tbody>`, `<tfoot>` elements.
 
-The `<Cell>` element can be used to define a `<td>` or `<th>`, and supports `WidthVariants` and `TypographyVariants` for styling.
+The `<Cell>` element can be used to define a `<td>` or `<th>`, and supports `PaddingVariants`, `IndentVariants`, `WidthVariants` and `TypographyVariants` for styling.
 
 ## Column widths
 

@@ -63,3 +63,159 @@
 		}
 	}
 }
+
+@layer variants {
+	/* Cell padding (top and bottom) for every cell in the table, from the `padding` variant. */
+	.padding-none {
+		--table-padding: 0;
+	}
+
+	.padding-paragraph {
+		--table-padding: var(--space-paragraph);
+	}
+
+	.padding-section {
+		--table-padding: var(--space-section);
+	}
+
+	.padding-xxsmall {
+		--table-padding: var(--space-xxsmall);
+	}
+
+	.padding-xsmall {
+		--table-padding: var(--space-xsmall);
+	}
+
+	.padding-small {
+		--table-padding: var(--space-small);
+	}
+
+	.padding-normal {
+		--table-padding: var(--space-normal);
+	}
+
+	.padding-large {
+		--table-padding: var(--space-large);
+	}
+
+	.padding-xlarge {
+		--table-padding: var(--space-xlarge);
+	}
+
+	.padding-xxlarge {
+		--table-padding: var(--space-xxlarge);
+	}
+
+	.padding-1x {
+		--table-padding: calc(var(--space-normal) * 1);
+	}
+
+	.padding-2x {
+		--table-padding: calc(var(--space-normal) * 2);
+	}
+
+	.padding-3x {
+		--table-padding: calc(var(--space-normal) * 3);
+	}
+
+	.padding-4x {
+		--table-padding: calc(var(--space-normal) * 4);
+	}
+
+	.padding-5x {
+		--table-padding: calc(var(--space-normal) * 5);
+	}
+
+	.padding-6x {
+		--table-padding: calc(var(--space-normal) * 6);
+	}
+
+	.padding-7x {
+		--table-padding: calc(var(--space-normal) * 7);
+	}
+
+	.padding-8x {
+		--table-padding: calc(var(--space-normal) * 8);
+	}
+
+	.padding-9x {
+		--table-padding: calc(var(--space-normal) * 9);
+	}
+
+	.padding-10x {
+		--table-padding: calc(var(--space-normal) * 10);
+	}
+
+	/* Cell indent (left and right) for every cell in the table, from the `indent` variant. */
+	.indent-none {
+		--table-indent: 0;
+	}
+
+	.indent-xxsmall {
+		--table-indent: var(--space-xxsmall);
+	}
+
+	.indent-xsmall {
+		--table-indent: var(--space-xsmall);
+	}
+
+	.indent-small {
+		--table-indent: var(--space-small);
+	}
+
+	.indent-normal {
+		--table-indent: var(--space-normal);
+	}
+
+	.indent-large {
+		--table-indent: var(--space-large);
+	}
+
+	.indent-xlarge {
+		--table-indent: var(--space-xlarge);
+	}
+
+	.indent-xxlarge {
+		--table-indent: var(--space-xxlarge);
+	}
+
+	.indent-1x {
+		--table-indent: calc(var(--space-normal) * 1);
+	}
+
+	.indent-2x {
+		--table-indent: calc(var(--space-normal) * 2);
+	}
+
+	.indent-3x {
+		--table-indent: calc(var(--space-normal) * 3);
+	}
+
+	.indent-4x {
+		--table-indent: calc(var(--space-normal) * 4);
+	}
+
+	.indent-5x {
+		--table-indent: calc(var(--space-normal) * 5);
+	}
+
+	.indent-6x {
+		--table-indent: calc(var(--space-normal) * 6);
+	}
+
+	.indent-7x {
+		--table-indent: calc(var(--space-normal) * 7);
+	}
+
+	.indent-8x {
+		--table-indent: calc(var(--space-normal) * 8);
+	}
+
+	.indent-9x {
+		--table-indent: calc(var(--space-normal) * 9);
+	}
+
+	.indent-10x {
+		--table-indent: calc(var(--space-normal) * 10);
+	}
+}
