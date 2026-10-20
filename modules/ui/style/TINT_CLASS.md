@@ -48,4 +48,21 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 2. **Retint a region.** Apply `color=` / `status=` to a container — `<Card color="purple">`, or a `<Panel color="purple">` wrapping a whole section — and everything inside re-tints, with text, border, surface, and hover shades all derived for free. Components don't expose a per-component `--x-tint` hook; the variant moves the anchor, not a bespoke variable.
 3. **Override one property.** Per-property hooks are the scalpel: `--button-radius: 999px`, `--card-radius: 0`, `--tag-case: none`.
 
+**Overrides that use ladder steps go on `:root, .tint`.** A `var()` inside a custom property resolves where the property is declared. So an override at `:root` alone locks in the `:root` ladder, and stays grey inside a `<Card color="red">`:
+
+```css
+/* Wrong: `--tint-95` resolves once, at `:root`. */
+:root {
+	--table-border: 2px solid var(--tint-95);
+}
+
+/* Right: the value resolves again in every scope that rebuilds the ladder. */
+:root,
+.tint {
+	--table-border: 2px solid var(--tint-95);
+}
+```
+
+`TINT_CLASS` adds a plain global `tint` class (as well as its hashed module class) for this purpose, so `tint` is a reserved class name. Do not use `* { … }` for this: it declares the variable on every element, which adds style-recalc cost on large pages.
+
 **Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is *recomputed* from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.

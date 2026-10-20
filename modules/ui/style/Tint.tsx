@@ -1,4 +1,4 @@
-import { getModuleClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import THEME_CSS from "./Tint.module.css";
 
 /**
@@ -36,7 +36,8 @@ export type TintVariant =
  * CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
  *
  * - Applied by colour/status helpers so an element can compose shades like `--tint-20` and `--tint-95` of the selected hue.
+ * - Also adds the plain global `tint` class, so theme files can target the recompute scope with `:root, .tint { … }`.
  *
  * @see https://shelving.cc/ui/TINT_CLASS
  */
-export const TINT_CLASS = getModuleClass(THEME_CSS, "tint");
+export const TINT_CLASS = getClass("tint", getModuleClass(THEME_CSS, "tint"));
