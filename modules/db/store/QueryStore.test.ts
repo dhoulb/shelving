@@ -84,6 +84,16 @@ describe("fetchBefore()", () => {
 });
 
 describe("refresh()", () => {
+	test("drops a page that was still loading when the refresh started", async () => {
+		const { store } = _setup();
+		await store.refresh();
+		await store.fetchAfter();
+		const page = store.fetchAfter(); // Starts loading the third page.
+		const refresh = store.refresh(); // Starts after the page, but the store keeps only its result.
+		await Promise.all([page, refresh]);
+		expect(_ids(store)).toEqual(["g", "f"]);
+		expect(store.busy.value).toBe(false);
+	});
 	test("loads the first page again and drops the other pages", async () => {
 		const { store } = _setup();
 		await store.refresh();
@@ -97,6 +107,13 @@ describe("refresh()", () => {
 });
 
 describe("pinned items", () => {
+	test("a store seeded with a full page from the memory can load more", () => {
+		const { provider } = _setup();
+		provider.memory.setItems(BASICS_COLLECTION, ITEMS);
+		const store = new QueryStore(BASICS_COLLECTION, QUERY, provider, provider.memory);
+		expect(_ids(store)).toEqual(["g", "f"]);
+		expect(store.hasAfter).toBe(true);
+	});
 	test("an edited item keeps its position", async () => {
 		const { provider, store } = _setup();
 		const stop = runSequence(store);
