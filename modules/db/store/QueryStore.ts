@@ -204,30 +204,32 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	 * Load the next page of items after the last item.
 	 * - Uses the query `$limit` as the page size.
 	 * - Sets `busy` while the page loads. The items already loaded do not suspend.
-	 * - Does nothing if `hasAfter` is `false` or a fetch is already running.
-	 * - Loads the first page if nothing has loaded yet.
-	 * - Fetch errors are stored as `reason`.
+	 * - Waits for a fetch that is already running, then loads the page.
+	 * - Does nothing if `hasAfter` is `false`.
+	 * - Loads the first page if no items have loaded yet.
+	 * - A failed fetch rejects the promise, and the items already loaded stay. Unlike `refresh()`, it does not set `reason`.
 	 *
 	 * @returns Promise that resolves when the page has loaded.
 	 * @throws {RequiredError} If the query has no `$order`.
+	 * @throws {unknown} The error from the provider, if the fetch fails.
 	 * @example if (store.hasAfter) await store.fetchAfter();
 	 * @see https://shelving.cc/db/QueryStore/fetchAfter
 	 */
 	async fetchAfter(): Promise<void> {
-		const { query, limit, _ids } = this;
+		const { query, limit } = this;
 		if (!this._orders.length)
 			throw new RequiredError("Query must have $order to fetch more items", { store: this, query, caller: this.fetchAfter });
-		if (this.busy.value) return;
-		if (!this._loaded) {
+		if (this.busy.value) await this._idle(); // Only await when busy, so `busy` is set at once.
+		const last = this._getRow(this._ids.at(-1));
+		if (!last) {
 			await this.refresh();
 			return;
 		}
-		const last = this._getRow(_ids.at(-1));
-		if (!last || !this._hasAfter) return;
+		if (!this._hasAfter) return;
 		const items = await this._fetchPage(getAfterQuery(query, last, this.fetchAfter), last);
 		if (!items) return;
 		this._hasAfter = items.length > limit;
-		this._pin([..._ids, ...items.slice(0, limit)]);
+		this._pin([...this._ids, ...items.slice(0, limit)]);
 		this.write(this._compose());
 	}
 
@@ -245,21 +247,22 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	 * Load the new items before the first item, e.g. new messages at the start of a newest-first list.
 	 * - Loads up to one page (the query `$limit`), nearest to the first item. Call again while `hasBefore` is `true` to load more.
 	 * - Sets `busy` while the items load. The items already loaded do not suspend.
-	 * - Does nothing if a fetch is already running.
-	 * - Loads the first page if nothing has loaded yet.
-	 * - Fetch errors are stored as `reason`.
+	 * - Waits for a fetch that is already running, then loads the items.
+	 * - Loads the first page if no items have loaded yet.
+	 * - A failed fetch rejects the promise, and the items already loaded stay. Unlike `refresh()`, it does not set `reason`.
 	 *
 	 * @returns Promise that resolves when the new items have loaded.
 	 * @throws {RequiredError} If the query has no `$order`.
-	 * @example setInterval(() => store.fetchBefore(), 10_000); // Poll for new messages.
+	 * @throws {unknown} The error from the provider, if the fetch fails.
+	 * @example setInterval(() => store.fetchBefore().catch(BLACKHOLE), 10_000); // Poll for new messages.
 	 * @see https://shelving.cc/db/QueryStore/fetchBefore
 	 */
 	async fetchBefore(): Promise<void> {
-		const { query, limit, _ids } = this;
+		const { query, limit } = this;
 		if (!this._orders.length)
 			throw new RequiredError("Query must have $order to fetch more items", { store: this, query, caller: this.fetchBefore });
-		if (this.busy.value) return;
-		const first = this._getRow(_ids[0]);
+		if (this.busy.value) await this._idle(); // Only await when busy, so `busy` is set at once.
+		const first = this._getRow(this._ids[0]);
 		if (!first) {
 			await this.refresh();
 			return;
@@ -271,8 +274,13 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		);
 		if (!items) return;
 		this._hasBefore = items.length > limit;
-		this._pin([...items.slice(0, limit).reverse(), ..._ids]);
+		this._pin([...items.slice(0, limit).reverse(), ...this._ids]);
 		this.write(this._compose());
+	}
+
+	/** Wait until no fetch is running. */
+	private async _idle(): Promise<void> {
+		while (this.busy.value) await this.busy.next;
 	}
 
 	/** Fetch one page from an inclusive cursor query, and drop the items already loaded. */
@@ -295,7 +303,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 			const seen = new Set(_ids);
 			return items.filter(({ id }) => !seen.has(id));
 		} catch (thrown) {
-			if (generation === this._generation) this.reason = thrown;
+			if (generation === this._generation) throw thrown; // Keep the loaded items, so do not set `reason`.
 		} finally {
 			if (generation === this._generation) this.busy.value = false;
 		}
@@ -326,6 +334,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	/**
 	 * Make the current value of a paged query.
 	 * - New items in the memory that match the filters and sort before the first pinned item come first.
+	 * - When the list is complete (`hasAfter` is `false`), new items that sort after the last pinned item come last.
 	 * - Then each pinned item in its pinned position, with its current data from the memory. Items deleted from the memory are hidden.
 	 */
 	private _compose(): Items<I, T> {
@@ -333,13 +342,16 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		if (!memory) return _ids.map(id => _rows.get(id)).filter(isDefined);
 		const table = memory.getTable(this.collection);
 		const first = this._getRow(_ids[0]);
+		const last = this._hasAfter ? undefined : this._getRow(_ids.at(-1)); // Only a complete list shows new items at the end.
 		const head: Item<I, T>[] = [];
+		const tail: Item<I, T>[] = [];
 		for (const item of table.getQuery()) {
 			if (_rows.has(item.id) || !matchQueryItem(item, _filters)) continue;
 			if (!first || compareQueryItems(item, first, _orders) < 0) head.push(item);
+			else if (last && compareQueryItems(item, last, _orders) > 0) tail.push(item);
 		}
 		const body = _ids.map(id => table.getItem(id)).filter(isDefined);
-		return [...sortQueryItems(head, _orders), ...body];
+		return [...sortQueryItems(head, _orders), ...body, ...sortQueryItems(tail, _orders)];
 	}
 
 	/** Recompose the value after the memory changes. */
@@ -357,7 +369,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 
 /** Set the limit of a query, or remove it when the limit is infinite. */
 function _withLimit<T extends Data>(query: Query<T>, limit: number): Query<T> {
-	return { ...query, $limit: Number.isFinite(limit) ? limit : undefined };
+	return { ...query, $limit: Number.isFinite(limit) ? limit : undefined }; // Not `withProp()`, because it cannot infer `$limit` on a generic `Query<T>`.
 }
 
 /** Reverse every order of a query. */

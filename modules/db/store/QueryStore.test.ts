@@ -159,3 +159,37 @@ describe("pinned items", () => {
 		expect(provider.memory.getTable(BASICS_COLLECTION).getItem("e3")).toBeDefined();
 	});
 });
+
+describe("review fixes", () => {
+	test("a failed page fetch rejects and keeps the loaded items", async () => {
+		const { server, store } = _setup();
+		await store.refresh();
+		server.getQuery = () => Promise.reject(new Error("offline"));
+		await expect(store.fetchAfter()).rejects.toThrow("offline");
+		expect(store.reason).toBeUndefined();
+		expect(_ids(store)).toEqual(["g", "f"]);
+		expect(store.busy.value).toBe(false);
+	});
+	test("a page fetch waits for a running fetch, then loads its page", async () => {
+		const { store } = _setup();
+		await store.refresh();
+		await Promise.all([store.fetchBefore(), store.fetchAfter()]);
+		expect(_ids(store)).toEqual(["g", "f", expect.any(String), expect.any(String)]);
+	});
+	test("a complete list shows a new item that sorts after the last item", async () => {
+		const { provider, store } = _setup({ $order: "num", $limit: 20 });
+		const stop = runSequence(store);
+		await store.refresh();
+		expect(store.hasAfter).toBe(false);
+		provider.memory.getTable(BASICS_COLLECTION).setItem("preview", _basic("preview", 99));
+		await runMicrotasks();
+		expect(_ids(store).at(-1)).toBe("preview");
+		stop();
+	});
+	test("fetchAfter() on a store with an empty memory loads the first page", async () => {
+		const { store } = _setup();
+		expect(_ids(store)).toEqual([]);
+		await store.fetchAfter();
+		expect(_ids(store)).toEqual(["g", "f"]);
+	});
+});

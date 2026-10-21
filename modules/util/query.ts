@@ -1,3 +1,4 @@
+import { RequiredError } from "../error/RequiredError.js";
 import type { ImmutableArray } from "./array.js";
 import { isArray, limitArray, requireFirst } from "./array.js";
 import type { Data, LeafData, LeafDataPath } from "./data.js";
@@ -220,13 +221,13 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
  * @param query The query to page through. It must have an `$order`.
  * @param item The item to page from (normally the first item already loaded).
  * @returns A new query with the range added.
- * @throws {RequiredError} If the query has no `$order`.
+ * @throws {RequiredError} If the query has no `$order`, or `item` has no value for the first `$order` key.
  * @example getBeforeQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when>=": 5 }
  * @see https://shelving.cc/util/query/getBeforeQuery
  */
 export function getBeforeQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getBeforeQuery): Query<T> {
 	const { key, direction } = requireFirst(getQueryOrders(query), caller);
-	return _withRange(query, key, direction === "asc" ? "<=" : ">=", getDataProp(item, key));
+	return _withRange(query, key, direction === "asc" ? "<=" : ">=", _requireCursor(item, key, caller));
 }
 
 /**
@@ -239,13 +240,20 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T, caller:
  * @param query The query to page through. It must have an `$order`.
  * @param item The item to page from (normally the last item already loaded).
  * @returns A new query with the range added.
- * @throws {RequiredError} If the query has no `$order`.
+ * @throws {RequiredError} If the query has no `$order`, or `item` has no value for the first `$order` key.
  * @example getAfterQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when<=": 5 }
  * @see https://shelving.cc/util/query/getAfterQuery
  */
 export function getAfterQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getAfterQuery): Query<T> {
 	const { key, direction } = requireFirst(getQueryOrders(query), caller);
-	return _withRange(query, key, direction === "asc" ? ">=" : "<=", getDataProp(item, key));
+	return _withRange(query, key, direction === "asc" ? ">=" : "<=", _requireCursor(item, key, caller));
+}
+
+/** Get the cursor value of an item, or throw if it has none (a range on `undefined` would be dropped). */
+function _requireCursor(item: Data, key: Segments, caller: AnyCaller): unknown {
+	const value = getDataProp(item, key);
+	if (value === undefined) throw new RequiredError(`Item must have a value for "${joinDataPath(key)}"`, { item, caller });
+	return value;
 }
 
 /** Add an inclusive range to a query, but keep an existing range on the same key when it is narrower. */
