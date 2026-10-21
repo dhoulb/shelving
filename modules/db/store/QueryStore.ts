@@ -161,6 +161,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	private _ids: ImmutableArray<I> = []; // Pinned IDs in display order.
 	private _rows = new Map<I, Item<I, T>>(); // Pinned items as they were fetched (their sort values are the cursors).
 	private _loaded = false; // Whether any items have been pinned yet.
+	private _generation = 0; // Increases when a refresh starts.
 
 	constructor(collection: Collection<string, I, T>, query: Query<Item<I, T>>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
 		const items = memory?.getTable(collection).getQuery(query);
@@ -173,7 +174,10 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		this._filters = getQueryFilters(query);
 		if (this._orders.length) {
 			// Paged query: pin the snapshot, and recompose the pinned items whenever the memory changes.
-			if (items) this._pin(items);
+			if (items) {
+				this._pin(items);
+				this._hasAfter = items.length >= this.limit; // A full snapshot may have more items after it.
+			}
 			if (memory) this.starter = store => runSequence(memory.getQuerySequence(collection), () => store._recompose());
 		} else if (memory) {
 			// Unpaged query: follow the live query result in the memory.
@@ -186,8 +190,10 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	override async _fetch(_signal: AbortSignal): Promise<Items<I, T>> {
 		if (!this._orders.length) return this.provider.getQuery(this.collection, this.query);
 		const { collection, query, limit } = this;
+		const generation = ++this._generation; // Makes any page fetch that is still running drop its result.
 		// Load one more item than the page, to see if there are more.
 		const items = await this.provider.getQuery(collection, _withLimit(query, limit + 1));
+		if (generation !== this._generation) return this._compose(); // A newer refresh started, so it sets the items.
 		this._hasAfter = items.length > limit;
 		this._hasBefore = false;
 		this._pin(items.slice(0, limit));
@@ -280,15 +286,18 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 			const row = _rows.get(id);
 			if (row && isEqual(getDataProp(row, key), value)) ties++;
 		}
+		// A refresh that starts while the page loads owns the items and `busy`, so the page is dropped.
+		const generation = this._generation;
 		this.busy.value = true;
 		try {
 			const items = await this.provider.getQuery(this.collection, _withLimit(query, limit + ties + 1));
+			if (generation !== this._generation) return;
 			const seen = new Set(_ids);
 			return items.filter(({ id }) => !seen.has(id));
 		} catch (thrown) {
-			this.reason = thrown;
+			if (generation === this._generation) this.reason = thrown;
 		} finally {
-			this.busy.value = false;
+			if (generation === this._generation) this.busy.value = false;
 		}
 	}
 
