@@ -64,6 +64,31 @@ describe("ValidationDBProvider", () => {
 		expect(source.calls).toHaveLength(0);
 	});
 
+	test("keeps sum, array and path updates for the source provider", async () => {
+		const source = new MockDBProvider();
+		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
+		const provider = new ValidationDBProvider(source);
+
+		await provider.updateItem(BASICS_COLLECTION, "basic1", { str: "NEW", "+=num": 5, "+[]tags": "new" });
+		const item = await source.getItem(BASICS_COLLECTION, "basic1");
+		expect(item?.str).toBe("NEW");
+		expect(item?.num).toBe(basic1.num + 5);
+		expect(item?.tags).toContain("new");
+	});
+
+	test("rejects a sum update that is not a number", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		try {
+			await provider.updateItem(BASICS_COLLECTION, "basic1", { "+=num": "bad" } as never);
+			expect.unreachable();
+		} catch (thrown) {
+			expect(thrown).toBeInstanceOf(Error);
+		}
+		expect(source.calls).toHaveLength(0);
+	});
+
 	test("query writes are passthrough: the source receives the query write itself", async () => {
 		const source = new MockDBProvider();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
