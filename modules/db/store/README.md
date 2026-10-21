@@ -32,7 +32,7 @@ A query with an `$order` loads in pages, and the query `$limit` is the page size
 
 - `QueryStore.fetchAfter()` loads the next page after the last item. `QueryStore.hasAfter` is `false` when there are no more items. `QueryStore.fetchMore()` and `QueryStore.hasMore` are aliases.
 - `QueryStore.fetchBefore()` loads the new items before the first item, e.g. new messages in a newest-first chat. Call it on a timer to poll. `QueryStore.hasBefore` is `true` when there were more new items than one page.
-- `QueryStore.paging` is `true` while a page loads. The items already loaded do not suspend.
+- `QueryStore.busy` is `true` while a page loads, as it is during `refresh()`. The items already loaded do not suspend.
 - `QueryStore.refresh()` loads every loaded page again in one query, so the store keeps its pages.
 
 A paged store **pins** its items. After a fetch, each item keeps its position:
@@ -86,7 +86,7 @@ console.log(store.loading); // false if already in cache
 ```tsx
 function Messages({ squad }: { squad: string }) {
   const store = useQuery(MESSAGES, { squad, $order: "!when", $limit: 50 }); // Suspends on the first page.
-  const paging = useStore(store.paging).value;
+  const busy = useStore(store.busy).value;
   useEffect(() => {
     const timer = setInterval(() => void store.fetchBefore(), 10_000); // Poll for new messages.
     return () => clearInterval(timer);
@@ -94,7 +94,7 @@ function Messages({ squad }: { squad: string }) {
   return (
     <>
       {store.value.map(message => <Message key={message.id} message={message} />)}
-      {store.hasAfter && <Button onClick={() => void store.fetchAfter()} disabled={paging}>Show older</Button>}
+      {store.hasAfter && <Button onClick={() => void store.fetchAfter()} disabled={busy}>Show older</Button>}
     </>
   );
 }
