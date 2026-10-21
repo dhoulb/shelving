@@ -33,7 +33,7 @@ A query with an `$order` loads in pages, and the query `$limit` is the page size
 - `QueryStore.fetchAfter()` loads the next page after the last item. `QueryStore.hasAfter` is `false` when there are no more items. `QueryStore.fetchMore()` and `QueryStore.hasMore` are aliases.
 - `QueryStore.fetchBefore()` loads the new items before the first item, e.g. new messages in a newest-first chat. Call it on a timer to poll. `QueryStore.hasBefore` is `true` when there were more new items than one page.
 - `QueryStore.busy` is `true` while a page loads, as it is during `refresh()`. The items already loaded do not suspend.
-- `QueryStore.refresh()` loads every loaded page again in one query, so the store keeps its pages.
+- `QueryStore.refresh()` loads the first page again, and drops the other loaded pages.
 
 A paged store **pins** its items. After a fetch, each item keeps its position:
 
