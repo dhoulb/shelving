@@ -182,22 +182,15 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	}
 
 	// Override to fetch the result from the database provider.
-	// - A paged query that has loaded more than one page fetches the whole loaded range again, so it keeps its pages.
+	// - A paged query loads the first page again, and drops any other loaded pages.
 	override async _fetch(_signal: AbortSignal): Promise<Items<I, T>> {
 		if (!this._orders.length) return this.provider.getQuery(this.collection, this.query);
-		const { collection, query, limit, _ids } = this;
-		const last = this._getRow(_ids.at(-1));
-		if (last && _ids.length > limit) {
-			// Reload every item from the start to the last loaded item.
-			const items = await this.provider.getQuery(collection, { ...getBeforeQuery(query, last, this._fetch), $limit: undefined });
-			this._pin(items);
-		} else {
-			// Load the first page, plus one item to see if there are more.
-			const items = await this.provider.getQuery(collection, _withLimit(query, limit + 1));
-			this._hasAfter = items.length > limit;
-			this._pin(items.slice(0, limit));
-		}
+		const { collection, query, limit } = this;
+		// Load one more item than the page, to see if there are more.
+		const items = await this.provider.getQuery(collection, _withLimit(query, limit + 1));
+		this._hasAfter = items.length > limit;
 		this._hasBefore = false;
+		this._pin(items.slice(0, limit));
 		return this._compose();
 	}
 

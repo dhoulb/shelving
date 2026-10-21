@@ -84,14 +84,14 @@ describe("fetchBefore()", () => {
 });
 
 describe("refresh()", () => {
-	test("reloads every loaded page", async () => {
+	test("loads the first page again and drops the other pages", async () => {
 		const { store } = _setup();
 		await store.refresh();
 		await store.fetchAfter();
 		await store.fetchAfter();
-		const loaded = _ids(store);
+		expect(store.value.length).toBe(6);
 		await store.refresh();
-		expect(_ids(store)).toEqual(loaded);
+		expect(_ids(store)).toEqual(["g", "f"]);
 		expect(store.hasAfter).toBe(true);
 	});
 });
