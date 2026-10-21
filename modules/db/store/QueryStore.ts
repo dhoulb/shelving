@@ -1,11 +1,9 @@
 import { RequiredError } from "../../error/RequiredError.js";
-import { BooleanStore } from "../../store/BooleanStore.js";
 import { FetchStore } from "../../store/FetchStore.js";
 import { getFirst, getLast, type ImmutableArray, requireFirst } from "../../util/array.js";
 import { getGetter } from "../../util/class.js";
 import { NONE } from "../../util/constants.js";
 import { type Data, getDataProp, joinDataPath } from "../../util/data.js";
-import { awaitDispose } from "../../util/dispose.js";
 import { isEqual } from "../../util/equal.js";
 import type { Identifier, Item, Items } from "../../util/item.js";
 import {
@@ -62,13 +60,6 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	 * @see https://shelving.cc/db/QueryStore/memory
 	 */
 	readonly memory: MemoryDBProvider<I> | undefined;
-
-	/**
-	 * Boolean store that is `true` while `fetchAfter()` or `fetchBefore()` is loading a page.
-	 * - Separate from `busy`, so the items already loaded do not suspend while a page loads.
-	 * @see https://shelving.cc/db/QueryStore/paging
-	 */
-	readonly paging = new BooleanStore(false);
 
 	/**
 	 * The maximum number of items the query can return, or `Infinity` if unlimited.
@@ -213,6 +204,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	/**
 	 * Load the next page of items after the last item.
 	 * - Uses the query `$limit` as the page size.
+	 * - Sets `busy` while the page loads. The items already loaded do not suspend.
 	 * - Does nothing if `hasAfter` is `false` or a fetch is already running.
 	 * - Loads the first page if nothing has loaded yet.
 	 * - Fetch errors are stored as `reason`.
@@ -226,7 +218,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		const { query, limit, _ids } = this;
 		if (!this._orders.length)
 			throw new RequiredError("Query must have $order to fetch more items", { store: this, query, caller: this.fetchAfter });
-		if (this.busy.value || this.paging.value) return;
+		if (this.busy.value) return;
 		if (!this._loaded) {
 			await this.refresh();
 			return;
@@ -253,6 +245,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	/**
 	 * Load the new items before the first item, e.g. new messages at the start of a newest-first list.
 	 * - Loads up to one page (the query `$limit`), nearest to the first item. Call again while `hasBefore` is `true` to load more.
+	 * - Sets `busy` while the items load. The items already loaded do not suspend.
 	 * - Does nothing if a fetch is already running.
 	 * - Loads the first page if nothing has loaded yet.
 	 * - Fetch errors are stored as `reason`.
@@ -266,7 +259,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		const { query, limit, _ids } = this;
 		if (!this._orders.length)
 			throw new RequiredError("Query must have $order to fetch more items", { store: this, query, caller: this.fetchBefore });
-		if (this.busy.value || this.paging.value) return;
+		if (this.busy.value) return;
 		const first = this._getRow(_ids[0]);
 		if (!first) {
 			await this.refresh();
@@ -294,7 +287,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 			const row = _rows.get(id);
 			if (row && isEqual(getDataProp(row, key), value)) ties++;
 		}
-		this.paging.value = true;
+		this.busy.value = true;
 		try {
 			const items = await this.provider.getQuery(this.collection, _withLimit(query, limit + ties + 1));
 			const seen = new Set(_ids);
@@ -302,7 +295,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		} catch (thrown) {
 			this.reason = thrown;
 		} finally {
-			this.paging.value = false;
+			this.busy.value = false;
 		}
 	}
 
@@ -349,7 +342,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 
 	/** Recompose the value after the memory changes. */
 	private _recompose(): void {
-		// Skip while loading, or while a refresh runs (it recomposes when it ends, and a write now would abort it).
+		// Skip while loading, or while a fetch runs (it recomposes when it ends, and a write now would abort a refresh).
 		if (!this._loaded || this.busy.value) return;
 		this.write(this._compose());
 	}
@@ -357,11 +350,6 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	// Implement `Iterable`
 	[Symbol.iterator](): Iterator<Item<I, T>> {
 		return this.value.values();
-	}
-
-	// Implement `AsyncDisposable`.
-	override async [Symbol.asyncDispose](): Promise<void> {
-		await awaitDispose(this.paging, super[Symbol.asyncDispose]());
 	}
 }
 

@@ -53,13 +53,13 @@ describe("fetchAfter()", () => {
 		expect(new Set(_ids(store)).size).toBe(ITEMS.length);
 		expect(store.hasAfter).toBe(false);
 	});
-	test("sets paging while a page loads", async () => {
+	test("sets busy while a page loads", async () => {
 		const { store } = _setup();
 		await store.refresh();
 		const promise = store.fetchAfter();
-		expect(store.paging.value).toBe(true);
+		expect(store.busy.value).toBe(true);
 		await promise;
-		expect(store.paging.value).toBe(false);
+		expect(store.busy.value).toBe(false);
 	});
 	test("throws for a query without $order", () => {
 		const { store } = _setup({ $limit: 2 });
