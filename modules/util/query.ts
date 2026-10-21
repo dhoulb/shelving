@@ -1,11 +1,11 @@
 import type { ImmutableArray } from "./array.js";
-import { isArray, limitArray, requireLast } from "./array.js";
+import { isArray, limitArray, requireFirst } from "./array.js";
 import type { Data, LeafData, LeafDataPath } from "./data.js";
 import { getDataProp, joinDataPath, splitDataPath } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
+import type { AnyCaller } from "./function.js";
 import { limitItems } from "./iterate.js";
-import type { Mutable } from "./object.js";
 import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 import type { Segments } from "./string.js";
@@ -211,37 +211,50 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
 }
 
 /**
- * Get a query for items that appear before a specified item.
- * - For token based pagination on a result set.
+ * Get a query for the items that sort at or before a specified item.
+ * - For cursor-based paging towards the start of a result set.
+ * - Adds an inclusive range on the first `$order` key only (`key<=` for an ascending order, `key>=` for a descending order), so items with the same value as `item` are included. Drop the items you already have by ID.
+ * - Keeps the existing order and limit. To get the nearest items first, reverse the order before you set a limit.
+ * - Page on a first key with many distinct values (e.g. a timestamp). Many items with the same value make each page read them all again.
+ *
+ * @param query The query to page through. It must have an `$order`.
+ * @param item The item to page from (normally the first item already loaded).
+ * @returns A new query with the range added.
+ * @throws {RequiredError} If the query has no `$order`.
+ * @example getBeforeQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when>=": 5 }
+ * @see https://shelving.cc/util/query/getBeforeQuery
  */
-export function getBeforeQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getQueryOrders(query);
-	const lastSort = requireLast(sorts);
-	const newQuery: Mutable<Query<Data>> = { ...query };
-	for (const sort of sorts) {
-		const { key, direction } = sort;
-		const keyStr = joinDataPath(key);
-		const value = getDataProp(item, key);
-		newQuery[direction === "asc" ? (sort === lastSort ? `${keyStr}>` : `${keyStr}>=`) : sort === lastSort ? `${keyStr}<` : `${keyStr}<=`] =
-			value;
-	}
-	return newQuery as Query<T>;
+export function getBeforeQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getBeforeQuery): Query<T> {
+	const { key, direction } = requireFirst(getQueryOrders(query), caller);
+	return _withRange(query, key, direction === "asc" ? "<=" : ">=", getDataProp(item, key));
 }
 
 /**
- * Get a query for items that appear after a specified item.
- * - For token based pagination on a result set.
+ * Get a query for the items that sort at or after a specified item.
+ * - For cursor-based paging towards the end of a result set.
+ * - Adds an inclusive range on the first `$order` key only (`key>=` for an ascending order, `key<=` for a descending order), so items with the same value as `item` are included. Drop the items you already have by ID.
+ * - Keeps the existing order and limit.
+ * - Page on a first key with many distinct values (e.g. a timestamp). Many items with the same value make each page read them all again.
+ *
+ * @param query The query to page through. It must have an `$order`.
+ * @param item The item to page from (normally the last item already loaded).
+ * @returns A new query with the range added.
+ * @throws {RequiredError} If the query has no `$order`.
+ * @example getAfterQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when<=": 5 }
+ * @see https://shelving.cc/util/query/getAfterQuery
  */
-export function getAfterQuery<T extends Data>(query: Query<T>, item: T): Query<T> {
-	const sorts = getQueryOrders(query);
-	const lastSort = requireLast(sorts);
-	const newQuery: Mutable<Query<Data>> = { ...query };
-	for (const sort of sorts) {
-		const { key, direction } = sort;
-		const keyStr = joinDataPath(key);
-		const value = getDataProp(item, key);
-		newQuery[direction === "asc" ? (sort === lastSort ? `${keyStr}<` : `${keyStr}<=`) : sort === lastSort ? `${keyStr}>` : `${keyStr}>=`] =
-			value;
+export function getAfterQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getAfterQuery): Query<T> {
+	const { key, direction } = requireFirst(getQueryOrders(query), caller);
+	return _withRange(query, key, direction === "asc" ? ">=" : "<=", getDataProp(item, key));
+}
+
+/** Add an inclusive range to a query, but keep an existing range on the same key when it is narrower. */
+function _withRange<T extends Data>(query: Query<T>, key: Segments, operator: "<=" | ">=", value: unknown): Query<T> {
+	const prop = `${joinDataPath(key)}${operator}`;
+	const current = (query as Data)[prop];
+	if (current !== undefined) {
+		const c = compareAscending(current, value);
+		if (operator === "<=" ? c <= 0 : c >= 0) return query;
 	}
-	return newQuery as Query<T>;
+	return { ...query, [prop]: value };
 }

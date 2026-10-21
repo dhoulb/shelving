@@ -1,7 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import type { ImmutableArray } from "shelving/util/array";
 import { getIdentifiers } from "shelving/util/item";
-import { filterQueryItems, getQueryFilters, getQueryOrders, matchQueryItem, queryItems, sortQueryItems } from "shelving/util/query";
+import {
+	filterQueryItems,
+	getAfterQuery,
+	getBeforeQuery,
+	getQueryFilters,
+	getQueryOrders,
+	matchQueryItem,
+	queryItems,
+	sortQueryItems,
+} from "shelving/util/query";
 import type { BasicData } from "../test/index.js";
 import { basic1, basic2, basics, expectUnorderedItems } from "../test/index.js";
 import { expectOrderedItems } from "../test/util.js";
@@ -187,4 +196,43 @@ describe("filterQueryItems()", () => {
 test("queryItems()", () => {
 	expectOrderedItems(queryItems(basics, { "num>=": 500, $order: "!str", $limit: 3 }), ["basic9", "basic8", "basic7"]);
 	expectOrderedItems(queryItems(basics, { "tags[]": "even", $order: "!num", $limit: 2 }), ["basic8", "basic6"]);
+});
+
+describe("getAfterQuery()", () => {
+	test("adds an inclusive range on the first order key", () => {
+		expect(getAfterQuery<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num>=": 100 });
+		expect(getAfterQuery<BasicData>({ $order: ["!num", "str"] }, basic1)).toEqual({ $order: ["!num", "str"], "num<=": 100 });
+	});
+	test("keeps a narrower range that already exists", () => {
+		expect(getAfterQuery<BasicData>({ $order: "num", "num>=": 150 }, basic1)).toEqual({ $order: "num", "num>=": 150 });
+		expect(getAfterQuery<BasicData>({ $order: "num", "num>=": 50 }, basic1)).toEqual({ $order: "num", "num>=": 100 });
+	});
+	test("returns the items at or after the item", () => {
+		expectOrderedItems(queryItems(basics, getAfterQuery({ $order: "num" }, basic2)), [
+			"basic2",
+			"basic3",
+			"basic4",
+			"basic5",
+			"basic6",
+			"basic7",
+			"basic8",
+			"basic9",
+		]);
+	});
+	test("throws without $order", () => {
+		expect(() => getAfterQuery({}, basic1)).toThrow();
+	});
+});
+
+describe("getBeforeQuery()", () => {
+	test("adds an inclusive range on the first order key", () => {
+		expect(getBeforeQuery<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num<=": 100 });
+		expect(getBeforeQuery<BasicData>({ $order: "!num" }, basic1)).toEqual({ $order: "!num", "num>=": 100 });
+	});
+	test("returns the items at or before the item", () => {
+		expectOrderedItems(queryItems(basics, getBeforeQuery({ $order: "num" }, basic2)), ["basic1", "basic2"]);
+	});
+	test("throws without $order", () => {
+		expect(() => getBeforeQuery({}, basic1)).toThrow();
+	});
 });

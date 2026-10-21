@@ -73,19 +73,24 @@ const limited  = limitQueryItems(sorted, 5);
 
 ### Cursor-based pagination
 
-```ts
-import { queryItems, getAfterQuery, getBeforeQuery } from "shelving/util";
+`getAfterQuery()` and `getBeforeQuery()` add an inclusive range on the first `$order` key. The range includes the items that have the same value as the cursor item, so drop the items you already have by ID, and ask for that many extra items.
 
-const base = { $order: "price", $limit: 10 };
+```ts
+import { queryItems, getAfterQuery } from "shelving/util";
+
+const base = { $order: "!when", $limit: 10 };
 const page1 = Array.from(queryItems(items, base));
 const last  = page1[page1.length - 1];
 
-// Next page — items that come after `last`
-const page2 = Array.from(queryItems(items, getAfterQuery(base, last)));
-
-// Previous page — items that come before `last`
-const prev  = Array.from(queryItems(items, getBeforeQuery(base, last)));
+// Next page — items at or after `last`, minus the ones already loaded.
+const seen  = new Set(page1.map(item => item.id));
+const ties  = page1.filter(item => item.when === last.when).length;
+const page2 = Array.from(queryItems(items, { ...getAfterQuery(base, last), $limit: 10 + ties }))
+  .filter(item => !seen.has(item.id))
+  .slice(0, 10);
 ```
+
+`QueryStore` does this for you with `QueryStore.fetchAfter()` and `QueryStore.fetchBefore()`.
 
 ### Matching a single item
 
