@@ -236,3 +236,9 @@ describe("getBeforeQuery()", () => {
 		expect(() => getBeforeQuery({}, basic1)).toThrow();
 	});
 });
+
+test("getAfterQuery() and getBeforeQuery() throw when the item has no value for the first order key", () => {
+	const item = { id: "a" } as unknown as BasicData;
+	expect(() => getAfterQuery<BasicData>({ $order: "num" }, item)).toThrow();
+	expect(() => getBeforeQuery<BasicData>({ $order: "num" }, item)).toThrow();
+});

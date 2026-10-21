@@ -32,7 +32,8 @@ A query with an `$order` loads in pages, and the query `$limit` is the page size
 
 - `QueryStore.fetchAfter()` loads the next page after the last item. `QueryStore.hasAfter` is `false` when there are no more items. `QueryStore.fetchMore()` and `QueryStore.hasMore` are aliases.
 - `QueryStore.fetchBefore()` loads the new items before the first item, e.g. new messages in a newest-first chat. Call it on a timer to poll. `QueryStore.hasBefore` is `true` when there were more new items than one page.
-- `QueryStore.busy` is `true` while a page loads, as it is during `refresh()`. The items already loaded do not suspend.
+- `QueryStore.busy` is `true` while a page loads, as it is during `refresh()`. The items already loaded do not suspend. A call while a fetch runs waits for it, then loads its page.
+- A failed `fetchAfter()` or `fetchBefore()` rejects its promise, and the items already loaded stay. It does not set `reason`, so the list does not go to the error boundary.
 - `QueryStore.refresh()` loads the first page again, and drops the other loaded pages.
 
 A paged store **pins** its items. After a fetch, each item keeps its position:
@@ -40,6 +41,7 @@ A paged store **pins** its items. After a fetch, each item keeps its position:
 - An edit to an item shows in place. The item does not move or leave the list, even if its sort value or a filter match changes. A refresh puts it in its new position.
 - An item deleted from the memory is hidden. If the delete is undone, the item shows again in its old position.
 - A new item in the memory that matches the filters and sorts before the first item shows at the start at once. This is how an optimistic preview from `UndoDBProvider` shows in the list.
+- When the list is complete (`hasAfter` is `false`), a new item that sorts after the last item shows at the end at once.
 - A new item that sorts between loaded items shows only after a refresh.
 
 The cursor is an inclusive range on the first `$order` key (see `getAfterQuery()`). The store drops the items it already has by ID, so no item is skipped or shown twice. Page on a first key with many distinct values, e.g. a timestamp: many items with the same value make each page read them all again.
@@ -88,13 +90,13 @@ function Messages({ squad }: { squad: string }) {
   const store = useQuery(MESSAGES, { squad, $order: "!when", $limit: 50 }); // Suspends on the first page.
   const busy = useStore(store.busy).value;
   useEffect(() => {
-    const timer = setInterval(() => void store.fetchBefore(), 10_000); // Poll for new messages.
+    const timer = setInterval(() => store.fetchBefore().catch(BLACKHOLE), 10_000); // Poll for new messages. A failed poll is tried again next time.
     return () => clearInterval(timer);
   }, [store]);
   return (
     <>
       {store.value.map(message => <Message key={message.id} message={message} />)}
-      {store.hasAfter && <Button onClick={() => void store.fetchAfter()} disabled={busy}>Show older</Button>}
+      {store.hasAfter && <Button onClick={() => store.fetchAfter().catch(notifyThrown)} disabled={busy}>Show older</Button>}
     </>
   );
 }
