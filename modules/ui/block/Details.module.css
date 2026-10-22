@@ -48,8 +48,8 @@
 			}
 		}
 
-		/* Title chevron (the summary's flex class sets its size). Points down while closed. */
-		.summary [data-slot="icon"] {
+		/* Title chevron (the summary's flex class sets its size). Points down while closed. Only the direct child, so icons in the title keep their own colour. */
+		.summary > [data-slot="icon"] {
 			color: var(--details-icon-color, var(--tint-50));
 			transform: rotate(180deg);
 			transition: var(--details-transition, all var(--duration-fast));
@@ -81,7 +81,7 @@
 
 		/* States */
 		&[open] {
-			.summary [data-slot="icon"] {
+			.summary > [data-slot="icon"] {
 				transform: rotate(0deg);
 			}
 
