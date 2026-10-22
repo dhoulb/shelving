@@ -91,5 +91,6 @@ function _isRetryableError(thrown: unknown): boolean {
 /** Convert a strings array into the `TemplateStringsArray` shape `Bun.SQL` expects. */
 function _getTemplateStrings(strings: ImmutableArray<string>): TemplateStringsArray {
 	const raw = [...strings];
-	return Object.assign(raw, { raw }) as unknown as TemplateStringsArray;
+	// `raw` must not be enumerable: newer Bun versions refuse a template object with an enumerable `raw`.
+	return Object.defineProperty(raw, "raw", { value: raw }) as unknown as TemplateStringsArray;
 }
