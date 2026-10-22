@@ -7,6 +7,7 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - A native `<dialog>` does both jobs. Shelving splits them: `<Dialog>` is the overlay and `Modal` is the panel. Content placed directly in a `<Dialog>` shows as white text on the dark overlay.
 - `Modal` sets its text back to `--tint-00`, so it reads on its own `--tint-100` surface.
 - `DialogsStore.show()` wraps its content in a `<Dialog>` only. It does not add a `Modal`, so put the `Modal` in the content yourself.
+- A tap inside a `Modal` never closes its `<Dialog>`, except on a link or a `<nav>` button. A tap on the overlay outside it does.
 - `Modal` only styles the box. Lay out its contents with the usual block components.
 - A centred `Modal` fills the width of its `<Dialog>`, so set `--dialog-width` to change it. `--modal-width` sets the width of a `left` or `right` panel, and the maximum width of a `top` or `bottom` panel.
 - The `padding` variant (for example `padding="large"`) sets the top and bottom padding, and the `indent` variant sets the left and right padding, the same as on `<Panel>`.
