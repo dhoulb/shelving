@@ -6,6 +6,7 @@ import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import "../transition/FadeTransition.css";
 import styles from "./Dialog.module.css";
+import modalStyles from "./Modal.module.css";
 
 /**
  * Props for `<Dialog>` — optional `children` content and an `onClose` callback.
@@ -20,7 +21,8 @@ export interface DialogProps extends OptionalChildProps {
 /**
  * Modal `<dialog>` element that opens on mount and includes a close button.
  *
- * - Opens via `showModal()` when mounted and closes on backdrop clicks, link/nav-button clicks, the close button, or the Escape key.
+ * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, the close button, or the Escape key.
+ * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
  * - The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
  * - With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
  * - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
@@ -38,7 +40,7 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 				<dialog
 					ref={_showModal}
 					className={getModuleClass(styles, "dialog")}
-					onClick={_closeOnBackdropClick}
+					onClick={_closeOnClick}
 					onCancel={e => {
 						// Keep the dialog open and let the parent unmount it in a transition. An uncancelable request closes natively and fires `onClose` from the `close` event.
 						if (!onClose || !e.cancelable) return;
@@ -67,13 +69,20 @@ function _showModal(dialog: HTMLDialogElement | null): void {
 	if (dialog && !dialog.open) dialog.showModal();
 }
 
-/** When the user clicks anywhere on a `<dialog>` element (and the click isn't on a link etc), then close the dialog. */
-function _closeOnBackdropClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>): void {
-	// Close the dialog when clicking on the dialog itself (but not its children).
-	if (currentTarget === target) _requestClose(currentTarget);
+/** Links and `<nav>` buttons always close the dialog. */
+const CLOSE_SELECTOR = "a:any-link, nav button:enabled";
 
-	// Close the dialog when clicking on links or buttons in a `<nav>` element.
-	if (target instanceof Element && target.closest("a:any-link, nav button:enabled")) _requestClose(currentTarget);
+/** Taps on controls and inside a `<Modal>` panel (a true modal, e.g. a form) never close the dialog. */
+const KEEP_SELECTOR = `button, input, select, textarea, label, .${getModuleClass(modalStyles, "modal")}`;
+
+/** When the user taps anywhere on a `<dialog>` element, close it, unless the tap is on a control or inside a `<Modal>`. */
+function _closeOnClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>): void {
+	if (!(target instanceof Element)) return;
+
+	// Ignore taps in a nested dialog. React events bubble through the React tree, so they can reach an outer dialog.
+	if (target.closest("dialog") !== currentTarget) return;
+
+	if (target.closest(CLOSE_SELECTOR) || !target.closest(KEEP_SELECTOR)) _requestClose(currentTarget);
 }
 
 /**

@@ -4,7 +4,8 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 
 **Things to know:**
 
-- Closes on a backdrop click, the Escape key, any link or `<nav>` button clicked inside it, or the built-in `<DialogCloseButton>` (an X icon, top-right).
+- Closes on a tap anywhere on it, the Escape key, or the built-in `<DialogCloseButton>` (an X icon, top-right).
+- A tap on a control (`<button>`, `<input>`, `<select>`, `<textarea>`, `<label>`) does not close it. A tap anywhere inside a `<Modal>` panel does not close it either, so a form in a `<Modal>` is safe. A tap on a link or a `<nav>` button always closes it.
 - Children render inside a `<Suspense>` boundary, so lazy content can stream in.
 - Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is `--dialog-width` wide (never wider than the screen) and centred on the screen. A centred `<Modal>` fills it. Content taller than the screen starts at the top, and the dialog scrolls.
 - While a dialog is open, the page behind it does not scroll. A scroll inside the dialog never passes on to the page.
