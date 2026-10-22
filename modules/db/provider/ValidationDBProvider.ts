@@ -6,7 +6,7 @@ import { getNamedMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
-import type { Updates } from "../../util/update.js";
+import { getUpdates, type Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
@@ -192,11 +192,25 @@ function _validateUpdates<I extends Identifier, T extends Data>(
 	collection: Collection<string, I, T>,
 	updates: Updates<Item<I, T>>,
 	caller: AnyCaller,
-): Partial<T> {
+): Data {
+	// Only a plain top-level key is a prop of the data schema. An encoded key (`+=num`, `+[]tags`, `=a.b`) or a path (`a.b`)
+	// is not, so the schema would strip it: keep it as it is. `getUpdates()` throws if a sum is not a number.
+	const plain: { [key: string]: unknown } = {};
+	const encoded: { [key: string]: unknown } = {};
+	for (const [key, value] of Object.entries(updates)) {
+		if (_isPlainKey(key)) plain[key] = value;
+		else encoded[key] = value;
+	}
+	getUpdates(encoded as Updates);
 	try {
-		return PARTIAL(collection).validate(updates) as Partial<T>;
+		return { ...PARTIAL(collection).validate(plain), ...encoded };
 	} catch (thrown) {
 		if (typeof thrown !== "string") throw thrown;
 		throw new ValueError(`Invalid updates for "${collection}"\n${thrown}`, { received: updates, caller });
 	}
+}
+
+/** Is an `Updates` key a plain top-level prop, with no update prefix and no path? */
+function _isPlainKey(key: string): boolean {
+	return !key.includes(".") && !/^(?:=|\+=|-=|\+\[\]|-\[\])/.test(key);
 }
