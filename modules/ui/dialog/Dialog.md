@@ -12,6 +12,7 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 - `Dialog` only dims the page. Its text is white (`--tint-100`) so it reads on the dark overlay. Wrap the content in `<Modal>` to give it a panel with dark text on a light surface.
 - `onClose` fires when the user closes the dialog. It must unmount the `Dialog`: clear the React state that mounts it, or (when pushed via a store) remove it from the list. `Dialog` calls `onClose` inside `startTransition()`, and the dialog stays open until it unmounts.
 - The dialog animates with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). The whole dialog fades in and out as one layer. A `<Modal>` pinned to an edge takes its own layer and slides.
+- A change inside an open dialog (new content, a Suspense reveal) runs no view transition, so the dialog never ignores a tap while its content changes. The page ignores taps while a view transition runs.
 - A view transition only runs for a React transition update. `DialogsStore` and `onClose` do this for you. To animate a declarative `Dialog` as it opens, set the state that mounts it inside `startTransition()`.
 - A browser without view transitions shows and hides the dialog at once.
 - Pair with `DialogsStore`, `<DialogsContext>`, and `<Dialogs>` to open dialogs imperatively from anywhere in the app.
