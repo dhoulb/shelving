@@ -24,6 +24,7 @@ export interface DialogProps extends OptionalChildProps {
  * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, the close button, or the Escape key.
  * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
  * - The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
+ * - A change inside an open dialog (new content, a Suspense reveal) runs no view transition. The page ignores taps while one runs.
  * - With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
  * - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
@@ -34,8 +35,8 @@ export interface DialogProps extends OptionalChildProps {
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	return (
 		<Suspense fallback={null}>
-			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. */}
-			<ViewTransition enter="fade" exit="fade">
+			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. No update transition: the page ignores taps while a view transition runs, so a change inside an open dialog must not start one. */}
+			<ViewTransition default="none" enter="fade" exit="fade">
 				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
 				<dialog
 					ref={_showModal}
