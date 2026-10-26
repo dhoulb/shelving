@@ -6,7 +6,7 @@ Core helpers for checking, converting, sanitising, and transforming strings. Use
 
 - `getString()` converts `boolean`, `number`, `Date`, and arrays to strings but returns `undefined` for anything else (e.g. objects, `null`). Use `requireString()` to throw instead.
 - `sanitizeText()` is for single-line input (titles, labels). `sanitizeMultilineText()` is for longer content — it preserves `\n` but normalises everything else.
-- `simplifyString()` uses Unicode normalisation (`NFKD`) so accented, ligature, and styled characters (`é`, `ﬀ`, `Ⓒ`, `𝐶`) collapse to plain letters before stripping. A small map also converts styled letters that `NFKD` misses (`ᴄ`, `🅒`, `🅲`). Letters from other scripts (`ж`, `π`) are kept. This makes it reliable for search and slug generation, e.g. `getSlug("𝓒𝓸𝓸𝓵 𝓣𝓲𝓽𝓵𝓮")` returns `"cool-title"`.
+- `simplifyString()` uses Unicode normalisation (`NFKD`) so accented, ligature, and styled characters (`é`, `ﬀ`, `Ⓒ`, `𝐶`) collapse to plain letters before stripping. A small map also converts styled letters that `NFKD` misses (`ᴄ`, `🅒`, `🅲`). Letters from other scripts (`ж`, `π`) are kept. Marks like `©`, `™`, and `№` are removed, not converted to letters. This makes it reliable for search and slug generation, e.g. `getSlug("𝓒𝓸𝓸𝓵 𝓣𝓲𝓽𝓵𝓮")` returns `"cool-title"`.
 - `splitString()` differs from `String.prototype.split()` in that excess segments are concatenated onto the last segment rather than discarded, and it enforces min/max segment counts.
 - `getWords()` honours quoted phrases: `"hello world"` is one word, not two.
 

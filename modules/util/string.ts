@@ -220,10 +220,11 @@ export function sanitizeMultilineText(str: string): string {
 		.replace(/(^|\t|\n)[^\S\t\n]+/g, "$1"); // Remove leading whitespace that isn't a tab.
 }
 
-// Letterlike characters that `NFKD` normalisation does not convert to a plain letter.
+// Characters where `NFKD` normalisation does not give the plain letter we want.
 const _LETTERS = "abcdefghijklmnopqrstuvwxyz";
 const _LETTERLIKE = new Map<string, string>([
 	["℮", "e"], // Estimate symbol.
+	...Array.from("™℠🄪🄫🄬🅪🅫🅬🄭🄮℡№℅℀℁℆℻㉐㋏₨﷼℃℉", char => [char, ""] as const), // Marks, abbreviations, currency signs, and unit signs are symbols, not letters (`NFKD` converts e.g. `™` to `TM`).
 	...Array.from("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ", (char, i) => [char, _LETTERS.charAt(i)] as const), // Small capitals `ᴀ` to `ᴢ` (no small capital `x` exists).
 	..._getLetterRange(0x1f150), // Negative circled capitals `🅐` to `🅩`.
 	..._getLetterRange(0x1f170), // Negative squared capitals `🅰` to `🆉`.
@@ -249,6 +250,7 @@ function _replaceLetterlike(char: string): string {
  * - Converts a small set of letterlike characters that `NFKD` does not cover: small capitals (e.g. `ᴄ`), negative circled and squared letters (e.g. `🅒` and `🅲`), regional indicators (e.g. `🇨`), and the estimate symbol `℮`.
  * - Keeps letters from other scripts (e.g. `ж`, `π`, `ℵ` alef becomes `א`), and does not convert them to Latin letters that look the same.
  * - Removes symbols, punctuation, and emoji (e.g. `©`, `!`, `😂`).
+ * - Removes marks and abbreviation symbols, and does not convert them to letters (e.g. `™`, `℠`, `🄬`, `№`, `℅`, `₨`, `℃`).
  * - Converts runs of spaces, tabs, newlines, underscores, and dashes to a single space, then trims and lowercases the result.
  *
  * @param str The string to simplify.
