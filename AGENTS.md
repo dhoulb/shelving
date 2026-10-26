@@ -215,6 +215,7 @@ General docblock standards (strong first line, `@example` / `@param` / `@returns
 - Each module has a `README.md` that acts as the module's guide page. It covers **purpose, key concepts, and integration examples** — how to combine the module's classes and functions to accomplish real tasks (and, for families like `error`, shared traits). When module behaviour changes, check whether the README needs updating
 - **Per-class / per-function usage examples** live in a sibling `MyClass.md` / `myFunction.md` next to the source file. `DirectoryExtractor` merges that markdown onto the symbol's own page (`MarkupExtractor` outranks `TypescriptExtractor`), so detailed usage belongs there rather than in the module README. `modules/util/template.md` is the precedent. This applies to UI components too — each reusable component gets a sibling `.md` (`Card.md` next to `Card.tsx`) with usage examples and a **Styling** section (see below)
 - Trust source and tests over README if they conflict — but fix the README rather than leaving it wrong
+- **Guides** live in `guides/*.md` (`guides/README.md` is the section's own page). The docs build publishes each one under `/guides/<name>` as HTML and Markdown, and lists them first in the sidebar, `llms.txt`, and the npm package's `docs/` folder
 
 ### Docs site
 

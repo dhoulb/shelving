@@ -11,7 +11,9 @@ Shelving is a TypeScript data toolkit. Its API changes often and does not follow
 
 The docs for the installed version are in `node_modules/shelving/docs/`. All files are Markdown.
 
-- `llms.txt` — the index of modules. Start here.
+- `llms.txt` — the index of guides and modules. Start here.
+- `guides/building-with-shelving.md` — how to lay out a full-stack project with Shelving. Read it before you add a new feature or package.
+- `guides/styleguide.md` — the code style that Shelving uses. Follow it in code that uses Shelving.
 - `<module>.md` — one page for each module, for example `schema.md` or `util/array.md`. It lists every token in the module, with a one-line description.
 - `<module>/<Token>.md` — one page for each token, for example `schema/StringSchema.md`. It gives the import line, signatures, parameters, return values, errors, and examples. Class members are at `<module>/<Class>/<member>.md`.
 - `llms-full.txt` — every page in one file. It is large, so search it (for example `grep -n "formatDate" node_modules/shelving/docs/llms-full.txt`). Do not read all of it.
