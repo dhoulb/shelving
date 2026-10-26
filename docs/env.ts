@@ -1,12 +1,12 @@
 import { resolve } from "node:path";
 import { requireBaseURL } from "../modules/util/index.js";
-import type { AbsolutePath } from "../modules/util/path.js";
+import type { AbsolutePathString } from "../modules/util/path.js";
 
-export const DOCS_DIR = resolve(import.meta.dir) as AbsolutePath;
-export const ROOT_DIR = resolve(DOCS_DIR, "..") as AbsolutePath;
-export const MODULES_DIR = resolve(ROOT_DIR, "modules") as AbsolutePath;
-export const PACKAGE_JSON_PATH = resolve(ROOT_DIR, "package.json") as AbsolutePath;
-export const OUTPUT_DIR = resolve(ROOT_DIR, ".build/docs") as AbsolutePath;
+export const DOCS_DIR = resolve(import.meta.dir) as AbsolutePathString;
+export const ROOT_DIR = resolve(DOCS_DIR, "..") as AbsolutePathString;
+export const MODULES_DIR = resolve(ROOT_DIR, "modules") as AbsolutePathString;
+export const PACKAGE_JSON_PATH = resolve(ROOT_DIR, "package.json") as AbsolutePathString;
+export const OUTPUT_DIR = resolve(ROOT_DIR, ".build/docs") as AbsolutePathString;
 
 export const APP_TITLE = "Shelving";
 export const APP_DESCRIPTION = "TypeScript data toolkit";

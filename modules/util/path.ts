@@ -10,23 +10,23 @@ import type { Nullish } from "./null.js";
 /**
  * Absolute path string starting with a `/` slash.
  *
- * @see https://shelving.cc/util/path/AbsolutePath
+ * @see https://shelving.cc/util/path/AbsolutePathString
  */
-export type AbsolutePath = `/` | `/${string}`;
+export type AbsolutePathString = `/` | `/${string}`;
 
 /**
  * Relative path string that is `.` dot, or starts with `./` dot slash.
  *
- * @see https://shelving.cc/util/path/RelativePath
+ * @see https://shelving.cc/util/path/RelativePathString
  */
-export type RelativePath = `.` | `./` | `./${string}`;
+export type RelativePathString = `.` | `./` | `./${string}`;
 
 /**
  * Either an absolute or relative path.
  *
- * @see https://shelving.cc/util/path/Path
+ * @see https://shelving.cc/util/path/PathString
  */
-export type Path = AbsolutePath | RelativePath;
+export type PathString = AbsolutePathString | RelativePathString;
 
 /**
  * Things that can be converted to a path.
@@ -39,10 +39,10 @@ export type PossiblePath = string | readonly string[];
  * Is a string path an absolute path?
  *
  * @param path The path to test.
- * @returns `true` if `path` is an `AbsolutePath` starting with `/`, narrowing its type.
+ * @returns `true` if `path` is an `AbsolutePathString` starting with `/`, narrowing its type.
  * @see https://shelving.cc/util/path/isAbsolutePath
  */
-export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
+export function isAbsolutePath(path: PossiblePath): path is AbsolutePathString {
 	return typeof path === "string" && path.startsWith("/");
 }
 
@@ -50,10 +50,10 @@ export function isAbsolutePath(path: PossiblePath): path is AbsolutePath {
  * Is a string path a relative path?
  *
  * @param path The path to test.
- * @returns `true` if `path` is a `RelativePath` (`.` or starting with `./`), narrowing its type.
+ * @returns `true` if `path` is a `RelativePathString` (`.` or starting with `./`), narrowing its type.
  * @see https://shelving.cc/util/path/isRelativePath
  */
-export function isRelativePath(path: PossiblePath): path is RelativePath {
+export function isRelativePath(path: PossiblePath): path is RelativePathString {
 	return typeof path === "string" && (path === "." || path.startsWith("./"));
 }
 
@@ -68,7 +68,7 @@ export function isRelativePath(path: PossiblePath): path is RelativePath {
  * @returns Absolute path with a leading slash but no trailing slash, e.g. `/a/c/b`, or `undefined` if `inputPath` is not a valid path.
  * @see https://shelving.cc/util/path/getPath
  */
-export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePath = "/"): AbsolutePath | undefined {
+export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePathString = "/"): AbsolutePathString | undefined {
 	if (isNullish(inputPath)) return;
 	if (isAbsolutePath(inputPath)) return cleanPath(inputPath);
 	return joinPath(inputBase, isRelativePath(inputPath) ? inputPath.slice(2) : inputPath);
@@ -85,7 +85,7 @@ export function getPath(inputPath: Nullish<PossiblePath>, inputBase: AbsolutePat
  * @returns The normalised path, preserving the absolute/relative type of `path`.
  * @see https://shelving.cc/util/path/cleanPath
  */
-export function cleanPath(path: AbsolutePath): AbsolutePath;
+export function cleanPath(path: AbsolutePathString): AbsolutePathString;
 export function cleanPath(path: string): string;
 export function cleanPath(path: string): string {
 	const clean = path.replace(/[\\/]+(?:\.(?:[\\/]+|$))*/g, "/");
@@ -104,7 +104,7 @@ export function cleanPath(path: string): string {
  * @throws {RequiredError} If `path` is not a valid path.
  * @see https://shelving.cc/util/path/requirePath
  */
-export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: AnyCaller = requirePath): AbsolutePath {
+export function requirePath(path: PossiblePath, base?: AbsolutePathString, caller: AnyCaller = requirePath): AbsolutePathString {
 	const output = getPath(path, base);
 	if (!output) throw new RequiredError("Invalid path", { received: path, caller });
 	return output;
@@ -122,12 +122,16 @@ export function requirePath(path: PossiblePath, base?: AbsolutePath, caller: Any
  * @throws {RequiredError} If `target` or `base` is not a valid path.
  * @see https://shelving.cc/util/path/matchPathPrefix
  */
-export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller: AnyCaller = matchPathPrefix): AbsolutePath | undefined {
+export function matchPathPrefix(
+	target: PossiblePath,
+	base: PossiblePath,
+	caller: AnyCaller = matchPathPrefix,
+): AbsolutePathString | undefined {
 	const basePath = requirePath(base, undefined, caller);
 	const targetPath = requirePath(target, basePath, caller);
 	if (basePath === "/") return targetPath;
 	if (targetPath === basePath) return "/";
-	if (targetPath.startsWith(`${basePath}/`)) return targetPath.slice(basePath.length) as AbsolutePath;
+	if (targetPath.startsWith(`${basePath}/`)) return targetPath.slice(basePath.length) as AbsolutePathString;
 }
 
 /**
@@ -139,7 +143,7 @@ export function matchPathPrefix(target: PossiblePath, base: PossiblePath, caller
  * @returns `true` if `target` is exactly `current`.
  * @see https://shelving.cc/util/path/isPathActive
  */
-export function isPathActive(target: AbsolutePath, current: AbsolutePath): boolean {
+export function isPathActive(target: AbsolutePathString, current: AbsolutePathString): boolean {
 	return target === current;
 }
 
@@ -152,7 +156,7 @@ export function isPathActive(target: AbsolutePath, current: AbsolutePath): boole
  * @returns `true` if `current` is `target` or a descendant of `target`.
  * @see https://shelving.cc/util/path/isPathProud
  */
-export function isPathProud(target: AbsolutePath, current: AbsolutePath): boolean {
+export function isPathProud(target: AbsolutePathString, current: AbsolutePathString): boolean {
 	return target === current || (target !== "/" && target.startsWith(`${current}/`));
 }
 
@@ -181,9 +185,9 @@ export type PathPart = string | readonly string[];
  * Join one or more path parts into a single path string.
  * - Each part can be a string (e.g. `"/foo/bar"`, `"foo"`) or an array of segments (e.g. `["foo", "bar"]`). String parts may themselves contain `/` separators — they're flattened and normalised.
  * - Runs of `//` are collapsed and trailing slashes stripped (via `cleanPath()`); `\` Windows slashes are converted too.
- * - If the first argument is an `AbsolutePath` string (starts with `/`), the result is also an `AbsolutePath`; otherwise the return type is `string`.
+ * - If the first argument is an `AbsolutePathString` string (starts with `/`), the result is also an `AbsolutePathString`; otherwise the return type is `string`.
  */
-export function joinPath(first: AbsolutePath, ...rest: PathPart[]): AbsolutePath;
+export function joinPath(first: AbsolutePathString, ...rest: PathPart[]): AbsolutePathString;
 export function joinPath(...parts: PathPart[]): string;
 export function joinPath(...parts: PathPart[]): string {
 	return cleanPath(parts.flat().join("/"));

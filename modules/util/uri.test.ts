@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { RequiredError } from "shelving/error";
 import { getURIParam, getURIParams, omitURIParam, omitURIParams, requireURIParam, withURIParam, withURIParams } from "shelving/util/uri";
-import { ImmutableURL } from "shelving/util/url";
+import { AbsoluteURL } from "shelving/util/url";
 
 describe("getURIParams()", () => {
 	test("returns params from URL", () => {
 		expect(getURIParams("https://a.com/?a=1&b=2")).toEqual({ a: "1", b: "2" });
-		expect(getURIParams(new ImmutableURL("https://a.com/?a=1&b=2"))).toEqual({ a: "1", b: "2" });
+		expect(getURIParams(new AbsoluteURL("https://a.com/?a=1&b=2"))).toEqual({ a: "1", b: "2" });
 	});
 	test("a `__proto__` param does not inject a prototype", () => {
 		const params = getURIParams("https://a.com/?__proto__=a&b=2");
@@ -32,8 +32,8 @@ describe("getURIParam()", () => {
 		expect(getURIParam("https://a.com/?foo=bar", "missing")).toBeUndefined();
 
 		// URL input.
-		expect(getURIParam(new ImmutableURL("https://a.com/?foo=bar"), "foo")).toBe("bar");
-		expect(getURIParam(new ImmutableURL("https://a.com/?foo=bar"), "missing")).toBeUndefined();
+		expect(getURIParam(new AbsoluteURL("https://a.com/?foo=bar"), "foo")).toBe("bar");
+		expect(getURIParam(new AbsoluteURL("https://a.com/?foo=bar"), "missing")).toBeUndefined();
 	});
 });
 describe("requireURIParam()", () => {
@@ -51,16 +51,16 @@ describe("requireURIParam()", () => {
 		expect(() => requireURIParam("https://a.com/?foo=bar", "missing")).toThrow(RequiredError);
 
 		// URL input.
-		expect(requireURIParam(new ImmutableURL("https://a.com/?foo=bar"), "foo")).toBe("bar");
-		expect(() => requireURIParam(new ImmutableURL("https://a.com/?foo=bar"), "missing")).toThrow(RequiredError);
+		expect(requireURIParam(new AbsoluteURL("https://a.com/?foo=bar"), "foo")).toBe("bar");
+		expect(() => requireURIParam(new AbsoluteURL("https://a.com/?foo=bar"), "missing")).toThrow(RequiredError);
 	});
 });
 describe("withURIParam()", () => {
 	test("sets param", () => {
 		expect(withURIParam("https://a.com", "a", "1").href).toBe("https://a.com/?a=1");
 		expect(withURIParam("https://a.com?c=3", "a", "1").href).toBe("https://a.com/?c=3&a=1");
-		expect(withURIParam(new ImmutableURL("https://a.com"), "a", "1").href).toBe("https://a.com/?a=1");
-		expect(withURIParam(new ImmutableURL("https://a.com?c=3"), "a", "1").href).toBe("https://a.com/?c=3&a=1");
+		expect(withURIParam(new AbsoluteURL("https://a.com"), "a", "1").href).toBe("https://a.com/?a=1");
+		expect(withURIParam(new AbsoluteURL("https://a.com?c=3"), "a", "1").href).toBe("https://a.com/?c=3&a=1");
 	});
 	test("converts values", () => {
 		expect(withURIParam("https://a.com", "a", "1").href).toBe("https://a.com/?a=1");
@@ -69,14 +69,14 @@ describe("withURIParam()", () => {
 		expect(withURIParam("https://a.com", "a", [1, true, "b"]).href).toBe("https://a.com/?a=1%2Ctrue%2Cb");
 	});
 	test("returns a new value", () => {
-		const input = new ImmutableURL("https://a.com");
+		const input = new AbsoluteURL("https://a.com");
 		const output = withURIParam(input, "a", "1");
 		expect(output).not.toBe(input);
 		expect(output.href).toBe("https://a.com/?a=1");
 		expect(input.href).toBe("https://a.com/");
 	});
 	test("returns same value if unchanged", () => {
-		const input = new ImmutableURL("https://a.com?a=1");
+		const input = new AbsoluteURL("https://a.com?a=1");
 		const output = withURIParam(input, "a", "1");
 		expect(output).toBe(input);
 		expect(output.href).toBe("https://a.com/?a=1");
@@ -88,38 +88,38 @@ describe("withURIParams()", () => {
 		// Data input.
 		expect(withURIParams("https://a.com", { a: 1, b: "2" }).href).toBe("https://a.com/?a=1&b=2");
 		expect(withURIParams("https://a.com?c=3", { a: 1, b: "2" }).href).toBe("https://a.com/?c=3&a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com"), { a: 1, b: "2" }).href).toBe("https://a.com/?a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com?c=3"), { a: 1, b: "2" }).href).toBe("https://a.com/?c=3&a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com"), { a: 1, b: "2" }).href).toBe("https://a.com/?a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com?c=3"), { a: 1, b: "2" }).href).toBe("https://a.com/?c=3&a=1&b=2");
 
 		// SearchParams input.
 		expect(withURIParams("https://a.com", new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
 		expect(withURIParams("https://a.com?c=3", new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com"), new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com?c=3"), new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com"), new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com?c=3"), new URLSearchParams("a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
 
 		// String URL input.
 		expect(withURIParams("https://a.com", "https://a.com?a=1&b=2").href).toBe("https://a.com/?a=1&b=2");
 		expect(withURIParams("https://a.com?c=3", "https://a.com?a=1&b=2").href).toBe("https://a.com/?c=3&a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com"), "https://a.com?a=1&b=2").href).toBe("https://a.com/?a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com?c=3"), "https://a.com?a=1&b=2").href).toBe("https://a.com/?c=3&a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com"), "https://a.com?a=1&b=2").href).toBe("https://a.com/?a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com?c=3"), "https://a.com?a=1&b=2").href).toBe("https://a.com/?c=3&a=1&b=2");
 
 		// URL input.
-		expect(withURIParams("https://a.com", new ImmutableURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
-		expect(withURIParams("https://a.com?c=3", new ImmutableURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com"), new ImmutableURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
-		expect(withURIParams(new ImmutableURL("https://a.com?c=3"), new ImmutableURL("https://a.com?a=1&b=2")).href).toBe(
+		expect(withURIParams("https://a.com", new AbsoluteURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
+		expect(withURIParams("https://a.com?c=3", new AbsoluteURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?c=3&a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com"), new AbsoluteURL("https://a.com?a=1&b=2")).href).toBe("https://a.com/?a=1&b=2");
+		expect(withURIParams(new AbsoluteURL("https://a.com?c=3"), new AbsoluteURL("https://a.com?a=1&b=2")).href).toBe(
 			"https://a.com/?c=3&a=1&b=2",
 		);
 	});
 	test("returns a new value", () => {
-		const input = new ImmutableURL("https://a.com");
+		const input = new AbsoluteURL("https://a.com");
 		const output = withURIParams(input, { a: 1, b: "2" });
 		expect(output).not.toBe(input);
 		expect(output.href).toBe("https://a.com/?a=1&b=2");
 		expect(input.href).toBe("https://a.com/");
 	});
 	test("returns same value if unchanged", () => {
-		const input = new ImmutableURL("https://a.com?a=1&b=2");
+		const input = new AbsoluteURL("https://a.com?a=1&b=2");
 		const output = withURIParams(input, { a: 1, b: "2" });
 		expect(output).toBe(input);
 		expect(output.href).toBe("https://a.com/?a=1&b=2");
@@ -132,20 +132,20 @@ describe("omitURIParams()", () => {
 		expect(omitURIParams("https://a.com?a=1&b=2", "a", "b").href).toBe("https://a.com/");
 		expect(omitURIParams("https://a.com?a=1&b=2", "a", "b", "c").href).toBe("https://a.com/");
 		expect(omitURIParams("https://a.com", "a", "b", "c").href).toBe("https://a.com/");
-		expect(omitURIParams(new ImmutableURL("https://a.com?a=1&b=2"), "a").href).toBe("https://a.com/?b=2");
-		expect(omitURIParams(new ImmutableURL("https://a.com?a=1&b=2"), "a", "b").href).toBe("https://a.com/");
-		expect(omitURIParams(new ImmutableURL("https://a.com?a=1&b=2"), "a", "b", "c").href).toBe("https://a.com/");
-		expect(omitURIParams(new ImmutableURL("https://a.com"), "a", "b", "c").href).toBe("https://a.com/");
+		expect(omitURIParams(new AbsoluteURL("https://a.com?a=1&b=2"), "a").href).toBe("https://a.com/?b=2");
+		expect(omitURIParams(new AbsoluteURL("https://a.com?a=1&b=2"), "a", "b").href).toBe("https://a.com/");
+		expect(omitURIParams(new AbsoluteURL("https://a.com?a=1&b=2"), "a", "b", "c").href).toBe("https://a.com/");
+		expect(omitURIParams(new AbsoluteURL("https://a.com"), "a", "b", "c").href).toBe("https://a.com/");
 	});
 	test("returns a new value", () => {
-		const input = new ImmutableURL("https://a.com?a=1&b=2");
+		const input = new AbsoluteURL("https://a.com?a=1&b=2");
 		const output = omitURIParams(input, "a", "b");
 		expect(output).not.toBe(input);
 		expect(output.href).toBe("https://a.com/");
 		expect(input.href).toBe("https://a.com/?a=1&b=2");
 	});
 	test("returns same value if unchanged", () => {
-		const input = new ImmutableURL("https://a.com?a=1&b=2");
+		const input = new AbsoluteURL("https://a.com?a=1&b=2");
 		const output = omitURIParams(input, "d", "c");
 		expect(output).toBe(input);
 		expect(output.href).toBe("https://a.com/?a=1&b=2");
@@ -155,8 +155,8 @@ describe("omitURIParams()", () => {
 describe("omitURIParam()", () => {
 	test("removes single param", () => {
 		expect(omitURIParam("https://a.com?a=1&b=2", "b").href).toBe("https://a.com/?a=1");
-		expect(omitURIParam(new ImmutableURL("https://a.com?a=1&b=2"), "b").href).toBe("https://a.com/?a=1");
+		expect(omitURIParam(new AbsoluteURL("https://a.com?a=1&b=2"), "b").href).toBe("https://a.com/?a=1");
 		expect(omitURIParam("https://a.com?a=1&b=2", "c").href).toBe("https://a.com/?a=1&b=2");
-		expect(omitURIParam(new ImmutableURL("https://a.com?a=1&b=2"), "c").href).toBe("https://a.com/?a=1&b=2");
+		expect(omitURIParam(new AbsoluteURL("https://a.com?a=1&b=2"), "c").href).toBe("https://a.com/?a=1&b=2");
 	});
 });

@@ -10,7 +10,7 @@ import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { renderToString } from "react-dom/server";
 import { createMeta, DocumentationApp, HTML } from "../modules/ui/index.js";
-import { type AbsolutePath, flattenTree, isAbsolutePath, type TreeElement } from "../modules/util/index.js";
+import { type AbsolutePathString, flattenTree, isAbsolutePath, type TreeElement } from "../modules/util/index.js";
 import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 
 /**
@@ -21,10 +21,15 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
  * @param stylesheet Site-root-relative URL of the stylesheet (e.g. `/client-abc123.css`).
  * @returns The number of pages written.
  */
-export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
+export async function renderApp(
+	tree: TreeElement,
+	outdir: AbsolutePathString,
+	script: AbsolutePathString,
+	stylesheet: AbsolutePathString,
+): Promise<number> {
 	// Flattening stamps a canonical `path` on every element and keys the map by it; the path-shaped keys are exactly the set of pages to render (one per element).
 	// The index page (`/all`) is a `<TreeApp>` fallback route, not a tree node, so add it explicitly.
-	const paths: AbsolutePath[] = [
+	const paths: AbsolutePathString[] = [
 		...Array.from(flattenTree(tree).keys()).filter(isAbsolutePath), //
 		"/search",
 	];

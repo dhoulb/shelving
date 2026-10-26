@@ -4,7 +4,7 @@ import { getLink, type PossibleLink } from "../util/link.js";
 import type { Nullish } from "../util/null.js";
 import type { NamedRegExpData } from "../util/regexp.js";
 import { HTTP_SCHEMES, type ImmutableURI, type URISchemes } from "../util/uri.js";
-import type { ImmutableURL } from "../util/url.js";
+import type { AbsoluteURL } from "../util/url.js";
 import type { MarkupRule, MarkupRules } from "./MarkupRule.js";
 import type { Parser } from "./Parser.js";
 import { MARKUP_RULES } from "./rule/index.js";
@@ -32,12 +32,12 @@ export type MarkupOptions = {
 	/**
 	 * Current page URL — used as the base for resolving relative refs (`./foo`, `#x`, bare segments) in link hrefs.
 	 */
-	readonly url?: ImmutableURL | undefined;
+	readonly url?: AbsoluteURL | undefined;
 
 	/**
 	 * Site root URL — used as the base for resolving site-absolute path hrefs (`/foo`), honoring its subfolder.
 	 */
-	readonly root?: ImmutableURL | undefined;
+	readonly root?: AbsoluteURL | undefined;
 
 	/**
 	 * Valid URI schemes/protocols for URLs and URIs.
@@ -92,13 +92,13 @@ export class MarkupParser implements Parser<string, ReactNode> {
 	 * Current page URL — used as the base for resolving relative refs (`./foo`, `#x`, bare segments) in link hrefs. Falls back to `root` if not set.
 	 * @see https://shelving.cc/markup/MarkupParser/url
 	 */
-	readonly url: ImmutableURL | undefined;
+	readonly url: AbsoluteURL | undefined;
 
 	/**
 	 * Site root URL — used as the base for resolving site-absolute path hrefs (`/foo`), honoring its subfolder. Falls back to `url` if not set.
 	 * @see https://shelving.cc/markup/MarkupParser/root
 	 */
-	readonly root: ImmutableURL | undefined;
+	readonly root: AbsoluteURL | undefined;
 
 	/**
 	 * Valid URI schemes/protocols for URLs and URIs.

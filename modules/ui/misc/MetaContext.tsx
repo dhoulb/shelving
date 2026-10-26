@@ -1,9 +1,9 @@
 import { createContext, use } from "react";
 import { RequiredError } from "../../error/RequiredError.js";
 import type { AnyCaller } from "../../util/function.js";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import { getURIParams, type URIParams } from "../../util/uri.js";
-import { type ImmutableURL, matchURLPrefix } from "../../util/url.js";
+import { type AbsoluteURL, matchURLPrefix } from "../../util/url.js";
 import { type Meta, mergeMeta, type PossibleMeta } from "../util/meta.js";
 
 /**
@@ -36,10 +36,10 @@ export function requireMeta(meta?: PossibleMeta): Meta {
  * @see https://shelving.cc/ui/MetaURL
  */
 export interface MetaURL extends Meta {
-	url: ImmutableURL;
-	root: ImmutableURL;
+	url: AbsoluteURL;
+	root: AbsoluteURL;
 	/** The path of `url` relative to `meta.root` (i.e. the _site-root-relative_ path). */
-	path: AbsolutePath;
+	path: AbsolutePathString;
 	/** The `?query` params of `url` extracted as a flat set of parameters. */
 	params: URIParams;
 }

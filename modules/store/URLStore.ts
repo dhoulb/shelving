@@ -1,6 +1,6 @@
 import { getGetter, getSetter } from "../util/class.js";
 import type { AnyCaller } from "../util/function.js";
-import type { AbsolutePath } from "../util/index.js";
+import type { AbsolutePathString } from "../util/index.js";
 import {
 	clearURIParams,
 	getURIParam,
@@ -13,23 +13,23 @@ import {
 	withURIParam,
 	withURIParams,
 } from "../util/uri.js";
-import { getURL, type ImmutableURL, isURLActive, isURLProud, type PossibleURL, requireURL, type URLString } from "../util/url.js";
+import { type AbsoluteURL, getURL, isURLActive, isURLProud, type PossibleURL, requireURL, type URLString } from "../util/url.js";
 import { BusyStore } from "./BusyStore.js";
 
 /**
  * Store a URL, e.g. `https://top.com/a/b/c`
- * - Accepts any `PossibleURL` as input and normalises it to an `ImmutableURL` (resolved against `this.base`).
+ * - Accepts any `PossibleURL` as input and normalises it to an `AbsoluteURL` (resolved against `this.base`).
  * - Exposes the URL's components (`href`, `origin`, `pathname`, etc.) and helpers to read and mutate its search params.
  *
  * @see https://shelving.cc/store/URLStore
  */
-export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
+export class URLStore extends BusyStore<AbsoluteURL, PossibleURL> {
 	/**
 	 * Base URL that relative URL inputs are resolved against, or `undefined` if none was set.
 	 *
 	 * @see https://shelving.cc/store/URLStore/base
 	 */
-	readonly base: ImmutableURL | undefined;
+	readonly base: AbsoluteURL | undefined;
 
 	// Override to convert possible URL to URL.
 	constructor(url: PossibleURL, base?: PossibleURL) {
@@ -39,12 +39,12 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	}
 
 	// Override to convert possible URL to URL (relative to `this.base`).
-	protected override _convert(value: PossibleURL, caller: AnyCaller): ImmutableURL {
+	protected override _convert(value: PossibleURL, caller: AnyCaller): AbsoluteURL {
 		return requireURL(value, this.base, caller);
 	}
 
 	// Override for fast equality.
-	protected override _equal(a: ImmutableURL, b: ImmutableURL): boolean {
+	protected override _equal(a: AbsoluteURL, b: AbsoluteURL): boolean {
 		return a.href === b.href;
 	}
 
@@ -128,7 +128,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 *
 	 * @see https://shelving.cc/store/URLStore/pathname
 	 */
-	get pathname(): AbsolutePath {
+	get pathname(): AbsolutePathString {
 		return this.value.pathname;
 	}
 
@@ -249,7 +249,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @example store.withParam("page", 2);
 	 * @see https://shelving.cc/store/URLStore/withParam
 	 */
-	withParam(key: string, value: unknown): ImmutableURL {
+	withParam(key: string, value: unknown): AbsoluteURL {
 		return withURIParam(this.value, key, value, this.withParam);
 	}
 
@@ -260,7 +260,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @example store.withParams({ page: 2, sort: "name" });
 	 * @see https://shelving.cc/store/URLStore/withParams
 	 */
-	withParams(params: PossibleURIParams): ImmutableURL {
+	withParams(params: PossibleURIParams): AbsoluteURL {
 		return withURIParams(this.value, params, this.withParams);
 	}
 
@@ -271,7 +271,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @example store.omitParams("page", "sort");
 	 * @see https://shelving.cc/store/URLStore/omitParams
 	 */
-	omitParams(...keys: string[]): ImmutableURL {
+	omitParams(...keys: string[]): AbsoluteURL {
 		return omitURIParams(this.value, ...keys);
 	}
 
@@ -282,7 +282,7 @@ export class URLStore extends BusyStore<ImmutableURL, PossibleURL> {
 	 * @example store.omitParam("page");
 	 * @see https://shelving.cc/store/URLStore/omitParam
 	 */
-	omitParam(key: string): ImmutableURL {
+	omitParam(key: string): AbsoluteURL {
 		return omitURIParams(this.value, key);
 	}
 

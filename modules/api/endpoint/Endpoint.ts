@@ -4,7 +4,7 @@ import type { ImmutableArray } from "../../util/array.js";
 import { type Data, isData } from "../../util/data.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestMethod, RequestParams } from "../../util/http.js";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import { getPlaceholders, matchPathTemplate, renderPathTemplate, type TemplatePlaceholders } from "../../util/template.js";
 import type { EndpointCallback, EndpointHandler } from "./util.js";
 
@@ -29,7 +29,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 *
 	 * @see https://shelving.cc/api/Endpoint/path
 	 */
-	readonly path: AbsolutePath;
+	readonly path: AbsolutePathString;
 
 	/**
 	 * The `{placeholder}` segments extracted from `path`, used to render and match URLs.
@@ -52,7 +52,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 */
 	readonly result: Schema<R>;
 
-	constructor(method: RequestMethod, path: AbsolutePath, payload: Schema<P>, result: Schema<R>) {
+	constructor(method: RequestMethod, path: AbsolutePathString, payload: Schema<P>, result: Schema<R>) {
 		this.method = method;
 		this.path = path;
 		this.placeholders = getPlaceholders(path);
@@ -71,7 +71,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * @example endpoint.renderPath({ id: "abc" }) // "/users/abc"
 	 * @see https://shelving.cc/api/Endpoint/renderPath
 	 */
-	renderPath(payload: P, caller: AnyCaller = this.renderPath): AbsolutePath {
+	renderPath(payload: P, caller: AnyCaller = this.renderPath): AbsolutePathString {
 		// Placeholders.
 		if (this.placeholders.length) {
 			assertPlaceholderPayload(payload, this, caller);
@@ -92,7 +92,7 @@ export class Endpoint<P = unknown, R = unknown> {
 	 * @example endpoint.match("GET", "/users/abc") // { id: "abc" }
 	 * @see https://shelving.cc/api/Endpoint/match
 	 */
-	match(method: RequestMethod, path: AbsolutePath, caller: AnyCaller = this.match): RequestParams | undefined {
+	match(method: RequestMethod, path: AbsolutePathString, caller: AnyCaller = this.match): RequestParams | undefined {
 		if (method !== this.method) return undefined;
 		return matchPathTemplate(this.path, path, caller);
 	}
@@ -163,10 +163,10 @@ export type EndpointType<X extends Endpoint<unknown, unknown>> = X extends Endpo
  * @example HEAD("/users/{id}")
  * @see https://shelving.cc/api/HEAD
  */
-export function HEAD<P extends Data, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function HEAD<P extends Data>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function HEAD<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function HEAD(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function HEAD<P extends Data, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function HEAD<P extends Data>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function HEAD<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function HEAD(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("HEAD", path, payload, result);
 }
 
@@ -183,10 +183,10 @@ export function HEAD(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * @example GET("/users/{id}", undefined, USER)
  * @see https://shelving.cc/api/GET
  */
-export function GET<P extends Data, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function GET<P extends Data>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function GET<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function GET(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function GET<P extends Data, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function GET<P extends Data>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function GET<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function GET(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("GET", path, payload, result);
 }
 
@@ -203,10 +203,10 @@ export function GET(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * @example POST("/users", USER, USER_RESULT)
  * @see https://shelving.cc/api/POST
  */
-export function POST<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function POST<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function POST<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function POST(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function POST<P, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function POST<P>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function POST<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function POST(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("POST", path, payload, result);
 }
 
@@ -223,10 +223,10 @@ export function POST(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED
  * @example PUT("/users/{id}", USER)
  * @see https://shelving.cc/api/PUT
  */
-export function PUT<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function PUT<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function PUT<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function PUT(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function PUT<P, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function PUT<P>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function PUT<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function PUT(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("PUT", path, payload, result);
 }
 
@@ -243,10 +243,10 @@ export function PUT(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED)
  * @example PATCH("/users/{id}", PARTIAL_USER)
  * @see https://shelving.cc/api/PATCH
  */
-export function PATCH<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function PATCH<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function PATCH<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function PATCH(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function PATCH<P, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function PATCH<P>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function PATCH<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function PATCH(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("PATCH", path, payload, result);
 }
 
@@ -263,10 +263,10 @@ export function PATCH(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINE
  * @example DELETE("/users/{id}")
  * @see https://shelving.cc/api/DELETE
  */
-export function DELETE<P, R>(path: AbsolutePath, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
-export function DELETE<P>(path: AbsolutePath, payload: Schema<P>): Endpoint<P, undefined>;
-export function DELETE<R>(path: AbsolutePath, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
-export function DELETE(path: AbsolutePath, payload = UNDEFINED, result = UNDEFINED): unknown {
+export function DELETE<P, R>(path: AbsolutePathString, payload?: Schema<P>, result?: Schema<R>): Endpoint<P, R>;
+export function DELETE<P>(path: AbsolutePathString, payload: Schema<P>): Endpoint<P, undefined>;
+export function DELETE<R>(path: AbsolutePathString, payload: undefined, result: Schema<R>): Endpoint<undefined, R>;
+export function DELETE(path: AbsolutePathString, payload = UNDEFINED, result = UNDEFINED): unknown {
 	return new Endpoint("DELETE", path, payload, result);
 }
 

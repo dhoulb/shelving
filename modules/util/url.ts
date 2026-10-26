@@ -1,8 +1,8 @@
 import { RequiredError } from "../error/RequiredError.js";
 import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
-import { type AbsolutePath, cleanPath } from "./path.js";
-import type { ImmutableURI } from "./uri.js";
+import { type AbsolutePathString, cleanPath } from "./path.js";
+import type { ImmutableURI, URIHash, URIScheme, URISearch } from "./uri.js";
 
 /**
  * A URL string has a protocol and a `//`.
@@ -14,46 +14,6 @@ import type { ImmutableURI } from "./uri.js";
 export type URLString = `${string}://${string}`;
 
 /**
- * Construct a correctly-typed `URL` object.
- * - This is a more correctly typed version of the builtin Javascript `URL` constructor.
- * - Requires a URL string, URL object, or path as input, and optionally a base URL.
- * - If a path is provided as input, a base URL _must_ also be provided.
- * - The returned type is `ImmutableURL`.
- *
- * @see https://shelving.cc/util/url/ImmutableURLConstructor
- */
-export interface ImmutableURLConstructor {
-	new (input: URLString | ImmutableURL, base?: URLString | ImmutableURL): ImmutableURL;
-	new (input: URLString | ImmutableURL | string, base: URLString | ImmutableURL): ImmutableURL;
-}
-
-/**
- * Object that describes a valid URL, e.g. `http://example.com/path/to/resource`
- * - Improves the builtin Javascript `URL` class to more accurately type its properties.
- *
- * URI and URL differences:
- * - According to RFC 3986, URLs are a subset of URIs that have a hierarchical path component, e.g. `http://example.com/path`.
- * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
- * - The absence of `//` indicates a non-hierarchical URI.
- * - URLs can be considered as "hierarchical URIs".
- * - All URLs are also URIs, but not all URIs are URLs.
- *
- * Javascript URL problems:
- * - Javascript `URL` instance can actually represent any kind of URI (not just URLs).
- * - It's more "correct" terminology to use `URI` to refer to what the Javascript `URL` class represents.
- * - You can tell the difference because a URL will have a non-empty `host` property, whereas URIs will never have a `host` (it will be `""` empty string).
- * - Javascript URLs are mutable which can lead to subtle bugs.
- *
- * @see https://shelving.cc/util/url/ImmutableURL
- */
-export interface ImmutableURL extends ImmutableURI {
-	readonly href: URLString;
-	readonly origin: URLString;
-	readonly pathname: AbsolutePath;
-}
-export const ImmutableURL = URL as ImmutableURLConstructor;
-
-/**
  * Values that can be converted to a URL instance.
  *
  * @see https://shelving.cc/util/url/PossibleURL
@@ -61,18 +21,70 @@ export const ImmutableURL = URL as ImmutableURLConstructor;
 export type PossibleURL = string | URL;
 
 /**
- * Is an unknown value a URL object?
- * - Must be a `URL` instance and its origin must start with `scheme://`
+ * Absolute URL object that describes a valid URL, e.g. `http://example.com/path/to/resource`
+ * - Extends the builtin Javascript `URL` class and types its properties more accurately.
+ * - The constructor throws `RequiredError` unless the result is a true `scheme://host` URL, so every instance is a true URL.
+ * - Javascript `URL` objects are mutable — treat `AbsoluteURL` instances as immutable and do not set their properties.
+ *
+ * URI and URL differences:
+ * - According to RFC 3986, URLs are a subset of URIs that have a hierarchical path component, e.g. `http://example.com/path`.
+ * - The `//` at the start of a URL indicates that it has a hierarchical path component, so this makes it a URL.
+ * - The absence of `//` indicates a non-hierarchical URI.
+ * - All URLs are also URIs, but not all URIs are URLs.
+ * - A Javascript `URL` instance can represent any kind of URI (not just URLs), which is why this class checks the result.
+ *
+ * @example new AbsoluteURL("/a/b", "https://example.com"); // https://example.com/a/b
+ * @see https://shelving.cc/util/url/AbsoluteURL
+ */
+export class AbsoluteURL extends URL {
+	declare readonly hash: URIHash | ``;
+	declare readonly host: string;
+	declare readonly hostname: string;
+	declare readonly href: URLString;
+	declare readonly origin: URLString;
+	declare readonly password: string;
+	declare readonly pathname: AbsolutePathString;
+	declare readonly port: string;
+	declare readonly protocol: URIScheme;
+	declare readonly search: URISearch | ``;
+	declare readonly username: string;
+
+	/**
+	 * @param input URL string, URL object, or path to resolve.
+	 * @param base Base URL to resolve a relative `input` against (used as-is, like `new URL()`).
+	 * @param caller Function to attribute a thrown error to — defaults to the `AbsoluteURL` class.
+	 * @throws RequiredError If `input` cannot be resolved to a true `scheme://host` URL.
+	 */
+	constructor(input: PossibleURL, base?: PossibleURL, caller: AnyCaller = AbsoluteURL) {
+		const href = _getURLHref(input, base);
+		if (!href) throw new RequiredError("Invalid URL", { received: input, caller });
+		super(href);
+	}
+}
+
+/** Resolve an input to the `href` of a true `scheme://host` URL, or return `undefined` if it is not one. */
+function _getURLHref(input: PossibleURL, base: PossibleURL | undefined): string | undefined {
+	try {
+		const uri = new URL(input, base);
+		if (_isURL(uri)) return uri.href;
+	} catch {
+		//
+	}
+}
+
+/**
+ * Is an unknown value an `AbsoluteURL` object?
+ * - Plain `URL` instances return `false` — use `getURL()` to convert them.
  *
  * @param value Unknown value to test.
- * @returns `true` if `value` is a true `scheme://host` URL object, otherwise `false`.
+ * @returns `true` if `value` is an `AbsoluteURL` instance, otherwise `false`.
  *
  * @see https://shelving.cc/util/url/isURL
  */
-export function isURL(value: unknown): value is ImmutableURL {
-	return value instanceof URL && _isURL(value);
+export function isURL(value: unknown): value is AbsoluteURL {
+	return value instanceof AbsoluteURL;
 }
-function _isURL(uri: URL): uri is ImmutableURL {
+function _isURL(uri: URL): boolean {
 	return uri.href.startsWith(`${uri.protocol}//`);
 }
 
@@ -81,11 +93,11 @@ function _isURL(uri: URL): uri is ImmutableURL {
  *
  * @param value Unknown value to test.
  * @param caller Function to attribute a thrown error to — defaults to `assertURL`.
- * @throws RequiredError If `value` is not a true `scheme://host` URL object.
+ * @throws RequiredError If `value` is not an `AbsoluteURL` instance.
  *
  * @see https://shelving.cc/util/url/assertURL
  */
-export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is ImmutableURL {
+export function assertURL(value: unknown, caller: AnyCaller = assertURL): asserts value is AbsoluteURL {
 	if (!isURL(value)) throw new RequiredError("Invalid URL", { received: value, caller });
 }
 
@@ -117,16 +129,18 @@ export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): Im
 /**
  * Resolve a possible URL relative to a base URL, or return `undefined` if conversion fails.
  * - Like `getBasedURI()` but only succeeds for true `scheme://host` URLs — other URIs (e.g. `mailto:`) return `undefined`.
+ * - An `AbsoluteURL` instance is returned as-is. A plain `URL` instance is converted to a new `AbsoluteURL`.
  *
  * @param target URL string, URL object, or path to resolve — falsy values return `undefined`.
  * @param base Base URL to resolve a relative `target` against.
- * @returns Resolved `ImmutableURL`, or `undefined` if conversion fails or the result is not a true URL.
+ * @returns Resolved `AbsoluteURL`, or `undefined` if conversion fails or the result is not a true URL.
  *
  * @see https://shelving.cc/util/url/getURL
  */
-export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURL | undefined {
+export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): AbsoluteURL | undefined {
+	if (target instanceof AbsoluteURL) return target;
 	const uri = getBasedURI(target, base);
-	if (uri && _isURL(uri)) return uri;
+	if (uri && _isURL(uri)) return new AbsoluteURL(uri);
 }
 
 /**
@@ -135,12 +149,12 @@ export function getURL(target: Nullish<PossibleURL>, base?: PossibleURL): Immuta
  * @param target URL string, URL object, or path to resolve.
  * @param base Base URL to resolve a relative `target` against.
  * @param caller Function to attribute a thrown error to — defaults to `requireURL`.
- * @returns Resolved `ImmutableURL`.
+ * @returns Resolved `AbsoluteURL`.
  * @throws RequiredError If `target` cannot be resolved to a true `scheme://host` URL.
  *
  * @see https://shelving.cc/util/url/requireURL
  */
-export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): ImmutableURL {
+export function requireURL(target: PossibleURL, base?: PossibleURL, caller: AnyCaller = requireURL): AbsoluteURL {
 	const url = getURL(target, base);
 	assertURL(url, caller);
 	return url;
@@ -167,7 +181,7 @@ export function matchURLPrefix(
 	target: PossibleURL | undefined,
 	base: PossibleURL | undefined,
 	caller: AnyCaller = matchURLPrefix,
-): AbsolutePath | undefined {
+): AbsolutePathString | undefined {
 	if (!target || !base) return;
 	const baseURL = requireURL(base, undefined, caller);
 	const targetURL = requireURL(target, baseURL, caller);
@@ -178,7 +192,8 @@ export function matchURLPrefix(
 	// `basePath` may or may not have a trailing slash, so strip it and re-assert the directory boundary explicitly.
 	const bareBase = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
 	if (targetPath === bareBase) return "/"; // e.g. `/abc` matches base `/abc` or `/abc/`
-	if (targetPath.startsWith(bareBase) && targetPath[bareBase.length] === "/") return targetPath.slice(bareBase.length) as AbsolutePath;
+	if (targetPath.startsWith(bareBase) && targetPath[bareBase.length] === "/")
+		return targetPath.slice(bareBase.length) as AbsolutePathString;
 }
 
 /**
@@ -215,11 +230,11 @@ export function isURLProud(target: PossibleURL | undefined, base: PossibleURL | 
 }
 
 /**
- * BaseURL is a URL with a guaranteed trailing slash on pathname.
+ * BaseURL is an `AbsoluteURL` with a guaranteed trailing slash on pathname.
  *
  * @see https://shelving.cc/util/url/BaseURL
  */
-export interface BaseURL extends ImmutableURL {
+export interface BaseURL extends AbsoluteURL {
 	readonly pathname: `/` | `/${string}/`;
 }
 
@@ -228,20 +243,21 @@ export interface BaseURL extends ImmutableURL {
  * - Must be a true URL whose `pathname` ends in a trailing slash.
  *
  * @param value Value to test.
- * @returns `true` if `value` is a `BaseURL` (a URL with a trailing-slash pathname), otherwise `false`.
+ * @returns `true` if `value` is a `BaseURL` (an `AbsoluteURL` with a trailing-slash pathname), otherwise `false`.
  *
  * @see https://shelving.cc/util/url/isBaseURL
  */
-export function isBaseURL(value: PossibleURL): value is BaseURL {
+export function isBaseURL(value: unknown): value is BaseURL {
 	return isURL(value) && _isBaseURL(value);
 }
-function _isBaseURL(uri: URL): uri is BaseURL {
-	return uri.pathname.endsWith("/");
+function _isBaseURL(url: AbsoluteURL): url is BaseURL {
+	return url.pathname.endsWith("/");
 }
 
 /**
  * Get a Base URL — a true URL whose `pathname` is normalised to end in a trailing slash.
  * - Falsy or non-URL input returns `undefined`.
+ * - An `AbsoluteURL` that already ends in a slash is returned as-is.
  * - A URL without a trailing slash is cloned and given one (the input is never mutated).
  *
  * @param input URL string, URL object, or path to normalise.
@@ -250,13 +266,12 @@ function _isBaseURL(uri: URL): uri is BaseURL {
  * @see https://shelving.cc/util/url/getBaseURL
  */
 export function getBaseURL(input: Nullish<PossibleURL>): BaseURL | undefined {
-	if (!input) return;
-	const uri = getBasedURI(input, undefined);
-	if (!uri || !_isURL(uri)) return;
-	if (_isBaseURL(uri)) return uri;
-	// Clone before mutating: when `input` was a `URL` instance, `getBasedURI` returned that same instance, so mutating it would corrupt the caller's object. A string input always yields a fresh `uri`.
-	const base: URL = typeof input === "string" ? uri : new URL(uri);
-	base.pathname = `${uri.pathname}/`; // Add a trailing slash.
+	const url = getURL(input);
+	if (!url) return;
+	if (_isBaseURL(url)) return url;
+	// Clone before mutating: when `input` was an `AbsoluteURL` instance, `getURL()` returned that same instance, so mutating it would corrupt the caller's object.
+	const base: URL = new AbsoluteURL(url);
+	base.pathname = `${url.pathname}/`; // Add a trailing slash.
 	return base as BaseURL;
 }
 

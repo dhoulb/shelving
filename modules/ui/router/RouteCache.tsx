@@ -1,5 +1,5 @@
 import { Activity, type ReactNode, useRef } from "react";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import { matchPathTemplate } from "../../util/template.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
 import { RouteContext, type RouteState } from "./RouteContext.js";
@@ -52,7 +52,7 @@ export interface RouteCacheProps {
 export function RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode {
 	// Read the live URL from context; each navigation re-renders this with the new path.
 	const meta = requireMetaURL();
-	const mapRef = useRef<Map<AbsolutePath, CacheEntry>>(undefined);
+	const mapRef = useRef<Map<AbsolutePathString, CacheEntry>>(undefined);
 	const usedRef = useRef(0);
 
 	// Caching disabled — render the page directly so it unmounts as soon as you leave it.
@@ -85,8 +85,8 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 }
 
 /** Find the key of the most-recently-used entry whose `<RoutePath>` owns a path, or `undefined` if none does. */
-function _findOwner(map: Map<AbsolutePath, CacheEntry>, path: AbsolutePath): AbsolutePath | undefined {
-	let ownerKey: AbsolutePath | undefined;
+function _findOwner(map: Map<AbsolutePathString, CacheEntry>, path: AbsolutePathString): AbsolutePathString | undefined {
+	let ownerKey: AbsolutePathString | undefined;
 	let ownerUsed = Number.NEGATIVE_INFINITY;
 	for (const [key, { state, used }] of map) {
 		if (state.path && used > ownerUsed && matchPathTemplate(state.path, path)) {
@@ -98,8 +98,8 @@ function _findOwner(map: Map<AbsolutePath, CacheEntry>, path: AbsolutePath): Abs
 }
 
 /** Find the key of the least-recently-used (lowest `used` tick) entry in the cache map. */
-function _findLeastRecentlyUsed(map: Map<AbsolutePath, CacheEntry>): AbsolutePath {
-	let lruKey!: AbsolutePath;
+function _findLeastRecentlyUsed(map: Map<AbsolutePathString, CacheEntry>): AbsolutePathString {
+	let lruKey!: AbsolutePathString;
 	let lruUsed = Number.POSITIVE_INFINITY;
 	for (const [key, entry] of map) {
 		if (entry.used < lruUsed) {

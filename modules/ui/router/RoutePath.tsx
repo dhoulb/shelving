@@ -1,5 +1,5 @@
 import { type ReactNode, use } from "react";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import { RouteContext } from "./RouteContext.js";
 
 /**
@@ -9,7 +9,7 @@ import { RouteContext } from "./RouteContext.js";
  */
 export interface RoutePathProps {
 	/** Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. */
-	readonly path: AbsolutePath;
+	readonly path: AbsolutePathString;
 	/** The page content. */
 	readonly children?: ReactNode;
 }

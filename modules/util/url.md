@@ -4,7 +4,9 @@ These helpers work specifically with hierarchical `scheme://host` URLs (a strict
 
 **Things to know:**
 
-- A URL is distinguished from a generic URI by the `://` in its href. `isURL()` checks this at runtime. `mailto:`, `urn:`, etc. are URIs but not URLs and will not pass `isURL()`.
+- `AbsoluteURL` extends the builtin `URL` class. Its constructor throws `RequiredError` unless the result is a true `scheme://host` URL, so every instance is a true URL.
+- A URL is distinguished from a generic URI by the `://` in its href. `mailto:`, `urn:`, etc. are URIs but not URLs, so `new AbsoluteURL()` rejects them.
+- `isURL()` and `assertURL()` check for an `AbsoluteURL` instance. A plain `URL` fails them — use `getURL()` or `requireURL()` to convert it.
 - `getBaseURL()` ensures a trailing slash on the pathname, which makes relative resolution behave naturally (paths resolve relative to the directory, not the file).
 - `getBasedURI()` accepts any input — including relative paths — and resolves them against the base. It can return a non-URL URI (e.g. `mailto:`). Use `getURL()` when you specifically need a `scheme://` URL.
 - `isURLActive()` and `isURLProud()` are designed for navigation menus: "active" means exact match, "proud" means the link's URL is an ancestor of the current location.
@@ -16,14 +18,14 @@ These helpers work specifically with hierarchical `scheme://host` URLs (a strict
 ```ts
 import { getURL, requireURL, getBasedURI, isURL, assertURL } from "shelving/util";
 
-getURL("https://example.com/page");          // ImmutableURL
+getURL("https://example.com/page");          // AbsoluteURL
 getURL("not-a-url");                         // undefined
 getURL("/page", "https://example.com/app/"); // https://example.com/app/page
 getBasedURI("/page", "https://example.com/app/b"); // resolves as https://example.com/app/b/page
 
-requireURL("https://example.com");           // ImmutableURL or throws RequiredError
-isURL(new URL("https://x.com"));             // true
-isURL(new URL("mailto:hi@example.com"));     // false
+requireURL("https://example.com");           // AbsoluteURL or throws RequiredError
+isURL(new AbsoluteURL("https://x.com"));     // true
+isURL(new URL("https://x.com"));             // false (plain URL, use getURL() to convert)
 ```
 
 ### Base URLs
@@ -33,7 +35,7 @@ import { getBaseURL, requireBaseURL, isBaseURL } from "shelving/util";
 
 getBaseURL("https://example.com/app");    // https://example.com/app/  (slash appended)
 getBaseURL("https://example.com/app/");  // same ref (already a base URL)
-isBaseURL(new URL("https://x.com/"));    // true
+isBaseURL(new AbsoluteURL("https://x.com/")); // true
 ```
 
 ### Path matching

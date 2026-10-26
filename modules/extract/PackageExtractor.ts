@@ -1,6 +1,6 @@
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { walkElements } from "../util/element.js";
-import { type AbsolutePath, type Path, requirePath } from "../util/path.js";
+import { type AbsolutePathString, type PathString, requirePath } from "../util/path.js";
 import type { DocumentationElement, TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { ModuleExtractor } from "./ModuleExtractor.js";
@@ -42,7 +42,7 @@ export interface PackageExtractorOptions {
 	/** `ModuleExtractor` used to build each module element. Defaults to a fresh `new ModuleExtractor()`. */
 	readonly module?: ModuleExtractor;
 	/** Absolute base path used to resolve a relative `package.json` path passed to `extract()`. */
-	readonly base?: AbsolutePath;
+	readonly base?: AbsolutePathString;
 }
 
 /**
@@ -59,11 +59,11 @@ export interface PackageExtractorOptions {
  *
  * @see https://shelving.cc/extract/PackageExtractor
  */
-export class PackageExtractor extends Extractor<Path, TreeElement> {
+export class PackageExtractor extends Extractor<PathString, TreeElement> {
 	private readonly _tree: TreeElement;
 	private readonly _extensions: ImmutableDictionary<readonly string[]>;
 	private readonly _module: ModuleExtractor;
-	private readonly _base: AbsolutePath | undefined;
+	private readonly _base: AbsolutePathString | undefined;
 
 	constructor({ tree, extensions = DEFAULT_EXTENSIONS, module = new ModuleExtractor(), base }: PackageExtractorOptions) {
 		super();
@@ -74,7 +74,7 @@ export class PackageExtractor extends Extractor<Path, TreeElement> {
 	}
 
 	/** Throws `Error` if a static export key has no matching source element in the tree, or a wildcard export is malformed. */
-	override async extract(packageJson: Path): Promise<TreeElement> {
+	override async extract(packageJson: PathString): Promise<TreeElement> {
 		const pkgPath = requirePath(packageJson, this._base, this.extract);
 		const pkg = (await Bun.file(pkgPath).json()) as PackageJson;
 		const tree = this._tree;

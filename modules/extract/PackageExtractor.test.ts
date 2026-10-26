@@ -3,14 +3,14 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DirectoryExtractor, IndexExtractor, MergingExtractor, PackageExtractor } from "shelving/extract";
-import type { AbsolutePath } from "shelving/util/path";
+import type { AbsolutePathString } from "shelving/util/path";
 import type { TreeElement } from "shelving/util/tree";
 
 /** Build a self-contained source tree on disk (independent per test, so concurrent runs don't collide). */
 async function _setup(
 	layout: (root: string) => Promise<void>,
-): Promise<{ root: AbsolutePath; tree: TreeElement; cleanup: () => Promise<void> }> {
-	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePath;
+): Promise<{ root: AbsolutePathString; tree: TreeElement; cleanup: () => Promise<void> }> {
+	const root = (await mkdtemp(join(tmpdir(), "shelving-pkgexttest-"))) as AbsolutePathString;
 	await layout(root);
 	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(root);
 	return {
@@ -25,10 +25,10 @@ async function _writePackageJson(
 	exports: Record<string, string>,
 	name = "test-pkg",
 	description = "Test package.",
-): Promise<AbsolutePath> {
+): Promise<AbsolutePathString> {
 	const path = join(root, "package.json");
 	await writeFile(path, JSON.stringify({ name, description, exports }));
-	return path as AbsolutePath;
+	return path as AbsolutePathString;
 }
 
 async function _basicLayout(root: string): Promise<void> {

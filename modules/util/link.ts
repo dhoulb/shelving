@@ -3,7 +3,7 @@ import type { AnyCaller } from "./function.js";
 import type { Nullish } from "./null.js";
 import { isAbsolutePath } from "./path.js";
 import { type ImmutableURI, isURI, type PossibleURI } from "./uri.js";
-import { getBasedURI, getURL, type ImmutableURL } from "./url.js";
+import { type AbsoluteURL, getBasedURI, getURL } from "./url.js";
 
 /**
  * Anything that can be turned into an `<a href>`.
@@ -32,7 +32,7 @@ export type PossibleLink = PossibleURI;
  * @returns An absolute URI object, or `undefined` if `link` is missing, not a string/URL, or cannot be resolved.
  * @see https://shelving.cc/util/link/getLink
  */
-export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: ImmutableURL | undefined = url): ImmutableURI | undefined {
+export function getLink(href: Nullish<PossibleLink>, url?: AbsoluteURL, root: AbsoluteURL | undefined = url): ImmutableURI | undefined {
 	if (!href) return;
 	if (isURI(href)) return href;
 	if (typeof href !== "string") return;
@@ -54,7 +54,7 @@ export function getLink(href: Nullish<PossibleLink>, url?: ImmutableURL, root: I
  * @throws {RequiredError} If `href` cannot be resolved.
  * @see https://shelving.cc/util/link/requireLink
  */
-export function requireLink(href: PossibleLink, url?: ImmutableURL, root?: ImmutableURL, caller: AnyCaller = requireLink): ImmutableURI {
+export function requireLink(href: PossibleLink, url?: AbsoluteURL, root?: AbsoluteURL, caller: AnyCaller = requireLink): ImmutableURI {
 	const uri = getLink(href, url, root);
 	if (!uri) throw new RequiredError("Invalid link", { received: href, caller });
 	return uri;

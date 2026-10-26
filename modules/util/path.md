@@ -1,10 +1,10 @@
 # Path helpers
 
-Typed helpers for working with filesystem and URL paths. Used throughout the router to represent and manipulate `AbsolutePath` values — strings that always start with `/`.
+Typed helpers for working with filesystem and URL paths. Used throughout the router to represent and manipulate `AbsolutePathString` values — strings that always start with `/`.
 
 **Things to know:**
 
-- `AbsolutePath` is a template-literal type (`/${string}`). TypeScript enforces it at compile time.
+- `AbsolutePathString` is a template-literal type (`/${string}`). TypeScript enforces it at compile time.
 - All helpers normalise runs of `//`, convert `\` Windows separators, and strip trailing slashes.
 - `getPath()` returns `undefined` on invalid input; `requirePath()` throws `RequiredError` instead.
 - `splitPath("/")` returns `[]` — the root has no segments.

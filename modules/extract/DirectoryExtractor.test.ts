@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DirectoryExtractor } from "shelving/extract";
-import type { AbsolutePath } from "shelving/util/path";
+import type { AbsolutePathString } from "shelving/util/path";
 import type { TreeElement } from "shelving/util/tree";
 
 let root: string;
@@ -28,13 +28,13 @@ afterAll(async () => {
 
 describe("DirectoryExtractor", () => {
 	test("produces a directory element with the directory name as key", async () => {
-		const out = await new DirectoryExtractor().extract(root as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(root as AbsolutePathString);
 		expect(out.type).toBe("tree-element");
 		expect(out.key).toBe(out.props.name);
 	});
 
 	test("keys files with the verbatim filename including extension", async () => {
-		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePathString);
 		const keys = Array.from(out.props.children as Iterable<TreeElement>)
 			.map(c => c.key)
 			.sort();
@@ -42,14 +42,14 @@ describe("DirectoryExtractor", () => {
 	});
 
 	test("keys directories with the verbatim directory name", async () => {
-		const out = await new DirectoryExtractor().extract(root as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(root as AbsolutePathString);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
 		const utilDir = kids.find(k => k.type === "tree-element" && k.key === "util");
 		expect(utilDir).toBeDefined();
 	});
 
 	test("does NOT merge same-base sibling files (verbatim keys, no merging)", async () => {
-		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePathString);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
 		// Both string.md and string.ts present as separate children — no merge.
 		expect(kids.filter(k => k.key === "string.md")).toHaveLength(1);
@@ -57,7 +57,7 @@ describe("DirectoryExtractor", () => {
 	});
 
 	test("does NOT absorb README into the directory (no index handling)", async () => {
-		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePathString);
 		// README.md is just another child, not absorbed.
 		expect(out.props.content).toBeUndefined();
 		expect(out.props.title).toBeUndefined();
@@ -66,14 +66,14 @@ describe("DirectoryExtractor", () => {
 	});
 
 	test("skips test files, underscore-prefixed files, and files with no matching extractor", async () => {
-		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(join(root, "util") as AbsolutePathString);
 		const keys = Array.from(out.props.children as Iterable<TreeElement>).map(c => c.key);
 		expect(keys).not.toContain("string.test.ts");
 		expect(keys).not.toContain("_internal.ts");
 	});
 
 	test("recurses into subdirectories", async () => {
-		const out = await new DirectoryExtractor().extract(join(root, "nested") as AbsolutePath);
+		const out = await new DirectoryExtractor().extract(join(root, "nested") as AbsolutePathString);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
 		expect(kids).toHaveLength(1);
 		const sub = kids[0];

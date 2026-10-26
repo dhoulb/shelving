@@ -1,6 +1,6 @@
 import type { ComponentClass, FunctionComponent, ReactElement } from "react";
 import type { Nullish } from "../../util/null.js";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import type { URIParams } from "../../util/uri.js";
 
 /**
@@ -22,12 +22,12 @@ export type RouteComponent = FunctionComponent<RouteProps> | ComponentClass<Rout
 /**
  * Valid route values:
  * - `RouteComponent` — rendered as `<Component {...params}/>` with merged placeholder + query params.
- * - `AbsolutePath` string — triggers a redirect to that path.
+ * - `AbsolutePathString` string — triggers a redirect to that path.
  * - `ReactElement` — rendered as-is (use for layout-wrapping a nested `<Router>` inside).
  *
  * @see https://shelving.cc/ui/Route
  */
-export type Route = RouteComponent | AbsolutePath | ReactElement;
+export type Route = RouteComponent | AbsolutePathString | ReactElement;
 
 /**
  * Route table mapping `{ path: RouteComponent | redirectPath | ReactElement }` for a `<Router>`.
@@ -38,5 +38,5 @@ export type Route = RouteComponent | AbsolutePath | ReactElement;
  * @see https://shelving.cc/ui/Routes
  */
 export type Routes = {
-	[key: AbsolutePath]: Nullish<Route | false>;
+	[key: AbsolutePathString]: Nullish<Route | false>;
 };

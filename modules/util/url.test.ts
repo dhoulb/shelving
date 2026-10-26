@@ -1,18 +1,90 @@
 import { describe, expect, test } from "bun:test";
-import { getBasedURI, getURL, isURL, isURLActive, isURLProud, matchURLPrefix, requireURL } from "shelving/util/url";
+import { RequiredError } from "shelving/error";
+import type { AbsolutePathString } from "shelving/util/path";
+import {
+	AbsoluteURL,
+	assertURL,
+	getBasedURI,
+	getBaseURL,
+	getURL,
+	isBaseURL,
+	isURL,
+	isURLActive,
+	isURLProud,
+	matchURLPrefix,
+	requireURL,
+	type URLString,
+} from "shelving/util/url";
 
+describe("AbsoluteURL", () => {
+	test("constructs from a URL string", () => {
+		const url = new AbsoluteURL("https://a.com/b");
+		expect(url).toBeInstanceOf(AbsoluteURL);
+		expect(url).toBeInstanceOf(URL);
+		expect(url.href).toBe("https://a.com/b");
+	});
+	test("constructs from a URL object", () => {
+		expect(new AbsoluteURL(new URL("https://a.com/b")).href).toBe("https://a.com/b");
+	});
+	test("resolves a path against a base", () => {
+		expect(new AbsoluteURL("/c", "https://a.com/b/").href).toBe("https://a.com/c");
+		expect(new AbsoluteURL("c", "https://a.com/b/").href).toBe("https://a.com/b/c");
+		expect(new AbsoluteURL("c", new URL("https://a.com/b")).href).toBe("https://a.com/c");
+	});
+	test("throws RequiredError for a non-URL URI", () => {
+		expect(() => new AbsoluteURL("mailto:a@b.com")).toThrow(RequiredError);
+	});
+	test("throws RequiredError for a path with no base", () => {
+		expect(() => new AbsoluteURL("/a")).toThrow(RequiredError);
+	});
+	test("throws RequiredError for an invalid string", () => {
+		expect(() => new AbsoluteURL("not a url")).toThrow(RequiredError);
+	});
+	test("TypeScript", () => {
+		const url = new AbsoluteURL("https://a.com/b");
+		const href: URLString = url.href;
+		const origin: URLString = url.origin;
+		const pathname: AbsolutePathString = url.pathname;
+		expect([href, origin, pathname]).toEqual(["https://a.com/b", "https://a.com", "/b"]);
+	});
+});
 describe("isURL()", () => {
-	test("returns true for URL instance", () => {
-		expect(isURL(new URL("https://a.com"))).toBe(true);
+	test("returns true for AbsoluteURL instance", () => {
+		expect(isURL(new AbsoluteURL("https://a.com"))).toBe(true);
+	});
+	test("returns false for plain URL instance", () => {
+		expect(isURL(new URL("https://a.com"))).toBe(false);
 	});
 	test("returns false for string", () => {
 		expect(isURL("https://a.com")).toBe(false);
 	});
 });
+describe("assertURL()", () => {
+	test("passes for AbsoluteURL instance", () => {
+		expect(() => assertURL(new AbsoluteURL("https://a.com"))).not.toThrow();
+	});
+	test("throws RequiredError for plain URL instance", () => {
+		expect(() => assertURL(new URL("https://a.com"))).toThrow(RequiredError);
+	});
+});
 describe("getURL()", () => {
+	test("returns AbsoluteURL instance as-is", () => {
+		const url = new AbsoluteURL("https://a.com");
+		expect(getURL(url)).toBe(url);
+	});
+	test("converts plain URL instance to AbsoluteURL", () => {
+		const url = new URL("https://a.com");
+		const output = getURL(url);
+		expect(output).toBeInstanceOf(AbsoluteURL);
+		expect(output?.href).toBe("https://a.com/");
+	});
+	test("returns undefined for non-URL URI", () => {
+		expect(getURL("mailto:a@b.com")).toBeUndefined();
+		expect(getURL(new URL("mailto:a@b.com"))).toBeUndefined();
+	});
 	test("returns URL for string", () => {
 		const url = getURL("https://a.com");
-		expect(url).toBeInstanceOf(URL);
+		expect(url).toBeInstanceOf(AbsoluteURL);
 		expect(url?.href).toBe("https://a.com/");
 	});
 	test("Check different types", () => {
@@ -53,6 +125,36 @@ describe("requireURL()", () => {
 	});
 	test("throws for invalid input", () => {
 		expect(() => requireURL("not a url")).toThrow();
+	});
+});
+describe("getBaseURL()", () => {
+	test("returns AbsoluteURL with a trailing slash", () => {
+		const url = getBaseURL("https://a.com/b");
+		expect(url).toBeInstanceOf(AbsoluteURL);
+		expect(url?.href).toBe("https://a.com/b/");
+	});
+	test("returns a base URL as-is", () => {
+		const url = new AbsoluteURL("https://a.com/b/");
+		expect(getBaseURL(url) === url).toBe(true);
+	});
+	test("does not change the input", () => {
+		const url = new AbsoluteURL("https://a.com/b");
+		expect(getBaseURL(url)).not.toBe(url);
+		expect(url.href).toBe("https://a.com/b");
+	});
+	test("returns undefined for non-URL URI", () => {
+		expect(getBaseURL("mailto:a@b.com")).toBeUndefined();
+	});
+});
+describe("isBaseURL()", () => {
+	test("returns true for AbsoluteURL with a trailing slash", () => {
+		expect(isBaseURL(new AbsoluteURL("https://a.com/b/"))).toBe(true);
+	});
+	test("returns false without a trailing slash", () => {
+		expect(isBaseURL(new AbsoluteURL("https://a.com/b"))).toBe(false);
+	});
+	test("returns false for plain URL instance", () => {
+		expect(isBaseURL(new URL("https://a.com/"))).toBe(false);
 	});
 });
 describe("getBasedURI()", () => {

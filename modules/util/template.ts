@@ -6,7 +6,7 @@ import { EMPTY_DICTIONARY, type ImmutableDictionary } from "./dictionary.js";
 import { type AnyCaller, isFunction } from "./function.js";
 import { setMapItem } from "./map.js";
 import type { Mutable } from "./object.js";
-import type { AbsolutePath } from "./path.js";
+import type { AbsolutePathString } from "./path.js";
 import { getString, type NotString, type PossibleString } from "./string.js";
 
 /** Single template chunk. */
@@ -148,8 +148,8 @@ export function matchTemplate(template: string, target: string, caller: AnyCalle
  * @see https://shelving.cc/util/template/matchPathTemplate
  */
 export function matchPathTemplate(
-	template: AbsolutePath,
-	target: AbsolutePath,
+	template: AbsolutePathString,
+	target: AbsolutePathString,
 	caller: AnyCaller = matchPathTemplate,
 ): TemplateMatches | undefined {
 	return _matchTemplate(template, target, "/", true, caller);
@@ -249,7 +249,10 @@ export function matchTemplates(templates: Iterable<string> & NotString, target: 
  * @example matchPathTemplates(["/users/{name}", "/users"], "/users/Dave") // { name: "Dave" }
  * @see https://shelving.cc/util/template/matchPathTemplates
  */
-export function matchPathTemplates(templates: Iterable<AbsolutePath> & NotString, target: AbsolutePath): TemplateMatches | undefined {
+export function matchPathTemplates(
+	templates: Iterable<AbsolutePathString> & NotString,
+	target: AbsolutePathString,
+): TemplateMatches | undefined {
 	for (const template of templates) {
 		const values = matchPathTemplate(template, target);
 		if (values) return values;
@@ -324,7 +327,11 @@ function _escapeReplacement(value: string): string {
  * @example renderPathTemplate("/users/{name}", { name: "a/b" }) // "/users/a%2Fb"
  * @see https://shelving.cc/util/template/renderPathTemplate
  */
-export function renderPathTemplate(template: AbsolutePath, values: TemplateValues, caller: AnyCaller = renderPathTemplate): AbsolutePath {
+export function renderPathTemplate(
+	template: AbsolutePathString,
+	values: TemplateValues,
+	caller: AnyCaller = renderPathTemplate,
+): AbsolutePathString {
 	const chunks = _splitTemplateCached(template, caller);
 	if (!chunks.length) return template;
 	let output: string = template;
@@ -334,7 +341,7 @@ export function renderPathTemplate(template: AbsolutePath, values: TemplateValue
 		// Use a replacer function so `$` sequences in the (already-encoded) value are never treated as special replacement patterns.
 		output = output.replace(placeholder, () => encoded);
 	}
-	return output as AbsolutePath;
+	return output as AbsolutePathString;
 }
 
 /** Resolve the string value for a single template placeholder from `TemplateValues` (mirrors `renderTemplate()`'s per-name resolution). */

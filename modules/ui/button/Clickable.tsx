@@ -4,7 +4,7 @@ import { useStore } from "../../react/useStore.js";
 import { BusyStore } from "../../store/BusyStore.js";
 import { isURLActive } from "../../util/index.js";
 import { getLink } from "../../util/link.js";
-import type { Path } from "../../util/path.js";
+import type { PathString } from "../../util/path.js";
 import type { ImmutableURI, URIString } from "../../util/uri.js";
 import { LOADING } from "../misc/Loading.js";
 import { requireMeta } from "../misc/MetaContext.js";
@@ -32,7 +32,7 @@ export interface ClickableProps extends OptionalChildProps {
 	/** Whether the clickable is currently disabled. */
 	disabled?: boolean | undefined;
 	/** If present then render this element as an `<a>` link (takes precidence over `onClick`). */
-	href?: ImmutableURI | Path | URIString | undefined;
+	href?: ImmutableURI | PathString | URIString | undefined;
 	/** If present then render this element as a `<button>` */
 	onClick?: ClickableCallback | undefined;
 	/** Target, e.g. `_blank` */

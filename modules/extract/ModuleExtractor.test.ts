@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { ModuleExtractor } from "shelving/extract";
-import type { AbsolutePath } from "shelving/util/path";
+import type { AbsolutePathString } from "shelving/util/path";
 import type { DocumentationElement, TreeElement } from "shelving/util/tree";
 
 function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElement {
@@ -8,7 +8,7 @@ function _file(key: string, props: Partial<TreeElement["props"]> = {}): TreeElem
 	return {
 		type: "tree-element",
 		key,
-		props: { name: name ?? key, source: `/tmp/${key}` as AbsolutePath, ...props },
+		props: { name: name ?? key, source: `/tmp/${key}` as AbsolutePathString, ...props },
 	};
 }
 
@@ -16,7 +16,7 @@ function _dir(key: string, children: TreeElement[], props: Partial<TreeElement["
 	return {
 		type: "tree-element",
 		key,
-		props: { name: key, source: `/tmp/${key}` as AbsolutePath, children, ...props },
+		props: { name: key, source: `/tmp/${key}` as AbsolutePathString, children, ...props },
 	};
 }
 

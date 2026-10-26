@@ -5,13 +5,18 @@ import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
 import { IndexExtractor } from "../modules/extract/IndexExtractor.js";
 import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
 import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
-import type { AbsolutePath } from "../modules/util/path.js";
+import type { AbsolutePathString } from "../modules/util/path.js";
 import type { TreeElement } from "../modules/util/tree.js";
 import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */
 interface RenderModule {
-	readonly renderApp: (root: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath) => Promise<number>;
+	readonly renderApp: (
+		root: TreeElement,
+		outdir: AbsolutePathString,
+		script: AbsolutePathString,
+		stylesheet: AbsolutePathString,
+	) => Promise<number>;
 }
 
 /**
@@ -28,7 +33,7 @@ interface RenderModule {
  *    same hashed class names (so its markup matches the browser CSS); its own CSS output is discarded.
  * 5. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
  */
-export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePath, outdir: AbsolutePath): Promise<void> {
+export async function buildApp(sourceDir: AbsolutePathString, packageJson: AbsolutePathString, outdir: AbsolutePathString): Promise<void> {
 	// Clean up first.
 	await rm(outdir, { recursive: true, force: true });
 	await mkdir(outdir, { recursive: true });

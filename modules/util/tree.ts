@@ -2,7 +2,7 @@ import type { ImmutableArray } from "./array.js";
 import type { Data } from "./data.js";
 import type { Element, ElementProps, Elements } from "./element.js";
 import { walkElements } from "./element.js";
-import { type AbsolutePath, joinPath } from "./path.js";
+import { type AbsolutePathString, joinPath } from "./path.js";
 import type { Query } from "./query.js";
 import { queryItems } from "./query.js";
 import { getWords } from "./string.js";
@@ -43,13 +43,13 @@ export interface TreeElementProps extends ElementProps {
 	 * - For directories this is the directory path; for files this is the file path.
 	 * - Optional: synthesised elements (e.g. `kind: "module"` documentation) have no single source.
 	 */
-	readonly source?: AbsolutePath | undefined;
+	readonly source?: AbsolutePathString | undefined;
 	/**
 	 * Canonical site-root-relative URL path of this element (e.g. `"/schema/BooleanSchema"`), stamped by `flattenTree()`.
 	 * - This is the exact URL the element renders at, and the canonical key it's registered under in `flattenTree()`.
 	 * - Absent on a freshly-extracted tree — paths are derived from tree structure when the tree is flattened, not at extraction.
 	 */
-	readonly path?: AbsolutePath | undefined;
+	readonly path?: AbsolutePathString | undefined;
 	/** Children of a tree element must be other tree elements. */
 	readonly children?: TreeElements | undefined;
 }
@@ -202,7 +202,7 @@ export function flattenTree(root: TreeElement, base?: ReadonlyMap<string, TreeEl
 	_flattenElement(root, "/", map);
 	return map;
 }
-function _flattenElement(element: TreeElement, path: AbsolutePath, map: Map<string, TreeElement>): TreeElement {
+function _flattenElement(element: TreeElement, path: AbsolutePathString, map: Map<string, TreeElement>): TreeElement {
 	// Rebuild children first (bottom-up) so the stamped element carries stamped children — the map doubles as the nested tree.
 	const children = Array.from(walkElements(element.props.children), child => _flattenElement(child, joinPath(path, child.props.name), map));
 	// Stamp the canonical `path` onto both `props.path` and the element's own `key` — the latter gives a flat listing of tree

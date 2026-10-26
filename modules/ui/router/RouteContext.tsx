@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 
 /**
  * The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePath>`.
@@ -10,7 +10,7 @@ import type { AbsolutePath } from "../../util/path.js";
  * @see https://shelving.cc/ui/RouteState
  */
 export interface RouteState {
-	path?: AbsolutePath | undefined;
+	path?: AbsolutePathString | undefined;
 	readonly cache?: RouteState | undefined;
 	readonly router?: true | undefined;
 }

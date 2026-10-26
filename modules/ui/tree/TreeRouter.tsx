@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
-import type { AbsolutePath } from "../../util/path.js";
+import type { AbsolutePathString } from "../../util/path.js";
 import { DocumentationPage } from "../docs/DocumentationPage.js";
 import { createMapper } from "../misc/Mapper.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
@@ -54,7 +54,13 @@ export function TreeRouter({ fallback, ...meta }: TreeRouterProps): ReactNode {
 }
 
 /** Resolve the current URL `path` to a tree element via the flattened map and render it; otherwise fall back, or throw `NotFoundError`. */
-function TreeRoute({ path, fallback }: { readonly path: AbsolutePath; readonly fallback: ReactElement | null | undefined }): ReactNode {
+function TreeRoute({
+	path,
+	fallback,
+}: {
+	readonly path: AbsolutePathString;
+	readonly fallback: ReactElement | null | undefined;
+}): ReactNode {
 	const element = useTreeMap().get(path);
 	if (element) return <TreeRouterMapper>{element}</TreeRouterMapper>;
 	if (fallback !== undefined) return fallback;

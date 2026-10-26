@@ -4,7 +4,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 
 **Things to know:**
 
-- Route keys are `AbsolutePath` strings starting with `/`. Placeholders (`{id}`, `:id`, `[id]`, `${id}`, `{{id}}`) are passed to function/component route values as props, merged with URL `?query` params (placeholders win on conflict).
+- Route keys are `AbsolutePathString` strings starting with `/`. Placeholders (`{id}`, `:id`, `[id]`, `${id}`, `{{id}}`) are passed to function/component route values as props, merged with URL `?query` params (placeholders win on conflict).
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
@@ -33,7 +33,7 @@ import { HTML, Navigation, Router } from "shelving/ui";
 | Value | Behaviour |
 |---|---|
 | Component | Rendered as `<Component {...params}/>` with merged placeholder + query props. |
-| `AbsolutePath` string | Redirects to that path (placeholders resolved against the source). |
+| `AbsolutePathString` string | Redirects to that path (placeholders resolved against the source). |
 | `ReactElement` | Rendered as-is — use for layout wrapping or composing inner routers. |
 | `null` / `false` | Skipped, as if the route were absent — lets a route be conditionally disabled. |
 
@@ -84,7 +84,7 @@ const USER_ROUTES = {
   "/{id}/edit": UserEditPage,
 };
 
-export function UserRouter({ path = "/" }: { path?: AbsolutePath }) {
+export function UserRouter({ path = "/" }: { path?: AbsolutePathString }) {
   return <Router routes={USER_ROUTES} url={path}/>;
 }
 

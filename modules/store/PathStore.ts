@@ -1,5 +1,5 @@
 import type { AnyCaller } from "../util/function.js";
-import type { AbsolutePath, RelativePath } from "../util/path.js";
+import type { AbsolutePathString, RelativePathString } from "../util/path.js";
 import { isPathActive, isPathProud, requirePath } from "../util/path.js";
 import { BusyStore } from "./BusyStore.js";
 
@@ -10,27 +10,27 @@ import { BusyStore } from "./BusyStore.js";
  *
  * @see https://shelving.cc/store/PathStore
  */
-export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePath> {
+export class PathStore extends BusyStore<AbsolutePathString, AbsolutePathString | RelativePathString> {
 	/**
 	 * Base path that relative inputs are resolved against.
 	 *
 	 * @see https://shelving.cc/store/PathStore/base
 	 */
-	readonly base: AbsolutePath;
+	readonly base: AbsolutePathString;
 
 	// Override to set default path to `.` and base to `/`
-	constructor(path: AbsolutePath | RelativePath = ".", base: AbsolutePath = "/") {
+	constructor(path: AbsolutePathString | RelativePathString = ".", base: AbsolutePathString = "/") {
 		super(requirePath(path, base, PathStore));
 		this.base = base;
 	}
 
 	// Override to convert a possible path to an absolute path (relative to `this.base`).
-	protected override _convert(possible: AbsolutePath | RelativePath, caller: AnyCaller): AbsolutePath {
+	protected override _convert(possible: AbsolutePathString | RelativePathString, caller: AnyCaller): AbsolutePathString {
 		return requirePath(possible, this.base, caller);
 	}
 
 	// Override for fast equality.
-	protected override _equal(a: AbsolutePath, b: AbsolutePath) {
+	protected override _equal(a: AbsolutePathString, b: AbsolutePathString) {
 		return a === b;
 	}
 
@@ -41,7 +41,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @example store.isActive("/a/b");
 	 * @see https://shelving.cc/store/PathStore/isActive
 	 */
-	isActive(path: AbsolutePath): boolean {
+	isActive(path: AbsolutePathString): boolean {
 		return isPathActive(this.value, path);
 	}
 
@@ -52,7 +52,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @example store.isProud("/a"); // true when current path is "/a/b"
 	 * @see https://shelving.cc/store/PathStore/isProud
 	 */
-	isProud(path: AbsolutePath): boolean {
+	isProud(path: AbsolutePathString): boolean {
 		return isPathProud(this.value, path);
 	}
 
@@ -63,7 +63,7 @@ export class PathStore extends BusyStore<AbsolutePath, AbsolutePath | RelativePa
 	 * @example store.getPath("c"); // "/a/b/c" when current path is "/a/b"
 	 * @see https://shelving.cc/store/PathStore/getPath
 	 */
-	getPath(path: AbsolutePath | RelativePath): AbsolutePath {
+	getPath(path: AbsolutePathString | RelativePathString): AbsolutePathString {
 		return requirePath(path, this.value);
 	}
 

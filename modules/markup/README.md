@@ -62,8 +62,8 @@ const node = MARKUP_PARSER.parse(source);
 |---|---|---|
 | `rules` | `MarkupRules` | Rules to apply. Defaults to `MARKUP_RULES` (all block + inline rules). |
 | `rel` | `string` | `rel` attribute applied to every rendered link, e.g. `"nofollow ugc"`. |
-| `url` | `ImmutableURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`). |
-| `root` | `ImmutableURL` | Site root URL — base for resolving site-absolute paths (`/foo`). |
+| `url` | `AbsoluteURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`). |
+| `root` | `AbsoluteURL` | Site root URL — base for resolving site-absolute paths (`/foo`). |
 | `schemes` | `URISchemes` | Allowed URI schemes for links. Defaults to `["http:", "https:"]`. |
 | `context` | `string` | Default starting context. Defaults to `"block"`. |
 

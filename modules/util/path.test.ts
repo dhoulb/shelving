@@ -1,5 +1,30 @@
 import { describe, expect, test } from "bun:test";
-import { getPath, isAbsolutePath, isPathProud, matchPathPrefix } from "shelving/util/path";
+import {
+	type AbsolutePathString,
+	getPath,
+	isAbsolutePath,
+	isPathProud,
+	isRelativePath,
+	matchPathPrefix,
+	type PathString,
+	type RelativePathString,
+} from "shelving/util/path";
+
+test("TypeScript", () => {
+	const a: AbsolutePathString = "/a";
+	const r: RelativePathString = "./a";
+	const p1: PathString = a;
+	const p2: PathString = r;
+	const g: AbsolutePathString | undefined = getPath("./b", a);
+	expect([p1, p2, g]).toEqual(["/a", "./a", "/a/b"]);
+});
+
+test("isRelativePath()", () => {
+	expect(isRelativePath(".")).toBe(true);
+	expect(isRelativePath("./a")).toBe(true);
+	expect(isRelativePath("/a")).toBe(false);
+	expect(isRelativePath("a")).toBe(false);
+});
 
 test("isAbsolutePath()", () => {
 	// Absolute.
@@ -105,7 +130,7 @@ describe("getPath()", () => {
 });
 describe("requirePath()", () => {
 	test("Unparseable paths", () => {
-		// expect(() => requirePath("" as RelativePath)).toThrow(RequiredError);
+		// expect(() => requirePath("" as RelativePathString)).toThrow(RequiredError);
 	});
 });
 test("isPathProud()", () => {

@@ -2,7 +2,7 @@ import type { Dirent } from "node:fs";
 import { readdir } from "node:fs/promises";
 import type { ImmutableDictionary } from "../util/dictionary.js";
 import { splitFileExtension } from "../util/file.js";
-import { type AbsolutePath, anyMatch, type Matchables, type Path, requirePath, splitPath } from "../util/index.js";
+import { type AbsolutePathString, anyMatch, type Matchables, type PathString, requirePath, splitPath } from "../util/index.js";
 import type { TreeElement } from "../util/tree.js";
 import { Extractor } from "./Extractor.js";
 import { FileExtractor } from "./FileExtractor.js";
@@ -38,7 +38,7 @@ export interface DirectoryExtractorOptions {
 	 */
 	readonly extractors?: ImmutableDictionary<FileExtractor>;
 	/** Absolute base path used to resolve relative paths passed to `extract()`. */
-	readonly base?: AbsolutePath;
+	readonly base?: AbsolutePathString;
 	/**
 	 * Glob patterns for entries to skip — applied to both files and directories.
 	 * - Defaults to test and spec files: `["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"]`.
@@ -58,9 +58,9 @@ export interface DirectoryExtractorOptions {
  * @example const tree = await new DirectoryExtractor().extract("modules/util");
  * @see https://shelving.cc/extract/DirectoryExtractor
  */
-export class DirectoryExtractor extends Extractor<Path, TreeElement> {
+export class DirectoryExtractor extends Extractor<PathString, TreeElement> {
 	private readonly _extractors: ImmutableDictionary<FileExtractor>;
-	private readonly _base: AbsolutePath | undefined;
+	private readonly _base: AbsolutePathString | undefined;
 	private readonly _ignore: Matchables;
 
 	constructor({ extractors = DEFAULT_EXTRACTORS, base, ignore = DEFAULT_IGNORE }: DirectoryExtractorOptions = {}) {
@@ -70,11 +70,11 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 		this._ignore = ignore;
 	}
 
-	override extract(source: Path): Promise<TreeElement> {
+	override extract(source: PathString): Promise<TreeElement> {
 		return this._extractDirectory(requirePath(source, this._base, this.extract));
 	}
 
-	private async _extractDirectory(source: AbsolutePath): Promise<TreeElement> {
+	private async _extractDirectory(source: AbsolutePathString): Promise<TreeElement> {
 		const name = splitPath(source).at(-1) ?? "";
 		const entries = await readdir(source, { withFileTypes: true });
 
@@ -96,7 +96,7 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 		};
 	}
 
-	private async _extractChild(base: AbsolutePath, entry: Dirent): Promise<TreeElement | undefined> {
+	private async _extractChild(base: AbsolutePathString, entry: Dirent): Promise<TreeElement | undefined> {
 		const name = entry.name;
 		const path = requirePath(name, base);
 		if (entry.isDirectory()) return this._extractDirectory(path);

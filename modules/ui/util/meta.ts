@@ -4,7 +4,7 @@ import type { AnyCaller } from "../../util/function.js";
 import { type PossibleLink, requireLink } from "../../util/link.js";
 import type { Nullish } from "../../util/null.js";
 import { type ImmutableURI, type PossibleURI, type PossibleURIParams, withURIParams } from "../../util/uri.js";
-import { ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
+import { AbsoluteURL, type PossibleURL, requireURL } from "../../util/url.js";
 
 /**
  * Set of named meta `<meta />` tags in `{ name: content }` format.
@@ -55,9 +55,9 @@ export type MetaCSP = { readonly [resource: string]: string[] };
  */
 export interface Meta {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
-	readonly root?: ImmutableURL | undefined;
+	readonly root?: AbsoluteURL | undefined;
 	/** URL of the current page (used to update history API and as the initial URL for routing). */
-	readonly url?: ImmutableURL | undefined;
+	readonly url?: AbsoluteURL | undefined;
 	/** Title of the entire application. */
 	readonly app?: string | undefined;
 	/** Title of the current page (set as `<title>` in `<Head>` */
@@ -156,7 +156,7 @@ export function mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = 
 	const url = mergeMetaURL(explicitRoot, meta1.url, meta2.url, meta2.params, caller);
 
 	// A meta with a `url` must always have a `root` — only correct for apps served from the origin's `/`, so sub-path deployments must set `root` explicitly.
-	const root = explicitRoot ?? (url ? new ImmutableURL("/", url) : undefined);
+	const root = explicitRoot ?? (url ? new AbsoluteURL("/", url) : undefined);
 
 	return {
 		...meta1,
@@ -201,12 +201,12 @@ export function createMeta(meta: PossibleMeta, caller: AnyCaller = createMeta): 
  * @see https://shelving.cc/ui/mergeMetaURL
  */
 export function mergeMetaURL(
-	base: ImmutableURL | undefined,
-	current: ImmutableURL | undefined,
+	base: AbsoluteURL | undefined,
+	current: AbsoluteURL | undefined,
 	next: PossibleURL | undefined,
 	params: PossibleURIParams | undefined,
 	caller: AnyCaller = mergeMetaURL,
-): ImmutableURL | undefined {
+): AbsoluteURL | undefined {
 	const url = next ? requireURL(next, base, caller) : current;
 	return url && params ? withURIParams(url, params, caller) : url;
 }
@@ -239,16 +239,16 @@ export function mergeMetaTags(current: MetaTags | undefined, next: MetaTags | un
 export function mergeMetaLinks(
 	current: MetaLinks | undefined,
 	next: PossibleMetaLinks | undefined,
-	url: ImmutableURL | undefined,
-	root: ImmutableURL | undefined,
+	url: AbsoluteURL | undefined,
+	root: AbsoluteURL | undefined,
 	caller: AnyCaller = mergeMetaLinks,
 ): MetaLinks | undefined {
 	return next ? { ...current, ...Object.fromEntries(_yieldMetaLinkEntries(next, url, root, caller)) } : current;
 }
 function* _yieldMetaLinkEntries(
 	links: PossibleMetaLinks,
-	url: ImmutableURL | undefined,
-	root: ImmutableURL | undefined,
+	url: AbsoluteURL | undefined,
+	root: AbsoluteURL | undefined,
 	caller: AnyCaller,
 ): Iterable<DictionaryItem<ImmutableURI>> {
 	for (const [k, link] of getDictionaryItems(links)) if (link) yield [k, requireLink(link, url, root, caller)];
@@ -270,8 +270,8 @@ function* _yieldMetaLinkEntries(
 export function mergeMetaAssets(
 	current: MetaAssets | undefined,
 	next: PossibleMetaAssets | undefined,
-	url: ImmutableURL | undefined,
-	root: ImmutableURL | undefined,
+	url: AbsoluteURL | undefined,
+	root: AbsoluteURL | undefined,
 	caller: AnyCaller = mergeMetaAssets,
 ): MetaAssets | undefined {
 	if (next) {
@@ -282,8 +282,8 @@ export function mergeMetaAssets(
 }
 function* _yieldMetaAssets(
 	assets: PossibleMetaAssets,
-	url: ImmutableURL | undefined,
-	root: ImmutableURL | undefined,
+	url: AbsoluteURL | undefined,
+	root: AbsoluteURL | undefined,
 	caller: AnyCaller,
 ): Iterable<ImmutableURI> {
 	for (const asset of assets) if (asset) yield requireLink(asset, url, root, caller);
