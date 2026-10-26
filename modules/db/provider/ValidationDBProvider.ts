@@ -1,12 +1,11 @@
 import { ValueError } from "../../error/ValueError.js";
-import { PARTIAL } from "../../schema/DataSchema.js";
 import type { MutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import { getNamedMessage } from "../../util/error.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
 import type { Query } from "../../util/query.js";
-import { getUpdates, type Updates } from "../../util/update.js";
+import type { Updates } from "../../util/update.js";
 import type { Collection } from "../collection/Collection.js";
 import { ThroughDBProvider } from "./ThroughDBProvider.js";
 
@@ -15,6 +14,7 @@ import { ThroughDBProvider } from "./ThroughDBProvider.js";
  *
  * - Wraps a `source` provider (which may have any type, because validation guarantees the type) and runs every value through the relevant `Collection` schema before writing and after reading.
  * - Written data is validated against the collection's data schema; read data is validated against the item schema, so trusted, correctly-typed values reach the rest of the app.
+ * - Updates are validated with `Collection.updates`, and every query with `Collection.query`, so an unknown key or a bad value never reaches the source.
  * - Validation failures here are program-state errors, so they throw a typed `ValueError` rather than a raw validation `string`.
  * - Applies inside `transact()` too — the transaction provider the callback receives validates its reads and writes the same way.
  *
@@ -53,28 +53,30 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		return super.updateItem(collection, id, _validateUpdates(collection, updates, this.updateItem));
 	}
 
+	/** Validate the query before reading; throws `ValueError` if it fails the collection schema. */
 	override countQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query?: Query<Item<II, TT>>): Promise<number> {
-		return super.countQuery(collection, query);
+		return super.countQuery(collection, _validateQuery(collection, query, this.countQuery));
 	}
 
-	/** Validate the items after reading; throws `ValueError` if any fail the collection schema. */
+	/** Validate the query before reading and the items after; throws `ValueError` if either fails the collection schema. */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): Promise<Items<II, TT>> {
-		return _validateItems(collection, await super.getQuery(collection, query), this.getQuery);
+		return _validateItems(collection, await super.getQuery(collection, _validateQuery(collection, query, this.getQuery)), this.getQuery);
 	}
 
-	/** Validate each emitted result; throws `ValueError` if any items fail the collection schema. */
+	/** Validate the query before reading and each emitted result; throws `ValueError` if either fails the collection schema. */
 	override async *getQuerySequence<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): ItemsSequence<II, TT> {
-		for await (const items of super.getQuerySequence(collection, query)) yield _validateItems(collection, items, this.getQuerySequence);
+		const valid = _validateQuery(collection, query, this.getQuerySequence);
+		for await (const items of super.getQuerySequence(collection, valid)) yield _validateItems(collection, items, this.getQuerySequence);
 	}
 
 	/**
-	 * Validate the data before writing; throws `ValueError` if it fails the collection schema.
+	 * Validate the query and data before writing; throws `ValueError` if they fail the collection schema.
 	 * - Passthrough, not two-step: validation applies to the query write's own inputs up front, so per-item routing adds nothing — pass through to keep the source's native query write.
 	 */
 	override setQuery<II extends I, TT extends T>(
@@ -82,11 +84,11 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		query: Query<Item<II, TT>>,
 		data: TT,
 	): Promise<void> {
-		return this.source.setQuery(collection, query, collection.validate(data));
+		return this.source.setQuery(collection, _validateQuery(collection, query, this.setQuery), collection.validate(data));
 	}
 
 	/**
-	 * Validate the updates before writing; throws `ValueError` if they fail the collection schema.
+	 * Validate the query and updates before writing; throws `ValueError` if they fail the collection schema.
 	 * - Passthrough, not two-step: validation applies to the query write's own inputs up front, so per-item routing adds nothing — pass through to keep the source's native query write.
 	 */
 	override updateQuery<II extends I, TT extends T>(
@@ -94,12 +96,19 @@ export class ValidationDBProvider<I extends Identifier, T extends Data> extends 
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
 	): Promise<void> {
-		return this.source.updateQuery(collection, query, _validateUpdates(collection, updates, this.updateQuery));
+		return this.source.updateQuery(
+			collection,
+			_validateQuery(collection, query, this.updateQuery),
+			_validateUpdates(collection, updates, this.updateQuery),
+		);
 	}
 
-	/** Passthrough, not two-step: there are no inputs to validate per item, so keep the source's native query write. */
+	/**
+	 * Validate the query before writing; throws `ValueError` if it fails the collection schema.
+	 * - Passthrough, not two-step: there are no inputs to validate per item, so keep the source's native query write.
+	 */
 	override deleteQuery<II extends I, TT extends T>(collection: Collection<string, II, TT>, query: Query<Item<II, TT>>): Promise<void> {
-		return this.source.deleteQuery(collection, query);
+		return this.source.deleteQuery(collection, _validateQuery(collection, query, this.deleteQuery));
 	}
 }
 
@@ -178,39 +187,44 @@ function* _yieldValidItems<I extends Identifier, T extends Data>(
 /**
  * Validate a set of updates for a collection.
  * @throws `ValueError` if the updates do not validate (conflict because the program is not in an expected state).
- *
- * @todo This currently is not correct — it's only validating the main keys of the object in a partial way
- *   We need to make a `Schema` validator for `Updates<T>` objects.
- *   And while we're doing it, we should make one for `Query<T>` objects too.
  */
 function _validateUpdates<I extends Identifier, T extends Data>(
 	collection: Collection<string, I, T>,
-	updates: Updates<Item<I, T>>,
+	updates: Updates<T>,
 	caller: AnyCaller,
-): Updates<Item<I, T>>;
-function _validateUpdates<I extends Identifier, T extends Data>(
-	collection: Collection<string, I, T>,
-	updates: Updates<Item<I, T>>,
-	caller: AnyCaller,
-): Data {
-	// Only a plain top-level key is a prop of the data schema. An encoded key (`+=num`, `+[]tags`, `=a.b`) or a path (`a.b`)
-	// is not, so the schema would strip it: keep it as it is. `getUpdates()` throws if a sum is not a number.
-	const plain: { [key: string]: unknown } = {};
-	const encoded: { [key: string]: unknown } = {};
-	for (const [key, value] of Object.entries(updates)) {
-		if (_isPlainKey(key)) plain[key] = value;
-		else encoded[key] = value;
-	}
-	getUpdates(encoded as Updates);
+): Updates<T> {
 	try {
-		return { ...PARTIAL(collection).validate(plain), ...encoded };
+		return collection.updates.validate(updates);
 	} catch (thrown) {
 		if (typeof thrown !== "string") throw thrown;
 		throw new ValueError(`Invalid updates for "${collection}"\n${thrown}`, { received: updates, caller });
 	}
 }
 
-/** Is an `Updates` key a plain top-level prop, with no update prefix and no path? */
-function _isPlainKey(key: string): boolean {
-	return !key.includes(".") && !/^(?:=|\+=|-=|\+\[\]|-\[\])/.test(key);
+/**
+ * Validate a query for a collection.
+ * @throws `ValueError` if the query does not validate (conflict because the program is not in an expected state).
+ */
+function _validateQuery<I extends Identifier, T extends Data>(
+	collection: Collection<string, I, T>,
+	query: Query<Item<I, T>>,
+	caller: AnyCaller,
+): Query<Item<I, T>>;
+function _validateQuery<I extends Identifier, T extends Data>(
+	collection: Collection<string, I, T>,
+	query: Query<Item<I, T>> | undefined,
+	caller: AnyCaller,
+): Query<Item<I, T>> | undefined;
+function _validateQuery<I extends Identifier, T extends Data>(
+	collection: Collection<string, I, T>,
+	query: Query<Item<I, T>> | undefined,
+	caller: AnyCaller,
+): Query<Item<I, T>> | undefined {
+	if (!query) return undefined;
+	try {
+		return collection.query.validate(query);
+	} catch (thrown) {
+		if (typeof thrown !== "string") throw thrown;
+		throw new ValueError(`Invalid query for "${collection}"\n${thrown}`, { received: query, caller });
+	}
 }

@@ -1,15 +1,18 @@
-import type { Data, PartialData } from "../util/data.js";
-import { isData } from "../util/data.js";
+import type { BranchData, BranchDataPath, Data, PartialData } from "../util/data.js";
+import { isData, splitDataPath } from "../util/data.js";
 import { formatObject } from "../util/format.js";
 import type { Identifier, Item } from "../util/item.js";
 import { type Key, omitProps, type Prop, pickProps, type Value } from "../util/object.js";
+import type { Segments } from "../util/string.js";
 import { mapProps } from "../util/transform.js";
 import { validateData } from "../util/validate.js";
+import { DictionarySchema } from "./DictionarySchema.js";
 import type { NullableSchema } from "./NullableSchema.js";
 import { NULLABLE } from "./NullableSchema.js";
 import { OPTIONAL } from "./OptionalSchema.js";
 import type { SchemaOptions, Schemas } from "./Schema.js";
 import { Schema } from "./Schema.js";
+import { getSourceSchema } from "./ThroughSchema.js";
 
 /**
  * Options for `DataSchema`.
@@ -141,4 +144,31 @@ export function ITEM<I extends Identifier, T extends Data>(id: Schema<I>, schema
 	return new DataSchema<Item<I, T>>({
 		props: { id, ...props } as Schemas<Item<I, T>>,
 	});
+}
+
+/**
+ * Get the schema for an optional (possibly deep) prop of a `DataSchema`, or `undefined` if it doesn't exist.
+ *
+ * - The schema twin of `getDataProp()`: it walks `DataSchema.props` one path segment at a time.
+ * - Goes through wrapper schemas (e.g. `NULLABLE()`, `OPTIONAL()`) with `getSourceSchema()`, and through the `items` of a `DictionarySchema`.
+ * - The schema it returns is not unwrapped, so e.g. a nullable prop still allows `null`.
+ *
+ * @param schema The `DataSchema` to read from.
+ * @param path The dotted path string (e.g. `"a.b"`) or an array of segments pointing at the prop.
+ * @returns The schema at the path, or `undefined` if any segment along the path doesn't exist.
+ * @example getDataSchemaProp(DATA({ sub: DATA({ num: NUMBER }) }), "sub.num") // NUMBER
+ * @see https://shelving.cc/schema/getDataSchemaProp
+ */
+export function getDataSchemaProp<T extends Data, K extends BranchDataPath<T>>(schema: DataSchema<T>, path: K): Schema<BranchData<T>[K]>;
+export function getDataSchemaProp(schema: DataSchema<Data>, path: string | Segments): Schema<unknown> | undefined;
+export function getDataSchemaProp(schema: DataSchema<Data>, path: string | Segments): Schema<unknown> | undefined {
+	let current: Schema<unknown> | undefined = schema;
+	for (const segment of splitDataPath(path)) current = _getSchemaChild(current, segment);
+	return current;
+}
+function _getSchemaChild(schema: Schema<unknown> | undefined, segment: string): Schema<unknown> | undefined {
+	if (!schema) return undefined;
+	const source = getSourceSchema(schema);
+	if (source instanceof DataSchema) return Object.hasOwn(source.props, segment) ? source.props[segment] : undefined;
+	if (source instanceof DictionarySchema) return source.items;
 }

@@ -3,8 +3,12 @@ import {
 	BOOLEAN,
 	DATA,
 	DataSchema,
+	DICTIONARY,
+	getDataSchemaProp,
+	getSourceSchema,
 	ITEM,
 	KEY,
+	NULLABLE,
 	NUMBER,
 	NumberSchema,
 	OPTIONAL,
@@ -356,5 +360,38 @@ describe("ITEM", () => {
 	});
 	test("throws if input is function", () => {
 		expect(() => ITEM_KEY_SCHEMA.validate(() => {})).toThrow();
+	});
+});
+
+describe("getDataSchemaProp()", () => {
+	const SUB = DATA({ num: NUMBER });
+	const SCHEMA = DATA({ str: STRING, sub: SUB, nullable: NULLABLE(SUB), dict: DICTIONARY(SUB) });
+	test("gets a top-level prop", () => {
+		expect(getDataSchemaProp(SCHEMA, "str")).toBe(STRING);
+		expect(getDataSchemaProp(SCHEMA, "sub")).toBe(SUB);
+	});
+	test("gets a deep prop from a dotted path or segments", () => {
+		expect(getDataSchemaProp(SCHEMA, "sub.num")).toBe(NUMBER);
+		expect(getDataSchemaProp(SCHEMA, ["sub", "num"])).toBe(NUMBER);
+	});
+	test("goes through wrapper schemas and dictionaries", () => {
+		expect(getDataSchemaProp(SCHEMA, "nullable.num")).toBe(NUMBER);
+		expect(getDataSchemaProp(SCHEMA, "dict.anything")).toBe(SUB);
+		expect(getDataSchemaProp(SCHEMA, "dict.anything.num")).toBe(NUMBER);
+	});
+	test("returns undefined for a missing prop", () => {
+		expect(getDataSchemaProp(SCHEMA, "nope")).toBe(undefined);
+		expect(getDataSchemaProp(SCHEMA, "sub.nope")).toBe(undefined);
+		expect(getDataSchemaProp(SCHEMA, "str.length")).toBe(undefined);
+		expect(getDataSchemaProp(SCHEMA, "sub.num.deeper")).toBe(undefined);
+		expect(getDataSchemaProp(SCHEMA, "constructor")).toBe(undefined);
+		expect(getDataSchemaProp(SCHEMA, "__proto__")).toBe(undefined);
+	});
+});
+
+describe("getSourceSchema()", () => {
+	test("unwraps wrapper schemas", () => {
+		expect(getSourceSchema(OPTIONAL(NULLABLE(NUMBER)))).toBe(NUMBER);
+		expect(getSourceSchema(NUMBER)).toBe(NUMBER);
 	});
 });

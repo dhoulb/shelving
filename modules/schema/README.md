@@ -53,6 +53,8 @@ For convenience the `shelving/schema` module offers sugar constants and factorie
 | `OPTIONAL(schema)`      | `T \| undefined`     |
 | `PARTIAL(schema)`       | `Partial<T>`         |
 | `ITEM(idSchema, props)` | `{ id: I } & T`      |
+| `UPDATES(dataSchema)`   | `Updates<T>`         |
+| `QUERY(dataSchema)`     | `Query<T>`           |
 
 ## Usage
 
@@ -73,4 +75,22 @@ PRODUCT.validate({ id: 1, name: "Widget", price: 9.99, tags: "a,b" });
 
 PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 // throws "name: Required"
+```
+
+### Deep props, updates, and queries
+
+`getDataSchemaProp()` is the schema twin of `getDataProp()`. It walks a dotted path (`"sub.num"`) down nested `DataSchema` props, through wrappers like `NULLABLE()`, and gives the schema at the path, or `undefined`.
+
+`UPDATES()` and `QUERY()` use it to validate every key of an `Updates` or `Query` object against the prop at its path. An unknown key throws.
+
+```ts
+import { ARRAY, DATA, NUMBER, QUERY, STRING, UPDATES } from "shelving/schema";
+
+const PERSON = DATA({ name: STRING, tags: ARRAY(STRING), address: DATA({ city: STRING, floor: NUMBER }) });
+
+UPDATES(PERSON).validate({ "address.city": "Leeds", "+=address.floor": 1, "+[]tags": "new" }); // Valid.
+UPDATES(PERSON).validate({ "address.floor": "high" }); // throws "address.floor: Must be number"
+
+QUERY(PERSON).validate({ "address.floor>": 2, "tags[]": "new", $order: "name", $limit: 10 }); // Valid.
+QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street: Unknown prop"
 ```
