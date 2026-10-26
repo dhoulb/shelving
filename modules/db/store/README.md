@@ -15,9 +15,11 @@ Both extend `FetchStore` from the `shelving/store` module, which manages the loa
 
 When a `MemoryDBProvider` is supplied (via `DBCache` reusing the `CacheDBProvider` mirror), the store seeds its initial value from the in-memory snapshot and subscribes to live changes via `DBProvider.getItemSequence()`. This makes the first render synchronous if the data is already cached.
 
+A missing item only counts as loaded when the memory has a time for it (`MemoryTable.getItemTime()`). Until then the store is loading. When the provider itself is a `MemoryDBProvider` (e.g. one that `HydratingAPIProvider` fills), a fetch waits until the memory has loaded the item.
+
 ### QueryStore
 
-`QueryStore<I, T>` holds `Items<I, T>` — a readonly array of matching items. It calls `DBProvider.getQuery()` on the first fetch. Like `ItemStore`, it seeds from memory when available.
+`QueryStore<I, T>` holds `Items<I, T>` — a readonly array of matching items. It calls `DBProvider.getQuery()` on the first fetch. Like `ItemStore`, it seeds from memory when available. An empty result only counts as loaded when the memory has a time for the query (`MemoryTable.getQueryTime()`), and a fetch from a `MemoryDBProvider` waits until it does.
 
 Additional accessors beyond the base `FetchStore`:
 
@@ -44,7 +46,7 @@ A paged store **pins** its items. After a fetch, each item keeps its position:
 - When the list is complete (`hasAfter` is `false`), a new item that sorts after the last item shows at the end at once.
 - A new item that sorts between loaded items shows only after a refresh.
 
-The cursor is an inclusive range on the first `$order` key (see `getAfterQuery()`). The store drops the items it already has by ID, so no item is skipped or shown twice. Page on a first key with many distinct values, e.g. a timestamp: many items with the same value make each page read them all again.
+The cursor is an inclusive range on the first `$order` key (see `getQueryAfter()`). The store drops the items it already has by ID, so no item is skipped or shown twice. Page on a first key with many distinct values, e.g. a timestamp: many items with the same value make each page read them all again.
 
 A query without an `$order` does not page. It follows the live query result in the memory.
 

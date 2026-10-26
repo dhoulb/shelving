@@ -3,9 +3,10 @@ import type { ImmutableArray } from "shelving/util/array";
 import { getIdentifiers } from "shelving/util/item";
 import {
 	filterQueryItems,
-	getAfterQuery,
-	getBeforeQuery,
+	getQueryAfter,
+	getQueryBefore,
 	getQueryFilters,
+	getQueryItemsAfter,
 	getQueryOrders,
 	matchQueryItem,
 	queryItems,
@@ -198,17 +199,17 @@ test("queryItems()", () => {
 	expectOrderedItems(queryItems(basics, { "tags[]": "even", $order: "!num", $limit: 2 }), ["basic8", "basic6"]);
 });
 
-describe("getAfterQuery()", () => {
+describe("getQueryAfter()", () => {
 	test("adds an inclusive range on the first order key", () => {
-		expect(getAfterQuery<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num>=": 100 });
-		expect(getAfterQuery<BasicData>({ $order: ["!num", "str"] }, basic1)).toEqual({ $order: ["!num", "str"], "num<=": 100 });
+		expect(getQueryAfter<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num>=": 100 });
+		expect(getQueryAfter<BasicData>({ $order: ["!num", "str"] }, basic1)).toEqual({ $order: ["!num", "str"], "num<=": 100 });
 	});
 	test("keeps a narrower range that already exists", () => {
-		expect(getAfterQuery<BasicData>({ $order: "num", "num>=": 150 }, basic1)).toEqual({ $order: "num", "num>=": 150 });
-		expect(getAfterQuery<BasicData>({ $order: "num", "num>=": 50 }, basic1)).toEqual({ $order: "num", "num>=": 100 });
+		expect(getQueryAfter<BasicData>({ $order: "num", "num>=": 150 }, basic1)).toEqual({ $order: "num", "num>=": 150 });
+		expect(getQueryAfter<BasicData>({ $order: "num", "num>=": 50 }, basic1)).toEqual({ $order: "num", "num>=": 100 });
 	});
 	test("returns the items at or after the item", () => {
-		expectOrderedItems(queryItems(basics, getAfterQuery({ $order: "num" }, basic2)), [
+		expectOrderedItems(queryItems(basics, getQueryAfter({ $order: "num" }, basic2)), [
 			"basic2",
 			"basic3",
 			"basic4",
@@ -220,25 +221,55 @@ describe("getAfterQuery()", () => {
 		]);
 	});
 	test("throws without $order", () => {
-		expect(() => getAfterQuery({}, basic1)).toThrow();
+		expect(() => getQueryAfter({}, basic1)).toThrow();
 	});
 });
 
-describe("getBeforeQuery()", () => {
+describe("getQueryBefore()", () => {
 	test("adds an inclusive range on the first order key", () => {
-		expect(getBeforeQuery<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num<=": 100 });
-		expect(getBeforeQuery<BasicData>({ $order: "!num" }, basic1)).toEqual({ $order: "!num", "num>=": 100 });
+		expect(getQueryBefore<BasicData>({ $order: "num" }, basic1)).toEqual({ $order: "num", "num<=": 100 });
+		expect(getQueryBefore<BasicData>({ $order: "!num" }, basic1)).toEqual({ $order: "!num", "num>=": 100 });
 	});
 	test("returns the items at or before the item", () => {
-		expectOrderedItems(queryItems(basics, getBeforeQuery({ $order: "num" }, basic2)), ["basic1", "basic2"]);
+		expectOrderedItems(queryItems(basics, getQueryBefore({ $order: "num" }, basic2)), ["basic1", "basic2"]);
 	});
 	test("throws without $order", () => {
-		expect(() => getBeforeQuery({}, basic1)).toThrow();
+		expect(() => getQueryBefore({}, basic1)).toThrow();
 	});
 });
 
-test("getAfterQuery() and getBeforeQuery() throw when the item has no value for the first order key", () => {
+test("getQueryAfter() and getQueryBefore() throw when the item has no value for the first order key", () => {
 	const item = { id: "a" } as unknown as BasicData;
-	expect(() => getAfterQuery<BasicData>({ $order: "num" }, item)).toThrow();
-	expect(() => getBeforeQuery<BasicData>({ $order: "num" }, item)).toThrow();
+	expect(() => getQueryAfter<BasicData>({ $order: "num" }, item)).toThrow();
+	expect(() => getQueryBefore<BasicData>({ $order: "num" }, item)).toThrow();
+});
+
+describe("getQueryItemsAfter()", () => {
+	type Row = { id: string; when: number };
+	const a: Row = { id: "a", when: 1 };
+	const b: Row = { id: "b", when: 2 };
+	const c: Row = { id: "c", when: 2 };
+	test("returns the query for the next page from the last item", () => {
+		expect(getQueryItemsAfter<string, { when: number }>({ query: { $order: "when", $limit: 2 }, items: [a, b] })).toEqual({
+			$order: "when",
+			$limit: 3,
+			"when>=": 2,
+		});
+	});
+	test("grows the limit by every item with the same sort value as the last item", () => {
+		expect(getQueryItemsAfter<string, { when: number }>({ query: { $order: "when", $limit: 3 }, items: [a, b, c] })).toEqual({
+			$order: "when",
+			$limit: 5,
+			"when>=": 2,
+		});
+	});
+	test("returns undefined when the page is not full", () => {
+		expect(getQueryItemsAfter<string, { when: number }>({ query: { $order: "when", $limit: 3 }, items: [a, b] })).toBe(undefined);
+	});
+	test("returns undefined when the query has no limit", () => {
+		expect(getQueryItemsAfter<string, { when: number }>({ query: { $order: "when" }, items: [a, b] })).toBe(undefined);
+	});
+	test("throws when a full page has no order", () => {
+		expect(() => getQueryItemsAfter<string, { when: number }>({ query: { $limit: 1 }, items: [a] })).toThrow();
+	});
 });

@@ -1,9 +1,13 @@
-import { DataSchema, ITEM } from "../../schema/DataSchema.js";
+import { DataSchema } from "../../schema/DataSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
 import type { Schema, Schemas } from "../../schema/Schema.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
+import { CollectionItemSchema } from "./CollectionItemSchema.js";
+import { CollectionItemsSchema } from "./CollectionItemsSchema.js";
+import { CollectionQueryItemsSchema } from "./CollectionQueryItemsSchema.js";
+import { CollectionQuerySchema } from "./CollectionQuerySchema.js";
 
 /**
  * Default identifier schema (integer) used when a collection doesn't supply its own.
@@ -24,6 +28,7 @@ export const ID = new NumberSchema({
  *
  * - Pairs a collection name with an identifier schema and a data schema, so providers can validate and address items.
  * - Extends `DataSchema<T>`, so the collection itself validates an item's data, while `.item` validates the complete `id + data` item.
+ * - `.item`, `.items`, `.query` and `.queryItems` point back at the collection with `source`, so an endpoint result that uses them can hydrate a database (see `HydratingAPIProvider`).
  *
  * @example
  *  const users = new Collection("users", ID, { name: STRING, age: NUMBER });
@@ -51,14 +56,38 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 	 *
 	 * @see https://shelving.cc/db/Collection/item
 	 */
-	readonly item: DataSchema<Item<I, T>>;
+	readonly item: CollectionItemSchema<I, T>;
+
+	/**
+	 * Schema for a list of complete items (id + data).
+	 *
+	 * @see https://shelving.cc/db/Collection/items
+	 */
+	readonly items: CollectionItemsSchema<I, T>;
+
+	/**
+	 * Schema for a query on the items. It only checks that the query is an object, so do not trust the query it validates.
+	 *
+	 * @see https://shelving.cc/db/Collection/query
+	 */
+	readonly query: CollectionQuerySchema<I, T>;
+
+	/**
+	 * Schema for a query and the complete list of items that answer it.
+	 *
+	 * @see https://shelving.cc/db/Collection/queryItems
+	 */
+	readonly queryItems: CollectionQueryItemsSchema<I, T>;
 
 	constructor(name: N, id: Schema<I>, data: Schemas<T> | DataSchema<T>) {
 		const dataSchema = data instanceof DataSchema ? data : new DataSchema({ props: data });
 		super({ ...dataSchema, props: dataSchema.props });
 		this.name = name;
 		this.id = id;
-		this.item = ITEM(id, dataSchema);
+		this.item = new CollectionItemSchema<I, T>(this);
+		this.items = new CollectionItemsSchema<I, T>(this);
+		this.query = new CollectionQuerySchema<I, T>(this);
+		this.queryItems = new CollectionQueryItemsSchema<I, T>(this);
 	}
 
 	/** Returns the collection name. */

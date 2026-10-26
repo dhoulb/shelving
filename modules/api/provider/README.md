@@ -13,6 +13,7 @@ The transport layer for API calls. A provider builds requests, sends them, and p
 | `ClientAPIProvider` | Sends requests over the network with `fetch()`. Accepts `{ url, options, timeout }`. |
 | `ThroughAPIProvider` | Pass-through base — extend this to intercept only the methods you need. |
 | `ValidationAPIProvider` | Validates payload before request creation and result after response parsing. |
+| `HydratingAPIProvider` | Validates, then writes the collection items in each result into a local `MemoryDBProvider`. |
 | `LoggingAPIProvider` | Logs requests, responses, and errors using configurable callbacks (production-safe). |
 | `DebugAPIProvider` | Verbose console output including full request/response bodies — development only. |
 | `JSONAPIProvider` | A `ClientAPIProvider` that forces JSON request bodies and always parses responses as JSON. |

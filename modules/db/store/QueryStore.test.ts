@@ -188,8 +188,49 @@ describe("review fixes", () => {
 	});
 	test("fetchAfter() on a store with an empty memory loads the first page", async () => {
 		const { store } = _setup();
-		expect(_ids(store)).toEqual([]);
+		expect(store.age).toBe(Number.POSITIVE_INFINITY); // The memory has no items and no time for the query, so the store is loading.
 		await store.fetchAfter();
 		expect(_ids(store)).toEqual(["g", "f"]);
+	});
+});
+
+describe("QueryStore with a MemoryDBProvider", () => {
+	test("is loading while the memory has no items and no time for the query", () => {
+		const memory = new MemoryDBProvider<string>();
+		const store = new QueryStore(BASICS_COLLECTION, { str: "aaa" }, memory, memory);
+		expect(store.age).toBe(Number.POSITIVE_INFINITY);
+	});
+	test("seeds from the memory when it has items for the query", () => {
+		const memory = new MemoryDBProvider<string>();
+		memory.getTable(BASICS_COLLECTION).setItems(ITEMS);
+		const store = new QueryStore(BASICS_COLLECTION, { num: 5 }, memory, memory);
+		expect(_ids(store)).toEqual(["e3", "e2", "e1"]);
+	});
+	test("seeds as empty when the memory has a time for the query", () => {
+		const memory = new MemoryDBProvider<string>();
+		memory.getTable(BASICS_COLLECTION).setQueryTime({ str: "aaa" });
+		const store = new QueryStore(BASICS_COLLECTION, { str: "aaa" }, memory, memory);
+		expect(_ids(store)).toEqual([]);
+	});
+	test("a fetch waits until the memory loads the query", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const store = new QueryStore(BASICS_COLLECTION, { str: "aaa" }, memory, memory);
+		const refresh = store.refresh();
+		await runMicrotasks();
+		expect(store.age).toBe(Number.POSITIVE_INFINITY);
+		memory.getTable(BASICS_COLLECTION).setQueryTime({ str: "aaa" }); // Loaded with no items.
+		await refresh;
+		expect(_ids(store)).toEqual([]);
+	});
+	test("follows the memory once the query loads", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const store = new QueryStore(BASICS_COLLECTION, { num: 5 }, memory, memory);
+		const stop = runSequence(store);
+		await runMicrotasks();
+		expect(store.age).toBe(Number.POSITIVE_INFINITY);
+		memory.getTable(BASICS_COLLECTION).setItems(ITEMS);
+		await runMicrotasks();
+		expect(_ids(store)).toEqual(["e3", "e2", "e1"]);
+		stop();
 	});
 });

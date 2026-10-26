@@ -6,6 +6,7 @@ export * from "./provider/APIProvider.js";
 export * from "./provider/CachedAPIProvider.js";
 export * from "./provider/ClientAPIProvider.js";
 export * from "./provider/DebugAPIProvider.js";
+export * from "./provider/HydratingAPIProvider.js";
 export * from "./provider/JSONAPIProvider.js";
 export * from "./provider/LoggingAPIProvider.js";
 export * from "./provider/MockAPIProvider.js";
