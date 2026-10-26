@@ -154,6 +154,63 @@ describe("simplifyString()", () => {
 		expect(simplifyString("Dave's Angles")).toBe("daves angles"); // Apostrophes are sensible.
 		expect(simplifyString("abc % def")).toBe("abc def");
 	});
+	test("NFKD converts styled letters to plain letters", () => {
+		expect(simplifyString("ⒸⓒⒶⓩ")).toBe("ccaz"); // Circled.
+		expect(simplifyString("⒜⒵🄐🄩")).toBe("azaz"); // Parenthesized.
+		expect(simplifyString("🄰🄲🅉")).toBe("acz"); // Squared.
+		expect(simplifyString("𝐂𝐨𝐨𝐥")).toBe("cool"); // Bold.
+		expect(simplifyString("𝐶𝑜𝑜𝑙")).toBe("cool"); // Italic.
+		expect(simplifyString("𝑪𝒐𝒐𝒍")).toBe("cool"); // Bold italic.
+		expect(simplifyString("𝒞ℴℴ𝓁")).toBe("cool"); // Script.
+		expect(simplifyString("𝓒𝓸𝓸𝓵")).toBe("cool"); // Bold script.
+		expect(simplifyString("ℭ𝔬𝔬𝔩")).toBe("cool"); // Fraktur.
+		expect(simplifyString("𝕮𝖔𝖔𝖑")).toBe("cool"); // Bold fraktur.
+		expect(simplifyString("ℂ𝕠𝕠𝕝")).toBe("cool"); // Double-struck.
+		expect(simplifyString("𝖢𝗈𝗈𝗅")).toBe("cool"); // Sans-serif.
+		expect(simplifyString("𝘾𝙤𝙤𝙡")).toBe("cool"); // Sans-serif bold italic.
+		expect(simplifyString("𝙲𝚘𝚘𝚕")).toBe("cool"); // Monospace.
+		expect(simplifyString("Ｃｏｏｌ")).toBe("cool"); // Fullwidth.
+		expect(simplifyString("ᶜᵒᵒˡ")).toBe("cool"); // Superscript.
+		expect(simplifyString("𝟏𝟚𝟹")).toBe("123"); // Styled digits.
+		expect(simplifyString("①⑳⑴⒈")).toBe("12011"); // Circled, parenthesized, and full stop digits.
+	});
+	test("NFKD converts letterlike symbols to plain letters", () => {
+		expect(simplifyString("ℂℊℋℌℍℎℐℑℒℓℕℙℚℛℜℝℤℬℰℱℳℯℴℹ")).toBe("cghhhhiillnpqrrrzbefmeoi");
+		expect(simplifyString("™ ℠ № ℡")).toBe("tm sm no tel");
+	});
+	test("NFKD splits ligatures and removes accents", () => {
+		expect(simplifyString("ﬀ ﬁ ﬂ ﬃ ﬄ ﬆ")).toBe("ff fi fl ffi ffl st");
+		expect(simplifyString("àáâãäå çèéêë ñòóôõö ùúûü ý")).toBe("aaaaaa ceeee nooooo uuuu y");
+		expect(simplifyString("Crème Brûlée")).toBe("creme brulee");
+	});
+	test("Letterlike characters that NFKD does not convert are converted to plain letters", () => {
+		expect(simplifyString("ᴄᴏᴏʟ")).toBe("cool"); // Small capitals.
+		expect(simplifyString("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ")).toBe("abcdefghijklmnopqrstuvwxyz");
+		expect(simplifyString("🅒🅞🅞🅛")).toBe("cool"); // Negative circled.
+		expect(simplifyString("🅐🅩")).toBe("az");
+		expect(simplifyString("🅲🅾🅾🅻")).toBe("cool"); // Negative squared.
+		expect(simplifyString("🅰🆉")).toBe("az");
+		expect(simplifyString("🇨🇴🇴🇱")).toBe("cool"); // Regional indicators.
+		expect(simplifyString("🇦🇿")).toBe("az");
+		expect(simplifyString("℮")).toBe("e"); // Estimate symbol.
+	});
+	test("Letters from other scripts are kept", () => {
+		expect(simplifyString("Привет мир")).toBe("привет мир"); // Cyrillic is not converted to Latin.
+		expect(simplifyString("Γειά σου")).toBe("γεια σου"); // Greek keeps its letters and loses its accents.
+		expect(simplifyString("ℵ ℶ")).toBe("א ב"); // Hebrew letter symbols become Hebrew letters.
+		expect(simplifyString("ℼ ℏ")).toBe("π ħ");
+		expect(simplifyString("æ œ ß ø ł ð þ")).toBe("æ œ ß ø ł ð þ"); // Letters without a decomposition are kept.
+		expect(simplifyString("日本語")).toBe("日本語");
+	});
+	test("Symbols and emoji are removed", () => {
+		expect(simplifyString("© ® ℗ ℅ ℀")).toBe("co ac"); // Symbols with a decomposition keep their letters.
+		expect(simplifyString("Hello 😂 World 🎉")).toBe("hello world");
+		expect(simplifyString("℘ ℞ ⅋")).toBe("");
+	});
+	test("Separators are normalised", () => {
+		expect(simplifyString("a_b-c\u2014d\u00A0e\tf\ng")).toBe("a b c d e f g");
+		expect(simplifyString("  -- a --  ")).toBe("a");
+	});
 });
 describe("getSlug()", () => {
 	test("Works correctly", () => {
@@ -162,6 +219,15 @@ describe("getSlug()", () => {
 		expect(requireSlug("This: Something to not-be proud of")).toBe("this-something-to-not-be-proud-of");
 		expect(requireSlug("under_score")).toBe("under-score");
 		expect(requireSlug("Dave's Angles")).toBe("daves-angles");
+	});
+	test("Styled titles make useful slugs", () => {
+		expect(requireSlug("Ⓒⓞⓞⓛ Ⓣⓘⓣⓛⓔ")).toBe("cool-title");
+		expect(requireSlug("𝐶𝑜𝑜𝑙 𝑇𝑖𝑡𝑙𝑒")).toBe("cool-title");
+		expect(requireSlug("𝓒𝓸𝓸𝓵 𝓣𝓲𝓽𝓵𝓮")).toBe("cool-title");
+		expect(requireSlug("ᴄᴏᴏʟ ᴛɪᴛʟᴇ")).toBe("cool-title");
+		expect(requireSlug("🅒🅞🅞🅛 🅣🅘🅣🅛🅔")).toBe("cool-title");
+		expect(requireSlug("🅲🅾🅾🅻 🆃🅸🆃🅻🅴")).toBe("cool-title");
+		expect(requireSlug("✨ 𝕮𝖔𝖔𝖑 𝕿𝖎𝖙𝖑𝖊 ✨")).toBe("cool-title");
 	});
 	test("Hyphens are cleaned up", () => {
 		expect(requireSlug("multiple----hyphens")).toBe("multiple-hyphens");

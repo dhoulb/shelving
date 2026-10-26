@@ -220,22 +220,47 @@ export function sanitizeMultilineText(str: string): string {
 		.replace(/(^|\t|\n)[^\S\t\n]+/g, "$1"); // Remove leading whitespace that isn't a tab.
 }
 
+// Letterlike characters that `NFKD` normalisation does not convert to a plain letter.
+const _LETTERS = "abcdefghijklmnopqrstuvwxyz";
+const _LETTERLIKE = new Map<string, string>([
+	["℮", "e"], // Estimate symbol.
+	...Array.from("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ", (char, i) => [char, _LETTERS.charAt(i)] as const), // Small capitals `ᴀ` to `ᴢ` (no small capital `x` exists).
+	..._getLetterRange(0x1f150), // Negative circled capitals `🅐` to `🅩`.
+	..._getLetterRange(0x1f170), // Negative squared capitals `🅰` to `🆉`.
+	..._getLetterRange(0x1f1e6), // Regional indicators `🇦` to `🇿` (pairs show as flags, e.g. `🇬🇧` becomes `gb`).
+]);
+const _LETTERLIKE_REGEXP = new RegExp(`[${Array.from(_LETTERLIKE.keys()).join("")}]`, "gu");
+
+/** Get the 26 `[char, letter]` pairs for a run of letterlike characters that starts at `start` and runs `A` to `Z`. */
+function _getLetterRange(start: number): [string, string][] {
+	return Array.from(_LETTERS, (letter, i) => [String.fromCodePoint(start + i), letter]);
+}
+
+/** Replace a letterlike character with its plain letter. */
+function _replaceLetterlike(char: string): string {
+	return _LETTERLIKE.get(char) ?? char;
+}
+
 /**
  * Simplify a string by removing anything that isn't a number, letter, or space.
- * - Normalizes the string by
- * - Useful when you're running a query against a string entered by a user.
+ * - Useful when you're running a query against a string entered by a user, or making a slug from a title.
+ * - Uses `NFKD` normalisation to convert styled letters to plain letters, e.g. circled `Ⓒ`, italic `𝐶`, script `𝒞`, fraktur `ℭ`, double-struck `ℂ`, fullwidth `Ｃ`, and superscript `ᶜ` all become `c`.
+ * - `NFKD` also splits ligatures (e.g. `ﬀ` becomes `ff`) and removes accents (e.g. `é` becomes `e`).
+ * - Converts a small set of letterlike characters that `NFKD` does not cover: small capitals (e.g. `ᴄ`), negative circled and squared letters (e.g. `🅒` and `🅲`), regional indicators (e.g. `🇨`), and the estimate symbol `℮`.
+ * - Keeps letters from other scripts (e.g. `ж`, `π`, `ℵ` alef becomes `א`), and does not convert them to Latin letters that look the same.
+ * - Removes symbols, punctuation, and emoji (e.g. `©`, `!`, `😂`).
+ * - Converts runs of spaces, tabs, newlines, underscores, and dashes to a single space, then trims and lowercases the result.
  *
  * @param str The string to simplify.
  * @returns The simplified, lowercased string containing only numbers, letters, and single spaces.
  * @see https://shelving.cc/util/string/simplifyString
- *
- * @todo Convert confusables (e.g. `ℵ` alef symbol or `℮` estimate symbol) to their letterlike equivalent (e.g. `N` and `e`).
  */
 export function simplifyString(str: string): string {
 	return str
+		.replace(_LETTERLIKE_REGEXP, _replaceLetterlike) // Convert letterlike characters that `NFKD` doesn't (e.g. `ᴄ` small capital, `🅒` negative circled, `℮` estimate symbol).
 		.normalize("NFKD") // Normalize ligatures (e.g. `ﬀ` to `ff`), combined characters (e.g. `Ⓜ` to `m`), accents (e.g. `å` to `a`).
-		.replace(/[^\p{L}\p{N}\p{Z}\p{Pc}\p{Pd}]+/gu, "") // Strip characters that aren't `\p{L}` letters, `\p{N}` numbers, `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore_, `\p{Pd}` dash punctuation (e.g. `-` hyphen)
-		.replace(/[\p{Z}\p{Pc}\p{Pd}]+/gu, " ") // Normalise runs of `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore_, `\p{Pd}` dash punctuation (e.g. `-` hyphen), to ` ` single space.
+		.replace(/[^\p{L}\p{N}\p{Z}\p{Pc}\p{Pd}\s]+/gu, "") // Strip characters that aren't `\p{L}` letters, `\p{N}` numbers, `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore), `\p{Pd}` dash punctuation (e.g. `-` hyphen), or `\s` whitespace (e.g. `\t` tab or `\n` newline).
+		.replace(/[\p{Z}\p{Pc}\p{Pd}\s]+/gu, " ") // Normalise runs of separators, connector punctuation, dash punctuation, and whitespace to ` ` single space.
 		.trim()
 		.toLowerCase();
 }
