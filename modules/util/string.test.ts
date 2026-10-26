@@ -176,7 +176,6 @@ describe("simplifyString()", () => {
 	});
 	test("NFKD converts letterlike symbols to plain letters", () => {
 		expect(simplifyString("ℂℊℋℌℍℎℐℑℒℓℕℙℚℛℜℝℤℬℰℱℳℯℴℹ")).toBe("cghhhhiillnpqrrrzbefmeoi");
-		expect(simplifyString("™ ℠ № ℡")).toBe("tm sm no tel");
 	});
 	test("NFKD splits ligatures and removes accents", () => {
 		expect(simplifyString("ﬀ ﬁ ﬂ ﬃ ﬄ ﬆ")).toBe("ff fi fl ffi ffl st");
@@ -203,7 +202,12 @@ describe("simplifyString()", () => {
 		expect(simplifyString("日本語")).toBe("日本語");
 	});
 	test("Symbols and emoji are removed", () => {
-		expect(simplifyString("© ® ℗ ℅ ℀")).toBe("co ac"); // Symbols with a decomposition keep their letters.
+		expect(simplifyString("© ® ℗")).toBe("");
+		expect(simplifyString("™ ℠ 🄪 🄫 🄬 🅪 🅫 🅬 🄭 🄮")).toBe(""); // Marks are removed, though `NFKD` converts them to letters.
+		expect(simplifyString("℡ № ℅ ℀ ℁ ℆ ℻ ㉐ ㋏")).toBe(""); // Abbreviations are removed, though `NFKD` converts them to letters.
+		expect(simplifyString("$ £ € ₨ ﷼")).toBe(""); // Currency signs are removed, though `NFKD` converts some to letters.
+		expect(simplifyString("20℃ 68℉")).toBe("20 68"); // Unit signs are removed, though `NFKD` converts them to letters.
+		expect(simplifyString("Acme™ Widget®")).toBe("acme widget");
 		expect(simplifyString("Hello 😂 World 🎉")).toBe("hello world");
 		expect(simplifyString("℘ ℞ ⅋")).toBe("");
 	});
@@ -228,6 +232,7 @@ describe("getSlug()", () => {
 		expect(requireSlug("🅒🅞🅞🅛 🅣🅘🅣🅛🅔")).toBe("cool-title");
 		expect(requireSlug("🅲🅾🅾🅻 🆃🅸🆃🅻🅴")).toBe("cool-title");
 		expect(requireSlug("✨ 𝕮𝖔𝖔𝖑 𝕿𝖎𝖙𝖑𝖊 ✨")).toBe("cool-title");
+		expect(requireSlug("© 2024 Acme™")).toBe("2024-acme");
 	});
 	test("Hyphens are cleaned up", () => {
 		expect(requireSlug("multiple----hyphens")).toBe("multiple-hyphens");
