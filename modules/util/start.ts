@@ -70,7 +70,7 @@ export class Starter<T extends Arguments = []> implements Disposable {
 		} catch (thrown) {
 			throw new UnexpectedError("Unexpected error in stop callback", { cause: thrown, caller: this.stop });
 		} finally {
-			this._started = true;
+			this._started = false;
 			this._stop = undefined;
 		}
 	}
