@@ -4,6 +4,7 @@
  * This file is bundled by `Bun.build` (orchestrated from `docs/build.tsx`) so that `.module.css` imports
  * resolve to hashed class-name objects. It renders every page to static HTML and embeds the data the
  * browser needs to hydrate: the per-page meta as JSON (`#docs-data`), plus the client bundle `<script>`.
+ * Each tree page also links its Markdown copy (written by `docs/markdown.ts`) so agents can find it.
  */
 
 import { mkdir } from "node:fs/promises";
@@ -24,10 +25,9 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
 export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
 	// Flattening stamps a canonical `path` on every element and keys the map by it; the path-shaped keys are exactly the set of pages to render (one per element).
 	// The index page (`/all`) is a `<TreeApp>` fallback route, not a tree node, so add it explicitly.
-	const paths: AbsolutePath[] = [
-		...Array.from(flattenTree(tree).keys()).filter(isAbsolutePath), //
-		"/search",
-	];
+	const pages = Array.from(flattenTree(tree).keys()).filter(isAbsolutePath);
+	const paths: AbsolutePath[] = [...pages, "/search"];
+	const markdown = new Set(pages);
 
 	for (const path of paths) {
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.
@@ -49,6 +49,8 @@ export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script:
 				<script type="application/json" id="docs-data">
 					{JSON.stringify(meta)}
 				</script>
+				{/* React hoists this into `<head>`, so it does not affect hydration. The `href` is relative to `<base>`, like every other link. */}
+				{markdown.has(path) && <link rel="alternate" type="text/markdown" href={path === "/" ? "index.md" : `${path.slice(1)}.md`} />}
 			</HTML>,
 		)}`;
 		const filePath = path === "/" ? join(outdir, "index.html") : join(outdir, path.slice(1), "index.html");

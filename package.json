@@ -71,10 +71,11 @@
 		"docs:start": "bun ./docs/start.tsx",
 		"build": "bun run --sequential build:*",
 		"build:0:setup": "rm -rf ./dist && mkdir -p ./dist",
-		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui",
+		"build:1:copy": "cp package.json dist/package.json && cp LICENSE.md dist/LICENSE.md && cp README.md dist/README.md && cp .npmignore dist/.npmignore && cp -r modules/ui dist/ui && cp -r skills dist/skills",
 		"build:2:emit": "tsc -p tsconfig.build.json",
-		"build:3:syntax": "bun run ./dist/index.js",
-		"build:4:unit": "GITHUB_ACTIONS=false bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
+		"build:3:docs": "bun ./docs/dist.ts",
+		"build:4:syntax": "bun run ./dist/index.js",
+		"build:5:unit": "GITHUB_ACTIONS=false bun test ./dist/**/*.test.js --concurrent --only-failures --bail"
 	},
 	"sideEffects": [
 		"*.css"

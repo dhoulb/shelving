@@ -1,13 +1,11 @@
 import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
-import { DirectoryExtractor } from "../modules/extract/DirectoryExtractor.js";
-import { IndexExtractor } from "../modules/extract/IndexExtractor.js";
-import { MergingExtractor } from "../modules/extract/MergingExtractor.js";
-import { PackageExtractor } from "../modules/extract/PackageExtractor.js";
 import type { AbsolutePath } from "../modules/util/path.js";
 import type { TreeElement } from "../modules/util/tree.js";
 import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
+import { renderMarkdown } from "./markdown.js";
+import { extractTree } from "./tree.js";
 
 /** Shape exposed by the bundled `docs/render.tsx` module. */
 interface RenderModule {
@@ -27,6 +25,7 @@ interface RenderModule {
  * 4. Bundle `docs/render.tsx` for Bun — the server-side renderer. It resolves `.module.css` imports to the
  *    same hashed class names (so its markup matches the browser CSS); its own CSS output is discarded.
  * 5. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
+ * 6. Write every page again as Markdown, plus `llms.txt` and `llms-full.txt`, for LLMs and coding agents (see `docs/markdown.ts`).
  */
 export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePath, outdir: AbsolutePath): Promise<void> {
 	// Clean up first.
@@ -38,8 +37,7 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 	// Extract the source tree (merging `.md` siblings and absorbing README files), then build the module tree from
 	// package.json exports. Write the resulting tree for the browser to fetch and hydrate from.
 	console.warn("Extracting tree...");
-	const tree = await new IndexExtractor(new MergingExtractor(new DirectoryExtractor())).extract(sourceDir);
-	const root = await new PackageExtractor({ tree }).extract(packageJson);
+	const root = await extractTree(sourceDir, packageJson);
 	await Bun.write(join(outdir, "tree.json"), JSON.stringify(root));
 
 	const tempdir = await mkdtemp(join(tmpdir(), "shelving-docs-"));
@@ -94,6 +92,11 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 	} finally {
 		await rm(tempdir, { recursive: true, force: true });
 	}
+
+	// Write the same pages as Markdown for LLMs and coding agents.
+	console.warn("Writing Markdown...");
+	const markdown = await renderMarkdown(root, outdir);
+	console.warn(`  Wrote ${markdown} Markdown pages`);
 
 	const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
 	console.warn(`Done in ${elapsed}s → ${outdir}`);
