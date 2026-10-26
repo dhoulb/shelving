@@ -117,6 +117,47 @@ describe("FirestoreProvider (protocol)", () => {
 		});
 	});
 
+	test("in filters over 30 values split into parallel queries, then merge, sort and limit", async () => {
+		const ids = Array.from({ length: 31 }, (_, i) => `basic${i}`);
+		const doc = (id: string, num: number) => ({
+			document: { name: `${ROOT}/basics/${id}`, fields: { num: { integerValue: String(num) } } },
+		});
+		const stub = _createStub({ json: [doc("basic1", 100), doc("basic2", 300)] }, { json: [doc("basic30", 200)] });
+		const provider = new FirestoreProvider({ project: "test", fetch: stub.fetch });
+		const items = await provider.getQuery(BASICS_COLLECTION, { id: ids, $order: "!num", $limit: 2 });
+		expect<unknown>(items).toEqual([
+			{ id: "basic2", num: 300 },
+			{ id: "basic30", num: 200 },
+		]);
+		expect(stub.requests.length).toBe(2);
+		expect(stub.requests[0]?.body.structuredQuery).toMatchObject({
+			where: {
+				fieldFilter: { value: { arrayValue: { values: ids.slice(0, 30).map(id => ({ referenceValue: `${ROOT}/basics/${id}` })) } } },
+			},
+			limit: 2,
+		});
+		expect(stub.requests[1]?.body.structuredQuery).toMatchObject({
+			where: { fieldFilter: { value: { arrayValue: { values: [{ referenceValue: `${ROOT}/basics/basic30` }] } } } },
+			limit: 2,
+		});
+	});
+
+	test("countQuery() sums the counts of split in queries", async () => {
+		const count = (n: number) => ({ json: [{ result: { aggregateFields: { count: { integerValue: String(n) } } } }] });
+		const stub = _createStub(count(30), count(5));
+		const provider = new FirestoreProvider({ project: "test", fetch: stub.fetch });
+		expect(await provider.countQuery(BASICS_COLLECTION, { num: Array.from({ length: 35 }, (_, i) => i) })).toBe(35);
+		expect(stub.requests.length).toBe(2);
+	});
+
+	test("deleteQuery() deletes the names from every split in query", async () => {
+		const name = (id: string) => ({ document: { name: `${ROOT}/basics/${id}` } });
+		const stub = _createStub({ json: [name("basic1")] }, { json: [name("basic2")] }, { json: {} });
+		const provider = new FirestoreProvider({ project: "test", fetch: stub.fetch });
+		await provider.deleteQuery(BASICS_COLLECTION, { num: Array.from({ length: 31 }, (_, i) => i) });
+		expect(stub.requests[2]?.body).toEqual({ writes: [{ delete: `${ROOT}/basics/basic1` }, { delete: `${ROOT}/basics/basic2` }] });
+	});
+
 	test("empty in filters match nothing without a request", async () => {
 		const stub = _createStub();
 		const provider = new FirestoreProvider({ project: "test", fetch: stub.fetch });

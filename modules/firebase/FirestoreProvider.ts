@@ -2,7 +2,7 @@ import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { UnsupportedError } from "../error/UnsupportedError.js";
-import type { ImmutableArray, MutableArray } from "../util/array.js";
+import { type ImmutableArray, isArray, type MutableArray } from "../util/array.js";
 import { getDelay } from "../util/async.js";
 import type { Data } from "../util/data.js";
 import { joinDataPath } from "../util/data.js";
@@ -11,7 +11,15 @@ import { BLACKHOLE } from "../util/function.js";
 import type { Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../util/item.js";
 import { getItem } from "../util/item.js";
 import { isPlainObject } from "../util/object.js";
-import { getQueryFilters, getQueryLimit, getQueryOrders, type Query } from "../util/query.js";
+import {
+	getQueryFilters,
+	getQueryLimit,
+	getQueryOrders,
+	limitQueryItems,
+	type Query,
+	type QueryOrder,
+	sortQueryItems,
+} from "../util/query.js";
 import { getRandom, getRandomKey } from "../util/random.js";
 import type { Updates } from "../util/update.js";
 import { getUpdates } from "../util/update.js";
@@ -21,6 +29,7 @@ import { toData, toFirestoreFields, toFirestoreValue } from "./value.js";
 // Constants.
 const WRITE_BATCH = 500;
 const TRANSACTION_ATTEMPTS = 5;
+const IN_MAX = 30; // Firestore allows at most 30 values in an `IN` filter.
 
 // Map `Filter.types` to Firestore REST `FieldFilter` operators.
 const OPERATORS = {
@@ -122,6 +131,27 @@ function _getStructuredQuery<II extends string, TT extends Data>(
 	else if (firstFilter) structured.where = firstFilter;
 	if (select) structured.select = { fields: [{ fieldPath: "__name__" }] };
 	return structured;
+}
+
+/**
+ * Split a query with an `in` filter of more than `IN_MAX` values into queries of `IN_MAX` values each.
+ * - Returns `undefined` when the query needs no split.
+ * - Each query keeps the order and the limit, so the caller must merge, sort and limit the results again.
+ */
+function _splitQuery<Q extends Query<Data>>(query: Q | undefined): ImmutableArray<Q> | undefined {
+	if (!query) return;
+	for (const [key, value] of Object.entries(query)) {
+		if (!isArray(value) || value.length <= IN_MAX || /^[!$]|\[\]$|[<>=]$/.test(key)) continue;
+		const queries: MutableArray<Q> = [];
+		for (let i = 0; i < value.length; i += IN_MAX) queries.push({ ...query, [key]: value.slice(i, i + IN_MAX) });
+		return queries.flatMap(q => _splitQuery(q) ?? [q]);
+	}
+}
+
+/** Get the orders Firestore sorts a query by: its own orders, then the document id in the direction of the last order. */
+function _getFirestoreOrders(query: Query<Data>): ImmutableArray<QueryOrder> {
+	const orders = getQueryOrders(query);
+	return [...orders, { key: ["id"], direction: orders[orders.length - 1]?.direction ?? "asc" }];
 }
 
 /** Convert an `Updates` object to a Firestore REST `Write` against a document name. */
@@ -258,6 +288,13 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 		query: Query<Item<II, TT>> | undefined,
 		caller: AnyCaller,
 	): Promise<ImmutableArray<string>> {
+		const queries = _splitQuery(query);
+		if (queries) {
+			// A limit needs the full documents to find the first items across the queries.
+			if (query && getQueryLimit(query) !== undefined)
+				return (await this.getQuery(collection, query)).map(({ id }) => this._getDocumentName(collection, id));
+			return (await Promise.all(queries.map(q => this._getQueryNames(collection, q, caller)))).flat();
+		}
 		const structuredQuery = _getStructuredQuery(this._root, collection.name, query, true, caller);
 		if (!structuredQuery) return [];
 		const results = (await this._request("runQuery", { structuredQuery, ...this._consistency })) as ImmutableArray<{
@@ -313,6 +350,12 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): Promise<number> {
+		const queries = _splitQuery(query);
+		if (queries) {
+			const total = (await Promise.all(queries.map(q => this.countQuery(collection, q)))).reduce((a, b) => a + b, 0);
+			const limit = query && getQueryLimit(query);
+			return typeof limit === "number" ? Math.min(total, limit) : total;
+		}
 		const structuredQuery = _getStructuredQuery(this._root, collection.name, query, false, this.countQuery);
 		if (!structuredQuery) return 0;
 		const results = (await this._request("runAggregationQuery", {
@@ -327,6 +370,11 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): Promise<Items<II, TT>> {
+		const queries = _splitQuery(query);
+		if (queries && query) {
+			const items = (await Promise.all(queries.map(q => this.getQuery(collection, q)))).flat();
+			return Array.from(limitQueryItems(sortQueryItems(items, _getFirestoreOrders(query)), getQueryLimit(query)));
+		}
 		const structuredQuery = _getStructuredQuery(this._root, collection.name, query, false, this.getQuery);
 		if (!structuredQuery) return [];
 		const results = (await this._request("runQuery", { structuredQuery, ...this._consistency })) as ImmutableArray<{
