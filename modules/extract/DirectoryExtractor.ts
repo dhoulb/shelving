@@ -50,6 +50,7 @@ export interface DirectoryExtractorOptions {
 /**
  * Extractor that walks a directory on disk and produces a tree of `tree-element` nodes.
  * - Recursively descends into subdirectories.
+ * - Sorts entries by name in natural order (`2-intro.md` comes before `10-advanced.md`), so the output is the same on every file system.
  * - Dispatches non-ignored files to a matching `FileExtractor` based on extension; files with no matching extractor are silently skipped.
  * - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
  * - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`
@@ -77,6 +78,8 @@ export class DirectoryExtractor extends Extractor<Path, TreeElement> {
 	private async _extractDirectory(source: AbsolutePath): Promise<TreeElement> {
 		const name = splitPath(source).at(-1) ?? "";
 		const entries = await readdir(source, { withFileTypes: true });
+		// `readdir()` order depends on the file system, so sort for the same output everywhere.
+		entries.sort((a, b) => a.name.localeCompare(b.name, "en", { numeric: true }));
 
 		const children: TreeElement[] = [];
 		for (const entry of entries) {
