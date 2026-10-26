@@ -203,11 +203,11 @@ describe("simplifyString()", () => {
 	});
 	test("Symbols and emoji are removed", () => {
 		expect(simplifyString("© ® ℗")).toBe("");
-		expect(simplifyString("™ ℠ 🅪 🅫 🅬 🄭 🄮")).toBe(""); // Marks are removed, though `NFKD` converts them to letters.
-		expect(simplifyString("℡ № ℅ ℀ ℁ ℆ ℻ ㉐ ㋏")).toBe(""); // Abbreviations are removed, though `NFKD` converts them to letters.
-		expect(simplifyString("$ £ € ₨ ﷼ ＄")).toBe(""); // Currency signs are removed, though `NFKD` converts some to letters.
-		expect(simplifyString("㎏ ㎞ ㏈ ㍱")).toBe(""); // Unit squares are removed, though `NFKD` converts them to letters.
-		expect(simplifyString("20℃ 68℉")).toBe("20 68"); // Unit signs are removed, though `NFKD` converts them to letters.
+		expect(simplifyString("™ ℠ 🅪 🅫 🅬")).toBe(""); // Marks are removed, though `NFKD` converts them to letters.
+		expect(simplifyString("$ £ € ＄")).toBe("");
+		expect(simplifyString("℡ № ℅ ₨ 🄭")).toBe("tel no co rs cd"); // Abbreviations keep their letters.
+		expect(simplifyString("5㎏ 10㎞ 3㏈")).toBe("5kg 10km 3db"); // Units keep their letters.
+		expect(simplifyString("20℃ 68℉")).toBe("20c 68f");
 		expect(simplifyString("Acme™ Widget®")).toBe("acme widget");
 		expect(simplifyString("Hello 😂 World 🎉")).toBe("hello world");
 		expect(simplifyString("℘ ℞ ⅋")).toBe("");

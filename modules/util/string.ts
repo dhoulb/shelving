@@ -220,10 +220,11 @@ export function sanitizeMultilineText(str: string): string {
 		.replace(/(^|\t|\n)[^\S\t\n]+/g, "$1"); // Remove leading whitespace that isn't a tab.
 }
 
-// Letterlike characters that `NFKD` normalisation does not convert to a plain letter.
+// Characters where `NFKD` normalisation does not give the plain letter we want.
 const _LETTERS = "abcdefghijklmnopqrstuvwxyz";
 const _LETTERLIKE = new Map<string, string>([
 	["℮", "e"], // Estimate symbol.
+	...Array.from("™℠🅪🅫🅬", char => [char, ""] as const), // Marks that annotate text are removed (these are every multi-letter symbol with a `<super>` decomposition, e.g. `NFKD` converts `™` to `TM`).
 	...Array.from("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡxʏᴢ", (char, i) => [char, _LETTERS.charAt(i)] as const), // Small capitals `ᴀ` to `ᴢ` (no small capital `x` exists).
 	..._getLetterRange(0x1f150), // Negative circled capitals `🅐` to `🅩`.
 	..._getLetterRange(0x1f170), // Negative squared capitals `🅰` to `🆉`.
@@ -241,12 +242,6 @@ function _replaceLetterlike(char: string): string {
 	return _LETTERLIKE.get(char) ?? char;
 }
 
-/** Replace a symbol with the one character it decomposes to (e.g. `Ⓒ` becomes `C`), or remove it if it decomposes to more (e.g. `™` becomes `TM`, `℃` becomes `°C`). */
-function _replaceSymbol(char: string): string {
-	const decomposed = char.normalize("NFKD").replace(/\p{P}/gu, ""); // Ignore punctuation, so parenthesized `⒞` becomes `c`.
-	return Array.from(decomposed).length === 1 ? decomposed : "";
-}
-
 /**
  * Simplify a string by removing anything that isn't a number, letter, or space.
  * - Useful when you're running a query against a string entered by a user, or making a slug from a title.
@@ -255,7 +250,8 @@ function _replaceSymbol(char: string): string {
  * - Converts a small set of letterlike characters that `NFKD` does not cover: small capitals (e.g. `ᴄ`), negative circled and squared letters (e.g. `🅒` and `🅲`), regional indicators (e.g. `🇨`), and the estimate symbol `℮`.
  * - Keeps letters from other scripts (e.g. `ж`, `π`, `ℵ` alef becomes `א`), and does not convert them to Latin letters that look the same.
  * - Removes symbols, punctuation, and emoji (e.g. `©`, `!`, `😂`).
- * - Removes symbols that `NFKD` expands to more than one character, so marks, abbreviations, and unit signs do not become letters (e.g. `™` is not `tm`, `№` is not `no`, `℃` is not `c`).
+ * - Removes marks that annotate text (`™`, `℠`, `🅪`, `🅫`, `🅬`), so `Acme™` becomes `acme`, not `acmetm`.
+ * - Keeps the letters of units and abbreviations, because they are part of the meaning (e.g. `㎏` becomes `kg`, `№` becomes `no`, `℃` becomes `c`).
  * - Converts runs of spaces, tabs, newlines, underscores, and dashes to a single space, then trims and lowercases the result.
  *
  * @param str The string to simplify.
@@ -264,8 +260,7 @@ function _replaceSymbol(char: string): string {
  */
 export function simplifyString(str: string): string {
 	return str
-		.replace(_LETTERLIKE_REGEXP, _replaceLetterlike) // Convert letterlike characters that `NFKD` doesn't (e.g. `ᴄ` small capital, `🅒` negative circled, `℮` estimate symbol).
-		.replace(/\p{S}/gu, _replaceSymbol) // Keep `\p{S}` symbols that are one styled character (e.g. `Ⓒ`) and remove symbols that `NFKD` expands to many (e.g. `™` to `TM`).
+		.replace(_LETTERLIKE_REGEXP, _replaceLetterlike) // Convert letterlike characters that `NFKD` doesn't (e.g. `ᴄ` small capital, `🅒` negative circled, `℮` estimate symbol), and remove marks (e.g. `™`).
 		.normalize("NFKD") // Normalize ligatures (e.g. `ﬀ` to `ff`), combined characters (e.g. `Ⓜ` to `m`), accents (e.g. `å` to `a`).
 		.replace(/[^\p{L}\p{N}\p{Z}\p{Pc}\p{Pd}\s]+/gu, "") // Strip characters that aren't `\p{L}` letters, `\p{N}` numbers, `\p{Z}` separators (e.g. ` ` space), `\p{Pc}` connector punctuation (e.g. `_` underscore), `\p{Pd}` dash punctuation (e.g. `-` hyphen), or `\s` whitespace (e.g. `\t` tab or `\n` newline).
 		.replace(/[\p{Z}\p{Pc}\p{Pd}\s]+/gu, " ") // Normalise runs of separators, connector punctuation, dash punctuation, and whitespace to ` ` single space.
