@@ -2,13 +2,13 @@
 
 - Kind: class
 - Import: `import { CollectionQuerySchema } from "shelving/db";`
-- Extends: `Schema<Query<Item<I, T>>>`
+- Extends: `QuerySchema<Item<I, T>>`
 - Implements: `Sourceable<Collection<string, I, T>>`
 
 Schema for a `Query` on the items of a `Collection`.
 
 - Built by `Collection` as `Collection.query`. Use that instance, and do not make your own.
-- **Do not trust a query that this schema validates.** It only checks that the value is an object. It does not check the keys or the values against the collection, so a query from outside (e.g. an API response) can have any keys and values.
+- Validates the query in full against `Collection.item` (see `QuerySchema`), so a query from outside (e.g. an API request or response) can be trusted. Filter and `$order` keys can use `id` and any prop path of the collection.
 - Its `source` is the `Collection`, so `getSource()` can find the collection from the schema.
 
 ## Signatures

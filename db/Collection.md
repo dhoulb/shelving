@@ -8,6 +8,7 @@ Declarative definition of a database collection/table.
 
 - Pairs a collection name with an identifier schema and a data schema, so providers can validate and address items.
 - Extends `DataSchema<T>`, so the collection itself validates an item's data, while `.item` validates the complete `id + data` item.
+- `.updates` validates an `Updates` object for the item data, and `.query` validates a `Query` on the items.
 - `.item`, `.items`, `.query` and `.queryItems` point back at the collection with `source`, so an endpoint result that uses them can hydrate a database (see `HydratingAPIProvider`).
 
 ## Signatures
@@ -38,7 +39,8 @@ new Collection<N, I, T>(name: N, id: Schema<I>, data: Schemas<T> | DataSchema<T>
 | `id` | `Schema<I>` | Schema for the identifier type. Read only. |
 | `item` | `CollectionItemSchema<I, T>` | Schema for a complete item (id + data). Read only. |
 | `items` | `CollectionItemsSchema<I, T>` | Schema for a list of complete items (id + data). Read only. |
-| `query` | `CollectionQuerySchema<I, T>` | Schema for a query on the items. It only checks that the query is an object, so do not trust the query it validates. Read only. |
+| `updates` | `UpdatesSchema<T>` | Schema for a set of updates to the data of an item. Read only. |
+| `query` | `CollectionQuerySchema<I, T>` | Schema for a query on the items. Read only. |
 | `queryItems` | `CollectionQueryItemsSchema<I, T>` | Schema for a query and the complete list of items that answer it. Read only. |
 
 ## Examples

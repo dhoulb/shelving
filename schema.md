@@ -56,6 +56,8 @@ For convenience the `shelving/schema` module offers sugar constants and factorie
 | `OPTIONAL(schema)`      | `T \| undefined`     |
 | `PARTIAL(schema)`       | `Partial<T>`         |
 | `ITEM(idSchema, props)` | `{ id: I } & T`      |
+| `UPDATES(dataSchema)`   | `Updates<T>`         |
+| `QUERY(dataSchema)`     | `Query<T>`           |
 
 ## Usage
 
@@ -78,6 +80,24 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 // throws "name: Required"
 ```
 
+### Deep props, updates, and queries
+
+`getDataSchemaProp()` is the schema twin of `getDataProp()`. It walks a dotted path (`"sub.num"`) down nested `DataSchema` props, through wrappers like `NULLABLE()`, and gives the schema at the path, or `undefined`.
+
+`UPDATES()` and `QUERY()` use it to validate every key of an `Updates` or `Query` object against the prop at its path. An unknown key throws.
+
+```ts
+import { ARRAY, DATA, NUMBER, QUERY, STRING, UPDATES } from "shelving/schema";
+
+const PERSON = DATA({ name: STRING, tags: ARRAY(STRING), address: DATA({ city: STRING, floor: NUMBER }) });
+
+UPDATES(PERSON).validate({ "address.city": "Leeds", "+=address.floor": 1, "+[]tags": "new" }); // Valid.
+UPDATES(PERSON).validate({ "address.floor": "high" }); // throws "address.floor: Must be number"
+
+QUERY(PERSON).validate({ "address.floor>": 2, "tags[]": "new", $order: "name", $limit: 10 }); // Valid.
+QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street: Unknown prop"
+```
+
 
 ## Functions
 
@@ -85,14 +105,18 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 - [NULLABLE_DATA](schema/NULLABLE_DATA.md): Create a schema for a valid data object with specified properties, or null.
 - [PARTIAL](schema/PARTIAL.md): Create a DataSchema that validates partially, i.e. every property can be its value or undefined.
 - [ITEM](schema/ITEM.md): Create a DataSchema that validates a data item, i.e. it has a string or number .id identifier property.
+- [getDataSchemaProp](schema/getDataSchemaProp.md): Get the schema for an optional (possibly deep) prop of a DataSchema, or undefined if it doesn't exist.
 - [CURRENCY_AMOUNT](schema/CURRENCY_AMOUNT.md): Create a CurrencyAmountSchema for a non-negative monetary amount in a currency.
 - [NULLABLE_CURRENCY_AMOUNT](schema/NULLABLE_CURRENCY_AMOUNT.md): Create a NullableSchema for an optional monetary amount in a currency, or null.
 - [ARRAY](schema/ARRAY.md): Create a schema for a valid array with specified items.
 - [DICTIONARY](schema/DICTIONARY.md): Create a schema for a valid dictionary object with specified entry values.
 - [NULLABLE](schema/NULLABLE.md): Create a NullableSchema that wraps a source schema and also allows null.
+- [getSourceSchema](schema/getSourceSchema.md): Get the innermost source of a wrapper schema, or the schema itself if it is not a ThroughSchema.
+- [UPDATES](schema/UPDATES.md): Create an UpdatesSchema for the data object of a DataSchema.
 - [OPTIONAL](schema/OPTIONAL.md): Create an OptionalSchema that wraps a source schema and also allows undefined.
 - [CHOICE](schema/CHOICE.md): Create a schema for a valid choice from an allowed set of values.
 - [REQUIRED](schema/REQUIRED.md): Create a RequiredSchema that wraps a source schema and rejects a falsy result.
+- [QUERY](schema/QUERY.md): Create a QuerySchema for the data objects of a DataSchema.
 
 ## Classes
 
@@ -112,6 +136,7 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 - [NullableSchema](schema/NullableSchema.md): Schema that wraps a source schema and additionally allows null.
 - [EmailSchema](schema/EmailSchema.md): Schema that defines a valid email address.
 - [ThroughSchema](schema/ThroughSchema.md): Schema that wraps and passes through to a source schema, used as a base for schemas that augment another schema's behaviour (e.g. NullableSchema, OptionalSchema, RequiredSchema).
+- [UpdatesSchema](schema/UpdatesSchema.md): Schema that validates an Updates object against the schema of the data object it changes.
 - [SlugSchema](schema/SlugSchema.md): Schema that defines a valid slug, e.g. this-is-a-slug.
 - [PasswordSchema](schema/PasswordSchema.md): Schema that defines a valid password string.
 - [CountrySchema](schema/CountrySchema.md): Schema that defines a valid ISO 3166 country code, e.g. GB.
@@ -128,6 +153,7 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 - [MediaSchema](schema/MediaSchema.md): Schema that validates the file name of an image or a video.
 - [CurrencyCodeSchema](schema/CurrencyCodeSchema.md): Schema that defines a valid ISO 4217 currency code, e.g. GBP.
 - [DateTimeSchema](schema/DateTimeSchema.md): Schema that defines a valid UTC datetime in ISO 8601 format, e.g. 2005-09-12T18:15:00.000Z.
+- [QuerySchema](schema/QuerySchema.md): Schema that validates a Query against the schema of the data objects it filters and sorts.
 - [VideoSchema](schema/VideoSchema.md): Schema that validates the file name of a video.
 
 ## Interfaces
@@ -148,6 +174,7 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 - [NullableSchemaOptions](schema/NullableSchemaOptions.md): Allowed options for NullableSchema.
 - [EmailSchemaOptions](schema/EmailSchemaOptions.md): Options for an EmailSchema.
 - [ThroughSchemaOptions](schema/ThroughSchemaOptions.md): Allowed options for ThroughSchema.
+- [UpdatesSchemaOptions](schema/UpdatesSchemaOptions.md): Options for UpdatesSchema.
 - [SlugSchemaOptions](schema/SlugSchemaOptions.md): Options for a SlugSchema.
 - [CountrySchemaOptions](schema/CountrySchemaOptions.md): Options for CountrySchema.
 - [FileSchemaOptions](schema/FileSchemaOptions.md): Allowed options for FileSchema.
@@ -157,6 +184,7 @@ PRODUCT.validate({ id: 2, name: "", price: 9.99, tags: [] });
 - [NumberSchemaOptions](schema/NumberSchemaOptions.md): Allowed options for NumberSchema.
 - [MediaSchemaOptions](schema/MediaSchemaOptions.md): Allowed options for MediaSchema.
 - [CurrencyCodeSchemaOptions](schema/CurrencyCodeSchemaOptions.md): Options for CurrencyCodeSchema.
+- [QuerySchemaOptions](schema/QuerySchemaOptions.md): Options for QuerySchema.
 
 ## Types
 
