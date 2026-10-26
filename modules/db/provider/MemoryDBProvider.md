@@ -20,6 +20,19 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
 }
 ```
 
+## Item and query times
+
+Each `MemoryTable` records when an item was last set or deleted (`MemoryTable.getItemTime()`), and when a query was marked as loaded (`MemoryTable.getQueryTime()`, set with `MemoryTable.setQueryTime()`). Stores use the times to tell "not loaded yet" from "empty":
+
+- An item with no item and no time is loading. Deleting an item that does not exist still sets its time, so the table knows it is missing.
+- A query with no items and no time is loading. A query matches by `JSON.stringify(query)`, including `$order` and `$limit`.
+
+```ts
+const table = memory.getTable(MEMBERS);
+table.setItems(items);
+table.setQueryTime({ user: "dave" }); // `items` is the complete answer to this query.
+```
+
 ## Transactions
 
 `MemoryDBProvider.transact()` hands the callback a shallow snapshot clone of the provider (see `MemoryDBProvider.clone()`) wrapped in a `RecordingDBProvider` to record its operations, then replays the recorded writes onto the real provider with `RecordingDBProvider.replayWrites()` when the callback resolves — so live subscriptions fire naturally on commit, and a thrown callback commits nothing:

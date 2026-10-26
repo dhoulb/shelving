@@ -200,6 +200,12 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/** Actual data in this table. */
 	protected readonly _data: Map<I, Item<I, T>>;
 
+	/** Time each item was last set or deleted. */
+	protected readonly _times = new Map<I, number>();
+
+	/** Time each query (by `JSON.stringify(query)`) was last marked as loaded. */
+	protected readonly _queryTimes = new Map<string, number>();
+
 	/** Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end. */
 	protected readonly _next = new DeferredSequence<boolean>();
 
@@ -240,16 +246,32 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 */
 	async *getItemSequence(id: I): AsyncIterable<OptionalItem<I, T>> {
 		let lastValue = this.getItem(id);
+		let lastLoaded = this._times.has(id);
 		yield lastValue;
 		while (true) {
 			const done = await this._next;
 			if (done) return;
 			const nextValue = this.getItem(id);
-			if (nextValue !== lastValue) {
+			const nextLoaded = this._times.has(id);
+			if (nextValue !== lastValue || nextLoaded !== lastLoaded) {
 				yield nextValue;
 				lastValue = nextValue;
+				lastLoaded = nextLoaded;
 			}
 		}
+	}
+
+	/**
+	 * Get the time an item was last set or deleted in this table, or `undefined` if it never was.
+	 * - Use it to tell an item that does not exist (a time and no item) from an item that has not loaded yet (no time).
+	 *
+	 * @param id Identifier of the item.
+	 * @returns The time in milliseconds, or `undefined` if the item was never set or deleted.
+	 * @example table.getItemTime(123) // 1700000000000
+	 * @see https://shelving.cc/db/MemoryTable/getItemTime
+	 */
+	getItemTime(id: I): number | undefined {
+		return this._times.get(id);
 	}
 
 	/**
@@ -283,7 +305,8 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 
 	/**
 	 * Set (insert or overwrite) an item by its id.
-	 * - Only resolves `next` when the stored instance actually changes.
+	 * - Sets the item's time (see `getItemTime()`).
+	 * - Only resolves `next` when the stored instance actually changes, or the item had no time.
 	 *
 	 * @param id Identifier of the item to set.
 	 * @param data Full item, or data to combine with `id` into an item.
@@ -292,10 +315,12 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 */
 	setItem(id: I, data: Item<I, T> | T): void {
 		const item = getItem(id, data);
+		const loaded = this._times.has(id);
+		this._times.set(id, Date.now());
 		if (this._data.get(id) !== item) {
 			this._data.set(id, item);
 			this._next.resolve(false);
-		}
+		} else if (!loaded) this._next.resolve(false);
 	}
 
 	/**
@@ -332,17 +357,20 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 
 	/**
 	 * Delete an item by its id.
-	 * - Only resolves `next` when an item was actually removed.
+	 * - Sets the item's time (see `getItemTime()`), even when the item does not exist, so the table knows the item is missing.
+	 * - Only resolves `next` when an item was actually removed, or the item had no time.
 	 *
 	 * @param id Identifier of the item to delete.
 	 * @example table.deleteItem(123);
 	 * @see https://shelving.cc/db/MemoryTable/deleteItem
 	 */
 	deleteItem(id: I): void {
+		const loaded = this._times.has(id);
+		this._times.set(id, Date.now());
 		if (this._data.has(id)) {
 			this._data.delete(id);
 			this._next.resolve(false);
-		}
+		} else if (!loaded) this._next.resolve(false);
 	}
 
 	/**
@@ -372,7 +400,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/**
 	 * Subscribe to the live result of a query.
 	 * - Emits the current query result immediately, even if empty.
-	 * - Wakes on every table change, but only yields when the computed query result changed.
+	 * - Wakes on every table change, but only yields when the computed query result changed, or the query was first marked as loaded (see `getQueryTime()`).
 	 *
 	 * @param query Query to filter, sort, and limit the items.
 	 * @returns Async sequence yielding the matching items on every change.
@@ -380,17 +408,52 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 * @see https://shelving.cc/db/MemoryTable/getQuerySequence
 	 */
 	async *getQuerySequence(query?: Query<Item<I, T>>): AsyncIterable<Items<I, T>> {
+		const key = _getQueryKey(query);
 		let lastItems = this.getQuery(query);
+		let lastLoaded = this._queryTimes.has(key);
 		yield lastItems;
 		while (true) {
 			const done = await this._next;
 			if (done) return;
 			const nextItems = this.getQuery(query);
-			if (!isArrayEqual(lastItems, nextItems)) {
+			const nextLoaded = this._queryTimes.has(key);
+			if (!isArrayEqual(lastItems, nextItems) || nextLoaded !== lastLoaded) {
 				yield nextItems;
 				lastItems = nextItems;
+				lastLoaded = nextLoaded;
 			}
 		}
+	}
+
+	/**
+	 * Get the time a query was last marked as loaded in this table, or `undefined` if it never was.
+	 * - Use it to tell a query with no items (a time and no items) from a query that has not loaded yet (no time).
+	 * - Queries match by `JSON.stringify(query)`, so the same filters in a different key order are a different query.
+	 *
+	 * @param query The query, including its `$order` and `$limit`.
+	 * @returns The time in milliseconds, or `undefined` if the query was never marked as loaded.
+	 * @example table.getQueryTime({ user: "dave", $limit: 20 }) // 1700000000000
+	 * @see https://shelving.cc/db/MemoryTable/getQueryTime
+	 */
+	getQueryTime(query?: Query<Item<I, T>>): number | undefined {
+		return this._queryTimes.get(_getQueryKey(query));
+	}
+
+	/**
+	 * Mark a query as loaded, i.e. the items in this table are the complete answer to the query.
+	 * - Set the items first (e.g. with `setItems()`), then mark the query.
+	 * - Resolves `next` when the query was not marked before, so live query sequences see the change.
+	 *
+	 * @param query The query, including its `$order` and `$limit`.
+	 * @param time The time to mark the query with, in milliseconds.
+	 * @example table.setQueryTime({ user: "dave", $limit: 20 });
+	 * @see https://shelving.cc/db/MemoryTable/setQueryTime
+	 */
+	setQueryTime(query?: Query<Item<I, T>>, time: number = Date.now()): void {
+		const key = _getQueryKey(query);
+		const loaded = this._queryTimes.has(key);
+		this._queryTimes.set(key, time);
+		if (!loaded) this._next.resolve(false);
 	}
 
 	/**
@@ -451,4 +514,9 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 			() => this._next.resolve(true), // Wake every open sequence with doneness, so it ends.
 		);
 	}
+}
+
+/** Get the key that `MemoryTable` stores a query's time under. */
+function _getQueryKey(query: Query | undefined): string {
+	return JSON.stringify(query ?? {});
 }

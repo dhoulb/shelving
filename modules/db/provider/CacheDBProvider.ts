@@ -82,13 +82,15 @@ export class CacheDBProvider<I extends Identifier, T extends Data> extends Throu
 		this.memory.getTable(collection).deleteItem(id);
 	}
 
-	/** Read from `source`, then refresh the cache. */
+	/** Read from `source`, then refresh the cache and mark the query as loaded. */
 	override async getQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query?: Query<Item<II, TT>>,
 	): Promise<Items<II, TT>> {
 		const items = await super.getQuery(collection, query);
-		this.memory.getTable(collection).setItems(items);
+		const table = this.memory.getTable(collection);
+		table.setItems(items);
+		table.setQueryTime(query);
 		return items;
 	}
 

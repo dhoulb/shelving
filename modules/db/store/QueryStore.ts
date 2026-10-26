@@ -1,15 +1,17 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { FetchStore } from "../../store/FetchStore.js";
 import { getFirst, getLast, type ImmutableArray, requireFirst } from "../../util/array.js";
+import { awaitAbort, awaitRace } from "../../util/async.js";
 import { getGetter } from "../../util/class.js";
 import { NONE } from "../../util/constants.js";
 import { type Data, getDataProp, joinDataPath } from "../../util/data.js";
 import { isEqual } from "../../util/equal.js";
+import { BLACKHOLE } from "../../util/function.js";
 import type { Identifier, Item, Items } from "../../util/item.js";
 import {
 	compareQueryItems,
-	getAfterQuery,
-	getBeforeQuery,
+	getQueryAfter,
+	getQueryBefore,
 	getQueryFilters,
 	getQueryLimit,
 	getQueryOrders,
@@ -23,13 +25,15 @@ import { runSequence } from "../../util/sequence.js";
 import { isDefined } from "../../util/undefined.js";
 import type { Collection } from "../collection/Collection.js";
 import type { DBProvider } from "../provider/DBProvider.js";
-import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
+import { MemoryDBProvider, type MemoryTable } from "../provider/MemoryDBProvider.js";
 
 /**
  * Store that runs a query against a collection from a database provider and tracks its matching items.
  *
  * - Holds an `Items` value (the array of matching items) and is iterable over those items.
  * - Seeds from a `MemoryDBProvider` snapshot when available, and follows changes in the memory.
+ * - An empty result in the memory only counts as loaded when the memory has a time for the query (see `MemoryTable.getQueryTime()`). Until then the store is loading.
+ * - When the provider is a `MemoryDBProvider`, a fetch waits until the memory has loaded the query (e.g. from `HydratingAPIProvider`).
  * - A query with an `$order` loads in pages: `fetchAfter()` loads the next page at the end, and `fetchBefore()` loads new items at the start.
  * - A query with an `$order` pins its items: each item keeps its position after a fetch, so an edit never moves an item or removes it from view. A deleted item is hidden. New items in the memory that sort before the first item show at the start at once (e.g. an optimistic preview).
  * - A query without an `$order` follows the live query result in the memory, and cannot page.
@@ -164,8 +168,9 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 	private _generation = 0; // Increases when a refresh starts.
 
 	constructor(collection: Collection<string, I, T>, query: Query<Item<I, T>>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
-		const items = memory?.getTable(collection).getQuery(query);
-		super(items ?? NONE); // Use the current memory snapshot if available.
+		const table = memory?.getTable(collection);
+		const items = table && _isLoaded(table, query) ? table.getQuery(query) : undefined;
+		super(items ?? NONE); // Use the current memory snapshot if it has loaded.
 		this.provider = provider;
 		this.collection = collection;
 		this.query = query;
@@ -179,20 +184,25 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 				this._hasAfter = items.length >= this.limit; // A full snapshot may have more items after it.
 			}
 			if (memory) this.starter = store => runSequence(memory.getQuerySequence(collection), () => store._recompose());
-		} else if (memory) {
-			// Unpaged query: follow the live query result in the memory.
-			this.starter = store => runSequence(store.through(memory.getQuerySequence(collection, query)));
+		} else if (table) {
+			// Unpaged query: follow the live query result in the memory, once it has loaded.
+			this.starter = store => runSequence(store.through(_getLoadedSequence(table, query)));
 		}
 	}
 
 	// Override to fetch the result from the database provider.
 	// - A paged query loads the first page again, and drops any other loaded pages.
-	override async _fetch(_signal: AbortSignal): Promise<Items<I, T>> {
-		if (!this._orders.length) return this.provider.getQuery(this.collection, this.query);
-		const { collection, query, limit } = this;
+	// - A `MemoryDBProvider` waits until it has loaded the query.
+	override async _fetch(signal: AbortSignal): Promise<Items<I, T>> {
+		const { provider, collection, query, limit } = this;
+		if (provider instanceof MemoryDBProvider) {
+			const table: MemoryTable<I, T> = provider.getTable(collection);
+			if (!_isLoaded(table, query)) await _awaitFirst(_getLoadedSequence(table, query), signal);
+		}
+		if (!this._orders.length) return provider.getQuery(collection, query);
 		const generation = ++this._generation; // Makes any page fetch that is still running drop its result.
 		// Load one more item than the page, to see if there are more.
-		const items = await this.provider.getQuery(collection, _withLimit(query, limit + 1));
+		const items = await provider.getQuery(collection, _withLimit(query, limit + 1));
 		if (generation !== this._generation) return this._compose(); // A newer refresh started, so it sets the items.
 		this._hasAfter = items.length > limit;
 		this._hasBefore = false;
@@ -226,7 +236,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 			return;
 		}
 		if (!this._hasAfter) return;
-		const items = await this._fetchPage(getAfterQuery(query, last, this.fetchAfter), last);
+		const items = await this._fetchPage(getQueryAfter(query, last, this.fetchAfter), last);
 		if (!items) return;
 		this._hasAfter = items.length > limit;
 		this._pin([...this._ids, ...items.slice(0, limit)]);
@@ -269,7 +279,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		}
 		// Reverse the order so the items nearest to the first item come first.
 		const items = await this._fetchPage(
-			{ ...getBeforeQuery(query, first, this.fetchBefore), $order: _reverseOrders(this._orders) } as Query<Item<I, T>>,
+			{ ...getQueryBefore(query, first, this.fetchBefore), $order: _reverseOrders(this._orders) } as Query<Item<I, T>>,
 			first,
 		);
 		if (!items) return;
@@ -375,4 +385,29 @@ function _withLimit<T extends Data>(query: Query<T>, limit: number): Query<T> {
 /** Reverse every order of a query. */
 function _reverseOrders(orders: ImmutableArray<QueryOrder>): ImmutableArray<string> {
 	return orders.map(({ key, direction }) => `${direction === "asc" ? "!" : ""}${joinDataPath(key)}`);
+}
+
+/** Whether the memory has loaded a query, i.e. it has items for it, or a time for it. */
+function _isLoaded<I extends Identifier, T extends Data>(table: MemoryTable<I, T>, query: Query<Item<I, T>>): boolean {
+	return table.getQueryTime(query) !== undefined || !!table.countQuery(query);
+}
+
+/** Follow a query in the memory, but skip the results from before it has loaded. */
+async function* _getLoadedSequence<I extends Identifier, T extends Data>(
+	table: MemoryTable<I, T>,
+	query: Query<Item<I, T>>,
+): AsyncIterable<Items<I, T>> {
+	for await (const items of table.getQuerySequence(query)) if (items.length || table.getQueryTime(query) !== undefined) yield items;
+}
+
+/** Get the first value of a sequence, or reject when the signal aborts. */
+async function _awaitFirst<T>(sequence: AsyncIterable<T>, signal: AbortSignal): Promise<T> {
+	const iterator = sequence[Symbol.asyncIterator]();
+	try {
+		const result = await awaitRace(iterator.next(), awaitAbort(signal));
+		if (result.done) throw new RequiredError("Memory closed before the query loaded", { caller: _awaitFirst });
+		return result.value;
+	} finally {
+		iterator.return?.().catch(BLACKHOLE);
+	}
 }

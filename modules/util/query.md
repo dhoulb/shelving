@@ -9,7 +9,8 @@ A `Query<T>` is a plain object that describes filters, ordering, and a result li
 - `$order` accepts a single key string or an array. Prefix `!` on a key means descending.
 - `queryItems()` returns a lazy `Iterable<T>` — wrap with `Array.from()` when you need an array.
 - `queryWritableItems()` skips sorting when no `$limit` is set, for write-path performance.
-- `getBeforeQuery()` / `getAfterQuery()` produce cursor queries for token-based pagination; the query must include `$order`.
+- `getQueryBefore()` / `getQueryAfter()` produce cursor queries for token-based pagination; the query must include `$order`.
+- `getQueryItemsAfter()` gives the next page query for a page of `QueryItems` (a query and the items that answer it).
 
 | Key syntax  | Meaning                                  |
 | ----------- | ---------------------------------------- |
@@ -73,10 +74,10 @@ const limited  = limitQueryItems(sorted, 5);
 
 ### Cursor-based pagination
 
-`getAfterQuery()` and `getBeforeQuery()` add an inclusive range on the first `$order` key. The range includes the items that have the same value as the cursor item, so drop the items you already have by ID, and ask for that many extra items.
+`getQueryAfter()` and `getQueryBefore()` add an inclusive range on the first `$order` key. The range includes the items that have the same value as the cursor item, so drop the items you already have by ID, and ask for that many extra items.
 
 ```ts
-import { queryItems, getAfterQuery } from "shelving/util";
+import { queryItems, getQueryAfter } from "shelving/util";
 
 const base = { $order: "!when", $limit: 10 };
 const page1 = Array.from(queryItems(items, base));
@@ -85,12 +86,20 @@ const last  = page1[page1.length - 1];
 // Next page — items at or after `last`, minus the ones already loaded.
 const seen  = new Set(page1.map(item => item.id));
 const ties  = page1.filter(item => item.when === last.when).length;
-const page2 = Array.from(queryItems(items, { ...getAfterQuery(base, last), $limit: 10 + ties }))
+const page2 = Array.from(queryItems(items, { ...getQueryAfter(base, last), $limit: 10 + ties }))
   .filter(item => !seen.has(item.id))
   .slice(0, 10);
 ```
 
 `QueryStore` does this for you with `QueryStore.fetchAfter()` and `QueryStore.fetchBefore()`.
+
+For one page of `QueryItems` from an API (a query and the items that answer it), `getQueryItemsAfter()` gives the query for the next page, with the `$limit` grown by the tied items. It returns `undefined` when the page is not full:
+
+```ts
+import { getQueryItemsAfter } from "shelving/util/query";
+
+const next = getQueryItemsAfter(page); // { ...page.query, "when<=": last.when, $limit: 30 + ties } or undefined
+```
 
 ### Matching a single item
 

@@ -6,6 +6,7 @@ import { getDataProp, joinDataPath, splitDataPath } from "./data.js";
 import { isArrayWith, isEqual, isEqualGreater, isEqualLess, isGreater, isInArray, isLess, notEqual, notInArray } from "./equal.js";
 import type { Match } from "./filter.js";
 import type { AnyCaller } from "./function.js";
+import type { Identifier, Item, Items } from "./item.js";
 import { limitItems } from "./iterate.js";
 import { getProps } from "./object.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
@@ -222,10 +223,10 @@ export function limitQueryItems<T extends Data>(items: ImmutableArray<T> | Itera
  * @param item The item to page from (normally the first item already loaded).
  * @returns A new query with the range added.
  * @throws {RequiredError} If the query has no `$order`, or `item` has no value for the first `$order` key.
- * @example getBeforeQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when>=": 5 }
- * @see https://shelving.cc/util/query/getBeforeQuery
+ * @example getQueryBefore({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when>=": 5 }
+ * @see https://shelving.cc/util/query/getQueryBefore
  */
-export function getBeforeQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getBeforeQuery): Query<T> {
+export function getQueryBefore<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getQueryBefore): Query<T> {
 	const { key, direction } = requireFirst(getQueryOrders(query), caller);
 	return _withRange(query, key, direction === "asc" ? "<=" : ">=", _requireCursor(item, key, caller));
 }
@@ -241,12 +242,49 @@ export function getBeforeQuery<T extends Data>(query: Query<T>, item: T, caller:
  * @param item The item to page from (normally the last item already loaded).
  * @returns A new query with the range added.
  * @throws {RequiredError} If the query has no `$order`, or `item` has no value for the first `$order` key.
- * @example getAfterQuery({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when<=": 5 }
- * @see https://shelving.cc/util/query/getAfterQuery
+ * @example getQueryAfter({ $order: "!when" }, { id: "a", when: 5 }) // { $order: "!when", "when<=": 5 }
+ * @see https://shelving.cc/util/query/getQueryAfter
  */
-export function getAfterQuery<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getAfterQuery): Query<T> {
+export function getQueryAfter<T extends Data>(query: Query<T>, item: T, caller: AnyCaller = getQueryAfter): Query<T> {
 	const { key, direction } = requireFirst(getQueryOrders(query), caller);
 	return _withRange(query, key, direction === "asc" ? ">=" : "<=", _requireCursor(item, key, caller));
+}
+
+/**
+ * A query and the items that answer it, e.g. one page of results from an API endpoint.
+ *
+ * @see https://shelving.cc/util/query/QueryItems
+ */
+export type QueryItems<I extends Identifier = Identifier, T extends Data = Data> = {
+	readonly query: Query<Item<I, T>>;
+	readonly items: Items<I, T>;
+};
+
+/**
+ * Get the query for the next page after a page of `QueryItems`, or `undefined` if there are no more items.
+ * - There are no more items when the query has no `$limit`, or the page has fewer items than the `$limit`.
+ * - The cursor is the last item of the page, so it comes from the page itself and never from a cache.
+ * - The range is inclusive (see `getQueryAfter()`), so the `$limit` grows by the number of items with the same sort value as the last item. The next page repeats those items.
+ *
+ * @param queryItems The page to continue from. Its query must have an `$order`.
+ * @returns The query for the next page, or `undefined` if there are no more items.
+ * @throws {RequiredError} If the query has no `$order`, or the last item has no value for the first `$order` key.
+ * @example getQueryItemsAfter({ query: { $order: "when", $limit: 2 }, items: [a, b] }) // { $order: "when", $limit: 3, "when>=": b.when }
+ * @see https://shelving.cc/util/query/getQueryItemsAfter
+ */
+export function getQueryItemsAfter<I extends Identifier, T extends Data>(
+	{ query, items }: QueryItems<I, T>,
+	caller: AnyCaller = getQueryItemsAfter,
+): Query<Item<I, T>> | undefined {
+	const limit = getQueryLimit(query);
+	if (limit === undefined || items.length < limit) return;
+	const last = items.at(-1);
+	if (!last) return;
+	const { key } = requireFirst(getQueryOrders(query), caller);
+	const value = _requireCursor(last, key, caller);
+	let ties = 0;
+	for (const item of items) if (isEqual(getDataProp(item, key), value)) ties++;
+	return { ...getQueryAfter(query, last, caller), $limit: limit + ties };
 }
 
 /** Get the cursor value of an item, or throw if it has none (a range on `undefined` would be dropped). */

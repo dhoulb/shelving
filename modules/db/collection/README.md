@@ -14,7 +14,16 @@ A `Collection<N, I, T>` carries three things:
 - `id` — a `Schema<I>` that validates the identifier type. Use `INTEGER` for auto-increment integer IDs, `STRING` for UUIDs, or any other schema.
 - The data schema — the shape of each record, defined as a plain object of named schemas. `Collection` extends `DataSchema`, so it validates data directly via `Schema.validate()`.
 
-It also exposes `collection.item`, a combined `DataSchema<{ id: I } & T>` used by providers to validate complete items returned from the backend.
+It also exposes schemas for API results. Each one points back at the collection with `source`, so `HydratingAPIProvider` knows which collection a result belongs to:
+
+| Schema | Validates | Hydrates |
+|---|---|---|
+| `collection.item` (`CollectionItemSchema`) | One complete item (`id` + data) | Sets the item. `NULLABLE(collection.item)` deletes it on `null`. |
+| `collection.items` (`CollectionItemsSchema`) | A list of complete items | Sets each item. |
+| `collection.query` (`CollectionQuerySchema`) | A `Query` — only checks that it is an object, so do not trust it | Nothing on its own. |
+| `collection.queryItems` (`CollectionQueryItemsSchema`) | `QueryItems`: a query and the complete list of items that answer it | Sets each item, and marks the query as loaded. |
+
+`ARRAY(collection.item)` validates the same value as `collection.items`, but it does not point at the collection, so it does not hydrate.
 
 ### The `ID` constant
 

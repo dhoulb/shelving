@@ -162,3 +162,50 @@ describe("MemoryDBProvider disposal", () => {
 		expect(await sequence).toBe(1); // The sequence emitted its initial value, then ended on disposal (this would hang otherwise).
 	});
 });
+
+describe("MemoryTable times", () => {
+	test("getItemTime() is undefined until the item is set or deleted", () => {
+		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
+		expect(table.getItemTime("basic1")).toBe(undefined);
+		table.setItem("basic1", basic1);
+		expect(table.getItemTime("basic1")).toBeNumber();
+		expect(table.getItemTime("basic2")).toBe(undefined);
+		table.deleteItem("basic2"); // The item does not exist, but the table now knows it is missing.
+		expect(table.getItemTime("basic2")).toBeNumber();
+		expect(table.getItem("basic2")).toBe(undefined);
+	});
+	test("getQueryTime() is undefined until setQueryTime() marks the query", () => {
+		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
+		expect(table.getQueryTime({ str: "aaa" })).toBe(undefined);
+		table.setQueryTime({ str: "aaa" }, 123);
+		expect(table.getQueryTime({ str: "aaa" })).toBe(123);
+		expect(table.getQueryTime({ str: "aaa", $limit: 1 })).toBe(undefined); // Queries match exactly.
+		table.setQueryTime(undefined, 456);
+		expect(table.getQueryTime()).toBe(456);
+		expect(table.getQueryTime({})).toBe(456);
+	});
+	test("getItemSequence() yields again when a missing item is marked as missing", async () => {
+		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
+		const values: unknown[] = [];
+		const stop = runSequence(table.getItemSequence("basic1"), value => void values.push(value));
+		await runMicrotasks();
+		table.deleteItem("basic1");
+		await runMicrotasks();
+		table.deleteItem("basic1"); // Already marked, so no change.
+		await runMicrotasks();
+		stop();
+		expect(values).toEqual([undefined, undefined]);
+	});
+	test("getQuerySequence() yields again when an empty query is marked as loaded", async () => {
+		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
+		const values: unknown[] = [];
+		const stop = runSequence(table.getQuerySequence({ str: "aaa" }), value => void values.push(value));
+		await runMicrotasks();
+		table.setQueryTime({ str: "aaa" });
+		await runMicrotasks();
+		table.setQueryTime({ str: "aaa" }); // Already marked, so no change.
+		await runMicrotasks();
+		stop();
+		expect(values).toEqual([[], []]);
+	});
+});
