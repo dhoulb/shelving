@@ -55,28 +55,28 @@ async function connect(stream: AsyncIterable<number>) {
 
 ## Classes
 
-- [DictionaryStore](store/DictionaryStore.md): Store a dictionary object (string-keyed map of values), with helpers to read and mutate its entries.
-- [BooleanStore](store/BooleanStore.md): Store a boolean value.
-- [FetchStore](store/FetchStore.md): Store that fetches its values from a remote source on demand.
-- [Store](store/Store.md): Store that retains its most recent value and is async-iterable to allow values to be observed.
-- [PayloadFetchStore](store/PayloadFetchStore.md): Store that fetches its values from a remote source by sending it a payload.
 - [ArrayStore](store/ArrayStore.md): Store an immutable array of items, with helpers to read and mutate its contents.
-- [PathStore](store/PathStore.md): Store an absolute path, e.g. /a/b/c
+- [BooleanStore](store/BooleanStore.md): Store a boolean value.
+- [BusyStore](store/BusyStore.md): Store that tracks its busy status via a separate this.busy store.
 - [DataStore](store/DataStore.md): Store a data object, with helpers to read and update individual props.
 - [OptionalDataStore](store/OptionalDataStore.md): Store a data object that may be undefined (e.g. a document that may not exist).
-- [BusyStore](store/BusyStore.md): Store that tracks its busy status via a separate this.busy store.
+- [DictionaryStore](store/DictionaryStore.md): Store a dictionary object (string-keyed map of values), with helpers to read and mutate its entries.
+- [FetchStore](store/FetchStore.md): Store that fetches its values from a remote source on demand.
+- [PathStore](store/PathStore.md): Store an absolute path, e.g. /a/b/c
+- [PayloadFetchStore](store/PayloadFetchStore.md): Store that fetches its values from a remote source by sending it a payload.
+- [Store](store/Store.md): Store that retains its most recent value and is async-iterable to allow values to be observed.
 - [URLStore](store/URLStore.md): Store a URL, e.g. https://top.com/a/b/c
 
 ## Types
 
 - [FetchCallback](store/FetchCallback.md): Callback that fetches the next value for a FetchStore.
+- [PayloadFetchCallback](store/PayloadFetchCallback.md): Callback that fetches the next value for a PayloadFetchStore from a payload.
 - [AnyStore](store/AnyStore.md): Any Store instance.
 - [StoreInput](store/StoreInput.md): Synchronous values that a store natively knows how to process as inputs.
 - [AsyncStoreInput](store/AsyncStoreInput.md): Synchronous or asynchronous values that a store natively knows how to process as inputs.
 - [StoreInternal](store/StoreInternal.md): Internal storage value for a store.
 - [StoreCallback](store/StoreCallback.md): Callback that sets a store's value (possibly asynchronously).
 - [StoreReducer](store/StoreReducer.md): Reducer that receives a store's current value and returns the store's next value (possibly asynchronously).
-- [PayloadFetchCallback](store/PayloadFetchCallback.md): Callback that fetches the next value for a PayloadFetchStore from a payload.
 
 ## Constants
 

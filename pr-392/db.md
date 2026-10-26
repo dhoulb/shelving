@@ -139,34 +139,34 @@ See the `shelving/react` module for full usage.
 
 ## Classes
 
-- [ItemStore](db/ItemStore.md): Store that fetches and tracks a single item by ID in a collection from a database provider.
-- [QueryStore](db/QueryStore.md): Store that runs a query against a collection from a database provider and tracks its matching items.
-- [CollectionQuerySchema](db/CollectionQuerySchema.md): Schema for a Query on the items of a Collection.
+- [CollectionCache](db/CollectionCache.md): Cache of ItemStore and QueryStore objects for a single collection.
+- [DBCache](db/DBCache.md): Cache of CollectionCache objects for multiple collections.
+- [Collection](db/Collection.md): Declarative definition of a database collection/table.
 - [CollectionItemSchema](db/CollectionItemSchema.md): Schema for one complete item (id + data) of a Collection.
 - [CollectionItemsSchema](db/CollectionItemsSchema.md): Schema for a list of complete items (id + data) of a Collection.
 - [CollectionQueryItemsSchema](db/CollectionQueryItemsSchema.md): Schema for QueryItems of a Collection, i.e. a query and the complete list of items that answer it.
-- [Collection](db/Collection.md): Declarative definition of a database collection/table.
-- [SQLiteMigrator](db/SQLiteMigrator.md): SQLite (and Cloudflare D1) migrator that uses sqlite_master as the schema source of truth.
-- [PostgresMigrator](db/PostgresMigrator.md): PostgreSQL migrator that inspects the live schema via pg_catalog tables to diff and migrate columns.
+- [CollectionQuerySchema](db/CollectionQuerySchema.md): Schema for a Query on the items of a Collection.
 - [DBMigrator](db/DBMigrator.md): Base class for database schema migrators that bring a provider's storage into line with a set of collection schemas.
+- [PostgresMigrator](db/PostgresMigrator.md): PostgreSQL migrator that inspects the live schema via pg_catalog tables to diff and migrate columns.
+- [SQLiteMigrator](db/SQLiteMigrator.md): SQLite (and Cloudflare D1) migrator that uses sqlite_master as the schema source of truth.
 - [SQLMigrator](db/SQLMigrator.md): Shared SQL migration logic that diffs collection schemas against live tables to produce migration statements.
-- [PostgresProvider](db/PostgresProvider.md): Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations.
-- [ThroughDBProvider](db/ThroughDBProvider.md): Database provider that passes every core operation straight through to a wrapped source provider.
-- [ValidationDBProvider](db/ValidationDBProvider.md): Database provider that validates data flowing to and from an asynchronous source provider.
-- [SQLFragment](db/SQLFragment.md): SQL fragment made from template strings plus embedded expressions, ready to be composed into a query.
-- [SQLProvider](db/SQLProvider.md): Abstract database provider that implements CRUD and query operations by generating and executing SQL.
-- [MockDBProvider](db/MockDBProvider.md): In-memory database provider that records every operation to its calls log, for testing.
-- [RecordingDBProvider](db/RecordingDBProvider.md): Database provider that records every operation it performs to its operations log.
+- [DBProvider](db/DBProvider.md): Provider with a fully asynchronous interface for database access.
 - [DebugDBProvider](db/DebugDBProvider.md): Database provider that logs every operation it performs to the console for debugging.
 - [MemoryDBProvider](db/MemoryDBProvider.md): Synchronous in-memory database provider, storing each collection in a MemoryTable.
 - [MemoryTable](db/MemoryTable.md): In-memory table holding the items of a single collection for a MemoryDBProvider.
-- [DBProvider](db/DBProvider.md): Provider with a fully asynchronous interface for database access.
+- [MockDBProvider](db/MockDBProvider.md): In-memory database provider that records every operation to its calls log, for testing.
+- [PostgresProvider](db/PostgresProvider.md): Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations.
+- [RecordingDBProvider](db/RecordingDBProvider.md): Database provider that records every operation it performs to its operations log.
 - [SQLiteProvider](db/SQLiteProvider.md): Abstract SQLite provider with JSON1 function support for nested keys, array containment, and array mutations.
+- [SQLFragment](db/SQLFragment.md): SQL fragment made from template strings plus embedded expressions, ready to be composed into a query.
+- [SQLProvider](db/SQLProvider.md): Abstract database provider that implements CRUD and query operations by generating and executing SQL.
 - [StorageDBProvider](db/StorageDBProvider.md): In-memory database provider that persists every collection to a Storage — localStorage, sessionStorage, or anything else with the same interface.
 - [StorageTable](db/StorageTable.md): MemoryTable that persists its items to a Storage instance — self-contained, so it can also be used independently of StorageDBProvider.
+- [ThroughDBProvider](db/ThroughDBProvider.md): Database provider that passes every core operation straight through to a wrapped source provider.
 - [UndoDBProvider](db/UndoDBProvider.md): Database provider that records every operation and can undo its own writes.
-- [DBCache](db/DBCache.md): Cache of CollectionCache objects for multiple collections.
-- [CollectionCache](db/CollectionCache.md): Cache of ItemStore and QueryStore objects for a single collection.
+- [ValidationDBProvider](db/ValidationDBProvider.md): Database provider that validates data flowing to and from an asynchronous source provider.
+- [ItemStore](db/ItemStore.md): Store that fetches and tracks a single item by ID in a collection from a database provider.
+- [QueryStore](db/QueryStore.md): Store that runs a query against a collection from a database provider and tracks its matching items.
 
 ## Types
 

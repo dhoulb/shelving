@@ -79,8 +79,8 @@ export default {
 
 ## Classes
 
-- [CloudflareKVProvider](cloudflare/CloudflareKVProvider.md): Cloudflare Workers KV database provider.
 - [CloudflareD1Provider](cloudflare/CloudflareD1Provider.md): SQLite database provider backed by Cloudflare D1.
+- [CloudflareKVProvider](cloudflare/CloudflareKVProvider.md): Cloudflare Workers KV database provider.
 
 ## Interfaces
 

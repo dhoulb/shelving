@@ -142,8 +142,8 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 
 ## Classes
 
-- [Parser](markup/Parser.md): Base class for a parser that converts an input of type I into an output of type O.
 - [MarkupParser](markup/MarkupParser.md): Parses a Markdownish markup string and renders it as a React node using a tiered, masking rule engine.
+- [Parser](markup/Parser.md): Base class for a parser that converts an input of type I into an output of type O.
 
 ## Interfaces
 
@@ -158,22 +158,22 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 ## Constants
 
 - [MARKUP_PARSER](markup/MARKUP_PARSER.md): Shared MarkupParser instance configured with the default markup rules and behaviour.
-- [PARAGRAPH_RULE](markup/PARAGRAPH_RULE.md): Paragraph.
+- [BLOCKQUOTE_RULE](markup/BLOCKQUOTE_RULE.md): Blockquote block.
+- [CODE_RULE](markup/CODE_RULE.md): Inline code.
 - [FENCED_RULE](markup/FENCED_RULE.md): Fenced code blocks
-- [SEPARATOR_RULE](markup/SEPARATOR_RULE.md): Separator (horizontal rule / thematic break).
-- [TABLE_RULE](markup/TABLE_RULE.md): Table.
-- [UNORDERED_RULE](markup/UNORDERED_RULE.md): Unordered list.
-- [ORDERED_RULE](markup/ORDERED_RULE.md): Ordered list.
+- [HEADING_RULE](markup/HEADING_RULE.md): Headings are single line only (don't allow multiline).
 - [MARKUP_RULES_BLOCK](markup/MARKUP_RULES_BLOCK.md): Default markup rules that render in a block context — fenced code, headings, separators, lists, blockquotes, tables, and paragraphs.
 - [MARKUP_RULES_INLINE](markup/MARKUP_RULES_INLINE.md): Default markup rules that render in an inline context — inline code, links, autolinks, emphasis, and hard linebreaks.
 - [MARKUP_RULES](markup/MARKUP_RULES.md): Default markup rules — the combined block and inline rules MarkupParser uses when none are supplied.
+- [INLINE_RULE](markup/INLINE_RULE.md): Inline strong, emphasis, insert, delete, highlight.
+- [LINEBREAK_RULE](markup/LINEBREAK_RULE.md): Hard linebreak (<br /> tag).
 - [LINK_RULE](markup/LINK_RULE.md): Markdown-style link.
 - [AUTOLINK_RULE](markup/AUTOLINK_RULE.md): Autolinked URL starts with scheme: (any scheme in MarkupOptions.schemes) and matches an unlimited number of non-space characters.
-- [HEADING_RULE](markup/HEADING_RULE.md): Headings are single line only (don't allow multiline).
-- [BLOCKQUOTE_RULE](markup/BLOCKQUOTE_RULE.md): Blockquote block.
-- [LINEBREAK_RULE](markup/LINEBREAK_RULE.md): Hard linebreak (<br /> tag).
-- [INLINE_RULE](markup/INLINE_RULE.md): Inline strong, emphasis, insert, delete, highlight.
-- [CODE_RULE](markup/CODE_RULE.md): Inline code.
+- [ORDERED_RULE](markup/ORDERED_RULE.md): Ordered list.
+- [PARAGRAPH_RULE](markup/PARAGRAPH_RULE.md): Paragraph.
+- [SEPARATOR_RULE](markup/SEPARATOR_RULE.md): Separator (horizontal rule / thematic break).
+- [TABLE_RULE](markup/TABLE_RULE.md): Table.
+- [UNORDERED_RULE](markup/UNORDERED_RULE.md): Unordered list.
 - [BLOCK_CONTENT_REGEXP](markup/BLOCK_CONTENT_REGEXP.md): Regular expression source matching block content — the shortest run of any character.
 - [BLOCK_SPACE_REGEXP](markup/BLOCK_SPACE_REGEXP.md): Regular expression source matching block whitespace — any single whitespace character.
 - [BLOCK_START_REGEXP](markup/BLOCK_START_REGEXP.md): Regular expression source matching the start of a block — the start of the string, or one linebreak.

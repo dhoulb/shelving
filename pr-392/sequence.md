@@ -42,11 +42,11 @@ for await (const ts of clock) {
 
 ## Classes
 
+- [DeferredSequence](sequence/DeferredSequence.md): Deferred sequence of values that can be async iterated and new values can be published.
 - [InspectSequence](sequence/InspectSequence.md): Sequence of values that inspects a source sequence of values as it iterates.
 - [LazySequence](sequence/LazySequence.md): Sequence of values that calls a StartCallback when it has iterators that are iterating, and calls the corresponding StopCallback when all iterators have finished.
-- [DeferredSequence](sequence/DeferredSequence.md): Deferred sequence of values that can be async iterated and new values can be published.
-- [ThroughSequence](sequence/ThroughSequence.md): Async iterable that pulls values from a source async iterable.
 - [Sequence](sequence/Sequence.md): Sequence of values designed to be extended that implements the full async generator protocol.
+- [ThroughSequence](sequence/ThroughSequence.md): Async iterable that pulls values from a source async iterable.
 
 ## Types
 
