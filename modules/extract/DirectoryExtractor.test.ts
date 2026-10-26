@@ -72,6 +72,15 @@ describe("DirectoryExtractor", () => {
 		expect(keys).not.toContain("_internal.ts");
 	});
 
+	test("sorts entries by name in natural order", async () => {
+		const dir = join(root, "sorted");
+		await mkdir(dir, { recursive: true });
+		for (const name of ["b.md", "10-c.md", "a.md", "2-d.md"]) await writeFile(join(dir, name), "Text.");
+		const out = await new DirectoryExtractor().extract(dir as AbsolutePath);
+		const keys = Array.from(out.props.children as Iterable<TreeElement>, el => el.key);
+		expect(keys).toEqual(["2-d.md", "10-c.md", "a.md", "b.md"]);
+	});
+
 	test("recurses into subdirectories", async () => {
 		const out = await new DirectoryExtractor().extract(join(root, "nested") as AbsolutePath);
 		const kids = Array.from(out.props.children as Iterable<TreeElement>);
