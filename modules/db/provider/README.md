@@ -1,6 +1,6 @@
 # Providers
 
-This directory contains `DBProvider` — the abstract base every backend implements — and all the built-in provider implementations. Providers are composable: wrap a backend in any combination of `ValidationDBProvider`, `CacheDBProvider`, or `DebugDBProvider` to add behaviour without touching call sites.
+This directory contains `DBProvider` — the abstract base every backend implements — and all the built-in provider implementations. Providers are composable: wrap a backend in any combination of `ValidationDBProvider`, `UndoDBProvider`, or `DebugDBProvider` to add behaviour without touching call sites.
 
 ## Concepts
 
@@ -18,10 +18,9 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 
 | Provider | Role |
 |---|---|
-| `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests and as the cache layer. |
+| `MemoryDBProvider` | In-memory store — fast, no persistence. Use for tests, and as the client database that `HydratingAPIProvider` fills. |
 | `StorageDBProvider` | Extends `MemoryDBProvider` and persists every collection to a required `Storage` (`localStorage` / `sessionStorage`), with cross-tab sync. |
 | `ValidationDBProvider` | Validates data written to and read from the source against the collection schema. Throws `ValueError` on bad backend data. |
-| `CacheDBProvider` | Keeps a `MemoryDBProvider` mirror in sync with a remote source so reads arrive synchronously after the first fetch. Extends `ThroughDBProvider`. |
 | `ThroughDBProvider` | Identity passthrough. Extend this to override only specific methods. |
 | `DebugDBProvider` | Logs all operations to the console (ANSI-formatted). Extends `ThroughDBProvider`. |
 | `RecordingDBProvider` | Accumulates a `RecordingDBProvider.operations` log of every read and write, replayable onto other providers. Useful for audit trails, optimistic updates, and testing. Extends `ThroughDBProvider`. |
@@ -36,15 +35,13 @@ Stack providers to compose behaviour. Each wrapping provider delegates to its `s
 ### Typical production chain
 
 ```ts
-import { CacheDBProvider, ValidationDBProvider } from "shelving/db";
+import { ValidationDBProvider } from "shelving/db";
 // Import a concrete SQL or cloud backend from the relevant module.
 import { MyConcreteProvider } from "./my-provider";
 
-const provider = new CacheDBProvider(
-  new ValidationDBProvider(
-    new MyConcreteProvider()
-  )
-);
+const provider = new ValidationDBProvider(new MyConcreteProvider());
 ```
 
-`ValidationDBProvider` sits between the cache and the backend so bad data from the database surfaces as a `ValueError` before it reaches the cache.
+`ValidationDBProvider` wraps the backend so bad data from the database surfaces as a `ValueError` before it reaches your code.
+
+In a client app, the database is usually a plain `MemoryDBProvider` that `HydratingAPIProvider` fills from API results, and not a provider that talks to a remote backend.

@@ -1,4 +1,5 @@
 import { RequiredError } from "../../error/RequiredError.js";
+import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { FetchStore } from "../../store/FetchStore.js";
 import { awaitAbort, awaitRace } from "../../util/async.js";
 import { getGetter } from "../../util/class.js";
@@ -8,6 +9,7 @@ import { BLACKHOLE } from "../../util/function.js";
 import type { Identifier, Item, OptionalItem } from "../../util/item.js";
 import { getItem } from "../../util/item.js";
 import { runSequence } from "../../util/sequence.js";
+import { getSource } from "../../util/source.js";
 import type { Collection } from "../collection/Collection.js";
 import type { DBProvider } from "../provider/DBProvider.js";
 import { MemoryDBProvider, type MemoryTable } from "../provider/MemoryDBProvider.js";
@@ -16,9 +18,8 @@ import { MemoryDBProvider, type MemoryTable } from "../provider/MemoryDBProvider
  * Store that fetches and tracks a single item by ID in a collection from a database provider.
  *
  * - Holds an `OptionalItem` value: the item if it exists, or `undefined` if it doesn't.
- * - Seeds from a `MemoryDBProvider` snapshot when available, and subscribes to realtime updates.
- * - A missing item in the memory only counts as loaded when the memory has a time for it (see `MemoryTable.getItemTime()`). Until then the store is loading.
- * - When the provider is a `MemoryDBProvider`, a fetch waits until the memory has loaded the item (e.g. from `HydratingAPIProvider`).
+ * - When the provider is (or wraps) a `MemoryDBProvider`, the store seeds from the memory at once and follows its changes. A missing item only counts as loaded when the memory has a time for it (see `MemoryTable.getItemTime()`). Until then the store is loading, and a fetch waits until the memory loads the item (e.g. from `HydratingAPIProvider`).
+ * - Any other provider is fetched, and its `DBProvider.getItemSequence()` is followed while the store has subscribers. A provider that throws `UnsupportedError` for subscriptions is only fetched.
  *
  * @example
  *  const store = new ItemStore(collection, "abc", provider);
@@ -67,23 +68,31 @@ export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<
 		this.value = getItem(this.id, data);
 	}
 
-	constructor(collection: Collection<string, I, T>, id: I, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
-		const table = memory?.getTable(collection);
+	/** The memory table the provider is backed by, if any. */
+	private readonly _table: MemoryTable<I, T> | undefined;
+
+	constructor(collection: Collection<string, I, T>, id: I, provider: DBProvider<I>) {
+		const table = getSource<MemoryDBProvider<I>>(MemoryDBProvider, provider)?.getTable(collection);
 		super(table && _isLoaded(table, id) ? table.getItem(id) : NONE); // Use the current memory snapshot if it has loaded.
-		if (table) this.starter = store => runSequence(store.through(_getLoadedSequence(table, id)));
 		this.provider = provider;
 		this.collection = collection;
 		this.id = id;
+		this._table = table;
+		this.starter = table
+			? store => runSequence(store.through(_getLoadedSequence(table, id)))
+			: store =>
+					runSequence(
+						store.through(_getSupportedSequence(() => provider.getItemSequence(collection, id))),
+						undefined,
+						reason => (store.reason = reason),
+					);
 	}
 
 	// Override to get the item from the provider.
-	// - A `MemoryDBProvider` waits until it has loaded the item.
+	// - A memory waits until it has loaded the item.
 	override async _fetch(signal: AbortSignal): Promise<OptionalItem<I, T>> {
-		const { provider, collection, id } = this;
-		if (provider instanceof MemoryDBProvider) {
-			const table: MemoryTable<I, T> = provider.getTable(collection);
-			if (!_isLoaded(table, id)) await _awaitFirst(_getLoadedSequence(table, id), signal);
-		}
+		const { provider, collection, id, _table } = this;
+		if (_table && !_isLoaded(_table, id)) await _awaitFirst(_getLoadedSequence(_table, id), signal);
 		return provider.getItem(collection, id);
 	}
 }
@@ -99,6 +108,15 @@ async function* _getLoadedSequence<I extends Identifier, T extends Data>(
 	id: I,
 ): AsyncIterable<OptionalItem<I, T>> {
 	for await (const item of table.getItemSequence(id)) if (_isLoaded(table, id)) yield item;
+}
+
+/** Follow a provider's sequence, but end it at once if the provider does not support subscriptions. */
+async function* _getSupportedSequence<T>(getSequence: () => AsyncIterable<T>): AsyncIterable<T> {
+	try {
+		yield* getSequence();
+	} catch (thrown) {
+		if (!(thrown instanceof UnsupportedError)) throw thrown;
+	}
 }
 
 /** Get the first value of a sequence, or reject when the signal aborts. */

@@ -13,42 +13,23 @@ Both extend `FetchStore` from the `shelving/store` module, which manages the loa
 - `ItemStore.item` — returns the item or throws `RequiredError` if absent. Safe to use once the store is loaded and you know the item exists.
 - `.item = data` — write helper that sets `.value` to `getItem()` directly (bypasses the provider; useful for optimistic updates).
 
-When a `MemoryDBProvider` is supplied (via `DBCache` reusing the `CacheDBProvider` mirror), the store seeds its initial value from the in-memory snapshot and subscribes to live changes via `DBProvider.getItemSequence()`. This makes the first render synchronous if the data is already cached.
+When the provider is (or wraps) a `MemoryDBProvider`, the store seeds its initial value from the memory and follows its changes. This makes the first render synchronous when the memory has the item. A missing item only counts as loaded when the memory has a time for it (`MemoryTable.getItemTime()`). Until then the store is loading, and a fetch waits until the memory loads the item (e.g. from `HydratingAPIProvider`).
 
-A missing item only counts as loaded when the memory has a time for it (`MemoryTable.getItemTime()`). Until then the store is loading. When the provider itself is a `MemoryDBProvider` (e.g. one that `HydratingAPIProvider` fills), a fetch waits until the memory has loaded the item.
+For any other provider, the store fetches with `DBProvider.getItem()`, and follows `DBProvider.getItemSequence()` while it has subscribers. A provider that throws `UnsupportedError` for subscriptions is only fetched.
 
 ### QueryStore
 
-`QueryStore<I, T>` holds `Items<I, T>` — a readonly array of matching items. It calls `DBProvider.getQuery()` on the first fetch. Like `ItemStore`, it seeds from memory when available. An empty result only counts as loaded when the memory has a time for the query (`MemoryTable.getQueryTime()`), and a fetch from a `MemoryDBProvider` waits until it does.
+`QueryStore<I, T>` holds `Items<I, T>` — a readonly array of matching items. It works like `ItemStore`: it seeds from and follows a memory, or fetches with `DBProvider.getQuery()` and follows `DBProvider.getQuerySequence()`. An empty result only counts as loaded when the memory has a time for the query (`MemoryTable.getQueryTime()`).
 
 Additional accessors beyond the base `FetchStore`:
 
 - `QueryStore.first` / `QueryStore.last` — the first or last item; throw `RequiredError` if the result is empty.
 - `QueryStore.optionalFirst` / `QueryStore.optionalLast` — same, returning `undefined` instead of throwing.
-- `QueryStore.limit` — the `$limit` from the query (the page size), or `Infinity` if not set.
 - `[Symbol.iterator]` — `QueryStore` is directly iterable, so `for...of store` works.
 
-### Paged queries
+### Paging
 
-A query with an `$order` loads in pages, and the query `$limit` is the page size.
-
-- `QueryStore.fetchAfter()` loads the next page after the last item. `QueryStore.hasAfter` is `false` when there are no more items. `QueryStore.fetchMore()` and `QueryStore.hasMore` are aliases.
-- `QueryStore.fetchBefore()` loads the new items before the first item, e.g. new messages in a newest-first chat. Call it on a timer to poll. `QueryStore.hasBefore` is `true` when there were more new items than one page.
-- `QueryStore.busy` is `true` while a page loads, as it is during `refresh()`. The items already loaded do not suspend. A call while a fetch runs waits for it, then loads its page.
-- A failed `fetchAfter()` or `fetchBefore()` rejects its promise, and the items already loaded stay. It does not set `reason`, so the list does not go to the error boundary.
-- `QueryStore.refresh()` loads the first page again, and drops the other loaded pages.
-
-A paged store **pins** its items. After a fetch, each item keeps its position:
-
-- An edit to an item shows in place. The item does not move or leave the list, even if its sort value or a filter match changes. A refresh puts it in its new position.
-- An item deleted from the memory is hidden. If the delete is undone, the item shows again in its old position.
-- A new item in the memory that matches the filters and sorts before the first item shows at the start at once. This is how an optimistic preview from `UndoDBProvider` shows in the list.
-- When the list is complete (`hasAfter` is `false`), a new item that sorts after the last item shows at the end at once.
-- A new item that sorts between loaded items shows only after a refresh.
-
-The cursor is an inclusive range on the first `$order` key (see `getQueryAfter()`). The store drops the items it already has by ID, so no item is skipped or shown twice. Page on a first key with many distinct values, e.g. a timestamp: many items with the same value make each page read them all again.
-
-A query without an `$order` does not page. It follows the live query result in the memory.
+`QueryStore` does not page. Paging is a feature of the API: call the endpoint for the next page, and `HydratingAPIProvider` writes the items into the memory. A store over the memory shows every item that matches its query, so it shows the new items at once. Use `getQueryItemsAfter()` to get the next page's query from the last page.
 
 ## Usage
 
@@ -70,35 +51,30 @@ for (const post of queryStore) {
 }
 ```
 
-### With a memory cache (synchronous first render)
+### With a memory (synchronous first render)
 
 ```ts
-import { CacheDBProvider, ValidationDBProvider, MemoryDBProvider, DBCache } from "shelving/db";
+import { DBCache, MemoryDBProvider } from "shelving/db";
 
 const memory = new MemoryDBProvider();
-const provider = new CacheDBProvider(new ValidationDBProvider(memory));
-const cache = new DBCache(provider);
+const cache = new DBCache(memory);
 
-// After a prior fetch has populated the CacheDBProvider's mirror,
-// this store starts loaded synchronously — no Suspense boundary needed.
+// When the memory has the item (e.g. `HydratingAPIProvider` wrote it), this store starts loaded — no Suspense.
 const store = cache.getItem(POSTS, "abc");
-console.log(store.loading); // false if already in cache
 ```
 
 ### Paging in React
 
 ```tsx
 function Messages({ squad }: { squad: string }) {
-  const store = useQuery(MESSAGES, { squad, $order: "!when", $limit: 50 }); // Suspends on the first page.
-  const busy = useStore(store.busy).value;
-  useEffect(() => {
-    const timer = setInterval(() => store.fetchBefore().catch(BLACKHOLE), 10_000); // Poll for new messages. A failed poll is tried again next time.
-    return () => clearInterval(timer);
-  }, [store]);
+  const messages = useQuery(MESSAGES, { squad, $order: "!when" }).value; // Every cached message, newest first.
+  const first = useAPI(LIST_MESSAGES, { squad, $order: "!when", $limit: 50 }); // Loads the first page into the memory.
+  const [page, setPage] = useState<QueryItems<string, MessageData>>();
+  const next = getQueryItemsAfter((page ?? first.value).messages);
   return (
     <>
-      {store.value.map(message => <Message key={message.id} message={message} />)}
-      {store.hasAfter && <Button onClick={() => store.fetchAfter().catch(notifyThrown)} disabled={busy}>Show older</Button>}
+      {messages.map(message => <Message key={message.id} message={message} />)}
+      {next && <Button onClick={async () => setPage(await API.call(LIST_MESSAGES, next))}>Show older</Button>}
     </>
   );
 }

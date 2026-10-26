@@ -91,8 +91,6 @@ const page2 = Array.from(queryItems(items, { ...getQueryAfter(base, last), $limi
   .slice(0, 10);
 ```
 
-`QueryStore` does this for you with `QueryStore.fetchAfter()` and `QueryStore.fetchBefore()`.
-
 For one page of `QueryItems` from an API (a query and the items that answer it), `getQueryItemsAfter()` gives the query for the next page, with the `$limit` grown by the tied items. It returns `undefined` when the page is not full:
 
 ```ts

@@ -3,11 +3,8 @@ import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
-import { getSource } from "../../util/source.js";
 import type { Collection } from "../collection/Collection.js";
-import { CacheDBProvider } from "../provider/CacheDBProvider.js";
 import type { DBProvider } from "../provider/DBProvider.js";
-import { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 import type { ItemStore } from "../store/ItemStore.js";
 import type { QueryStore } from "../store/QueryStore.js";
 import { CollectionCache } from "./CollectionCache.js";
@@ -16,7 +13,7 @@ import { CollectionCache } from "./CollectionCache.js";
  * Cache of `CollectionCache` objects for multiple collections.
  * - Use `get(collection)` to retrieve or create the `CollectionCache` for a given collection,
  *   then `getItem(id)` / `getQuery(query)` on that to get a specific store.
- * - If the provider chain contains a `CacheDBProvider`, its memory is reused so stores can seed synchronously.
+ * - If the provider is (or wraps) a `MemoryDBProvider`, the stores seed from it synchronously.
  *
  * @example
  *  const cache = new DBCache(provider);
@@ -31,16 +28,8 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 * @see https://shelving.cc/db/DBCache/provider
 	 */
 	readonly provider: DBProvider<I, T>;
-	/**
-	 * Memory provider reused from the provider chain to seed stores synchronously, if available.
-	 * @see https://shelving.cc/db/DBCache/memory
-	 */
-	readonly memory: MemoryDBProvider<I, T> | undefined;
-
 	constructor(provider: DBProvider<I, T>) {
 		this.provider = provider;
-		// If the provider is itself in-memory (e.g. `MemoryDBProvider` or `StorageDBProvider`), or the chain contains a `CacheDBProvider`, reuse its memory so we can seed stores synchronously.
-		this.memory = provider instanceof MemoryDBProvider ? provider : getSource<CacheDBProvider<I, T>>(CacheDBProvider, provider)?.memory;
 	}
 
 	private _get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT> | undefined;
@@ -58,7 +47,7 @@ export class DBCache<I extends Identifier = Identifier, T extends Data = Data> i
 	 */
 	get<II extends I, TT extends T>(collection: Collection<string, II, TT>): CollectionCache<II, TT>;
 	get(collection: Collection<string, I, T>): CollectionCache<I, T> {
-		return this._get(collection) || setMapItem(this._collections, collection, new CollectionCache(collection, this.provider, this.memory));
+		return this._get(collection) || setMapItem(this._collections, collection, new CollectionCache(collection, this.provider));
 	}
 
 	/**

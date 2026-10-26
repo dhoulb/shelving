@@ -1,6 +1,6 @@
 # createDBContext
 
-Create a React context for a Shelving `shelving/db` provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory `DBCache`; if the provider chain includes a `CacheDBProvider`, the returned stores reuse that cached data.
+Create a React context for a Shelving `shelving/db` provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory `DBCache`; if the provider is (or wraps) a `MemoryDBProvider`, the returned stores seed from it synchronously.
 
 ## Usage
 

@@ -170,7 +170,7 @@ export class RecordingDBProvider<I extends Identifier, T extends Data> extends T
 	 * - Applies what each read observed (setting the item, or deleting it when the read confirmed absence) — e.g. warming a cache from a recorded session.
 	 *
 	 * @param provider Provider to replay the reads onto.
-	 * @example await recording.replayReads(cache.memory);
+	 * @example await recording.replayReads(memory);
 	 * @see https://shelving.cc/db/RecordingDBProvider/replayReads
 	 */
 	replayReads(provider: DBProvider<I, T>): Promise<void> {

@@ -2,7 +2,7 @@
 
 A `MemoryDBProvider` that persists every collection to a `Storage` — `localStorage`, `sessionStorage`, or anything else with the same interface. Each collection is hydrated from storage once, lazily, on first access — after that all reads, queries, and realtime sequences are served synchronously from memory, and every write persists to storage before it touches memory.
 
-Because it *is* a `MemoryDBProvider`, it plugs into everything that expects one: it seeds `ItemStore` / `QueryStore` synchronously (including via `DBCache` and the React hooks from `createDBContext()`), and it can be passed as the cache inside `CacheDBProvider` to give a remote source a persistent local mirror.
+Because it *is* a `MemoryDBProvider`, it plugs into everything that expects one: it seeds `ItemStore` / `QueryStore` synchronously (including via `DBCache` and the React hooks from `createDBContext()`), and `HydratingAPIProvider` can fill it, to give API results a persistent local copy.
 
 `storage` events from other tabs/windows are applied to memory and notify realtime sequences, so `getItemSequence()` / `getQuerySequence()` update live across tabs.
 
@@ -28,13 +28,17 @@ Pass `sessionStorage` for per-tab persistence, and a prefix to namespace keys:
 const provider = new StorageDBProvider(sessionStorage, "myapp:");
 ```
 
-As the persistent cache tier under a remote source:
+As a persistent client database that API results fill:
 
 ```ts
-import { CacheDBProvider, StorageDBProvider } from "shelving/db";
+import { HydratingAPIProvider } from "shelving/api";
+import { StorageDBProvider } from "shelving/db";
 
-const provider = new CacheDBProvider(new MyRemoteProvider(), new StorageDBProvider(localStorage));
+const DB = new StorageDBProvider(localStorage);
+const API = new HydratingAPIProvider(new MyClientAPIProvider(), DB);
 ```
+
+Items persisted from an earlier visit show at once, but times are not persisted. A query with no persisted items loads again after a reload.
 
 ## Reliability
 

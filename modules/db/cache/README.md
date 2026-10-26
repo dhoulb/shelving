@@ -8,7 +8,7 @@
 
 `DBCache` is a registry of `CollectionCache` objects, one per `Collection`. Call `DBCache.getItem()` or `DBCache.getQuery()` to retrieve or lazily create a store. Calling the same method twice with the same arguments returns the exact same store instance.
 
-If the provider chain contains a `CacheDBProvider`, `DBCache` finds it automatically via `getSource` and reuses its `MemoryDBProvider` mirror. Stores are then seeded with the current in-memory snapshot and subscribe to live updates from it — so the first render is synchronous when data is already cached.
+If the provider is (or wraps) a `MemoryDBProvider`, the stores seed from it and follow its changes, so the first render is synchronous when the memory has the data.
 
 ### CollectionCache
 
@@ -27,9 +27,9 @@ Both `DBCache` and `CollectionCache` implement `AsyncDisposable`. Disposing them
 ### Create a cache and look up stores
 
 ```ts
-import { DBCache, CacheDBProvider, ValidationDBProvider, MemoryDBProvider } from "shelving/db";
+import { DBCache, ValidationDBProvider, MemoryDBProvider } from "shelving/db";
 
-const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvider()));
+const provider = new ValidationDBProvider(new MemoryDBProvider());
 const cache = new DBCache(provider);
 
 // Returns an ItemStore — created lazily, reused on subsequent calls.

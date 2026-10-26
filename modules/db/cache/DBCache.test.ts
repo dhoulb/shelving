@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { CacheDBProvider, CollectionCache, DBCache, MockDBProvider, ThroughDBProvider } from "shelving/db";
+import { CollectionCache, DBCache, MockDBProvider, ThroughDBProvider } from "shelving/db";
 import { runMicrotasks } from "shelving/util/async";
 import { BASICS_COLLECTION, basic1, basic2, PEOPLE_COLLECTION, person1 } from "../../test/index.js";
 
@@ -105,30 +105,10 @@ describe("DBCache", () => {
 		expect(secondItem).not.toBe(firstItem);
 	});
 
-	test("memory is extracted from a CacheDBProvider in the provider chain", async () => {
-		const source = new MockDBProvider();
-		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
-		const cached = new CacheDBProvider(source);
-		// Warm the memory cache by fetching once through the CacheDBProvider.
-		await cached.getItem(BASICS_COLLECTION, "basic1");
-
-		const cache = new DBCache(cached);
-		expect(cache.memory).toBe(cached.memory);
-
-		// A store built via the cache should be synchronously seeded from the memory snapshot.
-		const store = cache.getItem(BASICS_COLLECTION, "basic1");
-		expect(store.value).toMatchObject(basic1);
-	});
-
-	test("memory is the provider itself when the provider is in-memory", () => {
-		const provider = new MockDBProvider();
-		const cache = new DBCache(provider);
-		expect(cache.memory).toBe(provider);
-	});
-
-	test("memory is undefined when neither an in-memory provider nor a CacheDBProvider is present", () => {
-		const provider = new ThroughDBProvider(new MockDBProvider());
-		const cache = new DBCache(provider);
-		expect(cache.memory).toBeUndefined();
+	test("stores seed synchronously when the provider wraps a memory", async () => {
+		const memory = new MockDBProvider();
+		await memory.setItem(BASICS_COLLECTION, "basic1", basic1);
+		const cache = new DBCache(new ThroughDBProvider(memory));
+		expect(cache.getItem(BASICS_COLLECTION, "basic1").value).toMatchObject(basic1);
 	});
 });

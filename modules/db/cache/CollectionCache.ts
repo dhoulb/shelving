@@ -6,7 +6,6 @@ import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
 import type { Collection } from "../collection/Collection.js";
 import type { DBProvider } from "../provider/DBProvider.js";
-import type { MemoryDBProvider } from "../provider/MemoryDBProvider.js";
 import { ItemStore } from "../store/ItemStore.js";
 import { QueryStore } from "../store/QueryStore.js";
 
@@ -34,16 +33,9 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 * @see https://shelving.cc/db/CollectionCache/provider
 	 */
 	readonly provider: DBProvider<I>;
-	/**
-	 * Optional memory provider used to seed stores and drive realtime updates.
-	 * @see https://shelving.cc/db/CollectionCache/memory
-	 */
-	readonly memory: MemoryDBProvider<I> | undefined;
-
-	constructor(collection: Collection<string, I, T>, provider: DBProvider<I>, memory?: MemoryDBProvider<I>) {
+	constructor(collection: Collection<string, I, T>, provider: DBProvider<I>) {
 		this.collection = collection;
 		this.provider = provider;
-		this.memory = memory;
 	}
 
 	/**
@@ -55,7 +47,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 * @see https://shelving.cc/db/CollectionCache/getItem
 	 */
 	getItem(id: I): ItemStore<I, T> {
-		return this._items.get(id) || setMapItem(this._items, id, new ItemStore(this.collection, id, this.provider, this.memory));
+		return this._items.get(id) || setMapItem(this._items, id, new ItemStore(this.collection, id, this.provider));
 	}
 
 	/**
@@ -68,7 +60,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 */
 	getQuery(query: Query<Item<I, T>>): QueryStore<I, T> {
 		const key = this._queryKey(query);
-		return this._queries.get(key) || setMapItem(this._queries, key, new QueryStore(this.collection, query, this.provider, this.memory));
+		return this._queries.get(key) || setMapItem(this._queries, key, new QueryStore(this.collection, query, this.provider));
 	}
 
 	/**
