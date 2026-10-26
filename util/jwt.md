@@ -61,13 +61,13 @@ const claims = await verifyRequestToken(request, secret);
 
 ## Functions
 
-- [encodeToken](jwt/encodeToken.md): Encode a JWT and return the string token.
-- [splitToken](jwt/splitToken.md): Split a JSON Web Token into its header, payload, and signature, and decode and parse the JSON.
-- [verifyToken](jwt/verifyToken.md): Decode a JWT, verify it, and return the full payload data.
-- [setRequestToken](jwt/setRequestToken.md): Set the Authorization: Bearer {token} on a Request object (by reference).
-- [getRequestToken](jwt/getRequestToken.md): Extract the Authorization: Bearer {token} from a Request object, or return undefined if not set.
-- [requireRequestToken](jwt/requireRequestToken.md): Extract the Authorization: Bearer {token} from a Request object, or throw UnauthorizedError if not set or malformed.
-- [verifyRequestToken](jwt/verifyRequestToken.md): Extract the Authorization: Bearer {token} from a Request object and verify it using a signature, or throw UnauthorizedError if not set, malformed, or invalid.
+- [encodeToken()](jwt/encodeToken.md): Encode a JWT and return the string token.
+- [splitToken()](jwt/splitToken.md): Split a JSON Web Token into its header, payload, and signature, and decode and parse the JSON.
+- [verifyToken()](jwt/verifyToken.md): Decode a JWT, verify it, and return the full payload data.
+- [setRequestToken()](jwt/setRequestToken.md): Set the Authorization: Bearer {token} on a Request object (by reference).
+- [getRequestToken()](jwt/getRequestToken.md): Extract the Authorization: Bearer {token} from a Request object, or return undefined if not set.
+- [requireRequestToken()](jwt/requireRequestToken.md): Extract the Authorization: Bearer {token} from a Request object, or throw UnauthorizedError if not set or malformed.
+- [verifyRequestToken()](jwt/verifyRequestToken.md): Extract the Authorization: Bearer {token} from a Request object and verify it using a signature, or throw UnauthorizedError if not set, malformed, or invalid.
 
 ## Interfaces
 

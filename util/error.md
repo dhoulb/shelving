@@ -54,13 +54,13 @@ getNamedMessage("address", "Street is required\nCity is required");
 
 ## Functions
 
-- [logError](error/logError.md): Log an error to the console.
-- [isError](error/isError.md): Is an unknown value an Error instance?
-- [getMessage](error/getMessage.md): Return the string message from an unknown value, or return undefined if it could not be found.
-- [requireMessage](error/requireMessage.md): Require a message from an unknown value, or throw RequiredError if it could not be found.
-- [splitMessage](error/splitMessage.md): Split a string message into lines, look for prefixes like name:, and return a dictionary of those named messages.
-- [joinMessage](error/joinMessage.md): Join a dictionary of named messages back into a single string.
-- [getNamedMessage](error/getNamedMessage.md): Name a message by applying a name: prefix to it.
+- [logError()](error/logError.md): Log an error to the console.
+- [isError()](error/isError.md): Is an unknown value an Error instance?
+- [getMessage()](error/getMessage.md): Return the string message from an unknown value, or return undefined if it could not be found.
+- [requireMessage()](error/requireMessage.md): Require a message from an unknown value, or throw RequiredError if it could not be found.
+- [splitMessage()](error/splitMessage.md): Split a string message into lines, look for prefixes like name:, and return a dictionary of those named messages.
+- [joinMessage()](error/joinMessage.md): Join a dictionary of named messages back into a single string.
+- [getNamedMessage()](error/getNamedMessage.md): Name a message by applying a name: prefix to it.
 
 ## Types
 

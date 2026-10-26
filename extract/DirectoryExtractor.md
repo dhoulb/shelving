@@ -6,6 +6,7 @@
 
 Extractor that walks a directory on disk and produces a tree of `tree-element` nodes.
 - Recursively descends into subdirectories.
+- Sorts entries by name in natural order (`2-intro.md` comes before `10-advanced.md`), so the output is the same on every file system.
 - Dispatches non-ignored files to a matching `FileExtractor` based on extension; files with no matching extractor are silently skipped.
 - Keys on the produced elements are the verbatim filenames (e.g. `"string.ts"`, `"README.md"`) and directory names (e.g. `"util"`).
 - This is a pure walker: same-key merging and README absorption are intentionally *not* applied here — wrap with `MergingExtractor`

@@ -115,19 +115,19 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 
 ## Functions
 
-- [getQueryFilters](query/getQueryFilters.md): Get the QueryFilter objects decoded from a query.
-- [getQueryOrders](query/getQueryOrders.md): Get the QueryOrder objects decoded from a query.
-- [getQueryLimit](query/getQueryLimit.md): Get the limit for a query.
-- [queryItems](query/queryItems.md): Query a set of data items using a query.
-- [queryWritableItems](query/queryWritableItems.md): Query a set of data items for writing using a query.
-- [matchQueryItem](query/matchQueryItem.md): Match a single data item against a set of filters.
-- [filterQueryItems](query/filterQueryItems.md): Filter a set of data items using a set of filters.
-- [compareQueryItems](query/compareQueryItems.md): Compare two data items using a set of orders.
-- [sortQueryItems](query/sortQueryItems.md): Sort a set of data items using a set of orders.
-- [limitQueryItems](query/limitQueryItems.md): LImit a set of data items using a set of limit.
-- [getQueryBefore](query/getQueryBefore.md): Get a query for the items that sort at or before a specified item.
-- [getQueryAfter](query/getQueryAfter.md): Get a query for the items that sort at or after a specified item.
-- [getQueryItemsAfter](query/getQueryItemsAfter.md): Get the query for the next page after a page of QueryItems, or undefined if there are no more items.
+- [getQueryFilters()](query/getQueryFilters.md): Get the QueryFilter objects decoded from a query.
+- [getQueryOrders()](query/getQueryOrders.md): Get the QueryOrder objects decoded from a query.
+- [getQueryLimit()](query/getQueryLimit.md): Get the limit for a query.
+- [queryItems()](query/queryItems.md): Query a set of data items using a query.
+- [queryWritableItems()](query/queryWritableItems.md): Query a set of data items for writing using a query.
+- [matchQueryItem()](query/matchQueryItem.md): Match a single data item against a set of filters.
+- [filterQueryItems()](query/filterQueryItems.md): Filter a set of data items using a set of filters.
+- [compareQueryItems()](query/compareQueryItems.md): Compare two data items using a set of orders.
+- [sortQueryItems()](query/sortQueryItems.md): Sort a set of data items using a set of orders.
+- [limitQueryItems()](query/limitQueryItems.md): LImit a set of data items using a set of limit.
+- [getQueryBefore()](query/getQueryBefore.md): Get a query for the items that sort at or before a specified item.
+- [getQueryAfter()](query/getQueryAfter.md): Get a query for the items that sort at or after a specified item.
+- [getQueryItemsAfter()](query/getQueryItemsAfter.md): Get the query for the next page after a page of QueryItems, or undefined if there are no more items.
 
 ## Types
 

@@ -44,13 +44,13 @@ const combined = mergeElements(headerElements, bodyElements);
 
 ## Functions
 
-- [isElement](element/isElement.md): Is an unknown value an element?
-- [isElements](element/isElements.md): Is an unknown value a collection of elements?
-- [getElementText](element/getElementText.md): Strip all tags from elements to produce a plain text string.
-- [walkElements](element/walkElements.md): Walk an Elements value into a flat iterable of Element objects.
-- [queryElements](element/queryElements.md): Filter elements yielded by walkElements() using a Query<Element> object.
-- [filterElements](element/filterElements.md): Filter elements yielded by walkElements() using a match function.
-- [mergeElements](element/mergeElements.md): Combine two Elements, preserving both if both are set.
+- [isElement()](element/isElement.md): Is an unknown value an element?
+- [isElements()](element/isElements.md): Is an unknown value a collection of elements?
+- [getElementText()](element/getElementText.md): Strip all tags from elements to produce a plain text string.
+- [walkElements()](element/walkElements.md): Walk an Elements value into a flat iterable of Element objects.
+- [queryElements()](element/queryElements.md): Filter elements yielded by walkElements() using a Query<Element> object.
+- [filterElements()](element/filterElements.md): Filter elements yielded by walkElements() using a match function.
+- [mergeElements()](element/mergeElements.md): Combine two Elements, preserving both if both are set.
 
 ## Types
 

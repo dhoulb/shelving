@@ -59,7 +59,7 @@ noop.start(); // fine — stop callback does nothing
 
 ## Functions
 
-- [getStarter](start/getStarter.md): Get a Starter from a PossibleStarter.
+- [getStarter()](start/getStarter.md): Get a Starter from a PossibleStarter.
 
 ## Classes
 

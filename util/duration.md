@@ -67,34 +67,34 @@ unit.format(unit.from(3 * 24 * 60 * 60 * 1000));           // "3d"
 
 ## Functions
 
-- [getMilliseconds](duration/getMilliseconds.md): Get the millisecond difference between two dates.
-- [getDuration](duration/getDuration.md): Count the various time units between two dates and return a Duration format.
-- [getUntil](duration/getUntil.md): Get the various time units until a certain date.
-- [getAgo](duration/getAgo.md): Get the various time units since a certain date.
-- [getMillisecondsUntil](duration/getMillisecondsUntil.md): Count the milliseconds until a date.
-- [getMillisecondsAgo](duration/getMillisecondsAgo.md): Count the milliseconds since a date.
-- [getSecondsUntil](duration/getSecondsUntil.md): Count the whole seconds until a date.
-- [getSecondsAgo](duration/getSecondsAgo.md): Count the whole seconds since a date.
-- [getMinutesUntil](duration/getMinutesUntil.md): Count the whole minutes until a date.
-- [getMinutesAgo](duration/getMinutesAgo.md): Count the whole minutes since a date.
-- [getHoursUntil](duration/getHoursUntil.md): Count the whole hours until a date.
-- [getHoursAgo](duration/getHoursAgo.md): Count the whole hours since a date.
-- [getDaysUntil](duration/getDaysUntil.md): Count the calendar days until a date.
-- [getDaysAgo](duration/getDaysAgo.md): Count the calendar days since a date.
-- [getWeeksUntil](duration/getWeeksUntil.md): Count the whole weeks until a date.
-- [getWeeksAgo](duration/getWeeksAgo.md): Count the whole weeks since a date.
-- [getMonthsUntil](duration/getMonthsUntil.md): Count the calendar months until a date.
-- [getMonthsAgo](duration/getMonthsAgo.md): Count the calendar months since a date.
-- [getYearsUntil](duration/getYearsUntil.md): Count the calendar years until a date.
-- [getYearsAgo](duration/getYearsAgo.md): Count the calendar years since a date.
-- [isPast](duration/isPast.md): Is a date in the past?
-- [isFuture](duration/isFuture.md): Is a date in the future?
-- [isToday](duration/isToday.md): Is a date today (taking into account midnight).
-- [getBestDurationUnit](duration/getBestDurationUnit.md): Get a best-fit duration unit based on an amount in milliseconds.
-- [formatWhen](duration/formatWhen.md): Format a compact best-fit description of when a date happens or happened, e.g. in 10d or 2h ago or in 1w or just now
-- [formatUntil](duration/formatUntil.md): Format a compact best-fit description of how long until a date, e.g. 10d or 2h or -1w
-- [formatAgo](duration/formatAgo.md): Format a compact best-fit description of how long since a date, e.g. 10d or 2h or just now
-- [formatDuration](duration/formatDuration.md): Format a duration as a string, e.g. 1 year, 2 months, 3 days or 1y 2m 3d
+- [getMilliseconds()](duration/getMilliseconds.md): Get the millisecond difference between two dates.
+- [getDuration()](duration/getDuration.md): Count the various time units between two dates and return a Duration format.
+- [getUntil()](duration/getUntil.md): Get the various time units until a certain date.
+- [getAgo()](duration/getAgo.md): Get the various time units since a certain date.
+- [getMillisecondsUntil()](duration/getMillisecondsUntil.md): Count the milliseconds until a date.
+- [getMillisecondsAgo()](duration/getMillisecondsAgo.md): Count the milliseconds since a date.
+- [getSecondsUntil()](duration/getSecondsUntil.md): Count the whole seconds until a date.
+- [getSecondsAgo()](duration/getSecondsAgo.md): Count the whole seconds since a date.
+- [getMinutesUntil()](duration/getMinutesUntil.md): Count the whole minutes until a date.
+- [getMinutesAgo()](duration/getMinutesAgo.md): Count the whole minutes since a date.
+- [getHoursUntil()](duration/getHoursUntil.md): Count the whole hours until a date.
+- [getHoursAgo()](duration/getHoursAgo.md): Count the whole hours since a date.
+- [getDaysUntil()](duration/getDaysUntil.md): Count the calendar days until a date.
+- [getDaysAgo()](duration/getDaysAgo.md): Count the calendar days since a date.
+- [getWeeksUntil()](duration/getWeeksUntil.md): Count the whole weeks until a date.
+- [getWeeksAgo()](duration/getWeeksAgo.md): Count the whole weeks since a date.
+- [getMonthsUntil()](duration/getMonthsUntil.md): Count the calendar months until a date.
+- [getMonthsAgo()](duration/getMonthsAgo.md): Count the calendar months since a date.
+- [getYearsUntil()](duration/getYearsUntil.md): Count the calendar years until a date.
+- [getYearsAgo()](duration/getYearsAgo.md): Count the calendar years since a date.
+- [isPast()](duration/isPast.md): Is a date in the past?
+- [isFuture()](duration/isFuture.md): Is a date in the future?
+- [isToday()](duration/isToday.md): Is a date today (taking into account midnight).
+- [getBestDurationUnit()](duration/getBestDurationUnit.md): Get a best-fit duration unit based on an amount in milliseconds.
+- [formatWhen()](duration/formatWhen.md): Format a compact best-fit description of when a date happens or happened, e.g. in 10d or 2h ago or in 1w or just now
+- [formatUntil()](duration/formatUntil.md): Format a compact best-fit description of how long until a date, e.g. 10d or 2h or -1w
+- [formatAgo()](duration/formatAgo.md): Format a compact best-fit description of how long since a date, e.g. 10d or 2h or just now
+- [formatDuration()](duration/formatDuration.md): Format a duration as a string, e.g. 1 year, 2 months, 3 days or 1y 2m 3d
 
 ## Types
 

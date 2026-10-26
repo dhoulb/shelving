@@ -77,7 +77,7 @@ new MemoryDBProvider<I, T>()
 
 ## Methods
 
-- [getTable](MemoryDBProvider/getTable.md): Get (or lazily create) the MemoryTable backing a collection.
-- [createTable](MemoryDBProvider/createTable.md): Create a new MemoryTable for a collection (without registering it — use getTable() for that).
-- [setItems](MemoryDBProvider/setItems.md): Set (insert or overwrite) several whole items in a collection at once.
-- [clone](MemoryDBProvider/clone.md): Clone this provider into a new plain MemoryDBProvider containing the same items.
+- [MemoryDBProvider.getTable()](MemoryDBProvider/getTable.md): Get (or lazily create) the MemoryTable backing a collection.
+- [MemoryDBProvider.createTable()](MemoryDBProvider/createTable.md): Create a new MemoryTable for a collection (without registering it — use getTable() for that).
+- [MemoryDBProvider.setItems()](MemoryDBProvider/setItems.md): Set (insert or overwrite) several whole items in a collection at once.
+- [MemoryDBProvider.clone()](MemoryDBProvider/clone.md): Clone this provider into a new plain MemoryDBProvider containing the same items.

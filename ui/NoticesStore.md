@@ -28,4 +28,4 @@ const notices = new NoticesStore(); notices.show("Hello");
 
 ## Methods
 
-- [show](NoticesStore/show.md): Create and show a new notice, adding it to this list.
+- [NoticesStore.show()](NoticesStore/show.md): Create and show a new notice, adding it to this list.

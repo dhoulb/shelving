@@ -74,16 +74,16 @@ function Toggle() {
 
 ## Functions
 
-- [createDBContext](react/createDBContext.md): Create a data context
-- [useSequence](react/useSequence.md): Subscribe to an async iterable for the lifetime of the component.
-- [useStore](react/useStore.md): Subscribe to a Shelving Store instance to refresh this component when its value changes.
-- [useMap](react/useMap.md): Create a mutable Map that persists for the lifetime of the component.
-- [useInstance](react/useInstance.md): Use a memoised class instance.
-- [createAPIContext](react/createAPIContext.md): Create an API context.
-- [useLazy](react/useLazy.md): Use a memoised value with lazy initialisation.
-- [useReduce](react/useReduce.md): Use memoised value with reduction logic.
+- [createAPIContext()](react/createAPIContext.md): Create an API context.
+- [createDBContext()](react/createDBContext.md): Create a data context
+- [useInstance()](react/useInstance.md): Use a memoised class instance.
+- [useLazy()](react/useLazy.md): Use a memoised value with lazy initialisation.
+- [useMap()](react/useMap.md): Create a mutable Map that persists for the lifetime of the component.
+- [useReduce()](react/useReduce.md): Use memoised value with reduction logic.
+- [useSequence()](react/useSequence.md): Subscribe to an async iterable for the lifetime of the component.
+- [useStore()](react/useStore.md): Subscribe to a Shelving Store instance to refresh this component when its value changes.
 
 ## Interfaces
 
-- [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
 - [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
+- [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().

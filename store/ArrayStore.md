@@ -64,6 +64,6 @@ new ArrayStore<T>(value: PossibleArray<T> = [])
 
 ## Methods
 
-- [add](ArrayStore/add.md): Add one or more items to this array.
-- [delete](ArrayStore/delete.md): Remove one or more items from this array.
-- [toggle](ArrayStore/toggle.md): Toggle one or more items in this array (add if absent, remove if present).
+- [ArrayStore.add()](ArrayStore/add.md): Add one or more items to this array.
+- [ArrayStore.delete()](ArrayStore/delete.md): Remove one or more items from this array.
+- [ArrayStore.toggle()](ArrayStore/toggle.md): Toggle one or more items in this array (add if absent, remove if present).

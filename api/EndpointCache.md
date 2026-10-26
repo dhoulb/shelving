@@ -43,9 +43,9 @@ const user = await cache.call({ id: "abc" });
 
 ## Methods
 
-- [get](EndpointCache/get.md): Get (or create) the EndpointStore for the given payload.
-- [call](EndpointCache/call.md): Fetch (or return a cached result) for the given payload.
-- [invalidate](EndpointCache/invalidate.md): Invalidate a specific store so the next read refetches.
-- [invalidateAll](EndpointCache/invalidateAll.md): Invalidate all stores so the next read of any payload refetches.
-- [refresh](EndpointCache/refresh.md): Trigger a refetch on a specific store.
-- [refreshAll](EndpointCache/refreshAll.md): Trigger a refetch on all stores.
+- [EndpointCache.get()](EndpointCache/get.md): Get (or create) the EndpointStore for the given payload.
+- [EndpointCache.call()](EndpointCache/call.md): Fetch (or return a cached result) for the given payload.
+- [EndpointCache.invalidate()](EndpointCache/invalidate.md): Invalidate a specific store so the next read refetches.
+- [EndpointCache.invalidateAll()](EndpointCache/invalidateAll.md): Invalidate all stores so the next read of any payload refetches.
+- [EndpointCache.refresh()](EndpointCache/refresh.md): Trigger a refetch on a specific store.
+- [EndpointCache.refreshAll()](EndpointCache/refreshAll.md): Trigger a refetch on all stores.

@@ -43,8 +43,8 @@ new Color(r = 255, g = 255, b = 255, a = 255)
 
 ## Static methods
 
-- [from](Color/from.md): Make a Color from an unknown value, or undefined if it can't be parsed.
+- [Color.from()](Color/from.md): Make a Color from an unknown value, or undefined if it can't be parsed.
 
 ## Methods
 
-- [toString](Color/toString.md): Return this color as an rgba() string.
+- [Color.toString()](Color/toString.md): Return this color as an rgba() string.

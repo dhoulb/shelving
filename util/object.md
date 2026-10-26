@@ -97,27 +97,27 @@ type Z = OmitProps<User, string>;             // exclude string-valued props
 
 ## Functions
 
-- [isObject](object/isObject.md): Is an unknown value an unknown object?
-- [assertObject](object/assertObject.md): Assert that a value is an object.
-- [isPlainObject](object/isPlainObject.md): Is an unknown value a plain object?
-- [assertPlainObject](object/assertPlainObject.md): Assert that an unknown value is a plain object.
-- [isProp](object/isProp.md): Is an unknown value the key for an own prop of an object.
-- [assertProp](object/assertProp.md): Assert that an unknown value is the key for an own prop of an object.
-- [getObject](object/getObject.md): Turn a possible object into an object.
-- [getProps](object/getProps.md): Get the props of an object as a set of entries.
-- [getKeys](object/getKeys.md): Get the keys of an object as an array.
-- [getProp](object/getProp.md): Extract the value of a named prop from an object.
-- [fromProp](object/fromProp.md): Create an object from a single prop.
-- [withProp](object/withProp.md): Set a prop on an object (immutably) and return a new object including that prop.
-- [withProps](object/withProps.md): Set several props on an object (immutably) and return a new object including those props.
-- [omitProps](object/omitProps.md): Remove several props from an object (immutably) and return a new object without those props.
-- [pickProps](object/pickProps.md): Pick several props from an object and return a new object with only those props.
-- [setProp](object/setProp.md): Set a single named prop on an object (by reference) and return its value.
-- [setProps](object/setProps.md): Set several named props on an object (by reference).
-- [deleteProps](object/deleteProps.md): Remove several key/value entries from an object (by reference).
-- [getPrototype](object/getPrototype.md): Get the prototype of an object instance.
-- [cloneObject](object/cloneObject.md): Shallow clone an object with the same prototype.
-- [cloneObjectWith](object/cloneObjectWith.md): Shallow clone an object with a single changed value.
+- [isObject()](object/isObject.md): Is an unknown value an unknown object?
+- [assertObject()](object/assertObject.md): Assert that a value is an object.
+- [isPlainObject()](object/isPlainObject.md): Is an unknown value a plain object?
+- [assertPlainObject()](object/assertPlainObject.md): Assert that an unknown value is a plain object.
+- [isProp()](object/isProp.md): Is an unknown value the key for an own prop of an object.
+- [assertProp()](object/assertProp.md): Assert that an unknown value is the key for an own prop of an object.
+- [getObject()](object/getObject.md): Turn a possible object into an object.
+- [getProps()](object/getProps.md): Get the props of an object as a set of entries.
+- [getKeys()](object/getKeys.md): Get the keys of an object as an array.
+- [getProp()](object/getProp.md): Extract the value of a named prop from an object.
+- [fromProp()](object/fromProp.md): Create an object from a single prop.
+- [withProp()](object/withProp.md): Set a prop on an object (immutably) and return a new object including that prop.
+- [withProps()](object/withProps.md): Set several props on an object (immutably) and return a new object including those props.
+- [omitProps()](object/omitProps.md): Remove several props from an object (immutably) and return a new object without those props.
+- [pickProps()](object/pickProps.md): Pick several props from an object and return a new object with only those props.
+- [setProp()](object/setProp.md): Set a single named prop on an object (by reference) and return its value.
+- [setProps()](object/setProps.md): Set several named props on an object (by reference).
+- [deleteProps()](object/deleteProps.md): Remove several key/value entries from an object (by reference).
+- [getPrototype()](object/getPrototype.md): Get the prototype of an object instance.
+- [cloneObject()](object/cloneObject.md): Shallow clone an object with the same prototype.
+- [cloneObjectWith()](object/cloneObjectWith.md): Shallow clone an object with a single changed value.
 
 ## Types
 

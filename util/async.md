@@ -67,19 +67,19 @@ await runMicrotasks(); // drain all queued microtasks
 
 ## Functions
 
-- [isAsync](async/isAsync.md): Is a value an asynchronous value implementing a then() function.
-- [notAsync](async/notAsync.md): Is a value a synchronous value.
-- [throwAsync](async/throwAsync.md): Throw the value if it's an async (promised) value.
-- [assertNotAsync](async/assertNotAsync.md): Assert an unknown value is synchronous (i.e. does not have a .then() method).
-- [assertAsync](async/assertAsync.md): Assert an unknown value is asynchronous (i.e. has a .then() method).
-- [assertPromise](async/assertPromise.md): Assert that an unknown value is a Promise.
-- [runMicrotasks](async/runMicrotasks.md): Run any queued microtasks now.
-- [awaitValues](async/awaitValues.md): Get the result of multiple promises concurrently.
-- [awaitErrors](async/awaitErrors.md): Get the rejection reasons of multiple promises (concurrently).
-- [createDeferred](async/createDeferred.md): Create a deferred to access the resolve() and reject() functions of a promise.
-- [getDelay](async/getDelay.md): Get a promise that automatically resolves after a delay.
-- [awaitAbort](async/awaitAbort.md): Get a promise that rejects with the signal's reason when an AbortSignal fires.
-- [awaitRace](async/awaitRace.md): Race promises like Promise.race() but silently swallow rejections from the losers.
+- [isAsync()](async/isAsync.md): Is a value an asynchronous value implementing a then() function.
+- [notAsync()](async/notAsync.md): Is a value a synchronous value.
+- [throwAsync()](async/throwAsync.md): Throw the value if it's an async (promised) value.
+- [assertNotAsync()](async/assertNotAsync.md): Assert an unknown value is synchronous (i.e. does not have a .then() method).
+- [assertAsync()](async/assertAsync.md): Assert an unknown value is asynchronous (i.e. has a .then() method).
+- [assertPromise()](async/assertPromise.md): Assert that an unknown value is a Promise.
+- [runMicrotasks()](async/runMicrotasks.md): Run any queued microtasks now.
+- [awaitValues()](async/awaitValues.md): Get the result of multiple promises concurrently.
+- [awaitErrors()](async/awaitErrors.md): Get the rejection reasons of multiple promises (concurrently).
+- [createDeferred()](async/createDeferred.md): Create a deferred to access the resolve() and reject() functions of a promise.
+- [getDelay()](async/getDelay.md): Get a promise that automatically resolves after a delay.
+- [awaitAbort()](async/awaitAbort.md): Get a promise that rejects with the signal's reason when an AbortSignal fires.
+- [awaitRace()](async/awaitRace.md): Race promises like Promise.race() but silently swallow rejections from the losers.
 
 ## Classes
 

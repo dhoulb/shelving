@@ -44,18 +44,18 @@ new SQLProvider<I, T>()
 
 ## Methods
 
-- [exec](SQLProvider/exec.md): Execute an SQL query built from a template literal and return the resulting rows.
-- [sql](SQLProvider/sql.md): Define an SQL fragment using Javascript template literal format.
-- [sqlIdentifier](SQLProvider/sqlIdentifier.md): Define an SQL fragment for an escaped identifier, e.g. "myTable".
-- [sqlExtract](SQLProvider/sqlExtract.md): Define an SQL fragment that extracts a value at a key for comparison, e.g. "a" #>> {"b","c"} in Postgres.
-- [sqlConcat](SQLProvider/sqlConcat.md): Define an SQL fragment that joins a series of fragments with a separator, e.g. "a" = 1 AND "b" = 2.
-- [sqlSetters](SQLProvider/sqlSetters.md): Define an SQL fragment for setting a list of values, e.g. "a" = 1, "b" = 2.
-- [sqlUpdates](SQLProvider/sqlUpdates.md): Define an SQL fragment for a set of updates, e.g. "a" = 1, "b" = "b" + 5.
-- [sqlUpdate](SQLProvider/sqlUpdate.md): Define an SQL fragment for a single update action.
-- [sqlValues](SQLProvider/sqlValues.md): Define an SQL fragment for VALUES syntax, e.g. ("a", "b") VALUES (1, 2).
-- [sqlClauses](SQLProvider/sqlClauses.md): Define an SQL fragment for the WHERE, ORDER BY and LIMIT clauses of a query, e.g. WHERE x = 1 ORDER BY "name" LIMIT 0, 50.
-- [sqlWhere](SQLProvider/sqlWhere.md): Define an SQL fragment for a WHERE clause, e.g. WHERE x = 1 AND y <= 100.
-- [sqlFilter](SQLProvider/sqlFilter.md): Define an SQL fragment for a single filter clause on a column, e.g. x = 1 or x IN (1, 2).
-- [sqlOrder](SQLProvider/sqlOrder.md): Define an SQL fragment for an ORDER BY clause, e.g. ORDER BY "a" ASC, "b" DESC.
-- [sqlSort](SQLProvider/sqlSort.md): Define an SQL fragment for an individual column in an ORDER BY, e.g. "a" ASC.
-- [sqlLimit](SQLProvider/sqlLimit.md): Define an SQL fragment for a LIMIT clause, e.g. LIMIT 50.
+- [SQLProvider.exec()](SQLProvider/exec.md): Execute an SQL query built from a template literal and return the resulting rows.
+- [SQLProvider.sql()](SQLProvider/sql.md): Define an SQL fragment using Javascript template literal format.
+- [SQLProvider.sqlIdentifier()](SQLProvider/sqlIdentifier.md): Define an SQL fragment for an escaped identifier, e.g. "myTable".
+- [SQLProvider.sqlExtract()](SQLProvider/sqlExtract.md): Define an SQL fragment that extracts a value at a key for comparison, e.g. "a" #>> {"b","c"} in Postgres.
+- [SQLProvider.sqlConcat()](SQLProvider/sqlConcat.md): Define an SQL fragment that joins a series of fragments with a separator, e.g. "a" = 1 AND "b" = 2.
+- [SQLProvider.sqlSetters()](SQLProvider/sqlSetters.md): Define an SQL fragment for setting a list of values, e.g. "a" = 1, "b" = 2.
+- [SQLProvider.sqlUpdates()](SQLProvider/sqlUpdates.md): Define an SQL fragment for a set of updates, e.g. "a" = 1, "b" = "b" + 5.
+- [SQLProvider.sqlUpdate()](SQLProvider/sqlUpdate.md): Define an SQL fragment for a single update action.
+- [SQLProvider.sqlValues()](SQLProvider/sqlValues.md): Define an SQL fragment for VALUES syntax, e.g. ("a", "b") VALUES (1, 2).
+- [SQLProvider.sqlClauses()](SQLProvider/sqlClauses.md): Define an SQL fragment for the WHERE, ORDER BY and LIMIT clauses of a query, e.g. WHERE x = 1 ORDER BY "name" LIMIT 0, 50.
+- [SQLProvider.sqlWhere()](SQLProvider/sqlWhere.md): Define an SQL fragment for a WHERE clause, e.g. WHERE x = 1 AND y <= 100.
+- [SQLProvider.sqlFilter()](SQLProvider/sqlFilter.md): Define an SQL fragment for a single filter clause on a column, e.g. x = 1 or x IN (1, 2).
+- [SQLProvider.sqlOrder()](SQLProvider/sqlOrder.md): Define an SQL fragment for an ORDER BY clause, e.g. ORDER BY "a" ASC, "b" DESC.
+- [SQLProvider.sqlSort()](SQLProvider/sqlSort.md): Define an SQL fragment for an individual column in an ORDER BY, e.g. "a" ASC.
+- [SQLProvider.sqlLimit()](SQLProvider/sqlLimit.md): Define an SQL fragment for a LIMIT clause, e.g. LIMIT 50.

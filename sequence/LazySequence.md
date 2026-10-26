@@ -57,5 +57,5 @@ new LazySequence<T, R, N>(source: AsyncIterator<T, R, N>, start: StartCallback)
 
 ## Methods
 
-- [start](LazySequence/start.md): An iterator started iterating.
-- [stop](LazySequence/stop.md): An iterator stopped iterating.
+- [LazySequence.start()](LazySequence/start.md): An iterator started iterating.
+- [LazySequence.stop()](LazySequence/stop.md): An iterator stopped iterating.

@@ -21,6 +21,6 @@ Declares only the subset of the D1 binding API the provider needs, so the `@clou
 
 ## Methods
 
-- [batch](D1Database/batch.md)
-- [exec](D1Database/exec.md)
-- [prepare](D1Database/prepare.md)
+- [D1Database.batch()](D1Database/batch.md)
+- [D1Database.exec()](D1Database/exec.md)
+- [D1Database.prepare()](D1Database/prepare.md)

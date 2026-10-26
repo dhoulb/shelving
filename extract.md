@@ -114,26 +114,26 @@ The tree components render through *mappings* — wrap a subtree to swap a rende
 
 ## Functions
 
-- [mergeTreeElements](extract/mergeTreeElements.md): Merge two tree elements — primary keeps its identity (type, key, source); secondary contributes any metadata primary does not already have.
-- [extractMarkdownProps](extract/extractMarkdownProps.md): Parse a markdown source string once and derive its title and description in a single pass.
+- [mergeTreeElements()](extract/mergeTreeElements.md): Merge two tree elements — primary keeps its identity (type, key, source); secondary contributes any metadata primary does not already have.
+- [extractMarkdownProps()](extract/extractMarkdownProps.md): Parse a markdown source string once and derive its title and description in a single pass.
 
 ## Classes
 
 - [DirectoryExtractor](extract/DirectoryExtractor.md): Extractor that walks a directory on disk and produces a tree of tree-element nodes.
 - [Extractor](extract/Extractor.md): Base class for an extractor that converts an input of type I into a TreeElement output.
-- [TypescriptExtractor](extract/TypescriptExtractor.md): File extractor that parses a TypeScript source file into a tree element.
-- [PackageExtractor](extract/PackageExtractor.md): Extractor that reads a package.json and produces a flat tree of modules — one kind: "module" DocumentationElement per export entry, in declaration order.
 - [FileExtractor](extract/FileExtractor.md): Base extractor for a file in a tree.
-- [ModuleExtractor](extract/ModuleExtractor.md): Extractor that builds a kind: "module" DocumentationElement from a source file or directory.
-- [MergingExtractor](extract/MergingExtractor.md): Through extractor that walks a tree of tree-element nodes and merges sibling tree elements whose keys match a merges template pair.
-- [MarkupExtractor](extract/MarkupExtractor.md): File extractor for Markdown files.
 - [IndexExtractor](extract/IndexExtractor.md): Through extractor that absorbs each element's index child into the element itself.
+- [MarkupExtractor](extract/MarkupExtractor.md): File extractor for Markdown files.
+- [MergingExtractor](extract/MergingExtractor.md): Through extractor that walks a tree of tree-element nodes and merges sibling tree elements whose keys match a merges template pair.
+- [ModuleExtractor](extract/ModuleExtractor.md): Extractor that builds a kind: "module" DocumentationElement from a source file or directory.
+- [PackageExtractor](extract/PackageExtractor.md): Extractor that reads a package.json and produces a flat tree of modules — one kind: "module" DocumentationElement per export entry, in declaration order.
 - [ThroughExtractor](extract/ThroughExtractor.md): Base class for an extractor that wraps another extractor.
+- [TypescriptExtractor](extract/TypescriptExtractor.md): File extractor that parses a TypeScript source file into a tree element.
 
 ## Interfaces
 
 - [DirectoryExtractorOptions](extract/DirectoryExtractorOptions.md): Options for a directory extractor.
-- [PackageExtractorOptions](extract/PackageExtractorOptions.md): Options for a PackageExtractor.
-- [ModuleExtractorInput](extract/ModuleExtractorInput.md): Input for a ModuleExtractor.
-- [MergingExtractorOptions](extract/MergingExtractorOptions.md): Options for a MergingExtractor.
 - [IndexExtractorOptions](extract/IndexExtractorOptions.md): Options for an IndexExtractor.
+- [MergingExtractorOptions](extract/MergingExtractorOptions.md): Options for a MergingExtractor.
+- [ModuleExtractorInput](extract/ModuleExtractorInput.md): Input for a ModuleExtractor.
+- [PackageExtractorOptions](extract/PackageExtractorOptions.md): Options for a PackageExtractor.

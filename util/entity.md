@@ -36,8 +36,8 @@ function handleEntity(e: ChallengeEntity) {
 
 ## Functions
 
-- [getEntity](entity/getEntity.md): Split an optional entity tag like challenge:a1b2c3 into its type and id, or return EmptyEntity if the entity was invalid.
-- [requireEntity](entity/requireEntity.md): Split an entity tag like challenge:a1b2c3 into its type and id, or throw RequiredError if the entity tag was invalid.
+- [getEntity()](entity/getEntity.md): Split an optional entity tag like challenge:a1b2c3 into its type and id, or return EmptyEntity if the entity was invalid.
+- [requireEntity()](entity/requireEntity.md): Split an entity tag like challenge:a1b2c3 into its type and id, or throw RequiredError if the entity tag was invalid.
 
 ## Types
 

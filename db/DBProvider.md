@@ -77,19 +77,19 @@ const provider = new MemoryDBProvider();
 
 ## Methods
 
-- [getItem](DBProvider/getItem.md): Get an item from a collection by its id, or undefined if it doesn't exist.
-- [requireItem](DBProvider/requireItem.md): Get an item from a collection by its id, or throw if it doesn't exist.
-- [getItemSequence](DBProvider/getItemSequence.md): Subscribe to live changes for a single item by its id.
-- [addItem](DBProvider/addItem.md): Add a new item to a collection and return its generated id.
-- [setItem](DBProvider/setItem.md): Set (insert or overwrite) the data for an item by its id.
-- [updateItem](DBProvider/updateItem.md): Apply partial updates to an existing item by its id.
-- [deleteItem](DBProvider/deleteItem.md): Delete an item from a collection by its id.
-- [countQuery](DBProvider/countQuery.md): Count the items in a collection matching an optional query.
-- [getQuery](DBProvider/getQuery.md): Get the items in a collection matching an optional query.
-- [getQuerySequence](DBProvider/getQuerySequence.md): Subscribe to live changes for the result of a query.
-- [setQuery](DBProvider/setQuery.md): Set (overwrite) the data for every item matching a query.
-- [updateQuery](DBProvider/updateQuery.md): Apply partial updates to every item matching a query.
-- [deleteQuery](DBProvider/deleteQuery.md): Delete every item matching a query.
-- [getFirst](DBProvider/getFirst.md): Get the first item matching a query, or undefined if there are none.
-- [requireFirst](DBProvider/requireFirst.md): Get the first item matching a query, or throw if there are none.
-- [transact](DBProvider/transact.md): Run a callback as a single atomic transaction — every write made through the callback's provider is committed together, or not at all.
+- [DBProvider.getItem()](DBProvider/getItem.md): Get an item from a collection by its id, or undefined if it doesn't exist.
+- [DBProvider.requireItem()](DBProvider/requireItem.md): Get an item from a collection by its id, or throw if it doesn't exist.
+- [DBProvider.getItemSequence()](DBProvider/getItemSequence.md): Subscribe to live changes for a single item by its id.
+- [DBProvider.addItem()](DBProvider/addItem.md): Add a new item to a collection and return its generated id.
+- [DBProvider.setItem()](DBProvider/setItem.md): Set (insert or overwrite) the data for an item by its id.
+- [DBProvider.updateItem()](DBProvider/updateItem.md): Apply partial updates to an existing item by its id.
+- [DBProvider.deleteItem()](DBProvider/deleteItem.md): Delete an item from a collection by its id.
+- [DBProvider.countQuery()](DBProvider/countQuery.md): Count the items in a collection matching an optional query.
+- [DBProvider.getQuery()](DBProvider/getQuery.md): Get the items in a collection matching an optional query.
+- [DBProvider.getQuerySequence()](DBProvider/getQuerySequence.md): Subscribe to live changes for the result of a query.
+- [DBProvider.setQuery()](DBProvider/setQuery.md): Set (overwrite) the data for every item matching a query.
+- [DBProvider.updateQuery()](DBProvider/updateQuery.md): Apply partial updates to every item matching a query.
+- [DBProvider.deleteQuery()](DBProvider/deleteQuery.md): Delete every item matching a query.
+- [DBProvider.getFirst()](DBProvider/getFirst.md): Get the first item matching a query, or undefined if there are none.
+- [DBProvider.requireFirst()](DBProvider/requireFirst.md): Get the first item matching a query, or throw if there are none.
+- [DBProvider.transact()](DBProvider/transact.md): Run a callback as a single atomic transaction — every write made through the callback's provider is committed together, or not at all.

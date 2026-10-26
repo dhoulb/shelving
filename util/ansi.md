@@ -45,7 +45,7 @@ const styled = `${ANSI_CYAN}${ANSI_UNDERLINE}link text${ANSI_RESET}`;
 
 ## Functions
 
-- [ansiWrap](ansi/ansiWrap.md): Wrap a string in the ANSI color/style codes (at the start), and ANSI_RESET at the end.
+- [ansiWrap()](ansi/ansiWrap.md): Wrap a string in the ANSI color/style codes (at the start), and ANSI_RESET at the end.
 
 ## Constants
 

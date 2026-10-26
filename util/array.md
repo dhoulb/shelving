@@ -87,34 +87,34 @@ assertArrayItem(["x", "y"], "z"); // throws RequiredError
 
 ## Functions
 
-- [isArray](array/isArray.md): Is an unknown value an array (optionally with specified min/max length)?
-- [assertArray](array/assertArray.md): Assert that an unknown value is an array (optionally with specified min/max length).
-- [getArray](array/getArray.md): Convert a possible array to an array.
-- [requireArray](array/requireArray.md): Convert a possible array to an array (optionally with specified min/max length), or throw RequiredError if conversion fails.
-- [isArrayItem](array/isArrayItem.md): Is an unknown value an item in a specified array or iterable?
-- [assertArrayItem](array/assertArrayItem.md): Assert that an unknown value is an item in a specified array.
-- [withArrayItems](array/withArrayItems.md): Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made).
-- [pickArrayItems](array/pickArrayItems.md): Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made).
-- [omitArrayItems](array/omitArrayItems.md): Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made).
-- [toggleArrayItems](array/toggleArrayItems.md): Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made).
-- [shuffleArray](array/shuffleArray.md): Return a shuffled version of an array or iterable.
-- [addArrayItem](array/addArrayItem.md): Add an item to an array (by reference) and return the item.
-- [addArrayItems](array/addArrayItems.md): Add multiple items to an array (by reference).
-- [deleteArrayItems](array/deleteArrayItems.md): Remove multiple items from an array (by reference).
-- [getUniqueArray](array/getUniqueArray.md): Return an array of the unique items in an array.
-- [limitArray](array/limitArray.md): Apply a limit to an array.
-- [countArray](array/countArray.md): Count the items in an array.
-- [interleaveArray](array/interleaveArray.md): Interleave array items with a separator.
-- [withArrayIndex](array/withArrayIndex.md): Return a new array with a new value replacing a specific index in the array (or the same array if the value was unchanged).
-- [omitArrayIndex](array/omitArrayIndex.md): Return a new array without a specific index in the array (or the same array if the value was unchanged).
-- [getFirst](array/getFirst.md): Get the first item from an array or iterable, or undefined if it didn't exist.
-- [requireFirst](array/requireFirst.md): Get the first item from an array or iterable.
-- [getLast](array/getLast.md): Get the last item from an array or iterable, or undefined if it didn't exist.
-- [requireLast](array/requireLast.md): Get the last item from an array or iterable.
-- [getNext](array/getNext.md): Get the next item in an array or iterable.
-- [requireNext](array/requireNext.md): Get the next item from an array or iterable.
-- [getPrev](array/getPrev.md): Get the previous item in an array or iterable.
-- [requirePrev](array/requirePrev.md): Get the previous item from an array or iterable.
+- [isArray()](array/isArray.md): Is an unknown value an array (optionally with specified min/max length)?
+- [assertArray()](array/assertArray.md): Assert that an unknown value is an array (optionally with specified min/max length).
+- [getArray()](array/getArray.md): Convert a possible array to an array.
+- [requireArray()](array/requireArray.md): Convert a possible array to an array (optionally with specified min/max length), or throw RequiredError if conversion fails.
+- [isArrayItem()](array/isArrayItem.md): Is an unknown value an item in a specified array or iterable?
+- [assertArrayItem()](array/assertArrayItem.md): Assert that an unknown value is an item in a specified array.
+- [withArrayItems()](array/withArrayItems.md): Add multiple items to an array (immutably) and return a new array with those items (or the same array if no changes were made).
+- [pickArrayItems()](array/pickArrayItems.md): Pick multiple items from an array (immutably) and return a new array with those items (or the same array if no changes were made).
+- [omitArrayItems()](array/omitArrayItems.md): Remove multiple items from an array (immutably) and return a new array without those items (or the same array if no changes were made).
+- [toggleArrayItems()](array/toggleArrayItems.md): Toggle an item in and out of an array (immutably) and return a new array with or without the specified items (or the same array if no changes were made).
+- [shuffleArray()](array/shuffleArray.md): Return a shuffled version of an array or iterable.
+- [addArrayItem()](array/addArrayItem.md): Add an item to an array (by reference) and return the item.
+- [addArrayItems()](array/addArrayItems.md): Add multiple items to an array (by reference).
+- [deleteArrayItems()](array/deleteArrayItems.md): Remove multiple items from an array (by reference).
+- [getUniqueArray()](array/getUniqueArray.md): Return an array of the unique items in an array.
+- [limitArray()](array/limitArray.md): Apply a limit to an array.
+- [countArray()](array/countArray.md): Count the items in an array.
+- [interleaveArray()](array/interleaveArray.md): Interleave array items with a separator.
+- [withArrayIndex()](array/withArrayIndex.md): Return a new array with a new value replacing a specific index in the array (or the same array if the value was unchanged).
+- [omitArrayIndex()](array/omitArrayIndex.md): Return a new array without a specific index in the array (or the same array if the value was unchanged).
+- [getFirst()](array/getFirst.md): Get the first item from an array or iterable, or undefined if it didn't exist.
+- [requireFirst()](array/requireFirst.md): Get the first item from an array or iterable.
+- [getLast()](array/getLast.md): Get the last item from an array or iterable, or undefined if it didn't exist.
+- [requireLast()](array/requireLast.md): Get the last item from an array or iterable.
+- [getNext()](array/getNext.md): Get the next item in an array or iterable.
+- [requireNext()](array/requireNext.md): Get the next item from an array or iterable.
+- [getPrev()](array/getPrev.md): Get the previous item in an array or iterable.
+- [requirePrev()](array/requirePrev.md): Get the previous item from an array or iterable.
 
 ## Types
 

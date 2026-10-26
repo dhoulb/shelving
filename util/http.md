@@ -73,24 +73,24 @@ const merged = mergeRequestOptions(defaults, overrides);
 
 ## Functions
 
-- [parseRequestBody](http/parseRequestBody.md): Parse the body content of an HTTP Request based on its content type, or throw RequestError if the content could not be parsed.
-- [parseRequestJSON](http/parseRequestJSON.md): Parse JSON from an HTTP Request, or return undefined when the request has no body.
-- [parseRequestFormData](http/parseRequestFormData.md): Parse FormData from an HTTP Request, or return undefined when the request has no body.
-- [parseResponseBody](http/parseResponseBody.md): Parse the body content of an HTTP Response based on its content type, or throw ResponseError if the content could not be parsed.
-- [parseResponseJSON](http/parseResponseJSON.md): Parse JSON from an HTTP Response, or return undefined when the response has no body.
-- [parseResponseFormData](http/parseResponseFormData.md): Parse FormData from an HTTP Response, or return undefined when the response has no body.
-- [getResponse](http/getResponse.md): Get an HTTP Response for an unknown value.
-- [getErrorResponse](http/getErrorResponse.md): Get an HTTP Response for an unknown error value.
-- [isRequestMethod](http/isRequestMethod.md): Is a string a supported HTTP request method?
-- [isRequestHeadMethod](http/isRequestHeadMethod.md): Is a string a supported HTTP request method that never sends a body?
-- [mergeRequestOptions](http/mergeRequestOptions.md): Merge provider-level and call-level request options.
-- [createHeadRequest](http/createHeadRequest.md): Create a body-less Request.
-- [createTextRequest](http/createTextRequest.md): Create a plain-text Request.
-- [createJSONRequest](http/createJSONRequest.md): Create a JSON Request.
-- [createFormDataRequest](http/createFormDataRequest.md): Create a multipart form-data Request.
-- [createXMLRequest](http/createXMLRequest.md): Create an XML Request.
-- [createRequest](http/createRequest.md): Create a Request instance with a valid content type based on the body.
-- [assertRequestHeadPayload](http/assertRequestHeadPayload.md): Assert that the payload for a HEAD or GET method is a data object, null, or undefined.
+- [parseRequestBody()](http/parseRequestBody.md): Parse the body content of an HTTP Request based on its content type, or throw RequestError if the content could not be parsed.
+- [parseRequestJSON()](http/parseRequestJSON.md): Parse JSON from an HTTP Request, or return undefined when the request has no body.
+- [parseRequestFormData()](http/parseRequestFormData.md): Parse FormData from an HTTP Request, or return undefined when the request has no body.
+- [parseResponseBody()](http/parseResponseBody.md): Parse the body content of an HTTP Response based on its content type, or throw ResponseError if the content could not be parsed.
+- [parseResponseJSON()](http/parseResponseJSON.md): Parse JSON from an HTTP Response, or return undefined when the response has no body.
+- [parseResponseFormData()](http/parseResponseFormData.md): Parse FormData from an HTTP Response, or return undefined when the response has no body.
+- [getResponse()](http/getResponse.md): Get an HTTP Response for an unknown value.
+- [getErrorResponse()](http/getErrorResponse.md): Get an HTTP Response for an unknown error value.
+- [isRequestMethod()](http/isRequestMethod.md): Is a string a supported HTTP request method?
+- [isRequestHeadMethod()](http/isRequestHeadMethod.md): Is a string a supported HTTP request method that never sends a body?
+- [mergeRequestOptions()](http/mergeRequestOptions.md): Merge provider-level and call-level request options.
+- [createHeadRequest()](http/createHeadRequest.md): Create a body-less Request.
+- [createTextRequest()](http/createTextRequest.md): Create a plain-text Request.
+- [createJSONRequest()](http/createJSONRequest.md): Create a JSON Request.
+- [createFormDataRequest()](http/createFormDataRequest.md): Create a multipart form-data Request.
+- [createXMLRequest()](http/createXMLRequest.md): Create an XML Request.
+- [createRequest()](http/createRequest.md): Create a Request instance with a valid content type based on the body.
+- [assertRequestHeadPayload()](http/assertRequestHeadPayload.md): Assert that the payload for a HEAD or GET method is a data object, null, or undefined.
 
 ## Types
 

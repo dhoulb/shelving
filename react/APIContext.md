@@ -24,5 +24,5 @@ Bundle of hooks and a provider component returned by `createAPIContext()`
 
 ## Methods
 
-- [useAPI](APIContext/useAPI.md): React hook to return an EndpointStore for the specified endpoint/payload in the current APIProvider context.
-- [requireAPICache](APIContext/requireAPICache.md): Return the underlying APICache for <APIContext>
+- [APIContext.useAPI()](APIContext/useAPI.md): React hook to return an EndpointStore for the specified endpoint/payload in the current APIProvider context.
+- [APIContext.requireAPICache()](APIContext/requireAPICache.md): Return the underlying APICache for <APIContext>

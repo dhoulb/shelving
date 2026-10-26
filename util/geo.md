@@ -58,10 +58,10 @@ const codes = Object.keys(COUNTRIES); // ["AF", "AX", ...]
 
 ## Functions
 
-- [getCountry](geo/getCountry.md): Parse a country string, or detect a browser country from navigator.language.
-- [requireCountry](geo/requireCountry.md): Parse a country string, or detect a browser country from navigator.language, or throw RequiredError.
-- [formatCountry](geo/formatCountry.md): Format a country code into its full country name.
-- [formatAddress](geo/formatAddress.md): Format address data into a single multiline string.
+- [getCountry()](geo/getCountry.md): Parse a country string, or detect a browser country from navigator.language.
+- [requireCountry()](geo/requireCountry.md): Parse a country string, or detect a browser country from navigator.language, or throw RequiredError.
+- [formatCountry()](geo/formatCountry.md): Format a country code into its full country name.
+- [formatAddress()](geo/formatAddress.md): Format address data into a single multiline string.
 
 ## Types
 

@@ -60,6 +60,6 @@ new DataStore<T>()
 
 ## Methods
 
-- [update](DataStore/update.md): Update several props in this data.
-- [get](DataStore/get.md): Get a single named prop from this data.
-- [set](DataStore/set.md): Set a single named prop in this data.
+- [DataStore.update()](DataStore/update.md): Update several props in this data.
+- [DataStore.get()](DataStore/get.md): Get a single named prop from this data.
+- [DataStore.set()](DataStore/set.md): Set a single named prop in this data.

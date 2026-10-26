@@ -22,4 +22,4 @@ The search considers links, enabled buttons, enabled inputs, selects, textareas,
 
 ## Functions
 
-- [getFirstFocusable](focus/getFirstFocusable.md): Find the first focusable element inside an HTML element (including the element itself).
+- [getFirstFocusable()](focus/getFirstFocusable.md): Find the first focusable element inside an HTML element (including the element itself).

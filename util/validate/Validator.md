@@ -15,4 +15,4 @@ Object that can validate an unknown value with its `validate()` method.
 
 ## Methods
 
-- [validate](Validator/validate.md): Validate an unsafe value and return a valid value.
+- [Validator.validate()](Validator/validate.md): Validate an unsafe value and return a valid value.

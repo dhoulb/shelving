@@ -62,16 +62,16 @@ isPathProud("/app", "/app/sub");        // false
 
 ## Functions
 
-- [isAbsolutePath](path/isAbsolutePath.md): Is a string path an absolute path?
-- [isRelativePath](path/isRelativePath.md): Is a string path a relative path?
-- [getPath](path/getPath.md): Resolve a relative or absolute path and return the absolute path, or undefined if not a valid path.
-- [cleanPath](path/cleanPath.md): Normalise a path.
-- [requirePath](path/requirePath.md): Resolve a relative or absolute path and return the path, or throw RequiredError if not a valid path.
-- [matchPathPrefix](path/matchPathPrefix.md): Match and strip a base path prefix from a path using segment-aware pathname rules.
-- [isPathActive](path/isPathActive.md): Is a target path active relative to the current path?
-- [isPathProud](path/isPathProud.md): Is a target path proud relative to the current path?
-- [splitPath](path/splitPath.md): Get the "segments" in an absolute path.
-- [joinPath](path/joinPath.md): Join one or more path parts into a single path string.
+- [isAbsolutePath()](path/isAbsolutePath.md): Is a string path an absolute path?
+- [isRelativePath()](path/isRelativePath.md): Is a string path a relative path?
+- [getPath()](path/getPath.md): Resolve a relative or absolute path and return the absolute path, or undefined if not a valid path.
+- [cleanPath()](path/cleanPath.md): Normalise a path.
+- [requirePath()](path/requirePath.md): Resolve a relative or absolute path and return the path, or throw RequiredError if not a valid path.
+- [matchPathPrefix()](path/matchPathPrefix.md): Match and strip a base path prefix from a path using segment-aware pathname rules.
+- [isPathActive()](path/isPathActive.md): Is a target path active relative to the current path?
+- [isPathProud()](path/isPathProud.md): Is a target path proud relative to the current path?
+- [splitPath()](path/splitPath.md): Get the "segments" in an absolute path.
+- [joinPath()](path/joinPath.md): Join one or more path parts into a single path string.
 
 ## Types
 

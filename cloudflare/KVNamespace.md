@@ -19,6 +19,6 @@ Declares only the subset of methods `CloudflareKVProvider` uses, so the `@cloudf
 
 ## Methods
 
-- [get](KVNamespace/get.md)
-- [put](KVNamespace/put.md)
-- [delete](KVNamespace/delete.md)
+- [KVNamespace.get()](KVNamespace/get.md)
+- [KVNamespace.put()](KVNamespace/put.md)
+- [KVNamespace.delete()](KVNamespace/delete.md)

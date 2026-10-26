@@ -59,7 +59,7 @@ new CachedAPIProvider<P, R>(source: APIProvider<P, R>, maxAge: number = AVOID_RE
 
 ## Methods
 
-- [invalidate](CachedAPIProvider/invalidate.md): Invalidate the cached result for a specific endpoint and payload.
-- [invalidateAll](CachedAPIProvider/invalidateAll.md): Invalidate every cached result for an endpoint, across all payloads.
-- [refresh](CachedAPIProvider/refresh.md): Refresh the cached result for a specific endpoint and payload.
-- [refreshAll](CachedAPIProvider/refreshAll.md): Refresh every cached result for an endpoint, across all payloads.
+- [CachedAPIProvider.invalidate()](CachedAPIProvider/invalidate.md): Invalidate the cached result for a specific endpoint and payload.
+- [CachedAPIProvider.invalidateAll()](CachedAPIProvider/invalidateAll.md): Invalidate every cached result for an endpoint, across all payloads.
+- [CachedAPIProvider.refresh()](CachedAPIProvider/refresh.md): Refresh the cached result for a specific endpoint and payload.
+- [CachedAPIProvider.refreshAll()](CachedAPIProvider/refreshAll.md): Refresh every cached result for an endpoint, across all payloads.

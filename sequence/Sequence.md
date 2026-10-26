@@ -48,6 +48,6 @@ new Sequence<T, R, N>()
 
 ## Methods
 
-- [next](Sequence/next.md): Get a next value from this async iterator.
-- [return](Sequence/return.md): Finish iteration and optionally provide the iterator's final return value.
-- [throw](Sequence/throw.md): Throw an error into this iterator.
+- [Sequence.next()](Sequence/next.md): Get a next value from this async iterator.
+- [Sequence.return()](Sequence/return.md): Finish iteration and optionally provide the iterator's final return value.
+- [Sequence.throw()](Sequence/throw.md): Throw an error into this iterator.

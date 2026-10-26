@@ -43,4 +43,4 @@ new BooleanStore(value: boolean = false)
 
 ## Methods
 
-- [toggle](BooleanStore/toggle.md): Toggle the current boolean value.
+- [BooleanStore.toggle()](BooleanStore/toggle.md): Toggle the current boolean value.

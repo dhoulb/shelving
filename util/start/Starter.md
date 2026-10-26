@@ -28,5 +28,5 @@ new Starter<T>(start: StartCallback<T>)
 
 ## Methods
 
-- [start](Starter/start.md): Run the start callback (once).
-- [stop](Starter/stop.md): Run the stop callback (if one was returned by the start callback).
+- [Starter.start()](Starter/start.md): Run the start callback (once).
+- [Starter.stop()](Starter/stop.md): Run the stop callback (if one was returned by the start callback).

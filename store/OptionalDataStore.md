@@ -29,8 +29,8 @@ new OptionalDataStore<T>()
 
 ## Methods
 
-- [require](OptionalDataStore/require.md): Require the data of this store, or throw RequiredError if it is not set.
-- [update](OptionalDataStore/update.md): Update several props in this data.
-- [get](OptionalDataStore/get.md): Get a single named prop from this data.
-- [set](OptionalDataStore/set.md): Set a single named prop in this data.
-- [delete](OptionalDataStore/delete.md): Set the data to undefined.
+- [OptionalDataStore.require()](OptionalDataStore/require.md): Require the data of this store, or throw RequiredError if it is not set.
+- [OptionalDataStore.update()](OptionalDataStore/update.md): Update several props in this data.
+- [OptionalDataStore.get()](OptionalDataStore/get.md): Get a single named prop from this data.
+- [OptionalDataStore.set()](OptionalDataStore/set.md): Set a single named prop in this data.
+- [OptionalDataStore.delete()](OptionalDataStore/delete.md): Set the data to undefined.

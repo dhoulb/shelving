@@ -71,14 +71,14 @@ deleteDictionaryItems(dict, "b", "c");    // dict is now { d:4 }
 
 ## Functions
 
-- [isDictionary](dictionary/isDictionary.md): Is an unknown value a dictionary object?
-- [assertDictionary](dictionary/assertDictionary.md): Assert that an unknown value is a dictionary object.
-- [requireDictionary](dictionary/requireDictionary.md): Convert a possible dictionary into a dictionary.
-- [getDictionaryItems](dictionary/getDictionaryItems.md): Turn a dictionary object into a set of props.
-- [isDictionaryItem](dictionary/isDictionaryItem.md): Is an unknown value the key for an own prop of a dictionary.
-- [assertDictionaryItem](dictionary/assertDictionaryItem.md): Assert that an unknown value is the key for an own prop of a dictionary.
-- [requireDictionaryItem](dictionary/requireDictionaryItem.md): Get an item in a dictionary object, or throw RequiredError if it doesn't exist.
-- [getDictionaryItem](dictionary/getDictionaryItem.md): Get an item in a dictionary object, or undefined if it doesn't exist.
+- [isDictionary()](dictionary/isDictionary.md): Is an unknown value a dictionary object?
+- [assertDictionary()](dictionary/assertDictionary.md): Assert that an unknown value is a dictionary object.
+- [requireDictionary()](dictionary/requireDictionary.md): Convert a possible dictionary into a dictionary.
+- [getDictionaryItems()](dictionary/getDictionaryItems.md): Turn a dictionary object into a set of props.
+- [isDictionaryItem()](dictionary/isDictionaryItem.md): Is an unknown value the key for an own prop of a dictionary.
+- [assertDictionaryItem()](dictionary/assertDictionaryItem.md): Assert that an unknown value is the key for an own prop of a dictionary.
+- [requireDictionaryItem()](dictionary/requireDictionaryItem.md): Get an item in a dictionary object, or throw RequiredError if it doesn't exist.
+- [getDictionaryItem()](dictionary/getDictionaryItem.md): Get an item in a dictionary object, or undefined if it doesn't exist.
 
 ## Types
 

@@ -31,7 +31,7 @@ const verbose = requireEnvBoolean("VERBOSE"); // true | false or throws
 
 ## Functions
 
-- [getEnv](env/getEnv.md): Get a process.env variable safely in all environments, or undefined if it doesn't exist or this environment does not support process.env (i.e. web environments).
-- [requireEnv](env/requireEnv.md): Get a process.env variable safely in all environments, or throw RequiredError if it doesn't exist or this environment does not support process.env (i.e. web environments).
-- [getEnvBoolean](env/getEnvBoolean.md): Get a process.env variable and resolve it to true or false, or undefined if it isn't a true/false value.
-- [requireEnvBoolean](env/requireEnvBoolean.md): Get a process.env variable and resolve it to true or false, or throw RequiredError if it isn't a true/false value.
+- [getEnv()](env/getEnv.md): Get a process.env variable safely in all environments, or undefined if it doesn't exist or this environment does not support process.env (i.e. web environments).
+- [requireEnv()](env/requireEnv.md): Get a process.env variable safely in all environments, or throw RequiredError if it doesn't exist or this environment does not support process.env (i.e. web environments).
+- [getEnvBoolean()](env/getEnvBoolean.md): Get a process.env variable and resolve it to true or false, or undefined if it isn't a true/false value.
+- [requireEnvBoolean()](env/requireEnvBoolean.md): Get a process.env variable and resolve it to true or false, or throw RequiredError if it isn't a true/false value.

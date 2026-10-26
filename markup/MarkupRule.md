@@ -28,4 +28,4 @@ A single markup rule: a regular expression that matches a span of input plus a r
 
 ## Methods
 
-- [render](MarkupRule/render.md): Use the matched data to render an element.
+- [MarkupRule.render()](MarkupRule/render.md): Use the matched data to render an element.

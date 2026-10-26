@@ -87,34 +87,34 @@ addHours(2, "now");          // 2 hours from now
 
 ## Functions
 
-- [isDate](date/isDate.md): Is a value a valid Date instance?
-- [assertDate](date/assertDate.md): Assert that a value is a valid Date instance.
-- [getDate](date/getDate.md): Convert an unknown value to a valid Date instance, or return undefined if it couldn't be converted.
-- [getNow](date/getNow.md): Get a date representing this exact moment.
-- [getYesterday](date/getYesterday.md): Get a date representing midnight of the previous day.
-- [getToday](date/getToday.md): Get a date representing midnight of the current day.
-- [getTomorrow](date/getTomorrow.md): Get a date representing midnight of the next day.
-- [getMidnight](date/getMidnight.md): Get a Date representing exactly midnight of the specified date.
-- [getMonday](date/getMonday.md): Get a Date representing midnight on Monday of the specified week.
-- [getMonthStart](date/getMonthStart.md): Get a Date representing midnight on the first day of the specified month.
-- [requireDate](date/requireDate.md): Convert a possible date to a Date instance, or throw RequiredError if it couldn't be converted.
-- [getTimestamp](date/getTimestamp.md): Convert an unknown value to a timestamp (milliseconds past Unix epoch), or undefined if it couldn't be converted.
-- [requireTimestamp](date/requireTimestamp.md): Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw RequiredError if it couldn't be converted.
-- [getDateTimeString](date/getDateTimeString.md): Convert an unknown value to a local date string like "2015-09-12T18:30:00", or undefined if it couldn't be converted.
-- [requireDateTimeString](date/requireDateTimeString.md): Convert a possible Date instance to a local YMD string like "2015-09-12T18:30:00", or throw RequiredError if it couldn't be converted.
-- [getDateString](date/getDateString.md): Convert an unknown value to a local date string like "2015-09-12", or undefined if it couldn't be converted.
-- [requireDateString](date/requireDateString.md): Convert a possible Date instance to a local date string like "2015-09-12", or throw RequiredError if it couldn't be converted.
-- [getTimeString](date/getTimeString.md): Convert an unknown value to a local time string like "18:32:00", or undefined if it couldn't be converted.
-- [requireTimeString](date/requireTimeString.md): Convert a possible Date instance to local time string like "18:32:00", or throw RequiredError if it couldn't be converted.
-- [getDay](date/getDay.md): Convert a Date instance to a day-of-week string like "Monday"
-- [addYears](date/addYears.md): Return a new date that increase or decreases the month based on an input date.
-- [addMonths](date/addMonths.md): Return a new date that increase or decreases the month based on an input date.
-- [addWeeks](date/addWeeks.md): Return a new date that increase or decreases the week based on an input date.
-- [addDays](date/addDays.md): Return a new date that increase or decreases the day based on an input date.
-- [addHours](date/addHours.md): Return a new date that increase or decreases the hour based on an input date.
-- [addMinutes](date/addMinutes.md): Return a new date that increase or decreases the minute based on an input date.
-- [addSeconds](date/addSeconds.md): Return a new date that increases or decreases the seconds based on an input date.
-- [addMilliseconds](date/addMilliseconds.md): Return a new date that increases or decreases the milliseconds based on an input date.
+- [isDate()](date/isDate.md): Is a value a valid Date instance?
+- [assertDate()](date/assertDate.md): Assert that a value is a valid Date instance.
+- [getDate()](date/getDate.md): Convert an unknown value to a valid Date instance, or return undefined if it couldn't be converted.
+- [getNow()](date/getNow.md): Get a date representing this exact moment.
+- [getYesterday()](date/getYesterday.md): Get a date representing midnight of the previous day.
+- [getToday()](date/getToday.md): Get a date representing midnight of the current day.
+- [getTomorrow()](date/getTomorrow.md): Get a date representing midnight of the next day.
+- [getMidnight()](date/getMidnight.md): Get a Date representing exactly midnight of the specified date.
+- [getMonday()](date/getMonday.md): Get a Date representing midnight on Monday of the specified week.
+- [getMonthStart()](date/getMonthStart.md): Get a Date representing midnight on the first day of the specified month.
+- [requireDate()](date/requireDate.md): Convert a possible date to a Date instance, or throw RequiredError if it couldn't be converted.
+- [getTimestamp()](date/getTimestamp.md): Convert an unknown value to a timestamp (milliseconds past Unix epoch), or undefined if it couldn't be converted.
+- [requireTimestamp()](date/requireTimestamp.md): Convert a possible date to a timestamp (milliseconds past Unix epoch), or throw RequiredError if it couldn't be converted.
+- [getDateTimeString()](date/getDateTimeString.md): Convert an unknown value to a local date string like "2015-09-12T18:30:00", or undefined if it couldn't be converted.
+- [requireDateTimeString()](date/requireDateTimeString.md): Convert a possible Date instance to a local YMD string like "2015-09-12T18:30:00", or throw RequiredError if it couldn't be converted.
+- [getDateString()](date/getDateString.md): Convert an unknown value to a local date string like "2015-09-12", or undefined if it couldn't be converted.
+- [requireDateString()](date/requireDateString.md): Convert a possible Date instance to a local date string like "2015-09-12", or throw RequiredError if it couldn't be converted.
+- [getTimeString()](date/getTimeString.md): Convert an unknown value to a local time string like "18:32:00", or undefined if it couldn't be converted.
+- [requireTimeString()](date/requireTimeString.md): Convert a possible Date instance to local time string like "18:32:00", or throw RequiredError if it couldn't be converted.
+- [getDay()](date/getDay.md): Convert a Date instance to a day-of-week string like "Monday"
+- [addYears()](date/addYears.md): Return a new date that increase or decreases the month based on an input date.
+- [addMonths()](date/addMonths.md): Return a new date that increase or decreases the month based on an input date.
+- [addWeeks()](date/addWeeks.md): Return a new date that increase or decreases the week based on an input date.
+- [addDays()](date/addDays.md): Return a new date that increase or decreases the day based on an input date.
+- [addHours()](date/addHours.md): Return a new date that increase or decreases the hour based on an input date.
+- [addMinutes()](date/addMinutes.md): Return a new date that increase or decreases the minute based on an input date.
+- [addSeconds()](date/addSeconds.md): Return a new date that increases or decreases the seconds based on an input date.
+- [addMilliseconds()](date/addMilliseconds.md): Return a new date that increases or decreases the milliseconds based on an input date.
 
 ## Types
 

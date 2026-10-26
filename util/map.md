@@ -68,17 +68,17 @@ const limited = limitMap(bigMap, 100); // at most 100 entries
 
 ## Functions
 
-- [isMap](map/isMap.md): Is an unknown value a map?
-- [assertMap](map/assertMap.md): Assert that a value is a Map instance.
-- [getMap](map/getMap.md): Convert an iterable to a Map (if it's already a Map it passes through unchanged).
-- [limitMap](map/limitMap.md): Apply a limit to a map.
-- [isMapItem](map/isMapItem.md): Is an unknown value a key for an item in a map?
-- [assertMapItem](map/assertMapItem.md): Assert that an unknown value is a key for an item in a map.
-- [setMapItem](map/setMapItem.md): Set an item in a map (by reference) and return the value that was set.
-- [setMapItems](map/setMapItems.md): Add multiple items to a map (by reference).
-- [removeMapItems](map/removeMapItems.md): Remove multiple items from a map (by reference).
-- [getMapItem](map/getMapItem.md): Get an item in a map, or undefined if it doesn't exist.
-- [requireMapItem](map/requireMapItem.md): Get an item in a map, or throw RequiredError if it doesn't exist.
+- [isMap()](map/isMap.md): Is an unknown value a map?
+- [assertMap()](map/assertMap.md): Assert that a value is a Map instance.
+- [getMap()](map/getMap.md): Convert an iterable to a Map (if it's already a Map it passes through unchanged).
+- [limitMap()](map/limitMap.md): Apply a limit to a map.
+- [isMapItem()](map/isMapItem.md): Is an unknown value a key for an item in a map?
+- [assertMapItem()](map/assertMapItem.md): Assert that an unknown value is a key for an item in a map.
+- [setMapItem()](map/setMapItem.md): Set an item in a map (by reference) and return the value that was set.
+- [setMapItems()](map/setMapItems.md): Add multiple items to a map (by reference).
+- [removeMapItems()](map/removeMapItems.md): Remove multiple items from a map (by reference).
+- [getMapItem()](map/getMapItem.md): Get an item in a map, or undefined if it doesn't exist.
+- [requireMapItem()](map/requireMapItem.md): Get an item in a map, or throw RequiredError if it doesn't exist.
 
 ## Types
 

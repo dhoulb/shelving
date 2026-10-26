@@ -29,4 +29,4 @@ class UppercaseParser extends Parser<string, string> {
 
 ## Methods
 
-- [parse](Parser/parse.md): Parse an input value into an output value.
+- [Parser.parse()](Parser/parse.md): Parse an input value into an output value.

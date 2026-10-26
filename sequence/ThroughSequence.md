@@ -54,4 +54,4 @@ new ThroughSequence<T, R, N>(source: AsyncIterator<T, R | undefined, N | undefin
 
 ## Methods
 
-- [next](ThroughSequence/next.md)
+- [ThroughSequence.next()](ThroughSequence/next.md)

@@ -33,5 +33,5 @@ new FileExtractor().extract(Bun.file("/abs/path/notes.txt"))
 
 ## Methods
 
-- [extract](FileExtractor/extract.md): Read a file and build a tree-element from its text content.
-- [extractProps](FileExtractor/extractProps.md): Build the file element props from the extracted content.
+- [FileExtractor.extract()](FileExtractor/extract.md): Read a file and build a tree-element from its text content.
+- [FileExtractor.extractProps()](FileExtractor/extractProps.md): Build the file element props from the extracted content.

@@ -38,6 +38,6 @@ Bundle of hooks and a provider component returned by `createDBContext()`.
 
 ## Methods
 
-- [useItem](DBContext/useItem.md): Get an ItemStore for the specified collection item in the current DataProvider context and subscribe to any changes in it.
-- [useQuery](DBContext/useQuery.md): Get an QueryStore for the specified collection query in the current DataProvider context and subscribe to any changes in it.
-- [requireDBCache](DBContext/requireDBCache.md): Return the underlying DBCache for <DBContext>
+- [DBContext.useItem()](DBContext/useItem.md): Get an ItemStore for the specified collection item in the current DataProvider context and subscribe to any changes in it.
+- [DBContext.useQuery()](DBContext/useQuery.md): Get an QueryStore for the specified collection query in the current DataProvider context and subscribe to any changes in it.
+- [DBContext.requireDBCache()](DBContext/requireDBCache.md): Return the underlying DBCache for <DBContext>

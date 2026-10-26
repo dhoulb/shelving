@@ -37,17 +37,17 @@ const fallback = getNull; // () => null
 
 ## Functions
 
-- [getNull](null/getNull.md): Function that always returns null.
-- [isNull](null/isNull.md): Is a value null?
-- [assertNull](null/assertNull.md): Assert that a value is null.
-- [notNull](null/notNull.md): Is a value not null?
-- [assertNotNull](null/assertNotNull.md): Assert that a value is not null.
-- [requireNotNull](null/requireNotNull.md): Get the not-null version of a value, or throw RequiredError if it is null.
-- [isNullish](null/isNullish.md): Is a value nullish (null or undefined)?
-- [assertNullish](null/assertNullish.md): Assert that a value is nullish (null or undefined).
-- [notNullish](null/notNullish.md): Is a value not nullish (not null and not undefined)?
-- [assertNotNullish](null/assertNotNullish.md): Assert that a value is not nullish (not null and not undefined).
-- [requireNotNullish](null/requireNotNullish.md): Get the not-nullish version of a value, or throw RequiredError if it is null or undefined.
+- [getNull()](null/getNull.md): Function that always returns null.
+- [isNull()](null/isNull.md): Is a value null?
+- [assertNull()](null/assertNull.md): Assert that a value is null.
+- [notNull()](null/notNull.md): Is a value not null?
+- [assertNotNull()](null/assertNotNull.md): Assert that a value is not null.
+- [requireNotNull()](null/requireNotNull.md): Get the not-null version of a value, or throw RequiredError if it is null.
+- [isNullish()](null/isNullish.md): Is a value nullish (null or undefined)?
+- [assertNullish()](null/assertNullish.md): Assert that a value is nullish (null or undefined).
+- [notNullish()](null/notNullish.md): Is a value not nullish (not null and not undefined)?
+- [assertNotNullish()](null/assertNotNullish.md): Assert that a value is not nullish (not null and not undefined).
+- [requireNotNullish()](null/requireNotNullish.md): Get the not-nullish version of a value, or throw RequiredError if it is null or undefined.
 
 ## Types
 

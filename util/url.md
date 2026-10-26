@@ -74,17 +74,17 @@ isURLProud(current, "https://example.com/other");                  // false
 
 ## Functions
 
-- [isURL](url/isURL.md): Is an unknown value a URL object?
-- [assertURL](url/assertURL.md): Assert that an unknown value is a URL object.
-- [getBasedURI](url/getBasedURI.md): Resolve a possible URI relative to a base, or return undefined if conversion fails.
-- [getURL](url/getURL.md): Resolve a possible URL relative to a base URL, or return undefined if conversion fails.
-- [requireURL](url/requireURL.md): Convert a possible URL to a URL, or throw RequiredError if conversion fails.
-- [matchURLPrefix](url/matchURLPrefix.md): Resolve and match a target URL/path against a base URL and return the remaining path.
-- [isURLActive](url/isURLActive.md): Is a target URL active relative to a base URL?
-- [isURLProud](url/isURLProud.md): Is a target URL proud relative to a base URL?
-- [isBaseURL](url/isBaseURL.md): Is an unknown value a valid Base URL?
-- [getBaseURL](url/getBaseURL.md): Get a Base URL — a true URL whose pathname is normalised to end in a trailing slash.
-- [requireBaseURL](url/requireBaseURL.md): Require a Base URL — a true URL whose pathname is normalised to end in a trailing slash.
+- [isURL()](url/isURL.md): Is an unknown value a URL object?
+- [assertURL()](url/assertURL.md): Assert that an unknown value is a URL object.
+- [getBasedURI()](url/getBasedURI.md): Resolve a possible URI relative to a base, or return undefined if conversion fails.
+- [getURL()](url/getURL.md): Resolve a possible URL relative to a base URL, or return undefined if conversion fails.
+- [requireURL()](url/requireURL.md): Convert a possible URL to a URL, or throw RequiredError if conversion fails.
+- [matchURLPrefix()](url/matchURLPrefix.md): Resolve and match a target URL/path against a base URL and return the remaining path.
+- [isURLActive()](url/isURLActive.md): Is a target URL active relative to a base URL?
+- [isURLProud()](url/isURLProud.md): Is a target URL proud relative to a base URL?
+- [isBaseURL()](url/isBaseURL.md): Is an unknown value a valid Base URL?
+- [getBaseURL()](url/getBaseURL.md): Get a Base URL — a true URL whose pathname is normalised to end in a trailing slash.
+- [requireBaseURL()](url/requireBaseURL.md): Require a Base URL — a true URL whose pathname is normalised to end in a trailing slash.
 
 ## Interfaces
 

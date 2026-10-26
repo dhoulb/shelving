@@ -77,23 +77,23 @@ try {
 
 ## Functions
 
-- [setBaseErrorOptions](error/setBaseErrorOptions.md): Apply BaseErrorOptions to an error instance by copying contextual fields onto it and trimming its stack.
+- [setBaseErrorOptions()](error/setBaseErrorOptions.md): Apply BaseErrorOptions to an error instance by copying contextual fields onto it and trimming its stack.
 
 ## Classes
 
+- [Errors](error/Errors.md): Aggregate an array of errors into a single combined error.
+- [NetworkError](error/NetworkError.md): Thrown in the event of network issues e.g. the user's internet connection is down, or the server is down.
 - [RequestError](error/RequestError.md): Throw when a request isn't well-formed or is unacceptable in some way.
 - [UnauthorizedError](error/UnauthorizedError.md): Throw if an operation failed because the user is not logged in, or the login information is not well-formed.
 - [NotFoundError](error/NotFoundError.md): Throw if the requested content is not found.
 - [UnprocessableError](error/UnprocessableError.md): Throw when a request is valid and well-formed, but its actual data is not.
 - [ForbiddenError](error/ForbiddenError.md): Throw if an operation failed because the user is logged in, but does not have sufficient privileges to access this content.
 - [MethodNotAllowedError](error/MethodNotAllowedError.md): Throw if a request uses an HTTP method that is not supported.
-- [UnsupportedError](error/UnsupportedError.md): Error thrown when functionality is called but is not supported — by a backend, an environment, or an implementation.
-- [NetworkError](error/NetworkError.md): Thrown in the event of network issues e.g. the user's internet connection is down, or the server is down.
-- [UnexpectedError](error/UnexpectedError.md): Thrown when something is wrong or unexpected.
-- [ResponseError](error/ResponseError.md): Error thrown when a received HTTP response isn't OK.
-- [ValueError](error/ValueError.md): Thrown when a value is wrong or unexpected.
 - [RequiredError](error/RequiredError.md): Thrown when something is required but not supplied.
-- [Errors](error/Errors.md): Aggregate an array of errors into a single combined error.
+- [ResponseError](error/ResponseError.md): Error thrown when a received HTTP response isn't OK.
+- [UnexpectedError](error/UnexpectedError.md): Thrown when something is wrong or unexpected.
+- [UnsupportedError](error/UnsupportedError.md): Error thrown when functionality is called but is not supported — by a backend, an environment, or an implementation.
+- [ValueError](error/ValueError.md): Thrown when a value is wrong or unexpected.
 
 ## Interfaces
 

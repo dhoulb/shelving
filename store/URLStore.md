@@ -68,17 +68,17 @@ new URLStore(url: PossibleURL, base?: PossibleURL)
 
 ## Methods
 
-- [getParam](URLStore/getParam.md): Return a single param in this URL, or undefined if it could not be found.
-- [requireParam](URLStore/requireParam.md): Require a single param in this URL, or throw RequiredError if it could not be found.
-- [setParams](URLStore/setParams.md): Set all params in this URL (all current params are cleared first).
-- [setParam](URLStore/setParam.md): Set a single named param in this URL.
-- [updateParams](URLStore/updateParams.md): Update several params in this URL (merged with current params).
-- [deleteParam](URLStore/deleteParam.md): Delete one or more params from this URL.
-- [deleteParams](URLStore/deleteParams.md): Delete one or more params from this URL.
-- [clearParams](URLStore/clearParams.md): Clear all params from this URL.
-- [withParam](URLStore/withParam.md): Return the current URL with an additional param (without mutating this store).
-- [withParams](URLStore/withParams.md): Return the current URL with additional params (without mutating this store).
-- [omitParams](URLStore/omitParams.md): Return the current URL with one or more params removed (without mutating this store).
-- [omitParam](URLStore/omitParam.md): Return the current URL with a single param removed (without mutating this store).
-- [isActive](URLStore/isActive.md): Is target active relative to this store's URL?
-- [isProud](URLStore/isProud.md): Is target proud relative to this store's URL?
+- [URLStore.getParam()](URLStore/getParam.md): Return a single param in this URL, or undefined if it could not be found.
+- [URLStore.requireParam()](URLStore/requireParam.md): Require a single param in this URL, or throw RequiredError if it could not be found.
+- [URLStore.setParams()](URLStore/setParams.md): Set all params in this URL (all current params are cleared first).
+- [URLStore.setParam()](URLStore/setParam.md): Set a single named param in this URL.
+- [URLStore.updateParams()](URLStore/updateParams.md): Update several params in this URL (merged with current params).
+- [URLStore.deleteParam()](URLStore/deleteParam.md): Delete one or more params from this URL.
+- [URLStore.deleteParams()](URLStore/deleteParams.md): Delete one or more params from this URL.
+- [URLStore.clearParams()](URLStore/clearParams.md): Clear all params from this URL.
+- [URLStore.withParam()](URLStore/withParam.md): Return the current URL with an additional param (without mutating this store).
+- [URLStore.withParams()](URLStore/withParams.md): Return the current URL with additional params (without mutating this store).
+- [URLStore.omitParams()](URLStore/omitParams.md): Return the current URL with one or more params removed (without mutating this store).
+- [URLStore.omitParam()](URLStore/omitParam.md): Return the current URL with a single param removed (without mutating this store).
+- [URLStore.isActive()](URLStore/isActive.md): Is target active relative to this store's URL?
+- [URLStore.isProud()](URLStore/isProud.md): Is target proud relative to this store's URL?

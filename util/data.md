@@ -78,15 +78,15 @@ type ProfileLeafPaths = LeafDataPath<Profile>; // "name" | "address.city"
 
 ## Functions
 
-- [isData](data/isData.md): Is an unknown value a data object?
-- [assertData](data/assertData.md): Assert that an unknown value is a data object.
-- [isDataProp](data/isDataProp.md): Is an unknown value the key for an own prop of a data object?
-- [assertDataProp](data/assertDataProp.md): Assert that an unknown value is the key for an own prop of a data object.
-- [getDataProps](data/getDataProps.md): Get the props of a data object as a set of entries.
-- [getDataKeys](data/getDataKeys.md): Get the keys of a data object as an array.
-- [splitDataPath](data/splitDataPath.md): Split a dotted path into data path segments.
-- [joinDataPath](data/joinDataPath.md): Join a set of data path segments into a dotted path string.
-- [getDataProp](data/getDataProp.md): Get an optional (possibly deep) prop from a data object, or undefined if it doesn't exist.
+- [isData()](data/isData.md): Is an unknown value a data object?
+- [assertData()](data/assertData.md): Assert that an unknown value is a data object.
+- [isDataProp()](data/isDataProp.md): Is an unknown value the key for an own prop of a data object?
+- [assertDataProp()](data/assertDataProp.md): Assert that an unknown value is the key for an own prop of a data object.
+- [getDataProps()](data/getDataProps.md): Get the props of a data object as a set of entries.
+- [getDataKeys()](data/getDataKeys.md): Get the keys of a data object as an array.
+- [splitDataPath()](data/splitDataPath.md): Split a dotted path into data path segments.
+- [joinDataPath()](data/joinDataPath.md): Join a set of data path segments into a dotted path string.
+- [getDataProp()](data/getDataProp.md): Get an optional (possibly deep) prop from a data object, or undefined if it doesn't exist.
 
 ## Types
 

@@ -56,5 +56,5 @@ class CustomSchema extends Schema<string> {
 
 ## Methods
 
-- [validate](Schema/validate.md): Validate an unknown input value and return a known, valid value of type T.
-- [format](Schema/format.md): Format a validated value of this type as a string for display.
+- [Schema.validate()](Schema/validate.md): Validate an unknown input value and return a known, valid value of type T.
+- [Schema.format()](Schema/format.md): Format a validated value of this type as a string for display.

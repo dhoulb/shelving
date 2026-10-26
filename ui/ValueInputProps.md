@@ -23,4 +23,4 @@
 
 ## Methods
 
-- [onValue](ValueInputProps/onValue.md): Called when the value for the input changes, so you can make changes based on the new value (or undefined to set back to default).
+- [ValueInputProps.onValue()](ValueInputProps/onValue.md): Called when the value for the input changes, so you can make changes based on the new value (or undefined to set back to default).

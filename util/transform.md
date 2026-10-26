@@ -71,14 +71,14 @@ async function* process(stream: AsyncIterable<string>) {
 
 ## Functions
 
-- [mapItems](transform/mapItems.md): Lazily transform every item in an iterable.
-- [mapArray](transform/mapArray.md): Transform every item of an iterable into a new array.
-- [mapProps](transform/mapProps.md): Transform the values of an object's props into a new object.
-- [mapDictionary](transform/mapDictionary.md): Transform the values of a dictionary into a new dictionary.
-- [mapEntries](transform/mapEntries.md): Lazily transform the values of a set of entries, keeping each key.
-- [mapEntryValues](transform/mapEntryValues.md): Lazily transform the values of a set of entries, keeping each key.
-- [transformObject](transform/transformObject.md): Transform an object using a set of named transforms.
-- [mapSequence](transform/mapSequence.md): Lazily transform items in an async sequence as they are yielded.
+- [mapItems()](transform/mapItems.md): Lazily transform every item in an iterable.
+- [mapArray()](transform/mapArray.md): Transform every item of an iterable into a new array.
+- [mapProps()](transform/mapProps.md): Transform the values of an object's props into a new object.
+- [mapDictionary()](transform/mapDictionary.md): Transform the values of a dictionary into a new dictionary.
+- [mapEntries()](transform/mapEntries.md): Lazily transform the values of a set of entries, keeping each key.
+- [mapEntryValues()](transform/mapEntryValues.md): Lazily transform the values of a set of entries, keeping each key.
+- [transformObject()](transform/transformObject.md): Transform an object using a set of named transforms.
+- [mapSequence()](transform/mapSequence.md): Lazily transform items in an async sequence as they are yielded.
 
 ## Types
 

@@ -52,10 +52,10 @@ function findProduct(id: string, products: Items<string, { name: string; price: 
 
 ## Functions
 
-- [getIdentifier](item/getIdentifier.md): Get the identifier from an item object.
-- [getIdentifiers](item/getIdentifiers.md): Get the identifiers from an iterable set of item objects.
-- [hasIdentifier](item/hasIdentifier.md): Does a data object have a given identifier (and is therefore an Item).
-- [getItem](item/getItem.md): Merge an ID into a set of data to make an Item.
+- [getIdentifier()](item/getIdentifier.md): Get the identifier from an item object.
+- [getIdentifiers()](item/getIdentifiers.md): Get the identifiers from an iterable set of item objects.
+- [hasIdentifier()](item/hasIdentifier.md): Does a data object have a given identifier (and is therefore an Item).
+- [getItem()](item/getItem.md): Merge an ID into a set of data to make an Item.
 
 ## Types
 

@@ -5,7 +5,7 @@
 
 ## Functions
 
-- [getLazy](lazy/getLazy.md): Initialise a lazy value.
+- [getLazy()](lazy/getLazy.md): Initialise a lazy value.
 
 ## Types
 

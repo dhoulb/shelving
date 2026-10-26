@@ -23,4 +23,4 @@ new DialogsStore()
 
 ## Methods
 
-- [show](DialogsStore/show.md): Open a new dialog wrapping the given content.
+- [DialogsStore.show()](DialogsStore/show.md): Open a new dialog wrapping the given content.

@@ -37,5 +37,5 @@ escapeXML(`Tom & "Jerry"`);
 
 ## Functions
 
-- [escapeXML](xml/escapeXML.md): Escape a string for safe inclusion in XML text content or attribute values.
-- [getXML](xml/getXML.md): Build an XML string from a data object.
+- [escapeXML()](xml/escapeXML.md): Escape a string for safe inclusion in XML text content or attribute values.
+- [getXML()](xml/getXML.md): Build an XML string from a data object.

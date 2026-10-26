@@ -40,8 +40,8 @@ requireSource(Database, "oops");   // throws RequiredError
 
 ## Functions
 
-- [getSource](source/getSource.md): Recurse through Sourceable objects and return the first one that is an instance of type, or undefined if no source object matches.
-- [requireSource](source/requireSource.md): Recurse through Sourceable objects and return the first one that is an instance of type, or throw RequiredError if no source object matches.
+- [getSource()](source/getSource.md): Recurse through Sourceable objects and return the first one that is an instance of type, or undefined if no source object matches.
+- [requireSource()](source/requireSource.md): Recurse through Sourceable objects and return the first one that is an instance of type, or throw RequiredError if no source object matches.
 
 ## Interfaces
 

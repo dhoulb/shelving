@@ -65,4 +65,4 @@ new Catcher()
 
 ## Static methods
 
-- [getDerivedStateFromError](Catcher/getDerivedStateFromError.md)
+- [Catcher.getDerivedStateFromError()](Catcher/getDerivedStateFromError.md)

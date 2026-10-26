@@ -68,22 +68,22 @@ assertRegExp("foo");  // throws RequiredError
 
 ## Functions
 
-- [isRegExp](regexp/isRegExp.md): Is an unknown value a RegExp instance?
-- [assertRegExp](regexp/assertRegExp.md): Assert that an unknown value is a RegExp instance.
-- [getRegExp](regexp/getRegExp.md): Convert a possible regular expression into a RegExp instance.
-- [getRegExpSource](regexp/getRegExpSource.md): Convert a regular expression to its string source.
-- [escapeRegExp](regexp/escapeRegExp.md): Escape special characters in a string regular expression.
-- [createRegExpAny](regexp/createRegExpAny.md): Create a regular expression that matches any one of a list of other expressions.
-- [createRegExpAll](regexp/createRegExpAll.md): Create a regular expression that matches all of a list of other expressions.
-- [isMatch](regexp/isMatch.md): Does a string match against a regular expressions or string.
-- [notMatch](regexp/notMatch.md): Does a string not match against a regular expressions or string.
-- [allMatch](regexp/allMatch.md): All of the provided regular expressions match the string.
-- [anyMatch](regexp/anyMatch.md): At least one of the provided regular expressions matches the string.
-- [noneMatch](regexp/noneMatch.md): None of the provided regular expressions match the string.
-- [getMatch](regexp/getMatch.md): Get an optional regular expression match, or undefined if no match could be made.
-- [requireMatch](regexp/requireMatch.md): Get a required regular expression match, or throw ValueError if no match could be made.
-- [getMatchGroups](regexp/getMatchGroups.md): Get the named groups of an optional regular expression match, or undefined if no match could be made.
-- [requireMatchGroups](regexp/requireMatchGroups.md): Get the named groups of a required regular expression match, or throw ValueError if no match could be made.
+- [isRegExp()](regexp/isRegExp.md): Is an unknown value a RegExp instance?
+- [assertRegExp()](regexp/assertRegExp.md): Assert that an unknown value is a RegExp instance.
+- [getRegExp()](regexp/getRegExp.md): Convert a possible regular expression into a RegExp instance.
+- [getRegExpSource()](regexp/getRegExpSource.md): Convert a regular expression to its string source.
+- [escapeRegExp()](regexp/escapeRegExp.md): Escape special characters in a string regular expression.
+- [createRegExpAny()](regexp/createRegExpAny.md): Create a regular expression that matches any one of a list of other expressions.
+- [createRegExpAll()](regexp/createRegExpAll.md): Create a regular expression that matches all of a list of other expressions.
+- [isMatch()](regexp/isMatch.md): Does a string match against a regular expressions or string.
+- [notMatch()](regexp/notMatch.md): Does a string not match against a regular expressions or string.
+- [allMatch()](regexp/allMatch.md): All of the provided regular expressions match the string.
+- [anyMatch()](regexp/anyMatch.md): At least one of the provided regular expressions matches the string.
+- [noneMatch()](regexp/noneMatch.md): None of the provided regular expressions match the string.
+- [getMatch()](regexp/getMatch.md): Get an optional regular expression match, or undefined if no match could be made.
+- [requireMatch()](regexp/requireMatch.md): Get a required regular expression match, or throw ValueError if no match could be made.
+- [getMatchGroups()](regexp/getMatchGroups.md): Get the named groups of an optional regular expression match, or undefined if no match could be made.
+- [requireMatchGroups()](regexp/requireMatchGroups.md): Get the named groups of a required regular expression match, or throw ValueError if no match could be made.
 
 ## Interfaces
 

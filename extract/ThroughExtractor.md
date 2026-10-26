@@ -40,4 +40,4 @@ new MergingExtractor(new DirectoryExtractor()) // a ThroughExtractor wrapping a 
 
 ## Methods
 
-- [extract](ThroughExtractor/extract.md): Extract from the input by forwarding to source.extract().
+- [ThroughExtractor.extract()](ThroughExtractor/extract.md): Extract from the input by forwarding to source.extract().

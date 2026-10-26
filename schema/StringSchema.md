@@ -93,4 +93,4 @@ new StringSchema({
 
 ## Methods
 
-- [sanitize](StringSchema/sanitize.md): Sanitize the string by removing unwanted characters.
+- [StringSchema.sanitize()](StringSchema/sanitize.md): Sanitize the string by removing unwanted characters.

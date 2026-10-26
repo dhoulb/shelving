@@ -66,17 +66,17 @@ HTTP_SCHEMES; // ["http:", "https:"]
 
 ## Functions
 
-- [isURI](uri/isURI.md): Is an unknown value a URI object?
-- [assertURI](uri/assertURI.md): Assert that an unknown value is a URI object.
-- [getURI](uri/getURI.md): Convert a possible URI to a URI, or return undefined if conversion fails.
-- [requireURI](uri/requireURI.md): Convert a possible URI to a URI, or throw RequiredError if conversion fails.
-- [getURIParams](uri/getURIParams.md): Get a set of params for a URI as a dictionary.
-- [getURIParam](uri/getURIParam.md): Get a single named param from a URI.
-- [requireURIParam](uri/requireURIParam.md): Get a single named param from a URI.
-- [withURIParam](uri/withURIParam.md): Return a URI with a new param set (or same URI if no changes were made).
-- [withURIParams](uri/withURIParams.md): Return a URI with several new params set (or same URI if no changes were made).
-- [omitURIParams](uri/omitURIParams.md): Return a URI without one or more params (or same URI if no changes were made).
-- [clearURIParams](uri/clearURIParams.md): Return a URI with no search params (or same URI if no changes were made).
+- [isURI()](uri/isURI.md): Is an unknown value a URI object?
+- [assertURI()](uri/assertURI.md): Assert that an unknown value is a URI object.
+- [getURI()](uri/getURI.md): Convert a possible URI to a URI, or return undefined if conversion fails.
+- [requireURI()](uri/requireURI.md): Convert a possible URI to a URI, or throw RequiredError if conversion fails.
+- [getURIParams()](uri/getURIParams.md): Get a set of params for a URI as a dictionary.
+- [getURIParam()](uri/getURIParam.md): Get a single named param from a URI.
+- [requireURIParam()](uri/requireURIParam.md): Get a single named param from a URI.
+- [withURIParam()](uri/withURIParam.md): Return a URI with a new param set (or same URI if no changes were made).
+- [withURIParams()](uri/withURIParams.md): Return a URI with several new params set (or same URI if no changes were made).
+- [omitURIParams()](uri/omitURIParams.md): Return a URI without one or more params (or same URI if no changes were made).
+- [clearURIParams()](uri/clearURIParams.md): Return a URI with no search params (or same URI if no changes were made).
 
 ## Interfaces
 

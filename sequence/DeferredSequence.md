@@ -64,12 +64,12 @@ new DeferredSequence<T, R, N>()
 
 ## Methods
 
-- [resolve](DeferredSequence/resolve.md): Resolve the current deferred in the sequence with a value.
-- [reject](DeferredSequence/reject.md): Reject the current deferred in the sequence with an error.
-- [done](DeferredSequence/done.md): Signal that the sequence is done, causing any active for await loops to exit cleanly.
-- [cancel](DeferredSequence/cancel.md): Cancel the current resolution or rejection.
-- [through](DeferredSequence/through.md): Resolve the current deferred from a sequence of values.
-- [next](DeferredSequence/next.md)
-- [then](DeferredSequence/then.md)
-- [catch](DeferredSequence/catch.md)
-- [finally](DeferredSequence/finally.md)
+- [DeferredSequence.resolve()](DeferredSequence/resolve.md): Resolve the current deferred in the sequence with a value.
+- [DeferredSequence.reject()](DeferredSequence/reject.md): Reject the current deferred in the sequence with an error.
+- [DeferredSequence.done()](DeferredSequence/done.md): Signal that the sequence is done, causing any active for await loops to exit cleanly.
+- [DeferredSequence.cancel()](DeferredSequence/cancel.md): Cancel the current resolution or rejection.
+- [DeferredSequence.through()](DeferredSequence/through.md): Resolve the current deferred from a sequence of values.
+- [DeferredSequence.next()](DeferredSequence/next.md)
+- [DeferredSequence.then()](DeferredSequence/then.md)
+- [DeferredSequence.catch()](DeferredSequence/catch.md)
+- [DeferredSequence.finally()](DeferredSequence/finally.md)

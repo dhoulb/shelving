@@ -40,8 +40,8 @@ getRandomItem(["apple", "banana", "cherry"]);  // one element at random
 
 ## Functions
 
-- [getRandom](random/getRandom.md): Generate a random integer between two numbers (inclusive).
-- [getRandomExcept](random/getRandomExcept.md): Get a random integer that is anything except an existing number.
-- [getRandomKey](random/getRandomKey.md): Make a random key, e.g. xs23r34hhsdx or e4m29klrugef
-- [getRandomCharacter](random/getRandomCharacter.md): Get a random character from a string.
-- [getRandomItem](random/getRandomItem.md): Get a random item from an array.
+- [getRandom()](random/getRandom.md): Generate a random integer between two numbers (inclusive).
+- [getRandomExcept()](random/getRandomExcept.md): Get a random integer that is anything except an existing number.
+- [getRandomKey()](random/getRandomKey.md): Make a random key, e.g. xs23r34hhsdx or e4m29klrugef
+- [getRandomCharacter()](random/getRandomCharacter.md): Get a random character from a string.
+- [getRandomItem()](random/getRandomItem.md): Get a random item from an array.

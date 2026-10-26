@@ -46,7 +46,7 @@ const getUser = new Endpoint("GET", "/users/{id}", USER_PAYLOAD, USER_RESULT);
 
 ## Methods
 
-- [renderPath](Endpoint/renderPath.md): Render the path for this endpoint with the given payload.
-- [match](Endpoint/match.md): Match a method/path pair against this endpoint and return any matched {placeholder} params.
-- [handler](Endpoint/handler.md): Create an endpoint handler pairing for this endpoint.
-- [toString](Endpoint/toString.md): Convert this endpoint to a string in METHOD /path form, e.g. GET /user/{id}
+- [Endpoint.renderPath()](Endpoint/renderPath.md): Render the path for this endpoint with the given payload.
+- [Endpoint.match()](Endpoint/match.md): Match a method/path pair against this endpoint and return any matched {placeholder} params.
+- [Endpoint.handler()](Endpoint/handler.md): Create an endpoint handler pairing for this endpoint.
+- [Endpoint.toString()](Endpoint/toString.md): Convert this endpoint to a string in METHOD /path form, e.g. GET /user/{id}

@@ -42,11 +42,11 @@ const cache = new DBCache(provider);
 
 ## Methods
 
-- [get](DBCache/get.md): Get (or create) the CollectionCache for the given collection.
-- [getItem](DBCache/getItem.md): Get (or create) an ItemStore for a collection/id in one hop.
-- [getQuery](DBCache/getQuery.md): Get (or create) a QueryStore for a collection/query in one hop.
-- [refreshItem](DBCache/refreshItem.md): Refresh a specific item store for a collection.
-- [refreshItems](DBCache/refreshItems.md): Refresh every cached item store for a collection.
-- [refreshQuery](DBCache/refreshQuery.md): Refresh a specific query store for a collection.
-- [refreshQueries](DBCache/refreshQueries.md): Refresh every cached query store for a collection.
-- [refreshAll](DBCache/refreshAll.md): Refresh every cached store (items and queries) for a collection.
+- [DBCache.get()](DBCache/get.md): Get (or create) the CollectionCache for the given collection.
+- [DBCache.getItem()](DBCache/getItem.md): Get (or create) an ItemStore for a collection/id in one hop.
+- [DBCache.getQuery()](DBCache/getQuery.md): Get (or create) a QueryStore for a collection/query in one hop.
+- [DBCache.refreshItem()](DBCache/refreshItem.md): Refresh a specific item store for a collection.
+- [DBCache.refreshItems()](DBCache/refreshItems.md): Refresh every cached item store for a collection.
+- [DBCache.refreshQuery()](DBCache/refreshQuery.md): Refresh a specific query store for a collection.
+- [DBCache.refreshQueries()](DBCache/refreshQueries.md): Refresh every cached query store for a collection.
+- [DBCache.refreshAll()](DBCache/refreshAll.md): Refresh every cached store (items and queries) for a collection.

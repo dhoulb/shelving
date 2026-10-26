@@ -40,4 +40,4 @@ class WrapSchema<T> extends ThroughSchema<T> {} // Delegates `validate()` to `th
 
 ## Methods
 
-- [validate](ThroughSchema/validate.md): Validate an unknown input value by passing it through to the source schema.
+- [ThroughSchema.validate()](ThroughSchema/validate.md): Validate an unknown input value by passing it through to the source schema.

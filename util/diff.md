@@ -59,9 +59,9 @@ if (diff !== SAME) applyUpdate(diff);
 
 ## Functions
 
-- [deepDiff](diff/deepDiff.md): Deeply diff two unknown values to produce the transformation needed to transform left into right, or the SAME constant if they are deeply equal.
-- [deepDiffArray](diff/deepDiffArray.md): Diff two arrays to produce the transformation needed to transform left into right DH: Currently arrays don't diff at an item level, they return the entire new array if not deeply equal.
-- [deepDiffObject](diff/deepDiffObject.md): Diff two objects to produce the transformation needed to transform left into right
+- [deepDiff()](diff/deepDiff.md): Deeply diff two unknown values to produce the transformation needed to transform left into right, or the SAME constant if they are deeply equal.
+- [deepDiffArray()](diff/deepDiffArray.md): Diff two arrays to produce the transformation needed to transform left into right DH: Currently arrays don't diff at an item level, they return the entire new array if not deeply equal.
+- [deepDiffObject()](diff/deepDiffObject.md): Diff two objects to produce the transformation needed to transform left into right
 
 ## Constants
 

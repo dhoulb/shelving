@@ -29,4 +29,4 @@ class JSONExtractor extends Extractor<string, TreeElement> {
 
 ## Methods
 
-- [extract](Extractor/extract.md): Extract a tree element from the given input.
+- [Extractor.extract()](Extractor/extract.md): Extract a tree element from the given input.

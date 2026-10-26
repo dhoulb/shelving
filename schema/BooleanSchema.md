@@ -52,4 +52,4 @@ new BooleanSchema({ value = false, required = false, ...options }: BooleanSchema
 
 ## Methods
 
-- [validate](BooleanSchema/validate.md): Validate an unknown value and coerce it to a boolean.
+- [BooleanSchema.validate()](BooleanSchema/validate.md): Validate an unknown value and coerce it to a boolean.

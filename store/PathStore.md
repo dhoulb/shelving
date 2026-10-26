@@ -54,6 +54,6 @@ new PathStore(path: AbsolutePath | RelativePath = ".", base: AbsolutePath = "/")
 
 ## Methods
 
-- [isActive](PathStore/isActive.md): Based on the current store path, is a path active (i.e. equal to the current path)?
-- [isProud](PathStore/isProud.md): Based on the current store path, is a path proud (i.e. an ancestor of the current store path)?
-- [getPath](PathStore/getPath.md): Get an absolute path from a path relative to the current store path.
+- [PathStore.isActive()](PathStore/isActive.md): Based on the current store path, is a path active (i.e. equal to the current path)?
+- [PathStore.isProud()](PathStore/isProud.md): Based on the current store path, is a path proud (i.e. an ancestor of the current store path)?
+- [PathStore.getPath()](PathStore/getPath.md): Get an absolute path from a path relative to the current store path.

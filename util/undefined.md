@@ -31,11 +31,11 @@ const v = requireDefined(maybeValue); // returns the value or throws
 
 ## Functions
 
-- [getUndefined](undefined/getUndefined.md): Function that always returns undefined.
-- [isUndefined](undefined/isUndefined.md): Is a value undefined?
-- [isDefined](undefined/isDefined.md): Is a value defined (i.e. not undefined)?
-- [assertDefined](undefined/assertDefined.md): Assert that a value is not undefined.
-- [requireDefined](undefined/requireDefined.md): Get a defined value, or throw if it is undefined.
+- [getUndefined()](undefined/getUndefined.md): Function that always returns undefined.
+- [isUndefined()](undefined/isUndefined.md): Is a value undefined?
+- [isDefined()](undefined/isDefined.md): Is a value defined (i.e. not undefined)?
+- [assertDefined()](undefined/assertDefined.md): Assert that a value is not undefined.
+- [requireDefined()](undefined/requireDefined.md): Get a defined value, or throw if it is undefined.
 
 ## Constants
 

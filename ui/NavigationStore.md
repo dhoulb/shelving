@@ -67,6 +67,6 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 
 ## Methods
 
-- [forward](NavigationStore/forward.md): Navigate forward to a URL, pushing a new browser history entry.
-- [redirect](NavigationStore/redirect.md): Redirect to a URL, replacing the current browser history entry.
-- [back](NavigationStore/back.md): Navigate back to a URL, pushing a new browser history entry with the "back" transition type.
+- [NavigationStore.forward()](NavigationStore/forward.md): Navigate forward to a URL, pushing a new browser history entry.
+- [NavigationStore.redirect()](NavigationStore/redirect.md): Redirect to a URL, replacing the current browser history entry.
+- [NavigationStore.back()](NavigationStore/back.md): Navigate back to a URL, pushing a new browser history entry with the "back" transition type.

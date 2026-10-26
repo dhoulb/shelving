@@ -67,6 +67,6 @@ new RecordingDBProvider<I, T>()
 
 ## Methods
 
-- [replay](RecordingDBProvider/replay.md): Replay every recorded operation onto another provider, in order.
-- [replayWrites](RecordingDBProvider/replayWrites.md): Replay only the recorded write operations onto another provider, in order.
-- [replayReads](RecordingDBProvider/replayReads.md): Replay only the recorded "get" read operations onto another provider, in order.
+- [RecordingDBProvider.replay()](RecordingDBProvider/replay.md): Replay every recorded operation onto another provider, in order.
+- [RecordingDBProvider.replayWrites()](RecordingDBProvider/replayWrites.md): Replay only the recorded write operations onto another provider, in order.
+- [RecordingDBProvider.replayReads()](RecordingDBProvider/replayReads.md): Replay only the recorded "get" read operations onto another provider, in order.

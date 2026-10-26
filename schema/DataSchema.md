@@ -93,5 +93,5 @@ new DataSchema<T>({ one = "item", title = "Item", props, value: partialValue, ..
 
 ## Methods
 
-- [pick](DataSchema/pick.md): Make a new DataSchema that only uses a defined subset of the current props.
-- [omit](DataSchema/omit.md): Make a new DataSchema that omits one or more of the current props.
+- [DataSchema.pick()](DataSchema/pick.md): Make a new DataSchema that only uses a defined subset of the current props.
+- [DataSchema.omit()](DataSchema/omit.md): Make a new DataSchema that omits one or more of the current props.

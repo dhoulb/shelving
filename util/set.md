@@ -63,15 +63,15 @@ limitSet(s, 10); // same Set reference (no copy needed)
 
 ## Functions
 
-- [isSet](set/isSet.md): Is an unknown value a set?
-- [assertSet](set/assertSet.md): Assert that a value is a Set instance.
-- [getSet](set/getSet.md): Convert a possible set to a Set.
-- [limitSet](set/limitSet.md): Apply a limit to a set.
-- [isSetItem](set/isSetItem.md): Is an unknown value an item in a set?
-- [assertSetItem](set/assertSetItem.md): Assert that an unknown value is an item in a set.
-- [addSetItem](set/addSetItem.md): Add an item to a set (by reference) and return the set item.
-- [addSetItems](set/addSetItems.md): Add multiple items to a set (by reference).
-- [deleteSetItems](set/deleteSetItems.md): Remove multiple items from a set (by reference).
+- [isSet()](set/isSet.md): Is an unknown value a set?
+- [assertSet()](set/assertSet.md): Assert that a value is a Set instance.
+- [getSet()](set/getSet.md): Convert a possible set to a Set.
+- [limitSet()](set/limitSet.md): Apply a limit to a set.
+- [isSetItem()](set/isSetItem.md): Is an unknown value an item in a set?
+- [assertSetItem()](set/assertSetItem.md): Assert that an unknown value is an item in a set.
+- [addSetItem()](set/addSetItem.md): Add an item to a set (by reference) and return the set item.
+- [addSetItems()](set/addSetItems.md): Add multiple items to a set (by reference).
+- [deleteSetItems()](set/deleteSetItems.md): Remove multiple items from a set (by reference).
 
 ## Types
 

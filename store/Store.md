@@ -106,14 +106,14 @@ new Store<T, TT>(value: StoreInternal<T>)
 
 ## Methods
 
-- [write](Store/write.md): Write a synchronous value to this store.
-- [read](Store/read.md): Called to read values. Can be used to override get behaviour.
-- [stale](Store/stale.md): Whether this store is stale based on a maxAge value in milliseconds.
-- [through](Store/through.md): Set the value of this store as values are pulled from a sequence.
-- [call](Store/call.md): Call a callback and save the returned value to this store.
-- [reduce](Store/reduce.md): Send the current value to a callback and save the returned value to this store.
-- [run](Store/run.md): Run a callback and ignore any returned value.
-- [send](Store/send.md): Send the current value to a callback and ignore any returned value.
-- [await](Store/await.md): Await an async value and save it to this store.
-- [abort](Store/abort.md): Abort any current pending await() call.
-- [subscribe](Store/subscribe.md): Subscribe to this store with handlers.
+- [Store.write()](Store/write.md): Write a synchronous value to this store.
+- [Store.read()](Store/read.md): Called to read values. Can be used to override get behaviour.
+- [Store.stale()](Store/stale.md): Whether this store is stale based on a maxAge value in milliseconds.
+- [Store.through()](Store/through.md): Set the value of this store as values are pulled from a sequence.
+- [Store.call()](Store/call.md): Call a callback and save the returned value to this store.
+- [Store.reduce()](Store/reduce.md): Send the current value to a callback and save the returned value to this store.
+- [Store.run()](Store/run.md): Run a callback and ignore any returned value.
+- [Store.send()](Store/send.md): Send the current value to a callback and ignore any returned value.
+- [Store.await()](Store/await.md): Await an async value and save it to this store.
+- [Store.abort()](Store/abort.md): Abort any current pending await() call.
+- [Store.subscribe()](Store/subscribe.md): Subscribe to this store with handlers.

@@ -66,18 +66,18 @@ reduceItems([1, 2, 3, 4], (acc, n) => acc + n, 0); // 10
 
 ## Functions
 
-- [isIterable](iterate/isIterable.md): Is an unknown value an iterable?
-- [flattenItems](iterate/flattenItems.md): Flatten one or more (possibly nested) iterables into a flat sequence of items.
-- [hasItems](iterate/hasItems.md): Does an iterable have one or more items.
-- [countItems](iterate/countItems.md): Count the number of items in an iterable.
-- [getRange](iterate/getRange.md): Yield a range of numbers from start to end
-- [limitItems](iterate/limitItems.md): Apply a limit to an iterable set of items.
-- [pickItems](iterate/pickItems.md): Pick items from an iterable set of items.
-- [omitItems](iterate/omitItems.md): Omit items from an iterable set of items.
-- [reduceItems](iterate/reduceItems.md): Reduce an iterable set of items using a reducer function.
-- [getChunks](iterate/getChunks.md): Yield chunks of a given size.
-- [mergeItems](iterate/mergeItems.md): Merge two or more iterables into a single iterable set.
-- [interleaveItems](iterate/interleaveItems.md): Interleave items with a separator, i.e. [item1, separator, item2, separator, item3]
+- [isIterable()](iterate/isIterable.md): Is an unknown value an iterable?
+- [flattenItems()](iterate/flattenItems.md): Flatten one or more (possibly nested) iterables into a flat sequence of items.
+- [hasItems()](iterate/hasItems.md): Does an iterable have one or more items.
+- [countItems()](iterate/countItems.md): Count the number of items in an iterable.
+- [getRange()](iterate/getRange.md): Yield a range of numbers from start to end
+- [limitItems()](iterate/limitItems.md): Apply a limit to an iterable set of items.
+- [pickItems()](iterate/pickItems.md): Pick items from an iterable set of items.
+- [omitItems()](iterate/omitItems.md): Omit items from an iterable set of items.
+- [reduceItems()](iterate/reduceItems.md): Reduce an iterable set of items using a reducer function.
+- [getChunks()](iterate/getChunks.md): Yield chunks of a given size.
+- [mergeItems()](iterate/mergeItems.md): Merge two or more iterables into a single iterable set.
+- [interleaveItems()](iterate/interleaveItems.md): Interleave items with a separator, i.e. [item1, separator, item2, separator, item3]
 
 ## Types
 

@@ -56,8 +56,8 @@ new DictionaryStore<T>(value: PossibleDictionary<T> = EMPTY_DICTIONARY)
 
 ## Methods
 
-- [update](DictionaryStore/update.md): Update several entries in this dictionary.
-- [deleteItems](DictionaryStore/deleteItems.md): Remove one or more named entries from this dictionary.
-- [get](DictionaryStore/get.md): Get a single named item from this dictionary, or undefined if it is not set.
-- [set](DictionaryStore/set.md): Set a single named item in this dictionary.
-- [delete](DictionaryStore/delete.md): Delete one or more named items from this dictionary.
+- [DictionaryStore.update()](DictionaryStore/update.md): Update several entries in this dictionary.
+- [DictionaryStore.deleteItems()](DictionaryStore/deleteItems.md): Remove one or more named entries from this dictionary.
+- [DictionaryStore.get()](DictionaryStore/get.md): Get a single named item from this dictionary, or undefined if it is not set.
+- [DictionaryStore.set()](DictionaryStore/set.md): Set a single named item in this dictionary.
+- [DictionaryStore.delete()](DictionaryStore/delete.md): Delete one or more named items from this dictionary.

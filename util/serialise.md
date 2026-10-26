@@ -5,4 +5,4 @@
 
 ## Functions
 
-- [serialise](serialise/serialise.md): Serialise any value to a stable, consistent string (a JSON.stringify() that never loses information).
+- [serialise()](serialise/serialise.md): Serialise any value to a stable, consistent string (a JSON.stringify() that never loses information).

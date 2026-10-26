@@ -33,4 +33,4 @@ new DBMigrator<T>(provider: T)
 
 ## Methods
 
-- [migrate](DBMigrator/migrate.md): Bring the provider's storage into line with the given collection schemas.
+- [DBMigrator.migrate()](DBMigrator/migrate.md): Bring the provider's storage into line with the given collection schemas.

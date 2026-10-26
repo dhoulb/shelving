@@ -37,7 +37,7 @@ new Unit<K>(list: UnitList<K>, key: K, { to, ...options }: UnitProps<K>)
 
 ## Methods
 
-- [to](Unit/to.md): Convert an amount from this unit to another unit.
-- [from](Unit/from.md): Convert an amount from another unit to this unit.
-- [format](Unit/format.md): Format an amount with a given unit of measure, e.g. 12 kg or 29.5 l
-- [formatAbbr](Unit/formatAbbr.md): Format the short name of this unit on its own, e.g. km or min, with no number.
+- [Unit.to()](Unit/to.md): Convert an amount from this unit to another unit.
+- [Unit.from()](Unit/from.md): Convert an amount from another unit to this unit.
+- [Unit.format()](Unit/format.md): Format an amount with a given unit of measure, e.g. 12 kg or 29.5 l
+- [Unit.formatAbbr()](Unit/formatAbbr.md): Format the short name of this unit on its own, e.g. km or min, with no number.

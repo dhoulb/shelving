@@ -32,10 +32,10 @@ requireFileExtension("no-ext");       // throws RequiredError
 
 ## Functions
 
-- [getFileAccept](file/getFileAccept.md): Get the accept attribute of a file input for a set of file types, e.g. "image/jpeg,image/png".
-- [splitFileExtension](file/splitFileExtension.md): Split a filename into its base name and extension in a single pass.
-- [getFileExtension](file/getFileExtension.md): Get the file extension from a file path, e.g. "md", or return undefined if the input has no extension.
-- [requireFileExtension](file/requireFileExtension.md): Get the file extension from a file path e.g. "tsx", or throw RequiredError if the input has no extension.
+- [getFileAccept()](file/getFileAccept.md): Get the accept attribute of a file input for a set of file types, e.g. "image/jpeg,image/png".
+- [splitFileExtension()](file/splitFileExtension.md): Split a filename into its base name and extension in a single pass.
+- [getFileExtension()](file/getFileExtension.md): Get the file extension from a file path, e.g. "md", or return undefined if the input has no extension.
+- [requireFileExtension()](file/requireFileExtension.md): Get the file extension from a file path e.g. "tsx", or throw RequiredError if the input has no extension.
 
 ## Types
 

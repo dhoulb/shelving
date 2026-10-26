@@ -71,5 +71,5 @@ new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${o
 
 ## Methods
 
-- [get](ChoiceSchema/get.md): Get an unknown value as one of the allowed choices, or undefined if it isn't one.
-- [validate](ChoiceSchema/validate.md): Validate an unknown value as one of the allowed choices.
+- [ChoiceSchema.get()](ChoiceSchema/get.md): Get an unknown value as one of the allowed choices, or undefined if it isn't one.
+- [ChoiceSchema.validate()](ChoiceSchema/validate.md): Validate an unknown value as one of the allowed choices.

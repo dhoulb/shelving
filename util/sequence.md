@@ -83,12 +83,12 @@ isSequence([1, 2, 3]);        // false  (sync iterables are not async iterables)
 
 ## Functions
 
-- [isSequence](sequence/isSequence.md): Is a value an async iterable object?
-- [repeatUntil](sequence/repeatUntil.md): Infinite sequence that relays a source sequence until one of the abort signals resolves.
-- [repeatDelay](sequence/repeatDelay.md): Infinite sequence that yields every X milliseconds (yields a count of the number of iterations).
-- [callSequence](sequence/callSequence.md): Dispatch items in a sequence to a (possibly async) callback.
-- [runSequence](sequence/runSequence.md): Iterate over a sequence until the returned stop() callback is called.
-- [mergeSequences](sequence/mergeSequences.md): Merge several sequences (calls the sequences in series).
+- [isSequence()](sequence/isSequence.md): Is a value an async iterable object?
+- [repeatUntil()](sequence/repeatUntil.md): Infinite sequence that relays a source sequence until one of the abort signals resolves.
+- [repeatDelay()](sequence/repeatDelay.md): Infinite sequence that yields every X milliseconds (yields a count of the number of iterations).
+- [callSequence()](sequence/callSequence.md): Dispatch items in a sequence to a (possibly async) callback.
+- [runSequence()](sequence/runSequence.md): Iterate over a sequence until the returned stop() callback is called.
+- [mergeSequences()](sequence/mergeSequences.md): Merge several sequences (calls the sequences in series).
 
 ## Interfaces
 

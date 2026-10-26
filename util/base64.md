@@ -49,9 +49,9 @@ const token = encodeBase64URL(key);
 
 ## Functions
 
-- [encodeBase64](base64/encodeBase64.md): Encode a string or binary data to a Base64 string.
-- [decodeBase64String](base64/decodeBase64String.md): Decode a Base64 string to a string (decodes Base64URL too).
-- [decodeBase64Bytes](base64/decodeBase64Bytes.md): Decode a Base64 string to a byte sequence (decodes Base64URL too).
-- [encodeBase64URL](base64/encodeBase64URL.md): Encode a string or binary data to a URL-safe Base64 string.
-- [decodeBase64URLString](base64/decodeBase64URLString.md): Decode a string from a URL-safe Base64 string (decodes Base64 too).
-- [decodeBase64URLBytes](base64/decodeBase64URLBytes.md): Decode a URL-safe Base64 string to a byte sequence (decodes Base64 too).
+- [encodeBase64()](base64/encodeBase64.md): Encode a string or binary data to a Base64 string.
+- [decodeBase64String()](base64/decodeBase64String.md): Decode a Base64 string to a string (decodes Base64URL too).
+- [decodeBase64Bytes()](base64/decodeBase64Bytes.md): Decode a Base64 string to a byte sequence (decodes Base64URL too).
+- [encodeBase64URL()](base64/encodeBase64URL.md): Encode a string or binary data to a URL-safe Base64 string.
+- [decodeBase64URLString()](base64/decodeBase64URLString.md): Decode a string from a URL-safe Base64 string (decodes Base64 too).
+- [decodeBase64URLBytes()](base64/decodeBase64URLBytes.md): Decode a URL-safe Base64 string to a byte sequence (decodes Base64 too).

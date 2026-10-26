@@ -39,8 +39,8 @@ requireLink("/schema", pageURL, siteRoot); // "https://x.com/app/schema"
 
 ## Functions
 
-- [getLink](link/getLink.md): Resolve a possible link to an absolute URI string, or return undefined if resolution fails.
-- [requireLink](link/requireLink.md): Resolve a possible link to an absolute URI string, or throw RequiredError if resolution fails.
+- [getLink()](link/getLink.md): Resolve a possible link to an absolute URI string, or return undefined if resolution fails.
+- [requireLink()](link/requireLink.md): Resolve a possible link to an absolute URI string, or throw RequiredError if resolution fails.
 
 ## Types
 

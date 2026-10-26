@@ -45,8 +45,8 @@ new APIProvider<P, R>()
 
 ## Methods
 
-- [renderURL](APIProvider/renderURL.md): Render the full final URL for an API request to a given endpoint with a given payload.
-- [createRequest](APIProvider/createRequest.md): Create a Request that targets this endpoint with a given base URL.
-- [fetch](APIProvider/fetch.md): Send a Request and return its Response (defaults to the JavaScript fetch() API).
-- [parseResponse](APIProvider/parseResponse.md): Parse an HTTP Response for this endpoint into a result value.
-- [call](APIProvider/call.md): Send a payload to an Endpoint and retrieve the parsed result.
+- [APIProvider.renderURL()](APIProvider/renderURL.md): Render the full final URL for an API request to a given endpoint with a given payload.
+- [APIProvider.createRequest()](APIProvider/createRequest.md): Create a Request that targets this endpoint with a given base URL.
+- [APIProvider.fetch()](APIProvider/fetch.md): Send a Request and return its Response (defaults to the JavaScript fetch() API).
+- [APIProvider.parseResponse()](APIProvider/parseResponse.md): Parse an HTTP Response for this endpoint into a result value.
+- [APIProvider.call()](APIProvider/call.md): Send a payload to an Endpoint and retrieve the parsed result.

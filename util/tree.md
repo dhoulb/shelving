@@ -57,8 +57,8 @@ const el: DocumentationElement = {
 
 ## Functions
 
-- [flattenTree](tree/flattenTree.md): Flatten a tree into a Map for O(1) lookup, stamping a canonical path onto every element as it walks.
-- [searchTree](tree/searchTree.md): Search the descendants of a tree element and return the best-ranked matches.
+- [flattenTree()](tree/flattenTree.md): Flatten a tree into a Map for O(1) lookup, stamping a canonical path onto every element as it walks.
+- [searchTree()](tree/searchTree.md): Search the descendants of a tree element and return the best-ranked matches.
 
 ## Interfaces
 

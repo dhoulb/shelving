@@ -49,7 +49,7 @@ new MarkupParser({ rules = MARKUP_RULES, rel, url, root, schemes = HTTP_SCHEMES,
 
 ## Methods
 
-- [nested](MarkupParser/nested.md): Return a copy of this parser with depth incremented by one, sharing all other options.
-- [parse](MarkupParser/parse.md): Parse a text string as Markdownish markup syntax and render it as a React node.
-- [getRules](MarkupParser/getRules.md): Yield the rules active in context that sit in the given priority tier.
-- [getLink](MarkupParser/getLink.md): Resolve a link href against this parser's url and root, returning it only if its scheme is allowed.
+- [MarkupParser.nested()](MarkupParser/nested.md): Return a copy of this parser with depth incremented by one, sharing all other options.
+- [MarkupParser.parse()](MarkupParser/parse.md): Parse a text string as Markdownish markup syntax and render it as a React node.
+- [MarkupParser.getRules()](MarkupParser/getRules.md): Yield the rules active in context that sit in the given priority tier.
+- [MarkupParser.getLink()](MarkupParser/getLink.md): Resolve a link href against this parser's url and root, returning it only if its scheme is allowed.

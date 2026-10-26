@@ -60,8 +60,8 @@ mergeArray([1, 2, 3], [3, 4, 5]); // [1, 2, 3, 4, 5]
 
 ## Functions
 
-- [exactMerge](merge/exactMerge.md): Exact merge two unknown values.
-- [shallowMerge](merge/shallowMerge.md): Shallow merge two unknown values.
-- [deepMerge](merge/deepMerge.md): Deeply merge two unknown values.
-- [mergeArray](merge/mergeArray.md): Merge two arrays.
-- [mergeObject](merge/mergeObject.md): Merge two data objects.
+- [exactMerge()](merge/exactMerge.md): Exact merge two unknown values.
+- [shallowMerge()](merge/shallowMerge.md): Shallow merge two unknown values.
+- [deepMerge()](merge/deepMerge.md): Deeply merge two unknown values.
+- [mergeArray()](merge/mergeArray.md): Merge two arrays.
+- [mergeObject()](merge/mergeObject.md): Merge two data objects.

@@ -43,10 +43,10 @@ const cache = new CollectionCache(collection, provider);
 
 ## Methods
 
-- [getItem](CollectionCache/getItem.md): Get (or create) the ItemStore for the given id.
-- [getQuery](CollectionCache/getQuery.md): Get (or create) the QueryStore for the given query.
-- [refreshItem](CollectionCache/refreshItem.md): Refresh a specific item store.
-- [refreshItems](CollectionCache/refreshItems.md): Refresh every cached item store.
-- [refreshQuery](CollectionCache/refreshQuery.md): Refresh a specific query store.
-- [refreshQueries](CollectionCache/refreshQueries.md): Refresh every cached query store.
-- [refreshAll](CollectionCache/refreshAll.md): Refresh every cached store (items and queries).
+- [CollectionCache.getItem()](CollectionCache/getItem.md): Get (or create) the ItemStore for the given id.
+- [CollectionCache.getQuery()](CollectionCache/getQuery.md): Get (or create) the QueryStore for the given query.
+- [CollectionCache.refreshItem()](CollectionCache/refreshItem.md): Refresh a specific item store.
+- [CollectionCache.refreshItems()](CollectionCache/refreshItems.md): Refresh every cached item store.
+- [CollectionCache.refreshQuery()](CollectionCache/refreshQuery.md): Refresh a specific query store.
+- [CollectionCache.refreshQueries()](CollectionCache/refreshQueries.md): Refresh every cached query store.
+- [CollectionCache.refreshAll()](CollectionCache/refreshAll.md): Refresh every cached store (items and queries).

@@ -32,6 +32,6 @@ requireUUID("bad-value");                            // throws RequiredError
 
 ## Functions
 
-- [randomUUID](uuid/randomUUID.md): Return a random UUID (v4) as a 32-character lowercase hex string with dashes stripped.
-- [getUUID](uuid/getUUID.md): Convert/validate a string value as a UUID, or return undefined if it isn't valid.
-- [requireUUID](uuid/requireUUID.md): Convert/validate a string value as a UUID, or throw RequiredError if it isn't valid.
+- [randomUUID()](uuid/randomUUID.md): Return a random UUID (v4) as a 32-character lowercase hex string with dashes stripped.
+- [getUUID()](uuid/getUUID.md): Convert/validate a string value as a UUID, or return undefined if it isn't valid.
+- [requireUUID()](uuid/requireUUID.md): Convert/validate a string value as a UUID, or throw RequiredError if it isn't valid.

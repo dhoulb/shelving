@@ -80,6 +80,6 @@ new FormStore<T>(schema: DataSchema<T>, partialData: Partial<T> = {}, messages?:
 
 ## Methods
 
-- [requireSchema](FormStore/requireSchema.md): Get the Schema for a named field of this form.
-- [publish](FormStore/publish.md): Validate and set a value for a named field of this form.
-- [submit](FormStore/submit.md): Validate the current form value and run an optional submit callback with it.
+- [FormStore.requireSchema()](FormStore/requireSchema.md): Get the Schema for a named field of this form.
+- [FormStore.publish()](FormStore/publish.md): Validate and set a value for a named field of this form.
+- [FormStore.submit()](FormStore/submit.md): Validate the current form value and run an optional submit callback with it.

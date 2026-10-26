@@ -22,8 +22,8 @@ new SQLMigrator<T>()
 
 ## Methods
 
-- [migrate](SQLMigrator/migrate.md): Run each statement from getMigrations() against the provider in order.
-- [getMigrations](SQLMigrator/getMigrations.md): Compute the SQL statements needed to bring the tables into line with the given collection schemas, without executing them.
-- [getCreateTableQuery](SQLMigrator/getCreateTableQuery.md): Build the CREATE TABLE statement for a collection, including its ID, data, and generated columns.
-- [getCreateTableColumns](SQLMigrator/getCreateTableColumns.md): Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
-- [getGeneratedTableColumns](SQLMigrator/getGeneratedTableColumns.md): Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.
+- [SQLMigrator.migrate()](SQLMigrator/migrate.md): Run each statement from getMigrations() against the provider in order.
+- [SQLMigrator.getMigrations()](SQLMigrator/getMigrations.md): Compute the SQL statements needed to bring the tables into line with the given collection schemas, without executing them.
+- [SQLMigrator.getCreateTableQuery()](SQLMigrator/getCreateTableQuery.md): Build the CREATE TABLE statement for a collection, including its ID, data, and generated columns.
+- [SQLMigrator.getCreateTableColumns()](SQLMigrator/getCreateTableColumns.md): Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
+- [SQLMigrator.getGeneratedTableColumns()](SQLMigrator/getGeneratedTableColumns.md): Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.

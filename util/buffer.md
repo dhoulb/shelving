@@ -26,9 +26,9 @@ The `TypedArray` type exported from this file covers all numeric typed array cla
 
 ## Functions
 
-- [isBuffer](buffer/isBuffer.md): Detect if an unknown value is an ArrayBuffer (not a view like Uint8Array or Float32Array or DataView).
-- [isBufferView](buffer/isBufferView.md): Detect if an unknown value is an ArrayBufferView, like Uint8Array or Float32Array or DataView.
-- [isTypedArray](buffer/isTypedArray.md): Detect if an unknown value is a TypedArray, like Uint8Array or Float32Array (not including DataView).
+- [isBuffer()](buffer/isBuffer.md): Detect if an unknown value is an ArrayBuffer (not a view like Uint8Array or Float32Array or DataView).
+- [isBufferView()](buffer/isBufferView.md): Detect if an unknown value is an ArrayBufferView, like Uint8Array or Float32Array or DataView.
+- [isTypedArray()](buffer/isTypedArray.md): Detect if an unknown value is a TypedArray, like Uint8Array or Float32Array (not including DataView).
 
 ## Types
 

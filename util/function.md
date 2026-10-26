@@ -49,10 +49,10 @@ const onError: ErrorCallback = (err) => console.error(err);
 
 ## Functions
 
-- [isFunction](function/isFunction.md): Is a value a function?
-- [assertFunction](function/assertFunction.md): Assert that a value is a function.
-- [PASSTHROUGH](function/PASSTHROUGH.md): Function that just passes through the first argument.
-- [BLACKHOLE](function/BLACKHOLE.md): Function that does nothing with its arguments and always returns void.
+- [isFunction()](function/isFunction.md): Is a value a function?
+- [assertFunction()](function/assertFunction.md): Assert that a value is a function.
+- [PASSTHROUGH()](function/PASSTHROUGH.md): Function that just passes through the first argument.
+- [BLACKHOLE()](function/BLACKHOLE.md): Function that does nothing with its arguments and always returns void.
 
 ## Types
 

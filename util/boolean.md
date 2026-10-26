@@ -35,13 +35,13 @@ assertFalsy(value);    // throws RequiredError if truthy
 
 ## Functions
 
-- [isBoolean](boolean/isBoolean.md): Is an unknown value a boolean?
-- [isTrue](boolean/isTrue.md): Is an unknown value exactly true?
-- [isFalse](boolean/isFalse.md): Is an unknown value exactly false?
-- [isTruthy](boolean/isTruthy.md): Is an unknown value truthy?
-- [isFalsey](boolean/isFalsey.md): Is an unknown value falsey?
-- [assertBoolean](boolean/assertBoolean.md): Assert that an unknown value is a boolean.
-- [assertTrue](boolean/assertTrue.md): Assert that an unknown value is exactly true.
-- [assertFalse](boolean/assertFalse.md): Assert that an unknown value is exactly false.
-- [assertTruthy](boolean/assertTruthy.md): Assert that an unknown value is truthy.
-- [assertFalsy](boolean/assertFalsy.md): Assert that an unknown value is falsy.
+- [isBoolean()](boolean/isBoolean.md): Is an unknown value a boolean?
+- [isTrue()](boolean/isTrue.md): Is an unknown value exactly true?
+- [isFalse()](boolean/isFalse.md): Is an unknown value exactly false?
+- [isTruthy()](boolean/isTruthy.md): Is an unknown value truthy?
+- [isFalsey()](boolean/isFalsey.md): Is an unknown value falsey?
+- [assertBoolean()](boolean/assertBoolean.md): Assert that an unknown value is a boolean.
+- [assertTrue()](boolean/assertTrue.md): Assert that an unknown value is exactly true.
+- [assertFalse()](boolean/assertFalse.md): Assert that an unknown value is exactly false.
+- [assertTruthy()](boolean/assertTruthy.md): Assert that an unknown value is truthy.
+- [assertFalsy()](boolean/assertFalsy.md): Assert that an unknown value is falsy.

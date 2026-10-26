@@ -16,4 +16,4 @@ Regular expression that contains the specified named capture groups.
 
 ## Methods
 
-- [exec](NamedRegExp/exec.md)
+- [NamedRegExp.exec()](NamedRegExp/exec.md)

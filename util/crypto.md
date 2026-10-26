@@ -37,6 +37,6 @@ const token = getRandomBytes(32); // Uint8Array of 32 random bytes
 
 ## Functions
 
-- [getRandomBytes](crypto/getRandomBytes.md): Get cryptographically-random bytes from the platform crypto API.
-- [hashPassword](crypto/hashPassword.md): Hash a password using PBKDF2, generating a new salt, and return the combined salt$iterations$hash string.
-- [verifyPassword](crypto/verifyPassword.md): Verify a password against a stored salt$iterations$hash string using PBKDF2.
+- [getRandomBytes()](crypto/getRandomBytes.md): Get cryptographically-random bytes from the platform crypto API.
+- [hashPassword()](crypto/hashPassword.md): Hash a password using PBKDF2, generating a new salt, and return the combined salt$iterations$hash string.
+- [verifyPassword()](crypto/verifyPassword.md): Verify a password against a stored salt$iterations$hash string using PBKDF2.

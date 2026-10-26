@@ -20,7 +20,7 @@ Declares only the subset of the D1 prepared-statement API used by `CloudflareD1P
 
 ## Methods
 
-- [bind](D1PreparedStatement/bind.md)
-- [first](D1PreparedStatement/first.md)
-- [raw](D1PreparedStatement/raw.md)
-- [run](D1PreparedStatement/run.md)
+- [D1PreparedStatement.bind()](D1PreparedStatement/bind.md)
+- [D1PreparedStatement.first()](D1PreparedStatement/first.md)
+- [D1PreparedStatement.raw()](D1PreparedStatement/raw.md)
+- [D1PreparedStatement.run()](D1PreparedStatement/run.md)

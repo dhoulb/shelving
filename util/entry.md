@@ -48,11 +48,11 @@ type O = EntryObject<E>; // { status: "active" | "inactive" }
 
 ## Functions
 
-- [getEntryKey](entry/getEntryKey.md): Extract the key from an object entry.
-- [getEntryValue](entry/getEntryValue.md): Extract the value from an object entry.
-- [getEntryKeys](entry/getEntryKeys.md): Yield the keys of an iterable set of entries.
-- [getEntryValues](entry/getEntryValues.md): Yield the values of an iterable set of entries.
-- [getEntries](entry/getEntries.md): Yield the entries from one or more entry-yielding sources (sets, objects, maps, arrays, or iterables of entries).
+- [getEntryKey()](entry/getEntryKey.md): Extract the key from an object entry.
+- [getEntryValue()](entry/getEntryValue.md): Extract the value from an object entry.
+- [getEntryKeys()](entry/getEntryKeys.md): Yield the keys of an iterable set of entries.
+- [getEntryValues()](entry/getEntryValues.md): Yield the values of an iterable set of entries.
+- [getEntries()](entry/getEntries.md): Yield the entries from one or more entry-yielding sources (sets, objects, maps, arrays, or iterables of entries).
 
 ## Types
 

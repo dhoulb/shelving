@@ -70,12 +70,12 @@ type MyShape = ValidatorsType<typeof validators>;     // { name: string; age: nu
 
 ## Functions
 
-- [getValid](validate/getValid.md): Validate a value with a given validator, or return undefined if the value could not be validated.
-- [requireValid](validate/requireValid.md): Validate a value with a given validator, or throw RequiredError if the value could not be validated.
-- [validateItems](validate/validateItems.md): Validate an iterable set of items with a validator, yielding each valid item.
-- [validateArray](validate/validateArray.md): Validate an array of items with a validator.
-- [validateDictionary](validate/validateDictionary.md): Validate the values of the entries in a dictionary object with a validator.
-- [validateData](validate/validateData.md): Validate a data object with a set of validators.
+- [getValid()](validate/getValid.md): Validate a value with a given validator, or return undefined if the value could not be validated.
+- [requireValid()](validate/requireValid.md): Validate a value with a given validator, or throw RequiredError if the value could not be validated.
+- [validateItems()](validate/validateItems.md): Validate an iterable set of items with a validator, yielding each valid item.
+- [validateArray()](validate/validateArray.md): Validate an array of items with a validator.
+- [validateDictionary()](validate/validateDictionary.md): Validate the values of the entries in a dictionary object with a validator.
+- [validateData()](validate/validateData.md): Validate a data object with a set of validators.
 
 ## Interfaces
 

@@ -69,8 +69,8 @@ getUpdates({ "+=count": 1, "-[]tags": "old" });
 
 ## Functions
 
-- [getUpdates](update/getUpdates.md): Decode the prop updates in an Updates object into a set of Update objects.
-- [updateData](update/updateData.md): Return a copy of a data object with a set of updates applied.
+- [getUpdates()](update/getUpdates.md): Decode the prop updates in an Updates object into a set of Update objects.
+- [updateData()](update/updateData.md): Return a copy of a data object with a set of updates applied.
 
 ## Types
 

@@ -50,4 +50,4 @@ const schema = new DateSchema({ min: "2000-01-01" });
 
 ## Methods
 
-- [stringify](DateSchema/stringify.md): Convert a Date object to the string representation used by this schema.
+- [DateSchema.stringify()](DateSchema/stringify.md): Convert a Date object to the string representation used by this schema.

@@ -43,5 +43,5 @@ const notice = notices.show("Saved", "success"); notice.close();
 
 ## Methods
 
-- [show](NoticeStore/show.md): Update the notice's content and status, resetting its auto-close timer.
-- [close](NoticeStore/close.md): Close this notice permanently, removing it from its parent NoticesStore.
+- [NoticeStore.show()](NoticeStore/show.md): Update the notice's content and status, resetting its auto-close timer.
+- [NoticeStore.close()](NoticeStore/close.md): Close this notice permanently, removing it from its parent NoticesStore.

@@ -63,5 +63,5 @@ new FetchStore<T, TT>(value: T | typeof NONE, callback?: FetchCallback<TT>)
 
 ## Methods
 
-- [refresh](FetchStore/refresh.md): Fetch the result for this store now.
-- [invalidate](FetchStore/invalidate.md): Invalidate this store so a new fetch is triggered on the next read of loading or value.
+- [FetchStore.refresh()](FetchStore/refresh.md): Fetch the result for this store now.
+- [FetchStore.invalidate()](FetchStore/invalidate.md): Invalidate this store so a new fetch is triggered on the next read of loading or value.

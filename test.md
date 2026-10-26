@@ -62,9 +62,9 @@ expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 
 ## Functions
 
-- [expectUnorderedItems](test/expectUnorderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in any order.
-- [expectOrderedItems](test/expectOrderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in the exact given order.
-- [testDBProvider](test/testDBProvider.md): Register the universal DBProvider contract test suite against a provider, so every backend proves the same behaviour.
+- [testDBProvider()](test/testDBProvider.md): Register the universal DBProvider contract test suite against a provider, so every backend proves the same behaviour.
+- [expectUnorderedItems()](test/expectUnorderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in any order.
+- [expectOrderedItems()](test/expectOrderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in the exact given order.
 
 ## Classes
 
@@ -83,7 +83,6 @@ expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 
 ## Constants
 
-- [EXPECT_PROMISELIKE](test/EXPECT_PROMISELIKE.md): Asymmetric matcher that expects an object matching PromiseLike (i.e. has a .then() method).
 - [BASIC_SCHEMA](test/BASIC_SCHEMA.md): Schema for a test "basic" fixture, exercising string, number, choice, array, boolean, and nested-data props.
 - [basic1](test/basic1.md): Test basic fixture: str: "aaa", num: 100, group a, odd.
 - [basic2](test/basic2.md): Test basic fixture: str: "bbb", num: 200, group a, even.
@@ -105,3 +104,4 @@ expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 - [person5](test/person5.md): Test person fixture: Terry Times, born 1964-08-01.
 - [people](test/people.md): Ordered array of all five test person fixtures (person1 through person5).
 - [PEOPLE_COLLECTION](test/PEOPLE_COLLECTION.md): Collection of PersonData items keyed by string id, for testing database providers.
+- [EXPECT_PROMISELIKE](test/EXPECT_PROMISELIKE.md): Asymmetric matcher that expects an object matching PromiseLike (i.e. has a .then() method).

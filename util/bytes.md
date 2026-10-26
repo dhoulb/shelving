@@ -39,10 +39,10 @@ requireBytes(value, 8);                  // also requires at least 8 bytes
 
 ## Functions
 
-- [isBytes](bytes/isBytes.md): Is an unknown value a set of bytes?
-- [assertBytes](bytes/assertBytes.md): Assert that an unknown value is a Uint8Array byte sequence (optionally with a min/max length).
-- [getBytes](bytes/getBytes.md): Convert an unknown value to a Uint8Array<ArrayBuffer> byte sequence, or undefined if the value cannot be converted.
-- [requireBytes](bytes/requireBytes.md): Convert a possible set of bytes to a Uint8Array byte sequence, or throw RequiredError if the value cannot be converted.
+- [isBytes()](bytes/isBytes.md): Is an unknown value a set of bytes?
+- [assertBytes()](bytes/assertBytes.md): Assert that an unknown value is a Uint8Array byte sequence (optionally with a min/max length).
+- [getBytes()](bytes/getBytes.md): Convert an unknown value to a Uint8Array<ArrayBuffer> byte sequence, or undefined if the value cannot be converted.
+- [requireBytes()](bytes/requireBytes.md): Convert a possible set of bytes to a Uint8Array byte sequence, or throw RequiredError if the value cannot be converted.
 
 ## Types
 

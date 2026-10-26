@@ -35,5 +35,5 @@ new Timeout(callback: Callback | undefined = undefined, ms = 0)
 
 ## Methods
 
-- [set](Timeout/set.md): Cancel any existing timeout and set a new one.
-- [clear](Timeout/clear.md): Cancel any existing timeout.
+- [Timeout.set()](Timeout/set.md): Cancel any existing timeout and set a new one.
+- [Timeout.clear()](Timeout/clear.md): Cancel any existing timeout.

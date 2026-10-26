@@ -40,10 +40,10 @@ getCurrencyStep("JPY"); // 1
 
 ## Functions
 
-- [getCurrencyCode](currency/getCurrencyCode.md): Normalise a value to a valid ISO 4217 CurrencyCode, or undefined if it isn't a supported currency.
-- [requireCurrencyCode](currency/requireCurrencyCode.md): Normalise a value to a valid ISO 4217 CurrencyCode, or throw RequiredError if it isn't a supported currency.
-- [getCurrencySymbol](currency/getCurrencySymbol.md): Get the display symbol used for a currency.
-- [getCurrencyStep](currency/getCurrencyStep.md): Get the "step" value for a currency, i.e. the smallest fractional unit that is used for that currency.
+- [getCurrencyCode()](currency/getCurrencyCode.md): Normalise a value to a valid ISO 4217 CurrencyCode, or undefined if it isn't a supported currency.
+- [requireCurrencyCode()](currency/requireCurrencyCode.md): Normalise a value to a valid ISO 4217 CurrencyCode, or throw RequiredError if it isn't a supported currency.
+- [getCurrencySymbol()](currency/getCurrencySymbol.md): Get the display symbol used for a currency.
+- [getCurrencyStep()](currency/getCurrencyStep.md): Get the "step" value for a currency, i.e. the smallest fractional unit that is used for that currency.
 
 ## Types
 

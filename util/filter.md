@@ -48,9 +48,9 @@ const result = Array.from(filterItems(["a", "b", "c", "d"], isInArray, allowed))
 
 ## Functions
 
-- [filterItems](filter/filterItems.md): Filter an iterable set of items using a matcher.
-- [filterArray](filter/filterArray.md): Filter an array (immutably) using a matcher.
-- [filterSequence](filter/filterSequence.md): Filter a sequence of values using a matcher.
+- [filterItems()](filter/filterItems.md): Filter an iterable set of items using a matcher.
+- [filterArray()](filter/filterArray.md): Filter an array (immutably) using a matcher.
+- [filterSequence()](filter/filterSequence.md): Filter a sequence of values using a matcher.
 
 ## Types
 

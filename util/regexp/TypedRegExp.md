@@ -16,4 +16,4 @@ Regular expression that matches a specific string format.
 
 ## Methods
 
-- [exec](TypedRegExp/exec.md)
+- [TypedRegExp.exec()](TypedRegExp/exec.md)

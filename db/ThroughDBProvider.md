@@ -78,4 +78,4 @@ new ThroughDBProvider<I, T>(source: DBProvider<I, T>)
 
 ## Methods
 
-- [cloneWith](ThroughDBProvider/cloneWith.md): Clone this provider with different source.
+- [ThroughDBProvider.cloneWith()](ThroughDBProvider/cloneWith.md): Clone this provider with different source.

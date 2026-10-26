@@ -86,22 +86,22 @@ formatURL("https://example.com/page?ref=123");  // "example.com/page"
 
 ## Functions
 
-- [formatBoolean](format/formatBoolean.md): Format a boolean as "Yes" or "No".
-- [formatNumber](format/formatNumber.md): Format a number (based on the user's browser language settings).
-- [formatRange](format/formatRange.md): Format a number range (based on the user's browser language settings).
-- [formatUnit](format/formatUnit.md): Format a quantity of a given unit.
-- [formatUnitAbbr](format/formatUnitAbbr.md): Format the short name of a unit on its own, e.g. "km" or "min", with no number.
-- [formatCurrency](format/formatCurrency.md): Format a currency amount (based on the user's browser language settings).
-- [formatPercent](format/formatPercent.md): Format a percentage (combines getPercent() and formatUnit() for convenience).
-- [formatObject](format/formatObject.md): Format an unknown object as a string.
-- [formatArray](format/formatArray.md): Format an unknown array as a string.
-- [formatDate](format/formatDate.md): Format a date in the browser locale.
-- [formatTime](format/formatTime.md): Format a time in the browser locale (no seconds by default).
-- [formatDateTime](format/formatDateTime.md): Format a datetime in the browser locale (no seconds by default).
-- [formatURI](format/formatURI.md): Format a URI as a user-friendly string.
-- [formatURL](format/formatURL.md): Format a URL as a user-friendly string.
-- [formatValue](format/formatValue.md): Convert any unknown value into a friendly string for user-facing use.
-- [formatValues](format/formatValues.md): Format a sequence of values.
+- [formatBoolean()](format/formatBoolean.md): Format a boolean as "Yes" or "No".
+- [formatNumber()](format/formatNumber.md): Format a number (based on the user's browser language settings).
+- [formatRange()](format/formatRange.md): Format a number range (based on the user's browser language settings).
+- [formatUnit()](format/formatUnit.md): Format a quantity of a given unit.
+- [formatUnitAbbr()](format/formatUnitAbbr.md): Format the short name of a unit on its own, e.g. "km" or "min", with no number.
+- [formatCurrency()](format/formatCurrency.md): Format a currency amount (based on the user's browser language settings).
+- [formatPercent()](format/formatPercent.md): Format a percentage (combines getPercent() and formatUnit() for convenience).
+- [formatObject()](format/formatObject.md): Format an unknown object as a string.
+- [formatArray()](format/formatArray.md): Format an unknown array as a string.
+- [formatDate()](format/formatDate.md): Format a date in the browser locale.
+- [formatTime()](format/formatTime.md): Format a time in the browser locale (no seconds by default).
+- [formatDateTime()](format/formatDateTime.md): Format a datetime in the browser locale (no seconds by default).
+- [formatURI()](format/formatURI.md): Format a URI as a user-friendly string.
+- [formatURL()](format/formatURL.md): Format a URL as a user-friendly string.
+- [formatValue()](format/formatValue.md): Convert any unknown value into a friendly string for user-facing use.
+- [formatValues()](format/formatValues.md): Format a sequence of values.
 
 ## Interfaces
 

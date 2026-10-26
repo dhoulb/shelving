@@ -59,10 +59,10 @@ Color.from("#abc");  // same as getColor
 
 ## Functions
 
-- [isColor](color/isColor.md): Is an unknown value a Color instance?
-- [assertColor](color/assertColor.md): Assert that an unknown value is a Color instance.
-- [getColor](color/getColor.md): Convert an unknown value to a Color instance, or return undefined if conversion fails.
-- [requireColor](color/requireColor.md): Convert a possible color to a Color instance, or throw RequiredError if it can't be converted.
+- [isColor()](color/isColor.md): Is an unknown value a Color instance?
+- [assertColor()](color/assertColor.md): Assert that an unknown value is a Color instance.
+- [getColor()](color/getColor.md): Convert an unknown value to a Color instance, or return undefined if conversion fails.
+- [requireColor()](color/requireColor.md): Convert a possible color to a Color instance, or throw RequiredError if it can't be converted.
 
 ## Classes
 

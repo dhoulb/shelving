@@ -68,23 +68,23 @@ getClosestNumber([1, 5, 10], 4);  // 5
 
 ## Functions
 
-- [isNumber](number/isNumber.md): Is a value a finite number (optionally within a specified min/max range)?
-- [assertNumber](number/assertNumber.md): Assert that a value is a finite number (optionally within a specified min/max range).
-- [getNumber](number/getNumber.md): Convert an unknown value to a finite number, or return undefined if it cannot be converted.
-- [requireNumber](number/requireNumber.md): Convert a possible number to a finite number, or throw RequiredError if the value cannot be converted.
-- [isInteger](number/isInteger.md): Is an unknown value an integer (optionally within specified min/max values)?
-- [assertInteger](number/assertInteger.md): Assert that a value is an integer (optionally within specified min/max values).
-- [getInteger](number/getInteger.md): Convert an unknown value to an integer, or return undefined if it cannot be converted.
-- [requireInteger](number/requireInteger.md): Convert a possible number to an integer, or throw RequiredError if the value cannot be converted.
-- [isBetween](number/isBetween.md): Is a number within a specified range?
-- [roundStep](number/roundStep.md): Round numbers to a given step.
-- [roundNumber](number/roundNumber.md): Round a number to a specified set of decimal places.
-- [truncateNumber](number/truncateNumber.md): Truncate a number to a specified set of decimal places.
-- [boundNumber](number/boundNumber.md): Bound a number between two values.
-- [wrapNumber](number/wrapNumber.md): Wrap a number between two values.
-- [getPercent](number/getPercent.md): Get a number as a percentage of another number.
-- [sumNumbers](number/sumNumbers.md): Sum an iterable set of numbers and return the total.
-- [getClosestNumber](number/getClosestNumber.md): Find the number that's closest to a target in an iterable set of numbers.
+- [isNumber()](number/isNumber.md): Is a value a finite number (optionally within a specified min/max range)?
+- [assertNumber()](number/assertNumber.md): Assert that a value is a finite number (optionally within a specified min/max range).
+- [getNumber()](number/getNumber.md): Convert an unknown value to a finite number, or return undefined if it cannot be converted.
+- [requireNumber()](number/requireNumber.md): Convert a possible number to a finite number, or throw RequiredError if the value cannot be converted.
+- [isInteger()](number/isInteger.md): Is an unknown value an integer (optionally within specified min/max values)?
+- [assertInteger()](number/assertInteger.md): Assert that a value is an integer (optionally within specified min/max values).
+- [getInteger()](number/getInteger.md): Convert an unknown value to an integer, or return undefined if it cannot be converted.
+- [requireInteger()](number/requireInteger.md): Convert a possible number to an integer, or throw RequiredError if the value cannot be converted.
+- [isBetween()](number/isBetween.md): Is a number within a specified range?
+- [roundStep()](number/roundStep.md): Round numbers to a given step.
+- [roundNumber()](number/roundNumber.md): Round a number to a specified set of decimal places.
+- [truncateNumber()](number/truncateNumber.md): Truncate a number to a specified set of decimal places.
+- [boundNumber()](number/boundNumber.md): Bound a number between two values.
+- [wrapNumber()](number/wrapNumber.md): Wrap a number between two values.
+- [getPercent()](number/getPercent.md): Get a number as a percentage of another number.
+- [sumNumbers()](number/sumNumbers.md): Sum an iterable set of numbers and return the total.
+- [getClosestNumber()](number/getClosestNumber.md): Find the number that's closest to a target in an iterable set of numbers.
 
 ## Types
 

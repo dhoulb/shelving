@@ -64,9 +64,9 @@ compareDescending(1, 2);     // positive  (reversed)
 
 ## Functions
 
-- [compareAscending](sort/compareAscending.md): Compare two unknown values in ascending order.
-- [compareDescending](sort/compareDescending.md): Compare two unknown values in descending order.
-- [sortArray](sort/sortArray.md): Sort an iterable set of items using a ranker (defaults to sorting in ascending order).
+- [compareAscending()](sort/compareAscending.md): Compare two unknown values in ascending order.
+- [compareDescending()](sort/compareDescending.md): Compare two unknown values in descending order.
+- [sortArray()](sort/sortArray.md): Sort an iterable set of items using a ranker (defaults to sorting in ascending order).
 
 ## Types
 

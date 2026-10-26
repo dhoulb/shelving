@@ -35,5 +35,5 @@ new UnitList<K>(units: ImmutableObject<K, UnitProps<K>>)
 
 ## Methods
 
-- [convert](UnitList/convert.md): Convert an amount from a unit in this list to another unit in this list.
-- [require](UnitList/require.md): Require a unit from this list.
+- [UnitList.convert()](UnitList/convert.md): Convert an amount from a unit in this list to another unit in this list.
+- [UnitList.require()](UnitList/require.md): Require a unit from this list.

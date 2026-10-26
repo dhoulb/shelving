@@ -23,6 +23,6 @@ logRequestError(error, request);
 
 ## Functions
 
-- [logRequest](log/logRequest.md): Log a Request to the console.
-- [logRequestResponse](log/logRequestResponse.md): Log a Response to a Request to the console.
-- [logRequestError](log/logRequestError.md): Log an Error from a Request to the console.
+- [logRequest()](log/logRequest.md): Log a Request to the console.
+- [logRequestResponse()](log/logRequestResponse.md): Log a Response to a Request to the console.
+- [logRequestError()](log/logRequestError.md): Log an Error from a Request to the console.

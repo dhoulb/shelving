@@ -5,8 +5,8 @@
 
 ## Functions
 
-- [hydrate](hydrate/hydrate.md): Deeply hydrate a class instance based on a set of Hydrations
-- [dehydrate](hydrate/dehydrate.md): Deeply dehydrate a class instance based on a set of Hydrations
+- [hydrate()](hydrate/hydrate.md): Deeply hydrate a class instance based on a set of Hydrations
+- [dehydrate()](hydrate/dehydrate.md): Deeply dehydrate a class instance based on a set of Hydrations
 
 ## Types
 

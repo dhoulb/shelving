@@ -67,10 +67,10 @@ This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which sta
 
 ## Functions
 
-- [toFirestoreValue](firebase/toFirestoreValue.md): Convert a data value to its Firestore REST API JSON representation.
-- [toFirestoreFields](firebase/toFirestoreFields.md): Convert a data object to Firestore REST API document fields.
-- [toDataValue](firebase/toDataValue.md): Convert a Firestore REST API JSON value back to a data value.
-- [toData](firebase/toData.md): Convert Firestore REST API document fields back to a data object.
+- [toFirestoreValue()](firebase/toFirestoreValue.md): Convert a data value to its Firestore REST API JSON representation.
+- [toFirestoreFields()](firebase/toFirestoreFields.md): Convert a data object to Firestore REST API document fields.
+- [toDataValue()](firebase/toDataValue.md): Convert a Firestore REST API JSON value back to a data value.
+- [toData()](firebase/toData.md): Convert Firestore REST API document fields back to a data object.
 
 ## Classes
 

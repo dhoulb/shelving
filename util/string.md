@@ -81,31 +81,31 @@ joinStrings(["a", "b", "c"], ", "); // "a, b, c"
 
 ## Functions
 
-- [isString](string/isString.md): Is an unknown value a string?
-- [assertString](string/assertString.md): Assert that a value is a string.
-- [getString](string/getString.md): Convert an unknown value to a string, or return undefined if conversion fails.
-- [requireString](string/requireString.md): Convert a possible string to a string, or throw RequiredError if conversion fails.
-- [isStringLength](string/isStringLength.md): Is a value a string with a length between min and max?
-- [assertStringLength](string/assertStringLength.md): Assert that a value is a string with a length between min and max.
-- [requireStringLength](string/requireStringLength.md): Convert a possible string to a string with min/max length, or throw RequiredError if conversion fails.
-- [isStringBetween](string/isStringBetween.md): Does a string have a length between min and max?
-- [joinStrings](string/joinStrings.md): Concatenate an iterable set of strings together.
-- [sanitizeText](string/sanitizeText.md): Sanitize a single line of text.
-- [sanitizeWord](string/sanitizeWord.md): Sanitize a single word of text.
-- [sanitizeMultilineText](string/sanitizeMultilineText.md): Sanitize multiple lines of text.
-- [simplifyString](string/simplifyString.md): Simplify a string by removing anything that isn't a number, letter, or space.
-- [getSlug](string/getSlug.md): Convert a string to a kebab-case URL slug, or return undefined if conversion resulted in an empty ref.
-- [requireSlug](string/requireSlug.md): Convert a string to a kebab-case URL slug, or throw RequiredError if conversion resulted in an empty ref.
-- [getRef](string/getRef.md): Convert a string to a unique ref e.g. abc123, or return undefined if conversion resulted in an empty string.
-- [requireRef](string/requireRef.md): Convert a string to a unique ref e.g. abc123, or throw RequiredError if conversion resulted in an empty string.
-- [getWords](string/getWords.md): Return an array of the separate words and "quoted phrases" found in a string.
-- [getFirstLine](string/getFirstLine.md): Get the (trimmed) first full line of a string.
-- [isUppercaseLetter](string/isUppercaseLetter.md): Is the first character of a string an uppercase letter?
-- [isLowercaseLetter](string/isLowercaseLetter.md): Is the first character of a string a lowercase letter?
-- [limitString](string/limitString.md): Limit a string to a given length.
-- [splitString](string/splitString.md): Divide a string into parts based on a separator.
-- [trimString](string/trimString.md): Trim a string (as a function, so it can be used in mapping).
-- [isNonEmptyString](string/isNonEmptyString.md): Does a string have length?
+- [isString()](string/isString.md): Is an unknown value a string?
+- [assertString()](string/assertString.md): Assert that a value is a string.
+- [getString()](string/getString.md): Convert an unknown value to a string, or return undefined if conversion fails.
+- [requireString()](string/requireString.md): Convert a possible string to a string, or throw RequiredError if conversion fails.
+- [isStringLength()](string/isStringLength.md): Is a value a string with a length between min and max?
+- [assertStringLength()](string/assertStringLength.md): Assert that a value is a string with a length between min and max.
+- [requireStringLength()](string/requireStringLength.md): Convert a possible string to a string with min/max length, or throw RequiredError if conversion fails.
+- [isStringBetween()](string/isStringBetween.md): Does a string have a length between min and max?
+- [joinStrings()](string/joinStrings.md): Concatenate an iterable set of strings together.
+- [sanitizeText()](string/sanitizeText.md): Sanitize a single line of text.
+- [sanitizeWord()](string/sanitizeWord.md): Sanitize a single word of text.
+- [sanitizeMultilineText()](string/sanitizeMultilineText.md): Sanitize multiple lines of text.
+- [simplifyString()](string/simplifyString.md): Simplify a string by removing anything that isn't a number, letter, or space.
+- [getSlug()](string/getSlug.md): Convert a string to a kebab-case URL slug, or return undefined if conversion resulted in an empty ref.
+- [requireSlug()](string/requireSlug.md): Convert a string to a kebab-case URL slug, or throw RequiredError if conversion resulted in an empty ref.
+- [getRef()](string/getRef.md): Convert a string to a unique ref e.g. abc123, or return undefined if conversion resulted in an empty string.
+- [requireRef()](string/requireRef.md): Convert a string to a unique ref e.g. abc123, or throw RequiredError if conversion resulted in an empty string.
+- [getWords()](string/getWords.md): Return an array of the separate words and "quoted phrases" found in a string.
+- [getFirstLine()](string/getFirstLine.md): Get the (trimmed) first full line of a string.
+- [isUppercaseLetter()](string/isUppercaseLetter.md): Is the first character of a string an uppercase letter?
+- [isLowercaseLetter()](string/isLowercaseLetter.md): Is the first character of a string a lowercase letter?
+- [limitString()](string/limitString.md): Limit a string to a given length.
+- [splitString()](string/splitString.md): Divide a string into parts based on a separator.
+- [trimString()](string/trimString.md): Trim a string (as a function, so it can be used in mapping).
+- [isNonEmptyString()](string/isNonEmptyString.md): Does a string have length?
 
 ## Types
 

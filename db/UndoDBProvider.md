@@ -61,4 +61,4 @@ const local = new UndoDBProvider(memory);
 
 ## Methods
 
-- [undo](UndoDBProvider/undo.md): Restore the wrapped provider to the state the log first observed, undoing this provider's writes.
+- [UndoDBProvider.undo()](UndoDBProvider/undo.md): Restore the wrapped provider to the state the log first observed, undoing this provider's writes.

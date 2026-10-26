@@ -79,13 +79,13 @@ getPlaceholders("*-*");                        // ["0", "1"]
 
 ## Functions
 
-- [getPlaceholders](template/getPlaceholders.md): Get list of placeholders named in a template string.
-- [matchTemplate](template/matchTemplate.md): Match a template against a target string with no separator semantics.
-- [matchPathTemplate](template/matchPathTemplate.md): Match a path-shaped template against a target path.
-- [matchTemplates](template/matchTemplates.md): Match multiple templates against a target string and return the first match (no separator semantics).
-- [matchPathTemplates](template/matchPathTemplates.md): Match multiple path-shaped templates against a target path and return the first match.
-- [renderTemplate](template/renderTemplate.md): Turn ":year-:month" and { year: "2016"... } etc into "2016-06..." etc.
-- [renderPathTemplate](template/renderPathTemplate.md): Render a path-shaped template, percent-encoding each substituted value so it stays within its path segment.
+- [getPlaceholders()](template/getPlaceholders.md): Get list of placeholders named in a template string.
+- [matchTemplate()](template/matchTemplate.md): Match a template against a target string with no separator semantics.
+- [matchPathTemplate()](template/matchPathTemplate.md): Match a path-shaped template against a target path.
+- [matchTemplates()](template/matchTemplates.md): Match multiple templates against a target string and return the first match (no separator semantics).
+- [matchPathTemplates()](template/matchPathTemplates.md): Match multiple path-shaped templates against a target path and return the first match.
+- [renderTemplate()](template/renderTemplate.md): Turn ":year-:month" and { year: "2016"... } etc into "2016-06..." etc.
+- [renderPathTemplate()](template/renderPathTemplate.md): Render a path-shaped template, percent-encoding each substituted value so it stays within its path segment.
 
 ## Types
 

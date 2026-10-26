@@ -39,11 +39,11 @@ const setter = getSetter(obj, "name"); // the setter function, or undefined
 
 ## Functions
 
-- [isConstructor](class/isConstructor.md): Is a given value a class constructor?
-- [isInstance](class/isInstance.md): Is a value an instance of a class?
-- [assertInstance](class/assertInstance.md): Assert that a value is an instance of something.
-- [getGetter](class/getGetter.md): Get the 'getter' function for a given property, or undefined if it doesn't exist.
-- [getSetter](class/getSetter.md): Get the 'setter' function for a given property, or undefined if it doesn't exist.
+- [isConstructor()](class/isConstructor.md): Is a given value a class constructor?
+- [isInstance()](class/isInstance.md): Is a value an instance of a class?
+- [assertInstance()](class/assertInstance.md): Assert that a value is an instance of something.
+- [getGetter()](class/getGetter.md): Get the 'getter' function for a given property, or undefined if it doesn't exist.
+- [getSetter()](class/getSetter.md): Get the 'setter' function for a given property, or undefined if it doesn't exist.
 
 ## Types
 

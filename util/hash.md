@@ -25,5 +25,5 @@ const colorIndex = hashStringBetween("alice", 0, 10);  // 0–9
 
 ## Functions
 
-- [hashString](hash/hashString.md): Hash a string into an idempotent number.
-- [hashStringBetween](hash/hashStringBetween.md): Hash a string into an idempotent number wrapped between two values.
+- [hashString()](hash/hashString.md): Hash a string into an idempotent number.
+- [hashStringBetween()](hash/hashStringBetween.md): Hash a string into an idempotent number wrapped between two values.
