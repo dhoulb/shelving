@@ -1,0 +1,48 @@
+# getRadiusClass()
+
+- Kind: function
+- Import: `import { getRadiusClass } from "shelving/ui";`
+
+Get the corner-radius class for a component from its `radius` variant prop.
+
+This module's main job is to **define and document the corner-radius design tokens**. Components don't take a `radius` prop — they read these tokens directly and expose their own per-component hooks (`--card-radius`, `--button-radius`, …) for surgical overrides. `getRadiusClass({ radius })` exists as a utility (e.g. `radius="large"` → `radius-large`) and as the home for this documentation.
+
+## Theme variables
+
+The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app. Every step derives from `--radius-normal`, so changing that one value reflows the whole ramp.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `--radius-xxsmall` | `calc(var(--radius-normal) * 0.25)` | 4px |
+| `--radius-xsmall` | `calc(var(--radius-normal) * 0.5)` | 8px |
+| `--radius-small` | `calc(var(--radius-normal) * 0.75)` | 12px |
+| `--radius-normal` | `1rem` | 16px — Base radius (the root of the scale) |
+| `--radius-large` | `calc(var(--radius-normal) * 1.5)` | 24px |
+| `--radius-xlarge` | `calc(var(--radius-normal) * 2)` | 32px |
+| `--radius-xxlarge` | `calc(var(--radius-normal) * 3)` | 48px |
+
+
+## Signatures
+
+```ts
+getRadiusClass({ radius }: RadiusVariants): string | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `options` | `RadiusVariants` |  |
+| `.radius` | `RadiusVariant \| undefined` | Corner radius of the element. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `string \| undefined` | The radius class string, or `undefined` when no `radius` is set. |
+
+## Examples
+
+```ts
+getRadiusClass({ radius: "large" }) // "radius-large"
+```

@@ -1,0 +1,37 @@
+# DebugAPIProvider
+
+- Kind: class
+- Import: `import { DebugAPIProvider } from "shelving/api";`
+- Extends: `ThroughAPIProvider<P, R>`
+
+Provider that logs every request, response, and error to the console in detail to help diagnose issues in development.
+
+A wrapping provider for development. `DebugAPIProvider` writes verbose console output for every call — including full request and response bodies — so you can see exactly what is going over the wire.
+
+It is the noisy counterpart to `LoggingAPIProvider`: use `DebugAPIProvider` while developing, and `LoggingAPIProvider` (or nothing) in production.
+
+## Usage
+
+```ts
+import { ClientAPIProvider, DebugAPIProvider } from "shelving/api"
+
+const provider = new DebugAPIProvider(
+  new ClientAPIProvider({ url: "https://api.example.com" })
+)
+
+await provider.call(getUser, { id: "u_123" })
+// Console shows the full request and response, including bodies.
+```
+
+
+## Signatures
+
+```ts
+new DebugAPIProvider<P, R>()
+```
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `DebugAPIProvider<P, R>` |  |

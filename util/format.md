@@ -1,0 +1,114 @@
+# shelving/util/format
+
+- Kind: module
+- Import: `import { … } from "shelving/util/format";`
+
+A collection of helpers for converting typed values into user-readable strings. All formatters respect the browser's locale by default and accept an optional `locale` override — they delegate to the `Intl` APIs where possible so internationalisation and translation are handled automatically.
+
+**Things to know:**
+
+- `formatPercent()` takes a 0–100 numerator (not 0–1 like the raw `Intl` API), defaults to zero decimal places, and rounds toward zero so "99.99%" shows as "99%".
+- `formatUnit()` and `formatUnitAbbr()` fall back gracefully when the browser does not support a given unit in `Intl.NumberFormat`, or does not support `Intl.supportedValuesOf()` at all.
+- `formatValue()` is the catch-all: `null`/`undefined` → `"None"`, booleans → `"Yes"`/`"No"`, arrays → locale list, objects → `name`/`title`/`id` property.
+- `formatURI()` strips the scheme and query string — `mailto:dave@shax.com` → `dave@shax.com`.
+
+## Usage
+
+### Numbers, ranges, and currencies
+
+```ts
+import { formatNumber, formatRange, formatCurrency, formatPercent } from "shelving/util";
+
+formatNumber(1234567.89);             // "1,234,567.89"  (locale-dependent)
+formatRange(10, 20);                   // "10–20"
+formatCurrency(9.99, "GBP");          // "£9.99"
+formatPercent(33.3);                   // "33%"
+formatPercent(33.3, 100, { maximumFractionDigits: 1 }); // "33.3%"
+```
+
+### Units
+
+```ts
+import { formatUnit, formatUnitAbbr } from "shelving/util";
+
+formatUnit(5, "kilometer");                   // "5 km"  (browser-supported unit)
+formatUnit(12, "widget", { unitDisplay: "long", one: "widget", many: "widgets" });
+// "12 widgets"
+
+// Short name on its own, with no number.
+formatUnitAbbr("kilometer");                  // "km"
+formatUnitAbbr("widget", { abbr: "wdg" });    // "wdg"
+```
+
+### Dates and times
+
+```ts
+import { formatDate, formatTime, formatDateTime } from "shelving/util";
+
+formatDate(new Date("2024-06-01"));           // "6/1/2024"  (locale-dependent)
+formatTime(new Date("2024-06-01T14:30:00"));  // "02:30 PM"
+formatDateTime(new Date("2024-06-01T14:30:00")); // "6/1/2024, 02:30 PM"
+```
+
+### Booleans and generic values
+
+```ts
+import { formatBoolean, formatValue } from "shelving/util";
+
+formatBoolean(true);   // "Yes"
+formatBoolean(false);  // "No"
+
+formatValue(null);           // "None"
+formatValue(42);             // "42"
+formatValue([1, 2, 3]);      // "1, 2, and 3"
+formatValue({ name: "Alice" }); // "Alice"
+```
+
+### Arrays and objects
+
+```ts
+import { formatArray, formatObject } from "shelving/util";
+
+formatArray(["apples", "oranges", "pears"]);          // "apples, oranges, and pears"
+formatArray(["apples", "oranges"], { type: "disjunction" }); // "apples or oranges"
+formatObject({ name: "Widget" });  // "Widget"
+```
+
+### URLs and URIs
+
+```ts
+import { formatURI, formatURL } from "shelving/util";
+
+formatURI("mailto:dave@shax.com");              // "dave@shax.com"
+formatURL("https://example.com/page?ref=123");  // "example.com/page"
+```
+
+
+## Functions
+
+- [formatBoolean](format/formatBoolean.md): Format a boolean as "Yes" or "No".
+- [formatNumber](format/formatNumber.md): Format a number (based on the user's browser language settings).
+- [formatRange](format/formatRange.md): Format a number range (based on the user's browser language settings).
+- [formatUnit](format/formatUnit.md): Format a quantity of a given unit.
+- [formatUnitAbbr](format/formatUnitAbbr.md): Format the short name of a unit on its own, e.g. "km" or "min", with no number.
+- [formatCurrency](format/formatCurrency.md): Format a currency amount (based on the user's browser language settings).
+- [formatPercent](format/formatPercent.md): Format a percentage (combines getPercent() and formatUnit() for convenience).
+- [formatObject](format/formatObject.md): Format an unknown object as a string.
+- [formatArray](format/formatArray.md): Format an unknown array as a string.
+- [formatDate](format/formatDate.md): Format a date in the browser locale.
+- [formatTime](format/formatTime.md): Format a time in the browser locale (no seconds by default).
+- [formatDateTime](format/formatDateTime.md): Format a datetime in the browser locale (no seconds by default).
+- [formatURI](format/formatURI.md): Format a URI as a user-friendly string.
+- [formatURL](format/formatURL.md): Format a URL as a user-friendly string.
+- [formatValue](format/formatValue.md): Convert any unknown value into a friendly string for user-facing use.
+- [formatValues](format/formatValues.md): Format a sequence of values.
+
+## Interfaces
+
+- [FormatOptions](format/FormatOptions.md): Options that are shared across all formatters.
+- [NumberFormatOptions](format/NumberFormatOptions.md): Options we use for number formatting.
+- [UnitFormatOptions](format/UnitFormatOptions.md): Options for quantity formatting.
+- [CurrencyFormatOptions](format/CurrencyFormatOptions.md): Options we use for currency formatting.
+- [PercentFormatOptions](format/PercentFormatOptions.md): Options we use for percent formatting.
+- [ArrayFormatOptions](format/ArrayFormatOptions.md): Options for formatting an array as a string with formatArray().
+- [DateFormatOptions](format/DateFormatOptions.md): Options we use for date, time, and datetime formatting.
