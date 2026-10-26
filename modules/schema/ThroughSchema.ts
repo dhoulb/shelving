@@ -43,3 +43,19 @@ export abstract class ThroughSchema<T> extends Schema<T> implements Sourceable<S
 		return this.source.format(value);
 	}
 }
+
+/**
+ * Get the innermost source of a wrapper schema, or the schema itself if it is not a `ThroughSchema`.
+ *
+ * - Unlike `getSource()`, it only goes through `ThroughSchema` wrappers (e.g. `NullableSchema`, `OptionalSchema`), so it never leaves the schema for another kind of source.
+ *
+ * @param schema The schema to unwrap.
+ * @returns The innermost schema that is not a `ThroughSchema`.
+ * @example getSourceSchema(OPTIONAL(NULLABLE(NUMBER))) // NUMBER
+ * @see https://shelving.cc/schema/getSourceSchema
+ */
+export function getSourceSchema(schema: Schema<unknown>): Schema<unknown> {
+	let current = schema;
+	while (current instanceof ThroughSchema) current = current.source;
+	return current;
+}

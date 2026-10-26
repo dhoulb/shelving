@@ -7,10 +7,11 @@ import {
 	CollectionQueryItemsSchema,
 	CollectionQuerySchema,
 } from "shelving/db";
-import { NULLABLE, OPTIONAL, STRING } from "shelving/schema";
+import { NULLABLE, OPTIONAL, STRING, UpdatesSchema } from "shelving/schema";
 import type { Item, Items } from "shelving/util/item";
 import type { Query, QueryItems } from "shelving/util/query";
 import { getSource } from "shelving/util/source";
+import type { Updates } from "shelving/util/update";
 
 const USERS = COLLECTION("users", STRING, { name: STRING });
 type UserItem = Item<string, { name: string }>;
@@ -23,6 +24,8 @@ describe("Collection", () => {
 		const s2: Items<string, { name: string }> = USERS.items.validate([]);
 		const q1: CollectionQuerySchema<string, { name: string }> = USERS.query;
 		const q2: Query<UserItem> = USERS.query.validate({ name: "Dave" });
+		const u1: UpdatesSchema<{ name: string }> = USERS.updates;
+		const u2: Updates<{ name: string }> = USERS.updates.validate({ name: "Dave" });
 		const r1: CollectionQueryItemsSchema<string, { name: string }> = USERS.queryItems;
 		const r2: QueryItems<string, { name: string }> = USERS.queryItems.validate({ query: {}, items: [] });
 	});
@@ -36,11 +39,17 @@ describe("Collection", () => {
 		expect(USERS.items.validate([{ id: "a", name: "Dave" }])).toEqual([{ id: "a", name: "Dave" }]);
 		expect(() => USERS.items.validate(["Dave"])).toThrow();
 	});
-	test(".query only checks that the query is an object", () => {
+	test(".query validates a query on the items", () => {
 		expect(USERS.query).toBeInstanceOf(CollectionQuerySchema);
 		expect(USERS.query.validate({ name: "Dave", $limit: 5 })).toEqual({ name: "Dave", $limit: 5 });
-		expect(USERS.query.validate({ anything: true })).toEqual({ anything: true } as Query<UserItem>);
+		expect(USERS.query.validate({ id: ["a", "b"], $order: "!id" })).toEqual({ id: ["a", "b"], $order: "!id" });
+		expect(() => USERS.query.validate({ anything: true })).toThrow("anything: Unknown prop");
 		expect(() => USERS.query.validate("name")).toThrow("Must be object");
+	});
+	test(".updates validates updates to the item data", () => {
+		expect(USERS.updates).toBeInstanceOf(UpdatesSchema);
+		expect(USERS.updates.validate({ name: "Dave" })).toEqual({ name: "Dave" });
+		expect(() => USERS.updates.validate({ id: "b" })).toThrow("id: Unknown prop");
 	});
 	test(".queryItems validates a query and its items", () => {
 		expect(USERS.queryItems).toBeInstanceOf(CollectionQueryItemsSchema);

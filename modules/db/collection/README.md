@@ -20,8 +20,10 @@ It also exposes schemas for API results. Each one points back at the collection 
 |---|---|---|
 | `collection.item` (`CollectionItemSchema`) | One complete item (`id` + data) | Sets the item. `NULLABLE(collection.item)` deletes it on `null`. |
 | `collection.items` (`CollectionItemsSchema`) | A list of complete items | Sets each item. |
-| `collection.query` (`CollectionQuerySchema`) | A `Query` — only checks that it is an object, so do not trust it | Nothing on its own. |
+| `collection.query` (`CollectionQuerySchema`) | A `Query` — each key must be `id` or a prop path, and each value must match its prop schema | Nothing on its own. |
 | `collection.queryItems` (`CollectionQueryItemsSchema`) | `QueryItems`: a query and the complete list of items that answer it | Sets each item, and marks the query as loaded. |
+
+`collection.updates` (`UpdatesSchema`) validates an `Updates` object for the item data in the same way. `ValidationDBProvider` uses it, and `collection.query`.
 
 `ARRAY(collection.item)` validates the same value as `collection.items`, but it does not point at the collection, so it does not hydrate.
 

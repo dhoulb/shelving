@@ -114,7 +114,7 @@ Rules:
   - `ORDER.queryItems` for `{ query, items }`, when `items` is the complete answer to `query`. The client then knows the query has loaded, even with no rows.
   - `DATA({ orders: ORDER.items, people: PERSON.items })` to return several collections in one response (one level deep).
 - Build each `queryItems` query in one shared function. Query times match by `JSON.stringify(query)`, so the server and the client must write the keys in the same order.
-- The `query` in a `queryItems` value is only checked to be an object. Never trust it on the server.
+- The `query` in a `queryItems` value is validated in full by `ORDER.query`: unknown keys and bad values throw.
 
 ### `shared/endpoint/` — endpoint contracts
 

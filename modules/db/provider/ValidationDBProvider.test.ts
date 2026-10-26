@@ -89,6 +89,58 @@ describe("ValidationDBProvider", () => {
 		expect(source.calls).toHaveLength(0);
 	});
 
+	test("validates nested updateItem() updates before calling the source provider", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		for (const updates of [{ "sub.num": "bad" }, { sub: { str: "a", num: "bad" } }, { "+=sub.str": 1 }, { "sub.nope": 1 }]) {
+			try {
+				await provider.updateItem(BASICS_COLLECTION, "basic1", updates as never);
+				expect.unreachable();
+			} catch (thrown) {
+				expect(thrown).toBeInstanceOf(ValueError);
+			}
+		}
+		expect(source.calls).toHaveLength(0);
+	});
+
+	test("keeps valid nested updates for the source provider", async () => {
+		const source = new MockDBProvider();
+		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
+		const provider = new ValidationDBProvider(source);
+
+		await provider.updateItem(BASICS_COLLECTION, "basic1", { "sub.str": "NEW", "+=sub.num": 1 });
+		const item = await source.getItem(BASICS_COLLECTION, "basic1");
+		expect(item?.sub).toEqual({ ...basic1.sub, str: "NEW", num: basic1.sub.num + 1 });
+	});
+
+	test("validates queries before calling the source provider", async () => {
+		const source = new MockDBProvider();
+		const provider = new ValidationDBProvider(source);
+
+		const query = { "sub.num>": "bad" } as never;
+		await expect((async () => provider.countQuery(BASICS_COLLECTION, query))()).rejects.toBeInstanceOf(ValueError);
+		await expect((async () => provider.getQuery(BASICS_COLLECTION, query))()).rejects.toBeInstanceOf(ValueError);
+		await expect((async () => provider.getQuerySequence(BASICS_COLLECTION, query)[Symbol.asyncIterator]().next())()).rejects.toBeInstanceOf(
+			ValueError,
+		);
+		await expect((async () => provider.setQuery(BASICS_COLLECTION, query, basic999))()).rejects.toBeInstanceOf(ValueError);
+		await expect((async () => provider.updateQuery(BASICS_COLLECTION, query, { str: "NEW" }))()).rejects.toBeInstanceOf(ValueError);
+		await expect((async () => provider.deleteQuery(BASICS_COLLECTION, { nope: 1 } as never))()).rejects.toBeInstanceOf(ValueError);
+		expect(source.calls).toHaveLength(0);
+	});
+
+	test("passes valid queries to the source provider", async () => {
+		const source = new MockDBProvider();
+		await source.setItem(BASICS_COLLECTION, "basic1", basic1);
+		await source.setItem(BASICS_COLLECTION, "basic2", basic2);
+		const provider = new ValidationDBProvider(source);
+
+		expect(
+			await provider.getQuery(BASICS_COLLECTION, { id: ["basic1"], "sub.num>": 0, "tags[]": basic1.tags[0], $order: "!sub.num" }),
+		).toEqual([basic1]);
+	});
+
 	test("query writes are passthrough: the source receives the query write itself", async () => {
 		const source = new MockDBProvider();
 		await source.setItem(BASICS_COLLECTION, "basic1", basic1);

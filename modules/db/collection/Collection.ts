@@ -1,6 +1,7 @@
 import { DataSchema } from "../../schema/DataSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
 import type { Schema, Schemas } from "../../schema/Schema.js";
+import { UpdatesSchema } from "../../schema/UpdatesSchema.js";
 import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier, Item, Items, OptionalItem } from "../../util/item.js";
@@ -28,6 +29,7 @@ export const ID = new NumberSchema({
  *
  * - Pairs a collection name with an identifier schema and a data schema, so providers can validate and address items.
  * - Extends `DataSchema<T>`, so the collection itself validates an item's data, while `.item` validates the complete `id + data` item.
+ * - `.updates` validates an `Updates` object for the item data, and `.query` validates a `Query` on the items.
  * - `.item`, `.items`, `.query` and `.queryItems` point back at the collection with `source`, so an endpoint result that uses them can hydrate a database (see `HydratingAPIProvider`).
  *
  * @example
@@ -66,7 +68,14 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 	readonly items: CollectionItemsSchema<I, T>;
 
 	/**
-	 * Schema for a query on the items. It only checks that the query is an object, so do not trust the query it validates.
+	 * Schema for a set of updates to the data of an item.
+	 *
+	 * @see https://shelving.cc/db/Collection/updates
+	 */
+	readonly updates: UpdatesSchema<T>;
+
+	/**
+	 * Schema for a query on the items.
 	 *
 	 * @see https://shelving.cc/db/Collection/query
 	 */
@@ -86,6 +95,7 @@ export class Collection<N extends string = string, I extends Identifier = Identi
 		this.id = id;
 		this.item = new CollectionItemSchema<I, T>(this);
 		this.items = new CollectionItemsSchema<I, T>(this);
+		this.updates = new UpdatesSchema<T>({ data: this });
 		this.query = new CollectionQuerySchema<I, T>(this);
 		this.queryItems = new CollectionQueryItemsSchema<I, T>(this);
 	}
