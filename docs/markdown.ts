@@ -63,7 +63,7 @@ export async function renderMarkdown(tree: TreeElement, outdir: AbsolutePath): P
 
 /**
  * Format the `llms.txt` index for the docs tree.
- * - Lists every module with its description, and links to `llms-full.txt`.
+ * - Lists every guide first, then every module, each with its description, and links to `llms-full.txt`.
  * - Kept short on purpose — each module page lists its own tokens.
  *
  * @param root The flattened (path-stamped) root element.
@@ -71,7 +71,10 @@ export async function renderMarkdown(tree: TreeElement, outdir: AbsolutePath): P
 export function formatLLMsIndex(root: TreeElement): string {
 	const { title, name, description } = root.props;
 	const link = _getLinker("index.md");
-	const modules = Array.from(walkElements<TreeElement>(root.props.children)).filter(_hasDocs);
+	const children = Array.from(walkElements<TreeElement>(root.props.children));
+	// Sections such as `guides/` are plain tree elements (no `kind`), and list their own pages.
+	const sections = children.filter(el => !(el.props as DocumentationElementProps).kind);
+	const modules = children.filter(el => (el.props as DocumentationElementProps).kind === "module" && _hasDocs(el));
 	return _join(
 		`# ${title ?? name}`,
 		description && `> ${description}`,
@@ -86,6 +89,13 @@ export function formatLLMsIndex(root: TreeElement): string {
 			`- [Overview](${link("/")}): What Shelving is and how to install it.`,
 			`- [Full docs](llms-full.txt): Every page in one file.`,
 		].join("\n"),
+		...sections.map(el =>
+			[
+				`## ${el.props.title ?? el.props.name}`,
+				"",
+				...Array.from(walkElements<TreeElement>(el.props.children), c => _formatListItem(c, link)),
+			].join("\n"),
+		),
 		["## Modules", "", ...modules.map(el => _formatListItem(el, link, `shelving/${el.props.name}`))].join("\n"),
 	);
 }
@@ -135,10 +145,18 @@ export function formatMarkdownPage(
 			),
 		types?.length && ["## Types", "", ...types.map(t => _formatReference(t, map, link))].join("\n"),
 		examples?.length && ["## Examples", "", ...examples.map(e => ["```ts", e.description ?? "", "```"].join("\n"))].join("\n"),
-		...Object.entries(KINDS).map(([k, label]) => {
-			const group = children.filter(el => (el.props as DocumentationElementProps).kind === k);
-			return group.length && [`## ${label}`, "", ...group.map(el => _formatListItem(el, link))].join("\n");
-		}),
+		_formatGroup(
+			"Pages",
+			children.filter(el => !(el.props as DocumentationElementProps).kind),
+			link,
+		),
+		...Object.entries(KINDS).map(([k, label]) =>
+			_formatGroup(
+				label,
+				children.filter(el => (el.props as DocumentationElementProps).kind === k),
+				link,
+			),
+		),
 	);
 }
 
@@ -193,8 +211,13 @@ function _formatReference(type: string, map: ReadonlyMap<string, TreeElement>, l
 	return el ? _formatListItem(el, link) : `- ${_code(type)}`;
 }
 
+/** Format a group of child elements as a heading and a list of links, or nothing when the group is empty. */
+function _formatGroup(label: string, group: ImmutableArray<TreeElement>, link: MarkdownLinker): string | undefined {
+	if (group.length) return [`## ${label}`, "", ...group.map(el => _formatListItem(el, link))].join("\n");
+}
+
 /** Format an element as a list item that links to its page, with its description. */
-function _formatListItem(element: TreeElement, link: MarkdownLinker, label = element.props.name): string {
+function _formatListItem(element: TreeElement, link: MarkdownLinker, label = element.props.title ?? element.props.name): string {
 	const { description } = element.props;
 	const item = `- [${label}](${link(_requirePath(element))})`;
 	return description ? `${item}: ${_getLine(description)}` : item;

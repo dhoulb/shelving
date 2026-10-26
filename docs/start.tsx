@@ -9,7 +9,7 @@
 import { watch } from "node:fs";
 import { join } from "node:path";
 import { buildApp } from "./build.js";
-import { APP_URL, MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
+import { APP_URL, GUIDES_DIR, MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
 
 // Serve static files.
 Bun.serve({
@@ -28,7 +28,7 @@ console.warn(`\nDev server running at ${APP_URL.href}`);
 
 // Rebuild on changes (debounced).
 let rebuildTimer: Timer | undefined;
-watch(MODULES_DIR, { recursive: true }, (_event, filename) => {
+function rebuild(filename: string | null): void {
 	clearTimeout(rebuildTimer);
 	rebuildTimer = setTimeout(async () => {
 		console.warn(`\nFile changed: ${filename}`);
@@ -41,6 +41,8 @@ watch(MODULES_DIR, { recursive: true }, (_event, filename) => {
 			console.error("Rebuild failed:", error);
 		}
 	}, 200);
-});
+}
+watch(MODULES_DIR, { recursive: true }, (_event, filename) => rebuild(filename));
+watch(GUIDES_DIR, { recursive: true }, (_event, filename) => rebuild(filename));
 
-console.warn("Watching /modules for changes...\n");
+console.warn("Watching /modules and /guides for changes...\n");

@@ -12,6 +12,13 @@ Full documentation is published at **<https://shelving.cc/>**.
 npm install shelving
 ```
 
+## Guides
+
+- [Building with Shelving](https://shelving.cc/guides/building-with-shelving): how to lay out a full-stack TypeScript project with Shelving.
+- [Code styleguide](https://shelving.cc/guides/styleguide): how to write code in the Shelving style.
+
+The guides are in the [`guides/`](./guides/) folder of this repository. Add a `.md` file there to add a guide to the docs site, `llms.txt`, and the npm package.
+
 ## For AI agents
 
 The docs are also published as Markdown for LLMs and coding agents:
