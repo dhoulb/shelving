@@ -1,0 +1,35 @@
+# shelving/util/buffer
+
+- Kind: module
+- Import: `import { … } from "shelving/util/buffer";`
+
+Type guards for `ArrayBuffer`, `ArrayBufferView`, and typed arrays. Use these when a function receives an unknown binary value and needs to distinguish between a raw buffer and its various view types.
+
+## Usage
+
+```ts
+import { isBuffer, isBufferView, isTypedArray } from "shelving/util";
+
+isBuffer(new ArrayBuffer(8));     // true
+isBuffer(new Uint8Array(8));      // false — it's a view, not a buffer
+
+isBufferView(new Uint8Array(8));  // true
+isBufferView(new DataView(buf));  // true
+isBufferView(new ArrayBuffer(8)); // false
+
+isTypedArray(new Float32Array(4)); // true
+isTypedArray(new DataView(buf));   // false — DataView is a view but not a typed array
+```
+
+The `TypedArray` type exported from this file covers all numeric typed array classes (`Uint8Array`, `Uint16Array`, `Uint32Array`, `Int8Array`, `Int16Array`, `Int32Array`, `Float32Array`, `Float64Array`).
+
+
+## Functions
+
+- [isBuffer()](buffer/isBuffer.md): Detect if an unknown value is an ArrayBuffer (not a view like Uint8Array or Float32Array or DataView).
+- [isBufferView()](buffer/isBufferView.md): Detect if an unknown value is an ArrayBufferView, like Uint8Array or Float32Array or DataView.
+- [isTypedArray()](buffer/isTypedArray.md): Detect if an unknown value is a TypedArray, like Uint8Array or Float32Array (not including DataView).
+
+## Types
+
+- [TypedArray](buffer/TypedArray.md): Union of the numeric TypedArray views over an ArrayBufferLike (excludes DataView).
