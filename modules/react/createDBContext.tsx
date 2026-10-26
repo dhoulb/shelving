@@ -49,7 +49,7 @@ export interface DBContext<I extends Identifier, T extends Data> {
 /**
  * Create a data context
  * - Allows React elements to call `useItem()` and `useQuery()` to access items/queries in a database provider.
- * - If the database has a `CacheDBProvider` in its chain then in-memory data will be used in the returned stores.
+ * - If the database is (or wraps) a `MemoryDBProvider`, the returned stores seed from it synchronously.
  *
  * @param provider `DBProvider` the created context resolves item and query stores against.
  *

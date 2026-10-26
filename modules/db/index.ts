@@ -9,7 +9,6 @@ export * from "./migrate/DBMigrator.js";
 export * from "./migrate/PostgresMigrator.js";
 export * from "./migrate/SQLiteMigrator.js";
 export * from "./migrate/SQLMigrator.js";
-export * from "./provider/CacheDBProvider.js";
 export * from "./provider/DBProvider.js";
 export * from "./provider/DebugDBProvider.js";
 export * from "./provider/MemoryDBProvider.js";

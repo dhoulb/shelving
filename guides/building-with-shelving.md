@@ -68,15 +68,17 @@ One file per collection, plus a barrel `index.ts`. Each file defines:
 
 1. The collection schema with `COLLECTION(...)` from `shelving`.
 2. Derived variants with `.pick(...)` etc. (e.g. the "create" payload).
-3. Response-shape schemas with `DATA(...)`.
-4. The derived TypeScript types via `ValidatorType`.
+3. Response-shape schemas with `DATA(...)`, built from the collection's own result schemas (`ORDER.item`, `ORDER.items`, `ORDER.queryItems`) so the client can hydrate its local database from them.
+4. A function for each query that the server answers in full (e.g. `getMyOrdersQuery()`), so the server and the client build the exact same query.
+5. The derived TypeScript types via `ValidatorType`.
 
 ```ts
 // shared/collection/order.ts
-import { COLLECTION, DATA, DICTIONARY, OPTIONAL, STRING, StringSchema, TIMESTAMP, UNKNOWN, type ValidatorType } from "shelving";
+import { COLLECTION, DATA, DICTIONARY, OPTIONAL, type Query, STRING, StringSchema, TIMESTAMP, UNKNOWN, type ValidatorType } from "shelving";
 
 /** Represent an order in the database. */
 export const ORDER = COLLECTION("order", STRING, {
+	user: STRING,
 	form: new StringSchema({ title: "Form", min: 1 }),
 	date: TIMESTAMP,
 	data: DICTIONARY(UNKNOWN),
@@ -91,6 +93,14 @@ export type CreateOrder = ValidatorType<typeof CREATE_ORDER>;
 /** Response type for a submitted order. */
 export const ORDER_RESULT = DATA({ order: ORDER.item, redirect: OPTIONAL(STRING) });
 export type OrderResult = ValidatorType<typeof ORDER_RESULT>;
+
+/** Response type for my orders: the query it answers, and every order that matches it. */
+export const MY_ORDERS_RESULT = DATA({ orders: ORDER.queryItems });
+
+/** The query that `MY_ORDERS_RESULT` answers. The server and the client both call this. */
+export function getMyOrdersQuery(user: string): Query<OrderItem> {
+	return { user, $order: "!date", $limit: 20 };
+}
 ```
 
 Rules:
@@ -98,6 +108,13 @@ Rules:
 - Schema constants are `UPPER_SNAKE_CASE`; derived types are `PascalCase` with the same name.
 - The type is always derived from the schema — never written independently.
 - `shared/collection/index.ts` is a barrel: `export * from "./order.js";`, one line per module, alphabetically sorted.
+- Results that return rows use the collection's own schemas, so `HydratingAPIProvider` can find the collection:
+  - `ORDER.item` for one row. `NULLABLE(ORDER.item)` deletes the row on `null`, using the `id` from the payload.
+  - `ORDER.items` for a list of rows. Never `ARRAY(ORDER.item)`: it validates the same value, but it does not hydrate.
+  - `ORDER.queryItems` for `{ query, items }`, when `items` is the complete answer to `query`. The client then knows the query has loaded, even with no rows.
+  - `DATA({ orders: ORDER.items, people: PERSON.items })` to return several collections in one response (one level deep).
+- Build each `queryItems` query in one shared function. Query times match by `JSON.stringify(query)`, so the server and the client must write the keys in the same order.
+- The `query` in a `queryItems` value is only checked to be an object. Never trust it on the server.
 
 ### `shared/endpoint/` — endpoint contracts
 
@@ -334,8 +351,34 @@ Never create `app/components/`, `app/hooks/`, or other type-based folders. If a 
 
 Client-only cross-feature utilities. Two standard files:
 
-- **`app/util/api.ts`** — the single API client instance: `export const API = new ClientAPIProvider({ url: API_URL });`. All features call endpoints through this.
+- **`app/util/api.ts`** — the local database and the single API client instance. All features call endpoints through `API`, and read rows from `DB`:
+
+  ```ts
+  export const DB = new MemoryDBProvider();
+  export const API = new HydratingAPIProvider(new ClientAPIProvider({ url: API_URL }), DB);
+  export const { DBContext, useItem, useQuery } = createDBContext(DB);
+  export const { APIContext, useAPI } = createAPIContext(API);
+  ```
 - **`app/util/context.ts`** — the app-level React context: an `AppContextData` interface, the `createContext` value, and a `requireAppContext()` accessor that throws if used outside the provider.
+
+### Data flow
+
+The client has one local database (`DB`, a plain `MemoryDBProvider`). API results fill it, and components read from it.
+
+- **Fetch with `useAPI()`, read with `useQuery()` / `useItem()`.** A component calls the endpoint with `useAPI(endpoint, payload)` and ignores the result. `HydratingAPIProvider` writes the rows into `DB` before the call resolves, and the `useQuery()` / `useItem()` stores update from `DB`.
+- **Loading.** A store over `DB` is loading until `DB` has the rows, or has a time for the query or item. A `queryItems` result sets the query time, so an empty list shows as empty and not as loading. A `NULLABLE(X.item)` result of `null` marks the item as missing.
+- **Exact queries.** `useQuery()` must use the same query (from the shared function) as the server sends in `queryItems`, or the store waits for a query time that never comes.
+- **Paging is an API feature.** `useQuery()` shows every row in `DB` that matches, with no `$limit`. To load more, call the endpoint with `getQueryItemsAfter(page)` and keep the newest page in state:
+
+  ```tsx
+  const [page, setPage] = useState(first);
+  const next = getQueryItemsAfter(page.orders); // `undefined` when there are no more.
+  {next && <Button onClick={async () => setPage(await API.call(MY_ORDERS_ENDPOINT, next))}>Show more</Button>}
+  ```
+
+- **Writes are commands.** Send writes through endpoints. `DB` is a read model: a write to it changes only this client. An optimistic edit in `DB` is fine, and the next response that returns the row replaces it.
+- **Deleted rows.** A list result never deletes rows. A row the server deleted stays in `DB` until the client deletes it locally (e.g. an optimistic delete) or the page reloads.
+- **Partial rows.** Do not hydrate part of a row into a collection. Use a separate collection for a projection (e.g. `PEOPLE` for the public part of `PERSON`) and accept that the two can drift.
 
 ### Component conventions
 
@@ -647,3 +690,17 @@ Adding a feature called `order` touches these files, in this order:
 9. Run the full test gate locally, then open a PR — CI runs the same gate and deploys a preview environment at the deterministic per-PR URLs. Verify the feature against the live preview (smoke tests run against it automatically) before merging.
 
 If every file in that list is in the right place, the client and server share one schema, one endpoint contract, and zero duplicated types.
+
+## Upgrade notes
+
+### From `CacheDBProvider` to `HydratingAPIProvider`
+
+`CacheDBProvider` and the paging in `QueryStore` are removed. To upgrade an app:
+
+1. Replace the client database chain (e.g. `new CacheDBProvider(new RESTDBProvider(api))`) with a plain `MemoryDBProvider`, and wrap the API client in `HydratingAPIProvider` with that database (see `app/util/api.ts` above).
+2. Change result schemas to the collection's own schemas: `ARRAY(X.item)` → `X.items`, and `{ query, items }` results → `X.queryItems`.
+3. Add a shared query function for each `queryItems` result, and use it in both the handler and `useQuery()`.
+4. In each component, call `useAPI()` for the endpoint that loads the data, and keep `useQuery()` / `useItem()` to read it.
+5. Replace `QueryStore.fetchAfter()` / `fetchBefore()` / `hasAfter` with an API call and `getQueryItemsAfter()`. To poll for new rows, call the endpoint again on a timer.
+6. Rename `getAfterQuery()` / `getBeforeQuery()` to `getQueryAfter()` / `getQueryBefore()`.
+7. A row deleted on the server now stays in the local database until the page reloads, unless the app deletes it locally. Check that optimistic deletes run.

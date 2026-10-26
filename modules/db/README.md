@@ -53,7 +53,6 @@ Providers are layered wrappers. Each takes a `source` and delegates to it, inter
 
 - **`MemoryDBProvider`** — fully in-memory, ideal for testing and as a lightweight standalone store.
 - **`ValidationDBProvider`** — validates data in and out using the collection's schema. Throws `ValueError` on bad data from the backend.
-- **`CacheDBProvider`** — keeps a `MemoryDBProvider` mirror in sync with a remote source so reads are synchronous after the first fetch. Primarily useful with the [React integration](#react-integration).
 - **`ThroughDBProvider`** — identity wrapper; extend this to intercept only specific methods (e.g. `DebugDBProvider`).
 - **`SQLiteProvider`** / **`PostgresProvider`** — SQL-backed abstract providers. Concrete subclasses bind them to a specific driver.
 
@@ -117,14 +116,14 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 
 ## React integration
 
-The `shelving/react` module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (typically with a `CacheDBProvider` in the chain) and exposes typed hooks — `DBContext.useItem()` and `DBContext.useQuery()` — that return reactive `Store` instances and suspend automatically while loading.
+The `shelving/react` module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (in a client app, typically a `MemoryDBProvider` that `HydratingAPIProvider` fills) and exposes typed hooks — `DBContext.useItem()` and `DBContext.useQuery()` — that return reactive `Store` instances and suspend automatically while loading.
 
 ```ts
 import { createDBContext } from "shelving/react"
-import { CacheDBProvider, ValidationDBProvider, MemoryDBProvider } from "shelving/db"
+import { MemoryDBProvider } from "shelving/db"
 
-const provider = new CacheDBProvider(new ValidationDBProvider(new MemoryDBProvider()))
-export const { DBContext, useItem, useQuery } = createDBContext(provider)
+export const DB = new MemoryDBProvider()
+export const { DBContext, useItem, useQuery } = createDBContext(DB)
 ```
 
 See the `shelving/react` module for full usage.

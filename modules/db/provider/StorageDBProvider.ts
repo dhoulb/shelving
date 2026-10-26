@@ -11,7 +11,7 @@ import { MemoryDBProvider, MemoryTable } from "./MemoryDBProvider.js";
 /**
  * In-memory database provider that persists every collection to a `Storage` — `localStorage`, `sessionStorage`, or anything else with the same interface.
  *
- * - Extends `MemoryDBProvider`, so all reads, queries, and realtime sequences are served synchronously from memory, and it can seed `ItemStore` / `QueryStore` and act as the cache inside `CacheDBProvider`. The only difference is that collections are backed by `StorageTable` instead of `MemoryTable`.
+ * - Extends `MemoryDBProvider`, so all reads, queries, and realtime sequences are served synchronously from memory, and it can seed `ItemStore` / `QueryStore` and be filled by `HydratingAPIProvider`. The only difference is that collections are backed by `StorageTable` instead of `MemoryTable`.
  * - The storage is a required argument (there is no default), so server code that constructs this provider must reference `localStorage` / `sessionStorage` itself — surfacing the mistake at the callsite instead of deep inside this class.
  * - Treat the persisted data as best-effort: quota is shared across the origin (typically ~5MB) and users can clear it at any time. Data read back from storage is unvalidated — wrap this provider in `ValidationDBProvider` if it may have been written by an older version of your app.
  * - If the storage is unusable (writes blocked by browser settings, or private browsing with zero quota), the provider degrades to memory-only operation — check the `persistent` flag to warn users their changes won't be saved.

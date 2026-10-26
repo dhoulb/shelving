@@ -19,7 +19,7 @@ import { RecordingDBProvider } from "./RecordingDBProvider.js";
 /**
  * Synchronous in-memory database provider, storing each collection in a `MemoryTable`.
  *
- * - Extremely fast (ideal as the cache behind `CacheDBProvider`!), but does not persist data after the process or browser window closes.
+ * - Extremely fast (ideal as the client database that `HydratingAPIProvider` fills), but does not persist data after the process or browser window closes.
  * - Identity-preserving: `getItem()` etc. return the exact same object instance that was passed into `setItem()`.
  * - Supports live subscriptions, so it can back `ItemStore` / `QueryStore` reads.
  * - Supports transactions: `transact()` runs the callback against a snapshot clone, records its operations with `RecordingDBProvider`, and replays the recorded writes onto this provider on success — sequences and nested transactions work inside the callback, scoped to the transaction.
