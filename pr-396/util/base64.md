@@ -1,0 +1,57 @@
+# shelving/util/base64
+
+- Kind: module
+- Import: `import { … } from "shelving/util/base64";`
+
+Encode and decode data to and from standard Base64 and URL-safe Base64 (Base64URL). Useful for binary payloads, JWTs, cryptographic keys, and any context that needs ASCII-safe binary representation.
+
+- Both decoders accept either alphabet (standard `+/` or URL-safe `-_`), so you can call any decode function on either variant.
+- Encoding defaults to padding (`=`) for standard Base64 and no padding for Base64URL, matching common conventions.
+- Strings are encoded as UTF-8.
+
+## Usage
+
+### Standard Base64
+
+```ts
+import { encodeBase64, decodeBase64String, decodeBase64Bytes } from "shelving/util";
+
+encodeBase64("hello");           // "aGVsbG8="
+encodeBase64("hello", false);   // "aGVsbG8"  (no padding)
+
+decodeBase64String("aGVsbG8="); // "hello"
+decodeBase64Bytes("aGVsbG8=");  // Uint8Array
+```
+
+### URL-safe Base64 (Base64URL)
+
+```ts
+import { encodeBase64URL, decodeBase64URLString, decodeBase64URLBytes } from "shelving/util";
+
+encodeBase64URL("hello");            // "aGVsbG8"  (no padding by default)
+encodeBase64URL("hello", true);     // "aGVsbG8="
+
+decodeBase64URLString("aGVsbG8");   // "hello"
+decodeBase64URLBytes("aGVsbG8");    // Uint8Array
+```
+
+### Encoding binary data
+
+All encode functions accept a `string`, `ArrayBuffer`, or `Uint8Array` (`PossibleBytes`):
+
+```ts
+import { encodeBase64URL } from "shelving/util";
+
+const key = crypto.getRandomValues(new Uint8Array(32));
+const token = encodeBase64URL(key);
+```
+
+
+## Functions
+
+- [encodeBase64()](base64/encodeBase64.md): Encode a string or binary data to a Base64 string.
+- [decodeBase64String()](base64/decodeBase64String.md): Decode a Base64 string to a string (decodes Base64URL too).
+- [decodeBase64Bytes()](base64/decodeBase64Bytes.md): Decode a Base64 string to a byte sequence (decodes Base64URL too).
+- [encodeBase64URL()](base64/encodeBase64URL.md): Encode a string or binary data to a URL-safe Base64 string.
+- [decodeBase64URLString()](base64/decodeBase64URLString.md): Decode a string from a URL-safe Base64 string (decodes Base64 too).
+- [decodeBase64URLBytes()](base64/decodeBase64URLBytes.md): Decode a URL-safe Base64 string to a byte sequence (decodes Base64 too).
