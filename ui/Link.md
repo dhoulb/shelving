@@ -3,7 +3,7 @@
 - Kind: component
 - Import: `import { Link } from "shelving/ui";`
 
-Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
+Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set), a `<button>` (when `onClick` or `disabled` is set), or a `<span>`.
 
 An inline link or action. Delegates to `<Clickable>`, rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
 

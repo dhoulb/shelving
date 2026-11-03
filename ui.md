@@ -100,7 +100,7 @@ The components below are listed in the index following this page; this is the sh
 - [Title](ui/Title.md): Page title — renders an <h1>.
 - [Video](ui/Video.md): Video container element.
 - [Button](ui/Button.md): Render either a <button> or an <a href=""> styled as a button, based on whether an onClick or href prop is provided.
-- [Clickable](ui/Clickable.md): Render either a <button>, an <a href="">, or a plain <span> based on whether an onClick or href prop is provided.
+- [Clickable](ui/Clickable.md): Render an <a href="">, a <button>, or a plain <span>, from the href, onClick and disabled props.
 - [FullscreenButton](ui/FullscreenButton.md): Button to toggle the surrounding <figure> element or <body> element in/out of fullscreen mode.
 - [RetryButton](ui/RetryButton.md): Button that retries the nearest <Catcher> error boundary when clicked.
 - [Dialog](ui/Dialog.md): Modal <dialog> element that opens on mount and includes a close button.
@@ -135,7 +135,7 @@ The components below are listed in the index following this page; this is the sh
 - [Deleted](ui/Deleted.md): Deleted text — renders a <del> element to mark content removed from a document.
 - [Emphasis](ui/Emphasis.md): Emphasised text — renders an <em> element for stress emphasis (typically italic).
 - [Inserted](ui/Inserted.md): Inserted text — renders an <ins> element to mark content added to a document.
-- [Link](ui/Link.md): Inline link — delegates to <Clickable>, rendering an <a> (when href is set) or <button> (when onClick is set).
+- [Link](ui/Link.md): Inline link — delegates to <Clickable>, rendering an <a> (when href is set), a <button> (when onClick or disabled is set), or a <span>.
 - [Mark](ui/Mark.md): Highlighted text — renders a <mark> element to call attention to a run of text.
 - [Small](ui/Small.md): Small print — renders a <small> element for side comments and fine print.
 - [Span](ui/Span.md): Styled inline text — renders a <span> carrying only the colour and typography variant classes, with no styling of its own.
@@ -222,7 +222,7 @@ The components below are listed in the index following this page; this is the sh
 - [getButtonClass()](ui/getButtonClass.md): Get the full combined className string for a button from its styling variants.
 - [LinkClickable()](ui/LinkClickable.md): Render an <a href=""> element, resolving its href against the current page URL and marking it active when it matches.
 - [ButtonClickable()](ui/ButtonClickable.md): Render a <button> element that runs its onClick handler through a BusyStore and shows a loading spinner while busy.
-- [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when neither href nor onClick is provided.
+- [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when none of href, onClick or disabled is provided, e.g. a plain tag.
 - [SubmitButton()](ui/SubmitButton.md): Submit button for a form that disables itself and shows a spinner while the form is busy.
 - [requireDialogs()](ui/requireDialogs.md): Read the current DialogsStore from the nearest <DialogsContext>.
 - [DocumentationApp()](ui/DocumentationApp.md): Documentation app.

@@ -3,8 +3,9 @@
 - Kind: component
 - Import: `import { Clickable } from "shelving/ui";`
 
-Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
-- `href` renders a `LinkClickable`; `onClick` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+Render an `<a href="">`, a `<button>`, or a plain `<span>`, from the `href`, `onClick` and `disabled` props.
+- `href` renders a `LinkClickable`; `onClick` or `disabled` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+- `disabled` with no `onClick` is a disabled `<button>`, e.g. a "Locked" button that can never be pressed.
 - Dispatches on defined values (not key presence) so wrappers can always spread `href={href}` through, even when it's `undefined`.
 
 ## Signatures

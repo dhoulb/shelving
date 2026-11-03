@@ -3,7 +3,7 @@
 - Kind: function
 - Import: `import { SpanClickable } from "shelving/ui";`
 
-Render a non-interactive `<span>` element, used as the fallback when neither `href` nor `onClick` is provided.
+Render a non-interactive `<span>` element, used as the fallback when none of `href`, `onClick` or `disabled` is provided, e.g. a plain tag.
 
 ## Signatures
 

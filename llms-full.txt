@@ -19511,7 +19511,7 @@ The components below are listed in the index following this page; this is the sh
 - [Title](ui/Title.md): Page title — renders an <h1>.
 - [Video](ui/Video.md): Video container element.
 - [Button](ui/Button.md): Render either a <button> or an <a href=""> styled as a button, based on whether an onClick or href prop is provided.
-- [Clickable](ui/Clickable.md): Render either a <button>, an <a href="">, or a plain <span> based on whether an onClick or href prop is provided.
+- [Clickable](ui/Clickable.md): Render an <a href="">, a <button>, or a plain <span>, from the href, onClick and disabled props.
 - [FullscreenButton](ui/FullscreenButton.md): Button to toggle the surrounding <figure> element or <body> element in/out of fullscreen mode.
 - [RetryButton](ui/RetryButton.md): Button that retries the nearest <Catcher> error boundary when clicked.
 - [Dialog](ui/Dialog.md): Modal <dialog> element that opens on mount and includes a close button.
@@ -19546,7 +19546,7 @@ The components below are listed in the index following this page; this is the sh
 - [Deleted](ui/Deleted.md): Deleted text — renders a <del> element to mark content removed from a document.
 - [Emphasis](ui/Emphasis.md): Emphasised text — renders an <em> element for stress emphasis (typically italic).
 - [Inserted](ui/Inserted.md): Inserted text — renders an <ins> element to mark content added to a document.
-- [Link](ui/Link.md): Inline link — delegates to <Clickable>, rendering an <a> (when href is set) or <button> (when onClick is set).
+- [Link](ui/Link.md): Inline link — delegates to <Clickable>, rendering an <a> (when href is set), a <button> (when onClick or disabled is set), or a <span>.
 - [Mark](ui/Mark.md): Highlighted text — renders a <mark> element to call attention to a run of text.
 - [Small](ui/Small.md): Small print — renders a <small> element for side comments and fine print.
 - [Span](ui/Span.md): Styled inline text — renders a <span> carrying only the colour and typography variant classes, with no styling of its own.
@@ -19633,7 +19633,7 @@ The components below are listed in the index following this page; this is the sh
 - [getButtonClass()](ui/getButtonClass.md): Get the full combined className string for a button from its styling variants.
 - [LinkClickable()](ui/LinkClickable.md): Render an <a href=""> element, resolving its href against the current page URL and marking it active when it matches.
 - [ButtonClickable()](ui/ButtonClickable.md): Render a <button> element that runs its onClick handler through a BusyStore and shows a loading spinner while busy.
-- [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when neither href nor onClick is provided.
+- [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when none of href, onClick or disabled is provided, e.g. a plain tag.
 - [SubmitButton()](ui/SubmitButton.md): Submit button for a form that disables itself and shows a spinner while the form is busy.
 - [requireDialogs()](ui/requireDialogs.md): Read the current DialogsStore from the nearest <DialogsContext>.
 - [DocumentationApp()](ui/DocumentationApp.md): Documentation app.
@@ -22527,8 +22527,9 @@ Props for a clickable that also accepts a `className` for styling.
 - Kind: component
 - Import: `import { Clickable } from "shelving/ui";`
 
-Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
-- `href` renders a `LinkClickable`; `onClick` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+Render an `<a href="">`, a `<button>`, or a plain `<span>`, from the `href`, `onClick` and `disabled` props.
+- `href` renders a `LinkClickable`; `onClick` or `disabled` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+- `disabled` with no `onClick` is a disabled `<button>`, e.g. a "Locked" button that can never be pressed.
 - Dispatches on defined values (not key presence) so wrappers can always spread `href={href}` through, even when it's `undefined`.
 
 ## Signatures
@@ -22655,7 +22656,7 @@ ButtonClickable({
 - Kind: function
 - Import: `import { SpanClickable } from "shelving/ui";`
 
-Render a non-interactive `<span>` element, used as the fallback when neither `href` nor `onClick` is provided.
+Render a non-interactive `<span>` element, used as the fallback when none of `href`, `onClick` or `disabled` is provided, e.g. a plain tag.
 
 ## Signatures
 
@@ -25882,7 +25883,7 @@ Props for `Link` — `ClickableProps` (`href` for navigation or `onClick` for ac
 - Kind: component
 - Import: `import { Link } from "shelving/ui";`
 
-Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
+Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set), a `<button>` (when `onClick` or `disabled` is set), or a `<span>`.
 
 An inline link or action. Delegates to `<Clickable>`, rendering an `<a>` when `href` is provided or a `<button>` when `onClick` is provided — so the same component covers both navigation and in-page actions. Prefer it over a raw `<a>` inside React components.
 
@@ -30485,7 +30486,7 @@ Props for `<Tag>` — `TagVariants` styling options plus `<Clickable>` props (`h
 - Import: `import { Tag } from "shelving/ui";`
 
 Small inline label used to annotate other content.
-- Delegates to `getClickable()` — renders as `<a>` when `href` is set, otherwise `<button>`.
+- Delegates to `<Clickable>` — renders as `<a>` when `href` is set, `<button>` when `onClick` or `disabled` is set, otherwise `<span>`.
 - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.).
 
 A small inline label used to annotate other content. Accepts a status variant or a raw colour, and can be static or interactive depending on whether `href` / `onClick` is set.
