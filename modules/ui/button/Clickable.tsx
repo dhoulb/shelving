@@ -55,8 +55,9 @@ export interface ClickableProps extends OptionalChildProps {
 export interface StylableClickableProps extends ClickableProps, ClassProps {}
 
 /**
- * Render either a `<button>`, an `<a href="">`, or a plain `<span>` based on whether an `onClick` or `href` prop is provided.
- * - `href` renders a `LinkClickable`; `onClick` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+ * Render an `<a href="">`, a `<button>`, or a plain `<span>`, from the `href`, `onClick` and `disabled` props.
+ * - `href` renders a `LinkClickable`; `onClick` or `disabled` renders a `ButtonClickable`; neither renders a `SpanClickable`.
+ * - `disabled` with no `onClick` is a disabled `<button>`, e.g. a "Locked" button that can never be pressed.
  * - Dispatches on defined values (not key presence) so wrappers can always spread `href={href}` through, even when it's `undefined`.
  *
  * @kind component
@@ -67,7 +68,7 @@ export interface StylableClickableProps extends ClickableProps, ClassProps {}
 export function Clickable(props: StylableClickableProps): ReactElement {
 	return props.href !== undefined ? (
 		<LinkClickable {...props} />
-	) : props.onClick !== undefined ? (
+	) : props.onClick !== undefined || props.disabled ? (
 		<ButtonClickable {...props} />
 	) : (
 		<SpanClickable {...props} />
@@ -161,7 +162,7 @@ export function ButtonClickable({
 }
 
 /**
- * Render a non-interactive `<span>` element, used as the fallback when neither `href` nor `onClick` is provided.
+ * Render a non-interactive `<span>` element, used as the fallback when none of `href`, `onClick` or `disabled` is provided, e.g. a plain tag.
  *
  * @example <SpanClickable className="label">Static</SpanClickable>
  * @see https://shelving.cc/ui/SpanClickable

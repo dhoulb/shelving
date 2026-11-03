@@ -40,7 +40,7 @@ export interface TagProps extends TagVariants, ClickableProps, ClassProps {}
 
 /**
  * Small inline label used to annotate other content.
- * - Delegates to `getClickable()` — renders as `<a>` when `href` is set, otherwise `<button>`.
+ * - Delegates to `<Clickable>` — renders as `<a>` when `href` is set, `<button>` when `onClick` or `disabled` is set, otherwise `<span>`.
  * - Accepts a status variant (`success`, `info`, `error`, etc.) _or_ a raw colour (`color="red"`, `color="purple"`, etc.).
  *
  * @kind component

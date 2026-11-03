@@ -48,6 +48,11 @@ describe("ClassProps", () => {
 		expect(html).not.toContain("<a ");
 	});
 
+	test("clickable wrapper renders a disabled `<button>` when only `disabled` is set, and a `<span>` with nothing", () => {
+		expect(render(<Button disabled>Locked</Button>)).toContain('<button type="button" disabled=""');
+		expect(render(<Tag>New</Tag>)).toStartWith("<span");
+	});
+
 	test("`className` lands on the component's own root, not on its inner elements", () => {
 		// `Card` renders the class on its `<article>`, not on the stretched overlay `<a>` it also renders.
 		const html = render(
