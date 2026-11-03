@@ -190,6 +190,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 
 - [ChoiceOptions](schema/ChoiceOptions.md): Dictionary of allowed options for a ChoiceSchema in { key: title } format.
 - [PossibleChoiceOptions](schema/PossibleChoiceOptions.md): Things that can be converted to a ChoiceOptions dictionary.
+- [ChoiceGroups](schema/ChoiceGroups.md): Named groups of option keys for a ChoiceSchema in { group: [key] } format, e.g. { Fruit: ["apple", "pear"] }.
 - [ChoiceInputType](schema/ChoiceInputType.md): Input control hint for a ChoiceSchema: "radio" for radio inputs, or "select" for a <select>.
 - [DateInputType](schema/DateInputType.md): type="" prop for HTML <input /> tags that are relevant for dates.
 - [SchemaOptions](schema/SchemaOptions.md): Options allowed by a Schema instance.

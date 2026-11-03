@@ -40,11 +40,34 @@ const UNIT = new ChoiceSchema({ options: ["kg", "g", "lb"], input: "select" }); 
 const SIZE = new ChoiceSchema({ options: ["s", "m", "l", "xl"], input: "radio" }); // Always radios.
 ```
 
+## Groups
+
+`groups` puts options under named headings. A select shows each group as an `<optgroup>`, after the options that are in no group. The group order and the key order in each group set the display order. Groups are a display hint only: validation and `format()` still use `options`.
+
+```ts
+import { ChoiceSchema } from "shelving/schema";
+
+const FOOD = new ChoiceSchema({
+	options: { none: "Nothing", apple: "Apple", pear: "Pear", carrot: "Carrot" },
+	groups: { Fruit: ["apple", "pear"], Vegetables: ["carrot"] },
+	input: "select",
+});
+```
+
 
 ## Signatures
 
 ```ts
-new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, input, ...rest }: ChoiceSchemaOptions<O, I>)
+new ChoiceSchema<O, I>({
+		one = "choice",
+		title = "Choice",
+		placeholder = `No ${one}`,
+		options,
+		value,
+		input,
+		groups,
+		...rest
+	}: ChoiceSchemaOptions<O, I>)
 ```
 
 ## Parameters
@@ -55,6 +78,7 @@ new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${o
 | `.options` | `PossibleChoiceOptions<O>` | Specify correct options using a dictionary of entries. Read only. |
 | `.value` | `O \| I` | Default option for the value. Read only. Optional. |
 | `.input` | `ChoiceInputType \| undefined` | Input control hint for downstream UIs. Read only. Defaults to `"radio" for 8 or fewer options, otherwise "select"`. |
+| `.groups` | `ChoiceGroups<O> \| undefined` | Show the options under named headings, as a `{ group: [key] }` dictionary. Options in no group show first. Read only. Optional. |
 
 ## Returns
 
@@ -68,6 +92,7 @@ new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${o
 | --- | --- | --- |
 | `options` | `ChoiceOptions<O>` | Read only. |
 | `input` | `ChoiceInputType` | Read only. |
+| `groups` | `ChoiceGroups<O> \| undefined` | Read only. |
 
 ## Methods
 

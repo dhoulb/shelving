@@ -11524,6 +11524,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 
 - [ChoiceOptions](schema/ChoiceOptions.md): Dictionary of allowed options for a ChoiceSchema in { key: title } format.
 - [PossibleChoiceOptions](schema/PossibleChoiceOptions.md): Things that can be converted to a ChoiceOptions dictionary.
+- [ChoiceGroups](schema/ChoiceGroups.md): Named groups of option keys for a ChoiceSchema in { group: [key] } format, e.g. { Fruit: ["apple", "pear"] }.
 - [ChoiceInputType](schema/ChoiceInputType.md): Input control hint for a ChoiceSchema: "radio" for radio inputs, or "select" for a <select>.
 - [DateInputType](schema/DateInputType.md): type="" prop for HTML <input /> tags that are relevant for dates.
 - [SchemaOptions](schema/SchemaOptions.md): Options allowed by a Schema instance.
@@ -12010,6 +12011,31 @@ ImmutableArray<K> | ChoiceOptions<K>
 
 ---
 
+# ChoiceGroups
+
+- Kind: type
+- Import: `import { ChoiceGroups } from "shelving/schema";`
+
+Named groups of option keys for a `ChoiceSchema` in `{ group: [key] }` format, e.g. `{ Fruit: ["apple", "pear"] }`.
+
+- Groups are a display hint only: validation and `format()` use `options`, and do not change.
+- The group order and the key order in each group set the display order.
+
+## Signatures
+
+```ts
+{
+	readonly [group: string]: ImmutableArray<K>;
+}
+```
+
+## Types
+
+- [ImmutableArray](util/array/ImmutableArray.md): Immutable array: an array that cannot be changed.
+
+
+---
+
 # ChoiceInputType
 
 - Kind: type
@@ -12037,6 +12063,7 @@ Options for `ChoiceSchema`.
 - `options` — the allowed choices, as a `{ key: title }` dictionary or an array of keys.
 - `value` — default option used when the input is `undefined`.
 - `input` — control hint for downstream UIs (radios or a select).
+- `groups` — display hint that puts options under named headings (a select shows each group as an `<optgroup>`).
 
 ## Signatures
 
@@ -12045,6 +12072,7 @@ Options for `ChoiceSchema`.
 	readonly options: PossibleChoiceOptions<O>;
 	readonly value?: O | I;
 	readonly input?: ChoiceInputType | undefined;
+	readonly groups?: ChoiceGroups<O> | undefined;
 }
 ```
 
@@ -12055,6 +12083,7 @@ Options for `ChoiceSchema`.
 | `options` | `PossibleChoiceOptions<O>` | Specify correct options using a dictionary of entries. Read only. |
 | `value` | `O \| I` | Default option for the value. Read only. Optional. |
 | `input` | `ChoiceInputType \| undefined` | Input control hint for downstream UIs. Read only. Defaults to `"radio" for 8 or fewer options, otherwise "select"`. |
+| `groups` | `ChoiceGroups<O> \| undefined` | Show the options under named headings, as a `{ group: [key] }` dictionary. Options in no group show first. Read only. Optional. |
 
 
 ---
@@ -12101,11 +12130,34 @@ const UNIT = new ChoiceSchema({ options: ["kg", "g", "lb"], input: "select" }); 
 const SIZE = new ChoiceSchema({ options: ["s", "m", "l", "xl"], input: "radio" }); // Always radios.
 ```
 
+## Groups
+
+`groups` puts options under named headings. A select shows each group as an `<optgroup>`, after the options that are in no group. The group order and the key order in each group set the display order. Groups are a display hint only: validation and `format()` still use `options`.
+
+```ts
+import { ChoiceSchema } from "shelving/schema";
+
+const FOOD = new ChoiceSchema({
+	options: { none: "Nothing", apple: "Apple", pear: "Pear", carrot: "Carrot" },
+	groups: { Fruit: ["apple", "pear"], Vegetables: ["carrot"] },
+	input: "select",
+});
+```
+
 
 ## Signatures
 
 ```ts
-new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, input, ...rest }: ChoiceSchemaOptions<O, I>)
+new ChoiceSchema<O, I>({
+		one = "choice",
+		title = "Choice",
+		placeholder = `No ${one}`,
+		options,
+		value,
+		input,
+		groups,
+		...rest
+	}: ChoiceSchemaOptions<O, I>)
 ```
 
 ## Parameters
@@ -12116,6 +12168,7 @@ new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${o
 | `.options` | `PossibleChoiceOptions<O>` | Specify correct options using a dictionary of entries. Read only. |
 | `.value` | `O \| I` | Default option for the value. Read only. Optional. |
 | `.input` | `ChoiceInputType \| undefined` | Input control hint for downstream UIs. Read only. Defaults to `"radio" for 8 or fewer options, otherwise "select"`. |
+| `.groups` | `ChoiceGroups<O> \| undefined` | Show the options under named headings, as a `{ group: [key] }` dictionary. Options in no group show first. Read only. Optional. |
 
 ## Returns
 
@@ -12129,6 +12182,7 @@ new ChoiceSchema<O, I>({ one = "choice", title = "Choice", placeholder = `No ${o
 | --- | --- | --- |
 | `options` | `ChoiceOptions<O>` | Read only. |
 | `input` | `ChoiceInputType` | Read only. |
+| `groups` | `ChoiceGroups<O> \| undefined` | Read only. |
 
 ## Methods
 
@@ -28914,6 +28968,7 @@ Props for `SelectInput`, a dropdown `<select>` bound to a string value.
 ```ts
 {
 	options: ChoiceOptions<T>;
+	groups?: ChoiceGroups<T> | undefined;
 }
 ```
 
@@ -28922,6 +28977,7 @@ Props for `SelectInput`, a dropdown `<select>` bound to a string value.
 | Property | Type | Description |
 | --- | --- | --- |
 | `options` | `ChoiceOptions<T>` | The options for the select. |
+| `groups` | `ChoiceGroups<T> \| undefined` | Show the options under named headings, as `<optgroup>` elements. Options in no group show first. Optional. |
 
 
 ---
@@ -28933,6 +28989,7 @@ Props for `SelectInput`, a dropdown `<select>` bound to a string value.
 
 Dropdown input bound to a string value, rendered as a `<select>` of the provided `options`.
 - Shows a placeholder empty option unless the field is required and already has a value.
+- With `groups`, shows each group as an `<optgroup>`, after the options that are in no group. A group key that is not in `options` is skipped.
 
 ## Signatures
 
@@ -28946,6 +29003,7 @@ SelectInput(props: SelectProps<T>): ReactElement
 | --- | --- | --- |
 | `props` | `SelectProps<T>` |  |
 | `.options` | `ChoiceOptions<T>` | The options for the select. |
+| `.groups` | `ChoiceGroups<T> \| undefined` | Show the options under named headings, as `<optgroup>` elements. Options in no group show first. Optional. |
 
 ## Returns
 
