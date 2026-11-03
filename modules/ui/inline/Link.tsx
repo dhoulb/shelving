@@ -16,7 +16,7 @@ export interface LinkProps extends ClickableProps, TypographyVariants, ClassProp
 }
 
 /**
- * Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set) or `<button>` (when `onClick` is set).
+ * Inline link — delegates to `<Clickable>`, rendering an `<a>` (when `href` is set), a `<button>` (when `onClick` or `disabled` is set), or a `<span>`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Link
