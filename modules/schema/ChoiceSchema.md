@@ -30,3 +30,17 @@ import { ChoiceSchema } from "shelving/schema";
 const UNIT = new ChoiceSchema({ options: ["kg", "g", "lb"], input: "select" }); // Always a <select>.
 const SIZE = new ChoiceSchema({ options: ["s", "m", "l", "xl"], input: "radio" }); // Always radios.
 ```
+
+## Groups
+
+`groups` puts options under named headings. A select shows each group as an `<optgroup>`, after the options that are in no group. The group order and the key order in each group set the display order. Groups are a display hint only: validation and `format()` still use `options`.
+
+```ts
+import { ChoiceSchema } from "shelving/schema";
+
+const FOOD = new ChoiceSchema({
+	options: { none: "Nothing", apple: "Apple", pear: "Pear", carrot: "Carrot" },
+	groups: { Fruit: ["apple", "pear"], Vegetables: ["carrot"] },
+	input: "select",
+});
+```

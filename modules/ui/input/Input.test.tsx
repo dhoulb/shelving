@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement } from "react";
-import { DateInput, FileInput, ImageInput, NumberInput, TextareaInput, TextInput } from "shelving/ui";
+import { DateInput, FileInput, ImageInput, NumberInput, SelectInput, TextareaInput, TextInput } from "shelving/ui";
 import { PASSTHROUGH } from "shelving/util/function";
 
 /** The props of the rendered element that the tests read. */
@@ -66,5 +66,37 @@ describe("ImageInput", () => {
 		(input.props.onChange as (e: { currentTarget: { files: File[] } }) => void)({ currentTarget: { files: [file] } });
 		((clear as ReactElement<Record<string, unknown>>).props.onClick as (e: unknown) => void)({ currentTarget: { parentElement: null } });
 		expect(values).toEqual([file, undefined]);
+	});
+});
+
+describe("SelectInput", () => {
+	/** The `[type, key or label]` of each child of a rendered select, with an optgroup's options after it. */
+	function _getChildren(element: ReactElement): string[] {
+		const out: string[] = [];
+		const children = (element.props as { children: unknown[] }).children.flat();
+		for (const c of children) {
+			if (!c || typeof c !== "object") continue;
+			const el = c as ReactElement<{ value?: string; label?: string; children?: unknown }>;
+			if (el.type === "optgroup") {
+				out.push(`group:${el.props.label}`);
+				for (const o of [el.props.children].flat()) if (o) out.push(`option:${(o as ReactElement<{ value: string }>).props.value}`);
+			} else out.push(`option:${el.props.value}`);
+		}
+		return out;
+	}
+	test("shows options in no group first, then each group as an optgroup", () => {
+		const element = SelectInput<string>({
+			name: "x",
+			required: true,
+			value: "a",
+			options: { a: "A", b: "B", c: "C", d: "D" },
+			groups: { Second: ["d", "b"], Missing: ["z"] },
+			onValue: PASSTHROUGH,
+		});
+		expect(_getChildren(element)).toEqual(["option:a", "option:c", "group:Second", "option:d", "option:b", "group:Missing"]);
+	});
+	test("shows a flat list with no groups", () => {
+		const element = SelectInput<string>({ name: "x", required: true, value: "a", options: { a: "A", b: "B" }, onValue: PASSTHROUGH });
+		expect(_getChildren(element)).toEqual(["option:a", "option:b"]);
 	});
 });
