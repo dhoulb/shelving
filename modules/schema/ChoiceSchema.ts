@@ -20,6 +20,16 @@ export type ChoiceOptions<K extends string> = { readonly [KK in K]: string };
  */
 export type PossibleChoiceOptions<K extends string> = ImmutableArray<K> | ChoiceOptions<K>;
 
+/**
+ * Named groups of option keys for a `ChoiceSchema` in `{ group: [key] }` format, e.g. `{ Fruit: ["apple", "pear"] }`.
+ *
+ * - Groups are a display hint only: validation and `format()` use `options`, and do not change.
+ * - The group order and the key order in each group set the display order.
+ *
+ * @see https://shelving.cc/schema/ChoiceGroups
+ */
+export type ChoiceGroups<K extends string> = { readonly [group: string]: ImmutableArray<K> };
+
 /** Get a `ChoiceOptions` object for a set of `PossibleChoiceOptions`. */
 function _getChoiceOptions<K extends string>(options: PossibleChoiceOptions<K>): ChoiceOptions<K> {
 	return isArray(options) ? (Object.fromEntries(options.map(_getChoiceOption)) as ChoiceOptions<K>) : options;
@@ -44,6 +54,7 @@ export type ChoiceInputType = "radio" | "select";
  * - `options` — the allowed choices, as a `{ key: title }` dictionary or an array of keys.
  * - `value` — default option used when the input is `undefined`.
  * - `input` — control hint for downstream UIs (radios or a select).
+ * - `groups` — display hint that puts options under named headings (a select shows each group as an `<optgroup>`).
  *
  * @see https://shelving.cc/schema/ChoiceSchemaOptions
  */
@@ -57,6 +68,8 @@ export interface ChoiceSchemaOptions<O extends string, I = never> extends Schema
 	 * @default "radio" for 8 or fewer options, otherwise "select"
 	 */
 	readonly input?: ChoiceInputType | undefined;
+	/** Show the options under named headings, as a `{ group: [key] }` dictionary. Options in no group show first. */
+	readonly groups?: ChoiceGroups<O> | undefined;
 }
 
 /**
@@ -71,10 +84,21 @@ export class ChoiceSchema<O extends string, I = never> extends Schema<O> {
 	declare readonly value: O | I | undefined;
 	readonly options: ChoiceOptions<O>;
 	readonly input: ChoiceInputType;
+	readonly groups: ChoiceGroups<O> | undefined;
 
-	constructor({ one = "choice", title = "Choice", placeholder = `No ${one}`, options, value, input, ...rest }: ChoiceSchemaOptions<O, I>) {
+	constructor({
+		one = "choice",
+		title = "Choice",
+		placeholder = `No ${one}`,
+		options,
+		value,
+		input,
+		groups,
+		...rest
+	}: ChoiceSchemaOptions<O, I>) {
 		super({ one, title, value, placeholder, ...rest });
 		this.options = _getChoiceOptions(options);
+		this.groups = groups;
 		this.input = input ?? (getKeys(this.options).length <= MAX_RADIO_OPTIONS ? "radio" : "select");
 	}
 

@@ -78,3 +78,9 @@ test("input is preserved", () => {
 	expect(new ChoiceSchema({ options: ["a", "b"], input: "select" }).input).toBe("select");
 	expect(new ChoiceSchema({ options: ["a", "b"], input: "radio" }).input).toBe("radio");
 });
+test("groups are preserved and do not change validation", () => {
+	const schema = new ChoiceSchema({ options: ["a", "b", "c"], groups: { First: ["a", "b"] } });
+	expect(schema.groups).toEqual({ First: ["a", "b"] });
+	expect(schema.validate("c")).toBe("c");
+	expect(new ChoiceSchema({ options: ["a"] }).groups).toBeUndefined();
+});
