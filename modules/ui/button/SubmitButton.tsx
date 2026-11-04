@@ -1,5 +1,5 @@
-import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
+import { SubmitIcon } from "shelving/ui/icon/SubmitIcon";
 import { useStore } from "../../react/useStore.js";
 import { requireForm } from "../form/FormContext.js";
 import { LOADING } from "../misc/Loading.js";
@@ -21,7 +21,7 @@ export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps, C
 const _SUBMIT_CHILDREN = (
 	<>
 		Save
-		<ArrowRightIcon />
+		<SubmitIcon />
 	</>
 );
 

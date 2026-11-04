@@ -1,5 +1,6 @@
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
+import { AddIcon } from "shelving/ui/icon/AddIcon";
+import { CloseIcon } from "shelving/ui/icon/CloseIcon";
 import type { Schema } from "../../schema/Schema.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import { omitDictionaryItem, withDictionaryItem } from "../../util/dictionary.js";
@@ -91,7 +92,7 @@ export function DictionaryInput({
 								disabled={disableRemove}
 								title={disableRemove ? `Minimum ${formatUnit(min, one, { unitDisplay: "long", one, many })}` : `Remove ${one}`}
 							>
-								<XMarkIcon />
+								<CloseIcon />
 							</Button>
 						</Row>
 					);
@@ -107,14 +108,14 @@ export function DictionaryInput({
 					disabled={disabled || (typeof max === "number" && length >= max)}
 					small
 				>
-					<PlusIcon /> Add {one}
+					<AddIcon /> Add {one}
 				</Button>
 				{length && min < 1 ? (
 					<Button //
 						onClick={() => onValue({})}
 						small
 					>
-						<XMarkIcon /> Clear {many}
+						<CloseIcon /> Clear {many}
 					</Button>
 				) : null}
 			</Row>

@@ -1,5 +1,5 @@
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Fragment, type ReactElement } from "react";
+import { RightIcon } from "shelving/ui/icon/RightIcon";
 import { joinPath, splitPath } from "../../util/path.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { getBlockClass } from "../style/Block.js";
@@ -47,11 +47,11 @@ export function TreeBreadcrumbs({ tint = "70", left = true, wrap = true, classNa
 			)}
 		>
 			<TreeButton small plain name="/" />
-			<ChevronRightIcon />
+			<RightIcon />
 			{ancestors.map(path => (
 				<Fragment key={path}>
 					<TreeButton small plain name={path} />
-					<ChevronRightIcon />
+					<RightIcon />
 				</Fragment>
 			))}
 		</nav>

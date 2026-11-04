@@ -1,5 +1,8 @@
-import { CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import type { ComponentType, ReactElement } from "react";
+import { ErrorIcon } from "shelving/ui/icon/ErrorIcon";
+import { InfoIcon } from "shelving/ui/icon/InfoIcon";
+import { SuccessIcon } from "shelving/ui/icon/SuccessIcon";
+import { WarningIcon } from "shelving/ui/icon/WarningIcon";
 import type { ColorVariants } from "../style/Color.js";
 import type { SpaceVariants } from "../style/Space.js";
 import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
@@ -14,10 +17,10 @@ const STATUS_ICONS: {
 	[K in Status]?: ComponentType;
 } = {
 	loading: Loading,
-	success: CheckCircleIcon,
-	error: XCircleIcon,
-	warning: ExclamationTriangleIcon,
-	danger: ExclamationTriangleIcon,
+	success: SuccessIcon,
+	error: ErrorIcon,
+	warning: WarningIcon,
+	danger: WarningIcon,
 };
 
 /**
@@ -45,13 +48,13 @@ export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants,
 /**
  * Render the icon for a given status, coloured to match.
  *
- * - Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+ * - Picks an icon per status from `shelving/ui/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Icon
  */
 export function Icon(props: IconProps): ReactElement {
-	const { status = "info", icon: Element = STATUS_ICONS[status] ?? InformationCircleIcon } = props;
+	const { status = "info", icon: Element = STATUS_ICONS[status] ?? InfoIcon } = props;
 	return (
 		<Element
 			className={getClass(
