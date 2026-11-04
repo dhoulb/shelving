@@ -40,8 +40,8 @@ Components paint from the ladder by convention:
 |---|---|
 | `--tint-00` | Body text, headings — maximum contrast |
 | `--tint-50` | The hue itself — accents, labels, `Tag` backgrounds, `<Button>` backgrounds |
-| `--tint-80` | Borders |
-| `--tint-90` | Surfaces — `<Card>`, `Preformatted` backgrounds |
+| `--tint-80` | Borders of boxes and controls — `<Card>`, `<Input>`, `<Notice>` |
+| `--tint-90` | Surfaces — `<Card>`, `Preformatted` backgrounds; light rules — `<Divider>`, `<Table>` rows, `<Blockquote>` |
 | `--tint-95` | Hover state of those surfaces |
 | `--tint-100` | The page background; text on `--tint-50` backgrounds |
 | `--tint-contrast` | Text on `--tint-50` backgrounds when the anchor can be light or dark |
