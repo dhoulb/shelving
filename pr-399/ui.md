@@ -527,19 +527,6 @@ The components below are listed in the index following this page; this is the sh
 
 - [RetryContext](ui/RetryContext.md): Context for providing a "retry" callback to descendant <RetryButton> elements.
 - [FormContext](ui/FormContext.md): React context holding the current FormStore, provided by the Form component.
-- [AddIcon](ui/AddIcon.md): Icon to add an item, e.g. the add button on <ArrayInput> and <DictionaryInput>.
-- [CloseIcon](ui/CloseIcon.md): Icon to close or remove something, e.g. the close button on <Dialog> and the remove buttons on inputs.
-- [ErrorIcon](ui/ErrorIcon.md): Icon for status="error" in <Icon>.
-- [ExitFullscreenIcon](ui/ExitFullscreenIcon.md): Icon to exit fullscreen, used in <FullscreenButton>.
-- [FullscreenIcon](ui/FullscreenIcon.md): Icon to enter fullscreen, used in <FullscreenButton>.
-- [InfoIcon](ui/InfoIcon.md): Icon for status="info" (the default) in <Icon>.
-- [MenuIcon](ui/MenuIcon.md): Icon to open a menu, e.g. the menu button on <SidebarLayout>.
-- [RetryIcon](ui/RetryIcon.md): Icon for <RetryButton>.
-- [RightIcon](ui/RightIcon.md): Chevron that points right, e.g. the separator in <TreeBreadcrumbs>.
-- [SubmitIcon](ui/SubmitIcon.md): Icon for the default <SubmitButton>.
-- [SuccessIcon](ui/SuccessIcon.md): Icon for status="success" in <Icon>.
-- [UpIcon](ui/UpIcon.md): Chevron that points up, e.g. the open and close arrow on <Details>.
-- [WarningIcon](ui/WarningIcon.md): Icon for status="warning" and status="danger" in <Icon>.
 - [LOADING_INPUT](ui/LOADING_INPUT.md): Input that is loading.
 - [LOADING](ui/LOADING.md): Shared loading spinner element with a stable key, ready to drop into Suspense fallbacks and lists.
 - [MetaContext](ui/MetaContext.md): React context holding the current Meta object (page URL, site root, title, etc.).
