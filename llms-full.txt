@@ -49,6 +49,19 @@ See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 - [shelving/error](error.md): Typed error classes for system and transport failures.
 - [shelving/extract](extract.md): Turn a folder of source files into a navigable tree of documentation. extract is the engine behind the Shelving documentation site itself.
 - [shelving/firebase](firebase.md): FirestoreProvider — a Cloud Firestore DBProvider that talks directly to the Firestore REST API using fetch.
+- [shelving/icon/AddIcon](icon/AddIcon.md)
+- [shelving/icon/CloseIcon](icon/CloseIcon.md)
+- [shelving/icon/ErrorIcon](icon/ErrorIcon.md)
+- [shelving/icon/ExitFullscreenIcon](icon/ExitFullscreenIcon.md)
+- [shelving/icon/FullscreenIcon](icon/FullscreenIcon.md)
+- [shelving/icon/InfoIcon](icon/InfoIcon.md)
+- [shelving/icon/MenuIcon](icon/MenuIcon.md)
+- [shelving/icon/RetryIcon](icon/RetryIcon.md)
+- [shelving/icon/RightIcon](icon/RightIcon.md)
+- [shelving/icon/SubmitIcon](icon/SubmitIcon.md)
+- [shelving/icon/SuccessIcon](icon/SuccessIcon.md)
+- [shelving/icon/UpIcon](icon/UpIcon.md)
+- [shelving/icon/WarningIcon](icon/WarningIcon.md)
 - [shelving/markup](markup.md): A rule-based Markdown renderer that turns user-facing text into React nodes.
 - [shelving/react](react.md): React hooks and context helpers for integrating Shelving shelving/store, async sequences, and API/DB providers into React components. The module is built on useSyncExternalStore and standard React patterns — no magic, no global state.
 - [shelving/schema](schema.md): Schema validation for TypeScript. A Schema<T> describes how to coerce and validate an unknown value into a typed T. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.
@@ -9455,6 +9468,318 @@ toData(fields: FirestoreFields | undefined, caller: AnyCaller = toData): Data
 ```ts
 toData({ num: { integerValue: "123" } }) // { num: 123 }
 ```
+
+
+---
+
+# shelving/icon/AddIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/AddIcon";`
+
+## Constants
+
+- [AddIcon](icon/AddIcon/AddIcon.md): Icon to add an item, e.g. the add button on <ArrayInput> and <DictionaryInput>.
+
+
+---
+
+# AddIcon
+
+- Kind: constant
+- Import: `import { AddIcon } from "shelving/icon/AddIcon";`
+
+Icon to add an item, e.g. the add button on `<ArrayInput>` and `<DictionaryInput>`.
+- Default is the Heroicons `PlusIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/AddIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/CloseIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/CloseIcon";`
+
+## Constants
+
+- [CloseIcon](icon/CloseIcon/CloseIcon.md): Icon to close or remove something, e.g. the close button on <Dialog> and the remove buttons on inputs.
+
+
+---
+
+# CloseIcon
+
+- Kind: constant
+- Import: `import { CloseIcon } from "shelving/icon/CloseIcon";`
+
+Icon to close or remove something, e.g. the close button on `<Dialog>` and the remove buttons on inputs.
+- Default is the Heroicons `XMarkIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/CloseIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/ErrorIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/ErrorIcon";`
+
+## Constants
+
+- [ErrorIcon](icon/ErrorIcon/ErrorIcon.md): Icon for status="error" in <Icon>.
+
+
+---
+
+# ErrorIcon
+
+- Kind: constant
+- Import: `import { ErrorIcon } from "shelving/icon/ErrorIcon";`
+
+Icon for `status="error"` in `<Icon>`.
+- Default is the Heroicons `XCircleIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/ErrorIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/ExitFullscreenIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/ExitFullscreenIcon";`
+
+## Constants
+
+- [ExitFullscreenIcon](icon/ExitFullscreenIcon/ExitFullscreenIcon.md): Icon to exit fullscreen, used in <FullscreenButton>.
+
+
+---
+
+# ExitFullscreenIcon
+
+- Kind: constant
+- Import: `import { ExitFullscreenIcon } from "shelving/icon/ExitFullscreenIcon";`
+
+Icon to exit fullscreen, used in `<FullscreenButton>`.
+- Default is the Heroicons `ArrowsPointingInIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/ExitFullscreenIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/FullscreenIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/FullscreenIcon";`
+
+## Constants
+
+- [FullscreenIcon](icon/FullscreenIcon/FullscreenIcon.md): Icon to enter fullscreen, used in <FullscreenButton>.
+
+
+---
+
+# FullscreenIcon
+
+- Kind: constant
+- Import: `import { FullscreenIcon } from "shelving/icon/FullscreenIcon";`
+
+Icon to enter fullscreen, used in `<FullscreenButton>`.
+- Default is the Heroicons `ArrowsPointingOutIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/FullscreenIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/InfoIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/InfoIcon";`
+
+## Constants
+
+- [InfoIcon](icon/InfoIcon/InfoIcon.md): Icon for status="info" (the default) in <Icon>.
+
+
+---
+
+# InfoIcon
+
+- Kind: constant
+- Import: `import { InfoIcon } from "shelving/icon/InfoIcon";`
+
+Icon for `status="info"` (the default) in `<Icon>`.
+- Default is the Heroicons `InformationCircleIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/InfoIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/MenuIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/MenuIcon";`
+
+## Constants
+
+- [MenuIcon](icon/MenuIcon/MenuIcon.md): Icon to open a menu, e.g. the menu button on <SidebarLayout>.
+
+
+---
+
+# MenuIcon
+
+- Kind: constant
+- Import: `import { MenuIcon } from "shelving/icon/MenuIcon";`
+
+Icon to open a menu, e.g. the menu button on `<SidebarLayout>`.
+- Default is the Heroicons `Bars3Icon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/MenuIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/RetryIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/RetryIcon";`
+
+## Constants
+
+- [RetryIcon](icon/RetryIcon/RetryIcon.md): Icon for <RetryButton>.
+
+
+---
+
+# RetryIcon
+
+- Kind: constant
+- Import: `import { RetryIcon } from "shelving/icon/RetryIcon";`
+
+Icon for `<RetryButton>`.
+- Default is the Heroicons `ArrowPathIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/RetryIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/RightIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/RightIcon";`
+
+## Constants
+
+- [RightIcon](icon/RightIcon/RightIcon.md): Chevron that points right, e.g. the separator in <TreeBreadcrumbs>.
+
+
+---
+
+# RightIcon
+
+- Kind: constant
+- Import: `import { RightIcon } from "shelving/icon/RightIcon";`
+
+Chevron that points right, e.g. the separator in `<TreeBreadcrumbs>`.
+- Default is the Heroicons `ChevronRightIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/RightIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/SubmitIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/SubmitIcon";`
+
+## Constants
+
+- [SubmitIcon](icon/SubmitIcon/SubmitIcon.md): Icon for the default <SubmitButton>.
+
+
+---
+
+# SubmitIcon
+
+- Kind: constant
+- Import: `import { SubmitIcon } from "shelving/icon/SubmitIcon";`
+
+Icon for the default `<SubmitButton>`.
+- Default is the Heroicons `ArrowRightIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/SubmitIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/SuccessIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/SuccessIcon";`
+
+## Constants
+
+- [SuccessIcon](icon/SuccessIcon/SuccessIcon.md): Icon for status="success" in <Icon>.
+
+
+---
+
+# SuccessIcon
+
+- Kind: constant
+- Import: `import { SuccessIcon } from "shelving/icon/SuccessIcon";`
+
+Icon for `status="success"` in `<Icon>`.
+- Default is the Heroicons `CheckCircleIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/SuccessIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/UpIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/UpIcon";`
+
+## Constants
+
+- [UpIcon](icon/UpIcon/UpIcon.md): Chevron that points up, e.g. the open and close arrow on <Details>.
+
+
+---
+
+# UpIcon
+
+- Kind: constant
+- Import: `import { UpIcon } from "shelving/icon/UpIcon";`
+
+Chevron that points up, e.g. the open and close arrow on `<Details>`.
+- Default is the Heroicons `ChevronUpIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/UpIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/WarningIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/WarningIcon";`
+
+## Constants
+
+- [WarningIcon](icon/WarningIcon/WarningIcon.md): Icon for status="warning" and status="danger" in <Icon>.
+
+
+---
+
+# WarningIcon
+
+- Kind: constant
+- Import: `import { WarningIcon } from "shelving/icon/WarningIcon";`
+
+Icon for `status="warning"` and `status="danger"` in `<Icon>`.
+- Default is the Heroicons `ExclamationTriangleIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/WarningIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---
@@ -23090,7 +23415,7 @@ Button that closes its wrapping `<dialog>`, showing an X icon by default.
 
 ```ts
 DialogCloseButton({
-	children = <XMarkIcon />,
+	children = <CloseIcon />,
 	plain = true,
 	className,
 	...variants
@@ -29905,9 +30230,9 @@ Props for `<Icon>` — the `status` to represent and optional icon `size`.
 
 Render the icon for a given status, coloured to match.
 
-- Picks a heroicon per status (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+- Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
 
-Renders an icon for a given status, coloured to match. Picks a heroicon per status (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
+Renders an icon for a given status, coloured to match. Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
 
 **Things to know:**
 

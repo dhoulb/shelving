@@ -11,7 +11,7 @@ Button that closes its wrapping `<dialog>`, showing an X icon by default.
 
 ```ts
 DialogCloseButton({
-	children = <XMarkIcon />,
+	children = <CloseIcon />,
 	plain = true,
 	className,
 	...variants

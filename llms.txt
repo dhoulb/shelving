@@ -25,6 +25,19 @@ Every page of the docs site is also Markdown: add `.md` to the page path (`https
 - [shelving/error](error.md): Typed error classes for system and transport failures.
 - [shelving/extract](extract.md): Turn a folder of source files into a navigable tree of documentation. extract is the engine behind the Shelving documentation site itself.
 - [shelving/firebase](firebase.md): FirestoreProvider — a Cloud Firestore DBProvider that talks directly to the Firestore REST API using fetch.
+- [shelving/icon/AddIcon](icon/AddIcon.md)
+- [shelving/icon/CloseIcon](icon/CloseIcon.md)
+- [shelving/icon/ErrorIcon](icon/ErrorIcon.md)
+- [shelving/icon/ExitFullscreenIcon](icon/ExitFullscreenIcon.md)
+- [shelving/icon/FullscreenIcon](icon/FullscreenIcon.md)
+- [shelving/icon/InfoIcon](icon/InfoIcon.md)
+- [shelving/icon/MenuIcon](icon/MenuIcon.md)
+- [shelving/icon/RetryIcon](icon/RetryIcon.md)
+- [shelving/icon/RightIcon](icon/RightIcon.md)
+- [shelving/icon/SubmitIcon](icon/SubmitIcon.md)
+- [shelving/icon/SuccessIcon](icon/SuccessIcon.md)
+- [shelving/icon/UpIcon](icon/UpIcon.md)
+- [shelving/icon/WarningIcon](icon/WarningIcon.md)
 - [shelving/markup](markup.md): A rule-based Markdown renderer that turns user-facing text into React nodes.
 - [shelving/react](react.md): React hooks and context helpers for integrating Shelving shelving/store, async sequences, and API/DB providers into React components. The module is built on useSyncExternalStore and standard React patterns — no magic, no global state.
 - [shelving/schema](schema.md): Schema validation for TypeScript. A Schema<T> describes how to coerce and validate an unknown value into a typed T. Schemas are the foundation of shelving — database collections, API endpoints, and form handlers all build on them.
