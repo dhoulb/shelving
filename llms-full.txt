@@ -19656,7 +19656,7 @@ The components below are listed in the index following this page; this is the sh
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [Navigation](ui/Navigation.md): Top-level navigation provider.
 - [RouteCache](ui/RouteCache.md): Keep-alive page cache keyed by the current URL — drop it into a layout around its scrolling content region.
-- [RoutePath](ui/RoutePath.md): Tell the surrounding <Router> (and <RouteCache>) that this page owns every path that matches a template.
+- [RouteConfig](ui/RouteConfig.md): Configure the current page for the surrounding <Router> (and <RouteCache>).
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
 - [Cell](ui/Cell.md): Table cell.
@@ -19903,8 +19903,8 @@ The components below are listed in the index following this page; this is the sh
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation> — initial Meta (url/base) plus optional children.
 - [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache> — the maxCached size and the content children to keep alive per URL.
-- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RoutePath>.
-- [RoutePathProps](ui/RoutePathProps.md): Props for <RoutePath> — the path template the page owns, and the page content.
+- [RouteConfigProps](ui/RouteConfigProps.md): Props for <RouteConfig> — the settings of a page for the surrounding <Router> and <RouteCache>, and the page content.
+- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RouteConfig>.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
 - [BlockVariants](ui/BlockVariants.md): Variants for block level elements.
 - [ColorVariants](ui/ColorVariants.md): Variant props for colouring an element, e.g. color="purple".
@@ -31683,7 +31683,8 @@ Keep-alive page cache keyed by the current URL — drop it into a layout around 
   pages mounted but hidden (via React's `<Activity>`), so navigating back/forward to a page restores its
   entire DOM and component state — scroll position, toggles, searches, inputs, focus — untouched.
 - Pages are kept in a least-recently-used map keyed by `path`; the oldest is unmounted past the limit.
-- A page that owns other paths with `<RoutePath>` stays mounted when the URL changes to one of them.
+- A page that owns other paths with `<RouteConfig path>` stays mounted when the URL changes to one of them.
+- A page with `<RouteConfig cache={false}>` is dropped as soon as you leave it, so the next visit shows a new page.
 - Each snapshot is frozen under its own `<MetaContext>`, so the same single `children` element resolves a
   different page per path and a hidden page never re-renders for someone else's URL.
 - `<Activity mode="hidden">` preserves a hidden page's state while unmounting its effects, so its
@@ -31700,7 +31701,9 @@ Shelving's `<SidebarLayout>` and `<CenteredLayout>` already wrap their scrollabl
 **Things to know:**
 
 - Pages are kept in a least-recently-used map keyed by `path`. Once `maxCached` pages are retained the least-recently-visited one is unmounted (and loses its state). A never-seen or evicted page mounts fresh at the top.
-- A page can own other paths with `<RoutePath>`, for example its tabs (`/dave/{tab}`). A navigation to one of those paths keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide.
+- A page can own other paths with `<RouteConfig path>`, for example its tabs (`/dave/{tab}`). A navigation to one of those paths keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide.
+- A page with `<RouteConfig cache={false}>` is not kept: it unmounts as you leave it, so the next visit starts again. Use it for a form that makes or edits something, so it never shows old input.
+- The cache key is the path only, not the `?query`. So `/new?from=a` and `/new?from=b` are one page.
 - Pass `maxCached={0}` (or less) to disable caching entirely — the page renders directly and unmounts as soon as you leave it.
 - `<Activity mode="hidden">` preserves a hidden page's *state* while unmounting its *effects*, so subscriptions, observers (e.g. infinite-scroll), and timers pause and resume cleanly as the page is hidden and shown.
 - Each snapshot is frozen under its own `<Meta>` context, so the same single `children` element resolves a different page per path and a hidden page never re-renders for someone else's URL.
@@ -31742,14 +31745,122 @@ RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode
 
 ---
 
+# RouteConfigProps
+
+- Kind: interface
+- Import: `import { RouteConfigProps } from "shelving/ui";`
+
+Props for `<RouteConfig>` — the settings of a page for the surrounding `<Router>` and `<RouteCache>`, and the page content.
+
+## Signatures
+
+```ts
+{
+	readonly path?: AbsolutePath | undefined;
+	readonly cache?: boolean | undefined;
+	readonly children?: ReactNode;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `path` | `AbsolutePath \| undefined` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. Optional. |
+| `cache` | `boolean \| undefined` | Set to `false` so `<RouteCache>` drops the page when you leave it, and the next visit shows a new page. Defaults to `true`. Read only. Optional. |
+| `children` | `ReactNode` | The page content. Read only. Optional. |
+
+
+---
+
+# RouteConfig
+
+- Kind: component
+- Import: `import { RouteConfig } from "shelving/ui";`
+
+Configure the current page for the surrounding `<Router>` (and `<RouteCache>`).
+- `path` says the page owns every path that matches a template. A navigation to a path the page owns keeps the same
+  page mounted, so it keeps its scroll and state, and a `<ViewTransition>` around the page does not run an enter or
+  exit. The page updates for the new URL. Use it for a page whose tabs each have their own path: `path="/dave/{tab}"`.
+- Put the real values in the template. `/{name}/{tab}` would make every person's profile one page.
+- `cache={false}` makes `<RouteCache>` drop the page when you leave it, so the next visit starts again with no old
+  state. Use it for a form that makes or edits something, for example a "New challenge" page.
+
+Configure the current page for the surrounding `<Router>` (and `<RouteCache>`, if there is one). It has one prop for each setting, so a page wraps itself in one `<RouteConfig>` for all its settings.
+
+- `path` says the page owns every path that matches a template. A navigation between paths the page owns keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide. Use it for a page whose tabs each have their own path.
+- `cache={false}` tells `<RouteCache>` to drop the page when you leave it. The next visit starts again, with no old state. Use it for a form that makes or edits something, so it never shows old input.
+
+**Things to know:**
+
+- Without `path`, each path is its own page, so `/challenge/123` and `/challenge/456` stay separate pages.
+- Put the real values in the template (`/dave/{tab}`). A template such as `/{name}/{tab}` makes every profile the same page.
+- The page still renders for the new URL, so it reads the tab from the URL as usual.
+- The cache key is the path only, not the `?query`. A page that reads its `?query` once (for example `/new?from=123`) should use `cache={false}`, so a visit with another `?query` does not show the old page.
+- It works with or without a `<RouteCache>`. In a nested router's page, it tells only that nested router.
+
+## Usage
+
+```tsx
+import { Page, RouteConfig } from "shelving/ui";
+
+// Each tab has its own path, and all of them are the same page.
+function ProfilePage({ name, tab }: { name: string; tab?: string }) {
+  return (
+    <RouteConfig path={`/${name}/{tab}`}>
+      <Page title={name}>
+        <ProfileTabs tab={tab} />
+      </Page>
+    </RouteConfig>
+  );
+}
+
+// A new form on each visit.
+function NewChallengePage({ from }: { from?: string }) {
+  return (
+    <RouteConfig cache={false}>
+      <Page title="New challenge">
+        <ChallengeForm from={from} />
+      </Page>
+    </RouteConfig>
+  );
+}
+```
+
+
+## Signatures
+
+```ts
+RouteConfig({ path, cache, children }: RouteConfigProps): ReactNode
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `RouteConfigProps` |  |
+| `.path` | `AbsolutePath \| undefined` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. Optional. |
+| `.cache` | `boolean \| undefined` | Set to `false` so `<RouteCache>` drops the page when you leave it, and the next visit shows a new page. Defaults to `true`. Read only. Optional. |
+| `.children` | `ReactNode` | The page content. Read only. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactNode` |  |
+
+
+---
+
 # RouteState
 
 - Kind: interface
 - Import: `import { RouteState } from "shelving/ui";`
 
-The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePath>`.
-- `path` is the template of the paths the page owns, set by `<RoutePath>`.
-- `cache` is the page's `<RouteCache>` entry, so `<RoutePath>` in a top-level page also tells the cache.
+The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RouteConfig>`.
+- `path` is the template of the paths the page owns, set by `<RouteConfig path>`.
+- `cache` is `false` when `<RouteCache>` drops the page as you leave it, set by `<RouteConfig cache>`.
+- `entry` is the page's `<RouteCache>` entry, so `<RouteConfig>` in a top-level page also tells the cache.
 - `router` marks a state made by `<Router>`, so a nested router does not pass the cache entry on.
 
 ## Signatures
@@ -31757,7 +31868,8 @@ The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePat
 ```ts
 {
 	path?: AbsolutePath | undefined;
-	readonly cache?: RouteState | undefined;
+	cache?: boolean | undefined;
+	readonly entry?: RouteState | undefined;
 	readonly router?: true | undefined;
 }
 ```
@@ -31767,7 +31879,8 @@ The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePat
 | Property | Type | Description |
 | --- | --- | --- |
 | `path` | `AbsolutePath \| undefined` | Optional. |
-| `cache` | `RouteState \| undefined` | Read only. Optional. |
+| `cache` | `boolean \| undefined` | Optional. |
+| `entry` | `RouteState \| undefined` | Read only. Optional. |
 | `router` | `true \| undefined` | Read only. Optional. |
 
 
@@ -31779,92 +31892,6 @@ The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePat
 - Import: `import { RouteContext } from "shelving/ui";`
 
 React context holding the `RouteState` of the current page, provided by `<Router>` and `<RouteCache>`.
-
-
----
-
-# RoutePathProps
-
-- Kind: interface
-- Import: `import { RoutePathProps } from "shelving/ui";`
-
-Props for `<RoutePath>` — the path template the page owns, and the page content.
-
-## Signatures
-
-```ts
-{
-	readonly path: AbsolutePath;
-	readonly children?: ReactNode;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `path` | `AbsolutePath` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. |
-| `children` | `ReactNode` | The page content. Read only. Optional. |
-
-
----
-
-# RoutePath
-
-- Kind: component
-- Import: `import { RoutePath } from "shelving/ui";`
-
-Tell the surrounding `<Router>` (and `<RouteCache>`) that this page owns every path that matches a template.
-- A navigation to a path the page owns keeps the same page mounted, so it keeps its scroll and state,
-  and a `<ViewTransition>` around the page does not run an enter or exit. The page updates for the new URL.
-- Use it for a page whose tabs each have their own path: `<RoutePath path="/dave/{tab}">`.
-- Put the real values in the template. `/{name}/{tab}` would make every person's profile one page.
-
-Tell the surrounding `<Router>` (and `<RouteCache>`, if there is one) that a page owns every path that matches a template. A navigation between paths the page owns keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide. Use it for a page whose tabs each have their own path.
-
-**Things to know:**
-
-- Without `<RoutePath>`, each path is its own page, so `/challenge/123` and `/challenge/456` stay separate pages.
-- Put the real values in the template (`/dave/{tab}`). A template such as `/{name}/{tab}` makes every profile the same page.
-- The page still renders for the new URL, so it reads the tab from the URL as usual.
-- It works with or without a `<RouteCache>`. In a nested router's page, it tells only that nested router.
-
-## Usage
-
-```tsx
-import { Page, RoutePath } from "shelving/ui";
-
-function ProfilePage({ name, tab }: { name: string; tab?: string }) {
-  return (
-    <RoutePath path={`/${name}/{tab}`}>
-      <Page title={name}>
-        <ProfileTabs tab={tab} />
-      </Page>
-    </RoutePath>
-  );
-}
-```
-
-
-## Signatures
-
-```ts
-RoutePath({ path, children }: RoutePathProps): ReactNode
-```
-
-## Parameters
-
-| Param | Type | Description |
-| --- | --- | --- |
-| `props` | `RoutePathProps` |  |
-| `.path` | `AbsolutePath` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. |
-| `.children` | `ReactNode` | The page content. Read only. Optional. |
-
-## Returns
-
-| Type | Description |
-| --- | --- |
-| `ReactNode` |  |
 
 
 ---
@@ -31906,7 +31933,7 @@ Match the current URL against `routes` and render the matched element.
 - When `base` is set, the effective path is the URL after stripping the base prefix.
 - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
 - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
-- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RoutePath>` stays mounted when the path changes to one of them.
+- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RouteConfig path>` stays mounted when the path changes to one of them.
 - Returns `null` when there's no URL in context or the URL is outside the base.
 
 A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no `<Navigation>` at all — wrap it in `<Navigation>` on the client to get live URL updates.

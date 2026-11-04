@@ -191,7 +191,7 @@ The components below are listed in the index following this page; this is the sh
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [Navigation](ui/Navigation.md): Top-level navigation provider.
 - [RouteCache](ui/RouteCache.md): Keep-alive page cache keyed by the current URL — drop it into a layout around its scrolling content region.
-- [RoutePath](ui/RoutePath.md): Tell the surrounding <Router> (and <RouteCache>) that this page owns every path that matches a template.
+- [RouteConfig](ui/RouteConfig.md): Configure the current page for the surrounding <Router> (and <RouteCache>).
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
 - [Cell](ui/Cell.md): Table cell.
@@ -438,8 +438,8 @@ The components below are listed in the index following this page; this is the sh
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation> — initial Meta (url/base) plus optional children.
 - [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache> — the maxCached size and the content children to keep alive per URL.
-- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RoutePath>.
-- [RoutePathProps](ui/RoutePathProps.md): Props for <RoutePath> — the path template the page owns, and the page content.
+- [RouteConfigProps](ui/RouteConfigProps.md): Props for <RouteConfig> — the settings of a page for the surrounding <Router> and <RouteCache>, and the page content.
+- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RouteConfig>.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
 - [BlockVariants](ui/BlockVariants.md): Variants for block level elements.
 - [ColorVariants](ui/ColorVariants.md): Variant props for colouring an element, e.g. color="purple".

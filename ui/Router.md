@@ -8,7 +8,7 @@ Match the current URL against `routes` and render the matched element.
 - When `base` is set, the effective path is the URL after stripping the base prefix.
 - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
 - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
-- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RoutePath>` stays mounted when the path changes to one of them.
+- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RouteConfig path>` stays mounted when the path changes to one of them.
 - Returns `null` when there's no URL in context or the URL is outside the base.
 
 A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no `<Navigation>` at all — wrap it in `<Navigation>` on the client to get live URL updates.

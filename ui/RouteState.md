@@ -3,9 +3,10 @@
 - Kind: interface
 - Import: `import { RouteState } from "shelving/ui";`
 
-The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePath>`.
-- `path` is the template of the paths the page owns, set by `<RoutePath>`.
-- `cache` is the page's `<RouteCache>` entry, so `<RoutePath>` in a top-level page also tells the cache.
+The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RouteConfig>`.
+- `path` is the template of the paths the page owns, set by `<RouteConfig path>`.
+- `cache` is `false` when `<RouteCache>` drops the page as you leave it, set by `<RouteConfig cache>`.
+- `entry` is the page's `<RouteCache>` entry, so `<RouteConfig>` in a top-level page also tells the cache.
 - `router` marks a state made by `<Router>`, so a nested router does not pass the cache entry on.
 
 ## Signatures
@@ -13,7 +14,8 @@ The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePat
 ```ts
 {
 	path?: AbsolutePath | undefined;
-	readonly cache?: RouteState | undefined;
+	cache?: boolean | undefined;
+	readonly entry?: RouteState | undefined;
 	readonly router?: true | undefined;
 }
 ```
@@ -23,5 +25,6 @@ The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RoutePat
 | Property | Type | Description |
 | --- | --- | --- |
 | `path` | `AbsolutePath \| undefined` | Optional. |
-| `cache` | `RouteState \| undefined` | Read only. Optional. |
+| `cache` | `boolean \| undefined` | Optional. |
+| `entry` | `RouteState \| undefined` | Read only. Optional. |
 | `router` | `true \| undefined` | Read only. Optional. |
