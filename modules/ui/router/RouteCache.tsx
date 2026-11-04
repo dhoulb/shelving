@@ -36,7 +36,8 @@ export interface RouteCacheProps {
  *   pages mounted but hidden (via React's `<Activity>`), so navigating back/forward to a page restores its
  *   entire DOM and component state — scroll position, toggles, searches, inputs, focus — untouched.
  * - Pages are kept in a least-recently-used map keyed by `path`; the oldest is unmounted past the limit.
- * - A page that owns other paths with `<RoutePath>` stays mounted when the URL changes to one of them.
+ * - A page that owns other paths with `<RouteConfig path>` stays mounted when the URL changes to one of them.
+ * - A page with `<RouteConfig cache={false}>` is dropped as soon as you leave it, so the next visit shows a new page.
  * - Each snapshot is frozen under its own `<MetaContext>`, so the same single `children` element resolves a
  *   different page per path and a hidden page never re-renders for someone else's URL.
  * - `<Activity mode="hidden">` preserves a hidden page's state while unmounting its effects, so its
@@ -58,7 +59,7 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	// Caching disabled — render the page directly so it unmounts as soon as you leave it.
 	if (maxCached <= 0) return <MetaContext value={meta}>{children}</MetaContext>;
 
-	// Find the page for this path: its own entry, else the most recent page that owns the path with `<RoutePath>`.
+	// Find the page for this path: its own entry, else the most recent page that owns the path with `<RouteConfig path>`.
 	const map = (mapRef.current ??= new Map());
 	const key = map.has(meta.path) ? meta.path : (_findOwner(map, meta.path) ?? meta.path);
 	const entry = map.get(key) ?? { node: null, used: 0, state: {} };
@@ -73,6 +74,9 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	);
 	entry.used = ++usedRef.current;
 
+	// Drop the pages that ask not to be cached (`<RouteConfig cache={false}>`) once they are not the current page.
+	for (const [k, { state }] of map) if (k !== key && state.cache === false) map.delete(k);
+
 	// Evict the least-recently-used pages beyond the limit.
 	while (map.size > maxCached) map.delete(_findLeastRecentlyUsed(map));
 
@@ -84,7 +88,7 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	));
 }
 
-/** Find the key of the most-recently-used entry whose `<RoutePath>` owns a path, or `undefined` if none does. */
+/** Find the key of the most-recently-used entry whose `<RouteConfig path>` owns a path, or `undefined` if none does. */
 function _findOwner(map: Map<AbsolutePath, CacheEntry>, path: AbsolutePath): AbsolutePath | undefined {
 	let ownerKey: AbsolutePath | undefined;
 	let ownerUsed = Number.NEGATIVE_INFINITY;
