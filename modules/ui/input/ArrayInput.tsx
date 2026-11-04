@@ -1,5 +1,6 @@
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import type { ReactElement } from "react";
+import { AddIcon } from "shelving/icon/AddIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Schema } from "../../schema/Schema.js";
 import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
 import { splitMessage } from "../../util/error.js";
@@ -76,7 +77,7 @@ export function ArrayInput({
 								disabled={disableRemove}
 								title={disableRemove ? `Minimum ${formatUnit(min, one, { unitDisplay: "long", one, many })}` : `Remove ${one}`}
 							>
-								<XMarkIcon />
+								<CloseIcon />
 							</Button>
 						</Row>
 					);
@@ -92,14 +93,14 @@ export function ArrayInput({
 					disabled={disabled || (typeof max === "number" && length >= max)}
 					small
 				>
-					<PlusIcon /> Add {one}
+					<AddIcon /> Add {one}
 				</Button>
 				{length && min < 1 ? (
 					<Button //
 						onClick={() => onValue([])}
 						small
 					>
-						<XMarkIcon /> Clear {many}
+						<CloseIcon /> Clear {many}
 					</Button>
 				) : null}
 			</Row>

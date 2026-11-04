@@ -1,5 +1,6 @@
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import { type ReactElement, type ReactNode, useEffect, useState } from "react";
+import { CloseIcon } from "shelving/icon/CloseIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
 import { Button } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";
@@ -63,7 +64,7 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 				<div className={LAYOUT_CONTENT_CLASS}>
 					<div className={LAYOUT_TOGGLE_CLASS}>
 						<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
-							{open ? <XMarkIcon /> : <Bars3Icon />}
+							{open ? <CloseIcon /> : <MenuIcon />}
 						</Button>
 					</div>
 					{children}

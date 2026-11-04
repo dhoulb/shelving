@@ -30,6 +30,7 @@
 		"./error": "./error/index.js",
 		"./extract": "./extract/index.js",
 		"./firebase": "./firebase/index.js",
+		"./icon/*": "./icon/*.js",
 		"./markup": "./markup/index.js",
 		"./react": "./react/index.js",
 		"./schema": "./schema/index.js",

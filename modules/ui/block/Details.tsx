@@ -1,5 +1,5 @@
-import { ChevronUpIcon } from "@heroicons/react/24/solid";
 import type { ReactElement, ReactNode } from "react";
+import { UpIcon } from "shelving/icon/UpIcon";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -38,7 +38,7 @@ export function Details({ title, open = false, name, children, className, ...pro
 		<details className={getClass(DETAILS_CLASS, getBlockClass(props), className)} open={open} name={name}>
 			<summary className={DETAILS_SUMMARY_CLASS}>
 				<span>{title}</span>
-				<ChevronUpIcon />
+				<UpIcon />
 			</summary>
 			{children}
 		</details>

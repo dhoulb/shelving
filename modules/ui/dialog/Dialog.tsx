@@ -1,5 +1,5 @@
-import { XMarkIcon } from "@heroicons/react/24/solid";
 import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, ViewTransition } from "react";
+import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
 import { getClass, getModuleClass } from "../util/css.js";
@@ -110,7 +110,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
  * @see https://shelving.cc/ui/DialogCloseButton
  */
 export function DialogCloseButton({
-	children = <XMarkIcon />,
+	children = <CloseIcon />,
 	plain = true,
 	className,
 	...variants

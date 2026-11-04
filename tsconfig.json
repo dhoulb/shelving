@@ -18,6 +18,7 @@
 		"paths": {
 			"shelving": ["./modules/index.ts"],
 			"shelving/util/*": ["./modules/util/*.ts"],
+			"shelving/icon/*": ["./modules/icon/*.ts"],
 			"shelving/*": ["./modules/*/index.ts"]
 		}
 	},

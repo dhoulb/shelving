@@ -24,6 +24,7 @@ Source lives under `modules/`:
 - `error` — Error classes
 - `extract` — Docs extractors that build the docs tree from source and `.md` files
 - `firebase` — Firebase providers (Firestore via the REST API)
+- `icon` — Default icons for `ui` components; apps can swap each one
 - `markup` — Markdown renderer for user-facing content
 - `react` — React hooks and context
 - `schema` — Schema validation
