@@ -9,7 +9,7 @@
 	.prose blockquote {
 		/* Box */
 		margin-block: var(--blockquote-space, var(--space-paragraph));
-		border-inline-start: var(--blockquote-border, var(--blockquote-stroke, var(--stroke-normal)) solid var(--tint-80));
+		border-inline-start: var(--blockquote-border, var(--blockquote-stroke, var(--stroke-normal)) solid var(--tint-90));
 		padding-block: var(--blockquote-padding, var(--space-small));
 		padding-inline-start: var(--blockquote-indent, var(--space-normal));
 

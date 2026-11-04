@@ -59,7 +59,7 @@ import { Button, Cell, Table } from "shelving/ui";
 | `--table-padding` | Cell top and bottom padding (one length) | `var(--space-xsmall)` (8px) |
 | `--table-indent` | Cell left and right padding (one length) | `var(--space-xsmall)` (8px) |
 | `--table-border` | Cell border shorthand | `var(--table-stroke)` |
-| `--table-stroke` | Cell border thickness/colour | `var(--stroke-normal) solid var(--tint-80)` |
+| `--table-stroke` | Cell border thickness/colour | `var(--stroke-normal) solid var(--tint-90)` |
 | `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)` |
 | `--table-label-font` | Label font for `<thead>` / `<tfoot>` `<th>` | `var(--font-label)` |
 | `--table-label-weight` | Label weight | `var(--weight-label)` |
@@ -67,7 +67,7 @@ import { Button, Cell, Table } from "shelving/ui";
 | `--table-label-case` | Label letter case | `var(--case-label)` |
 | `--table-label-color` | Label colour | `var(--tint-70)` |
 
-**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-80`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
+**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-90`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
 
 ## Table contents
 
