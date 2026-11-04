@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useEffect, useState } from "react";
-import { CloseIcon } from "shelving/ui/icon/CloseIcon";
-import { MenuIcon } from "shelving/ui/icon/MenuIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
 import { Button } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { RouteCache } from "../router/RouteCache.js";

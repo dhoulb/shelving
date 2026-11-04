@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
-import { AddIcon } from "shelving/ui/icon/AddIcon";
-import { CloseIcon } from "shelving/ui/icon/CloseIcon";
+import { AddIcon } from "shelving/icon/AddIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Schema } from "../../schema/Schema.js";
 import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
 import { splitMessage } from "../../util/error.js";

@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { SubmitIcon } from "shelving/ui/icon/SubmitIcon";
+import { SubmitIcon } from "shelving/icon/SubmitIcon";
 import { useStore } from "../../react/useStore.js";
 import { requireForm } from "../form/FormContext.js";
 import { LOADING } from "../misc/Loading.js";

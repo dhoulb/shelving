@@ -1,6 +1,6 @@
 # Icon
 
-Renders an icon for a given status, coloured to match. Picks an icon per status from `shelving/ui/icon` (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
+Renders an icon for a given status, coloured to match. Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
 
 **Things to know:**
 

@@ -1,5 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
-import { UpIcon } from "shelving/ui/icon/UpIcon";
+import { UpIcon } from "shelving/icon/UpIcon";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";

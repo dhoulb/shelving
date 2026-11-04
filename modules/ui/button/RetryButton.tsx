@@ -1,5 +1,5 @@
 import { createContext, type ReactElement, use } from "react";
-import { RetryIcon } from "shelving/ui/icon/RetryIcon";
+import { RetryIcon } from "shelving/icon/RetryIcon";
 import type { Callback } from "../../util/function.js";
 import type { ClassProps, OptionalChildProps } from "../util/index.js";
 import { Button, type ButtonVariants } from "./Button.js";

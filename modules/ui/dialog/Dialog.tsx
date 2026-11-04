@@ -1,5 +1,5 @@
 import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, ViewTransition } from "react";
-import { CloseIcon } from "shelving/ui/icon/CloseIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
 import { getClass, getModuleClass } from "../util/css.js";

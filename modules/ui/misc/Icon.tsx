@@ -1,8 +1,8 @@
 import type { ComponentType, ReactElement } from "react";
-import { ErrorIcon } from "shelving/ui/icon/ErrorIcon";
-import { InfoIcon } from "shelving/ui/icon/InfoIcon";
-import { SuccessIcon } from "shelving/ui/icon/SuccessIcon";
-import { WarningIcon } from "shelving/ui/icon/WarningIcon";
+import { ErrorIcon } from "shelving/icon/ErrorIcon";
+import { InfoIcon } from "shelving/icon/InfoIcon";
+import { SuccessIcon } from "shelving/icon/SuccessIcon";
+import { WarningIcon } from "shelving/icon/WarningIcon";
 import type { ColorVariants } from "../style/Color.js";
 import type { SpaceVariants } from "../style/Space.js";
 import { getStatusClass, type Status, type StatusVariants } from "../style/Status.js";
@@ -48,7 +48,7 @@ export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants,
 /**
  * Render the icon for a given status, coloured to match.
  *
- * - Picks an icon per status from `shelving/ui/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+ * - Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Icon

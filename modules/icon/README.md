@@ -1,8 +1,8 @@
 # icon
 
-The default icons that `shelving/ui` components draw, one icon per module. Each module re-exports a Heroicon. Your app can swap any of them for its own icon.
+The default icons that `shelving/ui` components draw, one icon per module. `ui` imports each icon by its public path, so it is a separate module. Each module re-exports a Heroicon. Your app can swap any of them for its own icon.
 
-Components import each icon from its public path, for example `shelving/ui/icon/CloseIcon`, not from Heroicons. So one `paths` entry in your app's `tsconfig.json` changes the icon everywhere it is used.
+Components import each icon from its public path, for example `shelving/icon/CloseIcon`, not from Heroicons. There is no `shelving/icon` barrel: import each icon by its own path. So one `paths` entry in your app's `tsconfig.json` changes the icon everywhere it is used.
 
 ## Swap an icon
 
@@ -12,7 +12,7 @@ Make a module that exports a component with the same name, then point the path a
 {
 	"compilerOptions": {
 		"paths": {
-			"shelving/ui/icon/CloseIcon": ["./icons/CloseIcon.tsx"]
+			"shelving/icon/CloseIcon": ["./icons/CloseIcon.tsx"]
 		}
 	}
 }

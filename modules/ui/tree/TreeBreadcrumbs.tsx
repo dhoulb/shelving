@@ -1,5 +1,5 @@
 import { Fragment, type ReactElement } from "react";
-import { RightIcon } from "shelving/ui/icon/RightIcon";
+import { RightIcon } from "shelving/icon/RightIcon";
 import { joinPath, splitPath } from "../../util/path.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
 import { getBlockClass } from "../style/Block.js";

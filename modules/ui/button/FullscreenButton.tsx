@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useState } from "react";
-import { ExitFullscreenIcon } from "shelving/ui/icon/ExitFullscreenIcon";
-import { FullscreenIcon } from "shelving/ui/icon/FullscreenIcon";
+import { ExitFullscreenIcon } from "shelving/icon/ExitFullscreenIcon";
+import { FullscreenIcon } from "shelving/icon/FullscreenIcon";
 import type { ClassProps } from "../util/props.js";
 import { Button, type ButtonVariants } from "./Button.js";
 

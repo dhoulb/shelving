@@ -1,5 +1,5 @@
 import { type MouseEvent, type ReactElement, type SyntheticEvent, useEffect, useMemo } from "react";
-import { CloseIcon } from "shelving/ui/icon/CloseIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
 import { type FileCapture, type FileTypes, getFileAccept, IMAGE_TYPES } from "../../util/file.js";
 import { getButtonClass } from "../button/Button.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
