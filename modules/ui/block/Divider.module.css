@@ -7,7 +7,7 @@
 	.divider,
 	.prose hr {
 		/* Box */
-		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--tint-80));
+		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--tint-90));
 		margin-block: var(--divider-space, var(--space-paragraph));
 	}
 }
