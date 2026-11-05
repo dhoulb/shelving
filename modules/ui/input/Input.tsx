@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { LOADING } from "../misc/Loading.js";
+import { LOADING } from "../misc/Icon.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getFlexClass } from "../style/Flex.js";
 import { getClass, getModuleClass } from "../util/css.js";

@@ -6,7 +6,7 @@ import { isURLActive } from "../../util/index.js";
 import { getLink } from "../../util/link.js";
 import type { Path } from "../../util/path.js";
 import type { ImmutableURI, URIString } from "../../util/uri.js";
-import { LOADING } from "../misc/Loading.js";
+import { LOADING } from "../misc/Icon.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
 import { callNotifiedElement } from "../util/notice.js";

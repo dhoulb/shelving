@@ -1,7 +1,6 @@
 import type { ReactElement } from "react";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
-import { Icon } from "./Icon.js";
 import LOADING_CSS from "./Loading.module.css";
 
 const LOADING_TRACK_CLASS = getModuleClass(LOADING_CSS, "track");
@@ -43,12 +42,3 @@ export function Loading({ className }: ClassProps): ReactElement {
 		</svg>
 	);
 }
-
-/**
- * Shared loading spinner element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
- *
- * - A `<Loading>` rendered through `<Icon>`, so it picks up icon sizing, colour, and centring.
- *
- * @see https://shelving.cc/ui/LOADING
- */
-export const LOADING = <Icon icon={Loading} key="loading" />;

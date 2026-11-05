@@ -2,7 +2,7 @@ import { type ReactElement, type ReactNode, Suspense } from "react";
 import { CenteredLayout } from "../layout/CenteredLayout.js";
 import type { ChildProps } from "../util/props.js";
 import { Catcher, PageCatcher } from "./Catcher.js";
-import { LOADING } from "./Loading.js";
+import { LOADING } from "./Icon.js";
 
 /**
  * Props for `<Loader>` and `<PageLoader>` — the `children` to load plus an optional `fallback` shown while they suspend.

@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { Block } from "../block/Block.js";
-import { LOADING } from "../misc/Loading.js";
+import { LOADING } from "../misc/Icon.js";
 import type { ChildProps, ClassProps } from "../util/props.js";
 
 /**
