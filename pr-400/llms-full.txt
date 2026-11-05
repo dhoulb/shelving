@@ -58,6 +58,7 @@ See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 - [shelving/icon/LeftIcon](icon/LeftIcon.md)
 - [shelving/icon/LoadingIcon](icon/LoadingIcon.md)
 - [shelving/icon/MenuIcon](icon/MenuIcon.md)
+- [shelving/icon/RemoveIcon](icon/RemoveIcon.md)
 - [shelving/icon/RetryIcon](icon/RetryIcon.md)
 - [shelving/icon/RightIcon](icon/RightIcon.md)
 - [shelving/icon/ShrinkIcon](icon/ShrinkIcon.md)
@@ -9505,7 +9506,7 @@ Icon to add an item, e.g. the add button on `<ArrayInput>` and `<DictionaryInput
 
 ## Constants
 
-- [CloseIcon](icon/CloseIcon/CloseIcon.md): Icon to close or remove something, e.g. the close button on <Dialog> and the remove buttons on inputs.
+- [CloseIcon](icon/CloseIcon/CloseIcon.md): Icon to close something, e.g. the close button on <Dialog> and <SidebarLayout>.
 
 
 ---
@@ -9515,7 +9516,7 @@ Icon to add an item, e.g. the add button on `<ArrayInput>` and `<DictionaryInput
 - Kind: constant
 - Import: `import { CloseIcon } from "shelving/icon/CloseIcon";`
 
-Icon to close or remove something, e.g. the close button on `<Dialog>` and the remove buttons on inputs.
+Icon to close something, e.g. the close button on `<Dialog>` and `<SidebarLayout>`.
 - Default is the Heroicons `XMarkIcon`.
 - Swap it for your own icon with a `paths` entry for `shelving/icon/CloseIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
@@ -9687,6 +9688,30 @@ Animated icon that shows something is loading, e.g. `<Icon status="loading">` an
 Icon to open a menu, e.g. the menu button on `<SidebarLayout>`.
 - Default is the Heroicons `Bars3Icon`.
 - Swap it for your own icon with a `paths` entry for `shelving/icon/MenuIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/RemoveIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/RemoveIcon";`
+
+## Constants
+
+- [RemoveIcon](icon/RemoveIcon/RemoveIcon.md): Icon to remove an item, e.g. the remove buttons on <ArrayInput>, <DictionaryInput> and <ImageInput>. The pair of AddIcon.
+
+
+---
+
+# RemoveIcon
+
+- Kind: constant
+- Import: `import { RemoveIcon } from "shelving/icon/RemoveIcon";`
+
+Icon to remove an item, e.g. the remove buttons on `<ArrayInput>`, `<DictionaryInput>` and `<ImageInput>`. The pair of `AddIcon`.
+- Default is the Heroicons `XMarkIcon`, the same as `CloseIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/RemoveIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---

@@ -58,6 +58,7 @@ See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 - [shelving/icon/LeftIcon](icon/LeftIcon.md)
 - [shelving/icon/LoadingIcon](icon/LoadingIcon.md)
 - [shelving/icon/MenuIcon](icon/MenuIcon.md)
+- [shelving/icon/RemoveIcon](icon/RemoveIcon.md)
 - [shelving/icon/RetryIcon](icon/RetryIcon.md)
 - [shelving/icon/RightIcon](icon/RightIcon.md)
 - [shelving/icon/ShrinkIcon](icon/ShrinkIcon.md)

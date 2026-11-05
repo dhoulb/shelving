@@ -5,4 +5,4 @@
 
 ## Constants
 
-- [CloseIcon](CloseIcon/CloseIcon.md): Icon to close or remove something, e.g. the close button on <Dialog> and the remove buttons on inputs.
+- [CloseIcon](CloseIcon/CloseIcon.md): Icon to close something, e.g. the close button on <Dialog> and <SidebarLayout>.
