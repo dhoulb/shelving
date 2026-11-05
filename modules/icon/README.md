@@ -1,6 +1,6 @@
 # icon
 
-The default icons that `shelving/ui` components draw, one icon per module. `ui` imports each icon by its public path, so it is a separate module. Each module re-exports a Heroicon. Your app can swap any of them for its own icon.
+The default icons that `shelving/ui` components draw, one icon per module. `ui` imports each icon by its public path, so it is a separate module. Most modules re-export a Heroicon. Your app can swap any of them for its own icon.
 
 Components import each icon from its public path, for example `shelving/icon/CloseIcon`, not from Heroicons. There is no `shelving/icon` barrel: import each icon by its own path. So one `paths` entry in your app's `tsconfig.json` changes the icon everywhere it is used.
 
@@ -33,21 +33,25 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
 - Other bundlers need their own alias, for example `resolve.alias` in Vite or webpack.
 - Give the `<svg>` the attribute `data-slot="icon"`, the same as a Heroicon, so shelving's CSS sizes it.
 - If your app does not map an icon, it gets the default.
+- An icon has no CSS of its own. To animate a swapped `LoadingIcon`, animate it inside the SVG, e.g. with SMIL `<animateTransform>`.
 
 ## Icons
 
-| Module | Default Heroicon | Used in |
+| Module | Default | Used in |
 |---|---|---|
-| `CloseIcon` | `XMarkIcon` | `<Dialog>`, `<SidebarLayout>`, `<ImageInput>`, `<ArrayInput>`, `<DictionaryInput>` |
-| `AddIcon` | `PlusIcon` | `<ArrayInput>`, `<DictionaryInput>` |
-| `MenuIcon` | `Bars3Icon` | `<SidebarLayout>` |
-| `UpIcon` | `ChevronUpIcon` | `<Details>` |
-| `RightIcon` | `ChevronRightIcon` | `<TreeBreadcrumbs>` |
-| `FullscreenIcon` | `ArrowsPointingOutIcon` | `<FullscreenButton>` |
-| `ExitFullscreenIcon` | `ArrowsPointingInIcon` | `<FullscreenButton>` |
-| `SubmitIcon` | `ArrowRightIcon` | `<SubmitButton>` |
-| `RetryIcon` | `ArrowPathIcon` | `<RetryButton>` |
-| `SuccessIcon` | `CheckCircleIcon` | `<Icon status="success">` |
-| `ErrorIcon` | `XCircleIcon` | `<Icon status="error">` |
-| `WarningIcon` | `ExclamationTriangleIcon` | `<Icon status="warning">`, `<Icon status="danger">` |
-| `InfoIcon` | `InformationCircleIcon` | `<Icon>` (the default status) |
+| `CloseIcon` | Heroicons `XMarkIcon` | `<Dialog>`, `<SidebarLayout>` |
+| `AddIcon` | Heroicons `PlusIcon` | `<ArrayInput>`, `<DictionaryInput>` |
+| `RemoveIcon` | Heroicons `XMarkIcon` | `<ArrayInput>`, `<DictionaryInput>`, `<ImageInput>` |
+| `MenuIcon` | Heroicons `Bars3Icon` | `<SidebarLayout>` |
+| `UpIcon` | Heroicons `ChevronUpIcon` | `<Details>` |
+| `DownIcon` | Heroicons `ChevronDownIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
+| `LeftIcon` | Heroicons `ChevronLeftIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
+| `RightIcon` | Heroicons `ChevronRightIcon` | `<TreeBreadcrumbs>` |
+| `ExpandIcon` | Heroicons `ArrowsPointingOutIcon` | `<FullscreenButton>` |
+| `ShrinkIcon` | Heroicons `ArrowsPointingInIcon` | `<FullscreenButton>` |
+| `RetryIcon` | Heroicons `ArrowPathIcon` | `<RetryButton>` |
+| `LoadingIcon` | Shelving `<Loading>` spinner | `<Icon status="loading">`, `LOADING` |
+| `SuccessIcon` | Heroicons `CheckCircleIcon` | `<Icon status="success">` |
+| `ErrorIcon` | Heroicons `XCircleIcon` | `<Icon status="error">` |
+| `WarningIcon` | Heroicons `ExclamationTriangleIcon` | `<Icon status="warning">`, `<Icon status="danger">` |
+| `InfoIcon` | Heroicons `InformationCircleIcon` | `<Icon>` (the default status) |

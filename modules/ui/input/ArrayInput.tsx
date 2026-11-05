@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { AddIcon } from "shelving/icon/AddIcon";
-import { CloseIcon } from "shelving/icon/CloseIcon";
+import { RemoveIcon } from "shelving/icon/RemoveIcon";
 import type { Schema } from "../../schema/Schema.js";
 import { type ImmutableArray, omitArrayIndex, withArrayIndex } from "../../util/array.js";
 import { splitMessage } from "../../util/error.js";
@@ -77,7 +77,7 @@ export function ArrayInput({
 								disabled={disableRemove}
 								title={disableRemove ? `Minimum ${formatUnit(min, one, { unitDisplay: "long", one, many })}` : `Remove ${one}`}
 							>
-								<CloseIcon />
+								<RemoveIcon />
 							</Button>
 						</Row>
 					);
@@ -100,7 +100,7 @@ export function ArrayInput({
 						onClick={() => onValue([])}
 						small
 					>
-						<CloseIcon /> Clear {many}
+						<RemoveIcon /> Clear {many}
 					</Button>
 				) : null}
 			</Row>

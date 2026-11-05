@@ -1,8 +1,7 @@
 import type { ReactElement } from "react";
-import { SubmitIcon } from "shelving/icon/SubmitIcon";
 import { useStore } from "../../react/useStore.js";
 import { requireForm } from "../form/FormContext.js";
-import { LOADING } from "../misc/Loading.js";
+import { LOADING } from "../misc/Icon.js";
 import { getClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import { type ButtonVariants, getButtonClass } from "./Button.js";
@@ -10,20 +9,13 @@ import { type ButtonVariants, getButtonClass } from "./Button.js";
 /**
  * Component props for `<SubmitButton>`, a form submit button.
  *
- * @property children - The content of the button. Defaults to `"Save"` with a right-pointing arrow icon.
+ * @property children - The content of the button. Defaults to `"Save"`.
  * @property color - The color variant of the button. Defaults to `"primary"`
  * @property solid - Solid styling. Defaults to `true`
  *
  * @see https://shelving.cc/ui/SubmitButtonProps
  */
 export interface SubmitButtonProps extends ButtonVariants, OptionalChildProps, ClassProps {}
-
-const _SUBMIT_CHILDREN = (
-	<>
-		Save
-		<SubmitIcon />
-	</>
-);
 
 /**
  * Submit button for a form that disables itself and shows a spinner while the form is busy.
@@ -34,7 +26,7 @@ const _SUBMIT_CHILDREN = (
  * @see https://shelving.cc/ui/SubmitButton
  */
 export function SubmitButton({
-	children = _SUBMIT_CHILDREN,
+	children = "Save",
 	color = "primary",
 	solid = true,
 	full = true,

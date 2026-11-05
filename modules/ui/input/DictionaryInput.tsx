@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { AddIcon } from "shelving/icon/AddIcon";
-import { CloseIcon } from "shelving/icon/CloseIcon";
+import { RemoveIcon } from "shelving/icon/RemoveIcon";
 import type { Schema } from "../../schema/Schema.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import { omitDictionaryItem, withDictionaryItem } from "../../util/dictionary.js";
@@ -92,7 +92,7 @@ export function DictionaryInput({
 								disabled={disableRemove}
 								title={disableRemove ? `Minimum ${formatUnit(min, one, { unitDisplay: "long", one, many })}` : `Remove ${one}`}
 							>
-								<CloseIcon />
+								<RemoveIcon />
 							</Button>
 						</Row>
 					);
@@ -115,7 +115,7 @@ export function DictionaryInput({
 						onClick={() => onValue({})}
 						small
 					>
-						<CloseIcon /> Clear {many}
+						<RemoveIcon /> Clear {many}
 					</Button>
 				) : null}
 			</Row>

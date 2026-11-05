@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useState } from "react";
-import { ExitFullscreenIcon } from "shelving/icon/ExitFullscreenIcon";
-import { FullscreenIcon } from "shelving/icon/FullscreenIcon";
+import { ExpandIcon } from "shelving/icon/ExpandIcon";
+import { ShrinkIcon } from "shelving/icon/ShrinkIcon";
 import type { ClassProps } from "../util/props.js";
 import { Button, type ButtonVariants } from "./Button.js";
 
@@ -54,7 +54,7 @@ export function FullscreenButton({ target = "body, figure", ...props }: Fullscre
 			}}
 			{...props}
 		>
-			{isFull ? <ExitFullscreenIcon /> : <FullscreenIcon />}
+			{isFull ? <ShrinkIcon /> : <ExpandIcon />}
 		</Button>
 	);
 }

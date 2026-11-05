@@ -1,6 +1,7 @@
 import type { ComponentType, ReactElement } from "react";
 import { ErrorIcon } from "shelving/icon/ErrorIcon";
 import { InfoIcon } from "shelving/icon/InfoIcon";
+import { LoadingIcon } from "shelving/icon/LoadingIcon";
 import { SuccessIcon } from "shelving/icon/SuccessIcon";
 import { WarningIcon } from "shelving/icon/WarningIcon";
 import type { ColorVariants } from "../style/Color.js";
@@ -11,12 +12,11 @@ import { getTypographyClass, type SizeVariant } from "../style/Typography.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
 import ICON_CSS from "./Icon.module.css";
-import { Loading } from "./Loading.js";
 
 const STATUS_ICONS: {
 	[K in Status]?: ComponentType;
 } = {
-	loading: Loading,
+	loading: LoadingIcon,
 	success: SuccessIcon,
 	error: ErrorIcon,
 	warning: WarningIcon,
@@ -48,7 +48,7 @@ export interface IconProps extends ColorVariants, StatusVariants, SpaceVariants,
 /**
  * Render the icon for a given status, coloured to match.
  *
- * - Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+ * - Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `LoadingIcon` for `"loading"`.
  *
  * @kind component
  * @see https://shelving.cc/ui/Icon
@@ -66,3 +66,12 @@ export function Icon(props: IconProps): ReactElement {
 		/>
 	);
 }
+
+/**
+ * Shared loading spinner element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
+ *
+ * - A `LoadingIcon` rendered through `<Icon>`, so it picks up icon sizing, colour, and centring.
+ *
+ * @see https://shelving.cc/ui/LOADING
+ */
+export const LOADING = <Icon icon={LoadingIcon} key="loading" />;
