@@ -45,7 +45,7 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
 | `UpIcon` | Heroicons `ChevronUpIcon` | `<Details>` |
 | `DownIcon` | Heroicons `ChevronDownIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
 | `LeftIcon` | Heroicons `ChevronLeftIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
-| `RightIcon` | Heroicons `ChevronRightIcon` | `<TreeBreadcrumbs>`, the default `<SubmitButton>` |
+| `RightIcon` | Heroicons `ChevronRightIcon` | `<TreeBreadcrumbs>` |
 | `ExpandIcon` | Heroicons `ArrowsPointingOutIcon` | `<FullscreenButton>` |
 | `ShrinkIcon` | Heroicons `ArrowsPointingInIcon` | `<FullscreenButton>` |
 | `RetryIcon` | Heroicons `ArrowPathIcon` | `<RetryButton>` |
