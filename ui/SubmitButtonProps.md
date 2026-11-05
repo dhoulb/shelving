@@ -6,7 +6,7 @@
 
 Component props for `<SubmitButton>`, a form submit button.
 
-@property children - The content of the button. Defaults to `"Save"` with a right-pointing arrow icon.
+@property children - The content of the button. Defaults to `"Save"`.
 
 @property color - The color variant of the button. Defaults to `"primary"`
 

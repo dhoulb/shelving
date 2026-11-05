@@ -51,14 +51,17 @@ See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 - [shelving/firebase](firebase.md): FirestoreProvider — a Cloud Firestore DBProvider that talks directly to the Firestore REST API using fetch.
 - [shelving/icon/AddIcon](icon/AddIcon.md)
 - [shelving/icon/CloseIcon](icon/CloseIcon.md)
+- [shelving/icon/DownIcon](icon/DownIcon.md)
 - [shelving/icon/ErrorIcon](icon/ErrorIcon.md)
-- [shelving/icon/ExitFullscreenIcon](icon/ExitFullscreenIcon.md)
-- [shelving/icon/FullscreenIcon](icon/FullscreenIcon.md)
+- [shelving/icon/ExpandIcon](icon/ExpandIcon.md)
 - [shelving/icon/InfoIcon](icon/InfoIcon.md)
+- [shelving/icon/LeftIcon](icon/LeftIcon.md)
+- [shelving/icon/LoadingIcon](icon/LoadingIcon.md)
 - [shelving/icon/MenuIcon](icon/MenuIcon.md)
+- [shelving/icon/RemoveIcon](icon/RemoveIcon.md)
 - [shelving/icon/RetryIcon](icon/RetryIcon.md)
 - [shelving/icon/RightIcon](icon/RightIcon.md)
-- [shelving/icon/SubmitIcon](icon/SubmitIcon.md)
+- [shelving/icon/ShrinkIcon](icon/ShrinkIcon.md)
 - [shelving/icon/SuccessIcon](icon/SuccessIcon.md)
 - [shelving/icon/UpIcon](icon/UpIcon.md)
 - [shelving/icon/WarningIcon](icon/WarningIcon.md)
@@ -9503,7 +9506,7 @@ Icon to add an item, e.g. the add button on `<ArrayInput>` and `<DictionaryInput
 
 ## Constants
 
-- [CloseIcon](icon/CloseIcon/CloseIcon.md): Icon to close or remove something, e.g. the close button on <Dialog> and the remove buttons on inputs.
+- [CloseIcon](icon/CloseIcon/CloseIcon.md): Icon to close something, e.g. the close button on <Dialog> and <SidebarLayout>.
 
 
 ---
@@ -9513,9 +9516,33 @@ Icon to add an item, e.g. the add button on `<ArrayInput>` and `<DictionaryInput
 - Kind: constant
 - Import: `import { CloseIcon } from "shelving/icon/CloseIcon";`
 
-Icon to close or remove something, e.g. the close button on `<Dialog>` and the remove buttons on inputs.
+Icon to close something, e.g. the close button on `<Dialog>` and `<SidebarLayout>`.
 - Default is the Heroicons `XMarkIcon`.
 - Swap it for your own icon with a `paths` entry for `shelving/icon/CloseIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/DownIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/DownIcon";`
+
+## Constants
+
+- [DownIcon](icon/DownIcon/DownIcon.md): Chevron that points down.
+
+
+---
+
+# DownIcon
+
+- Kind: constant
+- Import: `import { DownIcon } from "shelving/icon/DownIcon";`
+
+Chevron that points down.
+- Default is the Heroicons `ChevronDownIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/DownIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---
@@ -9544,50 +9571,26 @@ Icon for `status="error"` in `<Icon>`.
 
 ---
 
-# shelving/icon/ExitFullscreenIcon
+# shelving/icon/ExpandIcon
 
 - Kind: module
-- Import: `import { … } from "shelving/icon/ExitFullscreenIcon";`
+- Import: `import { … } from "shelving/icon/ExpandIcon";`
 
 ## Constants
 
-- [ExitFullscreenIcon](icon/ExitFullscreenIcon/ExitFullscreenIcon.md): Icon to exit fullscreen, used in <FullscreenButton>.
+- [ExpandIcon](icon/ExpandIcon/ExpandIcon.md): Icon to expand, e.g. to enter fullscreen, used in <FullscreenButton>.
 
 
 ---
 
-# ExitFullscreenIcon
+# ExpandIcon
 
 - Kind: constant
-- Import: `import { ExitFullscreenIcon } from "shelving/icon/ExitFullscreenIcon";`
+- Import: `import { ExpandIcon } from "shelving/icon/ExpandIcon";`
 
-Icon to exit fullscreen, used in `<FullscreenButton>`.
-- Default is the Heroicons `ArrowsPointingInIcon`.
-- Swap it for your own icon with a `paths` entry for `shelving/icon/ExitFullscreenIcon` in your `tsconfig.json`. See `README.md` in this folder.
-
-
----
-
-# shelving/icon/FullscreenIcon
-
-- Kind: module
-- Import: `import { … } from "shelving/icon/FullscreenIcon";`
-
-## Constants
-
-- [FullscreenIcon](icon/FullscreenIcon/FullscreenIcon.md): Icon to enter fullscreen, used in <FullscreenButton>.
-
-
----
-
-# FullscreenIcon
-
-- Kind: constant
-- Import: `import { FullscreenIcon } from "shelving/icon/FullscreenIcon";`
-
-Icon to enter fullscreen, used in `<FullscreenButton>`.
+Icon to expand, e.g. to enter fullscreen, used in `<FullscreenButton>`.
 - Default is the Heroicons `ArrowsPointingOutIcon`.
-- Swap it for your own icon with a `paths` entry for `shelving/icon/FullscreenIcon` in your `tsconfig.json`. See `README.md` in this folder.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/ExpandIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---
@@ -9616,6 +9619,55 @@ Icon for `status="info"` (the default) in `<Icon>`.
 
 ---
 
+# shelving/icon/LeftIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/LeftIcon";`
+
+## Constants
+
+- [LeftIcon](icon/LeftIcon/LeftIcon.md): Chevron that points left.
+
+
+---
+
+# LeftIcon
+
+- Kind: constant
+- Import: `import { LeftIcon } from "shelving/icon/LeftIcon";`
+
+Chevron that points left.
+- Default is the Heroicons `ChevronLeftIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/LeftIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/LoadingIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/LoadingIcon";`
+
+## Constants
+
+- [LoadingIcon](icon/LoadingIcon/LoadingIcon.md): Animated icon that shows something is loading, e.g. <Icon status="loading"> and LOADING.
+
+
+---
+
+# LoadingIcon
+
+- Kind: constant
+- Import: `import { LoadingIcon } from "shelving/icon/LoadingIcon";`
+
+Animated icon that shows something is loading, e.g. `<Icon status="loading">` and `LOADING`.
+- Default is shelving's own `<Loading>` spinner.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/LoadingIcon` in your `tsconfig.json`. See `README.md` in this folder.
+- An icon has no CSS of its own, so animate your icon inside the SVG, e.g. with SMIL `<animateTransform>`.
+
+
+---
+
 # shelving/icon/MenuIcon
 
 - Kind: module
@@ -9636,6 +9688,30 @@ Icon for `status="info"` (the default) in `<Icon>`.
 Icon to open a menu, e.g. the menu button on `<SidebarLayout>`.
 - Default is the Heroicons `Bars3Icon`.
 - Swap it for your own icon with a `paths` entry for `shelving/icon/MenuIcon` in your `tsconfig.json`. See `README.md` in this folder.
+
+
+---
+
+# shelving/icon/RemoveIcon
+
+- Kind: module
+- Import: `import { … } from "shelving/icon/RemoveIcon";`
+
+## Constants
+
+- [RemoveIcon](icon/RemoveIcon/RemoveIcon.md): Icon to remove an item, e.g. the remove buttons on <ArrayInput>, <DictionaryInput> and <ImageInput>. The pair of AddIcon.
+
+
+---
+
+# RemoveIcon
+
+- Kind: constant
+- Import: `import { RemoveIcon } from "shelving/icon/RemoveIcon";`
+
+Icon to remove an item, e.g. the remove buttons on `<ArrayInput>`, `<DictionaryInput>` and `<ImageInput>`. The pair of `AddIcon`.
+- Default is the Heroicons `XMarkIcon`, the same as `CloseIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/RemoveIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---
@@ -9688,26 +9764,26 @@ Chevron that points right, e.g. the separator in `<TreeBreadcrumbs>`.
 
 ---
 
-# shelving/icon/SubmitIcon
+# shelving/icon/ShrinkIcon
 
 - Kind: module
-- Import: `import { … } from "shelving/icon/SubmitIcon";`
+- Import: `import { … } from "shelving/icon/ShrinkIcon";`
 
 ## Constants
 
-- [SubmitIcon](icon/SubmitIcon/SubmitIcon.md): Icon for the default <SubmitButton>.
+- [ShrinkIcon](icon/ShrinkIcon/ShrinkIcon.md): Icon to shrink, e.g. to exit fullscreen, used in <FullscreenButton>.
 
 
 ---
 
-# SubmitIcon
+# ShrinkIcon
 
 - Kind: constant
-- Import: `import { SubmitIcon } from "shelving/icon/SubmitIcon";`
+- Import: `import { ShrinkIcon } from "shelving/icon/ShrinkIcon";`
 
-Icon for the default `<SubmitButton>`.
-- Default is the Heroicons `ArrowRightIcon`.
-- Swap it for your own icon with a `paths` entry for `shelving/icon/SubmitIcon` in your `tsconfig.json`. See `README.md` in this folder.
+Icon to shrink, e.g. to exit fullscreen, used in `<FullscreenButton>`.
+- Default is the Heroicons `ArrowsPointingInIcon`.
+- Swap it for your own icon with a `paths` entry for `shelving/icon/ShrinkIcon` in your `tsconfig.json`. See `README.md` in this folder.
 
 
 ---
@@ -23203,7 +23279,7 @@ RetryButton({ children = _RETRY_CHILDREN, ...props }: RetryButtonProps): ReactEl
 
 Component props for `<SubmitButton>`, a form submit button.
 
-@property children - The content of the button. Defaults to `"Save"` with a right-pointing arrow icon.
+@property children - The content of the button. Defaults to `"Save"`.
 
 @property color - The color variant of the button. Defaults to `"primary"`
 
@@ -23230,7 +23306,7 @@ Submit button for a form that disables itself and shows a spinner while the form
 
 ```ts
 SubmitButton({
-	children = _SUBMIT_CHILDREN,
+	children = "Save",
 	color = "primary",
 	solid = true,
 	full = true,
@@ -30230,7 +30306,7 @@ Props for `<Icon>` — the `status` to represent and optional icon `size`.
 
 Render the icon for a given status, coloured to match.
 
-- Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+- Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `LoadingIcon` for `"loading"`.
 
 Renders an icon for a given status, coloured to match. Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
 
@@ -30280,6 +30356,18 @@ Icon(props: IconProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
+
+
+---
+
+# LOADING
+
+- Kind: constant
+- Import: `import { LOADING } from "shelving/ui";`
+
+Shared loading spinner element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
+
+- A `LoadingIcon` rendered through `<Icon>`, so it picks up icon sizing, colour, and centring.
 
 
 ---
@@ -30390,8 +30478,8 @@ An animated SVG spinner shaped like a Heroicon — a faint full track plus a rot
 
 - The track and indicator paint from scaled steps of the current tint ladder (`--tint-70` / `--tint-80`), so the faint track and brighter indicator both follow whatever tint `<Icon>` (or an ancestor) sets, correctly shaded.
 - The spin is driven by an inline SMIL `<animateTransform>`, so it needs no CSS to animate.
-- Feed it to `<Icon>` to size, colour, and centre it: `<Icon icon={Loading} size="large" status="loading" />`. `<Icon status="loading">` already uses it automatically.
-- `LOADING` is a pre-keyed `<Icon icon={Loading} />` element with a stable `key` — drop it straight into `Suspense` fallbacks and lists to avoid unnecessary reconciliation overhead.
+- Feed it to `<Icon>` to size, colour, and centre it: `<Icon icon={Loading} size="large" status="loading" />`. `<Icon status="loading">` and `LOADING` use `LoadingIcon`, which is this spinner by default. An app can swap it (see `shelving/icon`).
+- `LOADING` is a pre-keyed `<Icon icon={LoadingIcon} />` element with a stable `key` — drop it straight into `Suspense` fallbacks and lists to avoid unnecessary reconciliation overhead.
 
 ## Usage
 
@@ -30444,18 +30532,6 @@ Loading({ className }: ClassProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-
----
-
-# LOADING
-
-- Kind: constant
-- Import: `import { LOADING } from "shelving/ui";`
-
-Shared loading spinner element with a stable `key`, ready to drop into `Suspense` fallbacks and lists.
-
-- A `<Loading>` rendered through `<Icon>`, so it picks up icon sizing, colour, and centring.
 
 
 ---

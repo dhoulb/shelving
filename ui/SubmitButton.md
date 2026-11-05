@@ -10,7 +10,7 @@ Submit button for a form that disables itself and shows a spinner while the form
 
 ```ts
 SubmitButton({
-	children = _SUBMIT_CHILDREN,
+	children = "Save",
 	color = "primary",
 	solid = true,
 	full = true,

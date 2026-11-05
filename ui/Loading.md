@@ -15,8 +15,8 @@ An animated SVG spinner shaped like a Heroicon — a faint full track plus a rot
 
 - The track and indicator paint from scaled steps of the current tint ladder (`--tint-70` / `--tint-80`), so the faint track and brighter indicator both follow whatever tint `<Icon>` (or an ancestor) sets, correctly shaded.
 - The spin is driven by an inline SMIL `<animateTransform>`, so it needs no CSS to animate.
-- Feed it to `<Icon>` to size, colour, and centre it: `<Icon icon={Loading} size="large" status="loading" />`. `<Icon status="loading">` already uses it automatically.
-- `LOADING` is a pre-keyed `<Icon icon={Loading} />` element with a stable `key` — drop it straight into `Suspense` fallbacks and lists to avoid unnecessary reconciliation overhead.
+- Feed it to `<Icon>` to size, colour, and centre it: `<Icon icon={Loading} size="large" status="loading" />`. `<Icon status="loading">` and `LOADING` use `LoadingIcon`, which is this spinner by default. An app can swap it (see `shelving/icon`).
+- `LOADING` is a pre-keyed `<Icon icon={LoadingIcon} />` element with a stable `key` — drop it straight into `Suspense` fallbacks and lists to avoid unnecessary reconciliation overhead.
 
 ## Usage
 

@@ -5,7 +5,7 @@
 
 Render the icon for a given status, coloured to match.
 
-- Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `<Loading>` spinner for `"loading"`.
+- Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.), falling back to an info icon, and uses the animated `LoadingIcon` for `"loading"`.
 
 Renders an icon for a given status, coloured to match. Picks an icon per status from `shelving/icon` (`success`, `error`, `warning`, etc.) and uses the animated `<Loading>` spinner for `"loading"`.
 
