@@ -1,5 +1,5 @@
 import { type MouseEvent, type ReactElement, type SyntheticEvent, useEffect, useMemo } from "react";
-import { CloseIcon } from "shelving/icon/CloseIcon";
+import { RemoveIcon } from "shelving/icon/RemoveIcon";
 import { type FileCapture, type FileTypes, getFileAccept, IMAGE_TYPES } from "../../util/file.js";
 import { getButtonClass } from "../button/Button.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
@@ -81,7 +81,7 @@ export function ImageInput({
 			</label>
 			{value && !disabled && (
 				<button type="button" title="Clear" className={IMAGE_INPUT_CLEAR_CLASS} onClick={onClear}>
-					<CloseIcon />
+					<RemoveIcon />
 				</button>
 			)}
 		</div>

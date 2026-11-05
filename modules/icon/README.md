@@ -39,8 +39,9 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
 
 | Module | Default | Used in |
 |---|---|---|
-| `CloseIcon` | Heroicons `XMarkIcon` | `<Dialog>`, `<SidebarLayout>`, `<ImageInput>`, `<ArrayInput>`, `<DictionaryInput>` |
+| `CloseIcon` | Heroicons `XMarkIcon` | `<Dialog>`, `<SidebarLayout>` |
 | `AddIcon` | Heroicons `PlusIcon` | `<ArrayInput>`, `<DictionaryInput>` |
+| `RemoveIcon` | Heroicons `XMarkIcon` | `<ArrayInput>`, `<DictionaryInput>`, `<ImageInput>` |
 | `MenuIcon` | Heroicons `Bars3Icon` | `<SidebarLayout>` |
 | `UpIcon` | Heroicons `ChevronUpIcon` | `<Details>` |
 | `DownIcon` | Heroicons `ChevronDownIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
