@@ -9014,8 +9014,8 @@ extract(input: I): O | Promise<O>
 - Extends: `FileExtractor`
 
 File extractor that parses a TypeScript source file into a tree element.
-- Uses the native TypeScript compiler's API (`typescript/unstable/async` — TypeScript 7+) to parse the AST.
-- Parsing runs on a shared native compiler server, spawned on demand into a virtual filesystem and closed again after a short idle — callers never manage its lifecycle.
+- Uses the native TypeScript compiler's API (`typescript/async` — TypeScript 7.1+) to parse the AST with `API.createSourceFile()`.
+- Parsing runs on a shared native compiler server, spawned on demand and closed again after a short idle — callers never manage its lifecycle.
 - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
 - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`. When a function (or constructor) is overloaded, the implementation declaration (the "base definition") is dropped entirely — only the overload signatures are documented.
 - A `@param name {Type}` (or `@returns {Type}`) whose `{Type}` is given is canonical: it supersedes the inferred type from the base definition and any overloads. Multiple `@param name` tags for one parameter each emit a row, letting a single parameter be documented as several typed variants.
