@@ -16,7 +16,7 @@
 		"@types/react-dom": "^19.3.0",
 		"stylelint": "^17.16.0",
 		"stylelint-config-standard": "^40.0.0",
-		"typescript": "^7.0.2"
+		"typescript": "7.1.0-beta"
 	},
 	"peerDependencies": {
 		"@heroicons/react": ">=2.0.0"

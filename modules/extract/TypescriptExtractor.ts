@@ -37,9 +37,8 @@ import {
 	SyntaxKind,
 	type TypeElement,
 	type TypeNode,
-} from "typescript/unstable/ast";
-import { API } from "typescript/unstable/async";
-import type { FileSystem } from "typescript/unstable/fs";
+} from "typescript/ast";
+import { API } from "typescript/async";
 import { ValueError } from "../error/ValueError.js";
 import type { ImmutableArray } from "../util/array.js";
 import { BLACKHOLE } from "../util/function.js";
@@ -57,8 +56,8 @@ import { extractMarkdownProps } from "./MarkupExtractor.js";
 
 /**
  * File extractor that parses a TypeScript source file into a tree element.
- * - Uses the native TypeScript compiler's API (`typescript/unstable/async` — TypeScript 7+) to parse the AST.
- * - Parsing runs on a shared native compiler server, spawned on demand into a virtual filesystem and closed again after a short idle — callers never manage its lifecycle.
+ * - Uses the native TypeScript compiler's API (`typescript/async` — TypeScript 7.1+) to parse the AST with `API.createSourceFile()`.
+ * - Parsing runs on a shared native compiler server, spawned on demand and closed again after a short idle — callers never manage its lifecycle.
  * - Extracts exported, public, non-`_`-prefixed declarations as `tree-documentation` children.
  * - Overloaded declarations sharing a name are merged into a single `tree-documentation` with multiple `signatures`. When a function (or constructor) is overloaded, the implementation declaration (the "base definition") is dropped entirely — only the overload signatures are documented.
  * - A `@param name {Type}` (or `@returns {Type}`) whose `{Type}` is given is canonical: it supersedes the inferred type from the base definition and any overloads. Multiple `@param name` tags for one parameter each emit a row, letting a single parameter be documented as several typed variants.
@@ -107,98 +106,54 @@ export class TypescriptExtractor extends FileExtractor {
 }
 
 // Constants.
-const _DIR = "/shelving-typescript-extractor";
-const _TSCONFIG_PATH = `${_DIR}/tsconfig.json`;
-const _TSCONFIG_JSON = JSON.stringify({ compilerOptions: { noEmit: true }, include: ["**/*.ts"] });
 const _IDLE_CLOSE_MS = 500;
 
-/** Shared native compiler server plus the virtual files it can see. */
-interface _Server {
-	readonly api: API;
-	readonly files: Map<string, string>;
-}
-
-let _server: _Server | undefined;
-let _queue: Promise<unknown> = Promise.resolve();
+let _api: API | undefined;
 let _timer: ReturnType<typeof setTimeout> | undefined;
+let _pending = 0;
 let _count = 0;
-let _previous: string | undefined;
 
-/** Is a path inside the virtual directory the compiler server is rooted in? */
-function _isVirtual(path: string): boolean {
-	return path === _DIR || path.startsWith(`${_DIR}/`);
-}
-
-/** Get the shared compiler server, spawning it on demand with a virtual filesystem rooted at `_DIR`. */
-function _getServer(): _Server {
-	if (_server) return _server;
-	const files = new Map<string, string>([[_TSCONFIG_PATH, _TSCONFIG_JSON]]);
-	// Paths outside the virtual directory return `undefined` so the server falls back to the real filesystem (e.g. bundled libs).
-	const fs: FileSystem = {
-		fileExists: f => (_isVirtual(f) ? files.has(f) : undefined),
-		readFile: f => (_isVirtual(f) ? (files.get(f) ?? null) : undefined),
-		directoryExists: d => (d === _DIR ? true : _isVirtual(d) ? false : undefined),
-		getAccessibleEntries: d =>
-			d === _DIR
-				? { files: Array.from(files.keys(), f => f.slice(_DIR.length + 1)), directories: [] }
-				: _isVirtual(d)
-					? { files: [], directories: [] }
-					: undefined,
-		realpath: p => (_isVirtual(p) ? p : undefined),
-	};
-	_server = { api: new API({ cwd: _DIR, fs }), files };
-	return _server;
+/** Get the shared compiler server, and spawn it if it does not exist. */
+function _getAPI(): API {
+	if (_timer) clearTimeout(_timer);
+	_timer = undefined;
+	_api ??= new API();
+	return _api;
 }
 
 /** Close the shared compiler server after a short idle, so the process can exit without callers managing the lifecycle. */
-async function _scheduleClose(): Promise<void> {
+function _scheduleClose(): void {
 	if (_timer) clearTimeout(_timer);
 	_timer = setTimeout(() => {
-		const server = _server;
-		_server = undefined;
-		_previous = undefined;
+		const api = _api;
+		_api = undefined;
 		_timer = undefined;
-		try {
-			void server?.api.close();
-		} catch {
-			// Closing can reject in-flight bookkeeping requests — harmless on shutdown.
-		}
+		api?.close().catch(BLACKHOLE); // Closing can reject in-flight bookkeeping requests — harmless on shutdown.
 	}, _IDLE_CLOSE_MS);
 }
 
 /**
  * Parse TypeScript source text into a `SourceFile` via the shared native compiler server.
- * - Each call writes the text as a fresh virtual file, snapshots the project, and materialises the file's AST.
- * - Calls are serialised through a queue so concurrent extractions don't interleave snapshot updates.
+ * - Uses `API.createSourceFile()` (TypeScript 7.1+), which parses one file without a project, a program, or a filesystem.
+ * - The server closes after a short idle when no parse is in progress.
  *
  * @throws `ValueError` If the server fails to produce a source file for the text.
  */
-function _parseSourceFile(text: string): Promise<SourceFile> {
-	const task = async (): Promise<SourceFile> => {
-		if (_timer) clearTimeout(_timer);
-		const { api, files } = _getServer();
-		const path = `${_DIR}/${_count++}.ts`;
-		files.set(path, text);
-		// Drop the previous parse's file so the virtual project stays a single file (keeps snapshots cheap).
-		const deleted = _previous;
-		if (deleted) files.delete(deleted);
-		_previous = path;
-		const snapshot = await api.updateSnapshot({
-			openProjects: [_TSCONFIG_PATH],
-			fileChanges: { created: [path], ...(deleted ? { deleted: [deleted] } : {}) },
-		});
+async function _parseSourceFile(text: string): Promise<SourceFile> {
+	const api = _getAPI();
+	_pending++;
+	try {
+		const retained = await api.createSourceFile(`/${_count++}.ts`, text);
 		try {
-			const source = await snapshot.getProject(_TSCONFIG_PATH)?.program.getSourceFile(path);
+			const source = retained.sourceFile;
 			if (!source) throw new ValueError("Unable to parse TypeScript source", { received: text });
 			return source;
 		} finally {
-			await snapshot.dispose();
-			await _scheduleClose();
+			await retained.dispose();
 		}
-	};
-	const result = _queue.then(task, task);
-	_queue = result.catch(BLACKHOLE);
-	return result;
+	} finally {
+		if (--_pending === 0) _scheduleClose();
+	}
 }
 
 /** Read a node's modifiers (excluding decorators), or `undefined` when it has none. */
