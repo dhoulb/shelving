@@ -173,6 +173,33 @@ test("UNORDERED loose lists", () => {
 		},
 	});
 
+	// A loose item can contain a fenced code block indented with spaces.
+	expect(PARSER.parse("- ITEM1\n\n  ```sh\n  mkdir -p a\n    nested\n  ```\n- ITEM2")).toMatchObject({
+		type: "ul",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{
+								type: "figure",
+								props: {
+									children: [
+										{ type: "figcaption", props: { children: "sh" } },
+										{ type: "pre", props: { children: { type: "code", props: { children: "mkdir -p a\n  nested" } } } },
+									],
+								},
+							},
+						],
+					},
+				},
+				{ type: "li", props: { children: { type: "p", props: { children: "ITEM2" } } } },
+			],
+		},
+	});
+
 	// A list with no blank lines stays "tight" — items are not wrapped in `<p>`.
 	expect(PARSER.parse("- ITEM1\n- ITEM2")).toMatchObject({
 		type: "ul",

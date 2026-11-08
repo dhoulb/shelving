@@ -9,6 +9,12 @@ type LinkData = {
 	href: string;
 };
 
+type AutolinkData = {
+	title?: string;
+	angled?: string;
+	href?: string;
+};
+
 /** Render `<a href="">` if the link is a valid one, or `<a>` (with no `href`) if it isn't. */
 function _renderLink(key: string, { title, href }: LinkData, parser: MarkupParser): ReactElement {
 	const link = parser.getLink(href);
@@ -36,8 +42,14 @@ export const LINK_RULE = createMarkupRule<LinkData>(
 	["inline", "list"],
 );
 
+/** Render an autolink from whichever of its two URL forms matched. */
+function _renderAutolink(key: string, { angled, href = "", ...data }: AutolinkData, parser: MarkupParser): ReactElement {
+	return _renderLink(key, { ...data, href: angled ?? href }, parser);
+}
+
 /**
- * Autolinked URL starts with `scheme:` (any scheme in `MarkupOptions.schemes`) and matches an unlimited number of non-space characters.
+ * Autolinked URL starts with `scheme:` (any scheme in `MarkupOptions.schemes`) and matches an unlimited number of non-space characters (except `<` and `>`).
+ * - URL can be wrapped in `<>` angle brackets (the standard Markdown autolink syntax), e.g. `<http://google.com/maps>`. The brackets are not part of the link.
  * - If followed by space and then text in `()` round or `[]` square brackets that will be used as the title, e.g. `http://google.com/maps (Google Maps)` or `http://google.com/maps [Google Maps]` (this syntax is from Todoist and maybe other things too).
  * - If no title is specified a cleaned up version of the URL will be used, e.g. `google.com/maps`
  * - If link is not valid (using `new URL(url)` then unparsed text will be returned.
@@ -46,9 +58,9 @@ export const LINK_RULE = createMarkupRule<LinkData>(
  * @example new MarkupParser({ rules: [AUTOLINK_RULE] }).parse("http://google.com/maps (Google Maps)")
  * @see https://shelving.cc/markup/AUTOLINK_RULE
  */
-export const AUTOLINK_RULE = createMarkupRule<LinkData>(
+export const AUTOLINK_RULE = createMarkupRule<AutolinkData>(
 	// Scheme length is bounded (`{3,64}?`) so a long run of letters with no `:` can't force O(n²) backtracking.
-	getRegExp(/(?<href>[a-z]{3,64}?:\S+)(?: +(?:\((?<title>[^)\n]*?)\)))?/), //
-	_renderLink,
+	getRegExp(/(?:<(?<angled>[a-z]{3,64}?:[^\s<>]+)>|(?<href>[a-z]{3,64}?:[^\s<>]+))(?: +(?:\((?<title>[^)\n]*?)\)))?/), //
+	_renderAutolink,
 	["inline", "list"],
 );
