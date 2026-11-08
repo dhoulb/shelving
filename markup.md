@@ -168,7 +168,7 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 - [INLINE_RULE](markup/INLINE_RULE.md): Inline strong, emphasis, insert, delete, highlight.
 - [LINEBREAK_RULE](markup/LINEBREAK_RULE.md): Hard linebreak (<br /> tag).
 - [LINK_RULE](markup/LINK_RULE.md): Markdown-style link.
-- [AUTOLINK_RULE](markup/AUTOLINK_RULE.md): Autolinked URL starts with scheme: (any scheme in MarkupOptions.schemes) and matches an unlimited number of non-space characters.
+- [AUTOLINK_RULE](markup/AUTOLINK_RULE.md): Autolinked URL starts with scheme: (any scheme in MarkupOptions.schemes) and matches an unlimited number of non-space characters (except < and >).
 - [ORDERED_RULE](markup/ORDERED_RULE.md): Ordered list.
 - [PARAGRAPH_RULE](markup/PARAGRAPH_RULE.md): Paragraph.
 - [SEPARATOR_RULE](markup/SEPARATOR_RULE.md): Separator (horizontal rule / thematic break).
