@@ -3,10 +3,9 @@ import type { MarkupParser } from "../MarkupParser.js";
 import { createMarkupRule } from "../MarkupRule.js";
 import { BLOCK_CONTENT_REGEXP, BLOCK_SPACE_REGEXP, BLOCK_START_REGEXP, createBlockRegExp, LINE_SPACE_REGEXP } from "../util/regexp.js";
 
-const _INDENT = /^\t/gm; // Nesting is recognised with tabs only.
 const _BULLET = "[-*•+]"; // Allowed bullet symbol.
 const _ITEM = new RegExp(
-	`(?:^|\n)${_BULLET}(?:${LINE_SPACE_REGEXP}+(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${_BULLET}(?:\\s|$)|$)`,
+	`(?:^|\n)${_BULLET}(?:(${LINE_SPACE_REGEXP}+)(${BLOCK_CONTENT_REGEXP}))?${BLOCK_SPACE_REGEXP}*(?=\n${_BULLET}(?:\\s|$)|$)`,
 	"g",
 );
 
@@ -28,6 +27,7 @@ const _LOOSE = new RegExp(`\\n${LINE_SPACE_REGEXP}*\\n`);
  * - Line starting with `-`, `*`, `•`, or `+` character followed by one or more space characters.
  * - No spaces can appear before the bullet character.
  * - Second-level list can be created by indenting with `\t` one tab.
+ * - Continuation lines can also be indented with spaces to the width of the bullet and its spaces, e.g. two spaces after `- `, so a fenced code block can go inside an item.
  * - List block runs until a blank line that is not followed by another item or an indented continuation line.
  * - A list with blank lines between its items (or before a continuation paragraph) is "loose": its items are wrapped in `<p>` tags.
  * - An item starting with `[ ]` or `[x]` (case-insensitive) is a todo item: a checkbox `<input>` plus the content wrapped in a `<label>` so clicking it toggles the checkbox.
@@ -49,8 +49,8 @@ export function* _getItems(list: string, parser: MarkupParser): Iterable<ReactEl
 	// Items of a loose list are parsed as blocks so `PARAGRAPH_RULE` wraps their content in `<p>`.
 	const context = _LOOSE.test(list) ? "block" : "list";
 	let key = 0;
-	for (const [_unused, raw = ""] of list.matchAll(_ITEM)) {
-		const item = raw.replace(_INDENT, "");
+	for (const [_unused, space = "", raw = ""] of list.matchAll(_ITEM)) {
+		const item = _unindent(raw, 1 + space.length);
 		// A todo item renders a checkbox; the `<label>` wrapping the content toggles it on click.
 		const checkbox = _CHECKBOX.exec(item);
 		if (checkbox) {
@@ -66,4 +66,13 @@ export function* _getItems(list: string, parser: MarkupParser): Iterable<ReactEl
 			yield <li key={key++}>{parser.parse(item, context)}</li>;
 		}
 	}
+}
+
+/**
+ * Remove one level of indent from each continuation line of a list item.
+ * - One tab is one level (used for nested lists).
+ * - Up to `width` spaces is one level, where `width` is the width of the item's marker plus its spaces (as in standard Markdown).
+ */
+function _unindent(item: string, width: number): string {
+	return item.replace(new RegExp(`^(?:\\t| {1,${width}})`, "gm"), "");
 }

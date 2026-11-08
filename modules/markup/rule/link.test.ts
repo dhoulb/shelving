@@ -59,6 +59,24 @@ test("AUTOLINK_RULE", () => {
 		props: { href: "http://google.com/", children: "http://google.com" },
 	});
 
+	// Angle-bracket autolinks do not include the brackets.
+	expect(PARSER.parse("<http://google.com/a>", "inline")).toMatchObject({
+		type: "a",
+		props: { href: "http://google.com/a", children: "google.com/a" },
+	});
+	expect(PARSER.parse("See <http://google.com/a>.", "inline")).toMatchObject([
+		"See ",
+		{ type: "a", props: { href: "http://google.com/a", children: "google.com/a" } },
+		".",
+	]);
+	expect(PARSER.parse("<http://google.com> (Google)", "inline")).toMatchObject({
+		type: "a",
+		props: { href: "http://google.com/", children: "Google" },
+	});
+
+	// Bare autolinks stop at `<` or `>`.
+	expect(PARSER.parse("http://google.com/a>", "inline")).toMatchObject([{ type: "a", props: { href: "http://google.com/a" } }, ">"]);
+
 	// Links using schemes not in the whitelist are not linked.
 	expect(MAILTO_PARSER.parse("mailto:dave@shax.com", "inline")).toMatchObject({
 		type: "a",

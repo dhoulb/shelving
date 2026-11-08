@@ -169,4 +169,21 @@ test("ORDERED loose lists", () => {
 		{ type: "ol", props: { children: [{ type: "li", props: { value: 1, children: "ITEM1" } }] } },
 		{ type: "ol", props: { children: [{ type: "li", props: { value: 2, children: "ITEM2" } }] } },
 	]);
+	// A loose item can contain a fenced code block indented with spaces.
+	expect(PARSER.parse("1. ITEM1\n\n   ```\n   CODE\n   ```")).toMatchObject({
+		type: "ol",
+		props: {
+			children: [
+				{
+					type: "li",
+					props: {
+						children: [
+							{ type: "p", props: { children: "ITEM1" } },
+							{ type: "figure", props: { children: { type: "pre", props: { children: { type: "code", props: { children: "CODE" } } } } } },
+						],
+					},
+				},
+			],
+		},
+	});
 });
