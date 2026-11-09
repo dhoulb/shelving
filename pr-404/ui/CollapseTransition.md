@@ -1,0 +1,53 @@
+# CollapseTransition
+
+- Kind: component
+- Import: `import { CollapseTransition } from "shelving/ui";`
+
+Transition that collapses its children in and out by animating their size.
+
+A `<Transition>` preset that collapses its children in and out by animating their size, clipping the overflow during the animation.
+
+**Things to know:**
+
+- Uses the `collapse` transition class — there is no direction-aware variant, so forward and back animate identically.
+- Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
+- Under `prefers-reduced-motion: reduce` the collapse animation is disabled entirely — the size morph is positional movement, so the content swap happens as an instant cut (the DOM update still applies).
+
+## Usage
+
+```tsx
+import { CollapseTransition } from "shelving/ui";
+
+function Details({ open }: { open: boolean }) {
+  return open ? (
+    <CollapseTransition>
+      <Panel>…</Panel>
+    </CollapseTransition>
+  ) : null;
+}
+```
+
+## Styling
+
+This preset exposes no own `--collapse-transition-*` hooks. Its `CollapseTransition.module.css` only sets `overflow: hidden` on `::view-transition-image-pair(.collapse)` so the collapsing content is clipped.
+
+**Global tokens it reads** — none.
+
+
+## Signatures
+
+```ts
+CollapseTransition(props: CollapseTransitionProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `CollapseTransitionProps` |  |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
