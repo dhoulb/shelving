@@ -24,9 +24,9 @@ import { APP_DESCRIPTION, APP_LANGUAGE, APP_TITLE, APP_URL } from "./env.js";
  */
 export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script: AbsolutePath, stylesheet: AbsolutePath): Promise<number> {
 	// Flattening stamps a canonical `path` on every element and keys the map by it; the path-shaped keys are exactly the set of pages to render (one per element).
-	// The index page (`/all`) is a `<TreeApp>` fallback route, not a tree node, so add it explicitly.
+	// The search and playground pages are `<DocumentationApp>` fallback routes, not tree nodes, so add them explicitly.
 	const pages = Array.from(flattenTree(tree).keys()).filter(isAbsolutePath);
-	const paths: AbsolutePath[] = [...pages, "/search"];
+	const paths: AbsolutePath[] = [...pages, "/search", "/playground"];
 	const markdown = new Set(pages);
 
 	for (const path of paths) {

@@ -1,0 +1,28 @@
+@import url("../style/layers.css");
+@import url("../style/Space.module.css");
+@import url("../style/Width.module.css");
+
+@layer components {
+	.live {
+		/* Box */
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--documentation-live-gap, var(--space-small));
+		margin-inline: 0;
+		margin-block: var(--documentation-live-space, var(--space-paragraph));
+
+		/* Code and preview fill their cells, so the gap is the only space between them. */
+		& > * {
+			margin-block: 0;
+		}
+
+		/* Code and preview side by side when there is space. */
+		@media (width >= 75rem) {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+			& > figcaption {
+				grid-column: 1 / -1;
+			}
+		}
+	}
+}

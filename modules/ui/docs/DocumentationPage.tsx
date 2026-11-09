@@ -15,6 +15,7 @@ import { TreeCards } from "../tree/TreeCards.js";
 import { TreeMarkup } from "../tree/TreeMarkup.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
+import { DOCUMENTATION_MARKUP_RULES } from "./DocumentationLive.js";
 import { DocumentationParams } from "./DocumentationParams.js";
 import { DocumentationProperties } from "./DocumentationProperties.js";
 import { DocumentationReferences } from "./DocumentationReferences.js";
@@ -93,7 +94,7 @@ export function DocumentationPage({
 					{content && (
 						<Section>
 							<Prose>
-								<TreeMarkup>{content}</TreeMarkup>
+								<TreeMarkup rules={DOCUMENTATION_MARKUP_RULES}>{content}</TreeMarkup>
 							</Prose>
 						</Section>
 					)}
