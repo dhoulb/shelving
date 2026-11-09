@@ -22,7 +22,7 @@ Rules declare which contexts they apply in. Block rules fire in a `"block"` cont
 
 | Rule constant | Element | Syntax |
 |---|---|---|
-| `FENCED_RULE` | `<pre><code>` | ` ``` ` or `~~~` fenced code block; optional language after the fence |
+| `FENCED_RULE` | `<pre><code>` | ` ``` ` or `~~~` fenced code block; optional info after the fence (language, flags, and a quoted title — see `parseFencedInfo()`) |
 | `HEADING_RULE` | `<h1>`–`<h6>` | `#` through `######` followed by a space |
 | `SEPARATOR_RULE` | `<hr>` | Three or more repeated `-`, `*`, `•`, `+`, `_`, or `=` characters |
 | `UNORDERED_RULE` | `<ul>` | Lines starting with `-`, `*`, `•`, or `+`; nest with a tab; blank lines between items make the list loose (`<p>`-wrapped); items starting with `[ ]` / `[x]` render a todo checkbox |
