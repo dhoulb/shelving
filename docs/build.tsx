@@ -4,6 +4,7 @@ import { basename, join } from "node:path";
 import type { AbsolutePath } from "../modules/util/path.js";
 import type { TreeElement } from "../modules/util/tree.js";
 import { MODULES_DIR, OUTPUT_DIR, PACKAGE_JSON_PATH } from "./env.js";
+import { buildFrame } from "./frame-build.js";
 import { renderMarkdown } from "./markdown.js";
 import { extractTree } from "./tree.js";
 
@@ -26,6 +27,7 @@ interface RenderModule {
  *    same hashed class names (so its markup matches the browser CSS); its own CSS output is discarded.
  * 5. Import the bundled renderer and call `renderApp` to write every page, linking the two browser assets.
  * 6. Write every page again as Markdown, plus `llms.txt` and `llms-full.txt`, for LLMs and coding agents (see `docs/markdown.ts`).
+ * 7. Write the playground frame page, the shelving browser modules it imports, and the CSS variable index (see `docs/frame-build.ts`).
  */
 export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePath, outdir: AbsolutePath): Promise<void> {
 	// Clean up first.
@@ -92,6 +94,10 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 	} finally {
 		await rm(tempdir, { recursive: true, force: true });
 	}
+
+	// Write the playground frame page and what it needs.
+	console.warn("Building playground frame...");
+	await buildFrame(sourceDir, packageJson, outdir);
 
 	// Write the same pages as Markdown for LLMs and coding agents.
 	console.warn("Writing Markdown...");

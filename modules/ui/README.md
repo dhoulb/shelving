@@ -64,3 +64,5 @@ The components below are listed in the index following this page; this is the sh
 **Interaction.** Forms start at `<Form>`, which wires `<Field>` and the typed inputs to a `FormStore`; `<Button>` is the standalone action. Overlays are `<Dialog>` and `<Modal>`; navigation menus are `<Menu>` and `<MenuItem>`; transient feedback is `<Notice>` (and the global `<Notices>` list); animate enter/leave with `<Transition>`.
 
 **Documentation site.** Hand an extracted tree to `<TreeApp>` and you get a complete site — sidebar, routing, and a rendered page per element — using the renderers in `docs/`.
+
+**Live examples and playground.** `<DocumentationApp>` adds a `<DocumentationPlaygroundPage>` at `/playground`, where you write TSX and CSS and see them run with the raw shelving styles. On any docs page, a fenced code block with a `live` flag (` ```tsx live `) shows its code next to a live preview — see `<DocumentationLive>`.
