@@ -10,6 +10,7 @@
  */
 
 import { hydrateRoot } from "react-dom/client";
+import "./docs.css";
 import { DocumentationApp } from "../modules/ui/docs/DocumentationApp.js";
 import type { PossibleMeta } from "../modules/ui/util/meta.js";
 import { requireURL } from "../modules/util/index.js";

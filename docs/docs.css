@@ -1,0 +1,14 @@
+/*
+ * Docs-site theme overrides.
+ *
+ * Imported only by `docs/client.tsx`, so these rules style the docs site and its PR previews, not the `shelving/ui` library.
+ * Each rule sets a component's own hook at `:root`, so every instance on the site picks it up through inheritance.
+ */
+
+:root {
+	/* Remove the border on code blocks (`<Preformatted>` and `pre` in `.prose`). */
+	--preformatted-stroke: 0px;
+
+	/* Remove the border on cards (`<Card>`). */
+	--card-stroke: 0px;
+}
