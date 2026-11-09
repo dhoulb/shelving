@@ -10,7 +10,7 @@ A small inline label used to annotate other content. Accepts a status variant or
 
 ## Usage
 
-```tsx
+```tsx live
 import { Tag } from "shelving/ui";
 
 <Tag success>Active</Tag>

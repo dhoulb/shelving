@@ -14,7 +14,7 @@ An inline link or action. Delegates to `<Clickable>`, rendering an `<a>` when `h
 
 ### Link inside body copy
 
-```tsx
+```tsx live
 import { Paragraph, Link } from "shelving/ui";
 
 <Paragraph>
@@ -24,7 +24,7 @@ import { Paragraph, Link } from "shelving/ui";
 
 ### Action button
 
-```tsx
+```tsx live
 import { Link } from "shelving/ui";
 
 <Link onClick={() => save()}>Save now</Link>
@@ -32,7 +32,7 @@ import { Link } from "shelving/ui";
 
 ### Plain link around a block
 
-```tsx
+```tsx live
 import { Link, Row, Span } from "shelving/ui";
 
 <Link plain href="/jane">

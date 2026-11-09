@@ -13,7 +13,7 @@ Styled inline text — renders a `<span>` element that carries only the colour a
 
 ### Applying typography variants
 
-```tsx
+```tsx live
 import { Span } from "shelving/ui";
 
 <p>Total <Span weight="strong">$35.00</Span> due today.</p>
@@ -22,7 +22,7 @@ import { Span } from "shelving/ui";
 
 ### Colouring a run of text
 
-```tsx
+```tsx live
 import { Span } from "shelving/ui";
 
 <Span color="purple" tint="40">on-brand accent</Span>

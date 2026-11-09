@@ -77,7 +77,7 @@ import { Button } from "shelving/ui";
 
 ### Reusing the button class
 
-```tsx
+```tsx live
 import { getButtonClass } from "shelving/ui";
 
 // Style an arbitrary element as a button.

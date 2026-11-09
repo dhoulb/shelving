@@ -10,7 +10,7 @@ A block-level status callout with an icon and message, used to highlight feedbac
 
 ## Usage
 
-```tsx
+```tsx live
 import { Notice } from "shelving/ui";
 
 <Notice status="success">Your changes have been saved.</Notice>

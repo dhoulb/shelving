@@ -14,7 +14,7 @@ A full-width vertical region that paints the current surface colour. Use panels 
 
 ### Page banded into panels
 
-```tsx
+```tsx live
 import { Panel, Block, Title, Paragraph } from "shelving/ui";
 
 <Panel as="header" color="primary">
