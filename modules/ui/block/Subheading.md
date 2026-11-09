@@ -14,7 +14,7 @@ A subsection heading — renders an `<h3>`. It is the smallest member of the thr
 
 ### Card title
 
-```tsx
+```tsx live
 import { Card, Subheading, Paragraph } from "shelving/ui";
 
 <Card>
@@ -25,7 +25,7 @@ import { Card, Subheading, Paragraph } from "shelving/ui";
 
 ### The heading family together
 
-```tsx
+```tsx live
 import { Title, Heading, Subheading } from "shelving/ui";
 
 <Title>Account</Title>            {/* <h1> */}

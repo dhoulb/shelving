@@ -29,7 +29,7 @@ import { Code, Keyboard, Sample } from "shelving/ui";
 
 ### Plain (no background)
 
-```tsx
+```tsx live
 import { Code } from "shelving/ui";
 
 <Code plain>const x = 1;</Code>

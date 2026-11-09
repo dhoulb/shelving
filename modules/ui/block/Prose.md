@@ -22,7 +22,7 @@ import { Prose, Markup } from "shelving/ui";
 
 ### Hand-written longform
 
-```tsx
+```tsx live
 import { Prose, Paragraph } from "shelving/ui";
 
 <Prose>

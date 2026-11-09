@@ -40,7 +40,7 @@ The shared value-input prop contract (`ValueInputProps<O>`):
 
 ### Dispatch on a single schema
 
-```tsx
+```tsx live
 import { SchemaInput } from "shelving/ui";
 import { StringSchema, NumberSchema } from "shelving/schema";
 

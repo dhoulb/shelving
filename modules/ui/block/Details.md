@@ -14,7 +14,7 @@ A collapsible panel. The title is always visible. The content shows when the use
 
 ### Single panel
 
-```tsx
+```tsx live
 import { Details, Paragraph } from "shelving/ui";
 
 <Details title="What is shelving?">
@@ -24,7 +24,7 @@ import { Details, Paragraph } from "shelving/ui";
 
 ### Open by default
 
-```tsx
+```tsx live
 import { Details, Paragraph } from "shelving/ui";
 
 <Details title="Release notes" open>
@@ -34,7 +34,7 @@ import { Details, Paragraph } from "shelving/ui";
 
 ### Exclusive group (FAQ)
 
-```tsx
+```tsx live
 import { Details, Paragraph } from "shelving/ui";
 
 // Only one answer is open at a time.

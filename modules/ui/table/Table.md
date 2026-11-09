@@ -18,7 +18,7 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 
 ### Basic table
 
-```tsx
+```tsx live
 import { Table } from "shelving/ui";
 
 <Table>
@@ -34,7 +34,7 @@ import { Table } from "shelving/ui";
 
 ### Cell padding
 
-```tsx
+```tsx live
 import { Button, Cell, Table } from "shelving/ui";
 
 <Table padding="small">

@@ -10,7 +10,7 @@ Renders an icon for a given status, coloured to match. Picks an icon per status 
 
 ## Usage
 
-```tsx
+```tsx live
 import { Icon } from "shelving/ui";
 
 <Icon status="success" size="large" />

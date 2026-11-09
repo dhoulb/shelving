@@ -12,7 +12,7 @@ Emphasised text — renders an `<em>` element for stress emphasis, the kind that
 
 ### Stress emphasis in body copy
 
-```tsx
+```tsx live
 import { Paragraph, Emphasis } from "shelving/ui";
 
 <Paragraph>

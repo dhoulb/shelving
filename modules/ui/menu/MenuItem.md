@@ -11,7 +11,7 @@ A single `<li>` link entry inside a `<Menu>`. It reads the current page URL from
 
 ## Usage
 
-```tsx
+```tsx live
 import { Menu, MenuItem } from "shelving/ui";
 
 <Menu>
@@ -28,7 +28,7 @@ import { Menu, MenuItem } from "shelving/ui";
 
 ### Small items
 
-```tsx
+```tsx live
 import { Menu, MenuItem } from "shelving/ui";
 
 // One small item.
