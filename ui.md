@@ -433,7 +433,7 @@ The components below are listed in the index following this page; this is the sh
 - [EmptyProps](ui/EmptyProps.md): Props for <Empty> — the message content plus an optional className.
 - [MessageProps](ui/MessageProps.md): Props for <Message> — paragraph props plus colour and status styling variants.
 - [NoticeProps](ui/NoticeProps.md): Props for <Notice> — flex/colour/status styling variants, optional children, and an optional icon.
-- [NoticesProps](ui/NoticesProps.md): Props for <Notices> — the corner for the list, and flex styling variants for the notices container.
+- [NoticesProps](ui/NoticesProps.md): Props for <Notices> — the place for the list, and flex styling variants for the notices container.
 - [HTMLProps](ui/HTMLProps.md): Props for <HTML> — initial Meta (language/root/app) plus the page children.
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation> — initial Meta (url/base) plus optional children.
@@ -491,7 +491,7 @@ The components below are listed in the index following this page; this is the sh
 - [PopoverChildren](ui/PopoverChildren.md): Children tuple for Popover: a leading trigger node followed by the popover's contents.
 - [TextFormatter](ui/TextFormatter.md): Formats a string for display in a text input.
 - [Mapping](ui/Mapping.md): Dispatch table from a JSX.IntrinsicElements key to a renderer component.
-- [NoticesPosition](ui/NoticesPosition.md): Corner of the screen where <Notices> shows the list of notices.
+- [NoticesPosition](ui/NoticesPosition.md): Place on the screen where <Notices> shows the list of notices: a corner, or the centre of the top or bottom edge.
 - [RouteProps](ui/RouteProps.md): Props for a component that works as a route in the router.
 - [RouteComponent](ui/RouteComponent.md): React component usable as a route value — a function or class component accepting RouteProps.
 - [Route](ui/Route.md): Valid route values:

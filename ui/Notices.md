@@ -6,8 +6,8 @@
 Render the global list of notices and subscribe to incoming `"notice"` events.
 - Listens for `"notice"` events on `window` (or that bubble up to `window`) and shows them in the global notice list.
 - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
-- Shows the list in the bottom-right corner, or in the corner that `position` sets.
-- Each notice slides in and out in its own view transition, from the side of its corner. The other notices move to their new places in the same transition.
+- Shows the list in the bottom-right corner, or in the place that `position` sets.
+- Each notice slides in and out in its own view transition, from the side of its corner, or from the edge for a centred list. The other notices move to their new places in the same transition.
 
 Renders the global list of active notices and subscribes to incoming `"notice"` events. It listens for `"notice"` events on `window` (dispatched by the `notify()` helpers) and shows each one as a `<Notice>` — this is how components like `<Button>` and `<FormNotify>` send notices into the global list.
 
@@ -16,8 +16,8 @@ Renders the global list of active notices and subscribes to incoming `"notice"` 
 - Mount `<Notices>` once near the root of your app. It renders at that point in the DOM and listens automatically — no context required.
 - Notices auto-dismiss after a short delay unless they carry a `"loading"` status.
 - Backed by the `NOTICES` store singleton; for advanced use you can keep a reference to a notice to update or close it manually.
-- The list shows in the bottom-right corner. Set `position` to `"top-left"`, `"top-right"`, `"bottom-left"`, or `"bottom-right"` to choose a different corner.
-- Notices animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). A new notice slides in from the side of its corner, and a closed notice slides out to that side. The other notices move to their new places. A notice that changes in place (for example from loading to success) changes at once, with no animation.
+- The list shows in the bottom-right corner. Set `position` to `"top-left"`, `"top-center"`, `"top-right"`, `"bottom-left"`, `"bottom-center"`, or `"bottom-right"` to choose a different place.
+- Notices animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). A new notice slides in from the side of its corner, and a closed notice slides out to that side. In a centred list, notices slide in and out from the top or bottom edge. The other notices move to their new places. A notice that changes in place (for example from loading to success) changes at once, with no animation.
 - With reduced motion, notices fade in and out in place, and the others move at once. A browser without view transitions shows the changes at once.
 
 ## Usage
@@ -41,6 +41,12 @@ Show the list in the top-left corner:
 
 ```tsx
 <Notices position="top-left" />
+```
+
+Show the list at the top of the screen, in the centre:
+
+```tsx
+<Notices position="top-center" />
 ```
 
 Dispatch notices from anywhere — no context required:
@@ -72,7 +78,7 @@ notice.close(); // Or close it immediately.
 
 ## Styling
 
-`Notices` positions the list in the corner that `position` sets. Each notice is only as wide as its content and is aligned to the side of that corner. The list is never wider than `--notices-width`, and keeps `--notices-offset` clear at both sides on a narrow screen. The offset also adds the safe area of the device (`env(safe-area-inset-*)`). Clicks pass through the gaps between notices to the page. Each item is a `<Notice>`, which has its own hooks. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Notices` positions the list in the place that `position` sets. Each notice is only as wide as its content and is aligned to the side of that corner, or to the centre. The list is never wider than `--notices-width`, and keeps `--notices-offset` clear at both sides on a narrow screen. The offset also adds the safe area of the device (`env(safe-area-inset-*)`). Clicks pass through the gaps between notices to the page. Each item is a `<Notice>`, which has its own hooks. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable | Styles | Default |
 |---|---|---|
@@ -96,7 +102,7 @@ Notices({ position = "bottom-right", className, ...props }: NoticesProps): React
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `NoticesProps` |  |
-| `.position` | `NoticesPosition \| undefined` | Corner of the screen for the list. New notices slide in from this side. Defaults to `"bottom-right"`. |
+| `.position` | `NoticesPosition \| undefined` | Place on the screen for the list. New notices slide in from this side, or from the top or bottom edge for a centred list. Defaults to `"bottom-right"`. |
 
 ## Returns
 

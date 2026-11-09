@@ -3,10 +3,10 @@
 - Kind: type
 - Import: `import { NoticesPosition } from "shelving/ui";`
 
-Corner of the screen where `<Notices>` shows the list of notices.
+Place on the screen where `<Notices>` shows the list of notices: a corner, or the centre of the top or bottom edge.
 
 ## Signatures
 
 ```ts
-"top-left" | "top-right" | "bottom-left" | "bottom-right"
+`${"top" | "bottom"}-${"left" | "center" | "right"}`
 ```
