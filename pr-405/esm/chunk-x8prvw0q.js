@@ -1,0 +1,2 @@
+import*as e from"react";function n({title:a,titleId:t,...o},l){return e.createElement("svg",Object.assign({xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"currentColor","aria-hidden":"true","data-slot":"icon",ref:l,"aria-labelledby":t},o),a?e.createElement("title",{id:t},a):null,e.createElement("path",{fillRule:"evenodd",d:"M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z",clipRule:"evenodd"}))}var c=e.forwardRef(n),r=c;var dn=r;
+export{dn};
