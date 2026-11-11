@@ -1,4 +1,4 @@
-import { type PointerEvent, type ReactNode, type SyntheticEvent, useEffect, useRef, useState } from "react";
+import { type PointerEvent, type ReactNode, type SyntheticEvent, startTransition, useEffect, useRef, useState } from "react";
 import { AddIcon } from "../../icon/AddIcon.js";
 import { LeftIcon } from "../../icon/LeftIcon.js";
 import { Row } from "../block/Row.js";
@@ -6,7 +6,6 @@ import { Button } from "../button/Button.js";
 import { TextareaInput } from "../input/TextareaInput.js";
 import { Page } from "../page/Page.js";
 import { getClass, getModuleClass } from "../util/css.js";
-import { notifyError, notifySuccess } from "../util/notice.js";
 import { DocumentationFrame } from "./DocumentationFrame.js";
 import { DocumentationPlaygroundInsert } from "./DocumentationPlaygroundInsert.js";
 import DOCUMENTATION_PLAYGROUND_PAGE_CSS from "./DocumentationPlaygroundPage.module.css";
@@ -53,28 +52,30 @@ function Counter() {
   </Block>
 </Panel>
 
-<Block width="wide" padding="large">
-  <Heading>Projects</Heading>
-  <Grid columns={3} gap="small">
-    <Card>
-      <Subheading>Trail log</Subheading>
-      <Paragraph>Record runs and rides offline, then sync.</Paragraph>
-      <Tag status="success">Live</Tag>
-    </Card>
-    <Card>
-      <Subheading>Recipe box</Subheading>
-      <Paragraph>Shared shopping lists for the whole house.</Paragraph>
-      <Tag status="warning">Beta</Tag>
-    </Card>
-    <Card>
-      <Subheading>Tide tables</Subheading>
-      <Paragraph>Local tide times, with alerts for low water.</Paragraph>
-      <Tag>Draft</Tag>
-    </Card>
-  </Grid>
-</Block>
-
 <Panel padding="large">
+  <Block width="narrow">
+    <Heading>Projects</Heading>
+    <Grid gap="small">
+      <Card shadow="small">
+        <Subheading>Trail log</Subheading>
+        <Paragraph>Record runs and rides offline, then sync.</Paragraph>
+        <Tag status="success">Live</Tag>
+      </Card>
+      <Card shadow="small">
+        <Subheading>Recipe box</Subheading>
+        <Paragraph>Shared shopping lists for the whole house.</Paragraph>
+        <Tag status="warning">Beta</Tag>
+      </Card>
+      <Card shadow="small">
+        <Subheading>Tide tables</Subheading>
+        <Paragraph>Local tide times, with alerts for low water.</Paragraph>
+        <Tag>Draft</Tag>
+      </Card>
+    </Grid>
+  </Block>
+</Panel>
+
+<Panel color="primary" padding="large">
   <Block width="narrow">
     <Heading>Team</Heading>
     <Table>
@@ -95,23 +96,24 @@ function Counter() {
   </Block>
 </Panel>
 
-<Block width="narrow" padding="large">
-  <Heading>Join the beta</Heading>
-  <Card>
-    <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
-  </Card>
-  <Details title="What can I change?">
-    <Paragraph>Press Insert to add a component to the TSX, or a variable to the CSS.</Paragraph>
-  </Details>
-</Block>
+<Panel padding="large">
+  <Block width="narrow">
+    <Heading>Join the beta</Heading>
+    <Card shadow="small">
+      <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
+    </Card>
+    <Details title="What can I change?">
+      <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
+    </Details>
+  </Block>
+</Panel>
 `;
 
 /** CSS shown when the URL has no CSS. */
-const DEFAULT_CSS = `/* Change any shelving variable here. Press Insert to add more. */
+const DEFAULT_CSS = `/* Change any shelving variable here. Press + to add more. */
 :root {
   --color-primary: var(--color-purple);
   --color-gray: oklch(60% 0.04 300deg);
-  --radius-normal: 6px;
 }
 `;
 
@@ -132,8 +134,8 @@ type Tab = "code" | "css";
  * - Drag the edge between them (or focus it and press the arrow keys) to change their widths.
  * - The TSX tab holds code that can import from `shelving/*`, `react`, and `react-dom`. Its top-level expressions are shown in the preview.
  * - The CSS tab holds CSS that is added after the shelving styles, so you can change any shelving variable.
- * - "Insert" opens a `<DocumentationPlaygroundInsert>` panel. On the TSX tab it lists the shelving components, and on the CSS tab the CSS variables. Press one to insert it at the cursor.
- * - The code and CSS are kept in the URL hash, so you can share a link to what you made.
+ * - The + button opens a `<DocumentationPlaygroundInsert>` panel. On the TSX tab it lists the shelving components, and on the CSS tab the CSS variables. Press one to insert it at the cursor.
+ * - The code and CSS are saved in the URL hash on every change, so the address is always a link to what you made.
  * - The preview is a `<DocumentationFrame>`, so it uses the raw shelving styles and not the docs site styles.
  * - It has no sidebar of its own. `<DocumentationApp>` renders it outside its `<SidebarLayout>`.
  *
@@ -158,15 +160,6 @@ export function DocumentationPlaygroundPage(): ReactNode {
 		if (e.target instanceof HTMLTextAreaElement) cursor.current = e.target.selectionStart;
 	};
 
-	// Set code and CSS from outside the text boxes.
-	const load = (next: { code: string; css: string }) => {
-		setCode(next.code);
-		setCss(next.css);
-		setPreview(next);
-		setLoaded(n => n + 1);
-		cursor.current = undefined;
-	};
-
 	// Read the code and CSS from the URL hash (only in the browser, after the first render).
 	useEffect(() => {
 		const hashed = parsePlaygroundHash(window.location.hash);
@@ -178,14 +171,17 @@ export function DocumentationPlaygroundPage(): ReactNode {
 		setLoaded(n => n + 1);
 	}, []);
 
-	// Run the preview, and save the code and CSS in the URL hash, a short time after the last change.
+	// Save the code and CSS in the URL hash on every change, so the address is always a link to what you made.
 	useEffect(() => {
-		const timer = setTimeout(() => {
-			setPreview({ code, css });
-			const url = new URL(window.location.href);
-			url.hash = formatPlaygroundHash({ code, css });
-			window.history.replaceState(window.history.state, "", url.href);
-		}, DELAY);
+		const url = new URL(window.location.href);
+		// The default code and CSS need no hash, so a fresh playground keeps a short address.
+		url.hash = code === DEFAULT_CODE && css === DEFAULT_CSS ? "" : formatPlaygroundHash({ code, css });
+		if (url.href !== window.location.href) window.history.replaceState(window.history.state, "", url.href);
+	}, [code, css]);
+
+	// Run the preview a short time after the last change.
+	useEffect(() => {
+		const timer = setTimeout(() => setPreview({ code, css }), DELAY);
 		return () => clearTimeout(timer);
 	}, [code, css]);
 
@@ -205,51 +201,38 @@ export function DocumentationPlaygroundPage(): ReactNode {
 		<Page title={TITLE}>
 			<div ref={ref} className={PLAYGROUND_CLASS}>
 				<div className={EDITOR_CLASS} onSelect={onCursor}>
-					<Row left>
-						<Button plain small href="/">
+					<Row between>
+						<Button small href="/" title="Home">
 							<LeftIcon />
-							Home
 						</Button>
-					</Row>
-					<Row left wrap>
+						<Row center gap="xsmall">
+							<Button
+								small
+								selected={tab === "code"}
+								onClick={() => {
+									setTab("code");
+									cursor.current = undefined;
+								}}
+							>
+								TSX
+							</Button>
+							<Button
+								small
+								selected={tab === "css"}
+								onClick={() => {
+									setTab("css");
+									cursor.current = undefined;
+								}}
+							>
+								CSS
+							</Button>
+						</Row>
 						<Button
 							small
-							selected={tab === "code"}
-							onClick={() => {
-								setTab("code");
-								cursor.current = undefined;
-							}}
+							title={tab === "code" ? "Insert a component" : "Insert a variable"}
+							onClick={() => startTransition(() => setInserting({ at: cursor.current }))}
 						>
-							TSX
-						</Button>
-						<Button
-							small
-							selected={tab === "css"}
-							onClick={() => {
-								setTab("css");
-								cursor.current = undefined;
-							}}
-						>
-							CSS
-						</Button>
-						<Button small solid onClick={() => setInserting({ at: cursor.current })}>
 							<AddIcon />
-							Insert
-						</Button>
-						<Button
-							small
-							outline
-							onClick={() => {
-								navigator.clipboard.writeText(window.location.href).then(
-									() => notifySuccess("Link copied"),
-									() => notifyError("Could not copy the link"),
-								);
-							}}
-						>
-							Copy link
-						</Button>
-						<Button small plain onClick={() => load({ code: DEFAULT_CODE, css: DEFAULT_CSS })}>
-							Reset
 						</Button>
 					</Row>
 					{tab === "code" && (
@@ -269,7 +252,7 @@ export function DocumentationPlaygroundPage(): ReactNode {
 					{inserting && (
 						<DocumentationPlaygroundInsert
 							type={tab}
-							onClose={() => setInserting(undefined)}
+							onClose={() => startTransition(() => setInserting(undefined))}
 							onInsert={text => {
 								if (tab === "code") setCode(insertPlaygroundSnippet(code, text, inserting.at));
 								else setCss(insertPlaygroundText(css, text, inserting.at));
