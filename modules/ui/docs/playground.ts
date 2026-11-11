@@ -125,3 +125,101 @@ export function formatPlaygroundCSS(variables: readonly PlaygroundVariable[]): s
 	);
 	return `:root {\n${lines.join("\n")}\n}\n`;
 }
+
+/**
+ * Path of the component index that the docs build writes, relative to the docs site root.
+ * - It holds a list of `PlaygroundComponent` objects.
+ *
+ * @see https://shelving.cc/ui/PLAYGROUND_COMPONENTS_PATH
+ */
+export const PLAYGROUND_COMPONENTS_PATH = "components.json";
+
+/**
+ * One shelving component that you can insert into the playground code.
+ *
+ * @see https://shelving.cc/ui/PlaygroundComponent
+ */
+export interface PlaygroundComponent {
+	/** Name of the component, e.g. `"Button"`. */
+	readonly name: string;
+	/** Name of the group the component is in, e.g. `"block"` or `"form"`. */
+	readonly group: string;
+	/** First line of the component's docblock. */
+	readonly description?: string | undefined;
+	/** TSX to insert, with its imports, e.g. `import { Button } from "shelving/ui";\n\n<Button>Save</Button>`. */
+	readonly snippet: string;
+}
+
+/** Match one `import { … } from "…";` statement. */
+const _IMPORT_REGEXP = /^import\s*\{([^}]*)\}\s*from\s*["']([^"']+)["'];?[^\S\n]*\n?/gm;
+
+/** Get the names in an import list, e.g. `" A, B as C, "` gives `["A", "B as C"]`. */
+function _getNames(list: string): string[] {
+	return list
+		.split(",")
+		.map(name => name.trim())
+		.filter(Boolean);
+}
+
+/**
+ * Insert a TSX snippet into playground code, and merge the snippet's imports into the code's imports.
+ * - The snippet body goes on its own lines at `at` (or at the end of the code).
+ * - Each name in a snippet `import { … } from "…"` is added to the code's import from the same module, or a new import is added at the top.
+ *
+ * @param code The playground code.
+ * @param snippet The TSX snippet to insert, e.g. `PlaygroundComponent.snippet`.
+ * @param at The cursor position in `code`, e.g. the `selectionStart` of the text box.
+ * @returns The new code.
+ * @example insertPlaygroundSnippet("", 'import { Button } from "shelving/ui";\n\n<Button>Hi</Button>') // 'import { Button } from "shelving/ui";\n\n<Button>Hi</Button>\n'
+ * @see https://shelving.cc/ui/insertPlaygroundSnippet
+ */
+export function insertPlaygroundSnippet(code: string, snippet: string, at?: number | undefined): string {
+	const imports = Array.from(snippet.matchAll(_IMPORT_REGEXP), ([, list = "", from = ""]) => ({ from, names: _getNames(list) }));
+	let output = insertPlaygroundText(code, snippet.replace(_IMPORT_REGEXP, "").trim(), at ?? code.length);
+	for (const { from, names } of imports) {
+		const existing = Array.from(output.matchAll(_IMPORT_REGEXP)).find(([, , f]) => f === from);
+		if (existing) {
+			const [whole, list = ""] = existing;
+			const current = _getNames(list);
+			const added = names.filter(name => !current.includes(name));
+			if (!added.length) continue;
+			// Add the names before the closing `}`, on their own line if the import is split over lines.
+			const close = existing.index + whole.indexOf("}");
+			const multiline = list.includes("\n");
+			const head = output.slice(0, close).trimEnd();
+			const insert = multiline ? `  ${added.join(", ")},\n` : `${head.endsWith(",") ? "" : ","} ${added.join(", ")} `;
+			const before = multiline ? `${head}${head.endsWith(",") ? "" : ","}\n` : head;
+			output = `${before}${insert}${output.slice(close)}`;
+		} else {
+			const line = `import { ${names.join(", ")} } from "${from}";\n`;
+			const last = Array.from(output.matchAll(_IMPORT_REGEXP)).pop();
+			const index = last ? last.index + last[0].length : 0;
+			output = `${output.slice(0, index)}${line}${last ? "" : output.trim() ? "\n" : ""}${output.slice(index)}`;
+		}
+	}
+	return output;
+}
+
+/**
+ * Insert text on its own lines into playground code or CSS.
+ * - With no `at`, CSS (text that ends with a `}`) gets the text before its last `}`, and other text gets it at the end.
+ *
+ * @param text The code or CSS.
+ * @param insert The text to insert.
+ * @param at The cursor position in `text`, e.g. the `selectionStart` of the text box.
+ * @returns The new text.
+ * @example insertPlaygroundText("a\n", "b") // "a\nb\n"
+ * @see https://shelving.cc/ui/insertPlaygroundText
+ */
+export function insertPlaygroundText(text: string, insert: string, at?: number | undefined): string {
+	let index = at ?? (text.trimEnd().endsWith("}") ? text.lastIndexOf("}") : text.length);
+	index = Math.max(0, Math.min(text.length, index));
+	// Move to the end of the line the cursor is on, so the insert does not split a line.
+	const end = text.indexOf("\n", index);
+	if (at !== undefined && text.slice(index, end < 0 ? undefined : end).trim()) index = end < 0 ? text.length : end;
+	const before = text.slice(0, index);
+	const after = text.slice(index);
+	const head = !before || before.endsWith("\n") ? "" : "\n";
+	const tail = after.startsWith("\n") ? "" : "\n";
+	return `${before}${head}${insert}${tail}${after}`;
+}

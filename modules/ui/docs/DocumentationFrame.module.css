@@ -1,8 +1,5 @@
 @import url("../style/layers.css");
 @import url("../style/Color.module.css");
-@import url("../style/Radius.module.css");
-@import url("../style/Space.module.css");
-@import url("../style/Stroke.module.css");
 
 @layer components {
 	.frame {
@@ -11,11 +8,10 @@
 		box-sizing: border-box;
 		width: 100%;
 		min-block-size: var(--documentation-frame-height, 4rem);
-		margin-block: var(--documentation-frame-space, var(--space-paragraph));
-		border: var(--documentation-frame-border, var(--stroke-normal) solid var(--tint-80));
-		border-radius: var(--documentation-frame-radius, var(--radius-normal));
+		margin: 0;
+		border: 0;
 
 		/* Style */
-		background: var(--documentation-frame-background, var(--tint-100));
+		background: var(--documentation-frame-background, white);
 	}
 }

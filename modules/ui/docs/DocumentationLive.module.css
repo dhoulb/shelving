@@ -1,28 +1,85 @@
 @import url("../style/layers.css");
+@import url("../style/Color.module.css");
 @import url("../style/Space.module.css");
-@import url("../style/Width.module.css");
+@import url("../style/Typography.module.css");
 
 @layer components {
 	.live {
 		/* Box */
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: var(--documentation-live-gap, var(--space-small));
+		place-items: start center;
+		gap: var(--documentation-live-gap, var(--space-normal));
 		margin-inline: 0;
 		margin-block: var(--documentation-live-space, var(--space-paragraph));
 
-		/* Code and preview fill their cells, so the gap is the only space between them. */
-		& > * {
-			margin-block: 0;
+		/* The code block fills its cell, so the gap is the only space between the code and the preview. */
+		--preformatted-space: 0;
+
+		& > pre {
+			justify-self: stretch;
 		}
 
 		/* Code and preview side by side when there is space. */
 		@media (width >= 75rem) {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-
-			& > figcaption {
-				grid-column: 1 / -1;
-			}
+			grid-template-columns: minmax(0, 1fr) auto;
 		}
+	}
+
+	/* The phone and the link under it. */
+	.device {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: var(--space-xsmall);
+		inline-size: min(100%, var(--documentation-live-width, 22rem));
+	}
+
+	/* A simple phone: a light grey body with a thick top and a thick chin around a square screen. */
+	.phone {
+		/* Box */
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		inline-size: 100%;
+		padding-inline: var(--documentation-live-edge, 0.75rem);
+		border-radius: var(--documentation-live-radius, 2.5rem);
+
+		/* Style */
+		background: var(--documentation-live-body, oklch(92% 0 0deg));
+
+		/* Speaker slot in the top. */
+		&::before {
+			content: "";
+			margin-block: var(--documentation-live-bezel, 2.25rem);
+			inline-size: 3rem;
+			block-size: 0.375rem;
+			border-radius: 1rem;
+			background: var(--documentation-live-detail, oklch(80% 0 0deg));
+		}
+
+		/* Home button in the chin. */
+		&::after {
+			content: "";
+			box-sizing: border-box;
+			margin-block: calc((var(--documentation-live-bezel, 2.25rem) * 2 + 0.375rem - 2.75rem) / 2);
+			inline-size: 2.75rem;
+			block-size: 2.75rem;
+			border: 0.1875rem solid var(--documentation-live-detail, oklch(80% 0 0deg));
+			border-radius: 50%;
+		}
+	}
+
+	/* The screen is square, and scrolls inside when the preview is taller than it. */
+	.screen {
+		&.screen {
+			block-size: var(--documentation-live-height, 26rem);
+		}
+	}
+
+	.link {
+		font-family: var(--font-label);
+		font-size: var(--size-small);
 	}
 }

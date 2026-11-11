@@ -23,6 +23,9 @@ declare const TYPESCRIPT_URL: string;
 interface TypeScript {
 	createSourceFile(name: string, text: string, target: number, parents: boolean, kind: number): { statements: readonly TypeScriptNode[] };
 	isExpressionStatement(node: TypeScriptNode): node is TypeScriptNode & { expression: TypeScriptNode };
+	isBinaryExpression(
+		node: TypeScriptNode,
+	): node is TypeScriptNode & { left: TypeScriptNode; operatorToken: TypeScriptNode; right: TypeScriptNode };
 	transpileModule(code: string, options: { compilerOptions: Record<string, unknown>; fileName: string }): { outputText: string };
 	ScriptTarget: { ES2022: number; Latest: number };
 	ScriptKind: { TSX: number };
@@ -46,6 +49,8 @@ function _loadTypeScript(): Promise<TypeScript> {
 /**
  * Wrap code so each top-level expression statement is collected as an element to show.
  * - `<Button>Hi</Button>` becomes `__elements.push(<Button>Hi</Button>);`, so a snippet does not need a `return` or an export.
+ * - Elements next to each other (`<A />` then `<B />` on the next line) are not valid TSX, so TypeScript reads them as one
+ *   expression joined by a missing comma. Each part of that expression is collected as its own element.
  * - Imports, functions, and other statements are left as they are.
  */
 function wrapCode(ts: TypeScript, code: string): string {
@@ -54,11 +59,18 @@ function wrapCode(ts: TypeScript, code: string): string {
 	let last = 0;
 	for (const statement of file.statements) {
 		if (!ts.isExpressionStatement(statement)) continue;
-		const { expression } = statement;
-		output += `${code.slice(last, statement.getStart())}${ELEMENTS}.push(${code.slice(expression.getStart(), expression.getEnd())});`;
+		const parts = _splitMissingCommas(ts, statement.expression).map(part => code.slice(part.getStart(), part.getEnd()));
+		output += `${code.slice(last, statement.getStart())}${ELEMENTS}.push(${parts.join(", ")});`;
 		last = statement.getEnd();
 	}
 	return `const ${ELEMENTS} = [];\n${output}${code.slice(last)}\nexport { ${ELEMENTS} };\n`;
+}
+
+/** Split an expression at each comma that TypeScript added because the comma was missing (it has no width in the source). */
+function _splitMissingCommas(ts: TypeScript, node: TypeScriptNode): TypeScriptNode[] {
+	if (ts.isBinaryExpression(node) && node.operatorToken.getStart() === node.operatorToken.getEnd())
+		return [..._splitMissingCommas(ts, node.left), ..._splitMissingCommas(ts, node.right)];
+	return [node];
 }
 
 /** Transpile and import code, and return the elements it shows. */

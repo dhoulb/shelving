@@ -5,13 +5,15 @@
  * - `frame-[hash].js`: the frame script (see `docs/frame.tsx`), with `shelving/*`, `react`, and `react-dom` kept external.
  * - `frame.html`: an import map, the shelving stylesheets, a `<style id="css">` for the playground CSS, and the frame script.
  * - `variables.json`: the CSS variable index for the playground (see `docs/variables.ts`).
+ * - `components.json`: the component index for the playground (see `docs/components.ts`).
  *
  * The frame page loads no docs site styles, so a preview shows the raw shelving styles.
  */
 
 import { basename, join, resolve } from "node:path";
-import { PLAYGROUND_FRAME_PATH, PLAYGROUND_VARIABLES_PATH } from "../modules/ui/docs/playground.js";
+import { PLAYGROUND_COMPONENTS_PATH, PLAYGROUND_FRAME_PATH, PLAYGROUND_VARIABLES_PATH } from "../modules/ui/docs/playground.js";
 import type { AbsolutePath } from "../modules/util/path.js";
+import { buildComponents } from "./components.js";
 import { buildModules, TYPESCRIPT_URL } from "./modules.js";
 import { buildVariables } from "./variables.js";
 
@@ -21,7 +23,7 @@ function _escape(text: string): string {
 }
 
 /**
- * Write the playground frame page, the shelving browser modules, and the CSS variable index to `outdir`.
+ * Write the playground frame page, the shelving browser modules, and the CSS variable and component indexes to `outdir`.
  *
  * @param sourceDir The `modules/` source directory.
  * @param packageJson Path of `package.json`.
@@ -69,8 +71,7 @@ ${stylesheets.map(href => `<link rel="stylesheet" href="${_escape(href)}">`).joi
 </html>
 `;
 	await Bun.write(resolve(outdir, PLAYGROUND_FRAME_PATH), html);
-	await Bun.write(
-		resolve(outdir, PLAYGROUND_VARIABLES_PATH),
-		JSON.stringify(await buildVariables(resolve(sourceDir, "ui") as AbsolutePath)),
-	);
+	const uiDir = resolve(sourceDir, "ui") as AbsolutePath;
+	await Bun.write(resolve(outdir, PLAYGROUND_VARIABLES_PATH), JSON.stringify(await buildVariables(uiDir)));
+	await Bun.write(resolve(outdir, PLAYGROUND_COMPONENTS_PATH), JSON.stringify(await buildComponents(uiDir)));
 }

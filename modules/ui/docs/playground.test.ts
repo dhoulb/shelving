@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatPlaygroundCSS, formatPlaygroundHash, parsePlaygroundHash } from "shelving/ui";
+import { formatPlaygroundCSS, formatPlaygroundHash, insertPlaygroundSnippet, insertPlaygroundText, parsePlaygroundHash } from "shelving/ui";
 
 describe("formatPlaygroundHash()", () => {
 	test("empty input gives an empty hash", () => {
@@ -38,5 +38,46 @@ describe("formatPlaygroundCSS()", () => {
 				{ name: "--card-space", value: "0" },
 			]),
 		).toBe(":root {\n  --card-radius: var(--radius-normal); /* Corner radius */\n  --card-space: 0;\n}\n");
+	});
+});
+
+describe("insertPlaygroundText()", () => {
+	test("adds text at the end on its own line", () => {
+		expect(insertPlaygroundText("", "b")).toBe("b\n");
+		expect(insertPlaygroundText("a", "b")).toBe("a\nb\n");
+		expect(insertPlaygroundText("a\n", "b")).toBe("a\nb\n");
+	});
+	test("adds text inside the last CSS rule with no cursor", () => {
+		expect(insertPlaygroundText(":root {\n  --a: 1;\n}\n", "  --b: 2;")).toBe(":root {\n  --a: 1;\n  --b: 2;\n}\n");
+	});
+	test("adds text after the line the cursor is on", () => {
+		expect(insertPlaygroundText("one\ntwo\nthree", "new", 5)).toBe("one\ntwo\nnew\nthree");
+		expect(insertPlaygroundText("one\n\nthree", "new", 4)).toBe("one\nnew\nthree");
+	});
+});
+
+describe("insertPlaygroundSnippet()", () => {
+	test("adds the snippet and its imports to empty code", () => {
+		expect(insertPlaygroundSnippet("", 'import { Button } from "shelving/ui";\n\n<Button>Hi</Button>')).toBe(
+			'import { Button } from "shelving/ui";\n\n<Button>Hi</Button>\n',
+		);
+	});
+	test("merges names into an import from the same module", () => {
+		const code = 'import { Card } from "shelving/ui";\n\n<Card />\n';
+		expect(insertPlaygroundSnippet(code, 'import { Button, Card } from "shelving/ui";\n\n<Button>Hi</Button>')).toBe(
+			'import { Card, Button } from "shelving/ui";\n\n<Card />\n<Button>Hi</Button>\n',
+		);
+	});
+	test("adds names on their own line to an import that is split over lines", () => {
+		const code = 'import {\n  Card,\n} from "shelving/ui";\n\n<Card />\n';
+		expect(insertPlaygroundSnippet(code, 'import { Button } from "shelving/ui";\n\n<Button>Hi</Button>')).toBe(
+			'import {\n  Card,\n  Button,\n} from "shelving/ui";\n\n<Card />\n<Button>Hi</Button>\n',
+		);
+	});
+	test("adds a new import after the last import", () => {
+		const code = 'import { Card } from "shelving/ui";\n\n<Card />\n';
+		expect(insertPlaygroundSnippet(code, 'import { DATA } from "shelving/schema";\n\nDATA')).toBe(
+			'import { Card } from "shelving/ui";\nimport { DATA } from "shelving/schema";\n\n<Card />\nDATA\n',
+		);
 	});
 });

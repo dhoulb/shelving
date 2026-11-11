@@ -1,5 +1,5 @@
 /**
- * Build the CSS variable index for the playground's Variables tab (see `DocumentationPlaygroundVariables`).
+ * Build the CSS variable index for the playground insert panel (see `DocumentationPlaygroundInsert`).
  *
  * It reads every `.module.css` file under `modules/ui/`:
  * - A `style/` token module (`Color.module.css`, …) gives one "tokens" group with each variable it declares, and
