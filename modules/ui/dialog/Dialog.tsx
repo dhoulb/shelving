@@ -2,13 +2,11 @@ import { type MouseEvent, memo, type ReactElement, Suspense, ViewTransition } fr
 import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
-import FADE_TRANSITION_CSS from "../transition/FadeTransition.module.css";
+import { FADE_TRANSITION_CLASS } from "../transition/FadeTransition.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
 import modalStyles from "./Modal.module.css";
-
-const FADE_TRANSITION_CLASS = getModuleClass(FADE_TRANSITION_CSS, "fade");
 
 /**
  * Props for `<Dialog>` — optional `children` content and an `onClose` callback.

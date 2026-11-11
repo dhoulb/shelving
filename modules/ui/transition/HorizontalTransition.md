@@ -36,6 +36,19 @@ import { HorizontalTransition, Navigation, Router } from "shelving/ui";
 </Navigation>
 ```
 
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `SLIDE_RIGHT_TRANSITION_CLASS` and `SLIDE_LEFT_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { SLIDE_RIGHT_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={SLIDE_RIGHT_TRANSITION_CLASS} exit={SLIDE_RIGHT_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
+```
+
 ## Styling
 
 | Variable | Styles | Default |
