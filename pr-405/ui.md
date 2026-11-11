@@ -110,16 +110,17 @@ The components below are listed in the index following this page; this is the sh
 - [DialogsContext](ui/DialogsContext.md): Provider that creates a fresh DialogsStore and shares it with its subtree.
 - [Dialogs](ui/Dialogs.md): Render the open dialogs from the current DialogsContext.
 - [Modal](ui/Modal.md): Styled <aside> panel for content inside a <Dialog>, with dark text on a light surface.
+- [DocumentationApp](ui/DocumentationApp.md): Documentation app.
 - [DocumentationButtons](ui/DocumentationButtons.md): Render a symbol's relational metadata as a <nav> column of labelled links.
 - [DocumentationCard](ui/DocumentationCard.md): Card renderer for a tree-documentation element — a compact summary card linking to the symbol's detail page.
 - [DocumentationDescription](ui/DocumentationDescription.md): Render a documentation table row's description cell.
 - [DocumentationFrame](ui/DocumentationFrame.md): Show a live preview of playground code in an <iframe> of the playground frame page.
 - [DocumentationKind](ui/DocumentationKind.md): Colour-coded tag for a documented symbol's kind.
-- [DocumentationLive](ui/DocumentationLive.md): Show a code example next to a live preview of it, with a link that opens it in the playground.
+- [DocumentationLive](ui/DocumentationLive.md): Show a code example next to a live preview of it on a simple phone, with a link under it that opens it in the playground.
 - [DocumentationPage](ui/DocumentationPage.md): Page renderer for a tree-documentation element — the full detail page for a documented symbol.
 - [DocumentationParams](ui/DocumentationParams.md): Render a documented symbol's parameters as a scrollable table — one row per parameter.
+- [DocumentationPlaygroundInsert](ui/DocumentationPlaygroundInsert.md): Panel that slides in from the right of the playground, to insert a shelving component into the TSX, or a CSS variable into the CSS.
 - [DocumentationPlaygroundPage](ui/DocumentationPlaygroundPage.md): Page where you can write TSX and CSS and see the result run live, like the TypeScript Playground.
-- [DocumentationPlaygroundVariables](ui/DocumentationPlaygroundVariables.md): Searchable index of every CSS variable that shelving components read, grouped by the module that owns it.
 - [DocumentationProperties](ui/DocumentationProperties.md): Render a documented type's data members (properties, getters/setters) as a scrollable table — one row per property.
 - [DocumentationReferences](ui/DocumentationReferences.md): Render a type alias's referenced type names as a scrollable table — one row per referenced type.
 - [DocumentationReturns](ui/DocumentationReturns.md): Render a documented symbol's @returns entries as a scrollable table — one row per return type.
@@ -231,12 +232,13 @@ The components below are listed in the index following this page; this is the sh
 - [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when none of href, onClick or disabled is provided, e.g. a plain tag.
 - [SubmitButton()](ui/SubmitButton.md): Submit button for a form that disables itself and shows a spinner while the form is busy.
 - [requireDialogs()](ui/requireDialogs.md): Read the current DialogsStore from the nearest <DialogsContext>.
-- [DocumentationApp()](ui/DocumentationApp.md): Documentation app.
 - [getDocumentationKindColor()](ui/getDocumentationKindColor.md): Get the raw colour variant for a documented symbol's kind, or undefined for an unknown kind.
 - [splitType()](ui/splitType.md): Split a type expression on | into its individual union members.
 - [formatPlaygroundHash()](ui/formatPlaygroundHash.md): Format code and CSS as a URL hash for the playground page or its frame, e.g. #code=…&css=….
 - [parsePlaygroundHash()](ui/parsePlaygroundHash.md): Parse a URL hash made by formatPlaygroundHash() back into code and CSS.
 - [formatPlaygroundCSS()](ui/formatPlaygroundCSS.md): Format CSS variables as a :root rule that you can paste into the playground CSS and change.
+- [insertPlaygroundSnippet()](ui/insertPlaygroundSnippet.md): Insert a TSX snippet into playground code, and merge the snippet's imports into the code's imports.
+- [insertPlaygroundText()](ui/insertPlaygroundText.md): Insert text on its own lines into playground code or CSS.
 - [callNotifiedForm()](ui/callNotifiedForm.md): Run a form submit callback and publish success/error notices based on its return or thrown value.
 - [awaitNotifiedForm()](ui/awaitNotifiedForm.md): Await a pending submit result and publish a success or error notice to a form once it settles.
 - [notifyThrownForm()](ui/notifyThrownForm.md): Notify the user about a value thrown during submit, storing string errors as form field messages.
@@ -365,7 +367,7 @@ The components below are listed in the index following this page; this is the sh
 - [DocumentationKindProps](ui/DocumentationKindProps.md): Props for DocumentationKind — a TagProps plus the documented symbol's kind.
 - [DocumentationLiveProps](ui/DocumentationLiveProps.md): Props for <DocumentationLive> — the code to show and run, plus an optional title.
 - [DocumentationParamsProps](ui/DocumentationParamsProps.md): Props for DocumentationParams — the parameter list to render, one row per parameter.
-- [DocumentationPlaygroundVariablesProps](ui/DocumentationPlaygroundVariablesProps.md): Props for <DocumentationPlaygroundVariables>.
+- [DocumentationPlaygroundInsertProps](ui/DocumentationPlaygroundInsertProps.md): Props for <DocumentationPlaygroundInsert>.
 - [DocumentationPropertiesProps](ui/DocumentationPropertiesProps.md): Props for DocumentationProperties — the data members of a class/interface/object-literal type to render, one row each.
 - [DocumentationReferencesProps](ui/DocumentationReferencesProps.md): Props for DocumentationReferences — the referenced type names to render, one row each.
 - [DocumentationReturnsProps](ui/DocumentationReturnsProps.md): Props for DocumentationReturns — the @returns entries to render, one row each.
@@ -375,6 +377,7 @@ The components below are listed in the index following this page; this is the sh
 - [PlaygroundCode](ui/PlaygroundCode.md): Code and CSS that the playground frame runs.
 - [PlaygroundVariable](ui/PlaygroundVariable.md): One CSS variable that you can set to change the look of shelving components.
 - [PlaygroundVariableGroup](ui/PlaygroundVariableGroup.md): A group of CSS variables that one CSS module owns, e.g. the --card-* variables of Card.module.css.
+- [PlaygroundComponent](ui/PlaygroundComponent.md): One shelving component that you can insert into the playground code.
 - [FieldProps](ui/FieldProps.md): Props for Field, a labelled wrapper around a form control.
 - [FormProps](ui/FormProps.md): Props for Form, the schema-driven form wrapper component.
 - [FormFooterProps](ui/FormFooterProps.md): Props for FormFooter, the submit-button-and-message footer for a form.
@@ -547,6 +550,7 @@ The components below are listed in the index following this page; this is the sh
 - [PLAYGROUND_PAGE_PATH](ui/PLAYGROUND_PAGE_PATH.md): Path of the playground page, relative to the docs site root.
 - [PLAYGROUND_HEIGHT_MESSAGE](ui/PLAYGROUND_HEIGHT_MESSAGE.md): Type of the message that the frame page posts to its parent with its content height, e.g. { type: PLAYGROUND_HEIGHT_MESSAGE, height: 320 }.
 - [PLAYGROUND_VARIABLES_PATH](ui/PLAYGROUND_VARIABLES_PATH.md): Path of the CSS variable index that the docs build writes, relative to the docs site root.
+- [PLAYGROUND_COMPONENTS_PATH](ui/PLAYGROUND_COMPONENTS_PATH.md): Path of the component index that the docs build writes, relative to the docs site root.
 - [FormContext](ui/FormContext.md): React context holding the current FormStore, provided by the Form component.
 - [LOADING_INPUT](ui/LOADING_INPUT.md): Input that is loading.
 - [LOADING](ui/LOADING.md): Shared loading spinner element with a stable key, ready to drop into Suspense fallbacks and lists.

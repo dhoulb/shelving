@@ -1,10 +1,11 @@
-# DocumentationApp()
+# DocumentationApp
 
-- Kind: function
+- Kind: component
 - Import: `import { DocumentationApp } from "shelving/ui";`
 
 Documentation app.
-- Build upon `<TreeApp>` to include a `<DocumentationSearchPage>` at its `/search` URL, and a `<DocumentationPlaygroundPage>` at its `/playground` URL.
+- Works like `<TreeApp>`, and adds a `<DocumentationSearchPage>` at its `/search` URL.
+- Adds a `<DocumentationPlaygroundPage>` at its `/playground` URL. The playground fills the whole window, so it renders outside the `<SidebarLayout>`.
 
 ## Signatures
 
@@ -13,7 +14,6 @@ DocumentationApp({
 	tree,
 	routes = {
 		"/search": DocumentationSearchPage,
-		[`/${PLAYGROUND_PAGE_PATH}`]: DocumentationPlaygroundPage,
 	},
 	sidebar = (
 		<TreeSidebar>

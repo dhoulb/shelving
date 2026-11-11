@@ -29,15 +29,12 @@ import { DocumentationFrame } from "shelving/ui";
 
 ## Styling
 
+The frame has no border, radius, or margin. It fills the width of its parent, so the parent sets the look around it (see `<DocumentationLive>`). The space around the preview comes from padding inside the frame page.
+
 | Variable | Styles | Default |
 |---|---|---|
-| `--documentation-frame-background` | Fill behind the frame before it loads | `var(--tint-100)` |
-| `--documentation-frame-border` | Border shorthand | `var(--stroke-normal) solid var(--tint-80)` |
+| `--documentation-frame-background` | Fill behind the frame before it loads | `white` |
 | `--documentation-frame-height` | Minimum height (one length) | `4rem` |
-| `--documentation-frame-radius` | Corner radius | `var(--radius-normal)` (16px) |
-| `--documentation-frame-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-
-Global tokens: `--tint-80`, `--tint-100`, `--stroke-normal`, `--radius-normal`, `--space-paragraph`.
 
 
 ## Signatures
