@@ -1,7 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Duration.module.css");
 
-/* Global CSS, not a CSS module yet — see dhoulb/shelving#259. */
 @layer defaults {
 	:root {
 		/* A percentage is of the snapshot's own size, so the old and new content sit edge to edge and never overlap. */
@@ -64,20 +63,33 @@
 	overflow: clip;
 }
 
+/* Longhands, not the `animation` shorthand: Bun rewrites `animation-name` to the hashed keyframes name but leaves a shorthand that holds a `var()` untouched. */
 ::view-transition-new(.slide-up) {
-	animation: slide-in-from-bottom var(--vertical-transition-duration) ease-in-out both;
+	animation-name: slide-in-from-bottom;
+	animation-duration: var(--vertical-transition-duration);
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
 }
 
 ::view-transition-old(.slide-up) {
-	animation: slide-out-to-top var(--vertical-transition-duration) ease-in-out both;
+	animation-name: slide-out-to-top;
+	animation-duration: var(--vertical-transition-duration);
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
 }
 
 ::view-transition-new(.slide-down) {
-	animation: slide-in-from-top var(--vertical-transition-duration) ease-in-out both;
+	animation-name: slide-in-from-top;
+	animation-duration: var(--vertical-transition-duration);
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
 }
 
 ::view-transition-old(.slide-down) {
-	animation: slide-out-to-bottom var(--vertical-transition-duration) ease-in-out both;
+	animation-name: slide-out-to-bottom;
+	animation-duration: var(--vertical-transition-duration);
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
 }
 
 /* Reduced motion: null the slide distance so the keyframes above degrade to an opacity-only crossfade (reduced-motion-safe), and disable the group's default positional morph. Unlayered so it wins over app-level overrides of the distance hook. */
