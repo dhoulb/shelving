@@ -18,7 +18,7 @@ A grid container that arranges its children in equal-width columns. Renders a `<
 
 ### Two columns of cards
 
-```tsx
+```tsx live
 import { Card, Grid, Paragraph } from "shelving/ui";
 
 <Grid gap="small">

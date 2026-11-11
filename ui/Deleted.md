@@ -17,7 +17,7 @@ Deleted text — renders a `<del>` element to mark content that has been removed
 
 ### Marking a removed value
 
-```tsx
+```tsx live
 import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 <Paragraph>

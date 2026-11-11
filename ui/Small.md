@@ -16,7 +16,7 @@ Small print — renders a `<small>` element for side comments and fine print suc
 
 ### Fine print after a statement
 
-```tsx
+```tsx live
 import { Paragraph, Small } from "shelving/ui";
 
 <Paragraph>

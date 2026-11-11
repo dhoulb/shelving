@@ -136,6 +136,8 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 ## Functions
 
 - [createMarkupRule()](markup/createMarkupRule.md): Create a typed MarkupRule from a NamedRegExp, a renderer, its contexts, and an optional priority.
+- [parseFencedInfo()](markup/parseFencedInfo.md): Parse the info string of a fenced code block into its language, flags, and title.
+- [createFencedRegExp()](markup/createFencedRegExp.md): Create the regular expression that matches a fenced code block.
 - [createBlockRegExp()](markup/createBlockRegExp.md): Create a RegExp that matches a block of content, wrapped between block-start and block-end boundaries.
 - [createLineRegExp()](markup/createLineRegExp.md): Create a RegExp that matches a single line of content, wrapped between line-start and line-end boundaries.
 - [createWordRegExp()](markup/createWordRegExp.md): Create a RegExp that matches a word of content, wrapped between word-start and word-end boundaries.
@@ -148,6 +150,7 @@ If the text reaches you straight from a `StringSchema`-validated field it is alr
 ## Interfaces
 
 - [MarkupRule](markup/MarkupRule.md): A single markup rule: a regular expression that matches a span of input plus a renderer that turns the match into an element.
+- [FencedInfo](markup/FencedInfo.md): Parts of the info string that follows the opening fence of a fenced code block.
 
 ## Types
 

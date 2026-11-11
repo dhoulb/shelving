@@ -18,7 +18,7 @@ A `<menu>` list of `<MenuItem>` children — the container for URL-aware navigat
 
 ## Usage
 
-```tsx
+```tsx live
 import { Menu, MenuItem } from "shelving/ui";
 
 <Menu>

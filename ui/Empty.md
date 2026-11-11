@@ -19,7 +19,7 @@ Message for a list with nothing in it. `<Empty>` shows its content centred and g
 
 ### Empty list
 
-```tsx
+```tsx live
 import { Empty, Paragraph } from "shelving/ui";
 
 <Empty>

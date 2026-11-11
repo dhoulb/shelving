@@ -19,7 +19,7 @@ The top-level page heading — renders an `<h1>`. It is the most prominent membe
 
 ### Page title
 
-```tsx
+```tsx live
 import { Title, Paragraph } from "shelving/ui";
 
 <Title>Account</Title>
@@ -28,7 +28,7 @@ import { Title, Paragraph } from "shelving/ui";
 
 ### Inside a panel header
 
-```tsx
+```tsx live
 import { Panel, Block, Title } from "shelving/ui";
 
 <Panel as="header" color="primary">

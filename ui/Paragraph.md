@@ -18,7 +18,7 @@ A block of body text — renders a `<p>`. The default container for running pros
 
 ### Body text
 
-```tsx
+```tsx live
 import { Paragraph } from "shelving/ui";
 
 <Paragraph>The best widget on the market.</Paragraph>
@@ -26,7 +26,7 @@ import { Paragraph } from "shelving/ui";
 
 ### With inline annotations
 
-```tsx
+```tsx live
 import { Paragraph, Strong, Link } from "shelving/ui";
 
 <Paragraph>

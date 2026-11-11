@@ -20,7 +20,7 @@ A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ord
 
 ### Unordered and ordered lists
 
-```tsx
+```tsx live
 import { List } from "shelving/ui";
 
 <List>{["Apples", "Oranges", "Pears"]}</List>

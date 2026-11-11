@@ -19,7 +19,7 @@ A section heading — renders an `<h2>`. It sits in the middle of the three-leve
 
 ### Section heading
 
-```tsx
+```tsx live
 import { Heading, Paragraph } from "shelving/ui";
 
 <Heading>Billing</Heading>
@@ -28,7 +28,7 @@ import { Heading, Paragraph } from "shelving/ui";
 
 ### The heading family together
 
-```tsx
+```tsx live
 import { Title, Heading, Subheading } from "shelving/ui";
 
 <Title>Account</Title>        {/* <h1> */}
@@ -38,7 +38,7 @@ import { Title, Heading, Subheading } from "shelving/ui";
 
 ### Coloured heading
 
-```tsx
+```tsx live
 import { Heading } from "shelving/ui";
 
 <Heading color="red">Danger zone</Heading>

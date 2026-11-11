@@ -19,7 +19,7 @@ A landmark content region — renders a `<section>` with block-level spacing and
 
 ### Structured page section
 
-```tsx
+```tsx live
 import { Section, Heading, Definitions } from "shelving/ui";
 
 <Section width="narrow">

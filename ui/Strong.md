@@ -17,7 +17,7 @@ Strong importance — renders a `<strong>` element for text that carries strong 
 
 ### Strong importance in body copy
 
-```tsx
+```tsx live
 import { Paragraph, Strong } from "shelving/ui";
 
 <Paragraph>

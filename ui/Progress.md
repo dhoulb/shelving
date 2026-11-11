@@ -25,7 +25,7 @@ A continuous horizontal progress bar for the completion of a task. Rendered as a
 
 ### Basic
 
-```tsx
+```tsx live
 import { Progress } from "shelving/ui";
 
 // 75% full.
@@ -34,7 +34,7 @@ import { Progress } from "shelving/ui";
 
 ### Custom range
 
-```tsx
+```tsx live
 import { Progress } from "shelving/ui";
 
 // 50% full — value 15 within the 10–20 range.
@@ -43,7 +43,7 @@ import { Progress } from "shelving/ui";
 
 ### Status and colour
 
-```tsx
+```tsx live
 import { Progress } from "shelving/ui";
 
 <Progress value={90} status="success" />
@@ -53,7 +53,7 @@ import { Progress } from "shelving/ui";
 
 ### Indeterminate
 
-```tsx
+```tsx live
 import { Progress } from "shelving/ui";
 
 // No `value` → looping flow animation for a task of unknown duration.

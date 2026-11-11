@@ -17,7 +17,7 @@ Highlighted text — renders a `<mark>` element to call attention to a run of te
 
 ### Highlighted search term
 
-```tsx
+```tsx live
 import { Mark } from "shelving/ui";
 
 <p>Files are stored in <Mark>UTF-8</Mark> encoding.</p>

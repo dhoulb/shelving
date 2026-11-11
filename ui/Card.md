@@ -24,7 +24,7 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 
 ### Static card
 
-```tsx
+```tsx live
 import { Card, Subheading, Paragraph } from "shelving/ui";
 
 <Card>
@@ -35,7 +35,7 @@ import { Card, Subheading, Paragraph } from "shelving/ui";
 
 ### Navigable card
 
-```tsx
+```tsx live
 import { Card, Subheading, Paragraph } from "shelving/ui";
 
 // The entire card is a link; `title` labels the overlay for screen readers.
@@ -47,7 +47,7 @@ import { Card, Subheading, Paragraph } from "shelving/ui";
 
 ### Status and colour
 
-```tsx
+```tsx live
 import { Card, Subheading } from "shelving/ui";
 
 <Card status="error"><Subheading>Couldn't load</Subheading></Card>
@@ -56,7 +56,7 @@ import { Card, Subheading } from "shelving/ui";
 
 ### Shadow
 
-```tsx
+```tsx live
 import { Card, Subheading } from "shelving/ui";
 
 // Raise a card a little or a lot.

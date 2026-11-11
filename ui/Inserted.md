@@ -17,7 +17,7 @@ Inserted text — renders an `<ins>` element to mark content that has been added
 
 ### Marking an added value
 
-```tsx
+```tsx live
 import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 <Paragraph>
