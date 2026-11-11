@@ -6,6 +6,7 @@ import { isAsync } from "../../util/async.js";
 import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
+import { requestDialogClose } from "../dialog/Dialog.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
@@ -89,8 +90,8 @@ export function Form({
 				// Submit the form to the callback.
 				const result = await store.submit(callNotifiedForm, store, form, onSubmit, e);
 
-				// Close the parent dialog on successful submit.
-				if (result) dialog?.close();
+				// Close the parent dialog on successful submit, through its `cancel` event so a `<Dialog>` can animate out.
+				if (result && dialog) requestDialogClose(dialog);
 			}}
 			className={getClass(getBlockClass(props), className)}
 			noValidate={true}
