@@ -1,0 +1,106 @@
+@import url("../style/layers.css");
+@import url("../style/Color.module.css");
+@import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
+
+/*
+ * Full-page playground: the editor panel on the left, the preview on the right, and a drag handle between them.
+ * The page owns the whole viewport, so the document does not scroll — each pane scrolls on its own.
+ */
+
+@layer components {
+	html:has(.playground),
+	html:has(.playground) body {
+		margin: 0;
+		block-size: 100dvh;
+		overflow: hidden;
+	}
+
+	.playground {
+		/* Box */
+		position: relative;
+		display: grid;
+		grid-template-columns: var(--documentation-playground-split, 40%) minmax(0, 1fr);
+		block-size: 100dvh;
+
+		/* Style */
+		background: var(--documentation-playground-background, white);
+
+		/* Stack the panes on a narrow screen. */
+		@media (width < 50rem) {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+		}
+	}
+
+	.editor {
+		/* Box */
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-small);
+		min-inline-size: 0;
+		padding-block: var(--documentation-playground-padding, var(--space-normal));
+		padding-inline: var(--documentation-playground-indent, var(--space-normal));
+		overflow: auto;
+
+		/* Style */
+		background: var(--documentation-playground-editor-background, var(--tint-95));
+
+		/* The editor fields fill the panel, with no outer margins of their own. */
+		& > * {
+			margin-block: 0;
+		}
+	}
+
+	.preview {
+		/* Box */
+		display: block;
+		block-size: 100%;
+		min-block-size: 0;
+	}
+
+	/* An invisible handle on the edge between the panes. It shows a thin line only while you hover or drag it. */
+	.handle {
+		/* Box */
+		position: absolute;
+		inset-block: 0;
+		inset-inline-start: var(--documentation-playground-split, 40%);
+		inline-size: var(--documentation-playground-handle, 0.75rem);
+		translate: -50% 0;
+		z-index: 1;
+		margin: 0;
+		border: 0;
+
+		/* Style */
+		cursor: col-resize;
+		touch-action: none;
+		outline: none;
+
+		&::after {
+			content: "";
+			position: absolute;
+			inset-block: 0;
+			inset-inline-start: 50%;
+			inline-size: var(--stroke-thick);
+			translate: -50% 0;
+			background: var(--documentation-playground-handle-color, var(--color-focus));
+			opacity: 0;
+			transition: opacity 0.15s;
+		}
+
+		&:hover::after,
+		&:focus-visible::after,
+		&.dragging::after {
+			opacity: 1;
+		}
+
+		@media (width < 50rem) {
+			display: none;
+		}
+	}
+
+	/* While dragging, the preview must not take the pointer, or the drag would stop over it. */
+	.dragging ~ .preview {
+		pointer-events: none;
+	}
+}
