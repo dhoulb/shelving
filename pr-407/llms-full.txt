@@ -20537,6 +20537,11 @@ The components below are listed in the index following this page; this is the sh
 - [RouteContext](ui/RouteContext.md): React context holding the RouteState of the current page, provided by <Router> and <RouteCache>.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
+- [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.
+- [SLIDE_RIGHT_TRANSITION_CLASS](ui/SLIDE_RIGHT_TRANSITION_CLASS.md): View transition class that slides content right: the new content comes in from the right and the old content leaves to the left.
+- [SLIDE_LEFT_TRANSITION_CLASS](ui/SLIDE_LEFT_TRANSITION_CLASS.md): View transition class that slides content left: the new content comes in from the left and the old content leaves to the right.
+- [SLIDE_DOWN_TRANSITION_CLASS](ui/SLIDE_DOWN_TRANSITION_CLASS.md): View transition class that slides content down: the new content comes in from the top and the old content leaves to the bottom.
+- [SLIDE_UP_TRANSITION_CLASS](ui/SLIDE_UP_TRANSITION_CLASS.md): View transition class that slides content up: the new content comes in from the bottom and the old content leaves to the top.
 - [TreeContext](ui/TreeContext.md): React context holding a flattened key → element map of the surrounding tree(s).
 - [TREE_CODE_RULE](ui/TREE_CODE_RULE.md): Markup rule that renders an inline code span as a tree-resolved <TreeLink> instead of a plain <code>.
 - [TREE_MARKUP_RULES](ui/TREE_MARKUP_RULES.md): Default markup rules with the inline-code rule swapped for TREE_CODE_RULE — every backtick span auto-links to its documented token.
@@ -35531,6 +35536,19 @@ CollapseTransition(props: CollapseTransitionProps): ReactElement
 
 ---
 
+# FADE_TRANSITION_CLASS
+
+- Kind: constant
+- Import: `import { FADE_TRANSITION_CLASS } from "shelving/ui";`
+
+View transition class that fades content in and out.
+
+- Pass it to React's `<ViewTransition>` (for example `enter` or `exit`) to use this animation without the component.
+- Also adds the plain global `fade` class, so app CSS can target it with `::view-transition-group(.fade)`.
+
+
+---
+
 # FadeTransitionProps
 
 - Kind: interface
@@ -35577,6 +35595,19 @@ function Panel({ visible }: { visible: boolean }) {
 }
 ```
 
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `FADE_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { FADE_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
+```
+
 ## Styling
 
 | Variable | Styles | Default |
@@ -35603,6 +35634,32 @@ FadeTransition(props: FadeTransitionProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
+
+
+---
+
+# SLIDE_RIGHT_TRANSITION_CLASS
+
+- Kind: constant
+- Import: `import { SLIDE_RIGHT_TRANSITION_CLASS } from "shelving/ui";`
+
+View transition class that slides content right: the new content comes in from the right and the old content leaves to the left.
+
+- Pass it to React's `<ViewTransition>` (for example `enter` or `exit`) to use this animation without the component.
+- Also adds the plain global `slide-right` class, so app CSS can target it with `::view-transition-group(.slide-right)`.
+
+
+---
+
+# SLIDE_LEFT_TRANSITION_CLASS
+
+- Kind: constant
+- Import: `import { SLIDE_LEFT_TRANSITION_CLASS } from "shelving/ui";`
+
+View transition class that slides content left: the new content comes in from the left and the old content leaves to the right.
+
+- Pass it to React's `<ViewTransition>` (for example `enter` or `exit`) to use this animation without the component.
+- Also adds the plain global `slide-left` class, so app CSS can target it with `::view-transition-group(.slide-left)`.
 
 
 ---
@@ -35665,6 +35722,19 @@ import { HorizontalTransition, Navigation, Router } from "shelving/ui";
     <Router routes={ROUTES}/>
   </HorizontalTransition>
 </Navigation>
+```
+
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `SLIDE_RIGHT_TRANSITION_CLASS` and `SLIDE_LEFT_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { SLIDE_RIGHT_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={SLIDE_RIGHT_TRANSITION_CLASS} exit={SLIDE_RIGHT_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
 ```
 
 ## Styling
@@ -35978,6 +36048,32 @@ setTransitionType("forward")
 
 ---
 
+# SLIDE_DOWN_TRANSITION_CLASS
+
+- Kind: constant
+- Import: `import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";`
+
+View transition class that slides content down: the new content comes in from the top and the old content leaves to the bottom.
+
+- Pass it to React's `<ViewTransition>` (for example `enter` or `exit`) to use this animation without the component.
+- Also adds the plain global `slide-down` class, so app CSS can target it with `::view-transition-group(.slide-down)`.
+
+
+---
+
+# SLIDE_UP_TRANSITION_CLASS
+
+- Kind: constant
+- Import: `import { SLIDE_UP_TRANSITION_CLASS } from "shelving/ui";`
+
+View transition class that slides content up: the new content comes in from the bottom and the old content leaves to the top.
+
+- Pass it to React's `<ViewTransition>` (for example `enter` or `exit`) to use this animation without the component.
+- Also adds the plain global `slide-up` class, so app CSS can target it with `::view-transition-group(.slide-up)`.
+
+
+---
+
 # VerticalTransitionProps
 
 - Kind: interface
@@ -36033,6 +36129,19 @@ import { VerticalTransition } from "shelving/ui";
 <VerticalTransition>
   <Router routes={ROUTES}/>
 </VerticalTransition>
+```
+
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `SLIDE_DOWN_TRANSITION_CLASS` and `SLIDE_UP_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={SLIDE_DOWN_TRANSITION_CLASS} exit={SLIDE_DOWN_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
 ```
 
 ## Styling
