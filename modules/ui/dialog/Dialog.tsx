@@ -2,11 +2,13 @@ import { type MouseEvent, memo, type ReactElement, Suspense, ViewTransition } fr
 import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
+import FADE_TRANSITION_CSS from "../transition/FadeTransition.module.css";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
-import "../transition/FadeTransition.css";
 import styles from "./Dialog.module.css";
 import modalStyles from "./Modal.module.css";
+
+const FADE_TRANSITION_CLASS = getModuleClass(FADE_TRANSITION_CSS, "fade");
 
 /**
  * Props for `<Dialog>` — optional `children` content and an `onClose` callback.
@@ -36,7 +38,7 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	return (
 		<Suspense fallback={null}>
 			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. No update transition: the page ignores taps while a view transition runs, so a change inside an open dialog must not start one. */}
-			<ViewTransition default="none" enter="fade" exit="fade">
+			<ViewTransition default="none" enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
 				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
 				<dialog
 					ref={_showModal}

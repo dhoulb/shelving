@@ -1,6 +1,10 @@
 import type { ReactElement } from "react";
-import "./HorizontalTransition.css";
+import { getModuleClass } from "../util/css.js";
+import HORIZONTAL_TRANSITION_CSS from "./HorizontalTransition.module.css";
 import { Transition, type TransitionProps } from "./Transition.js";
+
+const HORIZONTAL_TRANSITION_FORWARD_CLASS = getModuleClass(HORIZONTAL_TRANSITION_CSS, "slide-right");
+const HORIZONTAL_TRANSITION_BACK_CLASS = getModuleClass(HORIZONTAL_TRANSITION_CSS, "slide-left");
 
 /**
  * Props for the `HorizontalTransition` component — the shared transition variant props.
@@ -16,5 +20,12 @@ export interface HorizontalTransitionProps extends TransitionProps {}
  * @see https://shelving.cc/ui/HorizontalTransition
  */
 export function HorizontalTransition(props: HorizontalTransitionProps): ReactElement {
-	return <Transition default="slide-right" forward="slide-right" back="slide-left" {...props} />;
+	return (
+		<Transition
+			default={HORIZONTAL_TRANSITION_FORWARD_CLASS}
+			forward={HORIZONTAL_TRANSITION_FORWARD_CLASS}
+			back={HORIZONTAL_TRANSITION_BACK_CLASS}
+			{...props}
+		/>
+	);
 }

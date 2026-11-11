@@ -44,7 +44,7 @@
 
 /*
  * A new notice slides in from the side of its corner (or from the edge for a centred list), and a closed notice slides out the same way.
- * - `:only-child` stops Safari from also starting the animation on the missing image, which stops it later on the real one (see `FadeTransition.css`).
+ * - `:only-child` stops Safari from also starting the animation on the missing image, which stops it later on the real one (see `FadeTransition.module.css`).
  * - Longhands, not the `animation` shorthand: Bun rewrites `animation-name` to the hashed keyframes name but leaves a shorthand that holds a `var()` untouched.
  */
 ::view-transition-new(.notice-left):only-child {
