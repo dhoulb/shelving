@@ -23,7 +23,7 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - The `radius` variant sets the corner radius. On a pinned panel, corners that touch a screen edge stay square.
 - It has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width up to `--modal-width`, and centred on a wider screen. A left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
-- A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place.
+- A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place. `Modal` has no transition of its own: it animates only when its `<Dialog>` does (see `Dialog`).
 
 ## Usage
 

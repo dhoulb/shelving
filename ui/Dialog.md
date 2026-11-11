@@ -7,9 +7,9 @@ Modal `<dialog>` element that opens on mount and includes a close button.
 
 - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, the close button, or the Escape key.
 - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
-- The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
+- It knows nothing about transitions. It fades in and out only when the update that mounts or unmounts it is a transition, e.g. from `<Dialogs>` or your own `startTransition()`. A `<Modal>` pinned to an edge then slides in its own layer.
 - A change inside an open dialog (new content, a Suspense reveal) runs no view transition. The page ignores taps while one runs.
-- With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
+- With `onClose`, it is declarative: a close request calls `onClose()`, and the dialog stays open until it unmounts, so a view transition can capture it as it leaves.
 - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
 - Wraps content in `<Suspense>` so lazy children can stream in.
 
@@ -23,10 +23,13 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 - Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is `--dialog-width` wide (never wider than the screen) and centred on the screen. A centred `<Modal>` fills it. Content taller than the screen starts at the top, and the dialog scrolls.
 - While a dialog is open, the page behind it does not scroll. A scroll inside the dialog never passes on to the page.
 - `Dialog` only dims the page. Its text is white (`--tint-100`) so it reads on the dark overlay. Wrap the content in `<Modal>` to give it a panel with dark text on a light surface.
-- `onClose` fires when the user closes the dialog. It must unmount the `Dialog`: clear the React state that mounts it, or (when pushed via a store) remove it from the list. `Dialog` calls `onClose` inside `startTransition()`, and the dialog stays open until it unmounts.
-- The dialog animates with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). The whole dialog fades in and out as one layer. A `<Modal>` pinned to an edge takes its own layer and slides.
+- `Dialog` is declarative. While it is mounted, it is open. When the user asks to close it, it calls `onClose` and stays open until it unmounts. `onClose` must unmount it: clear the React state that mounts it, or (when pushed via a store) remove it from the list.
+- To close a dialog from your own code, call `requestDialogClose()` on the `<dialog>` element, not `dialog.close()`. `requestDialogClose()` goes through `onClose` like the Escape key, so the dialog can animate out. `dialog.close()` closes it at once. A successful `<Form>` submit inside a dialog uses `requestDialogClose()`.
+- The dialog can animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). The whole dialog fades in and out as one layer. A `<Modal>` pinned to an edge takes its own layer and slides.
 - A change inside an open dialog (new content, a Suspense reveal) runs no view transition, so the dialog never ignores a tap while its content changes. The page ignores taps while a view transition runs.
-- A view transition only runs for a React transition update. `DialogsStore` and `onClose` do this for you. To animate a declarative `Dialog` as it opens, set the state that mounts it inside `startTransition()`.
+- `Dialog` knows nothing about transitions. React runs a view transition only for an update made inside `startTransition()`, so the code that mounts and unmounts the dialog decides if it animates:
+  - `<Dialogs>` renders a `DialogsStore` inside transitions, so a dialog opened with `DialogsStore.show()` animates in and out for you.
+  - A `Dialog` you mount yourself appears and goes at once, unless you set the state that mounts and unmounts it inside `startTransition()`. See the declarative example below.
 - A browser without view transitions shows and hides the dialog at once.
 - Pair with `DialogsStore`, `<DialogsContext>`, and `<Dialogs>` to open dialogs imperatively from anywhere in the app.
 
@@ -50,9 +53,9 @@ function ConfirmDelete({ onConfirm, onClose }: { onConfirm: () => void; onClose:
   );
 }
 
-// In the parent. Open inside `startTransition()` so the dialog animates in.
+// In the parent. Open and close inside `startTransition()` so the dialog animates in and out.
 <button type="button" onClick={() => startTransition(() => setShowConfirm(true))}>Delete</button>
-{showConfirm && <ConfirmDelete onConfirm={handleDelete} onClose={() => setShowConfirm(false)} />}
+{showConfirm && <ConfirmDelete onConfirm={handleDelete} onClose={() => startTransition(() => setShowConfirm(false))} />}
 ```
 
 ### Imperative
@@ -75,7 +78,7 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 }
 ```
 
-`dialogs.show()` wraps the content in a `<Dialog>` for you, so you pass plain children rather than a `<Dialog>` element. It does not add a `<Modal>`; include one in the content if you want a panel.
+`dialogs.show()` wraps the content in a `<Dialog>` for you, so you pass plain children rather than a `<Dialog>` element. It does not add a `<Modal>`; include one in the content if you want a panel. `<Dialogs>` renders the list inside transitions, so the dialog animates in and out with no `startTransition()` of your own.
 
 ## Styling
 

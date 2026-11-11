@@ -18,4 +18,4 @@ Props for `<Dialog>` — optional `children` content and an `onClose` callback.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `onClose` | `Callback` | Called when the user closes the dialog. It must unmount the `<Dialog>`, and it runs inside `startTransition()` so the dialog animates out. Optional. |
+| `onClose` | `Callback` | Called when the user asks to close the dialog. It must unmount the `<Dialog>`. Unmount it inside `startTransition()` to animate it out (`<Dialogs>` does this for you). Optional. |

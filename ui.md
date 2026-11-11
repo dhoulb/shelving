@@ -231,6 +231,7 @@ The components below are listed in the index following this page; this is the sh
 - [ButtonClickable()](ui/ButtonClickable.md): Render a <button> element that runs its onClick handler through a BusyStore and shows a loading spinner while busy.
 - [SpanClickable()](ui/SpanClickable.md): Render a non-interactive <span> element, used as the fallback when none of href, onClick or disabled is provided, e.g. a plain tag.
 - [SubmitButton()](ui/SubmitButton.md): Submit button for a form that disables itself and shows a spinner while the form is busy.
+- [requestDialogClose()](ui/requestDialogClose.md): Ask a <dialog> element to close, the same way as the Escape key.
 - [requireDialogs()](ui/requireDialogs.md): Read the current DialogsStore from the nearest <DialogsContext>.
 - [getDocumentationKindColor()](ui/getDocumentationKindColor.md): Get the raw colour variant for a documented symbol's kind, or undefined for an unknown kind.
 - [splitType()](ui/splitType.md): Split a type expression on | into its individual union members.

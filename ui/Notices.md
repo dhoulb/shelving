@@ -17,7 +17,7 @@ Renders the global list of active notices and subscribes to incoming `"notice"` 
 - Notices auto-dismiss after a short delay unless they carry a `"loading"` status.
 - Backed by the `NOTICES` store singleton; for advanced use you can keep a reference to a notice to update or close it manually.
 - The list shows in the bottom-right corner. Set `position` to `"top-left"`, `"top-center"`, `"top-right"`, `"bottom-left"`, `"bottom-center"`, or `"bottom-right"` to choose a different place.
-- Notices animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). A new notice slides in from the side of its corner, and a closed notice slides out to that side. In a centred list, notices slide in and out from the top or bottom edge. The other notices move to their new places. A notice that changes in place (for example from loading to success) changes at once, with no animation.
+- Notices animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). `Notices` renders the store inside transitions, so a notice animates with no `startTransition()` of your own. A single `<Notice>` knows nothing about transitions, the same as `<Dialog>`. A new notice slides in from the side of its corner, and a closed notice slides out to that side. In a centred list, notices slide in and out from the top or bottom edge. The other notices move to their new places. A notice that changes in place (for example from loading to success) changes at once, with no animation.
 - With reduced motion, notices fade in and out in place, and the others move at once. A browser without view transitions shows the changes at once.
 
 ## Usage
