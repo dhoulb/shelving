@@ -563,6 +563,11 @@ The components below are listed in the index following this page; this is the sh
 - [RouteContext](ui/RouteContext.md): React context holding the RouteState of the current page, provided by <Router> and <RouteCache>.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
+- [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.
+- [SLIDE_RIGHT_TRANSITION_CLASS](ui/SLIDE_RIGHT_TRANSITION_CLASS.md): View transition class that slides content right: the new content comes in from the right and the old content leaves to the left.
+- [SLIDE_LEFT_TRANSITION_CLASS](ui/SLIDE_LEFT_TRANSITION_CLASS.md): View transition class that slides content left: the new content comes in from the left and the old content leaves to the right.
+- [SLIDE_DOWN_TRANSITION_CLASS](ui/SLIDE_DOWN_TRANSITION_CLASS.md): View transition class that slides content down: the new content comes in from the top and the old content leaves to the bottom.
+- [SLIDE_UP_TRANSITION_CLASS](ui/SLIDE_UP_TRANSITION_CLASS.md): View transition class that slides content up: the new content comes in from the bottom and the old content leaves to the top.
 - [TreeContext](ui/TreeContext.md): React context holding a flattened key → element map of the surrounding tree(s).
 - [TREE_CODE_RULE](ui/TREE_CODE_RULE.md): Markup rule that renders an inline code span as a tree-resolved <TreeLink> instead of a plain <code>.
 - [TREE_MARKUP_RULES](ui/TREE_MARKUP_RULES.md): Default markup rules with the inline-code rule swapped for TREE_CODE_RULE — every backtick span auto-links to its documented token.

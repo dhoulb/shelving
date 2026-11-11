@@ -14,12 +14,15 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
-- During the slide, the snapshots paint above fixed elements such as a bottom bar. To keep a fixed element on top, give it its own `view-transition-name` and put the slide groups below it:
+- During the slide, the snapshots paint above fixed elements such as a bottom bar. To keep a fixed element on top, give it its own `view-transition-name` and raise its group:
 
   ```css
-  ::view-transition-group(.slide-up),
-  ::view-transition-group(.slide-down) {
-    z-index: -1;
+  .bottom-bar {
+    view-transition-name: bottom-bar;
+  }
+
+  ::view-transition-group(bottom-bar) {
+    z-index: 1;
   }
   ```
 
@@ -33,6 +36,19 @@ import { VerticalTransition } from "shelving/ui";
 <VerticalTransition>
   <Router routes={ROUTES}/>
 </VerticalTransition>
+```
+
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `SLIDE_DOWN_TRANSITION_CLASS` and `SLIDE_UP_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={SLIDE_DOWN_TRANSITION_CLASS} exit={SLIDE_DOWN_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
 ```
 
 ## Styling
