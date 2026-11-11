@@ -19,8 +19,8 @@ ${a.map(({name:l,value:g,description:v})=>`  ${l}: ${g};${v?` /* ${v.replaceAll(
 `)}))}function Fu(a,n){let l=n.trim().toLowerCase();if(!l)return a;return a.map((g)=>g.name.toLowerCase().includes(l)?g:{...g,all:void 0,items:g.items.filter(({name:v,title:S})=>`${v} ${S??""}`.toLowerCase().includes(l))}).filter(({items:g})=>g.length)}function Fs({type:a,onInsert:n,onClose:l}){let[g,v]=zs(""),S=Bs(Cs),P=Bs(bs),D=(a==="code"?S:P)&&(a==="code"?Ou(S??[]):zu(P??[])),I=D&&Fu(D,g),L=(z)=>{n(z),l()};return gt(Bo,{onClose:l,children:Os(Ri,{right:!0,children:[gt(dr,{children:a==="code"?"Insert a component":"Insert a variable"}),gt(Fe,{name:"search",title:"Search",placeholder:a==="code"?"Search, e.g. button or row…":"Search, e.g. card or radius…",value:g,onValue:(z)=>v(z??"")}),!I?gt(Le,{children:"Loading…"}):!I.length?gt(Le,{children:"Nothing matches your search."}):I.map(({name:z,items:U,all:j})=>gt(Xn,{title:`${z} (${U.length})`,open:a==="code"||!!g.trim(),children:Os(re,{left:!0,wrap:!0,gap:"xsmall",children:[U.map((F)=>gt(J,{small:!0,title:F.title,onClick:()=>L(F.text),children:F.name},F.name)),j&&gt(J,{small:!0,plain:!0,onClick:()=>L(j),children:"Insert all"})]})},z))]})})}var pr={playground:"playground_lxwgOg",editor:"editor_lxwgOg",preview:"preview_lxwgOg",handle:"handle_lxwgOg",dragging:"dragging_lxwgOg"};import{jsx as Ne,jsxs as da}from"react/jsx-runtime";var ju=e(pr,"playground"),Gu=e(pr,"editor"),Hu=e(pr,"preview"),qu=e(pr,"handle"),$u=e(pr,"dragging"),Wu="Playground",sn=`import { useState } from "react";
 import { DATA, EMAIL, BOOLEAN, StringSchema } from "shelving/schema";
 import {
-  Block, Button, Card, Definitions, Details, Form, Grid, Heading, Notice,
-  Panel, Paragraph, Row, Subheading, Table, Tag, Title,
+  App, Block, Button, Card, Definitions, Details, Divider, Form, Grid, Heading,
+  Panel, Paragraph, Row, Section, Subheading, Table, Tag, Title,
 } from "shelving/ui";
 
 const SIGNUP = DATA({
@@ -39,69 +39,74 @@ function Counter() {
   );
 }
 
-<Panel color="primary" padding="large">
-  <Block width="narrow">
-    <Title>Shelving playground</Title>
-    <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
-    <Counter />
-  </Block>
-</Panel>
+<App title="Shelving Playground" url="https://shelving.cc">
 
-<Panel padding="large">
-  <Block width="narrow">
+  <Panel color="primary" padding="xxlarge">
+    <Block width="narrow">
+      <Title>Shelving playground</Title>
+      <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
+      <Counter />
+    </Block>
+  </Panel>
+
+  <Block width="narrow" space="xxlarge" indent="normal">
     <Heading>Projects</Heading>
-    <Grid gap="small">
-      <Card shadow="small">
+    <Grid>
+      <Card>
         <Subheading>Trail log</Subheading>
         <Paragraph>Record runs and rides offline, then sync.</Paragraph>
         <Tag status="success">Live</Tag>
       </Card>
-      <Card shadow="small">
+      <Card>
         <Subheading>Recipe box</Subheading>
         <Paragraph>Shared shopping lists for the whole house.</Paragraph>
         <Tag status="warning">Beta</Tag>
       </Card>
-      <Card shadow="small">
+      <Card>
         <Subheading>Tide tables</Subheading>
         <Paragraph>Local tide times, with alerts for low water.</Paragraph>
         <Tag>Draft</Tag>
       </Card>
     </Grid>
   </Block>
-</Panel>
 
-<Panel color="primary" padding="large">
-  <Block width="narrow">
-    <Heading>Team</Heading>
-    <Table>
-      <thead>
-        <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
-        <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
-        <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
-      </tbody>
-    </Table>
-    <Definitions>
-      <dt>Created</dt><dd>3 March 2026</dd>
-      <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
-    </Definitions>
-    <Notice status="warning">Code can import from shelving, react, and react-dom only.</Notice>
-  </Block>
-</Panel>
+  <Panel color="primary" padding="xxlarge">
+    <Block width="narrow">
+      <Heading>Team</Heading>
+      <Table>
+        <thead>
+          <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
+          <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
+          <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
+        </tbody>
+      </Table>
+      <Definitions>
+        <dt>Created</dt><dd>3 March 2026</dd>
+        <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
+      </Definitions>
+    </Block>
+  </Panel>
 
-<Panel padding="large">
-  <Block width="narrow">
+  <Section width="narrow" space="xxlarge" indent="normal">
     <Heading>Join the beta</Heading>
-    <Card shadow="small">
+    <Card padding="xlarge" indent="xlarge">
       <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
     </Card>
+  </Section>
+
+  <Divider />
+
+  <Section width="narrow" space="xxlarge" indent="normal">
+    <Heading>FAQ</Heading>
     <Details title="What can I change?">
       <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
     </Details>
-  </Block>
-</Panel>
+  </Section>
+
+</App>
 `,ln=`/* Change any shelving variable here. Press + to add more. */
 :root {
   --color-primary: var(--color-purple);
