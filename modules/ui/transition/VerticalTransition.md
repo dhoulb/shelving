@@ -33,6 +33,19 @@ import { VerticalTransition } from "shelving/ui";
 </VerticalTransition>
 ```
 
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `SLIDE_DOWN_TRANSITION_CLASS` and `SLIDE_UP_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={SLIDE_DOWN_TRANSITION_CLASS} exit={SLIDE_DOWN_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
+```
+
 ## Styling
 
 | Variable | Styles | Default |

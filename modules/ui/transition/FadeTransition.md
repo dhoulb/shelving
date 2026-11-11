@@ -22,6 +22,19 @@ function Panel({ visible }: { visible: boolean }) {
 }
 ```
 
+## Use the class without the component
+
+The CSS is a CSS module, so its class names are hashed. To use the same animation on your own `<ViewTransition>`, import `FADE_TRANSITION_CLASS`. Each one also holds a plain global class name, so your CSS can still target it.
+
+```tsx
+import { ViewTransition } from "react";
+import { FADE_TRANSITION_CLASS } from "shelving/ui";
+
+<ViewTransition enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
+  <div className="panel">…</div>
+</ViewTransition>
+```
+
 ## Styling
 
 | Variable | Styles | Default |
