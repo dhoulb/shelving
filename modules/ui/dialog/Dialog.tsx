@@ -1,4 +1,4 @@
-import { type MouseEvent, memo, type ReactElement, Suspense, startTransition, ViewTransition } from "react";
+import { type MouseEvent, memo, type ReactElement, Suspense, ViewTransition } from "react";
 import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
@@ -14,7 +14,7 @@ import modalStyles from "./Modal.module.css";
  * @see https://shelving.cc/ui/DialogProps
  */
 export interface DialogProps extends OptionalChildProps {
-	/** Called when the user closes the dialog. It must unmount the `<Dialog>`, and it runs inside `startTransition()` so the dialog animates out. */
+	/** Called when the user asks to close the dialog. It must unmount the `<Dialog>`. Unmount it inside `startTransition()` to animate it out (`<Dialogs>` does this for you). */
 	onClose?: Callback;
 }
 
@@ -23,9 +23,9 @@ export interface DialogProps extends OptionalChildProps {
  *
  * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, the close button, or the Escape key.
  * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
- * - The whole dialog fades in and out in one view transition. A `<Modal>` pinned to an edge leaves that layer and slides in its own.
+ * - It knows nothing about transitions. It fades in and out only when the update that mounts or unmounts it is a transition, e.g. from `<Dialogs>` or your own `startTransition()`. A `<Modal>` pinned to an edge then slides in its own layer.
  * - A change inside an open dialog (new content, a Suspense reveal) runs no view transition. The page ignores taps while one runs.
- * - With `onClose`, a close request calls `onClose()` and the dialog stays open until it unmounts, so the view transition can capture it as it leaves.
+ * - With `onClose`, it is declarative: a close request calls `onClose()`, and the dialog stays open until it unmounts, so a view transition can capture it as it leaves.
  * - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
  *
@@ -43,10 +43,10 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 					className={getModuleClass(styles, "dialog")}
 					onClick={_closeOnClick}
 					onCancel={e => {
-						// Keep the dialog open and let the parent unmount it in a transition. An uncancelable request closes natively and fires `onClose` from the `close` event.
+						// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
 						if (!onClose || !e.cancelable) return;
 						e.preventDefault();
-						startTransition(() => onClose());
+						onClose();
 					}}
 					onClose={onClose}
 					{...props}
@@ -83,14 +83,21 @@ function _closeOnClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>)
 	// Ignore taps in a nested dialog. React events bubble through the React tree, so they can reach an outer dialog.
 	if (target.closest("dialog") !== currentTarget) return;
 
-	if (target.closest(CLOSE_SELECTOR) || !target.closest(KEEP_SELECTOR)) _requestClose(currentTarget);
+	if (target.closest(CLOSE_SELECTOR) || !target.closest(KEEP_SELECTOR)) requestDialogClose(currentTarget);
 }
 
 /**
- * Ask a `<dialog>` to close: fire a cancelable `cancel` event, so `<Dialog>` can run `onClose` in a transition. Close it at once only when nothing cancels the event.
- * - Not `requestClose()`: some browsers lack it, and Safari fires its `cancel` event as not cancelable. Both close the dialog at once, so it vanishes with no fade.
+ * Ask a `<dialog>` element to close, the same way as the Escape key.
+ * - Fires a cancelable `cancel` event, so a `<Dialog>` keeps itself open and calls its `onClose`. Its parent then unmounts it, and it can animate out.
+ * - Closes the dialog at once only if nothing cancels the event.
+ * - Use it instead of `dialog.close()`, which closes at once and fires no `cancel` event, so the dialog vanishes with no transition.
+ * - Not `requestClose()`: some browsers lack it, and Safari fires its `cancel` event as not cancelable. Both close the dialog at once.
+ *
+ * @param dialog The `<dialog>` element to close.
+ * @example requestDialogClose(dialog) // Like pressing Escape.
+ * @see https://shelving.cc/ui/requestDialogClose
  */
-function _requestClose(dialog: HTMLDialogElement): void {
+export function requestDialogClose(dialog: HTMLDialogElement): void {
 	if (dialog.dispatchEvent(new Event("cancel", { cancelable: true }))) dialog.close();
 }
 
@@ -129,5 +136,5 @@ export function DialogCloseButton({
 
 function _closeOnButtonClick({ currentTarget }: MouseEvent<HTMLButtonElement>): void {
 	const dialog = currentTarget.closest("dialog");
-	if (dialog) _requestClose(dialog);
+	if (dialog) requestDialogClose(dialog);
 }
