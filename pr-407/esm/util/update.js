@@ -1,1 +1,0 @@
-import{ur,Ke}from"../chunk-5m56f9wx.js";import"../chunk-cbgyefc2.js";import"../chunk-2rbwm51f.js";import"../chunk-6aa7yyq8.js";import"../chunk-mds6my0z.js";import"../chunk-sqep5xpn.js";import"../chunk-fmb8c6z5.js";export{ur as getUpdates,Ke as updateData};
