@@ -3,6 +3,7 @@ import { type DictionaryItem, getDictionaryItems, type ImmutableDictionary } fro
 import type { AnyCaller } from "../../util/function.js";
 import { type PossibleLink, requireLink } from "../../util/link.js";
 import type { Nullish } from "../../util/null.js";
+import type { AbsolutePath } from "../../util/path.js";
 import { type ImmutableURI, type PossibleURI, type PossibleURIParams, withURIParams } from "../../util/uri.js";
 import { ImmutableURL, type PossibleURL, requireURL } from "../../util/url.js";
 
@@ -56,8 +57,10 @@ export type MetaCSP = { readonly [resource: string]: string[] };
 export interface Meta {
 	/** Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). */
 	readonly root?: ImmutableURL | undefined;
-	/** URL of the current page (used to update history API and as the initial URL for routing). */
+	/** URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). */
 	readonly url?: ImmutableURL | undefined;
+	/** Root path of the current stack, set by `<Navigation stacks>` (for example `"/home"`). Pass it to a static render to render a page as if it were in that stack. */
+	readonly stack?: AbsolutePath | undefined;
 	/** Title of the entire application. */
 	readonly app?: string | undefined;
 	/** Title of the current page (set as `<title>` in `<Head>` */

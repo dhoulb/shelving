@@ -1,56 +1,102 @@
 # Navigation
 
-The top-level navigation provider for a client-side app. It owns a single `NavigationStore`, publishes the live URL into the `<Meta>` context so descendant `<Router>`s re-render on navigation, and wires up browser history. Use exactly one `<Navigation>` per app — nested routers all share its single store.
+The top-level navigation provider for a client-side app. It owns one `NavigationStore`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
+
+Give it `stacks` for an app with a tab bar. Each stack is one tab with its own history of pages, like a phone app: each tab remembers where you left it, and a back button goes back within its tab.
 
 **Things to know:**
 
-- Same-origin anchor clicks are intercepted automatically and turned into `forward()` calls. Add a `download` attribute to an anchor to opt out.
-- An anchor with a `data-back` attribute calls `back()` instead, so the page slides back. Set it with the `back` prop on `<Button>` or `<Link>`, e.g. on a "Back to profile" button.
-- It listens for `popstate` so the store stays in sync with browser back/forward.
-- It publishes each page change inside `startTransition()`, so a `<Transition>` around the routes animates it. A link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` transition type. A `data-back` link click, `NavigationStore.back()`, and the browser back or forward button set `"back"` (`popstate` does not say which way it went).
-- When the browser already animated the change, for example a swipe-back gesture on a phone, there is no view transition, so the page does not slide twice. The browser says so with `hasUAVisualTransition` on the `popstate` event. Other browsers still slide.
-- The `popstate` update waits for the next task (`setTimeout()`). React renders a transition that starts inside `popstate` as a sync update with no view transition.
-- It initialises the store from the surrounding `<Meta>` url/base, so set those on an ancestor `<App>` / `<HTML>` / `<Page>`. In the browser the store falls back to `window.location.href` when no url is set.
-- The meta it publishes always has a `root` — when none is set anywhere, `root` defaults to the live URL's origin. Setting `root` explicitly on `<App>` / `<HTML>` is still strongly recommended, especially for apps served under a sub-path.
-- `<Router>` works with no `<Navigation>` at all (SSR, static rendering, tests) — `<Navigation>` is only what makes the URL *live* on the client.
+- Same-origin link clicks become `NavigationStore.forward()`, so the page slides forward.
+- A link with `className="back"` calls `NavigationStore.back()`, so the page slides back. `<BackButton>` sets this class for you.
+- A link with `className="replace"` calls `NavigationStore.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
+- Clicks with a modifier key (Cmd, Ctrl, Shift, Alt), a middle-click, and links with `download` or a `target` other than `_self` go to the browser as usual.
+- It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
+- The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
+- When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
+- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`.
+- It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
+- `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
+
+### Browser support
+
+Stacks and slides use the browser [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API). Without it (older browsers, a server render, or a sandboxed frame), `<Navigation>` falls back to plain navigation:
+
+- Links still go through the app with no page reload, and the browser back button works.
+- There are no stacks, no slides and no `<RouteCache>`. Each page mounts fresh.
+- `<StackButton>` is a plain link to its stack's root. `<BackButton>` is a plain link to its `href`.
 
 ## Usage
 
-```tsx
-import { HTML, Navigation, Router } from "shelving/ui";
+### Basic setup
 
-<HTML url={initialUrl} root="https://example.com/">
+```tsx
+import { App, Navigation, Router } from "shelving/ui";
+
+<App root="https://example.com/">
   <Navigation>
     <Router routes={ROUTES}/>
   </Navigation>
-</HTML>
+</App>
 ```
 
-### Page transitions
+### App with a tab bar
+
+List the root path of each stack in tab order. Put a `<StackButton>` for each stack in the tab bar.
 
 ```tsx
-import { HorizontalTransition, Navigation, Router } from "shelving/ui";
+import { App, HorizontalTransition, Navigation, RouteCache, Router, StackButton } from "shelving/ui";
 
-// Links slide right. Back links and the browser back button slide left.
-<Navigation>
-  <HorizontalTransition>
-    <Router routes={ROUTES}/>
-  </HorizontalTransition>
-</Navigation>
+const STACKS = ["/home", "/discover", "/profile"] as const;
 
-// A "back to" link slides left too.
-<Button href="/profile" back>Back to profile</Button>
+<App root="https://example.com/">
+  <Navigation stacks={STACKS}>
+    <HorizontalTransition>
+      <RouteCache>
+        <Router routes={ROUTES}/>
+      </RouteCache>
+    </HorizontalTransition>
+    <nav className="tab-bar">
+      <StackButton stack="/home">Home</StackButton>
+      <StackButton stack="/discover">Discover</StackButton>
+      <StackButton stack="/profile">Profile</StackButton>
+    </nav>
+  </Navigation>
+</App>
+```
+
+Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+
+Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
+
+### Links
+
+```tsx
+// Opens a new page in the current stack. Slides forward.
+<Button href="/home/post/1">Open post</Button>
+
+// Goes back to a page. Slides back.
+// If the page is already in the stack, the stack goes back to it.
+<Button href="/home" className="back">Back to home</Button>
+
+// The back button for a page header. Goes to the page before this one in the stack, or to `href`.
+<BackButton href="/home"/>
+
+// Changes the URL but keeps the same page. No slide, no new history entry.
+<Button href="/profile/posts" className="replace">Posts</Button>
+<Button href="/profile/likes" className="replace">Likes</Button>
 ```
 
 ### Imperative navigation
 
-Read the navigation store from anywhere in the tree with `requireNavigation()` for imperative URL changes:
+Read the store from anywhere in the tree with `requireNavigation()`:
 
 ```tsx
 import { requireNavigation } from "shelving/ui";
 
 const nav = requireNavigation();
-nav.forward("/users/123");   // push a new history entry
-nav.redirect("/login");      // replace the current history entry
-nav.back("/users");          // push a new history entry that slides back
+nav.forward("/home/post/1");  // Open a page in the current stack.
+nav.back("/home");            // Go back to a page.
+nav.replace("/login");        // Change the URL of the current page.
 ```
+
+See `NavigationStore` for what each method does.
