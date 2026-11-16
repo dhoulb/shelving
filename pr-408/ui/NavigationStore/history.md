@@ -11,5 +11,5 @@ Get the pages in a stack, root first, or every page in every stack.
 ## Signatures
 
 ```ts
-history(stack?: AbsolutePath): AbsolutePath[]
+history(stack: AbsolutePath = this.stack.value): AbsolutePath[]
 ```

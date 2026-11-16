@@ -13,7 +13,7 @@ The back button for a page header. It goes back to the page before this one in t
 **Things to know:**
 
 - It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
-- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent.
+- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. If `href` is a stack root (for example `/home`), the back button on a deep-linked page goes to that stack.
 - It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationStore.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
