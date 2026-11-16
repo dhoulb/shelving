@@ -1,0 +1,106 @@
+@import url("../style/layers.css");
+@import url("../style/Stroke.module.css");
+@import url("../style/Tint.module.css");
+
+/*
+ * App layout: a content slot above a bar of the app's main sections (a tab bar).
+ *
+ * The layout is a frame only. It does not scroll: the `.content` slot is a positioned box, and the app fills it
+ * with `<Scroll vertical cover>` (inside `<RouteCache>`), so each page scrolls in its own box. The bar sits below
+ * the slot, not over it, so the slot never needs to know the bar's height.
+ */
+
+@layer components {
+	/*
+	 * Lock the document so the content slot is the only place that scrolls.
+	 * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
+	 */
+	html:has(.layout) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		height: 100vh;
+		height: 100dvh; /* Expand and contract as the address bar shows and hides on iOS. */
+		width: 100vw;
+		width: 100dvw;
+
+		/* Contents */
+		overflow: hidden;
+		overflow-wrap: break-word; /* Break overlong words only as a last resort. */
+	}
+
+	body:has(.layout) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+
+		/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
+		position: fixed;
+		inset: 0;
+
+		/* Style */
+		background: var(--app-layout-background, var(--tint-100));
+		color: var(--app-layout-color, var(--tint-00));
+	}
+
+	.layout {
+		/* Fill the locked body, even inside a mount element such as `<div id="root">`. `absolute`, not `fixed`: iOS Safari paints the status bar from a fixed element at the top edge. */
+		position: absolute;
+		inset: 0;
+
+		/* Stack the content slot above the bar. */
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* The content slot: a positioned box that `<Scroll vertical cover>` fills. */
+	.content {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
+
+		/* Keep the slot clear of the notch and the rounded corners (an absolute child fills the box inside the borders). The bar handles the bottom. */
+		border-top: env(safe-area-inset-top, 0) solid transparent;
+		border-left: env(safe-area-inset-left, 0) solid transparent;
+		border-right: env(safe-area-inset-right, 0) solid transparent;
+	}
+
+	/* The bar. Its transparent bottom border keeps the items clear of the home bar, and its background fills that area. */
+	.nav {
+		/* Box */
+		display: flex;
+		justify-content: center;
+		border-block-start: var(--app-layout-nav-border, var(--stroke-normal) solid var(--tint-90));
+		border-block-end: env(safe-area-inset-bottom, 0) solid transparent;
+		padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
+
+		/* Style */
+		background: var(--app-layout-nav-background, var(--tint-100));
+		color: var(--app-layout-nav-color, var(--tint-00));
+		box-shadow: var(--app-layout-nav-shadow, none);
+
+		/* Its own view-transition group, so a page slide passes under it and the bar stays still. */
+		view-transition-name: app-layout-nav;
+
+		/* Each item takes an equal share of the bar. */
+		> * {
+			flex: 1;
+			max-width: var(--app-layout-nav-item-width, 6rem);
+		}
+	}
+}
+
+/* The bar stays still, so it never makes a view transition last longer. */
+::view-transition-group(app-layout-nav) {
+	animation-duration: 0s;
+}
+
+/* Show only the live bar during a view transition, so the CSS transitions of its items (an active tab) play with no cross-fade. */
+::view-transition-old(app-layout-nav) {
+	display: none;
+}
+
+::view-transition-new(app-layout-nav) {
+	animation: none;
+}

@@ -3,8 +3,11 @@ import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
 import { PageCatcher } from "../misc/Catcher.js";
+import { PageLoader } from "../misc/Loader.js";
 import { Navigation } from "../router/Navigation.js";
+import { RouteCache } from "../router/RouteCache.js";
 import { Router } from "../router/Router.js";
+import { Scroll } from "../style/Scroll.js";
 import type { TreeAppProps } from "../tree/TreeApp.js";
 import { TreeProvider } from "../tree/TreeContext.js";
 import { TreeRouter } from "../tree/TreeRouter.js";
@@ -38,7 +41,13 @@ export function DocumentationApp({
 }: TreeAppProps): ReactElement {
 	const layout = (
 		<SidebarLayout sidebar={sidebar}>
-			<TreeRouter fallback={<Router routes={routes} />} />
+			<RouteCache>
+				<Scroll vertical cover>
+					<PageLoader>
+						<TreeRouter fallback={<Router routes={routes} />} />
+					</PageLoader>
+				</Scroll>
+			</RouteCache>
 		</SidebarLayout>
 	);
 	return (

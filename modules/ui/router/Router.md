@@ -9,7 +9,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
 - Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
-- `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (or use a layout that already does) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
+- `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (with a `<Scroll vertical cover>` between them) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage
 
@@ -55,7 +55,7 @@ Modifier chars are tolerant: one-or-more stars and three-or-more dots are all eq
 
 ### Layout wrapping
 
-Put layout JSX as the route value with another `<Router>` inside. Since `<Router>` reads its URL from `<Meta>`, the inner router sees the same URL.
+Put layout JSX as the route value with another `<Router>` inside. Since `<Router>` reads its URL from `<Meta>`, the inner router sees the same URL. A layout's content slot does not scroll, so put a `<Scroll vertical cover>` in it (and a `<RouteCache>` around that, to keep pages). See "Composing an app" on `<App>`.
 
 ```tsx
 const SIDEBARRED_ROUTES = {
@@ -68,7 +68,9 @@ const SIDEBARRED_ROUTES = {
   "/": <HomePage/>,
   "/{...path}": (
     <SidebarLayout sidebar={<Nav/>}>
-      <Router routes={SIDEBARRED_ROUTES}/>
+      <Scroll vertical cover>
+        <Router routes={SIDEBARRED_ROUTES}/>
+      </Scroll>
     </SidebarLayout>
   ),
 }}/>
@@ -115,7 +117,9 @@ const SIDEBARRED_ROUTES = {
   "/login": <LoginPage/>,                       // no sidebar
   "/{...path}": (                                // everything else wrapped
     <SidebarLayout sidebar={<Nav/>}>
-      <Router routes={SIDEBARRED_ROUTES}/>
+      <Scroll vertical cover>
+        <Router routes={SIDEBARRED_ROUTES}/>
+      </Scroll>
     </SidebarLayout>
   ),
 }}/>
@@ -123,7 +127,7 @@ const SIDEBARRED_ROUTES = {
 
 ### Keeping page state
 
-By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
+By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router in a `<RouteCache>`, with a `<Scroll vertical cover>` between them, to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Layouts do not do this for you: see `<RouteCache>` for the full nesting.
 
 ### SSR / static rendering
 
