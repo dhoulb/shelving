@@ -136,7 +136,7 @@ const next = getQueryItemsAfter(page.orders); // `undefined` when there are no m
   &lt;Scroll vertical cover&gt;
     &lt;Router routes={ROUTES} /&gt;
   &lt;/Scroll&gt;
-&lt;/SidebarLayout&gt;</code></pre></figure><h4 id="a-tab-bar">A tab bar</h4><p>Use <code class="code_nt1Inw">&lt;AppLayout nav&gt;</code>. It puts the content slot above a bar, at every screen size. The bar has its own view-transition group, so it stays still while pages slide. Set <code class="code_nt1Inw">nav={false}</code> to hide the bar.</p><figure><pre><code>&lt;AppLayout nav={&lt;StackBar /&gt;}&gt;
+&lt;/SidebarLayout&gt;</code></pre></figure><h4 id="a-tab-bar">A tab bar</h4><p>Use <code class="code_nt1Inw">&lt;AppLayout nav&gt;</code>. It puts the content slot above a bar, at every screen size. Pages slide in the content slot above the bar, so the bar stays still. Set <code class="code_nt1Inw">nav={false}</code> to hide the bar.</p><figure><pre><code>&lt;AppLayout nav={&lt;StackBar /&gt;}&gt;
   &lt;Scroll vertical cover&gt;
     &lt;Router routes={ROUTES} /&gt;
   &lt;/Scroll&gt;
