@@ -854,6 +854,32 @@ If every file in that list is in the right place, the client and server share on
 
 ## Upgrade notes
 
+### Tab stacks in `<Navigation>`
+
+`<Navigation>` now keeps one stack of pages for each tab, like a phone app. It uses the browser [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API). Some names and props changed. To upgrade an app:
+
+1. **Rename `redirect()` to `replace()`.** Change each `nav.redirect(url)` to `nav.replace(url)`. It does the same thing: it changes the URL of the current page with no new history entry and no slide.
+2. **Change the `back` prop to a class.** The `back` prop on `<Button>` and `<Link>` is removed, and so is the `data-back` attribute. Change `<Button href="/profile" back>` to `<Button href="/profile" className="back">`. For a page-header back button, use `<BackButton href="/profile"/>` (see step 6).
+3. **Remove `<RouteConfig>`.** `<RouteConfig>` and `RouteContext` are removed.
+   - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
+   - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
+4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
+5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. Set `stack` on `<Navigation>` to the stack the app opens in. With no `stack`, the app opens in the `/` stack, which is unstacked: no tab is selected until the user taps a tab, or the app names a stack. Deep links and login pages are unstacked. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
+6. **Use the new buttons (optional).**
+   - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
+   - `<BackButton href="/home"/>` goes back to the page before this one in the current tab, or to `href` when there is none.
+7. **Move the page transition outside `<RouteCache>`.** Put `<HorizontalTransition>` (or any page `<Transition>`) around the `<RouteCache>`, not inside it around each page. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+8. **Check pages that change URL for the same component.** `<RouteCache>` now keys each page by its stack and depth, not by its path. A replace from `/post/1` to `/post/2` keeps the same component mounted with its state. If the page must reset, wrap its content in an element with `key={id}`.
+9. **Know the fallback.** Without the Navigation API (older browsers), links still work with no page reload, but there are no stacks, no slides and no page cache. `<StackButton>` and `<BackButton>` become plain links.
+
+What changes for users:
+
+- Each tab remembers the page you left it on, and its back button goes back within that tab.
+- The browser back button walks the history as before, across tabs. The page slides the right way.
+- When you go back from a page, it leaves the cache. So the browser forward button then shows that page fresh, from the top.
+
+See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
+
 ### From `CacheDBProvider` to `HydratingAPIProvider`
 
 `CacheDBProvider` and the paging in `QueryStore` are removed. To upgrade an app:
@@ -20167,13 +20193,14 @@ The components below are listed in the index following this page; this is the sh
 - [Empty](ui/Empty.md): Message for a list with nothing in it: centred, grey content with space around it.
 - [Notice](ui/Notice.md): Block-level status callout with an icon and message, used to highlight feedback.
 - [Notices](ui/Notices.md): Render the global list of notices and subscribe to incoming "notice" events.
-- [Head](ui/Head.md): Emit the current page's head metadata and sync browser history to its URL.
+- [Head](ui/Head.md): Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
 - [HTML](ui/HTML.md): Render the full <html> document shell wrapping <head> and <body>.
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
-- [Navigation](ui/Navigation.md): Top-level navigation provider.
-- [RouteCache](ui/RouteCache.md): Keep-alive page cache keyed by the current URL — drop it into a layout around its scrolling content region.
-- [RouteConfig](ui/RouteConfig.md): Configure the current page for the surrounding <Router> (and <RouteCache>).
+- [BackButton](ui/BackButton.md): Back button for the current stack.
+- [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
+- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
+- [StackButton](ui/StackButton.md): Button for one stack in a tab bar.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
 - [Cell](ui/Cell.md): Table cell.
 - [Table](ui/Table.md): Table block — rendered as <table>.
@@ -20295,7 +20322,7 @@ The components below are listed in the index following this page; this is the sh
 - [FormStore](ui/FormStore.md): Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
-- [NavigationStore](ui/NavigationStore.md): Store holding the current navigation URL and driving browser history.
+- [NavigationStore](ui/NavigationStore.md): Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
 
 ## Interfaces
 
@@ -20429,11 +20456,13 @@ The components below are listed in the index following this page; this is the sh
 - [NoticesProps](ui/NoticesProps.md): Props for <Notices> — the place for the list, and flex styling variants for the notices container.
 - [HTMLProps](ui/HTMLProps.md): Props for <HTML> — initial Meta (language/root/app) plus the page children.
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
-- [NavigationProps](ui/NavigationProps.md): Props for <Navigation> — initial Meta (url/base) plus optional children.
-- [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache> — the maxCached size and the content children to keep alive per URL.
-- [RouteConfigProps](ui/RouteConfigProps.md): Props for <RouteConfig> — the settings of a page for the surrounding <Router> and <RouteCache>, and the page content.
-- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RouteConfig>.
+- [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
+- [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
+- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationStore saves on each browser history entry.
+- [NavigationPosition](ui/NavigationPosition.md): Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
+- [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache>: the maxCached size and the content children to keep alive for each page in the stacks.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
+- [StackButtonProps](ui/StackButtonProps.md): Props for <StackButton>: the stack it opens, plus the usual Button props except href and onClick.
 - [BlockVariants](ui/BlockVariants.md): Variants for block level elements.
 - [ColorVariants](ui/ColorVariants.md): Variant props for colouring an element, e.g. color="purple".
 - [DurationVariants](ui/DurationVariants.md): Variant props for the transition duration of an element, e.g. duration="fast".
@@ -20534,7 +20563,7 @@ The components below are listed in the index following this page; this is the sh
 - [LOADING_NOTICE](ui/LOADING_NOTICE.md): Shared loading <Notice> element showing the loading spinner.
 - [NOTICES](ui/NOTICES.md): Global NoticesStore shown by <Notices>, accepting any of the default statuses.
 - [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationStore, provided by <Navigation>.
-- [RouteContext](ui/RouteContext.md): React context holding the RouteState of the current page, provided by <Router> and <RouteCache>.
+- [NavigationPositionContext](ui/NavigationPositionContext.md): React context holding where the app is in its stacks, published by <Navigation> with each URL change.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
 - [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.
@@ -23079,7 +23108,6 @@ Props for a thing that can be clicked — either has a string `href` link or an 
 	download?: string | undefined;
 	title?: string | undefined;
 	selected?: boolean | undefined;
-	back?: boolean | undefined;
 }
 ```
 
@@ -23094,7 +23122,6 @@ Props for a thing that can be clicked — either has a string `href` link or an 
 | `download` | `string \| undefined` | If `href` is present then this is the suggested filename for downloading. Optional. |
 | `title` | `string \| undefined` | Title shown on hover. Optional. |
 | `selected` | `boolean \| undefined` | Whether this is the selected item in a group. Sets `aria-pressed` on a `<button>`, or `aria-current` on an `<a>`. Optional. |
-| `back` | `boolean \| undefined` | If `href` is present, then `<Navigation>` opens the link with a back transition. Use it for a "back to" link. Sets `data-back` on the `<a>`. Optional. |
 
 
 ---
@@ -23175,7 +23202,6 @@ LinkClickable({
 	download,
 	title,
 	selected,
-	back,
 	children = "Go",
 	className,
 }: StylableClickableProps): ReactElement
@@ -32430,10 +32456,10 @@ close(): void
 - Kind: component
 - Import: `import { Head } from "shelving/ui";`
 
-Emit the current page's head metadata and sync browser history to its URL.
+Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
 - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
 - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
-- Updates `window.history` to match the page URL.
+- When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationStore.replace()` with it. Outside `<Navigation>` it does not touch history.
 
 Low-level emitter of hoistable head metadata from the current `Meta` context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
 
@@ -32629,19 +32655,133 @@ Page({ children, ...meta }: PageProps): ReactElement
 
 ---
 
+# BackButtonProps
+
+- Kind: interface
+- Import: `import { BackButtonProps } from "shelving/ui";`
+- Extends: `Omit<ButtonProps, "href" | "onClick">`
+
+Props for `<BackButton>`: the `href` to go back to when the stack has no page before this one, plus the usual `Button` props except `onClick`.
+
+## Signatures
+
+```ts
+{
+	readonly href: AbsolutePath;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `href` | `AbsolutePath` | Where to go back to when the current stack has no page before this one (for example, the app was opened at this page). Read only. |
+
+
+---
+
+# BackButton
+
+- Kind: component
+- Import: `import { BackButton } from "shelving/ui";`
+
+Back button for the current stack.
+- Goes back to the page before this one in the current stack, wherever you came from.
+- Goes to `href` when the stack has no page before this one: the app was opened at this page, or the browser has no Navigation API.
+- It is a plain link with `className="back"`, so it slides back, and it works in a server render and with a middle-click.
+
+The back button for a page header. It goes back to the page before this one in the current stack, wherever you came from.
+
+**Things to know:**
+
+- It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
+- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On an unstacked page (for example a deep link), it goes to `href` and stays unstacked. To go into a stack, the user taps a `<StackButton>`.
+- It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationStore.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
+- Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
+- It takes the usual `<Button>` props, except `onClick`.
+- Without the browser Navigation API, and in a server render, it links to `href`.
+- In a server-rendered app the server always renders `href`, and the browser may render the page before this one. React then warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+
+## Usage
+
+```tsx
+import { BackButton } from "shelving/ui";
+
+function PostPage({ id }: { id: string }) {
+  return (
+    <>
+      <header>
+        <BackButton href="/home"/>
+        <h1>Post</h1>
+      </header>
+      {/* … */}
+    </>
+  );
+}
+```
+
+With a label:
+
+```tsx
+<BackButton href="/profile">Back to profile</BackButton>
+```
+
+To go back to one fixed page (not to the page before), use a link with `className="back"`:
+
+```tsx
+<Button href="/profile" className="back">Profile</Button>
+```
+
+## Styling
+
+`<BackButton>` renders a `<Button>`, so it has the same styling hooks. See `<Button>`.
+
+
+## Signatures
+
+```ts
+BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props }: BackButtonProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `BackButtonProps` |  |
+| `.href` | `AbsolutePath` | Where to go back to when the current stack has no page before this one (for example, the app was opened at this page). Read only. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
+
+
+---
+
 # NavigationProps
 
 - Kind: interface
 - Import: `import { NavigationProps } from "shelving/ui";`
 - Extends: `PossibleMeta`
 
-Props for `<Navigation>` — initial `Meta` (url/base) plus optional `children`.
+Props for `<Navigation>`: the initial `Meta` (url, root and stack), the `stacks`, and optional `children`.
 
 ## Signatures
 
 ```ts
-{}
+{
+	readonly stacks?: readonly AbsolutePath[] | undefined;
+	readonly stack?: AbsolutePath | undefined;
+}
 ```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
+| `stack` | `AbsolutePath \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `"/"`. - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
 
 
 ---
@@ -32651,78 +32791,132 @@ Props for `<Navigation>` — initial `Meta` (url/base) plus optional `children`.
 - Kind: component
 - Import: `import { Navigation } from "shelving/ui";`
 
-Top-level navigation provider.
-- Owns a single `NavigationStore` initialised from the surrounding `<Meta>` url/base.
-- Intercepts same-origin anchor clicks (excluding `download` anchors) and turns them into `forward()` calls, or `back()` calls for an anchor with a `data-back` attribute.
-- Listens for `popstate` to sync the store with browser back/forward.
-- Publishes the live URL into the `Meta` context via `mergeMeta()`, so descendant `<Router>`s re-render on navigation and merge invariants hold (e.g. `root` defaults to the live URL's origin when unset).
-- Publishes each URL change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition.
-- Skips the transition when the browser already animated the change (`PopStateEvent.hasUAVisualTransition`, e.g. a swipe-back gesture).
+Top-level navigation provider, with one stack of pages for each tab.
+- Owns a single `NavigationStore` made from the surrounding `<Meta>` url and root.
+- Turns clicks on same-origin links into `NavigationStore.forward()`, or `NavigationStore.back()` for a link with `className="back"`, or `NavigationStore.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
+- Publishes the URL and the current `stack` into `Meta`, and the position in the stacks into `NavigationPositionContext`, all in one render.
+- Publishes each change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition. A replace, or a change the browser already animated (for example a swipe-back), has no transition.
+- Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
 
-Exactly one `<Navigation>` per app — nested routers share this single store.
+Exactly one `<Navigation>` per app. Nested routers share its store.
 
-TODO: switch click/popstate handling to the browser Navigation API when broadly supported.
+The top-level navigation provider for a client-side app. It owns one `NavigationStore`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
 
-The top-level navigation provider for a client-side app. It owns a single `NavigationStore`, publishes the live URL into the `<Meta>` context so descendant `<Router>`s re-render on navigation, and wires up browser history. Use exactly one `<Navigation>` per app — nested routers all share its single store.
+Give it `stacks` for an app with a tab bar. Each stack is one tab with its own history of pages, like a phone app: each tab remembers where you left it, and a back button goes back within its tab.
 
 **Things to know:**
 
-- Same-origin anchor clicks are intercepted automatically and turned into `forward()` calls. Add a `download` attribute to an anchor to opt out.
-- An anchor with a `data-back` attribute calls `back()` instead, so the page slides back. Set it with the `back` prop on `<Button>` or `<Link>`, e.g. on a "Back to profile" button.
-- It listens for `popstate` so the store stays in sync with browser back/forward.
-- It publishes each page change inside `startTransition()`, so a `<Transition>` around the routes animates it. A link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` transition type. A `data-back` link click, `NavigationStore.back()`, and the browser back or forward button set `"back"` (`popstate` does not say which way it went).
-- When the browser already animated the change, for example a swipe-back gesture on a phone, there is no view transition, so the page does not slide twice. The browser says so with `hasUAVisualTransition` on the `popstate` event. Other browsers still slide.
-- The `popstate` update waits for the next task (`setTimeout()`). React renders a transition that starts inside `popstate` as a sync update with no view transition.
-- It initialises the store from the surrounding `<Meta>` url/base, so set those on an ancestor `<App>` / `<HTML>` / `<Page>`. In the browser the store falls back to `window.location.href` when no url is set.
-- The meta it publishes always has a `root` — when none is set anywhere, `root` defaults to the live URL's origin. Setting `root` explicitly on `<App>` / `<HTML>` is still strongly recommended, especially for apps served under a sub-path.
-- `<Router>` works with no `<Navigation>` at all (SSR, static rendering, tests) — `<Navigation>` is only what makes the URL *live* on the client.
+- Same-origin link clicks become `NavigationStore.forward()`, so the page slides forward.
+- A link with `className="back"` calls `NavigationStore.back()`, so the page slides back. `<BackButton>` sets this class for you.
+- A link with `className="replace"` calls `NavigationStore.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
+- Clicks with a modifier key (Cmd, Ctrl, Shift, Alt), a middle-click, and links with `download` or a `target` other than `_self` go to the browser as usual.
+- It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
+- The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
+- When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
+- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. With no `stacks`, the app has one stack, and `stack` is `"/"`.
+- It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
+- `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
+
+### Browser support
+
+Stacks and slides use the browser [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API). Without it (older browsers, a server render, or a sandboxed frame), `<Navigation>` falls back to plain navigation:
+
+- Links still go through the app with no page reload, and the browser back button works.
+- There are no stacks, no slides and no `<RouteCache>`. Each page mounts fresh.
+- `<StackButton>` is a plain link to its stack's root. `<BackButton>` is a plain link to its `href`.
 
 ## Usage
 
-```tsx
-import { HTML, Navigation, Router } from "shelving/ui";
+### Basic setup
 
-<HTML url={initialUrl} root="https://example.com/">
+```tsx
+import { App, Navigation, Router } from "shelving/ui";
+
+<App root="https://example.com/">
   <Navigation>
     <Router routes={ROUTES}/>
   </Navigation>
-</HTML>
+</App>
 ```
 
-### Page transitions
+### App with a tab bar
+
+List the root path of each stack in tab order. Put a `<StackButton>` for each stack in the tab bar.
 
 ```tsx
-import { HorizontalTransition, Navigation, Router } from "shelving/ui";
+import { App, HorizontalTransition, Navigation, RouteCache, Router, StackButton } from "shelving/ui";
 
-// Links slide right. Back links and the browser back button slide left.
-<Navigation>
-  <HorizontalTransition>
-    <Router routes={ROUTES}/>
-  </HorizontalTransition>
-</Navigation>
+const STACKS = ["/home", "/discover", "/profile"] as const;
 
-// A "back to" link slides left too.
-<Button href="/profile" back>Back to profile</Button>
+<App root="https://example.com/">
+  <Navigation stacks={STACKS}>
+    <HorizontalTransition>
+      <RouteCache>
+        <Router routes={ROUTES}/>
+      </RouteCache>
+    </HorizontalTransition>
+    <nav className="tab-bar">
+      <StackButton stack="/home">Home</StackButton>
+      <StackButton stack="/discover">Discover</StackButton>
+      <StackButton stack="/profile">Profile</StackButton>
+    </nav>
+  </Navigation>
+</App>
+```
+
+To select a tab when the app starts, pass the starting `stack`. The app decides which stack the opening URL belongs to, for example:
+
+```tsx
+const path = window.location.pathname;
+const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
+
+<Navigation stacks={STACKS} stack={stack}>
+```
+
+Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else in the `/` stack. A page in the `/` stack, such as a deep link or a login page, is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
+
+Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
+
+### Links
+
+```tsx
+// Opens a new page in the current stack. Slides forward.
+<Button href="/home/post/1">Open post</Button>
+
+// Goes back to a page. Slides back.
+// If the page is already in the stack, the stack goes back to it.
+<Button href="/home" className="back">Back to home</Button>
+
+// The back button for a page header. Goes to the page before this one in the stack, or to `href`.
+<BackButton href="/home"/>
+
+// Changes the URL but keeps the same page. No slide, no new history entry.
+<Button href="/profile/posts" className="replace">Posts</Button>
+<Button href="/profile/likes" className="replace">Likes</Button>
 ```
 
 ### Imperative navigation
 
-Read the navigation store from anywhere in the tree with `requireNavigation()` for imperative URL changes:
+Read the store from anywhere in the tree with `requireNavigation()`:
 
 ```tsx
 import { requireNavigation } from "shelving/ui";
 
 const nav = requireNavigation();
-nav.forward("/users/123");   // push a new history entry
-nav.redirect("/login");      // replace the current history entry
-nav.back("/users");          // push a new history entry that slides back
+nav.forward("/home/post/1");  // Open a page in the current stack.
+nav.back("/home");            // Go back to a page.
+nav.replace("/login");        // Change the URL of the current page.
 ```
+
+See `NavigationStore` for what each method does.
 
 
 ## Signatures
 
 ```ts
-Navigation({ children, ...meta }: NavigationProps): ReactElement
+Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement
 ```
 
 ## Parameters
@@ -32730,6 +32924,8 @@ Navigation({ children, ...meta }: NavigationProps): ReactElement
 | Param | Type | Description |
 | --- | --- | --- |
 | `meta` | `NavigationProps` |  |
+| `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
+| `.stack` | `AbsolutePath \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `"/"`. - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
 
 ## Returns
 
@@ -32784,52 +32980,192 @@ requireNavigation(): NavigationStore
 
 ---
 
+# NavigationPositionContext
+
+- Kind: constant
+- Import: `import { NavigationPositionContext } from "shelving/ui";`
+
+React context holding where the app is in its stacks, published by `<Navigation>` with each URL change.
+- `undefined` without the browser Navigation API, during a server render, or outside `<Navigation>`.
+- `<RouteCache>`, `<Router>` and `<BackButton>` read it, so they change in the same render as the URL.
+
+
+---
+
+# NavigationEntryState
+
+- Kind: interface
+- Import: `import { NavigationEntryState } from "shelving/ui";`
+
+State that `NavigationStore` saves on each browser history entry.
+
+## Signatures
+
+```ts
+{
+	readonly stack: AbsolutePath;
+	readonly depth: number;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `stack` | `AbsolutePath` | Root path of the stack this page is in. Read only. |
+| `depth` | `number` | Position of this page in its stack, where `0` is the root. Read only. |
+
+
+---
+
+# NavigationPosition
+
+- Kind: interface
+- Import: `import { NavigationPosition } from "shelving/ui";`
+- Extends: `NavigationEntryState`
+
+Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
+- `undefined` when the browser has no Navigation API, or during a server render.
+
+## Signatures
+
+```ts
+{
+	readonly tops: { readonly [stack: AbsolutePath]: number };
+	readonly parent: AbsolutePath | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `tops` | `{ readonly [stack: AbsolutePath]: number }` | Depth of the top page of each stack that has pages. Read only. |
+| `parent` | `AbsolutePath \| undefined` | The page before the current one in its stack, or `undefined` at the bottom of the stack. Read only. |
+
+
+---
+
 # NavigationStore
 
 - Kind: class
 - Import: `import { NavigationStore } from "shelving/ui";`
 - Extends: `URLStore`
 
-Store holding the current navigation URL and driving browser history.
+Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
 
-- Extends `URLStore`; the current location is its `value`.
-- `forward()` pushes a new history entry; `redirect()` replaces the current one.
-- `back()` pushes a new history entry like `forward()`, but `<Navigation>` animates it as a back transition.
-- TODO: switch to the browser Navigation API when broadly supported.
+- Extends `URLStore`, so its `value` is the current URL.
+- With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
+- `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
+- Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
+- Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
-The store holding the current navigation URL and driving browser history. It extends `URLStore` — the current location is its `value` — and is owned by `<Navigation>`. Reach for it via `requireNavigation()` rather than constructing your own.
+The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
 
 **Things to know:**
 
-- `forward()` pushes a new browser history entry; `redirect()` replaces the current one. Both resolve the destination against the store's `base`.
-- `back()` pushes a new browser history entry like `forward()`, but `<Navigation>` gives it the `"back"` transition type, so the page slides back. It does not go back in the browser history, so it works when the page was opened directly.
-- It is a `shelving/store` `URLStore`, so components can subscribe to it for re-renders.
+- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
+- A page that is not in a listed stack is **unstacked**: it is in the `/` stack. See [Unstacked pages](#unstacked-pages).
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
+- `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
+- All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
+- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+
+## Methods
+
+| Method | What it does | Slide |
+|---|---|---|
+| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace. | Forward. Across stacks, by tab order. |
+| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages. | None |
+| `history(stack?)` | Returns the pages in `stack`, root first. | — |
+
+`stack` defaults to the current stack.
+
+## Unstacked pages
+
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else in the `/` stack. A page in the `/` stack is **unstacked**. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+
+- On an unstacked page, no `<StackButton>` is selected.
+- Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
+- To leave the `/` stack, tap a `<StackButton>`, or name the stack.
+- To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
+- If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
+
+For example, a login page sends the user home after they log in, and names the Home stack:
+
+```tsx
+const nav = requireNavigation();
+nav.replace("/home", "/home");
+```
+
+## How stacks work
+
+The store saves a small state on each browser history entry: the `stack` the page is in, and its `depth` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the store walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower depth, and so on down to depth `0`.
+
+Why depth? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the store cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's depth. The pages that were above it now have a higher depth than the newest entry, so they are no longer in the stack.
+
+For example, with tabs `/home` and `/profile`:
+
+| Step | New history entry | Home stack | Profile stack |
+|---|---|---|---|
+| Start at `/home` | `/home` (depth 0) | `/home` | — |
+| Open a post | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | — |
+| Tap the Profile tab | `/profile` (depth 0) | `/home`, `/home/post/1` | `/profile` |
+| Tap the Home tab | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | `/profile` |
+| Tap the back button | `/home` (depth 0) | `/home` | `/profile` |
+
+When the page you go back to is the entry just before the current one, `back()` goes back in the browser history and pushes nothing.
+
+The browser back and forward buttons walk the history entries one at a time, as usual. Each entry knows its stack and depth, so the stacks are always right and the slide goes the right way.
 
 ## Usage
 
 ```tsx
-import { requireNavigation } from "shelving/ui";
+import { Button, requireNavigation } from "shelving/ui";
 
 function LogoutButton() {
   const nav = requireNavigation();
-  return <Button onClick={() => nav.redirect("/login")}>Log out</Button>;
+  return <Button onClick={() => nav.replace("/login")}>Log out</Button>;
 }
 ```
 
-Constructed directly only when wiring navigation by hand (e.g. tests):
+Read the current stack in a component:
+
+```tsx
+import { useStore } from "shelving/react";
+import { requireNavigation } from "shelving/ui";
+
+function TabTitle() {
+  const nav = requireNavigation();
+  const stack = useStore(nav.stack).value;
+  return <h1>{stack === "/profile" ? "Profile" : "Home"}</h1>;
+}
+```
+
+List the pages in a stack (for example, for breadcrumbs):
+
+```tsx
+const nav = requireNavigation();
+nav.history("/home"); // ["/home", "/home/post/1", "/home/post/1/comments"]
+```
+
+Make a store by hand only in tests:
 
 ```tsx
 import { NavigationStore } from "shelving/ui";
 
-const nav = new NavigationStore("/");
-nav.forward("/home");
+// URL, root, starting stack, then the stacks in tab order.
+const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
+nav.forward("/home/post/1");
 ```
 
 
 ## Signatures
 
 ```ts
-new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL)
+new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath = "/", ...stacks: AbsolutePath[])
 ```
 
 ## Parameters
@@ -32838,6 +33174,8 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | --- | --- | --- |
 | `url` | `PossibleURL` | Defaults to `typeof window === "undefined" ? "/" : window.location.href`. |
 | `base` | `PossibleURL` | Optional. |
+| `stack` | `AbsolutePath` | Defaults to `"/"`. |
+| `stacks` | `AbsolutePath[]` |  |
 
 ## Returns
 
@@ -32849,13 +33187,55 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `transition` | `TransitionType \| null` | Transition type of the next URL change. `null` means no transition. `<Navigation>` reads it, then sets it back to `"forward"`. Defaults to `"forward"`. |
+| `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. A single-stack app has one root. Read only. |
+| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - It starts at the `stack` given to the constructor (default `"/"`). Without the Navigation API, it stays there. Read only. |
+| `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
+| `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 
 ## Methods
 
-- [NavigationStore.forward()](ui/NavigationStore/forward.md): Navigate forward to a URL, pushing a new browser history entry.
-- [NavigationStore.redirect()](ui/NavigationStore/redirect.md): Redirect to a URL, replacing the current browser history entry.
-- [NavigationStore.back()](ui/NavigationStore/back.md): Navigate back to a URL, pushing a new browser history entry with the "back" transition type.
+- [NavigationStore.listen()](ui/NavigationStore/listen.md): Start listening to the browser (back, forward and swipe).
+- [NavigationStore.history()](ui/NavigationStore/history.md): Get the pages in a stack, root first, or every page in every stack.
+- [NavigationStore.forward()](ui/NavigationStore/forward.md): Go forward to a URL, as a link does.
+- [NavigationStore.back()](ui/NavigationStore/back.md): Go back to a URL, as a back button does.
+- [NavigationStore.replace()](ui/NavigationStore/replace.md): Replace the current URL, with no transition.
+
+
+---
+
+# NavigationStore.listen()
+
+- Kind: method
+- Member of: `NavigationStore`
+
+Start listening to the browser (back, forward and swipe).
+- Saves the current stack and depth on the current history entry, if it has none.
+- `<Navigation>` calls it once, when it mounts.
+
+## Signatures
+
+```ts
+listen(): () => void
+```
+
+
+---
+
+# NavigationStore.history()
+
+- Kind: method
+- Member of: `NavigationStore`
+
+Get the pages in a stack, root first, or every page in every stack.
+- Read from the browser history entries up to the current one.
+- A stack whose root entry is gone (the browser keeps a limited history) still starts with its root.
+- Without the Navigation API this is always empty.
+
+## Signatures
+
+```ts
+history(stack: AbsolutePath = this.stack.value): AbsolutePath[]
+```
 
 
 ---
@@ -32865,28 +33245,16 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 - Kind: method
 - Member of: `NavigationStore`
 
-Navigate forward to a URL, pushing a new browser history entry.
+Go forward to a URL, as a link does.
+- The URL is the top page of `stack`: switch to that stack, at the same depth. This is a tab switch.
+- Else push the URL onto `stack`, one level deeper than its top page.
+- The URL you are already on: replace it instead.
+- A change of stack slides by tab order. Else it slides forward.
 
 ## Signatures
 
 ```ts
-forward(possible: PossibleURL): void
-```
-
-
----
-
-# NavigationStore.redirect()
-
-- Kind: method
-- Member of: `NavigationStore`
-
-Redirect to a URL, replacing the current browser history entry.
-
-## Signatures
-
-```ts
-redirect(possible: PossibleURL): void
+forward(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
 ```
 
 
@@ -32897,14 +33265,35 @@ redirect(possible: PossibleURL): void
 - Kind: method
 - Member of: `NavigationStore`
 
-Navigate back to a URL, pushing a new browser history entry with the `"back"` transition type.
-- Use it for a "back to" link, so the page slides back, not forward.
-- It does not go back in the browser history, so it also works when the page was opened directly.
+Go back to a URL, as a back button does.
+- The URL is an earlier page in `stack`: go back to it. When it is the entry just before the current one, this goes back in the browser history. Else it pushes the URL again at that page's depth.
+- The URL is the root of `stack`: push it at depth 0.
+- Else push the URL in place of the top page of `stack`.
+- It works when the app was opened at the current page, so a back button always has somewhere to go.
 
 ## Signatures
 
 ```ts
-back(possible: PossibleURL): void
+back(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+```
+
+
+---
+
+# NavigationStore.replace()
+
+- Kind: method
+- Member of: `NavigationStore`
+
+Replace the current URL, with no transition.
+- The page stays in the same stack, at the same depth, so a cached page stays mounted.
+- Use it for a page that knows its canonical URL, or for in-page tabs.
+- Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
+
+## Signatures
+
+```ts
+replace(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
 ```
 
 
@@ -32915,7 +33304,7 @@ back(possible: PossibleURL): void
 - Kind: interface
 - Import: `import { RouteCacheProps } from "shelving/ui";`
 
-Props for `<RouteCache>` — the `maxCached` size and the content `children` to keep alive per URL.
+Props for `<RouteCache>`: the `maxCached` size and the content `children` to keep alive for each page in the stacks.
 
 ## Signatures
 
@@ -32930,8 +33319,8 @@ Props for `<RouteCache>` — the `maxCached` size and the content `children` to 
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `maxCached` | `number \| undefined` | Number of recently-visited URLs to keep mounted (but hidden) so the entire state of their subtree — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — is restored intact when navigating back or forward to them. - Defaults to `10`. Once the limit is reached the least-recently-visited entry is unmounted. - Set to `0` (or less) to disable caching and unmount the subtree as you leave each URL. Read only. Optional. |
-| `children` | `ReactNode` | The content to render for the current URL and keep alive (hidden) for recently-visited URLs. Read only. |
+| `maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The top page of each stack is never dropped, even past the limit, so a tab always shows the page you left. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 
 ---
@@ -32941,49 +33330,85 @@ Props for `<RouteCache>` — the `maxCached` size and the content `children` to 
 - Kind: component
 - Import: `import { RouteCache } from "shelving/ui";`
 
-Keep-alive page cache keyed by the current URL — drop it into a layout around its scrolling content region.
+Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
 
-- Reads the live URL from the surrounding `<Meta>` context and keeps up to `maxCached` recently-visited
-  pages mounted but hidden (via React's `<Activity>`), so navigating back/forward to a page restores its
-  entire DOM and component state — scroll position, toggles, searches, inputs, focus — untouched.
-- Pages are kept in a least-recently-used map keyed by `path`; the oldest is unmounted past the limit.
-- A page that owns other paths with `<RouteConfig path>` stays mounted when the URL changes to one of them.
-- A page with `<RouteConfig cache={false}>` is dropped as soon as you leave it, so the next visit shows a new page.
-- Each snapshot is frozen under its own `<MetaContext>`, so the same single `children` element resolves a
-  different page per path and a hidden page never re-renders for someone else's URL.
-- `<Activity mode="hidden">` preserves a hidden page's state while unmounting its effects, so its
-  subscriptions/observers/timers pause and resume cleanly as it is hidden and shown.
-- Because it wraps the scroll container itself (rather than sitting below it inside the router), the
-  scroll position of every cached page is preserved — surrounding chrome (sidebar, drawer state) stays
-  outside the cache, so it is neither duplicated nor remounted on navigation.
-- When `maxCached <= 0` the page is rendered directly with no caching (it unmounts as you leave it).
+- Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
+- Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
+- A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
+- The top page of each stack is never dropped. Other pages can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
+- Each kept page is frozen under its own `<MetaContext>`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
+- `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
+- Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
 
-A keep-alive page cache. Drop it into a layout around its scrolling content region: it reads the current URL from the surrounding `<Meta>` context and keeps a handful of recently-visited pages mounted but *hidden* (using React's [`<Activity>`](https://react.dev/reference/react/Activity)), so navigating back or forward to a page restores its entire DOM and component state — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — instead of remounting it fresh at the top.
+A keep-alive cache for the pages in the navigation stacks. Put it in a layout around the scrolling content region. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
 
-Shelving's `<SidebarLayout>` and `<CenteredLayout>` already wrap their scrollable content column in one for you, so pages rendered inside them keep their state across navigation automatically. Reach for it by hand only when building a custom layout.
+`<SidebarLayout>` and `<CenteredLayout>` already wrap their content in a `<RouteCache>`. Use it by hand only in a custom layout.
 
 **Things to know:**
 
-- Pages are kept in a least-recently-used map keyed by `path`. Once `maxCached` pages are retained the least-recently-visited one is unmounted (and loses its state). A never-seen or evicted page mounts fresh at the top.
-- A page can own other paths with `<RouteConfig path>`, for example its tabs (`/dave/{tab}`). A navigation to one of those paths keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide.
-- A page with `<RouteConfig cache={false}>` is not kept: it unmounts as you leave it, so the next visit starts again. Use it for a form that makes or edits something, so it never shows old input.
-- The cache key is the path only, not the `?query`. So `/new?from=a` and `/new?from=b` are one page.
-- Pass `maxCached={0}` (or less) to disable caching entirely — the page renders directly and unmounts as soon as you leave it.
-- `<Activity mode="hidden">` preserves a hidden page's *state* while unmounting its *effects*, so subscriptions, observers (e.g. infinite-scroll), and timers pause and resume cleanly as the page is hidden and shown.
-- Each snapshot is frozen under its own `<Meta>` context, so the same single `children` element resolves a different page per path and a hidden page never re-renders for someone else's URL.
-- For per-page **scroll** to be preserved the cache has to wrap the scroll container itself — which is why it lives in the layout (around the scrollable column) rather than below it inside the router. Surrounding chrome (sidebar, drawer state) stays outside the cache, so it is neither duplicated nor remounted on navigation.
+- Each page is keyed by its stack and its depth in that stack, not by its URL. See `NavigationStore` for how stacks work.
+- A page leaves the cache when it leaves its stack: when you go back from it, or when its stack goes back to the root. So a page you went back from mounts fresh the next time you open it.
+- After a browser back, the browser forward button shows the next page fresh (from the top), because that page left its stack when you went back.
+- The top page of each stack is never dropped, so each tab always shows the page you left. Other pages are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- `NavigationStore.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
+- The same URL open in two stacks is two separate pages.
+- A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
+- Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
+- `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
+- The cache must wrap the scroll container itself to keep each page's scroll. So it goes in the layout around the scrolling column, not inside the router. Chrome outside the cache (a sidebar, a tab bar) is not duplicated or remounted.
+- Put a page `<Transition>` around the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
 ```tsx
-import { RouteCache } from "shelving/ui";
+import { HorizontalTransition, RouteCache, Router } from "shelving/ui";
 
-<SidebarLayout sidebar={<Menu/>}>
-  <RouteCache>
-    <Router routes={routes}/>
-  </RouteCache>
-</SidebarLayout>
+function MyLayout() {
+  return (
+    <HorizontalTransition>
+      <RouteCache>
+        <main className="scroll">
+          <Router routes={ROUTES}/>
+        </main>
+      </RouteCache>
+    </HorizontalTransition>
+  );
+}
 ```
+
+Keep fewer pages:
+
+```tsx
+<RouteCache maxCached={5}>
+  <Router routes={ROUTES}/>
+</RouteCache>
+```
+
+Clear a create form after it saves. Change the `key` of the `<Form>`, so it mounts again with no input:
+
+```tsx
+import { useState } from "react";
+import { Form, requireNavigation } from "shelving/ui";
+
+function NewPostPage() {
+  const nav = requireNavigation();
+  const [formKey, setFormKey] = useState(0);
+  return (
+    <Form
+      key={formKey}
+      schema={POST_SCHEMA}
+      onSubmit={async data => {
+        const id = await createPost(data);
+        setFormKey(k => k + 1);
+        nav.forward(`/post/${id}`);
+      }}
+    />
+  );
+}
+```
+
+For a plain HTML `<form>`, call `form.reset()` after the submit.
 
 
 ## Signatures
@@ -32997,165 +33422,14 @@ RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `RouteCacheProps` |  |
-| `.maxCached` | `number \| undefined` | Number of recently-visited URLs to keep mounted (but hidden) so the entire state of their subtree — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — is restored intact when navigating back or forward to them. - Defaults to `10`. Once the limit is reached the least-recently-visited entry is unmounted. - Set to `0` (or less) to disable caching and unmount the subtree as you leave each URL. Read only. Optional. |
-| `.children` | `ReactNode` | The content to render for the current URL and keep alive (hidden) for recently-visited URLs. Read only. |
+| `.maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The top page of each stack is never dropped, even past the limit, so a tab always shows the page you left. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `.children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 ## Returns
 
 | Type | Description |
 | --- | --- |
 | `ReactNode` |  |
-
-
----
-
-# RouteConfigProps
-
-- Kind: interface
-- Import: `import { RouteConfigProps } from "shelving/ui";`
-
-Props for `<RouteConfig>` — the settings of a page for the surrounding `<Router>` and `<RouteCache>`, and the page content.
-
-## Signatures
-
-```ts
-{
-	readonly path?: AbsolutePath | undefined;
-	readonly cache?: boolean | undefined;
-	readonly children?: ReactNode;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `path` | `AbsolutePath \| undefined` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. Optional. |
-| `cache` | `boolean \| undefined` | Set to `false` so `<RouteCache>` drops the page when you leave it, and the next visit shows a new page. Defaults to `true`. Read only. Optional. |
-| `children` | `ReactNode` | The page content. Read only. Optional. |
-
-
----
-
-# RouteConfig
-
-- Kind: component
-- Import: `import { RouteConfig } from "shelving/ui";`
-
-Configure the current page for the surrounding `<Router>` (and `<RouteCache>`).
-- `path` says the page owns every path that matches a template. A navigation to a path the page owns keeps the same
-  page mounted, so it keeps its scroll and state, and a `<ViewTransition>` around the page does not run an enter or
-  exit. The page updates for the new URL. Use it for a page whose tabs each have their own path: `path="/dave/{tab}"`.
-- Put the real values in the template. `/{name}/{tab}` would make every person's profile one page.
-- `cache={false}` makes `<RouteCache>` drop the page when you leave it, so the next visit starts again with no old
-  state. Use it for a form that makes or edits something, for example a "New challenge" page.
-
-Configure the current page for the surrounding `<Router>` (and `<RouteCache>`, if there is one). It has one prop for each setting, so a page wraps itself in one `<RouteConfig>` for all its settings.
-
-- `path` says the page owns every path that matches a template. A navigation between paths the page owns keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide. Use it for a page whose tabs each have their own path.
-- `cache={false}` tells `<RouteCache>` to drop the page when you leave it. The next visit starts again, with no old state. Use it for a form that makes or edits something, so it never shows old input.
-
-**Things to know:**
-
-- Without `path`, each path is its own page, so `/challenge/123` and `/challenge/456` stay separate pages.
-- Put the real values in the template (`/dave/{tab}`). A template such as `/{name}/{tab}` makes every profile the same page.
-- The page still renders for the new URL, so it reads the tab from the URL as usual.
-- The cache key is the path only, not the `?query`. A page that reads its `?query` once (for example `/new?from=123`) should use `cache={false}`, so a visit with another `?query` does not show the old page.
-- It works with or without a `<RouteCache>`. In a nested router's page, it tells only that nested router.
-
-## Usage
-
-```tsx
-import { Page, RouteConfig } from "shelving/ui";
-
-// Each tab has its own path, and all of them are the same page.
-function ProfilePage({ name, tab }: { name: string; tab?: string }) {
-  return (
-    <RouteConfig path={`/${name}/{tab}`}>
-      <Page title={name}>
-        <ProfileTabs tab={tab} />
-      </Page>
-    </RouteConfig>
-  );
-}
-
-// A new form on each visit.
-function NewChallengePage({ from }: { from?: string }) {
-  return (
-    <RouteConfig cache={false}>
-      <Page title="New challenge">
-        <ChallengeForm from={from} />
-      </Page>
-    </RouteConfig>
-  );
-}
-```
-
-
-## Signatures
-
-```ts
-RouteConfig({ path, cache, children }: RouteConfigProps): ReactNode
-```
-
-## Parameters
-
-| Param | Type | Description |
-| --- | --- | --- |
-| `props` | `RouteConfigProps` |  |
-| `.path` | `AbsolutePath \| undefined` | Path template the page owns, for example `/dave/{tab}`. Every path that matches it shows this same page. Read only. Optional. |
-| `.cache` | `boolean \| undefined` | Set to `false` so `<RouteCache>` drops the page when you leave it, and the next visit shows a new page. Defaults to `true`. Read only. Optional. |
-| `.children` | `ReactNode` | The page content. Read only. Optional. |
-
-## Returns
-
-| Type | Description |
-| --- | --- |
-| `ReactNode` |  |
-
-
----
-
-# RouteState
-
-- Kind: interface
-- Import: `import { RouteState } from "shelving/ui";`
-
-The route state of one page, shared by `<Router>`, `<RouteCache>` and `<RouteConfig>`.
-- `path` is the template of the paths the page owns, set by `<RouteConfig path>`.
-- `cache` is `false` when `<RouteCache>` drops the page as you leave it, set by `<RouteConfig cache>`.
-- `entry` is the page's `<RouteCache>` entry, so `<RouteConfig>` in a top-level page also tells the cache.
-- `router` marks a state made by `<Router>`, so a nested router does not pass the cache entry on.
-
-## Signatures
-
-```ts
-{
-	path?: AbsolutePath | undefined;
-	cache?: boolean | undefined;
-	readonly entry?: RouteState | undefined;
-	readonly router?: true | undefined;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `path` | `AbsolutePath \| undefined` | Optional. |
-| `cache` | `boolean \| undefined` | Optional. |
-| `entry` | `RouteState \| undefined` | Read only. Optional. |
-| `router` | `true \| undefined` | Read only. Optional. |
-
-
----
-
-# RouteContext
-
-- Kind: constant
-- Import: `import { RouteContext } from "shelving/ui";`
-
-React context holding the `RouteState` of the current page, provided by `<Router>` and `<RouteCache>`.
 
 
 ---
@@ -33197,7 +33471,8 @@ Match the current URL against `routes` and render the matched element.
 - When `base` is set, the effective path is the URL after stripping the base prefix.
 - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
 - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
-- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RouteConfig path>` stays mounted when the path changes to one of them.
+- Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
+- Elsewhere, each path is a new page, so a component route remounts when the path changes.
 - Returns `null` when there's no URL in context or the URL is outside the base.
 
 A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no `<Navigation>` at all — wrap it in `<Navigation>` on the client to get live URL updates.
@@ -33208,6 +33483,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
+- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
 - `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (or use a layout that already does) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage
@@ -33322,7 +33598,7 @@ const SIDEBARRED_ROUTES = {
 
 ### Keeping page state
 
-By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is restored on back/forward navigation. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
+By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
 
 ### SSR / static rendering
 
@@ -33462,6 +33738,99 @@ Route table mapping `{ path: RouteComponent | redirectPath | ReactElement }` for
 - [AbsolutePath](util/path/AbsolutePath.md): Absolute path string starting with a / slash.
 - [Nullish](util/null/Nullish.md): Nullish is the value or null or undefined.
 - [Route](ui/Route.md): Valid route values:
+
+
+---
+
+# StackButtonProps
+
+- Kind: interface
+- Import: `import { StackButtonProps } from "shelving/ui";`
+- Extends: `Omit<ButtonProps, "href" | "onClick" | "selected">`
+
+Props for `<StackButton>`: the `stack` it opens, plus the usual `Button` props except `href` and `onClick`.
+
+## Signatures
+
+```ts
+{
+	readonly stack: AbsolutePath;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `stack` | `AbsolutePath` | Root path of the stack this button opens. It must be one of the `stacks` on `<Navigation>`. Read only. |
+
+
+---
+
+# StackButton
+
+- Kind: component
+- Import: `import { StackButton } from "shelving/ui";`
+
+Button for one stack in a tab bar.
+- Tap another stack's button: go to the page you left in that stack. The page slides left or right by tab order.
+- Tap the current stack's button: go back to its root.
+- Tap it again at the root: scroll the page to the top.
+- It is selected while its stack is the current stack.
+- Without the browser Navigation API (and in a server render) it is a plain link to the stack's root.
+
+A button for one stack in a tab bar. It acts like a tab button in a phone app.
+
+**Things to know:**
+
+- Tap another stack's button: go to the page you left in that stack. The page slides left or right, by tab order.
+- Tap the current stack's button: go back to the root of the stack. The page slides back.
+- Tap it again at the root: scroll the page to the top. It scrolls the window, and each visible `<main>` or `[data-scroll]` element.
+- It is selected (`aria-current`) while its stack is the current stack. On an unstacked page (for example a deep link or a login page), no stack button is selected.
+- `stack` must be one of the `stacks` on `<Navigation>`.
+- It takes the usual `<Button>` props, except `href`, `onClick` and `selected`.
+- Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while its stack is the starting stack.
+- In a server-rendered app, the server renders a link and the browser renders a button, so React warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+
+## Usage
+
+```tsx
+import { Navigation, StackButton } from "shelving/ui";
+import { HomeIcon, SearchIcon, UserIcon } from "./icons.js";
+
+<Navigation stacks={["/home", "/discover", "/profile"]}>
+  {/* … */}
+  <nav className="tab-bar">
+    <StackButton stack="/home" title="Home"><HomeIcon/></StackButton>
+    <StackButton stack="/discover" title="Discover"><SearchIcon/></StackButton>
+    <StackButton stack="/profile" title="Profile"><UserIcon/></StackButton>
+  </nav>
+</Navigation>
+```
+
+## Styling
+
+`<StackButton>` renders a `<Button>`, so it has the same styling hooks. See `<Button>`.
+
+
+## Signatures
+
+```ts
+StackButton({ stack, ...props }: StackButtonProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `StackButtonProps` |  |
+| `.stack` | `AbsolutePath` | Root path of the stack this button opens. It must be one of the `stacks` on `<Navigation>`. Read only. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
 
 
 ---
@@ -35693,7 +36062,7 @@ A direction-aware `<Transition>` preset that slides its children horizontally �
 **Things to know:**
 
 - Slides right by default and when the type is `"forward"`; slides left when the type is `"back"`.
-- Inside `<Navigation>` the direction is automatic: a link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` type, and the browser back or forward button sets `"back"`. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click or `NavigationStore.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationStore.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationStore.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full width apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
@@ -36103,7 +36472,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 **Things to know:**
 
 - Slides down by default and when the type is `"forward"`; slides up when the type is `"back"`.
-- Inside `<Navigation>` the direction is automatic: a link click, `NavigationStore.forward()` or `NavigationStore.redirect()` sets the `"forward"` type, and the browser back or forward button sets `"back"`. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click or `NavigationStore.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationStore.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationStore.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
@@ -37653,6 +38022,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 {
 	readonly root?: ImmutableURL | undefined;
 	readonly url?: ImmutableURL | undefined;
+	readonly stack?: AbsolutePath | undefined;
 	readonly app?: string | undefined;
 	readonly title?: string | undefined;
 	readonly description?: string | undefined;
@@ -37672,7 +38042,8 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | Property | Type | Description |
 | --- | --- | --- |
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
-| `url` | `ImmutableURL \| undefined` | URL of the current page (used to update history API and as the initial URL for routing). Read only. Optional. |
+| `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
@@ -37817,7 +38188,8 @@ mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta
 | --- | --- | --- |
 | `meta1` | `Meta` | The existing fully-resolved `Meta` to merge into. |
 | `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
-| `.url` | `ImmutableURL \| undefined` | URL of the current page (used to update history API and as the initial URL for routing). Read only. Optional. |
+| `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `.stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
 | `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |

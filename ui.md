@@ -193,13 +193,14 @@ The components below are listed in the index following this page; this is the sh
 - [Empty](ui/Empty.md): Message for a list with nothing in it: centred, grey content with space around it.
 - [Notice](ui/Notice.md): Block-level status callout with an icon and message, used to highlight feedback.
 - [Notices](ui/Notices.md): Render the global list of notices and subscribe to incoming "notice" events.
-- [Head](ui/Head.md): Emit the current page's head metadata and sync browser history to its URL.
+- [Head](ui/Head.md): Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
 - [HTML](ui/HTML.md): Render the full <html> document shell wrapping <head> and <body>.
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
-- [Navigation](ui/Navigation.md): Top-level navigation provider.
-- [RouteCache](ui/RouteCache.md): Keep-alive page cache keyed by the current URL — drop it into a layout around its scrolling content region.
-- [RouteConfig](ui/RouteConfig.md): Configure the current page for the surrounding <Router> (and <RouteCache>).
+- [BackButton](ui/BackButton.md): Back button for the current stack.
+- [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
+- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
+- [StackButton](ui/StackButton.md): Button for one stack in a tab bar.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
 - [Cell](ui/Cell.md): Table cell.
 - [Table](ui/Table.md): Table block — rendered as <table>.
@@ -321,7 +322,7 @@ The components below are listed in the index following this page; this is the sh
 - [FormStore](ui/FormStore.md): Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
-- [NavigationStore](ui/NavigationStore.md): Store holding the current navigation URL and driving browser history.
+- [NavigationStore](ui/NavigationStore.md): Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
 
 ## Interfaces
 
@@ -455,11 +456,13 @@ The components below are listed in the index following this page; this is the sh
 - [NoticesProps](ui/NoticesProps.md): Props for <Notices> — the place for the list, and flex styling variants for the notices container.
 - [HTMLProps](ui/HTMLProps.md): Props for <HTML> — initial Meta (language/root/app) plus the page children.
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
-- [NavigationProps](ui/NavigationProps.md): Props for <Navigation> — initial Meta (url/base) plus optional children.
-- [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache> — the maxCached size and the content children to keep alive per URL.
-- [RouteConfigProps](ui/RouteConfigProps.md): Props for <RouteConfig> — the settings of a page for the surrounding <Router> and <RouteCache>, and the page content.
-- [RouteState](ui/RouteState.md): The route state of one page, shared by <Router>, <RouteCache> and <RouteConfig>.
+- [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
+- [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
+- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationStore saves on each browser history entry.
+- [NavigationPosition](ui/NavigationPosition.md): Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
+- [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache>: the maxCached size and the content children to keep alive for each page in the stacks.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
+- [StackButtonProps](ui/StackButtonProps.md): Props for <StackButton>: the stack it opens, plus the usual Button props except href and onClick.
 - [BlockVariants](ui/BlockVariants.md): Variants for block level elements.
 - [ColorVariants](ui/ColorVariants.md): Variant props for colouring an element, e.g. color="purple".
 - [DurationVariants](ui/DurationVariants.md): Variant props for the transition duration of an element, e.g. duration="fast".
@@ -560,7 +563,7 @@ The components below are listed in the index following this page; this is the sh
 - [LOADING_NOTICE](ui/LOADING_NOTICE.md): Shared loading <Notice> element showing the loading spinner.
 - [NOTICES](ui/NOTICES.md): Global NoticesStore shown by <Notices>, accepting any of the default statuses.
 - [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationStore, provided by <Navigation>.
-- [RouteContext](ui/RouteContext.md): React context holding the RouteState of the current page, provided by <Router> and <RouteCache>.
+- [NavigationPositionContext](ui/NavigationPositionContext.md): React context holding where the app is in its stacks, published by <Navigation> with each URL change.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
 - [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.

@@ -8,7 +8,8 @@ Match the current URL against `routes` and render the matched element.
 - When `base` is set, the effective path is the URL after stripping the base prefix.
 - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
 - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
-- Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RouteConfig path>` stays mounted when the path changes to one of them.
+- Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
+- Elsewhere, each path is a new page, so a component route remounts when the path changes.
 - Returns `null` when there's no URL in context or the URL is outside the base.
 
 A pure URL matcher: it reads the current URL from the surrounding `<Meta>` context, matches it against a `routes` table, and renders the matched element. It has no client requirements, so it works for SSR, static rendering, and tests with no `<Navigation>` at all — wrap it in `<Navigation>` on the client to get live URL updates.
@@ -19,6 +20,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
+- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
 - `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (or use a layout that already does) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage
@@ -133,7 +135,7 @@ const SIDEBARRED_ROUTES = {
 
 ### Keeping page state
 
-By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is restored on back/forward navigation. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
+By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
 
 ### SSR / static rendering
 

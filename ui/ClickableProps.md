@@ -17,7 +17,6 @@ Props for a thing that can be clicked — either has a string `href` link or an 
 	download?: string | undefined;
 	title?: string | undefined;
 	selected?: boolean | undefined;
-	back?: boolean | undefined;
 }
 ```
 
@@ -32,4 +31,3 @@ Props for a thing that can be clicked — either has a string `href` link or an 
 | `download` | `string \| undefined` | If `href` is present then this is the suggested filename for downloading. Optional. |
 | `title` | `string \| undefined` | Title shown on hover. Optional. |
 | `selected` | `boolean \| undefined` | Whether this is the selected item in a group. Sets `aria-pressed` on a `<button>`, or `aria-current` on an `<a>`. Optional. |
-| `back` | `boolean \| undefined` | If `href` is present, then `<Navigation>` opens the link with a back transition. Use it for a "back to" link. Sets `data-back` on the `<a>`. Optional. |

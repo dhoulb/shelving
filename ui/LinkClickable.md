@@ -17,7 +17,6 @@ LinkClickable({
 	download,
 	title,
 	selected,
-	back,
 	children = "Go",
 	className,
 }: StylableClickableProps): ReactElement

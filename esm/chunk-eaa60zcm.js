@@ -1,0 +1,2 @@
+import{rt}from"./chunk-q9gxqpy1.js";import{r}from"./chunk-90kryzxh.js";function nt(e){return e instanceof Set}function ys(e,t=ys){if(!nt(e))throw new r("Must be set",{received:e,caller:t})}function ju(e){return nt(e)?e:new Set(e)}function $u(e,t){return t>e.size?e:new Set(rt(e,t))}function hs(e,t){return e.has(t)}function gs(e,t,n=gs){if(!hs(e,t))throw new r("Item must exist in set",{item:t,set:e,caller:n})}function Fu(e,t){return e.add(t),t}function Vu(e,...t){for(let n of t)e.add(n)}function Ku(e,...t){for(let n of t)e.delete(n)}
+export{nt,ys,ju,$u,hs,gs,Fu,Vu,Ku};

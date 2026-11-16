@@ -11,6 +11,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 {
 	readonly root?: ImmutableURL | undefined;
 	readonly url?: ImmutableURL | undefined;
+	readonly stack?: AbsolutePath | undefined;
 	readonly app?: string | undefined;
 	readonly title?: string | undefined;
 	readonly description?: string | undefined;
@@ -30,7 +31,8 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | Property | Type | Description |
 | --- | --- | --- |
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
-| `url` | `ImmutableURL \| undefined` | URL of the current page (used to update history API and as the initial URL for routing). Read only. Optional. |
+| `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
