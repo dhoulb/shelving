@@ -77,7 +77,8 @@ const STACKS = ["/home", "/discover", "/profile"] as const;
 const globals = globalThis as { navigation?: unknown; window?: unknown };
 let fake: FakeNavigation;
 
-function setup(path = "/home"): NavigationStore {
+/** Open the app at `path`, in `stack` (by default the stack whose root is `path`, else `/`). */
+function setup(path = "/home", stack = (STACKS as readonly string[]).includes(path) ? path : "/"): NavigationStore {
 	fake = new FakeNavigation(`${ORIGIN}${path}`);
 	globals.navigation = fake;
 	globals.window = {
@@ -89,7 +90,7 @@ function setup(path = "/home"): NavigationStore {
 		addEventListener: () => undefined,
 		removeEventListener: () => undefined,
 	};
-	const nav = new NavigationStore(`${ORIGIN}${path}`, `${ORIGIN}/`, ...STACKS);
+	const nav = new NavigationStore(`${ORIGIN}${path}`, `${ORIGIN}/`, stack as `/${string}`, ...STACKS);
 	nav.listen();
 	return nav;
 }
@@ -113,7 +114,7 @@ afterEach(() => {
 
 describe("NavigationStore", () => {
 	test("has no history without the Navigation API", () => {
-		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, ...STACKS);
+		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
 		expect(nav.stack.value).toBe("/home");
 		expect(nav.history("/home")).toEqual([]);
 		expect(nav.position).toBe(undefined);
@@ -126,22 +127,36 @@ describe("NavigationStore", () => {
 		expect(new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`).stack.value).toBe("/");
 	});
 
-	test("follows the path without the Navigation API", () => {
+	test("keeps the starting stack without the Navigation API", () => {
 		globals.window = {
 			location: { href: `${ORIGIN}/home` },
 			history: { pushState: () => undefined, replaceState: () => undefined },
 		};
-		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, ...STACKS);
+		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
 		nav.forward("/profile/settings");
-		expect(nav.stack.value).toBe("/");
 		nav.back("/discover");
-		expect(nav.stack.value).toBe("/discover");
+		expect(nav.stack.value).toBe("/home");
 	});
 
-	test("opens a stack root in its stack", () => {
-		const nav = setup("/profile");
+	test("opens in the starting stack", () => {
+		const nav = setup("/profile/settings", "/profile");
 		expect(nav.stack.value).toBe("/profile");
-		expect(getEntries()).toEqual(["/profile /profile@0"]);
+		expect(getEntries()).toEqual(["/profile/settings /profile@0"]);
+	});
+
+	test("opens a stack root in / with no starting stack", () => {
+		const nav = setup("/profile", "/");
+		expect(nav.stack.value).toBe("/");
+		expect(getEntries()).toEqual(["/profile /@0"]);
+	});
+
+	test("keeps the saved stack after a reload", () => {
+		fake = new FakeNavigation(`${ORIGIN}/home/post/1`);
+		(fake.list[0] as FakeEntry).state = { stack: "/home", depth: 1 };
+		globals.navigation = fake;
+		globals.window = { location: { href: `${ORIGIN}/home/post/1` } };
+		const nav = new NavigationStore(`${ORIGIN}/home/post/1`, `${ORIGIN}/`, "/profile", ...STACKS);
+		expect(nav.stack.value).toBe("/home");
 	});
 
 	describe("unstacked pages", () => {

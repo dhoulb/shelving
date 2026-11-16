@@ -37,21 +37,20 @@ describe("Navigation", () => {
 		expect(html).toContain('class="back"');
 	});
 
-	test("renders a stack button as a link to its root, selected in its stack", () => {
+	test("renders a stack button as a link to its root, selected in the starting stack", () => {
 		const html = renderToStaticMarkup(
-			<Navigation url="http://x.com/home" stacks={["/home", "/profile"]}>
+			<Navigation url="http://x.com/profile/settings" stacks={["/home", "/profile"]} stack="/profile">
 				<StackButton stack="/home">Home</StackButton>
 				<StackButton stack="/profile">Profile</StackButton>
 			</Navigation>,
 		);
-		expect(html).toContain('href="http://x.com/home"');
-		expect(html).toContain('href="http://x.com/profile"');
-		expect(html.match(/aria-current/g)?.length).toBe(1);
+		expect(html).toContain('<a href="http://x.com/home">Home</a>');
+		expect(html).toContain('<a href="http://x.com/profile" aria-current="true">Profile</a>');
 	});
 
 	test("selects no stack button on an unstacked page", () => {
 		const html = renderToStaticMarkup(
-			<Navigation url="http://x.com/login" stacks={["/home", "/profile"]}>
+			<Navigation url="http://x.com/settings" stacks={["/home", "/profile"]}>
 				<StackButton stack="/home">Home</StackButton>
 				<StackButton stack="/profile">Profile</StackButton>
 			</Navigation>,

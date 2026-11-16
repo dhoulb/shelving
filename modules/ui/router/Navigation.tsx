@@ -10,7 +10,7 @@ import { NavigationContext, NavigationPositionContext } from "./NavigationContex
 import { type NavigationPosition, NavigationStore } from "./NavigationStore.js";
 
 /**
- * Props for `<Navigation>`: the initial `Meta` (url and root), the `stacks`, and optional `children`.
+ * Props for `<Navigation>`: the initial `Meta` (url, root and stack), the `stacks`, and optional `children`.
  *
  * @see https://shelving.cc/ui/NavigationProps
  */
@@ -21,6 +21,12 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {
 	 * - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`.
 	 */
 	readonly stacks?: readonly AbsolutePath[] | undefined;
+	/**
+	 * Stack of the page the app opens at (for example `"/home"`), like `url` and `root`.
+	 * - Read from this prop, else from the surrounding `<Meta>`, else `"/"`.
+	 * - Used only when the opening history entry has no saved stack. A reload keeps the stack it had.
+	 */
+	readonly stack?: AbsolutePath | undefined;
 }
 
 /** What `<Navigation>` publishes on each change. */
@@ -45,7 +51,7 @@ interface _Published {
  */
 export function Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement {
 	const current = requireMeta(meta);
-	const nav = useInstance(NavigationStore, current.url, current.root, ...stacks);
+	const nav = useInstance(NavigationStore, current.url, current.root, current.stack ?? "/", ...stacks);
 
 	// React runs a `<ViewTransition>` only for a transition update, and `useSyncExternalStore()` always renders a sync update.
 	// So keep the published values in state, and copy each store change into it inside `startTransition()`.
