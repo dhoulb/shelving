@@ -7,11 +7,12 @@ Load a page.
 
 - Wrapped in `<PageCatcher>` so child components can throw errors.
 - Wrapped in `<Suspense>` so child components can throw promises.
+- It renders no layout, so its loading state and error page show inside whatever layout is around it.
 
 ## Signatures
 
 ```ts
-PageLoader({ children, fallback = <CenteredLayout>{LOADING}</CenteredLayout> }: LoaderProps): ReactElement
+PageLoader({ children, fallback = PAGE_LOADING }: LoaderProps): ReactElement
 ```
 
 ## Parameters

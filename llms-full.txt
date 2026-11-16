@@ -481,7 +481,7 @@ Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` define
 - **`app/index.html`** — production HTML shell. References `./style.css` and `./index.tsx`; the bundler resolves and bundles from here.
 - **`app/start.html`** — identical shell for local dev, minus any third-party scripts you don't want running locally.
 - **`app/index.tsx`** — mounts `<App />` into `#root`. Nothing else.
-- **`app/App.tsx`** — the composition root of the client: the `ROUTES` table, the app-level context value, and the provider tree (Shelving's `App`, `Navigation`, `PageCatcher`, `Router`, `Dialogs`, `Notices`). Every page component is registered here.
+- **`app/App.tsx`** — the composition root of the client: the `ROUTES` table, the app-level context value, and the provider tree (Shelving's `App`, `Navigation`, `Dialogs`, `Notices`), and the app shell (layout picker, layout, cache and router — see [The app shell](#the-app-shell)). Every page component is registered here.
 - **`app/start.ts`** — local dev server: `Bun.serve` on the port derived from `APP_URL`, serving the HTML shell for all SPA routes and static files (e.g. `/img/*` mapped to `shared/img/`).
 
 ### Routing
@@ -547,6 +547,197 @@ The client has one local database (`DB`, a plain `MemoryDBProvider`). API result
 - Page components use the `*Page` suffix and are registered in `App.tsx`. Layout components use the `*Layout` suffix.
 - **No inline `style` props, ever.** All styling lives in `.module.css` files named after their component (`OrderPage.module.css` for `OrderPage.tsx`).
 - Reusable components expose styling options as **variants**: boolean props mapped to class names in the CSS module. Pages compose existing `shelving/ui` primitives (`Button`, `Notice`, `Page`, `Row`, layouts, transitions) rather than styling raw elements.
+
+### The app shell
+
+The app shell is everything around the pages: the layout, the scroll box, the page cache, the page transition and the tab stacks. **Every part is opt-in.** Start with the smallest shell that works, and add a part only when the app needs it. Each recipe below says what to add and where.
+
+The full nesting, from the outside in, is: contexts, then the app-level catcher, then your layout picker, then the layout, then the transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`, then the page. Leave out the parts you do not need, but keep the order. "Composing an app" on `<App>` has the full rules and a complete `App.tsx`.
+
+#### A simple site: no layout
+
+With no layout, the document body scrolls. This is fine for a site or a small app.
+
+```tsx
+<App app="My site" root="https://example.com/">
+  <Navigation>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Navigation>
+</App>
+```
+
+#### A full-screen app with its own scroll box
+
+Use `<FixedLayout>`. It locks the body and gives one full-screen content slot inside the safe areas. It does not scroll, so put a `<Scroll vertical cover>` in it. `cover` makes the scroll box fill the slot.
+
+```tsx
+<FixedLayout>
+  <Scroll vertical cover>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Scroll>
+</FixedLayout>
+```
+
+#### Content in the middle of the screen
+
+A layout never centres. The page centres its own content with `<Block height="full" middle>`. The block is at least as tall as the scroll box, so short content sits in the middle, and tall content starts at the top and scrolls. Use `top` or `bottom` to put it at an edge. This is how to make a log-in page or an error page.
+
+```tsx
+<Page title="Log in">
+  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+    <LoginForm />
+  </Block>
+</Page>
+```
+
+#### A sidebar
+
+Use `<SidebarLayout sidebar>`. On a narrow screen the sidebar becomes a drawer with a menu button. Fill its content slot the same way as any other layout.
+
+```tsx
+<SidebarLayout sidebar={<Menu />}>
+  <Scroll vertical cover>
+    <Router routes={ROUTES} />
+  </Scroll>
+</SidebarLayout>
+```
+
+#### A tab bar
+
+Use `<AppLayout nav>`. It puts the content slot above a bar, at every screen size. The bar has its own view-transition group, so it stays still while pages slide. Set `nav={false}` to hide the bar.
+
+```tsx
+<AppLayout nav={<StackBar />}>
+  <Scroll vertical cover>
+    <Router routes={ROUTES} />
+  </Scroll>
+</AppLayout>
+```
+
+#### A custom layout with a custom scroll area
+
+Make your own frame when no layout fits, for example a header that stays on screen above the content. A frame does three things:
+
+1. It locks the document, so only its own boxes scroll.
+2. It fills the screen with `position: absolute; inset: 0`, so it works inside a mount element such as `<div id="root">`.
+3. It gives a content slot with `position: relative`, which a `<Scroll vertical cover>` fills.
+
+A frame does not scroll, centre, cache or transition. The app puts those in the slot.
+
+```tsx
+export function TopBarLayout({ bar, children }: TopBarLayoutProps): ReactElement {
+  return (
+    <div className={LAYOUT_CLASS}>
+      <header className={BAR_CLASS}>{bar}</header>
+      <main className={CONTENT_CLASS}>{children}</main>
+    </div>
+  );
+}
+```
+
+```css
+@layer components {
+  html:has(.layout) { height: 100dvh; overflow: hidden; }
+  body:has(.layout) { position: fixed; inset: 0; margin: 0; }
+  .layout { position: absolute; inset: 0; display: flex; flex-direction: column; }
+  .content { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+}
+```
+
+`modules/ui/layout/AppLayout.module.css` in Shelving is a full example, with the safe areas.
+
+#### Other scroll boxes
+
+`<Scroll>` is not only for pages. Use `<Scroll horizontal>` for a wide table, or `<Scroll vertical cover reverse>` for a chat that starts at the end and stays there as messages arrive. See `<Scroll>`.
+
+#### Keep page state when you go back
+
+By default a page unmounts when you leave it, so its scroll position, toggles and form input are lost. Add `<RouteCache>` to keep recent pages mounted but hidden. Put the scroll box **inside** the cache, so each page keeps its own scroll position.
+
+```tsx
+<RouteCache>
+  <Scroll vertical cover>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Scroll>
+</RouteCache>
+```
+
+Keep the layout **outside** the cache, so the chrome has one copy and keeps its own state. Clear a create form after it saves, because the cache keeps its input. See `<RouteCache>`.
+
+#### Page transitions
+
+Put a page transition, for example `<HorizontalTransition>`, **around** `<RouteCache>` and inside the layout. The pages slide and the chrome stays still. Do not put a transition inside the cache around each page: Safari loses the exit animation.
+
+```tsx
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>…</Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
+```
+
+#### Tab stacks, like a phone app
+
+Each tab keeps its own stack of pages, and its back button goes back within that tab. You need four parts:
+
+1. Set `stacks` on `<Navigation>` to the root path of each tab, in tab order, and `stack` to the tab the app opens in: `<Navigation stacks={["/home", "/discover", "/profile"]} stack="/home">`.
+2. Make a tab bar of `<StackButton stack="/home">` buttons, and put it in `<AppLayout nav>`.
+3. Put `<BackButton href="/home" />` in each page header. It goes back in the current tab, or to `href` when there is no page before.
+4. Use `<RouteCache>`, so each tab shows the page you left it on.
+
+Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationStore`, `<StackButton>` and `<BackButton>`.
+
+#### Hide the tab bar on some pages
+
+All pages in one stack share one layout, because they share one cache. So a page cannot change the layout itself. Pick the layout props from the URL in your layout picker, above the router:
+
+```tsx
+function Shell() {
+  const { path } = requireMetaURL();
+  return (
+    <AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
+      <Content />
+    </AppLayout>
+  );
+}
+```
+
+#### Pick a layout by state or path
+
+The layout picker is plain React, so any rule works: the session, the path, or both. Swap to another layout only between sections the user does not move back and forth in, such as log-in and the main app, because a new layout mounts a new cache.
+
+```tsx
+function Shell({ signedIn }: { signedIn: boolean }) {
+  if (!signedIn) return <FixedLayout><Content routes={LOGIN_ROUTES} /></FixedLayout>;
+  return <AppLayout nav={<StackBar />}><Content routes={ROUTES} /></AppLayout>;
+}
+```
+
+Put the slot content (transition, cache, scroll box, loader and router) in one small `Content` component, and reuse it in each layout.
+
+#### Errors and loading
+
+A page, an error page or a loading state never renders a layout. `<PageLoader>` catches errors and shows a loading state inside the scroll box, in the layout the user already sees. An app-level `<Catcher>` sits outside every layout, so it picks one itself:
+
+```tsx
+function AppError({ reason }: ErrorProps) {
+  return (
+    <FixedLayout>
+      <Scroll vertical cover>
+        <ErrorPage reason={reason} />
+      </Scroll>
+    </FixedLayout>
+  );
+}
+```
 
 ## Boundaries
 
@@ -879,6 +1070,18 @@ What changes for users:
 - When you go back from a page, it leaves the cache. So the browser forward button then shows that page fresh, from the top.
 
 See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
+
+### Layouts are frames
+
+Layouts no longer include a `<RouteCache>` or a scroll box. Each layout is a frame with a content slot, so the app chooses the scroll box, the transition and the cache. `<CenteredLayout>` is now `<FixedLayout>`, and it no longer centres or scrolls. `<ErrorPage>` and the `<PageLoader>` fallback no longer render a layout. To upgrade an app:
+
+1. **Fill the `<SidebarLayout>` slot.** Put `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then your `<Router>` in it. Without a scroll box, the content does not scroll. Put a page transition around the `<RouteCache>`, inside the layout, so the sidebar stays still.
+2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">`. The new `height` and `middle` block variants put the content in the middle of the screen, and it still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
+3. **Do not render a layout in a page.** A page, an error page or a loading state never renders a layout. Pick the layout once, above the router. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and a `<Scroll vertical cover>`.
+4. **Use `<AppLayout>` for a tab bar (optional).** `<AppLayout nav={<StackBar />}>` puts a bar of `<StackButton>`s below the content slot. Set `nav={false}` to hide it for some pages.
+5. **Rename the scroll focus hook.** `--scrollable-focus-border` is now `--scroll-focus-border`.
+
+See "Composing an app" on `<App>` for the full nesting rules and an example `App.tsx`, and [The app shell](#the-app-shell) above for each part as a recipe.
 
 ### From `CacheDBProvider` to `HydratingAPIProvider`
 
@@ -20062,7 +20265,7 @@ The components below are listed in the index following this page; this is the sh
 
 **Content.** Block-level structure starts with `<Card>`, `<Section>`, and the `<Heading>` / `<Title>` family, with `<Table>`, `<List>`, and `<Figure>` for specific shapes; wrap longform copy in `<Prose>`. Inline pieces — `<Link>`, `<Code>`, `<Strong>`, `<Mark>` — live inside that block content. To render a Markdown string as components, use `<Markup>`.
 
-**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<CenteredLayout>` or `<SidebarLayout>`, and drive URLs with `<Navigation>` and `<Router>`.
+**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`, and drive URLs with `<Navigation>` and `<Router>`. A layout is a frame: it sits above the router, and the app fills its content slot with `<RouteCache>` and `<Scroll>`. See "Composing an app" on `<App>`.
 
 **Interaction.** Forms start at `<Form>`, which wires `<Field>` and the typed inputs to a `FormStore`; `<Button>` is the standalone action. Overlays are `<Dialog>` and `<Modal>`; navigation menus are `<Menu>` and `<MenuItem>`; transient feedback is `<Notice>` (and the global `<Notices>` list); animate enter/leave with `<Transition>`.
 
@@ -20176,14 +20379,15 @@ The components below are listed in the index following this page; this is the sh
 - [DataSchemaInput](ui/DataSchemaInput.md): Show a DataInput for a nested DataSchema.
 - [SchemaField](ui/SchemaField.md): Show the appropriate input for a schema, wrapped in a <Field> with its label and message.
 - [SelectInput](ui/SelectInput.md): Dropdown input bound to a string value, rendered as a <select> of the provided options.
-- [CenteredLayout](ui/CenteredLayout.md): Layout that centres its content with no header/footer and a narrow max-width.
-- [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a scrollable main content column.
+- [AppLayout](ui/AppLayout.md): Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
+- [FixedLayout](ui/FixedLayout.md): Layout with no chrome: the whole screen is one content slot.
+- [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a content slot.
 - [Menu](ui/Menu.md): A <menu> list of <MenuItem> children.
 - [MenuItem](ui/MenuItem.md): A <li> containing an <a> link, plus optional submenu content shown when this item is "proud".
 - [Catcher](ui/Catcher.md): React error boundary that renders a fallback component when any descendant throws.
 - [ErrorNotice](ui/ErrorNotice.md): Render a caught error as an inline <Notice> with a retry button.
 - [PageCatcher](ui/PageCatcher.md): Error boundary for a whole page that renders a full <ErrorPage> fallback on error.
-- [ErrorPage](ui/ErrorPage.md): Render a caught error as a full-page <Page> with a centered <ErrorNotice>.
+- [ErrorPage](ui/ErrorPage.md): Render a caught error as a <Page> with an <ErrorNotice> in a narrow column, centred in the middle of the screen.
 - [Icon](ui/Icon.md): Render the icon for a given status, coloured to match.
 - [Loader](ui/Loader.md): Load a component.
 - [PageLoader](ui/PageLoader.md): Load a page.
@@ -20198,7 +20402,7 @@ The components below are listed in the index following this page; this is the sh
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [BackButton](ui/BackButton.md): Back button for the current stack.
 - [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
-- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
+- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a <Scroll vertical cover> box.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
 - [StackButton](ui/StackButton.md): Button for one stack in a tab bar.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
@@ -20271,10 +20475,11 @@ The components below are listed in the index following this page; this is the sh
 - [getFlexClass()](ui/getFlexClass.md): Get the flex layout class for a component from its flex variant props.
 - [getGapClass()](ui/getGapClass.md): Get the gap class for a component from its gap variant prop.
 - [getGridClass()](ui/getGridClass.md): Get the grid layout class for a component from its grid variant props.
+- [getHeightClass()](ui/getHeightClass.md): Get the height class for a component from its height, top, middle and bottom variant props.
 - [getIndentClass()](ui/getIndentClass.md): Get the inline-padding ("indent") class for a component from its indent variant prop.
 - [getPaddingClass()](ui/getPaddingClass.md): Get the block-padding class for a component from its padding variant prop.
 - [getRadiusClass()](ui/getRadiusClass.md): Get the corner-radius class for a component from its radius variant prop.
-- [getScrollClass()](ui/getScrollClass.md): Get the scroll class for a component from its horizontal / vertical variant props.
+- [getScrollClass()](ui/getScrollClass.md): Get the scroll class for a component from its horizontal, vertical, cover and reverse variant props.
 - [getShadowClass()](ui/getShadowClass.md): Get the drop-shadow class for a component from its shadow variant prop.
 - [getSpaceClass()](ui/getSpaceClass.md): Get the block spacing class for a component from its space="" variant prop.
 - [getStatusClass()](ui/getStatusClass.md): Get the status tint class for a component from its status variant prop.
@@ -20436,7 +20641,8 @@ The components below are listed in the index following this page; this is the sh
 - [SelectProps](ui/SelectProps.md): Props for SelectInput, a dropdown <select> bound to a string value.
 - [TextareaInputProps](ui/TextareaInputProps.md): Props for TextareaInput, a multiline text input bound to a string value.
 - [TextInputProps](ui/TextInputProps.md): Props for TextInput, a single-line text input bound to a string value.
-- [CenteredLayoutProps](ui/CenteredLayoutProps.md): Props for <CenteredLayout> — optional children plus width (of the centred column) and padding / indent (block / inline padding of the scroll area) variants.
+- [AppLayoutProps](ui/AppLayoutProps.md): Props for <AppLayout>: the nav bar content and the content slot children.
+- [FixedLayoutProps](ui/FixedLayoutProps.md): Props for <FixedLayout>: the content slot children.
 - [SidebarLayoutProps](ui/SidebarLayoutProps.md): Props for <SidebarLayout> — the sidebar column content, main children, and a right placement flag.
 - [MenuProps](ui/MenuProps.md): Props for <Menu> — optional <MenuItem> children.
 - [MenuItemProps](ui/MenuItemProps.md): Props for <MenuItem> — <Clickable> props plus children whose first node is the label and the rest the submenu.
@@ -20469,10 +20675,11 @@ The components below are listed in the index following this page; this is the sh
 - [FlexVariants](ui/FlexVariants.md): Variant props for flex layout — opt-in modifiers any component can mix in via getFlexClass().
 - [GapVariants](ui/GapVariants.md): Variant props for the gap between a component's children, e.g. gap="large".
 - [GridVariants](ui/GridVariants.md): Variant props for grid layout, e.g. columns={3} gap="normal".
+- [HeightVariants](ui/HeightVariants.md): Variant props that set a component's height, and where its content sits inside that height, e.g. height="full" middle.
 - [IndentVariants](ui/IndentVariants.md): Variant props for the inline-padding ("indent", left + right) of a component, e.g. indent="normal".
 - [PaddingVariants](ui/PaddingVariants.md): Variant props for the block-padding (top + bottom) of a component, e.g. padding="large".
 - [RadiusVariants](ui/RadiusVariants.md): Variant props for the corner radius of an element, e.g. radius="large".
-- [ScrollVariants](ui/ScrollVariants.md): Variant props selecting which scroll axes are enabled on an element.
+- [ScrollVariants](ui/ScrollVariants.md): Variant props for a scroll region: which axes scroll, plus cover and reverse.
 - [ScrollComponentProps](ui/ScrollComponentProps.md): Props for the Scroll component — children plus scroll-axis variants.
 - [ShadowVariants](ui/ShadowVariants.md): Variant props for the drop shadow of an element, e.g. shadow="large".
 - [SpaceVariants](ui/SpaceVariants.md): Variants to control block spacing on components, e.g. space="large".
@@ -20521,6 +20728,7 @@ The components below are listed in the index following this page; this is the sh
 - [ColorVariant](ui/ColorVariant.md): Enumerated colour names selectable via the color="purple" prop for components that support that support ColorVariants
 - [DurationValue](ui/DurationValue.md): Allowed values for transition timing for components that support DurationVariants
 - [ColumnsVariant](ui/ColumnsVariant.md): Number of equal-width columns selectable via the columns variant prop.
+- [HeightVariant](ui/HeightVariant.md): Enumerated height selectable via the height variant prop.
 - [IndentVariant](ui/IndentVariant.md): Allowed values for inline-padding ("indent") for components that support IndentVariants
 - [RadiusVariant](ui/RadiusVariant.md): Allowed values for border radius for components that support RadiusVariants
 - [ShadowVariant](ui/ShadowVariant.md): Enumerated drop-shadow scale selectable via the shadow="normal" variant prop.
@@ -20613,17 +20821,19 @@ Use `<App>` when mounting into an existing HTML page on the client. For server-s
 The smallest single-screen app — `<App>` wraps a layout and some content:
 
 ```tsx
-import { App, CenteredLayout, Section, Title, Paragraph } from "shelving/ui";
+import { App, FixedLayout, Paragraph, Scroll, Section, Title } from "shelving/ui";
 
 function HelloApp() {
   return (
     <App app="My app">
-      <CenteredLayout>
-        <Section width="narrow">
-          <Title>Hello</Title>
-          <Paragraph>Welcome to the app.</Paragraph>
-        </Section>
-      </CenteredLayout>
+      <FixedLayout>
+        <Scroll vertical cover>
+          <Section width="narrow">
+            <Title>Hello</Title>
+            <Paragraph>Welcome to the app.</Paragraph>
+          </Section>
+        </Scroll>
+      </FixedLayout>
     </App>
   );
 }
@@ -20653,6 +20863,102 @@ export function MyApp() {
 **Setting a `root` URL on `<App>` is strongly recommended.** `root` is the base that site-absolute links and assets (`/favicon.png`, `/base.css`) resolve against, the `<base>` tag rendered by `<HTML>`, and the prefix `<Router>` strips when matching routes. When it's unset, merging a `url` into the meta context derives `root` from that URL's origin (e.g. `https://example.com/`) — a safe fallback for apps served from the domain root, but wrong for apps deployed under a sub-path, so set it explicitly whenever your app doesn't live at `/`.
 
 `<App>` accepts all `PossibleMeta` props (`app`, `root`, `url`, `title`, `language`, `tags`, etc.) and merges them into the context it provides to children. On mount it adds the theme class to `document.body`, which activates the CSS custom property tokens defined in `App.module.css`; on unmount it removes it.
+
+## Composing an app
+
+An app is built from layers, each with one job. Write them in plain sight in `App.tsx`, from the outside in:
+
+1. **Contexts**: `<App>`, your data contexts, `<Navigation>`, `<DialogsContext>`.
+2. **App-level catcher**: a last resort, outside every layout.
+3. **Layout picker**: your own component that picks the layout (and its props) from the session, the path, or any other state.
+4. **Layout**: `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`. It draws the chrome (tab bar, sidebar) and gives a content slot. It knows nothing about the cache.
+5. **Content**: transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. Put it in a small component of your own, and reuse it in each layout.
+6. **Page**: `<Page>` with its title, then the page content. A page renders no layout.
+
+Nesting rules:
+
+- The layout sits **above** the router. A page, an error page or a loading state never renders a layout.
+- The transition goes **around** `<RouteCache>`, not inside it.
+- `<Scroll vertical cover>` goes **inside** `<RouteCache>`, so each page keeps its own scroll.
+- Chrome that keeps state or animates (a tab bar, a sidebar) stays in the layout, **outside** the cache.
+- All pages in one stack must share one layout, because they share one `<RouteCache>`. To change the chrome for some pages (hide the tab bar), change a layout prop from the picker, for example `nav={false}`. Swap to another layout only between sections you do not move back and forth in, such as log-in and the main app.
+
+```tsx
+import { useStore } from "shelving/react";
+import {
+  App, AppLayout, Catcher, DialogsContext, Dialogs, ErrorPage, FixedLayout, HorizontalTransition,
+  Navigation, Notices, PageLoader, requireMetaURL, RouteCache, Router, type ErrorProps, type Routes,
+  Scroll, StackButton,
+} from "shelving/ui";
+
+const STACKS = ["/home", "/discover", "/profile"] as const;
+
+/** 1–2. Contexts and the app-level catcher. No layout here. */
+export function MyApp() {
+  const session = useStore(SESSION).value;
+  return (
+    <App key={session?.id ?? "out"} app="My app" root="https://example.com/">
+      <Navigation stacks={STACKS} stack="/home">
+        <DialogsContext>
+          <Catcher as={AppError}>
+            <Shell signedIn={!!session} />
+          </Catcher>
+          <Dialogs />
+          <Notices />
+        </DialogsContext>
+      </Navigation>
+    </App>
+  );
+}
+
+/** 3–4. Pick the layout. Plain React, so any rule works. */
+function Shell({ signedIn }: { signedIn: boolean }) {
+  const { path } = requireMetaURL();
+  if (!signedIn) return <FixedLayout><Content routes={LOGIN_ROUTES} /></FixedLayout>;
+  return (
+    <AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
+      <Content routes={ROUTES} />
+    </AppLayout>
+  );
+}
+
+/** 5. The content of a layout's slot. */
+function Content({ routes }: { routes: Routes }) {
+  return (
+    <HorizontalTransition>
+      <RouteCache>
+        <Scroll vertical cover>
+          <PageLoader>
+            <Router routes={routes} />
+          </PageLoader>
+        </Scroll>
+      </RouteCache>
+    </HorizontalTransition>
+  );
+}
+
+/** The tab bar, in the layout, outside the cache. */
+function StackBar() {
+  return <>
+    <StackButton stack="/home" title="Home"><HomeIcon /></StackButton>
+    <StackButton stack="/discover" title="Discover"><SearchIcon /></StackButton>
+    <StackButton stack="/profile" title="Profile"><ProfileIcon /></StackButton>
+  </>;
+}
+
+/** An error outside every layout: the app picks one here. */
+function AppError({ reason }: ErrorProps) {
+  return (
+    <FixedLayout>
+      <Scroll vertical cover>
+        <ErrorPage reason={reason} />
+      </Scroll>
+    </FixedLayout>
+  );
+}
+```
+
+Layouts are optional. With no layout, the document body scrolls, which is fine for a simple site. Use a layout when the app scrolls inside its own boxes: it locks the body and gives a content slot. Every layout is a frame: none of them scroll or centre. A page centres its own content, for example with `<Block height="full" middle width="narrow">`.
 
 For a documentation site, hand an extracted tree to `<TreeApp>` instead — see the `shelving/extract` guide.
 
@@ -30490,14 +30796,127 @@ TextInput({
 
 ---
 
-# CenteredLayoutProps
+# AppLayoutProps
 
 - Kind: interface
-- Import: `import { CenteredLayoutProps } from "shelving/ui";`
-- Extends: `WidthVariants`
+- Import: `import { AppLayoutProps } from "shelving/ui";`
+- Extends: `OptionalChildProps`
 
-Props for `<CenteredLayout>` — optional `children` plus `width` (of the centred column) and `padding` / `indent`
-(block / inline padding of the scroll area) variants.
+Props for `<AppLayout>`: the `nav` bar content and the content slot `children`.
+
+## Signatures
+
+```ts
+{
+	nav?: ReactNode;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `nav` | `ReactNode` | Items for the bar below the content, for example a `<StackButton>` for each tab. Set `false` (or leave it out) to show no bar. Optional. |
+
+
+---
+
+# AppLayout
+
+- Kind: component
+- Import: `import { AppLayout } from "shelving/ui";`
+
+Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
+- It is a frame only: the content slot does not scroll. Fill it with `<Scroll vertical cover>`, inside `<RouteCache>`, so each page scrolls in its own box.
+- The bar sits below the content slot, not over it, and it stays still while a page slides.
+- Set `nav={false}` to hide the bar, for example for a full-screen page. Change the prop in place (from the URL), so the layout and its page cache stay mounted.
+
+A full-viewport layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app. It is a frame only: it draws the bar and gives the content slot, and the app fills the slot.
+
+**Things to know:**
+
+- The content slot does not scroll. Fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box and keeps its own scroll position.
+- The bar sits below the content slot, not over it. So pages need no extra space at the bottom for the bar.
+- The bar shows at every screen size.
+- The content slot stays clear of the notch and the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
+- Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
+- The bar is outside the page cache, so it has one copy. It keeps its state, and the CSS transitions of its items (an active tab) still play while a page slides.
+- The bar has its own view-transition group, so it stays still while the page slides under it.
+- Leave out `nav`, or set it to `false`, to show no bar. The content slot then fills the screen. To hide the bar for some pages, change the prop from the URL, so the layout and its page cache stay mounted: `nav={path.startsWith("/squad/") ? false : <StackBar />}`.
+- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
+
+## Usage
+
+```tsx
+import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
+
+function StackBar() {
+  return <>
+    <StackButton stack="/home" title="Home"><HomeIcon /></StackButton>
+    <StackButton stack="/discover" title="Discover"><SearchIcon /></StackButton>
+    <StackButton stack="/profile" title="Profile"><ProfileIcon /></StackButton>
+  </>;
+}
+
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>
+        <PageLoader>
+          <Router routes={ROUTES} />
+        </PageLoader>
+      </Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
+```
+
+## Styling
+
+| Variable | Styles | Default |
+|---|---|---|
+| `--app-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
+| `--app-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
+| `--app-layout-nav-background` | Bar fill (also fills the home-bar area below it) | `var(--tint-100)` (white) |
+| `--app-layout-nav-color` | Bar text and icon colour | `var(--tint-00)` (black) |
+| `--app-layout-nav-border` | Line above the bar | `var(--stroke-normal) solid var(--tint-90)` |
+| `--app-layout-nav-shadow` | Shadow of the bar, for example a soft shadow above it | `none` |
+| `--app-layout-nav-item-width` | Largest width of one bar item | `6rem` |
+
+The bar keeps its items clear of the home bar and the rounded screen corners with safe-area insets.
+
+**Global tokens it reads** — `--tint-00`, `--tint-90`, `--tint-100`, and `--stroke-normal`.
+
+
+## Signatures
+
+```ts
+AppLayout({ nav, children }: AppLayoutProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `AppLayoutProps` |  |
+| `.nav` | `ReactNode` | Items for the bar below the content, for example a `<StackButton>` for each tab. Set `false` (or leave it out) to show no bar. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
+
+
+---
+
+# FixedLayoutProps
+
+- Kind: interface
+- Import: `import { FixedLayoutProps } from "shelving/ui";`
+- Extends: `OptionalChildProps`
+
+Props for `<FixedLayout>`: the content slot `children`.
 
 ## Signatures
 
@@ -30508,66 +30927,91 @@ Props for `<CenteredLayout>` — optional `children` plus `width` (of the centre
 
 ---
 
-# CenteredLayout
+# FixedLayout
 
 - Kind: component
-- Import: `import { CenteredLayout } from "shelving/ui";`
+- Import: `import { FixedLayout } from "shelving/ui";`
 
-Layout that centres its content with no header/footer and a narrow max-width.
-- Used for e.g. login/register/error/form pages where the content is the only focus.
+Layout with no chrome: the whole screen is one content slot.
+- It locks the document and gives a full-height slot inside the safe areas. It does not scroll or centre.
+- Fill the slot with `<Scroll vertical cover>`. Used for e.g. log-in and error screens, and full-screen pages.
 
-A full-viewport layout that centres its content — vertically and horizontally — inside a narrow max-width column. Good for login, registration, error, and other focused single-purpose pages where the content is the only thing on screen. When the content is taller than the viewport it scrolls vertically, pinned to the top so nothing is clipped.
+A full-viewport layout with no chrome: the whole screen is one content slot. It locks the document, so the page behind never scrolls or rubber-bands, and gives a full-height slot inside the safe areas. Use it for log-in and error screens, and other full-screen pages.
 
 **Things to know:**
 
-- Pass the `width` variant to resize the centred column (e.g. `width="normal"`, `width="wide"`, or `width="full"` to fill the available width).
-- Pass the `padding` (block / top + bottom) and `indent` (inline / left + right) variants to change the space around the content.
-- Like the other full-viewport layouts it owns scroll, padding, and safe-area insets so individual pages don't have to.
+- It is a frame only. It does not scroll or centre. Fill the slot with `<Scroll vertical cover>`, so the content scrolls inside it.
+- Centre the content in the page itself, for example with `<Block height="full" middle width="narrow">`: it puts the content in the middle of the screen, and it still scrolls when it is taller.
+- The slot stays clear of the notch, the home bar and the rounded screen corners (safe-area insets).
+- For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
+- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
 ## Usage
 
 ```tsx
-import { CenteredLayout, Section } from "shelving/ui";
+import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
 
+// The signed-out screens: one layout around their own router.
+<FixedLayout>
+  <Scroll vertical cover>
+    <Router routes={{
+      "/login": LoginPage,
+      "/register": RegisterPage,
+    }} />
+  </Scroll>
+</FixedLayout>
+
+// Each page centres its own content.
 function LoginPage() {
   return (
-    <CenteredLayout width="narrow">
-      <Section>
-        <LoginForm/>
-      </Section>
-    </CenteredLayout>
+    <Page title="Log in">
+      <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+        <LoginForm />
+      </Block>
+    </Page>
   );
 }
 ```
 
-Layouts compose naturally as `<Router>` route values — wrap a group of routes in a shared layout, then route further inside it.
+An app-level error, outside every other layout:
+
+```tsx
+import { Catcher, ErrorPage, type ErrorProps, FixedLayout, Scroll } from "shelving/ui";
+
+function AppError({ reason }: ErrorProps) {
+  return (
+    <FixedLayout>
+      <Scroll vertical cover>
+        <ErrorPage reason={reason} />
+      </Scroll>
+    </FixedLayout>
+  );
+}
+
+<Catcher as={AppError}>…</Catcher>
+```
 
 ## Styling
 
 | Variable | Styles | Default |
 |---|---|---|
-| `--centered-layout-width` | Width of the centred column (capped at 100%) | `var(--width-narrow)` |
-| `--centered-layout-padding` | Block (top/bottom) padding of the scroll area | `var(--space-normal)` |
-| `--centered-layout-indent` | Inline (left/right) padding of the scroll area | `var(--space-normal)` |
-| `--centered-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
-| `--centered-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
+| `--fixed-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
+| `--fixed-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
 
-The column width and the scroll-area padding can also be set per-instance via the `width`, `padding`, and `indent` variant props. The outer element owns its scroll, padding, and safe-area behaviour directly — safe-area insets are applied as transparent borders so they stack with (rather than replace) the padding.
-
-**Global tokens it reads** — `--width-narrow`, `--space-normal`, `--tint-100`, and `--tint-00`.
+**Global tokens it reads** — `--tint-00` and `--tint-100`.
 
 
 ## Signatures
 
 ```ts
-CenteredLayout({ children, ...props }: CenteredLayoutProps): ReactElement
+FixedLayout({ children }: FixedLayoutProps): ReactElement
 ```
 
 ## Parameters
 
 | Param | Type | Description |
 | --- | --- | --- |
-| `props` | `CenteredLayoutProps` |  |
+| `props` | `FixedLayoutProps` |  |
 
 ## Returns
 
@@ -30610,14 +31054,14 @@ Props for `<SidebarLayout>` — the `sidebar` column content, main `children`, a
 - Kind: component
 - Import: `import { SidebarLayout } from "shelving/ui";`
 
-Layout with a fixed-width side column (typically navigation) next to a scrollable main content column.
+Layout with a fixed-width side column (typically navigation) next to a content slot.
 - The sidebar is rendered as `<nav>` — it almost always contains the page's primary navigation.
 - On narrow viewports the sidebar becomes an off-canvas drawer toggled by a single menu button that switches between a burger and a close icon.
 - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
 - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
-- The scrollable content column is kept alive across navigation via `<RouteCache>`, so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
+- It is a frame only: the content slot does not scroll. Fill it with `<Scroll vertical cover>`, inside `<RouteCache>`, so each page scrolls in its own box. The sidebar stays outside the cache, so it keeps its own state and scroll.
 
-A full-viewport layout with a fixed-width side column next to a scrollable main content column. The sidebar renders as a `<nav>` landmark — it almost always holds the primary navigation. On narrow viewports it collapses to an off-canvas drawer toggled by a single burger/close button.
+A full-viewport layout with a fixed-width side column next to a content slot. The sidebar renders as a `<nav>` landmark — it almost always holds the primary navigation. On narrow viewports it collapses to an off-canvas drawer toggled by a single burger/close button.
 
 **Things to know:**
 
@@ -30626,12 +31070,15 @@ A full-viewport layout with a fixed-width side column next to a scrollable main 
 - While the drawer is open an overlay dims the page; clicking the overlay closes it.
 - Under `prefers-reduced-motion: reduce` the drawer snaps open/closed instead of sliding off-canvas; the overlay keeps its dimming fade, which is opacity-only and therefore reduced-motion-safe.
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
-- The layout owns scroll, padding, and safe-area insets so individual pages don't have to.
+- It is a frame only. The content slot does not scroll: fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box. Content put in the slot without a scroll box does not scroll.
+- The sidebar stays outside the page cache, so it keeps its own scroll position and state as pages change.
+- On a narrow screen the menu button floats at the top right of the content slot, above the page.
+- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
 ## Usage
 
 ```tsx
-import { SidebarLayout, Menu, MenuItem, Router } from "shelving/ui";
+import { Menu, MenuItem, PageLoader, RouteCache, Router, Scroll, SidebarLayout } from "shelving/ui";
 
 function AppShell() {
   const nav = (
@@ -30643,13 +31090,19 @@ function AppShell() {
   );
   return (
     <SidebarLayout sidebar={nav}>
-      <Router routes={ROUTES}/>
+      <RouteCache>
+        <Scroll vertical cover>
+          <PageLoader>
+            <Router routes={ROUTES}/>
+          </PageLoader>
+        </Scroll>
+      </RouteCache>
     </SidebarLayout>
   );
 }
 ```
 
-Layouts compose naturally as `<Router>` route values — wrap a group of routes in a shared layout, then route further inside it.
+To slide pages, put a transition around the `<RouteCache>`, inside the layout. The sidebar is outside the transition, so it stays still.
 
 ## Styling
 
@@ -30663,7 +31116,7 @@ Layouts compose naturally as `<Router>` route values — wrap a group of routes 
 | `--sidebar-layout-border` | Divider between sidebar and content, e.g. `1px solid var(--tint-90)` | `none` |
 | `--sidebar-layout-shadow` | Drop shadow of the open drawer on a narrow screen | `var(--shadow-large)` |
 
-The sidebar and content columns own their own scroll behaviour directly (this layout no longer composes a shared `.layout` class).
+The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
 
 **Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--shadow-large`, and `--color-backdrop`.
 
@@ -30993,7 +31446,7 @@ A React error boundary that catches errors thrown anywhere in its subtree and re
 
 **Things to know:**
 
-- `PageCatcher` is a convenience wrapper that renders `ErrorPage` instead — a full-page error display inside a `<CenteredLayout>`.
+- `PageCatcher` is a convenience wrapper that renders `ErrorPage` instead — a page with the error in a narrow column. `ErrorPage` renders no layout, so it shows inside the layout around it. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and `<Scroll vertical cover>` (see `<FixedLayout>`).
 - `RetryButton` reads the retry callback from the nearest `Catcher` via context and renders a `<Button>`. It returns `null` when there is no parent catcher to retry.
 - `ErrorNotice` and `ErrorPage` can be used standalone when you need to display a known error without a boundary. Both use `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
 
@@ -31129,7 +31582,8 @@ PageCatcher({ children }: ChildProps): ReactElement
 - Kind: component
 - Import: `import { ErrorPage } from "shelving/ui";`
 
-Render a caught error as a full-page `<Page>` with a centered `<ErrorNotice>`.
+Render a caught error as a `<Page>` with an `<ErrorNotice>` in a narrow column, centred in the middle of the screen.
+- It renders no layout, so it shows inside whatever layout is around it. Outside every layout (an app-level catcher), wrap it in one, for example `<FixedLayout>` with a `<Scroll vertical cover>`.
 
 ## Signatures
 
@@ -31321,11 +31775,12 @@ Load a page.
 
 - Wrapped in `<PageCatcher>` so child components can throw errors.
 - Wrapped in `<Suspense>` so child components can throw promises.
+- It renders no layout, so its loading state and error page show inside whatever layout is around it.
 
 ## Signatures
 
 ```ts
-PageLoader({ children, fallback = <CenteredLayout>{LOADING}</CenteredLayout> }: LoaderProps): ReactElement
+PageLoader({ children, fallback = PAGE_LOADING }: LoaderProps): ReactElement
 ```
 
 ## Parameters
@@ -32621,16 +33076,20 @@ function UserPage({ id }: { id: string }) {
 }
 ```
 
-Layouts go inside `<Page>`:
+A page renders no layout. The layout goes outside the page, above the router, so every page in it shares one frame. See "Composing an app" on `<App>`.
 
 ```tsx
-import { Page, CenteredLayout } from "shelving/ui";
+import { Block, FixedLayout, Page, Scroll } from "shelving/ui";
 
-<Page title="Sign in">
-  <CenteredLayout>
-    <LoginForm/>
-  </CenteredLayout>
-</Page>
+<FixedLayout>
+  <Scroll vertical cover>
+    <Page title="Sign in">
+      <Block height="full" middle width="narrow">
+        <LoginForm/>
+      </Block>
+    </Page>
+  </Scroll>
+</FixedLayout>
 ```
 
 
@@ -32844,25 +33303,34 @@ import { App, Navigation, Router } from "shelving/ui";
 List the root path of each stack in tab order. Put a `<StackButton>` for each stack in the tab bar.
 
 ```tsx
-import { App, HorizontalTransition, Navigation, RouteCache, Router, StackButton } from "shelving/ui";
+import { App, AppLayout, HorizontalTransition, Navigation, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
 
 const STACKS = ["/home", "/discover", "/profile"] as const;
 
+const TABS = <>
+  <StackButton stack="/home">Home</StackButton>
+  <StackButton stack="/discover">Discover</StackButton>
+  <StackButton stack="/profile">Profile</StackButton>
+</>;
+
 <App root="https://example.com/">
   <Navigation stacks={STACKS}>
-    <HorizontalTransition>
-      <RouteCache>
-        <Router routes={ROUTES}/>
-      </RouteCache>
-    </HorizontalTransition>
-    <nav className="tab-bar">
-      <StackButton stack="/home">Home</StackButton>
-      <StackButton stack="/discover">Discover</StackButton>
-      <StackButton stack="/profile">Profile</StackButton>
-    </nav>
+    <AppLayout nav={TABS}>
+      <HorizontalTransition>
+        <RouteCache>
+          <Scroll vertical cover>
+            <PageLoader>
+              <Router routes={ROUTES}/>
+            </PageLoader>
+          </Scroll>
+        </RouteCache>
+      </HorizontalTransition>
+    </AppLayout>
   </Navigation>
 </App>
 ```
+
+The tab bar is in the layout, outside the cache, so it stays still while pages slide. See "Composing an app" on `<App>` for the full nesting rules.
 
 To select a tab when the app starts, pass the starting `stack`. The app decides which stack the opening URL belongs to, for example:
 
@@ -33330,8 +33798,9 @@ Props for `<RouteCache>`: the `maxCached` size and the content `children` to kee
 - Kind: component
 - Import: `import { RouteCache } from "shelving/ui";`
 
-Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
+Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box.
 
+- Put a page transition around it, and a `<Scroll vertical cover>` inside it, so each kept page scrolls in its own box.
 - Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
 - Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
 - A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
@@ -33340,9 +33809,9 @@ Keep-alive page cache for the pages in the navigation stacks. Drop it into a lay
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
 - Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
 
-A keep-alive cache for the pages in the navigation stacks. Put it in a layout around the scrolling content region. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
+A keep-alive cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
 
-`<SidebarLayout>` and `<CenteredLayout>` already wrap their content in a `<RouteCache>`. Use it by hand only in a custom layout.
+Layouts do not include a cache. The app composes it, so it can also choose the transition, or leave the cache out.
 
 **Things to know:**
 
@@ -33355,33 +33824,37 @@ A keep-alive cache for the pages in the navigation stacks. Put it in a layout ar
 - A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
 - Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
-- The cache must wrap the scroll container itself to keep each page's scroll. So it goes in the layout around the scrolling column, not inside the router. Chrome outside the cache (a sidebar, a tab bar) is not duplicated or remounted.
-- Put a page `<Transition>` around the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- **Nesting:** layout, then transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. See the usage below.
+- The scroll box goes **inside** the cache, so each kept page has its own scroll box and keeps its own scroll position. A scroll box outside the cache is shared by every page, so pages lose their scroll.
+- Put a page `<Transition>` **around** the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- Keep the layout **outside** the cache. Chrome in the layout (a sidebar, a tab bar) then has one copy, keeps its own state, and plays its own CSS transitions. Chrome inside the cache gets one copy per kept page.
 - Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
 ```tsx
-import { HorizontalTransition, RouteCache, Router } from "shelving/ui";
+import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
-function MyLayout() {
-  return (
-    <HorizontalTransition>
-      <RouteCache>
-        <main className="scroll">
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>
+        <PageLoader>
           <Router routes={ROUTES}/>
-        </main>
-      </RouteCache>
-    </HorizontalTransition>
-  );
-}
+        </PageLoader>
+      </Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
 ```
 
 Keep fewer pages:
 
 ```tsx
 <RouteCache maxCached={5}>
-  <Router routes={ROUTES}/>
+  <Scroll vertical cover>
+    <Router routes={ROUTES}/>
+  </Scroll>
 </RouteCache>
 ```
 
@@ -33484,7 +33957,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
 - Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
-- `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (or use a layout that already does) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
+- `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (with a `<Scroll vertical cover>` between them) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage
 
@@ -33530,7 +34003,7 @@ Modifier chars are tolerant: one-or-more stars and three-or-more dots are all eq
 
 ### Layout wrapping
 
-Put layout JSX as the route value with another `<Router>` inside. Since `<Router>` reads its URL from `<Meta>`, the inner router sees the same URL.
+Put layout JSX as the route value with another `<Router>` inside. Since `<Router>` reads its URL from `<Meta>`, the inner router sees the same URL. A layout's content slot does not scroll, so put a `<Scroll vertical cover>` in it (and a `<RouteCache>` around that, to keep pages). See "Composing an app" on `<App>`.
 
 ```tsx
 const SIDEBARRED_ROUTES = {
@@ -33543,7 +34016,9 @@ const SIDEBARRED_ROUTES = {
   "/": <HomePage/>,
   "/{...path}": (
     <SidebarLayout sidebar={<Nav/>}>
-      <Router routes={SIDEBARRED_ROUTES}/>
+      <Scroll vertical cover>
+        <Router routes={SIDEBARRED_ROUTES}/>
+      </Scroll>
     </SidebarLayout>
   ),
 }}/>
@@ -33590,7 +34065,9 @@ const SIDEBARRED_ROUTES = {
   "/login": <LoginPage/>,                       // no sidebar
   "/{...path}": (                                // everything else wrapped
     <SidebarLayout sidebar={<Nav/>}>
-      <Router routes={SIDEBARRED_ROUTES}/>
+      <Scroll vertical cover>
+        <Router routes={SIDEBARRED_ROUTES}/>
+      </Scroll>
     </SidebarLayout>
   ),
 }}/>
@@ -33598,7 +34075,7 @@ const SIDEBARRED_ROUTES = {
 
 ### Keeping page state
 
-By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router (or its scrolling content region) in a `<RouteCache>` to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Shelving's `<SidebarLayout>` and `<CenteredLayout>` already do this for you.
+By default a page is unmounted when you navigate away and mounted fresh when you return — so scroll position, open/closed toggles, in-progress searches, form inputs, and focus are all lost, and you land back at the top. Wrap the router in a `<RouteCache>`, with a `<Scroll vertical cover>` between them, to keep recently-visited pages mounted but hidden so their state is still there when you go back to them, or switch back to their tab. Layouts do not do this for you: see `<RouteCache>` for the full nesting.
 
 ### SSR / static rendering
 
@@ -33859,7 +34336,7 @@ Variants for block level elements.
 
 Get the combined `className` string for a block from its styling variants.
 
-Composes the base block class and tint ladder with the colour, space, typography, and width variant helpers, so anything that wants block-level styling can apply it.
+Composes the base block class and tint ladder with the colour, space, typography, width, and height variant helpers, so anything that wants block-level styling can apply it.
 
 ## Signatures
 
@@ -34219,7 +34696,7 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 ```ts
 {
-	gap?: SpaceValue | undefined;
+	gap?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -34227,7 +34704,7 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |
 
 
 ---
@@ -34250,7 +34727,7 @@ getGapClass({ gap }: GapVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `GapVariants` |  |
-| `.gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `.gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |
 
 ## Returns
 
@@ -34367,6 +34844,138 @@ getGridClass({ columns: 3, gap: "normal" })
 
 ---
 
+# HeightVariant
+
+- Kind: type
+- Import: `import { HeightVariant } from "shelving/ui";`
+
+Enumerated height selectable via the `height` variant prop.
+- `full` — at least the full height of the container.
+- `1x`–`32x` — at least a multiple of `--space-normal` (1x–8x at 1x intervals, then 10x/12x, then 16x–32x at 4x intervals).
+- Each value is a minimum (`min-block-size`), so the element grows when its content is taller and nothing is cut off.
+
+## Signatures
+
+```ts
+| "full"
+	| "1x"
+	| "2x"
+	| "3x"
+	| "4x"
+	| "5x"
+	| "6x"
+	| "7x"
+	| "8x"
+	| "10x"
+	| "12x"
+	| "16x"
+	| "20x"
+	| "24x"
+	| "28x"
+	| "32x"
+```
+
+
+---
+
+# HeightVariants
+
+- Kind: interface
+- Import: `import { HeightVariants } from "shelving/ui";`
+
+Variant props that set a component's height, and where its content sits inside that height, e.g. `height="full" middle`.
+
+## Signatures
+
+```ts
+{
+	height?: HeightVariant | undefined;
+	top?: boolean | undefined;
+	middle?: boolean | undefined;
+	bottom?: boolean | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `height` | `HeightVariant \| undefined` | Height of the element. It is a minimum, so the element grows when its content is taller. Optional. |
+| `top` | `boolean \| undefined` | Put the content at the top of the element (the default). Optional. |
+| `middle` | `boolean \| undefined` | Put the content in the vertical middle of the element. Use with `height`. Optional. |
+| `bottom` | `boolean \| undefined` | Put the content at the bottom of the element. Use with `height`. Optional. |
+
+
+---
+
+# getHeightClass()
+
+- Kind: function
+- Import: `import { getHeightClass } from "shelving/ui";`
+
+Get the height class for a component from its `height`, `top`, `middle` and `bottom` variant props.
+
+The `height` variant prop sets a component's minimum block size, and `top` / `middle` / `bottom` set where its content sits inside that height — `<Block height="full" middle>`, `<Section height="12x" bottom>`. It is the vertical partner of the `width` variant (see `getWidthClass()`).
+
+`getHeightClass({ height, top, middle, bottom })` maps the props to height classes.
+
+**Values:**
+
+- `full` — at least the full height of the container, for example a layout's `<Scroll vertical cover>` box.
+- `1x` / `2x` / `3x` / `4x` / `5x` / `6x` / `7x` / `8x` / `10x` / `12x` / `16x` / `20x` / `24x` / `28x` / `32x` — at least a multiple of `--space-normal`.
+
+**Things to know:**
+
+- Every height is a minimum (`min-block-size`). When the content is taller, the element grows, so a scroll box scrolls it from the top and nothing is cut off.
+- `top` (the default), `middle` and `bottom` set `align-content` on the element itself. The element keeps its own `display`, so its parent does not need to be a flex box. They only do something when the element is taller than its content, so use them with `height`.
+- `<Row>` and `<Column>` already have `top` / `middle` / `bottom` flex variants with the same meaning, so `<Column height="full" middle>` also puts its items in the middle (see `getFlexClass()`).
+- In a flex or grid container, `space="auto"` is the other way to centre a block (see `getSpaceClass()`).
+- `align-content` on a plain block shipped in Chrome 123, Firefox 125 and Safari 17.4. Older browsers show the content at the top.
+
+## Usage
+
+A log-in screen, in the middle of a layout's scroll box:
+
+```tsx
+<Page title="Log in">
+  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+    <LoginForm />
+  </Block>
+</Page>
+```
+
+
+## Signatures
+
+```ts
+getHeightClass({ height, top, middle, bottom }: HeightVariants): string | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `options` | `HeightVariants` |  |
+| `.height` | `HeightVariant \| undefined` | Height of the element. It is a minimum, so the element grows when its content is taller. Optional. |
+| `.top` | `boolean \| undefined` | Put the content at the top of the element (the default). Optional. |
+| `.middle` | `boolean \| undefined` | Put the content in the vertical middle of the element. Use with `height`. Optional. |
+| `.bottom` | `boolean \| undefined` | Put the content at the bottom of the element. Use with `height`. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `string \| undefined` | The height class string, or `undefined` if no height variants are set. |
+
+## Examples
+
+```ts
+getHeightClass({ height: "full", middle: true }) // "height height-full middle"
+```
+
+
+---
+
 # IndentVariant
 
 - Kind: type
@@ -34470,7 +35079,7 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 ```ts
 {
-	padding?: SpaceValue | undefined;
+	padding?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -34478,7 +35087,7 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |
 
 
 ---
@@ -34501,7 +35110,7 @@ getPaddingClass({ padding }: PaddingVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `PaddingVariants` |  |
-| `.padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `.padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |
 
 ## Returns
 
@@ -34615,7 +35224,7 @@ getRadiusClass({ radius: "large" }) // "radius-large"
 - Kind: interface
 - Import: `import { ScrollVariants } from "shelving/ui";`
 
-Variant props selecting which scroll axes are enabled on an element.
+Variant props for a scroll region: which axes scroll, plus `cover` and `reverse`.
 
 ## Signatures
 
@@ -34623,6 +35232,8 @@ Variant props selecting which scroll axes are enabled on an element.
 {
 	vertical?: boolean | undefined;
 	horizontal?: boolean | undefined;
+	cover?: boolean | undefined;
+	reverse?: boolean | undefined;
 }
 ```
 
@@ -34632,6 +35243,8 @@ Variant props selecting which scroll axes are enabled on an element.
 | --- | --- | --- |
 | `vertical` | `boolean \| undefined` | Vertical scrolling (defaults to `false`). Optional. |
 | `horizontal` | `boolean \| undefined` | Horizontal scrolling (defaults to `false`). Optional. |
+| `cover` | `boolean \| undefined` | Cover the nearest positioned ancestor (`position: absolute; inset: 0`), for example a layout's content slot (defaults to `false`). Optional. |
+| `reverse` | `boolean \| undefined` | Start at the end and stay there as the content grows, for example a chat (defaults to `false`). Put the content in one child. Optional. |
 
 
 ---
@@ -34641,12 +35254,12 @@ Variant props selecting which scroll axes are enabled on an element.
 - Kind: function
 - Import: `import { getScrollClass } from "shelving/ui";`
 
-Get the scroll class for a component from its `horizontal` / `vertical` variant props.
+Get the scroll class for a component from its `horizontal`, `vertical`, `cover` and `reverse` variant props.
 
 ## Signatures
 
 ```ts
-getScrollClass({ horizontal, vertical }: ScrollVariants): string
+getScrollClass({ horizontal, vertical, cover, reverse }: ScrollVariants): string
 ```
 
 ## Parameters
@@ -34656,6 +35269,8 @@ getScrollClass({ horizontal, vertical }: ScrollVariants): string
 | `options` | `ScrollVariants` |  |
 | `.vertical` | `boolean \| undefined` | Vertical scrolling (defaults to `false`). Optional. |
 | `.horizontal` | `boolean \| undefined` | Horizontal scrolling (defaults to `false`). Optional. |
+| `.cover` | `boolean \| undefined` | Cover the nearest positioned ancestor (`position: absolute; inset: 0`), for example a layout's content slot (defaults to `false`). Optional. |
+| `.reverse` | `boolean \| undefined` | Start at the end and stay there as the content grows, for example a chat (defaults to `false`). Put the content in one child. Optional. |
 
 ## Returns
 
@@ -34695,6 +35310,66 @@ Props for the `Scroll` component — children plus scroll-axis variants.
 - Import: `import { Scroll } from "shelving/ui";`
 
 Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
+- With `cover`, it fills a layout's content slot, so each page in a `<RouteCache>` scrolls in its own box.
+
+A box that scrolls its content on one or both axes. Use it for a wide table on a small screen, or as the scroll box of each page in an app.
+
+**Things to know:**
+
+- Set `vertical`, `horizontal`, or both. With neither, the box clips its content and does not scroll.
+- Set `cover` to fill the nearest positioned ancestor (`position: absolute; inset: 0`). A layout's content slot is positioned, so `<Scroll vertical cover>` fills it.
+- Set `reverse` to start at the end and stay there when the content grows, for example a chat. Put the content in one child: only the scroll is reversed, so the child keeps its own order. No script is needed.
+- Overscroll stops at the box edge (`overscroll-behavior: none`), so a scroll inside the box never scrolls the page behind it.
+- When the box has keyboard focus, it shows a focus outline.
+
+## Usage
+
+### A wide table
+
+```tsx
+import { Scroll, Table } from "shelving/ui";
+
+<Scroll horizontal>
+  <Table>…</Table>
+</Scroll>
+```
+
+### A scroll box for each page
+
+Put `<Scroll vertical cover>` inside `<RouteCache>`, so each kept page has its own scroll box and keeps its own scroll position. The layout gives its content slot `position: relative`, and the scroll box fills it.
+
+```tsx
+import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
+
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>
+        <PageLoader>
+          <Router routes={ROUTES} />
+        </PageLoader>
+      </Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
+```
+
+### A chat
+
+```tsx
+<Scroll vertical cover reverse>
+  <div>{messages}</div>
+</Scroll>
+```
+
+## Styling
+
+| Variable | Styles | Default |
+|---|---|---|
+| `--scroll-focus-border` | Outline when the box has keyboard focus | `var(--stroke-focus) solid var(--color-focus)` |
+
+**Global tokens it reads** — `--stroke-focus`, `--stroke-normal`, and `--color-focus`.
+
 
 ## Signatures
 
@@ -34713,12 +35388,6 @@ Scroll({ children, ...props }: ScrollComponentProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<div>` element with the computed scroll class. |
-
-## Examples
-
-```ts
-<Scroll horizontal>{wideContent}</Scroll>
-```
 
 
 ---
@@ -34829,6 +35498,7 @@ Allowed values for block spacing for components that support `SpaceVariants`
 | "section"
 	| "paragraph"
 	| "none"
+	| "auto"
 	| "xxsmall"
 	| "xsmall"
 	| "small"
@@ -34885,6 +35555,8 @@ Get the block spacing class for a component from its `space=""` variant prop.
 The `space` variant prop sets a block-level element's `margin-block` (top + bottom) from the spacing scale — `<Section space="large">`, `<Paragraph space="none">`. It's an **override** for one-off spacing; for an app-wide change, retune the spacing variables below in a theme file.
 
 `getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` (block padding), `getIndentClass()` (inline padding), and `getGapClass()`, so they all move together when you change `--space-normal`.
+
+`space="auto"` sets `margin-block: auto`. In a flex or grid container, such as a `<Column>`, the auto margins take the free space, so the block sits in the middle (it still keeps auto margins as a first or last child). In normal block flow they do nothing: to centre a block vertically there, use `height="full" middle` (see `getHeightClass()`). `padding` and `gap` have no `auto`.
 
 Alongside the named scale, `space`, `padding`, and `indent` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
 
@@ -36580,7 +37252,7 @@ Props for the `TreeApp` component — the tree to render plus optional extra rou
 
 Top-level app component for a tree-based documentation site.
 
-- Wraps `<App>` with error catching and a sidebar layout.
+- Wraps `<App>` with error catching and a sidebar layout. Each page is kept in a `<RouteCache>` and scrolls in its own `<Scroll>` box, and a page error shows inside the layout.
 - Flattens `tree` once via `<TreeProvider>` wrapping both the sidebar and the router, so everything below shares a single `useTreeMap()` lookup — nothing re-flattens.
 - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
 - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.

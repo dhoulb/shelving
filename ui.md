@@ -62,7 +62,7 @@ The components below are listed in the index following this page; this is the sh
 
 **Content.** Block-level structure starts with `<Card>`, `<Section>`, and the `<Heading>` / `<Title>` family, with `<Table>`, `<List>`, and `<Figure>` for specific shapes; wrap longform copy in `<Prose>`. Inline pieces — `<Link>`, `<Code>`, `<Strong>`, `<Mark>` — live inside that block content. To render a Markdown string as components, use `<Markup>`.
 
-**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<CenteredLayout>` or `<SidebarLayout>`, and drive URLs with `<Navigation>` and `<Router>`.
+**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`, and drive URLs with `<Navigation>` and `<Router>`. A layout is a frame: it sits above the router, and the app fills its content slot with `<RouteCache>` and `<Scroll>`. See "Composing an app" on `<App>`.
 
 **Interaction.** Forms start at `<Form>`, which wires `<Field>` and the typed inputs to a `FormStore`; `<Button>` is the standalone action. Overlays are `<Dialog>` and `<Modal>`; navigation menus are `<Menu>` and `<MenuItem>`; transient feedback is `<Notice>` (and the global `<Notices>` list); animate enter/leave with `<Transition>`.
 
@@ -176,14 +176,15 @@ The components below are listed in the index following this page; this is the sh
 - [DataSchemaInput](ui/DataSchemaInput.md): Show a DataInput for a nested DataSchema.
 - [SchemaField](ui/SchemaField.md): Show the appropriate input for a schema, wrapped in a <Field> with its label and message.
 - [SelectInput](ui/SelectInput.md): Dropdown input bound to a string value, rendered as a <select> of the provided options.
-- [CenteredLayout](ui/CenteredLayout.md): Layout that centres its content with no header/footer and a narrow max-width.
-- [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a scrollable main content column.
+- [AppLayout](ui/AppLayout.md): Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
+- [FixedLayout](ui/FixedLayout.md): Layout with no chrome: the whole screen is one content slot.
+- [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a content slot.
 - [Menu](ui/Menu.md): A <menu> list of <MenuItem> children.
 - [MenuItem](ui/MenuItem.md): A <li> containing an <a> link, plus optional submenu content shown when this item is "proud".
 - [Catcher](ui/Catcher.md): React error boundary that renders a fallback component when any descendant throws.
 - [ErrorNotice](ui/ErrorNotice.md): Render a caught error as an inline <Notice> with a retry button.
 - [PageCatcher](ui/PageCatcher.md): Error boundary for a whole page that renders a full <ErrorPage> fallback on error.
-- [ErrorPage](ui/ErrorPage.md): Render a caught error as a full-page <Page> with a centered <ErrorNotice>.
+- [ErrorPage](ui/ErrorPage.md): Render a caught error as a <Page> with an <ErrorNotice> in a narrow column, centred in the middle of the screen.
 - [Icon](ui/Icon.md): Render the icon for a given status, coloured to match.
 - [Loader](ui/Loader.md): Load a component.
 - [PageLoader](ui/PageLoader.md): Load a page.
@@ -198,7 +199,7 @@ The components below are listed in the index following this page; this is the sh
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [BackButton](ui/BackButton.md): Back button for the current stack.
 - [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
-- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
+- [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a <Scroll vertical cover> box.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
 - [StackButton](ui/StackButton.md): Button for one stack in a tab bar.
 - [Scroll](ui/Scroll.md): Wrap children in a scrollable container with horizontal and/or vertical scrolling enabled.
@@ -271,10 +272,11 @@ The components below are listed in the index following this page; this is the sh
 - [getFlexClass()](ui/getFlexClass.md): Get the flex layout class for a component from its flex variant props.
 - [getGapClass()](ui/getGapClass.md): Get the gap class for a component from its gap variant prop.
 - [getGridClass()](ui/getGridClass.md): Get the grid layout class for a component from its grid variant props.
+- [getHeightClass()](ui/getHeightClass.md): Get the height class for a component from its height, top, middle and bottom variant props.
 - [getIndentClass()](ui/getIndentClass.md): Get the inline-padding ("indent") class for a component from its indent variant prop.
 - [getPaddingClass()](ui/getPaddingClass.md): Get the block-padding class for a component from its padding variant prop.
 - [getRadiusClass()](ui/getRadiusClass.md): Get the corner-radius class for a component from its radius variant prop.
-- [getScrollClass()](ui/getScrollClass.md): Get the scroll class for a component from its horizontal / vertical variant props.
+- [getScrollClass()](ui/getScrollClass.md): Get the scroll class for a component from its horizontal, vertical, cover and reverse variant props.
 - [getShadowClass()](ui/getShadowClass.md): Get the drop-shadow class for a component from its shadow variant prop.
 - [getSpaceClass()](ui/getSpaceClass.md): Get the block spacing class for a component from its space="" variant prop.
 - [getStatusClass()](ui/getStatusClass.md): Get the status tint class for a component from its status variant prop.
@@ -436,7 +438,8 @@ The components below are listed in the index following this page; this is the sh
 - [SelectProps](ui/SelectProps.md): Props for SelectInput, a dropdown <select> bound to a string value.
 - [TextareaInputProps](ui/TextareaInputProps.md): Props for TextareaInput, a multiline text input bound to a string value.
 - [TextInputProps](ui/TextInputProps.md): Props for TextInput, a single-line text input bound to a string value.
-- [CenteredLayoutProps](ui/CenteredLayoutProps.md): Props for <CenteredLayout> — optional children plus width (of the centred column) and padding / indent (block / inline padding of the scroll area) variants.
+- [AppLayoutProps](ui/AppLayoutProps.md): Props for <AppLayout>: the nav bar content and the content slot children.
+- [FixedLayoutProps](ui/FixedLayoutProps.md): Props for <FixedLayout>: the content slot children.
 - [SidebarLayoutProps](ui/SidebarLayoutProps.md): Props for <SidebarLayout> — the sidebar column content, main children, and a right placement flag.
 - [MenuProps](ui/MenuProps.md): Props for <Menu> — optional <MenuItem> children.
 - [MenuItemProps](ui/MenuItemProps.md): Props for <MenuItem> — <Clickable> props plus children whose first node is the label and the rest the submenu.
@@ -469,10 +472,11 @@ The components below are listed in the index following this page; this is the sh
 - [FlexVariants](ui/FlexVariants.md): Variant props for flex layout — opt-in modifiers any component can mix in via getFlexClass().
 - [GapVariants](ui/GapVariants.md): Variant props for the gap between a component's children, e.g. gap="large".
 - [GridVariants](ui/GridVariants.md): Variant props for grid layout, e.g. columns={3} gap="normal".
+- [HeightVariants](ui/HeightVariants.md): Variant props that set a component's height, and where its content sits inside that height, e.g. height="full" middle.
 - [IndentVariants](ui/IndentVariants.md): Variant props for the inline-padding ("indent", left + right) of a component, e.g. indent="normal".
 - [PaddingVariants](ui/PaddingVariants.md): Variant props for the block-padding (top + bottom) of a component, e.g. padding="large".
 - [RadiusVariants](ui/RadiusVariants.md): Variant props for the corner radius of an element, e.g. radius="large".
-- [ScrollVariants](ui/ScrollVariants.md): Variant props selecting which scroll axes are enabled on an element.
+- [ScrollVariants](ui/ScrollVariants.md): Variant props for a scroll region: which axes scroll, plus cover and reverse.
 - [ScrollComponentProps](ui/ScrollComponentProps.md): Props for the Scroll component — children plus scroll-axis variants.
 - [ShadowVariants](ui/ShadowVariants.md): Variant props for the drop shadow of an element, e.g. shadow="large".
 - [SpaceVariants](ui/SpaceVariants.md): Variants to control block spacing on components, e.g. space="large".
@@ -521,6 +525,7 @@ The components below are listed in the index following this page; this is the sh
 - [ColorVariant](ui/ColorVariant.md): Enumerated colour names selectable via the color="purple" prop for components that support that support ColorVariants
 - [DurationValue](ui/DurationValue.md): Allowed values for transition timing for components that support DurationVariants
 - [ColumnsVariant](ui/ColumnsVariant.md): Number of equal-width columns selectable via the columns variant prop.
+- [HeightVariant](ui/HeightVariant.md): Enumerated height selectable via the height variant prop.
 - [IndentVariant](ui/IndentVariant.md): Allowed values for inline-padding ("indent") for components that support IndentVariants
 - [RadiusVariant](ui/RadiusVariant.md): Allowed values for border radius for components that support RadiusVariants
 - [ShadowVariant](ui/ShadowVariant.md): Enumerated drop-shadow scale selectable via the shadow="normal" variant prop.

@@ -3,8 +3,9 @@
 - Kind: component
 - Import: `import { RouteCache } from "shelving/ui";`
 
-Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
+Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box.
 
+- Put a page transition around it, and a `<Scroll vertical cover>` inside it, so each kept page scrolls in its own box.
 - Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
 - Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
 - A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
@@ -13,9 +14,9 @@ Keep-alive page cache for the pages in the navigation stacks. Drop it into a lay
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
 - Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
 
-A keep-alive cache for the pages in the navigation stacks. Put it in a layout around the scrolling content region. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
+A keep-alive cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
 
-`<SidebarLayout>` and `<CenteredLayout>` already wrap their content in a `<RouteCache>`. Use it by hand only in a custom layout.
+Layouts do not include a cache. The app composes it, so it can also choose the transition, or leave the cache out.
 
 **Things to know:**
 
@@ -28,33 +29,37 @@ A keep-alive cache for the pages in the navigation stacks. Put it in a layout ar
 - A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
 - Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
-- The cache must wrap the scroll container itself to keep each page's scroll. So it goes in the layout around the scrolling column, not inside the router. Chrome outside the cache (a sidebar, a tab bar) is not duplicated or remounted.
-- Put a page `<Transition>` around the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- **Nesting:** layout, then transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. See the usage below.
+- The scroll box goes **inside** the cache, so each kept page has its own scroll box and keeps its own scroll position. A scroll box outside the cache is shared by every page, so pages lose their scroll.
+- Put a page `<Transition>` **around** the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- Keep the layout **outside** the cache. Chrome in the layout (a sidebar, a tab bar) then has one copy, keeps its own state, and plays its own CSS transitions. Chrome inside the cache gets one copy per kept page.
 - Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
 ```tsx
-import { HorizontalTransition, RouteCache, Router } from "shelving/ui";
+import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
-function MyLayout() {
-  return (
-    <HorizontalTransition>
-      <RouteCache>
-        <main className="scroll">
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>
+        <PageLoader>
           <Router routes={ROUTES}/>
-        </main>
-      </RouteCache>
-    </HorizontalTransition>
-  );
-}
+        </PageLoader>
+      </Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
 ```
 
 Keep fewer pages:
 
 ```tsx
 <RouteCache maxCached={5}>
-  <Router routes={ROUTES}/>
+  <Scroll vertical cover>
+    <Router routes={ROUTES}/>
+  </Scroll>
 </RouteCache>
 ```
 

@@ -5,7 +5,7 @@
 
 Top-level app component for a tree-based documentation site.
 
-- Wraps `<App>` with error catching and a sidebar layout.
+- Wraps `<App>` with error catching and a sidebar layout. Each page is kept in a `<RouteCache>` and scrolls in its own `<Scroll>` box, and a page error shows inside the layout.
 - Flattens `tree` once via `<TreeProvider>` wrapping both the sidebar and the router, so everything below shares a single `useTreeMap()` lookup — nothing re-flattens.
 - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
 - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.

@@ -5,7 +5,7 @@
 
 Get the combined `className` string for a block from its styling variants.
 
-Composes the base block class and tint ladder with the colour, space, typography, and width variant helpers, so anything that wants block-level styling can apply it.
+Composes the base block class and tint ladder with the colour, space, typography, width, and height variant helpers, so anything that wants block-level styling can apply it.
 
 ## Signatures
 

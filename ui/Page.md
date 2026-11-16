@@ -29,16 +29,20 @@ function UserPage({ id }: { id: string }) {
 }
 ```
 
-Layouts go inside `<Page>`:
+A page renders no layout. The layout goes outside the page, above the router, so every page in it shares one frame. See "Composing an app" on `<App>`.
 
 ```tsx
-import { Page, CenteredLayout } from "shelving/ui";
+import { Block, FixedLayout, Page, Scroll } from "shelving/ui";
 
-<Page title="Sign in">
-  <CenteredLayout>
-    <LoginForm/>
-  </CenteredLayout>
-</Page>
+<FixedLayout>
+  <Scroll vertical cover>
+    <Page title="Sign in">
+      <Block height="full" middle width="narrow">
+        <LoginForm/>
+      </Block>
+    </Page>
+  </Scroll>
+</FixedLayout>
 ```
 
 

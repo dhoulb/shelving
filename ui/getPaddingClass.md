@@ -16,7 +16,7 @@ getPaddingClass({ padding }: PaddingVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `PaddingVariants` |  |
-| `.padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `.padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |
 
 ## Returns
 

@@ -9,7 +9,7 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 ```ts
 {
-	gap?: SpaceValue | undefined;
+	gap?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -17,4 +17,4 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |

@@ -13,7 +13,7 @@ A React error boundary that catches errors thrown anywhere in its subtree and re
 
 **Things to know:**
 
-- `PageCatcher` is a convenience wrapper that renders `ErrorPage` instead — a full-page error display inside a `<CenteredLayout>`.
+- `PageCatcher` is a convenience wrapper that renders `ErrorPage` instead — a page with the error in a narrow column. `ErrorPage` renders no layout, so it shows inside the layout around it. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and `<Scroll vertical cover>` (see `<FixedLayout>`).
 - `RetryButton` reads the retry callback from the nearest `Catcher` via context and renders a `<Button>`. It returns `null` when there is no parent catcher to retry.
 - `ErrorNotice` and `ErrorPage` can be used standalone when you need to display a known error without a boundary. Both use `getMessage()` to extract a human-readable message, falling back to `"Unknown error"`.
 
