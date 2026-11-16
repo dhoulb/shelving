@@ -1,0 +1,89 @@
+# shelving/react
+
+- Kind: module
+- Import: `import { … } from "shelving/react";`
+
+React hooks and context helpers for integrating Shelving `shelving/store`, async sequences, and API/DB providers into React components. The module is built on `useSyncExternalStore` and standard React patterns — no magic, no global state.
+
+## Concepts
+
+### Stores and Suspense
+
+`Store.value` implements the React Suspense contract directly: it throws a `Promise` while the store is loading (which Suspense catches and shows the fallback) and throws the error reason if the store has failed (which an error boundary catches). `useStore()` wires a store into `useSyncExternalStore` so the component re-renders whenever the store emits a new value.
+
+### Context helpers
+
+`createAPIContext()` and `createDBContext()` are factory functions that return a React context component plus typed hooks. Each mounted context instance gets its own in-memory cache, so multiple subtrees can use independent providers. This mirrors the `createDataContext()` / `createCacheContext()` pattern used throughout the library.
+
+### Stable references
+
+A recurring React problem is stale closures and unnecessary re-renders caused by objects being recreated on every render. `useInstance()`, `useLazy()`, `useReduce()`, and `useMap()` each solve a specific variant of this: `useInstance()` memoises a class constructor call; `useLazy()` memoises an arbitrary factory call; `useReduce()` lets you fold render state with custom equality logic; `useMap()` gives you a single mutable `Map` that lives for the lifetime of the component.
+
+## Usage
+
+The per-symbol pages below carry the detailed usage for each hook and context factory. This section shows how the pieces fit together for real tasks — start here, then follow the links for specifics.
+
+### Rendering data with a DB context
+
+Create a context once at module scope, wrap the tree in it, and let child components suspend while data loads. The same shape works for `createAPIContext()` — swap `DBContext.useItem()` / `DBContext.useQuery()` for `APIContext.useAPI()`.
+
+```tsx
+import { Suspense } from "react";
+import { createDBContext } from "shelving/react";
+
+const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
+
+function UserCard({ id }: { id: string }) {
+  const user = useItem(Users, id).value; // Suspends while loading.
+  return <li>{user.name}</li>;
+}
+
+function UserList() {
+  const users = useQuery(Users, { $order: "name" }).value;
+  return <ul>{users.map(u => <UserCard key={u.id} id={u.id} />)}</ul>;
+}
+
+function App() {
+  return (
+    <DBContext>
+      <ErrorBoundary fallback={<p>Something went wrong.</p>}>
+        <Suspense fallback={<p>Loading…</p>}>
+          <UserList />
+        </Suspense>
+      </ErrorBoundary>
+    </DBContext>
+  );
+}
+```
+
+### Building a store inside a component
+
+A store that depends on props can't live at module scope. `useInstance()` constructs it once and keeps it stable across renders, while `useStore()` subscribes the component to its updates.
+
+```tsx
+import { useInstance, useStore } from "shelving/react";
+import { BooleanStore } from "shelving/store";
+
+function Toggle() {
+  const open = useInstance(BooleanStore); // Created once, stable across renders.
+  useStore(open); // Re-render whenever the store changes.
+  return <button onClick={() => open.toggle()}>{open.value ? "Open" : "Closed"}</button>;
+}
+```
+
+
+## Functions
+
+- [createAPIContext()](react/createAPIContext.md): Create an API context.
+- [createDBContext()](react/createDBContext.md): Create a data context
+- [useInstance()](react/useInstance.md): Use a memoised class instance.
+- [useLazy()](react/useLazy.md): Use a memoised value with lazy initialisation.
+- [useMap()](react/useMap.md): Create a mutable Map that persists for the lifetime of the component.
+- [useReduce()](react/useReduce.md): Use memoised value with reduction logic.
+- [useSequence()](react/useSequence.md): Subscribe to an async iterable for the lifetime of the component.
+- [useStore()](react/useStore.md): Subscribe to a Shelving Store instance to refresh this component when its value changes.
+
+## Interfaces
+
+- [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
+- [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
