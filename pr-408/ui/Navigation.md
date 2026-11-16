@@ -76,9 +76,18 @@ const STACKS = ["/home", "/discover", "/profile"] as const;
 </App>
 ```
 
+To select a tab when the app starts, pass the starting `stack`. The app decides which stack the opening URL belongs to, for example:
+
+```tsx
+const path = window.location.pathname;
+const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
+
+<Navigation stacks={STACKS} stack={stack}>
+```
+
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else in the `/` stack. A page in the `/` stack, such as a deep link or a login page, is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -128,6 +137,7 @@ Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement
 | --- | --- | --- |
 | `meta` | `NavigationProps` |  |
 | `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
+| `.stack` | `AbsolutePath \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `"/"`. - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
 
 ## Returns
 

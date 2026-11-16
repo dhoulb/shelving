@@ -9,7 +9,7 @@ Store that holds the current navigation URL, drives browser history, and keeps a
 - Extends `URLStore`, so its `value` is the current URL.
 - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
 - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
-- Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack whose root is the current path (else `"/"`), `history()` is empty, and `stack` arguments are ignored.
+- Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
 - Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
 The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
@@ -22,7 +22,7 @@ The store that holds the current URL, drives browser history, and keeps one stac
 - `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there is no stack history: `stack` is the stack whose root is the current path (else `/`), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
@@ -37,12 +37,12 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 ## Unstacked pages
 
-A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. So a page you open that is not exactly a stack root is **unstacked**, and is in the `/` stack. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else in the `/` stack. A page in the `/` stack is **unstacked**. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
 
 - On an unstacked page, no `<StackButton>` is selected.
 - Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
 - To leave the `/` stack, tap a `<StackButton>`, or name the stack.
-- The page the app opens at is the one exception: if its URL is exactly a stack root (for example `/home`), it opens in that stack, so the right tab is selected when the app starts.
+- To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
 - If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
@@ -108,7 +108,8 @@ Make a store by hand only in tests:
 ```tsx
 import { NavigationStore } from "shelving/ui";
 
-const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/profile");
+// URL, root, starting stack, then the stacks in tab order.
+const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
 nav.forward("/home/post/1");
 ```
 
@@ -116,7 +117,7 @@ nav.forward("/home/post/1");
 ## Signatures
 
 ```ts
-new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, ...stacks: AbsolutePath[])
+new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath = "/", ...stacks: AbsolutePath[])
 ```
 
 ## Parameters
@@ -125,6 +126,7 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | --- | --- | --- |
 | `url` | `PossibleURL` | Defaults to `typeof window === "undefined" ? "/" : window.location.href`. |
 | `base` | `PossibleURL` | Optional. |
+| `stack` | `AbsolutePath` | Defaults to `"/"`. |
 | `stacks` | `AbsolutePath[]` |  |
 
 ## Returns
@@ -138,7 +140,7 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | Property | Type | Description |
 | --- | --- | --- |
 | `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. A single-stack app has one root. Read only. |
-| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - Without the Navigation API, it is the stack whose root is the current path, else the unstacked `"/"` stack. Read only. |
+| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - It starts at the `stack` given to the constructor (default `"/"`). Without the Navigation API, it stays there. Read only. |
 | `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
 | `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 

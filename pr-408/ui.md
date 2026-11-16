@@ -457,7 +457,7 @@ The components below are listed in the index following this page; this is the sh
 - [HTMLProps](ui/HTMLProps.md): Props for <HTML> — initial Meta (language/root/app) plus the page children.
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
-- [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url and root), the stacks, and optional children.
+- [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
 - [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationStore saves on each browser history entry.
 - [NavigationPosition](ui/NavigationPosition.md): Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
 - [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache>: the maxCached size and the content children to keep alive for each page in the stacks.
