@@ -179,7 +179,6 @@ export class NavigationStore extends URLStore {
 	 * - Else push the URL onto `stack`, one level deeper than its top page.
 	 * - The URL you are already on: replace it instead.
 	 * - A change of stack slides by tab order. Else it slides forward.
-	 * - From an unstacked page (the `"/"` stack, when it is not one of the `stacks`), a URL that is a stack root goes to that stack. For example, a login page goes to `/home`.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go to. Defaults to the current stack.
@@ -194,7 +193,6 @@ export class NavigationStore extends URLStore {
 			return;
 		}
 		const current = this.stack.value;
-		if (!this.stacks.includes(stack)) stack = this._getRoot(url) ?? stack;
 		if (stack === current && url.href === this.value.href) {
 			this.replace(url);
 			return;
@@ -231,11 +229,9 @@ export class NavigationStore extends URLStore {
 			navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" }).finished?.catch(BLACKHOLE);
 			return;
 		}
-		// The URL is an earlier page in the stack, else the root of a stack (go to that stack at its root), else it takes the place of the top page.
-		const root = page ? undefined : this._getRoot(url);
-		const to = root ?? stack;
-		const depth = page ? page.depth : root ? 0 : (pages.at(-1)?.depth ?? 0);
-		this._push(url, this._getOrder(current, to) ?? "back", { stack: to, depth });
+		// The URL is an earlier page in the stack, else the root of the stack, else it takes the place of the top page.
+		const depth = page ? page.depth : this._getPath(url) === stack ? 0 : (pages.at(-1)?.depth ?? 0);
+		this._push(url, this._getOrder(current, stack) ?? "back", { stack, depth });
 	}
 
 	/**
@@ -243,7 +239,6 @@ export class NavigationStore extends URLStore {
 	 * - The page stays in the same stack, at the same depth, so a cached page stays mounted.
 	 * - Use it for a page that knows its canonical URL, or for in-page tabs.
 	 * - Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
-	 * - From an unstacked page, a URL that is a stack root goes to that stack, at its root, with no `stack` too.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to move the page into. Defaults to the current stack.
@@ -255,13 +250,11 @@ export class NavigationStore extends URLStore {
 		const url = requireURL(possible, this.base, this.replace);
 		const saved = this._navigation?.currentEntry?.getState();
 		let state = _isEntryState(saved) ? saved : undefined;
-		const root = this._getRoot(url);
-		const to = state && !this.stacks.includes(state.stack) && stack === state.stack ? (root ?? stack) : stack;
-		if (state && to !== state.stack) {
-			const top = this._getPages(to)
+		if (state && stack !== state.stack) {
+			const top = this._getPages(stack)
 				.filter(p => p.index !== this._navigation?.currentEntry?.index)
 				.at(-1);
-			state = { stack: to, depth: root === to ? 0 : top ? top.depth + 1 : 0 };
+			state = { stack, depth: this._getPath(url) === stack ? 0 : top ? top.depth + 1 : 0 };
 		}
 		this._write(() => window.history.replaceState(null, "", url.href), state);
 		this._change(url, null, state?.stack);
