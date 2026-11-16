@@ -105,7 +105,7 @@ export function PageCatcher({ children }: ChildProps): ReactElement {
 export function ErrorPage({ reason }: ErrorProps): ReactElement {
 	return (
 		<Page title="Error">
-			<Block middle width="narrow" padding="xxlarge" indent="normal">
+			<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
 				<ErrorNotice reason={reason} />
 			</Block>
 		</Page>

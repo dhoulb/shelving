@@ -34,7 +34,7 @@ export function Loader({ children, fallback = LOADING }: LoaderProps): ReactElem
 
 /** Default page loading state: the spinner, in the middle of the screen. It renders no layout. */
 const PAGE_LOADING = (
-	<Block middle padding="xxlarge">
+	<Block height="full" middle padding="xxlarge">
 		<Row center>{LOADING}</Row>
 	</Block>
 );

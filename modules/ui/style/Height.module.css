@@ -1,0 +1,88 @@
+@import url("layers.css");
+@import url("Space.module.css");
+
+@layer variants {
+	/* Every height is a minimum, so the element grows when its content is taller and nothing is cut off. */
+	.height {
+		min-block-size: var(--height);
+	}
+
+	/* At least the full height of the container (for example a layout's scroll box). */
+	.height-full {
+		--height: 100%;
+	}
+
+	/* Numeric heights — multiples of `--space-normal` (no `--height-*` tokens; calculated directly). */
+	.height-1x {
+		--height: calc(1 * var(--space-normal));
+	}
+
+	.height-2x {
+		--height: calc(2 * var(--space-normal));
+	}
+
+	.height-3x {
+		--height: calc(3 * var(--space-normal));
+	}
+
+	.height-4x {
+		--height: calc(4 * var(--space-normal));
+	}
+
+	.height-5x {
+		--height: calc(5 * var(--space-normal));
+	}
+
+	.height-6x {
+		--height: calc(6 * var(--space-normal));
+	}
+
+	.height-7x {
+		--height: calc(7 * var(--space-normal));
+	}
+
+	.height-8x {
+		--height: calc(8 * var(--space-normal));
+	}
+
+	.height-10x {
+		--height: calc(10 * var(--space-normal));
+	}
+
+	.height-12x {
+		--height: calc(12 * var(--space-normal));
+	}
+
+	.height-16x {
+		--height: calc(16 * var(--space-normal));
+	}
+
+	.height-20x {
+		--height: calc(20 * var(--space-normal));
+	}
+
+	.height-24x {
+		--height: calc(24 * var(--space-normal));
+	}
+
+	.height-28x {
+		--height: calc(28 * var(--space-normal));
+	}
+
+	.height-32x {
+		--height: calc(32 * var(--space-normal));
+	}
+
+	/* Where the content sits inside the height. `align-content` works on a plain block box, so the element keeps its own `display`. On flex boxes such as `<Row>` and `<Column>`, the flex variants with the same names align the items. */
+	.top {
+		align-content: start;
+	}
+
+	.middle {
+		align-content: center;
+	}
+
+	.bottom {
+		align-content: end;
+	}
+}

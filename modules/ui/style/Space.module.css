@@ -23,6 +23,11 @@
 		margin-block: 0;
 	}
 
+	/* Auto margins take the free space in a flex or grid container (for example a `<Column>`), so the block sits in the middle. In normal block flow they compute to 0. */
+	.space-auto {
+		margin-block: auto;
+	}
+
 	.space-paragraph {
 		margin-block: var(--space-paragraph);
 	}
@@ -99,5 +104,12 @@
 
 	.space-10x {
 		margin-block: calc(var(--space-normal) * 10);
+	}
+}
+
+@layer overrides {
+	/* Blocks zero the outer margin of a first or last child in this layer (`Block.module.css`). Keep auto margins anyway, so an only child in a column still sits in the middle. The extra always-true pseudo-classes beat that rule's specificity. */
+	.space-auto:nth-child(n):nth-last-child(n) {
+		margin-block: auto;
 	}
 }

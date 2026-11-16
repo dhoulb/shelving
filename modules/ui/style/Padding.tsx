@@ -9,7 +9,7 @@ import type { SpaceValue } from "./Space.js";
  */
 export interface PaddingVariants {
 	/** Block-padding (top + bottom) of the element. */
-	padding?: SpaceValue | undefined;
+	padding?: Exclude<SpaceValue, "auto"> | undefined;
 }
 
 /**
