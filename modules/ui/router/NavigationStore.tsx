@@ -50,7 +50,7 @@ type _Navigation = Pick<
  * - Extends `URLStore`, so its `value` is the current URL.
  * - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
  * - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
- * - Without the Navigation API (older browsers and server renders) there are no stacks: `history()` is empty and `stack` arguments are ignored.
+ * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack that starts the current path, `history()` is empty, and `stack` arguments are ignored.
  * - Owned by `<Navigation>`. Read it with `requireNavigation()`.
  *
  * @see https://shelving.cc/ui/NavigationStore
@@ -59,8 +59,12 @@ export class NavigationStore extends URLStore {
 	/** Root path of each stack, in tab order. A single-stack app has one root. */
 	readonly stacks: readonly AbsolutePath[];
 
-	/** Root path of the current stack, or `undefined` without the Navigation API. */
-	readonly stack: Store<AbsolutePath | undefined>;
+	/**
+	 * Root path of the current stack.
+	 * - Always set. With no `stacks`, it is `"/"`.
+	 * - Without the Navigation API, it is the stack that starts the current path (else the first stack).
+	 */
+	readonly stack: Store<AbsolutePath>;
 
 	/**
 	 * Transition type of the most recent change, read by `<Navigation>` when the value changes.
@@ -83,7 +87,9 @@ export class NavigationStore extends URLStore {
 		super(url, base);
 		this.stacks = stacks.length ? stacks : ["/"];
 		this._navigation = _getNavigation();
-		this.stack = new Store<AbsolutePath | undefined>(this._navigation ? this._getState(this._navigation.currentEntry).stack : undefined);
+		this.stack = new Store<AbsolutePath>(
+			this._navigation ? this._getState(this._navigation.currentEntry).stack : this._getStack(this.value),
+		);
 	}
 
 	/**
@@ -181,9 +187,9 @@ export class NavigationStore extends URLStore {
 	 * @example nav.forward("/settings");
 	 * @see https://shelving.cc/ui/NavigationStore/forward
 	 */
-	forward(possible: PossibleURL, stack: AbsolutePath | undefined = this.stack.value): void {
+	forward(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void {
 		const url = requireURL(possible, this.base, this.forward);
-		if (!this._navigation || !stack) {
+		if (!this._navigation) {
 			this._push(url, "forward");
 			return;
 		}
@@ -210,10 +216,10 @@ export class NavigationStore extends URLStore {
 	 * @example nav.back("/profile");
 	 * @see https://shelving.cc/ui/NavigationStore/back
 	 */
-	back(possible: PossibleURL, stack: AbsolutePath | undefined = this.stack.value): void {
+	back(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void {
 		const url = requireURL(possible, this.base, this.back);
 		const navigation = this._navigation;
-		if (!navigation || !stack) {
+		if (!navigation) {
 			this._push(url, "back");
 			return;
 		}
@@ -277,7 +283,9 @@ export class NavigationStore extends URLStore {
 	/** Set the stack first, then the URL, so both are ready when `<Navigation>` reads them. */
 	private _change(url: PossibleURL, transition: TransitionType | null, stack?: AbsolutePath): void {
 		this.transition = transition;
-		if (stack) this.stack.value = stack;
+		// Without the Navigation API, the stack follows the path.
+		const next = stack ?? (this._navigation ? undefined : this._getStack(requireURL(url, this.base, this._change)));
+		if (next) this.stack.value = next;
 		this.value = url;
 	}
 
@@ -307,9 +315,13 @@ export class NavigationStore extends URLStore {
 	private _getState(entry: NavigationHistoryEntry | null): NavigationEntryState {
 		const state = entry?.getState();
 		if (_isEntryState(state) && this.stacks.includes(state.stack)) return state;
-		const path = entry?.url ? this._getPath(requireURL(entry.url, undefined, this._getState)) : undefined;
-		const stack = (path && this.stacks.find(s => path === s || path.startsWith(s === "/" ? s : `${s}/`))) || this.stacks[0] || "/";
-		return { stack, depth: 0 };
+		return { stack: entry?.url ? this._getStack(requireURL(entry.url, undefined, this._getState)) : this._getStack(), depth: 0 };
+	}
+
+	/** Get the stack that starts the path of a URL, else the first stack. */
+	private _getStack(url?: ImmutableURL): AbsolutePath {
+		const path = url && this._getPath(url);
+		return (path && this.stacks.find(s => path === s || path.startsWith(s === "/" ? s : `${s}/`))) || this.stacks[0] || "/";
 	}
 
 	/** Get the path of a URL relative to the app root, or `undefined` if it is outside the app. */
@@ -329,8 +341,8 @@ export class NavigationStore extends URLStore {
 	}
 
 	/** Slide direction between two stacks by tab order, or `undefined` for the same stack. */
-	private _getOrder(from: AbsolutePath | undefined, to: AbsolutePath): TransitionType | undefined {
-		if (!from || from === to) return;
+	private _getOrder(from: AbsolutePath, to: AbsolutePath): TransitionType | undefined {
+		if (from === to) return;
 		return this.stacks.indexOf(to) > this.stacks.indexOf(from) ? "forward" : "back";
 	}
 }

@@ -112,11 +112,30 @@ afterEach(() => {
 });
 
 describe("NavigationStore", () => {
-	test("has no stacks without the Navigation API", () => {
+	test("has no history without the Navigation API", () => {
 		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, ...STACKS);
-		expect(nav.stack.value).toBe(undefined);
+		expect(nav.stack.value).toBe("/home");
 		expect(nav.history("/home")).toEqual([]);
 		expect(nav.position).toBe(undefined);
+	});
+
+	test("defaults to one stack at the root", () => {
+		expect(new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`).stack.value).toBe("/");
+		fake = new FakeNavigation(`${ORIGIN}/a/b`);
+		globals.navigation = fake;
+		expect(new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`).stack.value).toBe("/");
+	});
+
+	test("follows the path without the Navigation API", () => {
+		globals.window = {
+			location: { href: `${ORIGIN}/home` },
+			history: { pushState: () => undefined, replaceState: () => undefined },
+		};
+		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, ...STACKS);
+		nav.forward("/profile/settings");
+		expect(nav.stack.value).toBe("/profile");
+		nav.back("/discover");
+		expect(nav.stack.value).toBe("/discover");
 	});
 
 	test("saves the stack of the start page", () => {
