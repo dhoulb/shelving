@@ -80,8 +80,8 @@
 		color: var(--app-layout-nav-color, var(--tint-00));
 		box-shadow: var(--app-layout-nav-shadow, none);
 
-		/* Its own view-transition group, so a page slide passes under it and the bar stays still. */
-		view-transition-name: app-layout-nav;
+		/* No view-transition name of its own. Pages slide sideways in the content slot above it, so they never pass over it.
+		 * A named bar would draw above everything else during any view transition, and jump over a dialog or notice that covers it. */
 
 		/* Each item takes an equal share of the bar. */
 		> * {
@@ -89,18 +89,4 @@
 			max-width: var(--app-layout-nav-item-width, 6rem);
 		}
 	}
-}
-
-/* The bar stays still, so it never makes a view transition last longer. */
-::view-transition-group(app-layout-nav) {
-	animation-duration: 0s;
-}
-
-/* Show only the live bar during a view transition, so the CSS transitions of its items (an active tab) play with no cross-fade. */
-::view-transition-old(app-layout-nav) {
-	display: none;
-}
-
-::view-transition-new(app-layout-nav) {
-	animation: none;
 }
