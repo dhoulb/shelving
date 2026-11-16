@@ -481,7 +481,7 @@ Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` define
 - **`app/index.html`** — production HTML shell. References `./style.css` and `./index.tsx`; the bundler resolves and bundles from here.
 - **`app/start.html`** — identical shell for local dev, minus any third-party scripts you don't want running locally.
 - **`app/index.tsx`** — mounts `<App />` into `#root`. Nothing else.
-- **`app/App.tsx`** — the composition root of the client: the `ROUTES` table, the app-level context value, and the provider tree (Shelving's `App`, `Navigation`, `PageCatcher`, `Router`, `Dialogs`, `Notices`). Every page component is registered here.
+- **`app/App.tsx`** — the composition root of the client: the `ROUTES` table, the app-level context value, and the provider tree (Shelving's `App`, `Navigation`, `Dialogs`, `Notices`), and the app shell (layout picker, layout, cache and router — see [The app shell](#the-app-shell)). Every page component is registered here.
 - **`app/start.ts`** — local dev server: `Bun.serve` on the port derived from `APP_URL`, serving the HTML shell for all SPA routes and static files (e.g. `/img/*` mapped to `shared/img/`).
 
 ### Routing
@@ -547,6 +547,197 @@ The client has one local database (`DB`, a plain `MemoryDBProvider`). API result
 - Page components use the `*Page` suffix and are registered in `App.tsx`. Layout components use the `*Layout` suffix.
 - **No inline `style` props, ever.** All styling lives in `.module.css` files named after their component (`OrderPage.module.css` for `OrderPage.tsx`).
 - Reusable components expose styling options as **variants**: boolean props mapped to class names in the CSS module. Pages compose existing `shelving/ui` primitives (`Button`, `Notice`, `Page`, `Row`, layouts, transitions) rather than styling raw elements.
+
+### The app shell
+
+The app shell is everything around the pages: the layout, the scroll box, the page cache, the page transition and the tab stacks. **Every part is opt-in.** Start with the smallest shell that works, and add a part only when the app needs it. Each recipe below says what to add and where.
+
+The full nesting, from the outside in, is: contexts, then the app-level catcher, then your layout picker, then the layout, then the transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`, then the page. Leave out the parts you do not need, but keep the order. "Composing an app" on `<App>` has the full rules and a complete `App.tsx`.
+
+#### A simple site: no layout
+
+With no layout, the document body scrolls. This is fine for a site or a small app.
+
+```tsx
+<App app="My site" root="https://example.com/">
+  <Navigation>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Navigation>
+</App>
+```
+
+#### A full-screen app with its own scroll box
+
+Use `<FixedLayout>`. It locks the body and gives one full-screen content slot inside the safe areas. It does not scroll, so put a `<Scroll vertical cover>` in it. `cover` makes the scroll box fill the slot.
+
+```tsx
+<FixedLayout>
+  <Scroll vertical cover>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Scroll>
+</FixedLayout>
+```
+
+#### Content in the middle of the screen
+
+A layout never centres. The page centres its own content with `<Block height="full" middle>`. The block is at least as tall as the scroll box, so short content sits in the middle, and tall content starts at the top and scrolls. Use `top` or `bottom` to put it at an edge. This is how to make a log-in page or an error page.
+
+```tsx
+<Page title="Log in">
+  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+    <LoginForm />
+  </Block>
+</Page>
+```
+
+#### A sidebar
+
+Use `<SidebarLayout sidebar>`. On a narrow screen the sidebar becomes a drawer with a menu button. Fill its content slot the same way as any other layout.
+
+```tsx
+<SidebarLayout sidebar={<Menu />}>
+  <Scroll vertical cover>
+    <Router routes={ROUTES} />
+  </Scroll>
+</SidebarLayout>
+```
+
+#### A tab bar
+
+Use `<AppLayout nav>`. It puts the content slot above a bar, at every screen size. The bar has its own view-transition group, so it stays still while pages slide. Set `nav={false}` to hide the bar.
+
+```tsx
+<AppLayout nav={<StackBar />}>
+  <Scroll vertical cover>
+    <Router routes={ROUTES} />
+  </Scroll>
+</AppLayout>
+```
+
+#### A custom layout with a custom scroll area
+
+Make your own frame when no layout fits, for example a header that stays on screen above the content. A frame does three things:
+
+1. It locks the document, so only its own boxes scroll.
+2. It fills the screen with `position: absolute; inset: 0`, so it works inside a mount element such as `<div id="root">`.
+3. It gives a content slot with `position: relative`, which a `<Scroll vertical cover>` fills.
+
+A frame does not scroll, centre, cache or transition. The app puts those in the slot.
+
+```tsx
+export function TopBarLayout({ bar, children }: TopBarLayoutProps): ReactElement {
+  return (
+    <div className={LAYOUT_CLASS}>
+      <header className={BAR_CLASS}>{bar}</header>
+      <main className={CONTENT_CLASS}>{children}</main>
+    </div>
+  );
+}
+```
+
+```css
+@layer components {
+  html:has(.layout) { height: 100dvh; overflow: hidden; }
+  body:has(.layout) { position: fixed; inset: 0; margin: 0; }
+  .layout { position: absolute; inset: 0; display: flex; flex-direction: column; }
+  .content { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+}
+```
+
+`modules/ui/layout/AppLayout.module.css` in Shelving is a full example, with the safe areas.
+
+#### Other scroll boxes
+
+`<Scroll>` is not only for pages. Use `<Scroll horizontal>` for a wide table, or `<Scroll vertical cover reverse>` for a chat that starts at the end and stays there as messages arrive. See `<Scroll>`.
+
+#### Keep page state when you go back
+
+By default a page unmounts when you leave it, so its scroll position, toggles and form input are lost. Add `<RouteCache>` to keep recent pages mounted but hidden. Put the scroll box **inside** the cache, so each page keeps its own scroll position.
+
+```tsx
+<RouteCache>
+  <Scroll vertical cover>
+    <PageLoader>
+      <Router routes={ROUTES} />
+    </PageLoader>
+  </Scroll>
+</RouteCache>
+```
+
+Keep the layout **outside** the cache, so the chrome has one copy and keeps its own state. Clear a create form after it saves, because the cache keeps its input. See `<RouteCache>`.
+
+#### Page transitions
+
+Put a page transition, for example `<HorizontalTransition>`, **around** `<RouteCache>` and inside the layout. The pages slide and the chrome stays still. Do not put a transition inside the cache around each page: Safari loses the exit animation.
+
+```tsx
+<AppLayout nav={<StackBar />}>
+  <HorizontalTransition>
+    <RouteCache>
+      <Scroll vertical cover>…</Scroll>
+    </RouteCache>
+  </HorizontalTransition>
+</AppLayout>
+```
+
+#### Tab stacks, like a phone app
+
+Each tab keeps its own stack of pages, and its back button goes back within that tab. You need four parts:
+
+1. Set `stacks` on `<Navigation>` to the root path of each tab, in tab order, and `stack` to the tab the app opens in: `<Navigation stacks={["/home", "/discover", "/profile"]} stack="/home">`.
+2. Make a tab bar of `<StackButton stack="/home">` buttons, and put it in `<AppLayout nav>`.
+3. Put `<BackButton href="/home" />` in each page header. It goes back in the current tab, or to `href` when there is no page before.
+4. Use `<RouteCache>`, so each tab shows the page you left it on.
+
+Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationStore`, `<StackButton>` and `<BackButton>`.
+
+#### Hide the tab bar on some pages
+
+All pages in one stack share one layout, because they share one cache. So a page cannot change the layout itself. Pick the layout props from the URL in your layout picker, above the router:
+
+```tsx
+function Shell() {
+  const { path } = requireMetaURL();
+  return (
+    <AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
+      <Content />
+    </AppLayout>
+  );
+}
+```
+
+#### Pick a layout by state or path
+
+The layout picker is plain React, so any rule works: the session, the path, or both. Swap to another layout only between sections the user does not move back and forth in, such as log-in and the main app, because a new layout mounts a new cache.
+
+```tsx
+function Shell({ signedIn }: { signedIn: boolean }) {
+  if (!signedIn) return <FixedLayout><Content routes={LOGIN_ROUTES} /></FixedLayout>;
+  return <AppLayout nav={<StackBar />}><Content routes={ROUTES} /></AppLayout>;
+}
+```
+
+Put the slot content (transition, cache, scroll box, loader and router) in one small `Content` component, and reuse it in each layout.
+
+#### Errors and loading
+
+A page, an error page or a loading state never renders a layout. `<PageLoader>` catches errors and shows a loading state inside the scroll box, in the layout the user already sees. An app-level `<Catcher>` sits outside every layout, so it picks one itself:
+
+```tsx
+function AppError({ reason }: ErrorProps) {
+  return (
+    <FixedLayout>
+      <Scroll vertical cover>
+        <ErrorPage reason={reason} />
+      </Scroll>
+    </FixedLayout>
+  );
+}
+```
 
 ## Boundaries
 
@@ -885,12 +1076,12 @@ See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<Bac
 Layouts no longer include a `<RouteCache>` or a scroll box. Each layout is a frame with a content slot, so the app chooses the scroll box, the transition and the cache. `<CenteredLayout>` is now `<FixedLayout>`, and it no longer centres or scrolls. `<ErrorPage>` and the `<PageLoader>` fallback no longer render a layout. To upgrade an app:
 
 1. **Fill the `<SidebarLayout>` slot.** Put `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then your `<Router>` in it. Without a scroll box, the content does not scroll. Put a page transition around the `<RouteCache>`, inside the layout, so the sidebar stays still.
-2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">`. The new `middle` block variant centres the content in the middle of the screen, and still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
+2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">`. The new `height` and `middle` block variants put the content in the middle of the screen, and it still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
 3. **Do not render a layout in a page.** A page, an error page or a loading state never renders a layout. Pick the layout once, above the router. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and a `<Scroll vertical cover>`.
 4. **Use `<AppLayout>` for a tab bar (optional).** `<AppLayout nav={<StackBar />}>` puts a bar of `<StackButton>`s below the content slot. Set `nav={false}` to hide it for some pages.
 5. **Rename the scroll focus hook.** `--scrollable-focus-border` is now `--scroll-focus-border`.
 
-See "Composing an app" on `<App>` for the full nesting rules and an example `App.tsx`.
+See "Composing an app" on `<App>` for the full nesting rules and an example `App.tsx`, and [The app shell](#the-app-shell) above for each part as a recipe.
 
 ### From `CacheDBProvider` to `HydratingAPIProvider`
 
