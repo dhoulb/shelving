@@ -158,18 +158,20 @@ describe("NavigationStore", () => {
 			expect(nav.history()).toEqual(["/login", "/login/reset"]);
 		});
 
-		test("go to a stack when a link goes to its root", () => {
+		test("stay unstacked when a link or a replace goes to a stack root", () => {
 			const nav = setup("/login");
 			nav.forward("/home");
-			expect(nav.stack.value).toBe("/home");
-			expect(getEntries().at(-1)).toBe("/home /home@0");
+			expect(getEntries().at(-1)).toBe("/home /@1");
+			nav.replace("/profile");
+			expect(getEntries().at(-1)).toBe("/profile /@1");
+			expect(nav.stack.value).toBe("/");
 		});
 
-		test("go to a stack when a replace goes to its root", () => {
+		test("move into a stack when forward names it", () => {
 			const nav = setup("/login");
-			nav.replace("/home");
+			nav.forward("/home", "/home");
 			expect(nav.stack.value).toBe("/home");
-			expect(getEntries()).toEqual(["/home /home@0"]);
+			expect(getEntries().at(-1)).toBe("/home /home@0");
 		});
 
 		test("move into a stack when a replace names it", () => {
@@ -188,9 +190,9 @@ describe("NavigationStore", () => {
 			expect(nav.history("/home")).toEqual(["/home", "/home/post/1", "/home/post/2"]);
 		});
 
-		test("go to a stack when going back to its root", () => {
+		test("move into a stack when back names it", () => {
 			const nav = setup("/home/post/1");
-			nav.back("/home");
+			nav.back("/home", "/home");
 			expect(nav.stack.value).toBe("/home");
 			expect(getEntries().at(-1)).toBe("/home /home@0");
 		});
@@ -261,9 +263,11 @@ describe("NavigationStore", () => {
 			expect(nav.history("/profile")).toEqual(["/profile", "/profile/settings"]);
 		});
 
-		test("pushes the root at depth 0 when the page is not in the stack", () => {
-			const nav = setup("/profile/settings");
-			nav.back("/profile");
+		test("goes back to the root of another stack when it is named", () => {
+			const nav = setup("/profile");
+			nav.forward("/profile/settings");
+			nav.forward("/discover", "/discover");
+			nav.back("/profile", "/profile");
 			expect(getEntries().at(-1)).toBe("/profile /profile@0");
 			expect(nav.history("/profile")).toEqual(["/profile"]);
 		});
