@@ -5,22 +5,41 @@ The store that holds the current URL, drives browser history, and keeps one stac
 **Things to know:**
 
 - `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
+- A page that is not in a listed stack is **unstacked**: it is in the `/` stack. See [Unstacked pages](#unstacked-pages).
 - `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
-- `NavigationStore.history()` returns the pages in a stack, root first.
+- `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there is no stack history: `stack` is the stack that starts the current path (else the first stack), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` is the stack whose root is the current path (else `/`), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
 | Method | What it does | Slide |
 |---|---|---|
 | `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace. | Forward. Across stacks, by tab order. |
-| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back |
-| `replace(href)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. | None |
-| `history(stack?)` | Returns the pages in `stack`, root first. With no `stack`, returns every page in every stack, with no repeats. | — |
+| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of a stack, it goes to that stack, at its root. Otherwise `href` takes the place of the top page of the stack. | Back |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages. | None |
+| `history(stack?)` | Returns the pages in `stack`, root first. | — |
 
 `stack` defaults to the current stack.
+
+## Unstacked pages
+
+A page opens in a stack only when you say so: with a `<StackButton>`, a `stack` argument, or a link from a page that is already in that stack. Any other page is **unstacked**, and is in the `/` stack. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+
+- On an unstacked page, no `<StackButton>` is selected.
+- Links from an unstacked page push deeper in the `/` stack.
+- To leave the `/` stack, go to a stack root. A link, `forward()`, `replace()` or `back()` to a URL that is exactly a stack root (for example `/home`) goes to that stack, at its root. A tap on a `<StackButton>` goes to that stack too.
+- A URL that is exactly a stack root always opens in that stack, also on a fresh open.
+- If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
+
+For example, a login page sends the user home after they log in. `/home` is a stack root, so the app is now in the Home stack:
+
+```tsx
+const nav = requireNavigation();
+nav.replace("/home");          // From an unstacked page, a stack root goes to that stack.
+nav.replace("/home", "/home"); // The same, with the stack named.
+```
 
 ## How stacks work
 

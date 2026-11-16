@@ -50,7 +50,7 @@ type _Navigation = Pick<
  * - Extends `URLStore`, so its `value` is the current URL.
  * - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
  * - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
- * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack that starts the current path, `history()` is empty, and `stack` arguments are ignored.
+ * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack whose root is the current path (else `"/"`), `history()` is empty, and `stack` arguments are ignored.
  * - Owned by `<Navigation>`. Read it with `requireNavigation()`.
  *
  * @see https://shelving.cc/ui/NavigationStore
@@ -62,7 +62,7 @@ export class NavigationStore extends URLStore {
 	/**
 	 * Root path of the current stack.
 	 * - Always set. With no `stacks`, it is `"/"`.
-	 * - Without the Navigation API, it is the stack that starts the current path (else the first stack).
+	 * - Without the Navigation API, it is the stack whose root is the current path, else the unstacked `"/"` stack.
 	 */
 	readonly stack: Store<AbsolutePath>;
 
@@ -102,7 +102,7 @@ export class NavigationStore extends URLStore {
 		if (!this._navigation) return undefined;
 		const { stack, depth } = this._getState(this._navigation.currentEntry);
 		const tops: { [stack: AbsolutePath]: number } = {};
-		for (const s of this.stacks) {
+		for (const s of this._getStacks()) {
 			const top = this._getPages(s).at(-1);
 			if (top) tops[s] = top.depth;
 		}
@@ -161,13 +161,12 @@ export class NavigationStore extends URLStore {
 	 * - A stack whose root entry is gone (the browser keeps a limited history) still starts with its root.
 	 * - Without the Navigation API this is always empty.
 	 *
-	 * @param stack Root path of the stack. With no stack, it returns the pages in all stacks, with no repeats.
+	 * @param stack Root path of the stack. Defaults to the current stack.
 	 * @returns Paths relative to the app root, each with its `?query`.
 	 * @example nav.history("/home") // ["/home", "/home/post/2"]
 	 * @see https://shelving.cc/ui/NavigationStore/history
 	 */
-	history(stack?: AbsolutePath): AbsolutePath[] {
-		if (!stack) return Array.from(new Set(this.stacks.flatMap(s => this.history(s))));
+	history(stack: AbsolutePath = this.stack.value): AbsolutePath[] {
 		const pages = this._getPages(stack);
 		const paths = pages.map(p => _getPathWithQuery(p));
 		if (pages[0] && pages[0].depth > 0) paths.unshift(stack);
@@ -180,6 +179,7 @@ export class NavigationStore extends URLStore {
 	 * - Else push the URL onto `stack`, one level deeper than its top page.
 	 * - The URL you are already on: replace it instead.
 	 * - A change of stack slides by tab order. Else it slides forward.
+	 * - From an unstacked page (the `"/"` stack, when it is not one of the `stacks`), a URL that is a stack root goes to that stack. For example, a login page goes to `/home`.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go to. Defaults to the current stack.
@@ -194,6 +194,7 @@ export class NavigationStore extends URLStore {
 			return;
 		}
 		const current = this.stack.value;
+		if (!this.stacks.includes(stack)) stack = this._getRoot(url) ?? stack;
 		if (stack === current && url.href === this.value.href) {
 			this.replace(url);
 			return;
@@ -224,32 +225,46 @@ export class NavigationStore extends URLStore {
 			return;
 		}
 		const current = this.stack.value;
-		const transition = this._getOrder(current, stack) ?? "back";
 		const pages = this._getPages(stack);
 		const page = pages.slice(0, -1).findLast(p => p.url.href === url.href);
 		if (page && stack === current && page.index === (navigation.currentEntry?.index ?? 0) - 1) {
-			navigation.traverseTo(page.key, { info: transition }).finished?.catch(BLACKHOLE);
+			navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" }).finished?.catch(BLACKHOLE);
 			return;
 		}
-		const depth = page ? page.depth : this._getPath(url) === stack ? 0 : (pages.at(-1)?.depth ?? 0);
-		this._push(url, transition, { stack, depth });
+		// The URL is an earlier page in the stack, else the root of a stack (go to that stack at its root), else it takes the place of the top page.
+		const root = page ? undefined : this._getRoot(url);
+		const to = root ?? stack;
+		const depth = page ? page.depth : root ? 0 : (pages.at(-1)?.depth ?? 0);
+		this._push(url, this._getOrder(current, to) ?? "back", { stack: to, depth });
 	}
 
 	/**
 	 * Replace the current URL, with no transition.
 	 * - The page stays in the same stack, at the same depth, so a cached page stays mounted.
 	 * - Use it for a page that knows its canonical URL, or for in-page tabs.
+	 * - Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
+	 * - From an unstacked page, a URL that is a stack root goes to that stack, at its root, with no `stack` too.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
+	 * @param stack Root path of the stack to move the page into. Defaults to the current stack.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.replace("/login");
 	 * @see https://shelving.cc/ui/NavigationStore/replace
 	 */
-	replace(possible: PossibleURL): void {
+	replace(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void {
 		const url = requireURL(possible, this.base, this.replace);
-		const state = this._navigation?.currentEntry?.getState();
-		this._write(() => window.history.replaceState(null, "", url.href), _isEntryState(state) ? state : undefined);
-		this._change(url, null);
+		const saved = this._navigation?.currentEntry?.getState();
+		let state = _isEntryState(saved) ? saved : undefined;
+		const root = this._getRoot(url);
+		const to = state && !this.stacks.includes(state.stack) && stack === state.stack ? (root ?? stack) : stack;
+		if (state && to !== state.stack) {
+			const top = this._getPages(to)
+				.filter(p => p.index !== this._navigation?.currentEntry?.index)
+				.at(-1);
+			state = { stack: to, depth: root === to ? 0 : top ? top.depth + 1 : 0 };
+		}
+		this._write(() => window.history.replaceState(null, "", url.href), state);
+		this._change(url, null, state?.stack);
 	}
 
 	/** Push a URL as a new history entry, with an optional state. */
@@ -311,17 +326,27 @@ export class NavigationStore extends URLStore {
 		return pages;
 	}
 
-	/** Get the saved state of an entry, or for an entry with none (the page the app opened at), the stack that starts its path (else the first stack) at depth 0. */
+	/** Get the saved state of an entry, or for an entry with none (the page the app opened at), the stack whose root is its path (else the unstacked `"/"` stack) at depth 0. */
 	private _getState(entry: NavigationHistoryEntry | null): NavigationEntryState {
 		const state = entry?.getState();
-		if (_isEntryState(state) && this.stacks.includes(state.stack)) return state;
+		if (_isEntryState(state) && this._getStacks().includes(state.stack)) return state;
 		return { stack: entry?.url ? this._getStack(requireURL(entry.url, undefined, this._getState)) : this._getStack(), depth: 0 };
 	}
 
-	/** Get the stack that starts the path of a URL, else the first stack. */
+	/** Get every stack a page can be in: the listed stacks, plus the unstacked `"/"` stack. */
+	private _getStacks(): AbsolutePath[] {
+		return this.stacks.includes("/") ? [...this.stacks] : [...this.stacks, "/"];
+	}
+
+	/** Get the stack whose root is exactly the path of a URL, or `undefined` if none is. */
+	private _getRoot(url: ImmutableURL): AbsolutePath | undefined {
+		const path = this._getPath(url);
+		return path && this.stacks.includes(path) ? path : undefined;
+	}
+
+	/** Get the stack of a URL with no saved stack: the stack whose root is exactly its path, else the unstacked `"/"` stack. */
 	private _getStack(url?: ImmutableURL): AbsolutePath {
-		const path = url && this._getPath(url);
-		return (path && this.stacks.find(s => path === s || path.startsWith(s === "/" ? s : `${s}/`))) || this.stacks[0] || "/";
+		return (url && this._getRoot(url)) || "/";
 	}
 
 	/** Get the path of a URL relative to the app root, or `undefined` if it is outside the app. */
@@ -343,7 +368,10 @@ export class NavigationStore extends URLStore {
 	/** Slide direction between two stacks by tab order, or `undefined` for the same stack. */
 	private _getOrder(from: AbsolutePath, to: AbsolutePath): TransitionType | undefined {
 		if (from === to) return;
-		return this.stacks.indexOf(to) > this.stacks.indexOf(from) ? "forward" : "back";
+		const a = this.stacks.indexOf(from);
+		const b = this.stacks.indexOf(to);
+		if (a < 0 || b < 0) return;
+		return b > a ? "forward" : "back";
 	}
 }
 

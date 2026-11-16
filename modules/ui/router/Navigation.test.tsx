@@ -37,9 +37,9 @@ describe("Navigation", () => {
 		expect(html).toContain('class="back"');
 	});
 
-	test("renders a stack button as a link to its root, selected by path", () => {
+	test("renders a stack button as a link to its root, selected in its stack", () => {
 		const html = renderToStaticMarkup(
-			<Navigation url="http://x.com/home/post/1" stacks={["/home", "/profile"]}>
+			<Navigation url="http://x.com/home" stacks={["/home", "/profile"]}>
 				<StackButton stack="/home">Home</StackButton>
 				<StackButton stack="/profile">Profile</StackButton>
 			</Navigation>,
@@ -47,5 +47,15 @@ describe("Navigation", () => {
 		expect(html).toContain('href="http://x.com/home"');
 		expect(html).toContain('href="http://x.com/profile"');
 		expect(html.match(/aria-current/g)?.length).toBe(1);
+	});
+
+	test("selects no stack button on an unstacked page", () => {
+		const html = renderToStaticMarkup(
+			<Navigation url="http://x.com/login" stacks={["/home", "/profile"]}>
+				<StackButton stack="/home">Home</StackButton>
+				<StackButton stack="/profile">Profile</StackButton>
+			</Navigation>,
+		);
+		expect(html).not.toContain("aria-current");
 	});
 });
