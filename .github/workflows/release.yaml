@@ -86,7 +86,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 26
       # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
       # release build and local development all agree on one floor.
       - uses: oven-sh/setup-bun@v2
