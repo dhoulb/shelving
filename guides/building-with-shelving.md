@@ -719,6 +719,18 @@ What changes for users:
 
 See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
 
+### Layouts are frames
+
+Layouts no longer include a `<RouteCache>` or a scroll box. Each layout is a frame with a content slot, so the app chooses the scroll box, the transition and the cache. `<CenteredLayout>` is now `<FixedLayout>`, and it no longer centres or scrolls. `<ErrorPage>` and the `<PageLoader>` fallback no longer render a layout. To upgrade an app:
+
+1. **Fill the `<SidebarLayout>` slot.** Put `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then your `<Router>` in it. Without a scroll box, the content does not scroll. Put a page transition around the `<RouteCache>`, inside the layout, so the sidebar stays still.
+2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block middle width="narrow" padding="xxlarge" indent="normal">`. The new `middle` block variant centres the content in the middle of the screen, and still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
+3. **Do not render a layout in a page.** A page, an error page or a loading state never renders a layout. Pick the layout once, above the router. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and a `<Scroll vertical cover>`.
+4. **Use `<AppLayout>` for a tab bar (optional).** `<AppLayout nav={<StackBar />}>` puts a bar of `<StackButton>`s below the content slot. Set `nav={false}` to hide it for some pages.
+5. **Rename the scroll focus hook.** `--scrollable-focus-border` is now `--scroll-focus-border`.
+
+See "Composing an app" on `<App>` for the full nesting rules and an example `App.tsx`.
+
 ### From `CacheDBProvider` to `HydratingAPIProvider`
 
 `CacheDBProvider` and the paging in `QueryStore` are removed. To upgrade an app:

@@ -3,9 +3,12 @@ import type { TreeElement } from "../../util/index.js";
 import { App } from "../app/App.js";
 import { SidebarLayout } from "../layout/SidebarLayout.js";
 import { PageCatcher } from "../misc/Catcher.js";
+import { PageLoader } from "../misc/Loader.js";
 import { Navigation } from "../router/Navigation.js";
+import { RouteCache } from "../router/RouteCache.js";
 import { Router } from "../router/Router.js";
 import type { Routes } from "../router/Routes.js";
+import { Scroll } from "../style/Scroll.js";
 import type { PossibleMeta } from "../util/index.js";
 import { TreeProvider } from "./TreeContext.js";
 import { TreeRouter } from "./TreeRouter.js";
@@ -31,7 +34,7 @@ export interface TreeAppProps extends PossibleMeta {
 /**
  * Top-level app component for a tree-based documentation site.
  *
- * - Wraps `<App>` with error catching and a sidebar layout.
+ * - Wraps `<App>` with error catching and a sidebar layout. Each page is kept in a `<RouteCache>` and scrolls in its own `<Scroll>` box, and a page error shows inside the layout.
  * - Flattens `tree` once via `<TreeProvider>` wrapping both the sidebar and the router, so everything below shares a single `useTreeMap()` lookup — nothing re-flattens.
  * - The sidebar shows a `<TreeSidebar>` (root as a home link + a menu of its children).
  * - `/` renders the root via `<TreePage>`; `/**` catches every deeper path and feeds the full sub-path into `<TreePage>`.
@@ -49,7 +52,13 @@ export function TreeApp({ tree, routes, sidebar = <TreeSidebar />, ...meta }: Tr
 				<PageCatcher>
 					<TreeProvider tree={tree}>
 						<SidebarLayout sidebar={sidebar}>
-							<TreeRouter fallback={fallback} />
+							<RouteCache>
+								<Scroll vertical cover>
+									<PageLoader>
+										<TreeRouter fallback={fallback} />
+									</PageLoader>
+								</Scroll>
+							</RouteCache>
 						</SidebarLayout>
 					</TreeProvider>
 				</PageCatcher>

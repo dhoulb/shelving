@@ -3,7 +3,6 @@ import { CloseIcon } from "shelving/icon/CloseIcon";
 import { MenuIcon } from "shelving/icon/MenuIcon";
 import { Button } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
-import { RouteCache } from "../router/RouteCache.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
 import LAYOUT_CSS from "./SidebarLayout.module.css";
@@ -29,12 +28,12 @@ export interface SidebarLayoutProps extends OptionalChildProps {
 }
 
 /**
- * Layout with a fixed-width side column (typically navigation) next to a scrollable main content column.
+ * Layout with a fixed-width side column (typically navigation) next to a content slot.
  * - The sidebar is rendered as `<nav>` — it almost always contains the page's primary navigation.
  * - On narrow viewports the sidebar becomes an off-canvas drawer toggled by a single menu button that switches between a burger and a close icon.
  * - While the drawer is open an overlay dims the rest of the page; clicking the overlay closes the drawer.
  * - Inside a `<Navigation>` the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
- * - The scrollable content column is kept alive across navigation via `<RouteCache>`, so returning to a recently-visited page restores its scroll position and state; the sidebar stays mounted throughout.
+ * - It is a frame only: the content slot does not scroll. Fill it with `<Scroll vertical cover>`, inside `<RouteCache>`, so each page scrolls in its own box. The sidebar stays outside the cache, so it keeps its own state and scroll.
  *
  * @kind component
  * @see https://shelving.cc/ui/SidebarLayout
@@ -59,17 +58,15 @@ export function SidebarLayout({ sidebar, children, right = false }: SidebarLayou
 			>
 				{sidebar}
 			</nav>
-			{/* Wrap the scrolling content column in `<RouteCache>` so recently-visited pages stay mounted but hidden — keeping the scroll position of this `.content` container (and all page state) intact across back/forward navigation. The sidebar and drawer state stay outside the cache, so they are neither duplicated nor remounted as the URL changes. */}
-			<RouteCache>
-				<div className={LAYOUT_CONTENT_CLASS}>
-					<div className={LAYOUT_TOGGLE_CLASS}>
-						<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
-							{open ? <CloseIcon /> : <MenuIcon />}
-						</Button>
-					</div>
-					{children}
+			{/* The content slot is a positioned box: the app fills it with `<Scroll vertical cover>` inside `<RouteCache>`. The menu toggle floats above it. */}
+			<div className={LAYOUT_CONTENT_CLASS}>
+				<div className={LAYOUT_TOGGLE_CLASS}>
+					<Button title={open ? "Close menu" : "Show menu"} onClick={() => setOpen(o => !o)}>
+						{open ? <CloseIcon /> : <MenuIcon />}
+					</Button>
 				</div>
-			</RouteCache>
+				{children}
+			</div>
 			{/* Overlay is always mounted (on narrow viewports) so it can fade both in and out via the `open` class — a conditionally-mounted element can't animate on the way out. */}
 			<button
 				type="button"

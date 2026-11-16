@@ -30,8 +30,9 @@ export interface RouteCacheProps {
 }
 
 /**
- * Keep-alive page cache for the pages in the navigation stacks. Drop it into a layout around its scrolling content region.
+ * Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box.
  *
+ * - Put a page transition around it, and a `<Scroll vertical cover>` inside it, so each kept page scrolls in its own box.
  * - Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
  * - Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
  * - A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.

@@ -18,7 +18,7 @@
 	.horizontal,
 	.vertical {
 		/* Style */
-		outline: var(--scrollable-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline: var(--scroll-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(0px - var(--stroke-normal));
 
 		&:not(:focus-visible) {
@@ -38,5 +38,17 @@
 		/* Scrolling */
 		overflow-x: auto;
 		overscroll-behavior-x: none;
+	}
+
+	/* Cover the nearest positioned ancestor (for example a layout's content slot), so the region scrolls inside that box. */
+	.cover {
+		position: absolute;
+		inset: 0;
+	}
+
+	/* Start at the end and stay there when the content grows (for example a chat). Only the scroll is reversed: the content keeps its own order inside its one child. */
+	.reverse {
+		display: flex;
+		flex-direction: column-reverse;
 	}
 }

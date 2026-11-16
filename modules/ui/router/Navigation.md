@@ -44,25 +44,34 @@ import { App, Navigation, Router } from "shelving/ui";
 List the root path of each stack in tab order. Put a `<StackButton>` for each stack in the tab bar.
 
 ```tsx
-import { App, HorizontalTransition, Navigation, RouteCache, Router, StackButton } from "shelving/ui";
+import { App, AppLayout, HorizontalTransition, Navigation, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
 
 const STACKS = ["/home", "/discover", "/profile"] as const;
 
+const TABS = <>
+  <StackButton stack="/home">Home</StackButton>
+  <StackButton stack="/discover">Discover</StackButton>
+  <StackButton stack="/profile">Profile</StackButton>
+</>;
+
 <App root="https://example.com/">
   <Navigation stacks={STACKS}>
-    <HorizontalTransition>
-      <RouteCache>
-        <Router routes={ROUTES}/>
-      </RouteCache>
-    </HorizontalTransition>
-    <nav className="tab-bar">
-      <StackButton stack="/home">Home</StackButton>
-      <StackButton stack="/discover">Discover</StackButton>
-      <StackButton stack="/profile">Profile</StackButton>
-    </nav>
+    <AppLayout nav={TABS}>
+      <HorizontalTransition>
+        <RouteCache>
+          <Scroll vertical cover>
+            <PageLoader>
+              <Router routes={ROUTES}/>
+            </PageLoader>
+          </Scroll>
+        </RouteCache>
+      </HorizontalTransition>
+    </AppLayout>
   </Navigation>
 </App>
 ```
+
+The tab bar is in the layout, outside the cache, so it stays still while pages slide. See "Composing an app" on `<App>` for the full nesting rules.
 
 To select a tab when the app starts, pass the starting `stack`. The app decides which stack the opening URL belongs to, for example:
 

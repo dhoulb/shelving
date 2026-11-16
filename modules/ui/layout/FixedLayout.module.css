@@ -1,0 +1,55 @@
+@import url("../style/layers.css");
+@import url("../style/Tint.module.css");
+
+/*
+ * Fixed layout: the whole screen as one content slot.
+ *
+ * The layout is a frame only. It locks the document and gives a full-height, positioned slot inside the
+ * safe areas. It does not scroll or centre: the app fills the slot with `<Scroll vertical cover>`.
+ */
+
+@layer components {
+	/*
+	 * Lock the document so the content slot is the only place that scrolls.
+	 * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
+	 */
+	html:has(.layout) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+		height: 100vh;
+		height: 100dvh; /* Expand and contract as the address bar shows and hides on iOS. */
+		width: 100vw;
+		width: 100dvw;
+
+		/* Contents */
+		overflow: hidden;
+		overflow-wrap: break-word; /* Break overlong words only as a last resort. */
+	}
+
+	body:has(.layout) {
+		/* Box */
+		margin: 0;
+		padding: 0;
+
+		/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
+		position: fixed;
+		inset: 0;
+
+		/* Style */
+		background: var(--fixed-layout-background, var(--tint-100));
+		color: var(--fixed-layout-color, var(--tint-00));
+	}
+
+	/* The content slot: a positioned box that fills the screen, and that `<Scroll vertical cover>` fills. Transparent borders keep it inside the safe areas (an absolute child fills the box inside the borders). */
+	.layout {
+		/* Fill the locked body, even inside a mount element such as `<div id="root">`. `absolute`, not `fixed`: iOS Safari paints the status bar from a fixed element at the top edge. */
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		border-top: env(safe-area-inset-top, 0) solid transparent;
+		border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
+		border-left: env(safe-area-inset-left, 0) solid transparent;
+		border-right: env(safe-area-inset-right, 0) solid transparent;
+	}
+}

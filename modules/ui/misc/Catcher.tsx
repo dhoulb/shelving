@@ -1,9 +1,9 @@
 import { Component, type ReactElement, type ReactNode } from "react";
 import { getMessage } from "../../util/error.js";
 import type { Callback } from "../../util/function.js";
+import { Block } from "../block/Block.js";
 import { Paragraph } from "../block/Paragraph.js";
 import { RetryButton, RetryContext } from "../button/RetryButton.js";
-import { CenteredLayout } from "../layout/CenteredLayout.js";
 import { Notice } from "../notice/Notice.js";
 import { Page } from "../page/Page.js";
 import type { ChildProps } from "../util/props.js";
@@ -96,7 +96,8 @@ export function PageCatcher({ children }: ChildProps): ReactElement {
 }
 
 /**
- * Render a caught error as a full-page `<Page>` with a centered `<ErrorNotice>`.
+ * Render a caught error as a `<Page>` with an `<ErrorNotice>` in a narrow column, centred in the middle of the screen.
+ * - It renders no layout, so it shows inside whatever layout is around it. Outside every layout (an app-level catcher), wrap it in one, for example `<FixedLayout>` with a `<Scroll vertical cover>`.
  *
  * @kind component
  * @see https://shelving.cc/ui/ErrorPage
@@ -104,9 +105,9 @@ export function PageCatcher({ children }: ChildProps): ReactElement {
 export function ErrorPage({ reason }: ErrorProps): ReactElement {
 	return (
 		<Page title="Error">
-			<CenteredLayout>
+			<Block middle width="narrow" padding="xxlarge" indent="normal">
 				<ErrorNotice reason={reason} />
-			</CenteredLayout>
+			</Block>
 		</Page>
 	);
 }

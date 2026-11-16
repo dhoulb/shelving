@@ -8,9 +8,9 @@
 /*
 * Sidebar layout: a fixed-width column on the left, a scrollable main content column on the right.
 *
-* This layout owns its page styling completely: `.main` is the body-filling grid container, and the
-* inner `.content` column owns the scroll/safe-area behaviour. The `html`/`body` rules below lock the
-* document so `.main` is the only scroll container.
+* This layout is a frame only: `.main` is the body-filling grid container, and the `.content` slot is a
+* positioned box that the app fills with `<Scroll vertical cover>`. The `html`/`body` rules below lock the
+* document, so only the sidebar and the content slot's scroll box scroll.
 *
 * On narrow viewports the sidebar becomes an off-canvas drawer that slides off the left edge of the
 * screen (the right edge for the `.right` variant); the `.toggle` button opens/closes it and the
@@ -24,7 +24,6 @@
 	/*
 	 * Lock the document and let `.main` own the page scroll.
 	 * - <html> and <body> are pinned to the viewport (no rubber-band on iOS).
-	 * - <body> stacks its children vertically (flex column).
 	 * - The `.main` element grows to fill the body.
 	 */
 	html:has(.main) {
@@ -45,8 +44,6 @@
 		/* Box */
 		margin: 0;
 		padding: 0;
-		display: flex;
-		flex-direction: column;
 
 		/* Lock body to prevent iOS Safari triggering viewport scrolling on focus change. */
 		position: fixed;
@@ -61,8 +58,9 @@
 	}
 
 	.main {
-		/* Grow to fill the body (it is the body's flex child). */
-		flex: 1;
+		/* Fill the locked body, even inside a mount element such as `<div id="root">`. */
+		position: absolute;
+		inset: 0;
 		display: grid;
 		grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
 		gap: 0;
@@ -89,15 +87,12 @@
 	}
 
 	.content {
-		/* Owns the page scroll for the content column (previously inherited from the shared `.layout`). */
+		/* The content slot: a positioned box that `<Scroll vertical cover>` fills. It does not scroll itself. */
+		position: relative;
 		min-width: 0;
+		min-height: 0;
 		padding: 0;
-
-		/* Scrolling */
-		display: flow-root;
-		overflow: hidden auto;
-		overscroll-behavior: auto contain;
-		scroll-behavior: smooth;
+		overflow: hidden;
 
 		/* Style */
 
@@ -173,7 +168,7 @@
 			transform: translateX(0);
 		}
 
-		/* Pin the toggle button to the top-right so it stays reachable while the content column scrolls. */
+		/* Pin the toggle button to the top-right of the content slot, above its scroll box. */
 		.toggle {
 			display: block;
 			position: absolute;

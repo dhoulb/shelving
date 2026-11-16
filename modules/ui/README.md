@@ -59,7 +59,7 @@ The components below are listed in the index following this page; this is the sh
 
 **Content.** Block-level structure starts with `<Card>`, `<Section>`, and the `<Heading>` / `<Title>` family, with `<Table>`, `<List>`, and `<Figure>` for specific shapes; wrap longform copy in `<Prose>`. Inline pieces — `<Link>`, `<Code>`, `<Strong>`, `<Mark>` — live inside that block content. To render a Markdown string as components, use `<Markup>`.
 
-**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<CenteredLayout>` or `<SidebarLayout>`, and drive URLs with `<Navigation>` and `<Router>`.
+**Structure.** Mount a client app with `<App>`, or render a full server document with `<HTML>` and `<Page>`. Arrange the screen with `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`, and drive URLs with `<Navigation>` and `<Router>`. A layout is a frame: it sits above the router, and the app fills its content slot with `<RouteCache>` and `<Scroll>`. See "Composing an app" on `<App>`.
 
 **Interaction.** Forms start at `<Form>`, which wires `<Field>` and the typed inputs to a `FormStore`; `<Button>` is the standalone action. Overlays are `<Dialog>` and `<Modal>`; navigation menus are `<Menu>` and `<MenuItem>`; transient feedback is `<Notice>` (and the global `<Notices>` list); animate enter/leave with `<Transition>`.
 
