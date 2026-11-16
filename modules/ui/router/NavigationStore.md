@@ -5,11 +5,11 @@ The store that holds the current URL, drives browser history, and keeps one stac
 **Things to know:**
 
 - `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
 - `NavigationStore.history()` returns the pages in a stack, root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there are no stacks: `stack` holds `undefined`, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` is the stack that starts the current path (else the first stack), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 

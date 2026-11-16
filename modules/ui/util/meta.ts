@@ -59,7 +59,7 @@ export interface Meta {
 	readonly root?: ImmutableURL | undefined;
 	/** URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). */
 	readonly url?: ImmutableURL | undefined;
-	/** Root path of the current stack, set by `<Navigation stacks>` (for example `"/home"`). Pass it to a static render to render a page as if it were in that stack. */
+	/** Root path of the current stack, set by `<Navigation>` (for example `"/home"`, or `"/"` when it has no `stacks`). */
 	readonly stack?: AbsolutePath | undefined;
 	/** Title of the entire application. */
 	readonly app?: string | undefined;

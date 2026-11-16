@@ -1,9 +1,8 @@
-import type { ReactElement } from "react";
+import { type ReactElement, use } from "react";
 import { useStore } from "../../react/useStore.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { Button, type ButtonProps } from "../button/Button.js";
-import { requireMetaURL } from "../misc/MetaContext.js";
-import { requireNavigation } from "./NavigationContext.js";
+import { NavigationPositionContext, requireNavigation } from "./NavigationContext.js";
 
 /**
  * Props for `<StackButton>`: the `stack` it opens, plus the usual `Button` props except `href` and `onClick`.
@@ -29,10 +28,10 @@ export interface StackButtonProps extends Omit<ButtonProps, "href" | "onClick" |
 export function StackButton({ stack, ...props }: StackButtonProps): ReactElement {
 	const nav = requireNavigation();
 	const current = useStore(nav.stack).value;
-	const { path } = requireMetaURL();
+	const position = use(NavigationPositionContext);
 
-	// No stacks: a plain link to the root, selected while the URL is in the stack.
-	if (!current) return <Button {...props} href={stack} selected={path === stack || path.startsWith(`${stack}/`)} />;
+	// No Navigation API (or a server render): a plain link to the root, selected while its stack is the current stack.
+	if (!position) return <Button {...props} href={stack} selected={current === stack} />;
 
 	const onClick = () => {
 		if (current !== stack) return nav.forward(nav.history(stack).at(-1) ?? stack, stack);

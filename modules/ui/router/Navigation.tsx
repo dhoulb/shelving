@@ -18,7 +18,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {
 	/**
 	 * Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`).
 	 * - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab.
-	 * - With no stacks, the app has one stack.
+	 * - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`.
 	 */
 	readonly stacks?: readonly AbsolutePath[] | undefined;
 }
@@ -26,7 +26,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {
 /** What `<Navigation>` publishes on each change. */
 interface _Published {
 	readonly url: ImmutableURL;
-	readonly stack: AbsolutePath | undefined;
+	readonly stack: AbsolutePath;
 	readonly position: NavigationPosition | undefined;
 }
 
@@ -113,7 +113,7 @@ export function Navigation({ children, stacks = [], ...meta }: NavigationProps):
 	return (
 		<NavigationContext value={nav}>
 			<NavigationPositionContext value={position}>
-				<MetaContext value={mergeMeta(current, stack ? { url, stack } : { url }, Navigation)}>{children}</MetaContext>
+				<MetaContext value={mergeMeta(current, { url, stack }, Navigation)}>{children}</MetaContext>
 			</NavigationPositionContext>
 		</NavigationContext>
 	);
