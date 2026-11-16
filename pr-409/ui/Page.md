@@ -37,7 +37,7 @@ import { Block, FixedLayout, Page, Scroll } from "shelving/ui";
 <FixedLayout>
   <Scroll vertical cover>
     <Page title="Sign in">
-      <Block middle width="narrow">
+      <Block height="full" middle width="narrow">
         <LoginForm/>
       </Block>
     </Page>

@@ -9,7 +9,7 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 ```ts
 {
-	padding?: SpaceValue | undefined;
+	padding?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -17,4 +17,4 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |

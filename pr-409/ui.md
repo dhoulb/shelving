@@ -272,6 +272,7 @@ The components below are listed in the index following this page; this is the sh
 - [getFlexClass()](ui/getFlexClass.md): Get the flex layout class for a component from its flex variant props.
 - [getGapClass()](ui/getGapClass.md): Get the gap class for a component from its gap variant prop.
 - [getGridClass()](ui/getGridClass.md): Get the grid layout class for a component from its grid variant props.
+- [getHeightClass()](ui/getHeightClass.md): Get the height class for a component from its height, top, middle and bottom variant props.
 - [getIndentClass()](ui/getIndentClass.md): Get the inline-padding ("indent") class for a component from its indent variant prop.
 - [getPaddingClass()](ui/getPaddingClass.md): Get the block-padding class for a component from its padding variant prop.
 - [getRadiusClass()](ui/getRadiusClass.md): Get the corner-radius class for a component from its radius variant prop.
@@ -471,6 +472,7 @@ The components below are listed in the index following this page; this is the sh
 - [FlexVariants](ui/FlexVariants.md): Variant props for flex layout — opt-in modifiers any component can mix in via getFlexClass().
 - [GapVariants](ui/GapVariants.md): Variant props for the gap between a component's children, e.g. gap="large".
 - [GridVariants](ui/GridVariants.md): Variant props for grid layout, e.g. columns={3} gap="normal".
+- [HeightVariants](ui/HeightVariants.md): Variant props that set a component's height, and where its content sits inside that height, e.g. height="full" middle.
 - [IndentVariants](ui/IndentVariants.md): Variant props for the inline-padding ("indent", left + right) of a component, e.g. indent="normal".
 - [PaddingVariants](ui/PaddingVariants.md): Variant props for the block-padding (top + bottom) of a component, e.g. padding="large".
 - [RadiusVariants](ui/RadiusVariants.md): Variant props for the corner radius of an element, e.g. radius="large".
@@ -523,6 +525,7 @@ The components below are listed in the index following this page; this is the sh
 - [ColorVariant](ui/ColorVariant.md): Enumerated colour names selectable via the color="purple" prop for components that support that support ColorVariants
 - [DurationValue](ui/DurationValue.md): Allowed values for transition timing for components that support DurationVariants
 - [ColumnsVariant](ui/ColumnsVariant.md): Number of equal-width columns selectable via the columns variant prop.
+- [HeightVariant](ui/HeightVariant.md): Enumerated height selectable via the height variant prop.
 - [IndentVariant](ui/IndentVariant.md): Allowed values for inline-padding ("indent") for components that support IndentVariants
 - [RadiusVariant](ui/RadiusVariant.md): Allowed values for border radius for components that support RadiusVariants
 - [ShadowVariant](ui/ShadowVariant.md): Enumerated drop-shadow scale selectable via the shadow="normal" variant prop.

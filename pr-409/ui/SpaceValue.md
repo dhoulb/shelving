@@ -11,6 +11,7 @@ Allowed values for block spacing for components that support `SpaceVariants`
 | "section"
 	| "paragraph"
 	| "none"
+	| "auto"
 	| "xxsmall"
 	| "xsmall"
 	| "small"

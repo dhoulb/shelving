@@ -885,7 +885,7 @@ See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<Bac
 Layouts no longer include a `<RouteCache>` or a scroll box. Each layout is a frame with a content slot, so the app chooses the scroll box, the transition and the cache. `<CenteredLayout>` is now `<FixedLayout>`, and it no longer centres or scrolls. `<ErrorPage>` and the `<PageLoader>` fallback no longer render a layout. To upgrade an app:
 
 1. **Fill the `<SidebarLayout>` slot.** Put `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then your `<Router>` in it. Without a scroll box, the content does not scroll. Put a page transition around the `<RouteCache>`, inside the layout, so the sidebar stays still.
-2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block middle width="narrow" padding="xxlarge" indent="normal">`. The new `middle` block variant centres the content in the middle of the screen, and still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
+2. **Change `<CenteredLayout>` to `<FixedLayout>`.** Put a `<Scroll vertical cover>` in it, then your page or `<Router>`. Move the centring into the page: `<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">`. The new `middle` block variant centres the content in the middle of the screen, and still scrolls when it is taller. The `width`, `padding` and `indent` props and the `--centered-layout-*` hooks are removed; the background and colour hooks are now `--fixed-layout-background` and `--fixed-layout-color`.
 3. **Do not render a layout in a page.** A page, an error page or a loading state never renders a layout. Pick the layout once, above the router. An app-level catcher sits outside every layout, so give it one: `<Catcher as={AppError}>`, where `AppError` renders `<ErrorPage>` in a `<FixedLayout>` and a `<Scroll vertical cover>`.
 4. **Use `<AppLayout>` for a tab bar (optional).** `<AppLayout nav={<StackBar />}>` puts a bar of `<StackButton>`s below the content slot. Set `nav={false}` to hide it for some pages.
 5. **Rename the scroll focus hook.** `--scrollable-focus-border` is now `--scroll-focus-border`.
@@ -20284,6 +20284,7 @@ The components below are listed in the index following this page; this is the sh
 - [getFlexClass()](ui/getFlexClass.md): Get the flex layout class for a component from its flex variant props.
 - [getGapClass()](ui/getGapClass.md): Get the gap class for a component from its gap variant prop.
 - [getGridClass()](ui/getGridClass.md): Get the grid layout class for a component from its grid variant props.
+- [getHeightClass()](ui/getHeightClass.md): Get the height class for a component from its height, top, middle and bottom variant props.
 - [getIndentClass()](ui/getIndentClass.md): Get the inline-padding ("indent") class for a component from its indent variant prop.
 - [getPaddingClass()](ui/getPaddingClass.md): Get the block-padding class for a component from its padding variant prop.
 - [getRadiusClass()](ui/getRadiusClass.md): Get the corner-radius class for a component from its radius variant prop.
@@ -20483,6 +20484,7 @@ The components below are listed in the index following this page; this is the sh
 - [FlexVariants](ui/FlexVariants.md): Variant props for flex layout — opt-in modifiers any component can mix in via getFlexClass().
 - [GapVariants](ui/GapVariants.md): Variant props for the gap between a component's children, e.g. gap="large".
 - [GridVariants](ui/GridVariants.md): Variant props for grid layout, e.g. columns={3} gap="normal".
+- [HeightVariants](ui/HeightVariants.md): Variant props that set a component's height, and where its content sits inside that height, e.g. height="full" middle.
 - [IndentVariants](ui/IndentVariants.md): Variant props for the inline-padding ("indent", left + right) of a component, e.g. indent="normal".
 - [PaddingVariants](ui/PaddingVariants.md): Variant props for the block-padding (top + bottom) of a component, e.g. padding="large".
 - [RadiusVariants](ui/RadiusVariants.md): Variant props for the corner radius of an element, e.g. radius="large".
@@ -20535,6 +20537,7 @@ The components below are listed in the index following this page; this is the sh
 - [ColorVariant](ui/ColorVariant.md): Enumerated colour names selectable via the color="purple" prop for components that support that support ColorVariants
 - [DurationValue](ui/DurationValue.md): Allowed values for transition timing for components that support DurationVariants
 - [ColumnsVariant](ui/ColumnsVariant.md): Number of equal-width columns selectable via the columns variant prop.
+- [HeightVariant](ui/HeightVariant.md): Enumerated height selectable via the height variant prop.
 - [IndentVariant](ui/IndentVariant.md): Allowed values for inline-padding ("indent") for components that support IndentVariants
 - [RadiusVariant](ui/RadiusVariant.md): Allowed values for border radius for components that support RadiusVariants
 - [ShadowVariant](ui/ShadowVariant.md): Enumerated drop-shadow scale selectable via the shadow="normal" variant prop.
@@ -20764,7 +20767,7 @@ function AppError({ reason }: ErrorProps) {
 }
 ```
 
-Layouts are optional. With no layout, the document body scrolls, which is fine for a simple site. Use a layout when the app scrolls inside its own boxes: it locks the body and gives a content slot. Every layout is a frame: none of them scroll or centre. A page centres its own content, for example with `<Block middle width="narrow">`.
+Layouts are optional. With no layout, the document body scrolls, which is fine for a simple site. Use a layout when the app scrolls inside its own boxes: it locks the body and gives a content slot. Every layout is a frame: none of them scroll or centre. A page centres its own content, for example with `<Block height="full" middle width="narrow">`.
 
 For a documentation site, hand an extracted tree to `<TreeApp>` instead — see the `shelving/extract` guide.
 
@@ -30747,7 +30750,7 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 **Things to know:**
 
 - It is a frame only. It does not scroll or centre. Fill the slot with `<Scroll vertical cover>`, so the content scrolls inside it.
-- Centre the content in the page itself, for example with `<Block middle width="narrow">`: `middle` puts it in the middle of the screen, and it still scrolls when it is taller.
+- Centre the content in the page itself, for example with `<Block height="full" middle width="narrow">`: it puts the content in the middle of the screen, and it still scrolls when it is taller.
 - The slot stays clear of the notch, the home bar and the rounded screen corners (safe-area insets).
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
@@ -30771,7 +30774,7 @@ import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
 function LoginPage() {
   return (
     <Page title="Log in">
-      <Block middle width="narrow" padding="xxlarge" indent="normal">
+      <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
         <LoginForm />
       </Block>
     </Page>
@@ -32890,7 +32893,7 @@ import { Block, FixedLayout, Page, Scroll } from "shelving/ui";
 <FixedLayout>
   <Scroll vertical cover>
     <Page title="Sign in">
-      <Block middle width="narrow">
+      <Block height="full" middle width="narrow">
         <LoginForm/>
       </Block>
     </Page>
@@ -34129,16 +34132,8 @@ Variants for block level elements.
 ## Signatures
 
 ```ts
-{
-	middle?: boolean | undefined;
-}
+{}
 ```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `middle` | `boolean \| undefined` | Make the block at least as tall as its container, and centre its content vertically (defaults to `false`). - Content taller than the container makes the block grow, so a scroll box scrolls it from the top and nothing is cut off. - Has no effect on flex components such as `<Row>` and `<Column>`: wrap them in a `<Block middle>`. Optional. |
 
 
 ---
@@ -34150,7 +34145,7 @@ Variants for block level elements.
 
 Get the combined `className` string for a block from its styling variants.
 
-Composes the base block class and tint ladder with the colour, space, typography, and width variant helpers, plus the `middle` variant, so anything that wants block-level styling can apply it.
+Composes the base block class and tint ladder with the colour, space, typography, width, and height variant helpers, so anything that wants block-level styling can apply it.
 
 ## Signatures
 
@@ -34163,7 +34158,6 @@ getBlockClass(variants: BlockVariants): string
 | Param | Type | Description |
 | --- | --- | --- |
 | `variants` | `BlockVariants` |  |
-| `.middle` | `boolean \| undefined` | Make the block at least as tall as its container, and centre its content vertically (defaults to `false`). - Content taller than the container makes the block grow, so a scroll box scrolls it from the top and nothing is cut off. - Has no effect on flex components such as `<Row>` and `<Column>`: wrap them in a `<Block middle>`. Optional. |
 
 ## Returns
 
@@ -34511,7 +34505,7 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 ```ts
 {
-	gap?: SpaceValue | undefined;
+	gap?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -34519,7 +34513,7 @@ Variant props for the gap between a component's children, e.g. `gap="large"`.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |
 
 
 ---
@@ -34542,7 +34536,7 @@ getGapClass({ gap }: GapVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `GapVariants` |  |
-| `.gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `.gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |
 
 ## Returns
 
@@ -34659,6 +34653,138 @@ getGridClass({ columns: 3, gap: "normal" })
 
 ---
 
+# HeightVariant
+
+- Kind: type
+- Import: `import { HeightVariant } from "shelving/ui";`
+
+Enumerated height selectable via the `height` variant prop.
+- `full` — at least the full height of the container.
+- `1x`–`32x` — at least a multiple of `--space-normal` (1x–8x at 1x intervals, then 10x/12x, then 16x–32x at 4x intervals).
+- Each value is a minimum (`min-block-size`), so the element grows when its content is taller and nothing is cut off.
+
+## Signatures
+
+```ts
+| "full"
+	| "1x"
+	| "2x"
+	| "3x"
+	| "4x"
+	| "5x"
+	| "6x"
+	| "7x"
+	| "8x"
+	| "10x"
+	| "12x"
+	| "16x"
+	| "20x"
+	| "24x"
+	| "28x"
+	| "32x"
+```
+
+
+---
+
+# HeightVariants
+
+- Kind: interface
+- Import: `import { HeightVariants } from "shelving/ui";`
+
+Variant props that set a component's height, and where its content sits inside that height, e.g. `height="full" middle`.
+
+## Signatures
+
+```ts
+{
+	height?: HeightVariant | undefined;
+	top?: boolean | undefined;
+	middle?: boolean | undefined;
+	bottom?: boolean | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `height` | `HeightVariant \| undefined` | Height of the element. It is a minimum, so the element grows when its content is taller. Optional. |
+| `top` | `boolean \| undefined` | Put the content at the top of the element (the default). Optional. |
+| `middle` | `boolean \| undefined` | Put the content in the vertical middle of the element. Use with `height`. Optional. |
+| `bottom` | `boolean \| undefined` | Put the content at the bottom of the element. Use with `height`. Optional. |
+
+
+---
+
+# getHeightClass()
+
+- Kind: function
+- Import: `import { getHeightClass } from "shelving/ui";`
+
+Get the height class for a component from its `height`, `top`, `middle` and `bottom` variant props.
+
+The `height` variant prop sets a component's minimum block size, and `top` / `middle` / `bottom` set where its content sits inside that height — `<Block height="full" middle>`, `<Section height="12x" bottom>`. It is the vertical partner of the `width` variant (see `getWidthClass()`).
+
+`getHeightClass({ height, top, middle, bottom })` maps the props to height classes.
+
+**Values:**
+
+- `full` — at least the full height of the container, for example a layout's `<Scroll vertical cover>` box.
+- `1x` / `2x` / `3x` / `4x` / `5x` / `6x` / `7x` / `8x` / `10x` / `12x` / `16x` / `20x` / `24x` / `28x` / `32x` — at least a multiple of `--space-normal`.
+
+**Things to know:**
+
+- Every height is a minimum (`min-block-size`). When the content is taller, the element grows, so a scroll box scrolls it from the top and nothing is cut off.
+- `top` (the default), `middle` and `bottom` set `align-content` on the element itself. The element keeps its own `display`, so its parent does not need to be a flex box. They only do something when the element is taller than its content, so use them with `height`.
+- `<Row>` and `<Column>` already have `top` / `middle` / `bottom` flex variants with the same meaning, so `<Column height="full" middle>` also puts its items in the middle (see `getFlexClass()`).
+- In a flex or grid container, `space="auto"` is the other way to centre a block (see `getSpaceClass()`).
+- `align-content` on a plain block shipped in Chrome 123, Firefox 125 and Safari 17.4. Older browsers show the content at the top.
+
+## Usage
+
+A log-in screen, in the middle of a layout's scroll box:
+
+```tsx
+<Page title="Log in">
+  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+    <LoginForm />
+  </Block>
+</Page>
+```
+
+
+## Signatures
+
+```ts
+getHeightClass({ height, top, middle, bottom }: HeightVariants): string | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `options` | `HeightVariants` |  |
+| `.height` | `HeightVariant \| undefined` | Height of the element. It is a minimum, so the element grows when its content is taller. Optional. |
+| `.top` | `boolean \| undefined` | Put the content at the top of the element (the default). Optional. |
+| `.middle` | `boolean \| undefined` | Put the content in the vertical middle of the element. Use with `height`. Optional. |
+| `.bottom` | `boolean \| undefined` | Put the content at the bottom of the element. Use with `height`. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `string \| undefined` | The height class string, or `undefined` if no height variants are set. |
+
+## Examples
+
+```ts
+getHeightClass({ height: "full", middle: true }) // "height height-full middle"
+```
+
+
+---
+
 # IndentVariant
 
 - Kind: type
@@ -34762,7 +34888,7 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 ```ts
 {
-	padding?: SpaceValue | undefined;
+	padding?: Exclude<SpaceValue, "auto"> | undefined;
 }
 ```
 
@@ -34770,7 +34896,7 @@ Variant props for the block-padding (top + bottom) of a component, e.g. `padding
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |
 
 
 ---
@@ -34793,7 +34919,7 @@ getPaddingClass({ padding }: PaddingVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `PaddingVariants` |  |
-| `.padding` | `SpaceValue \| undefined` | Block-padding (top + bottom) of the element. Optional. |
+| `.padding` | `Exclude<SpaceValue, "auto"> \| undefined` | Block-padding (top + bottom) of the element. Optional. |
 
 ## Returns
 
@@ -35181,6 +35307,7 @@ Allowed values for block spacing for components that support `SpaceVariants`
 | "section"
 	| "paragraph"
 	| "none"
+	| "auto"
 	| "xxsmall"
 	| "xsmall"
 	| "small"
@@ -35237,6 +35364,8 @@ Get the block spacing class for a component from its `space=""` variant prop.
 The `space` variant prop sets a block-level element's `margin-block` (top + bottom) from the spacing scale — `<Section space="large">`, `<Paragraph space="none">`. It's an **override** for one-off spacing; for an app-wide change, retune the spacing variables below in a theme file.
 
 `getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` (block padding), `getIndentClass()` (inline padding), and `getGapClass()`, so they all move together when you change `--space-normal`.
+
+`space="auto"` sets `margin-block: auto`. In a flex or grid container, such as a `<Column>`, the auto margins take the free space, so the block sits in the middle (it still keeps auto margins as a first or last child). In normal block flow they do nothing: to centre a block vertically there, use `height="full" middle` (see `getHeightClass()`). `padding` and `gap` have no `auto`.
 
 Alongside the named scale, `space`, `padding`, and `indent` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
 

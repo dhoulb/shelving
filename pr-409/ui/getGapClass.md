@@ -16,7 +16,7 @@ getGapClass({ gap }: GapVariants): string | undefined
 | Param | Type | Description |
 | --- | --- | --- |
 | `options` | `GapVariants` |  |
-| `.gap` | `SpaceValue \| undefined` | Gap between child elements. Optional. |
+| `.gap` | `Exclude<SpaceValue, "auto"> \| undefined` | Gap between child elements. Optional. |
 
 ## Returns
 

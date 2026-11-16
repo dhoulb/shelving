@@ -12,7 +12,7 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 **Things to know:**
 
 - It is a frame only. It does not scroll or centre. Fill the slot with `<Scroll vertical cover>`, so the content scrolls inside it.
-- Centre the content in the page itself, for example with `<Block middle width="narrow">`: `middle` puts it in the middle of the screen, and it still scrolls when it is taller.
+- Centre the content in the page itself, for example with `<Block height="full" middle width="narrow">`: it puts the content in the middle of the screen, and it still scrolls when it is taller.
 - The slot stays clear of the notch, the home bar and the rounded screen corners (safe-area insets).
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
@@ -36,7 +36,7 @@ import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
 function LoginPage() {
   return (
     <Page title="Log in">
-      <Block middle width="narrow" padding="xxlarge" indent="normal">
+      <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
         <LoginForm />
       </Block>
     </Page>
