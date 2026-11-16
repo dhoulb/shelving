@@ -133,15 +133,72 @@ describe("NavigationStore", () => {
 		};
 		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, ...STACKS);
 		nav.forward("/profile/settings");
-		expect(nav.stack.value).toBe("/profile");
+		expect(nav.stack.value).toBe("/");
 		nav.back("/discover");
 		expect(nav.stack.value).toBe("/discover");
 	});
 
-	test("saves the stack of the start page", () => {
-		const nav = setup("/profile/settings");
+	test("opens a stack root in its stack", () => {
+		const nav = setup("/profile");
 		expect(nav.stack.value).toBe("/profile");
-		expect(getEntries()).toEqual(["/profile/settings /profile@0"]);
+		expect(getEntries()).toEqual(["/profile /profile@0"]);
+	});
+
+	describe("unstacked pages", () => {
+		test("open any other page in the unstacked / stack", () => {
+			const nav = setup("/profile/settings");
+			expect(nav.stack.value).toBe("/");
+			expect(getEntries()).toEqual(["/profile/settings /@0"]);
+		});
+
+		test("push links deeper in the unstacked stack", () => {
+			const nav = setup("/login");
+			nav.forward("/login/reset");
+			expect(nav.stack.value).toBe("/");
+			expect(nav.history()).toEqual(["/login", "/login/reset"]);
+		});
+
+		test("go to a stack when a link goes to its root", () => {
+			const nav = setup("/login");
+			nav.forward("/home");
+			expect(nav.stack.value).toBe("/home");
+			expect(getEntries().at(-1)).toBe("/home /home@0");
+		});
+
+		test("go to a stack when a replace goes to its root", () => {
+			const nav = setup("/login");
+			nav.replace("/home");
+			expect(nav.stack.value).toBe("/home");
+			expect(getEntries()).toEqual(["/home /home@0"]);
+		});
+
+		test("move into a stack when a replace names it", () => {
+			const nav = setup("/login");
+			nav.replace("/home", "/home");
+			expect(nav.stack.value).toBe("/home");
+			expect(getEntries()).toEqual(["/home /home@0"]);
+		});
+
+		test("move onto the top of a stack when a replace names it", () => {
+			const nav = setup("/home");
+			nav.forward("/home/post/1");
+			nav.forward("/login", "/");
+			nav.replace("/home/post/2", "/home");
+			expect(getEntries().at(-1)).toBe("/home/post/2 /home@2");
+			expect(nav.history("/home")).toEqual(["/home", "/home/post/1", "/home/post/2"]);
+		});
+
+		test("go to a stack when going back to its root", () => {
+			const nav = setup("/home/post/1");
+			nav.back("/home");
+			expect(nav.stack.value).toBe("/home");
+			expect(getEntries().at(-1)).toBe("/home /home@0");
+		});
+
+		test("have no parent", () => {
+			const nav = setup("/home/post/1");
+			expect(nav.position?.parent).toBe(undefined);
+		});
 	});
 
 	describe("forward()", () => {
@@ -258,11 +315,11 @@ describe("NavigationStore", () => {
 			expect(nav.history("/home")).toEqual(["/home"]);
 		});
 
-		test("returns every page in every stack with no stack", () => {
+		test("returns the current stack with no stack", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");
 			nav.forward("/profile", "/profile");
-			expect(nav.history()).toEqual(["/home", "/home/post/1", "/profile"]);
+			expect(nav.history()).toEqual(["/profile"]);
 		});
 
 		test("keeps the query", () => {
