@@ -1,2 +1,0 @@
-import{Bo}from"./chunk-nf3tcjg3.js";function pr(r=Number.MIN_SAFE_INTEGER,e=Number.MAX_SAFE_INTEGER){return Math.round(Math.random()*(e-r)+r)}function sc(r,e,t){let n;do n=pr(e,t);while(n===r);return n}function _e(r=12){return Array.from({length:r},o).join("")}var m="0123456789abcdefghjkmnpqrstvwxyz";function o(){return Dl(m)}function Dl(r){return r[pr(0,r.length-1)]}function lc(r){return Bo(r[pr(0,r.length-1)])}
-export{pr,sc,_e,Dl,lc};
