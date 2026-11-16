@@ -447,7 +447,7 @@ Use `<SidebarLayout sidebar>`. On a narrow screen the sidebar becomes a drawer w
 
 #### A tab bar
 
-Use `<AppLayout nav>`. It puts the content slot above a bar, at every screen size. The bar has its own view-transition group, so it stays still while pages slide. Set `nav={false}` to hide the bar.
+Use `<AppLayout nav>`. It puts the content slot above a bar, at every screen size. Pages slide in the content slot above the bar, so the bar stays still. Set `nav={false}` to hide the bar.
 
 ```tsx
 <AppLayout nav={<StackBar />}>
