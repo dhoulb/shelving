@@ -1,0 +1,55 @@
+# HTML
+
+- Kind: component
+- Import: `import { HTML } from "shelving/ui";`
+
+Render the full `<html>` document shell wrapping `<head>` and `<body>`.
+- Emits the literal `<head>` with `<base>` and other shell-level metadata; per-page hoistable elements (title, meta, links, stylesheets, scripts) come from `<Head>` inside `<Page>` and are hoisted into this `<head>` by React 19.
+
+The full `<html>` document shell, wrapping `<head>` and `<body>`. Use it as the outermost wrapper for server-side rendering — it owns the literal `<head>` (charset, `<base>`, app `<title>`) while per-page hoistable tags come from `<Page>`.
+
+**Things to know:**
+
+- Accepts `PossibleMeta` props (`app`, `root`, `url`, `title`, `description`, `language`, `tags`, `links`, `stylesheets`, `modules`, `scripts`) and merges them into the `Meta` context it provides to children.
+- `<base>` lives only here — it is not a hoistable element, unlike the title/meta/link/script tags that `<Page>` emits and React 19 lifts into this `<head>`.
+- Pass the request URL so the tree can match routes during SSR.
+
+## Usage
+
+```tsx
+import { HTML, Page } from "shelving/ui";
+import { Navigation, Router } from "shelving/ui";
+
+// Server-side render — pass the request URL to <HTML>.
+renderToString(
+  <HTML app="My App" root="https://example.com/" url={requestUrl} language="en">
+    <Navigation>
+      <Router routes={{
+        "/": HomePage,
+        "/about": AboutPage,
+      }}/>
+    </Navigation>
+  </HTML>
+);
+```
+
+For client-side-only roots that don't need an `<html>` shell, use `<App>` from `shelving/ui` instead.
+
+
+## Signatures
+
+```ts
+HTML({ children, ...meta }: HTMLProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `meta` | `HTMLProps` |  |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
