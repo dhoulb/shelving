@@ -78,7 +78,7 @@ const STACKS = ["/home", "/discover", "/profile"] as const;
 
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you go to a stack root or tap a tab. See `NavigationStore`.
+A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 

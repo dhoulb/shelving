@@ -864,7 +864,7 @@ If every file in that list is in the right place, the client and server share on
    - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
    - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
 4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
-5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. A page you open that is not exactly a stack root (a deep link, a login page) is unstacked: no tab is selected until you go to a stack root. A login page can call `nav.replace("/home")` to send the user into the Home tab.
+5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. A page you open that is not exactly a stack root (a deep link, a login page) is unstacked: no tab is selected until the user taps a tab, or the app names a stack. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
 6. **Use the new buttons (optional).**
    - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
    - `<BackButton href="/home"/>` goes back to the page before this one in the current tab, or to `href` when there is none.
@@ -32695,7 +32695,7 @@ The back button for a page header. It goes back to the page before this one in t
 **Things to know:**
 
 - It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
-- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. If `href` is a stack root (for example `/home`), the back button on a deep-linked page goes to that stack.
+- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On an unstacked page (for example a deep link), it goes to `href` and stays unstacked. To go into a stack, the user taps a `<StackButton>`.
 - It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationStore.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
@@ -32864,7 +32864,7 @@ const STACKS = ["/home", "/discover", "/profile"] as const;
 
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you go to a stack root or tap a tab. See `NavigationStore`.
+A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -33065,7 +33065,7 @@ The store that holds the current URL, drives browser history, and keeps one stac
 | Method | What it does | Slide |
 |---|---|---|
 | `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace. | Forward. Across stacks, by tab order. |
-| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of a stack, it goes to that stack, at its root. Otherwise `href` takes the place of the top page of the stack. | Back |
+| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back |
 | `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages. | None |
 | `history(stack?)` | Returns the pages in `stack`, root first. | — |
 
@@ -33073,20 +33073,19 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 ## Unstacked pages
 
-A page opens in a stack only when you say so: with a `<StackButton>`, a `stack` argument, or a link from a page that is already in that stack. Any other page is **unstacked**, and is in the `/` stack. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. So a page you open that is not exactly a stack root is **unstacked**, and is in the `/` stack. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
 
 - On an unstacked page, no `<StackButton>` is selected.
-- Links from an unstacked page push deeper in the `/` stack.
-- To leave the `/` stack, go to a stack root. A link, `forward()`, `replace()` or `back()` to a URL that is exactly a stack root (for example `/home`) goes to that stack, at its root. A tap on a `<StackButton>` goes to that stack too.
-- A URL that is exactly a stack root always opens in that stack, also on a fresh open.
+- Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
+- To leave the `/` stack, tap a `<StackButton>`, or name the stack.
+- The page the app opens at is the one exception: if its URL is exactly a stack root (for example `/home`), it opens in that stack, so the right tab is selected when the app starts.
 - If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
 
-For example, a login page sends the user home after they log in. `/home` is a stack root, so the app is now in the Home stack:
+For example, a login page sends the user home after they log in, and names the Home stack:
 
 ```tsx
 const nav = requireNavigation();
-nav.replace("/home");          // From an unstacked page, a stack root goes to that stack.
-nav.replace("/home", "/home"); // The same, with the stack named.
+nav.replace("/home", "/home");
 ```
 
 ## How stacks work
@@ -33237,7 +33236,6 @@ Go forward to a URL, as a link does.
 - Else push the URL onto `stack`, one level deeper than its top page.
 - The URL you are already on: replace it instead.
 - A change of stack slides by tab order. Else it slides forward.
-- From an unstacked page (the `"/"` stack, when it is not one of the `stacks`), a URL that is a stack root goes to that stack. For example, a login page goes to `/home`.
 
 ## Signatures
 
@@ -33277,7 +33275,6 @@ Replace the current URL, with no transition.
 - The page stays in the same stack, at the same depth, so a cached page stays mounted.
 - Use it for a page that knows its canonical URL, or for in-page tabs.
 - Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
-- From an unstacked page, a URL that is a stack root goes to that stack, at its root, with no `stack` too.
 
 ## Signatures
 
