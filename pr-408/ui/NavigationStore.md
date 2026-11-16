@@ -9,7 +9,7 @@ Store that holds the current navigation URL, drives browser history, and keeps a
 - Extends `URLStore`, so its `value` is the current URL.
 - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
 - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
-- Without the Navigation API (older browsers and server renders) there are no stacks: `history()` is empty and `stack` arguments are ignored.
+- Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack that starts the current path, `history()` is empty, and `stack` arguments are ignored.
 - Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
 The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
@@ -17,11 +17,11 @@ The store that holds the current URL, drives browser history, and keeps one stac
 **Things to know:**
 
 - `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
 - `NavigationStore.history()` returns the pages in a stack, root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there are no stacks: `stack` holds `undefined`, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` is the stack that starts the current path (else the first stack), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
@@ -120,7 +120,7 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | Property | Type | Description |
 | --- | --- | --- |
 | `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. A single-stack app has one root. Read only. |
-| `stack` | `Store<AbsolutePath \| undefined>` | Root path of the current stack, or `undefined` without the Navigation API. Read only. |
+| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - Without the Navigation API, it is the stack that starts the current path (else the first stack). Read only. |
 | `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
 | `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 

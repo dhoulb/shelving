@@ -32779,7 +32779,7 @@ Props for `<Navigation>`: the initial `Meta` (url and root), the `stacks`, and o
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack. Read only. Optional. |
+| `stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
 
 
 ---
@@ -32811,7 +32811,7 @@ Give it `stacks` for an app with a tab bar. Each stack is one tab with its own h
 - It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
 - The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
 - When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
-- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`.
+- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. With no `stacks`, the app has one stack, and `stack` is `"/"`.
 - It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
 - `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
 
@@ -32911,7 +32911,7 @@ Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement
 | Param | Type | Description |
 | --- | --- | --- |
 | `meta` | `NavigationProps` |  |
-| `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack. Read only. Optional. |
+| `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
 
 ## Returns
 
@@ -33043,7 +33043,7 @@ Store that holds the current navigation URL, drives browser history, and keeps a
 - Extends `URLStore`, so its `value` is the current URL.
 - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
 - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
-- Without the Navigation API (older browsers and server renders) there are no stacks: `history()` is empty and `stack` arguments are ignored.
+- Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack that starts the current path, `history()` is empty, and `stack` arguments are ignored.
 - Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
 The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
@@ -33051,11 +33051,11 @@ The store that holds the current URL, drives browser history, and keeps one stac
 **Things to know:**
 
 - `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
 - `NavigationStore.history()` returns the pages in a stack, root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there are no stacks: `stack` holds `undefined`, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` is the stack that starts the current path (else the first stack), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
@@ -33154,7 +33154,7 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | Property | Type | Description |
 | --- | --- | --- |
 | `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. A single-stack app has one root. Read only. |
-| `stack` | `Store<AbsolutePath \| undefined>` | Root path of the current stack, or `undefined` without the Navigation API. Read only. |
+| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - Without the Navigation API, it is the stack that starts the current path (else the first stack). Read only. |
 | `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
 | `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 
@@ -33220,7 +33220,7 @@ Go forward to a URL, as a link does.
 ## Signatures
 
 ```ts
-forward(possible: PossibleURL, stack: AbsolutePath | undefined = this.stack.value): void
+forward(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
 ```
 
 
@@ -33240,7 +33240,7 @@ Go back to a URL, as a back button does.
 ## Signatures
 
 ```ts
-back(possible: PossibleURL, stack: AbsolutePath | undefined = this.stack.value): void
+back(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
 ```
 
 
@@ -33754,7 +33754,7 @@ A button for one stack in a tab bar. It acts like a tab button in a phone app.
 - It is selected (`aria-current`) while its stack is the current stack.
 - `stack` must be one of the `stacks` on `<Navigation>`.
 - It takes the usual `<Button>` props, except `href`, `onClick` and `selected`.
-- Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while the URL is in the stack.
+- Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while the current path is in its stack.
 - In a server-rendered app, the server renders a link and the browser renders a button, so React warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
 
 ## Usage
@@ -38008,7 +38008,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | --- | --- | --- |
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation stacks>` (for example `"/home"`). Pass it to a static render to render a page as if it were in that stack. Read only. Optional. |
+| `stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation>` (for example `"/home"`, or `"/"` when it has no `stacks`). Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
@@ -38154,7 +38154,7 @@ mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta
 | `meta1` | `Meta` | The existing fully-resolved `Meta` to merge into. |
 | `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `.stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation stacks>` (for example `"/home"`). Pass it to a static render to render a page as if it were in that stack. Read only. Optional. |
+| `.stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation>` (for example `"/home"`, or `"/"` when it has no `stacks`). Read only. Optional. |
 | `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |

@@ -12,5 +12,5 @@ Go forward to a URL, as a link does.
 ## Signatures
 
 ```ts
-forward(possible: PossibleURL, stack: AbsolutePath | undefined = this.stack.value): void
+forward(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
 ```

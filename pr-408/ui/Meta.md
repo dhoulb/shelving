@@ -32,7 +32,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | --- | --- | --- |
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation stacks>` (for example `"/home"`). Pass it to a static render to render a page as if it were in that stack. Read only. Optional. |
+| `stack` | `AbsolutePath \| undefined` | Root path of the current stack, set by `<Navigation>` (for example `"/home"`, or `"/"` when it has no `stacks`). Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
