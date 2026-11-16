@@ -1,2 +1,0 @@
-import{r}from"./chunk-90kryzxh.js";function gc(t){return typeof t==="function"&&t.toString().startsWith("class")}function xc(t,e){return t instanceof e}function ql(t,e){if(!(t instanceof e))throw new r(`Must be instance of class "${e.name}"`,{received:t,expected:e,caller:ql})}function B(t,e){let n=Object.getOwnPropertyDescriptor(t,e);return n&&typeof n.get==="function"?n.get:void 0}function On(t,e){let n=Object.getOwnPropertyDescriptor(t.constructor.prototype,e);return n&&typeof n.set==="function"?n.set:void 0}
-export{gc,xc,ql,B,On};
