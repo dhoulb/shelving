@@ -1,28 +1,71 @@
 # RouteCache
 
-A keep-alive page cache. Drop it into a layout around its scrolling content region: it reads the current URL from the surrounding `<Meta>` context and keeps a handful of recently-visited pages mounted but *hidden* (using React's [`<Activity>`](https://react.dev/reference/react/Activity)), so navigating back or forward to a page restores its entire DOM and component state — scroll position of every scroll container, open/closed toggles, in-progress searches, form inputs, focus — instead of remounting it fresh at the top.
+A keep-alive cache for the pages in the navigation stacks. Put it in a layout around the scrolling content region. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
 
-Shelving's `<SidebarLayout>` and `<CenteredLayout>` already wrap their scrollable content column in one for you, so pages rendered inside them keep their state across navigation automatically. Reach for it by hand only when building a custom layout.
+`<SidebarLayout>` and `<CenteredLayout>` already wrap their content in a `<RouteCache>`. Use it by hand only in a custom layout.
 
 **Things to know:**
 
-- Pages are kept in a least-recently-used map keyed by `path`. Once `maxCached` pages are retained the least-recently-visited one is unmounted (and loses its state). A never-seen or evicted page mounts fresh at the top.
-- A page can own other paths with `<RouteConfig path>`, for example its tabs (`/dave/{tab}`). A navigation to one of those paths keeps the same page mounted: it keeps its scroll and state, and a `<ViewTransition>` around the page does not slide.
-- A page with `<RouteConfig cache={false}>` is not kept: it unmounts as you leave it, so the next visit starts again. Use it for a form that makes or edits something, so it never shows old input.
-- The cache key is the path only, not the `?query`. So `/new?from=a` and `/new?from=b` are one page.
-- Pass `maxCached={0}` (or less) to disable caching entirely — the page renders directly and unmounts as soon as you leave it.
-- `<Activity mode="hidden">` preserves a hidden page's *state* while unmounting its *effects*, so subscriptions, observers (e.g. infinite-scroll), and timers pause and resume cleanly as the page is hidden and shown.
-- Each snapshot is frozen under its own `<Meta>` context, so the same single `children` element resolves a different page per path and a hidden page never re-renders for someone else's URL.
-- For per-page **scroll** to be preserved the cache has to wrap the scroll container itself — which is why it lives in the layout (around the scrollable column) rather than below it inside the router. Surrounding chrome (sidebar, drawer state) stays outside the cache, so it is neither duplicated nor remounted on navigation.
+- Each page is keyed by its stack and its depth in that stack, not by its URL. See `NavigationStore` for how stacks work.
+- A page leaves the cache when it leaves its stack: when you go back from it, or when its stack goes back to the root. So a page you went back from mounts fresh the next time you open it.
+- After a browser back, the browser forward button shows the next page fresh (from the top), because that page left its stack when you went back.
+- The top page of each stack is never dropped, so each tab always shows the page you left. Other pages are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- `NavigationStore.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
+- The same URL open in two stacks is two separate pages.
+- A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
+- Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
+- `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
+- The cache must wrap the scroll container itself to keep each page's scroll. So it goes in the layout around the scrolling column, not inside the router. Chrome outside the cache (a sidebar, a tab bar) is not duplicated or remounted.
+- Put a page `<Transition>` around the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+- Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
 ```tsx
-import { RouteCache } from "shelving/ui";
+import { HorizontalTransition, RouteCache, Router } from "shelving/ui";
 
-<SidebarLayout sidebar={<Menu/>}>
-  <RouteCache>
-    <Router routes={routes}/>
-  </RouteCache>
-</SidebarLayout>
+function MyLayout() {
+  return (
+    <HorizontalTransition>
+      <RouteCache>
+        <main className="scroll">
+          <Router routes={ROUTES}/>
+        </main>
+      </RouteCache>
+    </HorizontalTransition>
+  );
+}
 ```
+
+Keep fewer pages:
+
+```tsx
+<RouteCache maxCached={5}>
+  <Router routes={ROUTES}/>
+</RouteCache>
+```
+
+Clear a create form after it saves. Change the `key` of the `<Form>`, so it mounts again with no input:
+
+```tsx
+import { useState } from "react";
+import { Form, requireNavigation } from "shelving/ui";
+
+function NewPostPage() {
+  const nav = requireNavigation();
+  const [formKey, setFormKey] = useState(0);
+  return (
+    <Form
+      key={formKey}
+      schema={POST_SCHEMA}
+      onSubmit={async data => {
+        const id = await createPost(data);
+        setFormKey(k => k + 1);
+        nav.forward(`/post/${id}`);
+      }}
+    />
+  );
+}
+```
+
+For a plain HTML `<form>`, call `form.reset()` after the submit.

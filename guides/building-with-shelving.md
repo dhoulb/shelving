@@ -693,6 +693,32 @@ If every file in that list is in the right place, the client and server share on
 
 ## Upgrade notes
 
+### Tab stacks in `<Navigation>`
+
+`<Navigation>` now keeps one stack of pages for each tab, like a phone app. It uses the browser [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API). Some names and props changed. To upgrade an app:
+
+1. **Rename `redirect()` to `replace()`.** Change each `nav.redirect(url)` to `nav.replace(url)`. It does the same thing: it changes the URL of the current page with no new history entry and no slide.
+2. **Change the `back` prop to a class.** The `back` prop on `<Button>` and `<Link>` is removed, and so is the `data-back` attribute. Change `<Button href="/profile" back>` to `<Button href="/profile" className="back">`. For a page-header back button, use `<BackButton href="/profile"/>` (see step 6).
+3. **Remove `<RouteConfig>`.** `<RouteConfig>` and `RouteContext` are removed.
+   - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
+   - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
+4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
+5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points.
+6. **Use the new buttons (optional).**
+   - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
+   - `<BackButton href="/home"/>` goes back to the page before this one in the current tab, or to `href` when there is none.
+7. **Move the page transition outside `<RouteCache>`.** Put `<HorizontalTransition>` (or any page `<Transition>`) around the `<RouteCache>`, not inside it around each page. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+8. **Check pages that change URL for the same component.** `<RouteCache>` now keys each page by its stack and depth, not by its path. A replace from `/post/1` to `/post/2` keeps the same component mounted with its state. If the page must reset, wrap its content in an element with `key={id}`.
+9. **Know the fallback.** Without the Navigation API (older browsers), links still work with no page reload, but there are no stacks, no slides and no page cache. `<StackButton>` and `<BackButton>` become plain links.
+
+What changes for users:
+
+- Each tab remembers the page you left it on, and its back button goes back within that tab.
+- The browser back button walks the history as before, across tabs. The page slides the right way.
+- When you go back from a page, it leaves the cache. So the browser forward button then shows that page fresh, from the top.
+
+See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
+
 ### From `CacheDBProvider` to `HydratingAPIProvider`
 
 `CacheDBProvider` and the paging in `QueryStore` are removed. To upgrade an app:

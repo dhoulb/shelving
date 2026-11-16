@@ -1,11 +1,11 @@
-import { type ReactElement, use, useRef } from "react";
+import { type ReactElement, use } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { getProps } from "../../util/index.js";
 import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/meta.js";
-import { RouteContext, type RouteState } from "./RouteContext.js";
+import { NavigationPositionContext } from "./NavigationContext.js";
 import type { Routes } from "./Routes.js";
 
 /**
@@ -30,7 +30,8 @@ export interface RouterProps extends PossibleMeta {
  * - When `base` is set, the effective path is the URL after stripping the base prefix.
  * - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
  * - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
- * - Each path is a new page, so a component route remounts when the path changes. A page that owns other paths with `<RouteConfig path>` stays mounted when the path changes to one of them.
+ * - Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
+ * - Elsewhere, each path is a new page, so a component route remounts when the path changes.
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  *
  * @kind component
@@ -41,24 +42,12 @@ export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement
 	const combined = requireMetaURL(meta);
 	const path = combined;
 
-	// Keep the current page when it owns the new path with `<RouteConfig path>`, else start a new page for this path.
-	// The top-level router passes the `<RouteCache>` entry on, so `<RouteConfig>` in its page also tells the cache.
-	const parent = use(RouteContext);
-	const pageRef = useRef<{ key: string; state: RouteState }>(undefined);
-	const prev = pageRef.current;
-	const page =
-		prev && (prev.key === combined.path || (prev.state.path && matchPathTemplate(prev.state.path, combined.path)))
-			? prev
-			: { key: combined.path, state: { router: true, entry: parent?.router ? undefined : parent } as RouteState };
-	pageRef.current = page;
+	// Key the page by its place in the stack when there is one, else by its path.
+	const position = use(NavigationPositionContext);
+	const key = position ? `${position.stack} ${position.depth}` : combined.path;
 
-	const route = _matchRoute(routes, fallback, combined, page.key);
-	if (route)
-		return (
-			<RouteContext value={page.state}>
-				<MetaContext value={combined}>{route}</MetaContext>
-			</RouteContext>
-		);
+	const route = _matchRoute(routes, fallback, combined, key);
+	if (route) return <MetaContext value={combined}>{route}</MetaContext>;
 	throw new NotFoundError("Tree route not found", { received: path });
 }
 

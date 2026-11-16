@@ -1,17 +1,18 @@
-import { type ReactElement, useEffect } from "react";
+import { type ReactElement, use, useEffect } from "react";
 import type { ArrayItem } from "../../util/array.js";
 import { getProps, type Prop } from "../../util/object.js";
 import { requireMeta } from "../misc/MetaContext.js";
+import { NavigationContext } from "../router/NavigationContext.js";
 import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../util/meta.js";
 
 /** Meta tags with a capital first letter and hyphens, e.g. `Content-Security-Policy` or `Accept`, are `http-equiv=""` tags. */
 const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 
 /**
- * Emit the current page's head metadata and sync browser history to its URL.
+ * Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
  * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
  * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
- * - Updates `window.history` to match the page URL.
+ * - When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationStore.replace()` with it. Outside `<Navigation>` it does not touch history.
  *
  * @kind component
  * @see https://shelving.cc/ui/Head
@@ -20,10 +21,11 @@ export function Head(): ReactElement {
 	const meta = requireMeta();
 	const { url, title, app, description, links, tags, stylesheets, modules, scripts } = meta;
 
+	// A page can set its canonical URL in meta. Replace the browser URL with it, through the navigation store so the history entry keeps its stack.
+	const nav = use(NavigationContext);
 	useEffect(() => {
-		if (typeof window === "undefined") return;
-		if (url) window.history.replaceState(null, "", url);
-	}, [url]);
+		if (nav && url && url.href !== nav.value.href) nav.replace(url);
+	}, [nav, url]);
 
 	const fullTitle = joinTitles(title, app);
 	return (
