@@ -29,7 +29,9 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 - A change inside an open dialog (new content, a Suspense reveal) runs no view transition, so the dialog never ignores a tap while its content changes. The page ignores taps while a view transition runs.
 - `Dialog` knows nothing about transitions. React runs a view transition only for an update made inside `startTransition()`, so the code that mounts and unmounts the dialog decides if it animates:
   - `<Dialogs>` renders a `DialogsStore` inside transitions, so a dialog opened with `DialogsStore.show()` animates in and out for you.
-  - A `Dialog` you mount yourself appears and goes at once, unless you set the state that mounts and unmounts it inside `startTransition()`. See the declarative example below.
+  - A `Dialog` you mount yourself appears and goes at once, unless you set the React state that mounts and unmounts it inside `startTransition()`. See the declarative example below.
+  - A `Dialog` you mount from a store read with `useStore()` never animates. `useStore()` applies each change at once, so `startTransition()` around the store write does not help.
+- To open a dialog from app code, use `requireDialogs()` and `DialogsStore.show()`. Pass the `DialogsStore` into any function that opens one.
 - A browser without view transitions shows and hides the dialog at once.
 - Pair with `DialogsStore`, `<DialogsContext>`, and `<Dialogs>` to open dialogs imperatively from anywhere in the app.
 
