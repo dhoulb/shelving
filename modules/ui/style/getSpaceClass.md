@@ -4,6 +4,8 @@ The `space` variant prop sets a block-level element's `margin-block` (top + bott
 
 `getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` (block padding), `getIndentClass()` (inline padding), and `getGapClass()`, so they all move together when you change `--space-normal`.
 
+`space="auto"` sets `margin-block: auto`. In a flex or grid container, such as a `<Column>`, the auto margins take the free space, so the block sits in the middle (it still keeps auto margins as a first or last child). In normal block flow they do nothing: to centre a block vertically there, use `height="full" middle` (see `getHeightClass()`). `padding` and `gap` have no `auto`.
+
 Alongside the named scale, `space`, `padding`, and `indent` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
 
 ## Theme variables

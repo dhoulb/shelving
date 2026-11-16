@@ -41,14 +41,6 @@
 	}
 }
 
-@layer variants {
-	/* At least as tall as the container, with the content centred vertically. The block grows past the container when its content is taller, so a scroll box scrolls it and nothing is cut off. */
-	.middle {
-		min-block-size: 100%;
-		align-content: center;
-	}
-}
-
 @layer overrides {
 	.prose
 		:is(

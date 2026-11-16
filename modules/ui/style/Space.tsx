@@ -10,6 +10,7 @@ export type SpaceValue =
 	| "section"
 	| "paragraph"
 	| "none"
+	| "auto"
 	| "xxsmall"
 	| "xsmall"
 	| "small"

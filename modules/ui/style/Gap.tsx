@@ -9,7 +9,7 @@ import type { SpaceValue } from "./Space.js";
  */
 export interface GapVariants {
 	/** Gap between child elements. */
-	gap?: SpaceValue | undefined;
+	gap?: Exclude<SpaceValue, "auto"> | undefined;
 }
 
 /**

@@ -146,6 +146,6 @@ function AppError({ reason }: ErrorProps) {
 }
 ```
 
-Layouts are optional. With no layout, the document body scrolls, which is fine for a simple site. Use a layout when the app scrolls inside its own boxes: it locks the body and gives a content slot. Every layout is a frame: none of them scroll or centre. A page centres its own content, for example with `<Block middle width="narrow">`.
+Layouts are optional. With no layout, the document body scrolls, which is fine for a simple site. Use a layout when the app scrolls inside its own boxes: it locks the body and gives a content slot. Every layout is a frame: none of them scroll or centre. A page centres its own content, for example with `<Block height="full" middle width="narrow">`.
 
 For a documentation site, hand an extracted tree to `<TreeApp>` instead — see the `shelving/extract` guide.
