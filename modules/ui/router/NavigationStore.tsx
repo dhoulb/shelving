@@ -50,7 +50,7 @@ type _Navigation = Pick<
  * - Extends `URLStore`, so its `value` is the current URL.
  * - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
  * - `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
- * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` is the stack whose root is the current path (else `"/"`), `history()` is empty, and `stack` arguments are ignored.
+ * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
  * - Owned by `<Navigation>`. Read it with `requireNavigation()`.
  *
  * @see https://shelving.cc/ui/NavigationStore
@@ -62,7 +62,7 @@ export class NavigationStore extends URLStore {
 	/**
 	 * Root path of the current stack.
 	 * - Always set. With no `stacks`, it is `"/"`.
-	 * - Without the Navigation API, it is the stack whose root is the current path, else the unstacked `"/"` stack.
+	 * - It starts at the `stack` given to the constructor (default `"/"`). Without the Navigation API, it stays there.
 	 */
 	readonly stack: Store<AbsolutePath>;
 
@@ -79,17 +79,20 @@ export class NavigationStore extends URLStore {
 	/** `true` while the store changes history itself, so it ignores the events that causes. */
 	private _busy = false;
 
+	/** Stack of the page the app opens at, when its history entry has no saved stack. */
+	private readonly _start: AbsolutePath;
+
 	constructor(
 		url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href,
 		base?: PossibleURL,
+		stack: AbsolutePath = "/",
 		...stacks: AbsolutePath[]
 	) {
 		super(url, base);
 		this.stacks = stacks.length ? stacks : ["/"];
+		this._start = stack;
 		this._navigation = _getNavigation();
-		this.stack = new Store<AbsolutePath>(
-			this._navigation ? this._getState(this._navigation.currentEntry).stack : this._getStack(this.value),
-		);
+		this.stack = new Store<AbsolutePath>(this._navigation ? this._getState(this._navigation.currentEntry).stack : stack);
 	}
 
 	/**
@@ -291,9 +294,7 @@ export class NavigationStore extends URLStore {
 	/** Set the stack first, then the URL, so both are ready when `<Navigation>` reads them. */
 	private _change(url: PossibleURL, transition: TransitionType | null, stack?: AbsolutePath): void {
 		this.transition = transition;
-		// Without the Navigation API, the stack follows the path.
-		const next = stack ?? (this._navigation ? undefined : this._getStack(requireURL(url, this.base, this._change)));
-		if (next) this.stack.value = next;
+		if (stack) this.stack.value = stack;
 		this.value = url;
 	}
 
@@ -319,27 +320,16 @@ export class NavigationStore extends URLStore {
 		return pages;
 	}
 
-	/** Get the saved state of an entry, or for an entry with none (the page the app opened at), the stack whose root is its path (else the unstacked `"/"` stack) at depth 0. */
+	/** Get the saved state of an entry, or for an entry with none (the page the app opened at), the starting stack at depth 0. */
 	private _getState(entry: NavigationHistoryEntry | null): NavigationEntryState {
 		const state = entry?.getState();
 		if (_isEntryState(state) && this._getStacks().includes(state.stack)) return state;
-		return { stack: entry?.url ? this._getStack(requireURL(entry.url, undefined, this._getState)) : this._getStack(), depth: 0 };
+		return { stack: this._start, depth: 0 };
 	}
 
 	/** Get every stack a page can be in: the listed stacks, plus the unstacked `"/"` stack. */
 	private _getStacks(): AbsolutePath[] {
-		return this.stacks.includes("/") ? [...this.stacks] : [...this.stacks, "/"];
-	}
-
-	/** Get the stack whose root is exactly the path of a URL, or `undefined` if none is. */
-	private _getRoot(url: ImmutableURL): AbsolutePath | undefined {
-		const path = this._getPath(url);
-		return path && this.stacks.includes(path) ? path : undefined;
-	}
-
-	/** Get the stack of a URL with no saved stack: the stack whose root is exactly its path, else the unstacked `"/"` stack. */
-	private _getStack(url?: ImmutableURL): AbsolutePath {
-		return (url && this._getRoot(url)) || "/";
+		return Array.from(new Set([...this.stacks, this._start, "/" as const]));
 	}
 
 	/** Get the path of a URL relative to the app root, or `undefined` if it is outside the app. */

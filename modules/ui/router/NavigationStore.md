@@ -10,7 +10,7 @@ The store that holds the current URL, drives browser history, and keeps one stac
 - `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there is no stack history: `stack` is the stack whose root is the current path (else `/`), `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
@@ -25,12 +25,12 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 ## Unstacked pages
 
-A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. So a page you open that is not exactly a stack root is **unstacked**, and is in the `/` stack. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else in the `/` stack. A page in the `/` stack is **unstacked**. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
 
 - On an unstacked page, no `<StackButton>` is selected.
 - Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
 - To leave the `/` stack, tap a `<StackButton>`, or name the stack.
-- The page the app opens at is the one exception: if its URL is exactly a stack root (for example `/home`), it opens in that stack, so the right tab is selected when the app starts.
+- To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
 - If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
@@ -96,6 +96,7 @@ Make a store by hand only in tests:
 ```tsx
 import { NavigationStore } from "shelving/ui";
 
-const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/profile");
+// URL, root, starting stack, then the stacks in tab order.
+const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
 nav.forward("/home/post/1");
 ```

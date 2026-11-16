@@ -64,9 +64,18 @@ const STACKS = ["/home", "/discover", "/profile"] as const;
 </App>
 ```
 
+To select a tab when the app starts, pass the starting `stack`. The app decides which stack the opening URL belongs to, for example:
+
+```tsx
+const path = window.location.pathname;
+const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
+
+<Navigation stacks={STACKS} stack={stack}>
+```
+
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-A deep link, a login page, or any page you open that is not exactly a stack root is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else in the `/` stack. A page in the `/` stack, such as a deep link or a login page, is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
