@@ -1,2 +1,0 @@
-import{ae}from"./chunk-4fz03msw.js";import{E}from"./chunk-9dz833vz.js";import{Ta}from"./chunk-jjdwhk0s.js";import{useRef as o}from"react";function ee(e,...t){let n=o(void 0).current??={instance:new e(...t),args:t};if(!ae(t,n.args))n.instance=new e(...t),n.args=t;return n.instance}import{useSyncExternalStore as s}from"react";var i=Symbol(),a={subscribe:Ta,getSnapshot:E};function x(e){let{subscribe:t,getSnapshot:n}=!e?a:e[i]??={subscribe:(r)=>e.subscribe(r,r),getSnapshot:()=>e.snapshot};return s(t,n,n),e}
-export{ee,x};
