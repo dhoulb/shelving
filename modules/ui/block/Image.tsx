@@ -20,6 +20,7 @@ export interface ImageProps extends SpaceVariants, WidthVariants, ClassProps {
 
 /**
  * Image block — renders an `<img>` with space and width variants applied.
+ * - It loads `lazy`. React holds a transition (such as a page change) until each eager `<img>` loads, so an eager image would delay the whole page.
  *
  * @kind component
  * @example <Image src="/logo.png" alt="Logo" width="narrow" />
@@ -30,6 +31,7 @@ export function Image({ src, alt, className, ...props }: ImageProps): ReactEleme
 		<img
 			src={src}
 			alt={alt}
+			loading="lazy"
 			className={getClass(
 				IMAGE_CLASS, //
 				getBlockClass(props),
