@@ -1,8 +1,8 @@
-import { type ReactElement, use } from "react";
-import { useStore } from "../../react/useStore.js";
+import type { ReactElement } from "react";
 import type { AbsolutePath } from "../../util/path.js";
 import { Button, type ButtonProps } from "../button/Button.js";
-import { NavigationPositionContext, requireNavigation } from "./NavigationContext.js";
+import { requireMetaURL } from "../misc/MetaContext.js";
+import { requireNavigation } from "./NavigationContext.js";
 
 /**
  * Props for `<StackButton>`: the `stack` it opens, plus the usual `Button` props except `href` and `onClick`.
@@ -27,15 +27,14 @@ export interface StackButtonProps extends Omit<ButtonProps, "href" | "onClick" |
  */
 export function StackButton({ stack, ...props }: StackButtonProps): ReactElement {
 	const nav = requireNavigation();
-	const current = useStore(nav.stack).value;
-	const position = use(NavigationPositionContext);
+	const { stack: current, ordinal, path } = requireMetaURL();
 
 	// No Navigation API (or a server render): a plain link to the root, selected while its stack is the current stack.
-	if (!position) return <Button {...props} href={stack} selected={current === stack} />;
+	if (ordinal === undefined) return <Button {...props} href={stack} selected={current === stack} />;
 
 	const onClick = () => {
 		if (current !== stack) return nav.forward(nav.history(stack).at(-1) ?? stack, stack);
-		if (nav.path !== stack) return nav.back(stack, stack);
+		if (path !== stack) return nav.back(stack, stack);
 		window.scrollTo({ top: 0, behavior: "smooth" });
 		for (const el of document.querySelectorAll<HTMLElement>("main, [data-scroll]"))
 			if (el.offsetParent) el.scrollTo({ top: 0, behavior: "smooth" });

@@ -551,7 +551,7 @@ Each tab keeps its own stack of pages, and its back button goes back within that
 3. Put `<BackButton href="/home" />` in each page header. It goes back in the current tab, or to `href` when there is no page before.
 4. Use `<RouteCache>`, so each tab shows the page you left it on.
 
-Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationStore`, `<StackButton>` and `<BackButton>`.
+Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationSequence`, `<StackButton>` and `<BackButton>`.
 
 #### Hide the tab bar on some pages
 
@@ -921,7 +921,7 @@ If every file in that list is in the right place, the client and server share on
 3. **Remove `<RouteConfig>`.** `<RouteConfig>` and `RouteContext` are removed.
    - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
    - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
-4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
+4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationSequence.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
 5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. Set `stack` on `<Navigation>` to the stack the app opens in. With no `stack`, the page floats (its stack is `null`): it is outside every tab, so no tab is selected until the user taps a tab, or the app names a stack. Deep links and login pages float. `/` is a normal stack root, so a Home tab can be `/`. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
 6. **Use the new buttons (optional).**
    - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
@@ -936,7 +936,7 @@ What changes for users:
 - The browser back button walks the history as before, across tabs. The page slides the right way.
 - When you go back from a page, it leaves the cache. So the browser forward button then shows that page fresh, from the top.
 
-See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
+See `<Navigation>`, `NavigationSequence`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
 
 ### Layouts are frames
 

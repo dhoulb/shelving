@@ -1,33 +1,23 @@
 import { createContext } from "react";
 import { requireContext } from "../util/context.js";
-import type { NavigationPosition, NavigationStore } from "./NavigationStore.js";
+import type { NavigationSequence } from "./NavigationSequence.js";
 
 /**
- * React context holding the current `NavigationStore`, provided by `<Navigation>`.
+ * React context holding the current `NavigationSequence`, provided by `<Navigation>`.
  *
- * @example <NavigationContext value={store}>…</NavigationContext>
+ * @example <NavigationContext value={nav}>…</NavigationContext>
  * @see https://shelving.cc/ui/NavigationContext
  */
-export const NavigationContext = createContext<NavigationStore | undefined>(undefined);
+export const NavigationContext = createContext<NavigationSequence | undefined>(undefined);
 NavigationContext.displayName = "NavigationContext";
 
 /**
- * Read the current `NavigationStore` from context, throwing if used outside `<Navigation>`.
+ * Read the current `NavigationSequence` from context, throwing if used outside `<Navigation>`.
  *
- * @returns The current `NavigationStore`.
+ * @returns The current `NavigationSequence`.
  * @throws RequiredError If no `<Navigation>` provider is present above.
  * @see https://shelving.cc/ui/requireNavigation
  */
-export function requireNavigation(): NavigationStore {
+export function requireNavigation(): NavigationSequence {
 	return requireContext(NavigationContext, requireNavigation);
 }
-
-/**
- * React context holding where the app is in its stacks, published by `<Navigation>` with each URL change.
- * - `undefined` without the browser Navigation API, during a server render, or outside `<Navigation>`.
- * - `<RouteCache>`, `<Router>` and `<BackButton>` read it, so they change in the same render as the URL.
- *
- * @see https://shelving.cc/ui/NavigationPositionContext
- */
-export const NavigationPositionContext = createContext<NavigationPosition | undefined>(undefined);
-NavigationPositionContext.displayName = "NavigationPositionContext";

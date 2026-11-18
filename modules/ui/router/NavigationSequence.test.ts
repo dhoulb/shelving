@@ -1,7 +1,16 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { NavigationStore } from "shelving/ui";
+import { type NavigationEvent, NavigationSequence } from "shelving/ui";
 
-// A small fake of the browser Navigation API and `window.history`, enough for `NavigationStore`.
+/** Records the last event, so tests can read its direction straight away. */
+class TestSequence extends NavigationSequence {
+	last: NavigationEvent | undefined;
+	override resolve(event: NavigationEvent): void {
+		this.last = event;
+		super.resolve(event);
+	}
+}
+
+// A small fake of the browser Navigation API and `window.history`, enough for `NavigationSequence`.
 
 type Listener = (e: Record<string, unknown>) => void;
 
@@ -78,7 +87,7 @@ const globals = globalThis as { navigation?: unknown; window?: unknown };
 let fake: FakeNavigation;
 
 /** Open the app at `path`, in `stack` (by default the stack whose root is `path`, else `/`). */
-function setup(path = "/home", stack: string | null = (STACKS as readonly string[]).includes(path) ? path : null): NavigationStore {
+function setup(path = "/home", stack: string | null = (STACKS as readonly string[]).includes(path) ? path : null): TestSequence {
 	fake = new FakeNavigation(`${ORIGIN}${path}`);
 	globals.navigation = fake;
 	globals.window = {
@@ -90,15 +99,15 @@ function setup(path = "/home", stack: string | null = (STACKS as readonly string
 		addEventListener: () => undefined,
 		removeEventListener: () => undefined,
 	};
-	const nav = new NavigationStore(`${ORIGIN}${path}`, `${ORIGIN}/`, stack as `/${string}` | null, ...STACKS);
+	const nav = new TestSequence(`${ORIGIN}${path}`, `${ORIGIN}/`, stack as `/${string}` | null, ...STACKS);
 	nav.listen();
 	return nav;
 }
 
 function getEntries(): string[] {
 	return fake.list.map(e => {
-		const s = e.state as { stack: string | null; depth: number } | undefined;
-		return `${new URL(e.url).pathname}${s ? ` ${s.stack}@${s.depth}` : ""}`;
+		const s = e.state as { stack: string | null; ordinal: number } | undefined;
+		return `${new URL(e.url).pathname}${s ? ` ${s.stack}@${s.ordinal}` : ""}`;
 	});
 }
 
@@ -112,21 +121,21 @@ afterEach(() => {
 	delete globals.window;
 });
 
-describe("NavigationStore", () => {
+describe("NavigationSequence", () => {
 	test("has no history without the Navigation API", () => {
-		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
-		expect(nav.stack.value).toBe("/home");
+		const nav = new TestSequence(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
+		expect(nav.stack).toBe("/home");
 		expect(nav.history("/home")).toEqual([]);
-		expect(nav.position).toBe(undefined);
+		expect(nav.current().ordinal).toBe(undefined);
 	});
 
 	test("floats every page with no stacks", () => {
-		expect(new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`).stack.value).toBe(null);
+		expect(new TestSequence(`${ORIGIN}/home`, `${ORIGIN}/`).stack).toBe(null);
 		fake = new FakeNavigation(`${ORIGIN}/a/b`);
 		globals.navigation = fake;
 		globals.window = { location: { href: `${ORIGIN}/a/b` } };
-		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`);
-		expect(nav.stack.value).toBe(null);
+		const nav = new TestSequence(`${ORIGIN}/a/b`, `${ORIGIN}/`);
+		expect(nav.stack).toBe(null);
 		expect(nav.history()).toEqual(["/a/b"]);
 	});
 
@@ -135,19 +144,19 @@ describe("NavigationStore", () => {
 			location: { href: `${ORIGIN}/home` },
 			history: { pushState: () => undefined, replaceState: () => undefined },
 		};
-		const nav = new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
+		const nav = new TestSequence(`${ORIGIN}/home`, `${ORIGIN}/`, "/home", ...STACKS);
 		nav.forward("/profile/settings");
 		nav.back("/discover");
-		expect(nav.stack.value).toBe("/home");
+		expect(nav.stack).toBe("/home");
 	});
 
 	test("opens in the starting stack", () => {
 		const nav = setup("/profile/settings", "/profile");
-		expect(nav.stack.value).toBe("/profile");
+		expect(nav.stack).toBe("/profile");
 		expect(getEntries()).toEqual(["/profile/settings /profile@1"]);
 	});
 
-	test("opens a stack root at depth 0", () => {
+	test("opens a stack root at ordinal 0", () => {
 		setup("/profile", "/profile");
 		expect(getEntries()).toEqual(["/profile /profile@0"]);
 	});
@@ -155,7 +164,7 @@ describe("NavigationStore", () => {
 	test("keeps the stack root below a deep page the app opens at", () => {
 		const nav = setup("/discover/fitness", "/discover");
 		expect(nav.history()).toEqual(["/discover", "/discover/fitness"]);
-		expect(nav.position?.parent).toBe("/discover");
+		expect(nav.history().at(-2)).toBe("/discover");
 		nav.back("/discover");
 		expect(getEntries()).toEqual(["/discover/fitness /discover@1", "/discover /discover@0"]);
 		expect(nav.history()).toEqual(["/discover"]);
@@ -165,7 +174,7 @@ describe("NavigationStore", () => {
 		fake = new FakeNavigation(`${ORIGIN}/a/b`);
 		globals.navigation = fake;
 		globals.window = { location: { href: `${ORIGIN}/a/b` } };
-		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`, "/", "/");
+		const nav = new TestSequence(`${ORIGIN}/a/b`, `${ORIGIN}/`, "/", "/");
 		expect(nav.history()).toEqual(["/", "/a/b"]);
 	});
 
@@ -173,42 +182,42 @@ describe("NavigationStore", () => {
 		fake = new FakeNavigation(`${ORIGIN}/post/1`);
 		globals.navigation = fake;
 		globals.window = { location: { href: `${ORIGIN}/post/1` } };
-		const nav = new NavigationStore(`${ORIGIN}/post/1`, `${ORIGIN}/`, null, "/", "/discover");
-		expect(nav.stack.value).toBe(null);
+		const nav = new TestSequence(`${ORIGIN}/post/1`, `${ORIGIN}/`, null, "/", "/discover");
+		expect(nav.stack).toBe(null);
 		expect(nav.history("/")).toEqual([]);
 	});
 
 	test("opens a stack root as floating with no starting stack", () => {
 		const nav = setup("/profile", null);
-		expect(nav.stack.value).toBe(null);
+		expect(nav.stack).toBe(null);
 		expect(getEntries()).toEqual(["/profile null@0"]);
 	});
 
 	test("floats a starting stack that is not listed", () => {
 		const nav = setup("/other/1", "/other");
-		expect(nav.stack.value).toBe(null);
+		expect(nav.stack).toBe(null);
 	});
 
 	test("keeps the saved stack after a reload", () => {
 		fake = new FakeNavigation(`${ORIGIN}/home/post/1`);
-		(fake.list[0] as FakeEntry).state = { stack: "/home", depth: 1 };
+		(fake.list[0] as FakeEntry).state = { stack: "/home", ordinal: 1 };
 		globals.navigation = fake;
 		globals.window = { location: { href: `${ORIGIN}/home/post/1` } };
-		const nav = new NavigationStore(`${ORIGIN}/home/post/1`, `${ORIGIN}/`, "/profile", ...STACKS);
-		expect(nav.stack.value).toBe("/home");
+		const nav = new TestSequence(`${ORIGIN}/home/post/1`, `${ORIGIN}/`, "/profile", ...STACKS);
+		expect(nav.stack).toBe("/home");
 	});
 
 	describe("floating pages", () => {
 		test("open any other page in the floating stack", () => {
 			const nav = setup("/profile/settings");
-			expect(nav.stack.value).toBe(null);
+			expect(nav.stack).toBe(null);
 			expect(getEntries()).toEqual(["/profile/settings null@0"]);
 		});
 
 		test("push links deeper in the floating stack", () => {
 			const nav = setup("/login");
 			nav.forward("/login/reset");
-			expect(nav.stack.value).toBe(null);
+			expect(nav.stack).toBe(null);
 			expect(nav.history()).toEqual(["/login", "/login/reset"]);
 		});
 
@@ -218,27 +227,27 @@ describe("NavigationStore", () => {
 			expect(getEntries().at(-1)).toBe("/home null@1");
 			nav.replace("/profile");
 			expect(getEntries().at(-1)).toBe("/profile null@1");
-			expect(nav.stack.value).toBe(null);
+			expect(nav.stack).toBe(null);
 		});
 
 		test("move back into the floating stack when forward names it", () => {
 			const nav = setup("/home");
 			nav.forward("/login", null);
-			expect(nav.stack.value).toBe(null);
+			expect(nav.stack).toBe(null);
 			expect(getEntries().at(-1)).toBe("/login null@0");
 		});
 
 		test("move into a stack when forward names it", () => {
 			const nav = setup("/login");
 			nav.forward("/home", "/home");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.stack).toBe("/home");
 			expect(getEntries().at(-1)).toBe("/home /home@0");
 		});
 
 		test("move into a stack when a replace names it", () => {
 			const nav = setup("/login");
 			nav.replace("/home", "/home");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.stack).toBe("/home");
 			expect(getEntries()).toEqual(["/home /home@0"]);
 		});
 
@@ -254,13 +263,13 @@ describe("NavigationStore", () => {
 		test("move into a stack when back names it", () => {
 			const nav = setup("/home/post/1");
 			nav.back("/home", "/home");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.stack).toBe("/home");
 			expect(getEntries().at(-1)).toBe("/home /home@0");
 		});
 
 		test("have no parent", () => {
 			const nav = setup("/home/post/1");
-			expect(nav.position?.parent).toBe(undefined);
+			expect(nav.history().at(-2)).toBe(undefined);
 		});
 	});
 
@@ -277,24 +286,24 @@ describe("NavigationStore", () => {
 			nav.forward("/home/post/1");
 			nav.forward("/home/post/1/comments");
 			expect(nav.history("/home")).toEqual(["/home", "/home/post/1", "/home/post/1/comments"]);
-			expect(nav.transition).toBe("forward");
+			expect(nav.last?.direction ?? null).toBe("forward");
 		});
 
 		test("pushes onto the current stack wherever the link points", () => {
 			const nav = setup();
 			nav.forward("/profile/settings");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.stack).toBe("/home");
 			expect(nav.history("/home")).toEqual(["/home", "/profile/settings"]);
 		});
 
-		test("switches stack at the same depth and slides by tab order", () => {
+		test("switches stack at the same ordinal and slides by tab order", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");
 			nav.forward("/profile", "/profile");
-			expect(nav.transition).toBe("forward");
+			expect(nav.last?.direction ?? null).toBe("forward");
 			nav.forward("/home/post/1", "/home");
-			expect(nav.transition).toBe("back");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.last?.direction ?? null).toBe("back");
+			expect(nav.stack).toBe("/home");
 			expect(getEntries().at(-1)).toBe("/home/post/1 /home@1");
 			expect(nav.history("/home")).toEqual(["/home", "/home/post/1"]);
 			expect(nav.history("/profile")).toEqual(["/profile"]);
@@ -304,7 +313,7 @@ describe("NavigationStore", () => {
 			const nav = setup();
 			nav.forward("/home");
 			expect(fake.list.length).toBe(1);
-			expect(nav.transition).toBe(null);
+			expect(nav.last?.direction ?? null).toBe(null);
 		});
 	});
 
@@ -315,8 +324,50 @@ describe("NavigationStore", () => {
 			nav.back("/home");
 			expect(fake.index).toBe(0);
 			expect(fake.list.length).toBe(2);
-			expect(nav.transition).toBe("back");
+			expect(nav.last?.direction ?? null).toBe("back");
 			expect(nav.history("/home")).toEqual(["/home"]);
+		});
+
+		test("falls back to history.back() when traverseTo() throws", () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			const win = globals.window as { history: { back?: () => void } };
+			const traverse = fake.traverseTo.bind(fake);
+			win.history.back = () => void traverse(fake.list[fake.index - 1]?.key ?? "");
+			fake.traverseTo = () => {
+				throw new Error("Invalid state");
+			};
+			nav.back("/home");
+			expect(fake.index).toBe(0);
+			expect(nav.history("/home")).toEqual(["/home"]);
+		});
+
+		test("falls back to history.back() when traverseTo() rejects", async () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			let backs = 0;
+			const win = globals.window as { history: { back?: () => void } };
+			win.history.back = () => void backs++;
+			const fail = Object.assign(new Error("Invalid state"), { name: "SecurityError" });
+			fake.traverseTo = () => ({ committed: Promise.reject(fail), finished: Promise.reject(fail) }) as never;
+			nav.back("/home");
+			await Promise.resolve();
+			await Promise.resolve();
+			expect(backs).toBe(1);
+		});
+
+		test("does not fall back when a newer navigation stops the traverse", async () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			let backs = 0;
+			const win = globals.window as { history: { back?: () => void } };
+			win.history.back = () => void backs++;
+			const abort = Object.assign(new Error("Stopped"), { name: "AbortError" });
+			fake.traverseTo = () => ({ committed: Promise.reject(abort), finished: Promise.reject(abort) }) as never;
+			nav.back("/home");
+			await Promise.resolve();
+			await Promise.resolve();
+			expect(backs).toBe(0);
 		});
 
 		test("pushes the page again when other stacks are in between", () => {
@@ -342,12 +393,12 @@ describe("NavigationStore", () => {
 	});
 
 	describe("replace()", () => {
-		test("keeps the stack and depth", () => {
+		test("keeps the stack and ordinal", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");
 			nav.replace("/home/post/1/info");
 			expect(getEntries().at(-1)).toBe("/home/post/1/info /home@1");
-			expect(nav.transition).toBe(null);
+			expect(nav.last?.direction ?? null).toBe(null);
 		});
 
 		test("puts the state back after another script replaces the entry", () => {
@@ -355,7 +406,7 @@ describe("NavigationStore", () => {
 			nav.forward("/home/post/1");
 			fake.replace(`${ORIGIN}/home/post/1?x=1`);
 			expect(getEntries().at(-1)).toBe("/home/post/1 /home@1");
-			expect(nav.value.href).toBe(`${ORIGIN}/home/post/1?x=1`);
+			expect(nav.url.href).toBe(`${ORIGIN}/home/post/1?x=1`);
 		});
 	});
 
@@ -402,18 +453,18 @@ describe("NavigationStore", () => {
 	});
 
 	describe("browser back and forward", () => {
-		test("slides by depth in a stack and by tab order across stacks", () => {
+		test("slides by ordinal in a stack and by tab order across stacks", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");
 			nav.forward("/profile", "/profile");
 			fake.go(-1);
-			expect(nav.transition).toBe("back");
-			expect(nav.stack.value).toBe("/home");
+			expect(nav.last?.direction ?? null).toBe("back");
+			expect(nav.stack).toBe("/home");
 			fake.go(-1);
-			expect(nav.transition).toBe("back");
-			expect(nav.value.pathname).toBe("/home");
+			expect(nav.last?.direction ?? null).toBe("back");
+			expect(nav.url.pathname).toBe("/home");
 			fake.go(1);
-			expect(nav.transition).toBe("forward");
+			expect(nav.last?.direction ?? null).toBe("forward");
 		});
 
 		test("slides forward when undoing a pushed back", () => {
@@ -423,7 +474,7 @@ describe("NavigationStore", () => {
 			nav.forward("/home/post/1", "/home");
 			nav.back("/home");
 			fake.go(-1);
-			expect(nav.transition).toBe("forward");
+			expect(nav.last?.direction ?? null).toBe("forward");
 		});
 	});
 
@@ -433,19 +484,33 @@ describe("NavigationStore", () => {
 		expect(nav.path).toBe("/home/post/1");
 	});
 
-	test("position has the depth of each stack's top page and the parent", () => {
+	test("current() has the stack and ordinal of the history entry", () => {
 		const nav = setup();
 		nav.forward("/home/post/1");
 		nav.forward("/profile", "/profile");
 		nav.forward("/home/post/1", "/home");
-		expect(nav.position).toEqual({
-			stack: "/home",
-			depth: 1,
-			tops: new Map([
-				["/home", 1],
-				["/profile", 0],
-			]),
-			parent: "/home",
+		expect(nav.current()).toEqual({ url: nav.url, stack: "/home", ordinal: 1 });
+		expect(nav.history().at(-2)).toBe("/home");
+	});
+
+	test("each change publishes one event", async () => {
+		const nav = setup();
+		const next = nav.next();
+		nav.forward("/home/post/1");
+		const { value } = await next;
+		expect(value).toEqual({ url: nav.url, stack: "/home", ordinal: 1, direction: "forward" });
+	});
+
+	test("publish() resolves when committed() is called", async () => {
+		const nav = setup();
+		let done = false;
+		const promise = nav.publish({ ...nav.current(), direction: "back" }).then(() => {
+			done = true;
 		});
+		await Promise.resolve();
+		expect(done).toBe(false);
+		nav.committed();
+		await promise;
+		expect(done).toBe(true);
 	});
 });

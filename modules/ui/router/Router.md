@@ -8,7 +8,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
-- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
+- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationSequence.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
 - `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (with a `<Scroll vertical cover>` between them) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage

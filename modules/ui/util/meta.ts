@@ -61,6 +61,8 @@ export interface Meta {
 	readonly url?: ImmutableURL | undefined;
 	/** Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. */
 	readonly stack?: AbsolutePath | null | undefined;
+	/** Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. */
+	readonly ordinal?: number | undefined;
 	/** Title of the entire application. */
 	readonly app?: string | undefined;
 	/** Title of the current page (set as `<title>` in `<Head>` */

@@ -1,12 +1,11 @@
-import { Store } from "../../store/Store.js";
-import { URLStore } from "../../store/URLStore.js";
+import { DeferredSequence } from "../../sequence/DeferredSequence.js";
+import { createDeferred } from "../../util/async.js";
 import { BLACKHOLE } from "../../util/function.js";
 import type { AbsolutePath } from "../../util/path.js";
-import { type ImmutableURL, matchURLPrefix, type PossibleURL, requireURL } from "../../util/url.js";
-import type { TransitionType } from "../transition/util.js";
+import { getURL, type ImmutableURL, matchURLPrefix, type PossibleURL, requireURL } from "../../util/url.js";
 
 /**
- * State that `NavigationStore` saves on each browser history entry.
+ * State that `NavigationSequence` saves on each browser history entry.
  *
  * @see https://shelving.cc/ui/NavigationEntryState
  */
@@ -14,20 +13,32 @@ export interface NavigationEntryState {
 	/** Root path of the stack this page is in, or `null` for a floating page. */
 	readonly stack: AbsolutePath | null;
 	/** Position of this page in its stack, where `0` is the root. */
-	readonly depth: number;
+	readonly ordinal: number;
 }
 
 /**
- * Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
- * - `undefined` when the browser has no Navigation API, or during a server render.
+ * Direction of a move in a `NavigationEvent`: `"forward"` or `"back"`.
  *
- * @see https://shelving.cc/ui/NavigationPosition
+ * @see https://shelving.cc/ui/NavigationDirection
  */
-export interface NavigationPosition extends NavigationEntryState {
-	/** Depth of the top page of each stack that has pages, including the floating stack (`null`). */
-	readonly tops: ReadonlyMap<AbsolutePath | null, number>;
-	/** The page before the current one in its stack, or `undefined` at the bottom of the stack. */
-	readonly parent: AbsolutePath | undefined;
+export type NavigationDirection = "forward" | "back";
+
+/**
+ * One change of page, published by `NavigationSequence`.
+ * - A move (a link, a back button, the browser back and forward buttons) has a `direction`, so `<Navigation>` shows it inside a view transition of that type.
+ * - A replace has no `direction`, so it shows at once with no transition.
+ *
+ * @see https://shelving.cc/ui/NavigationEvent
+ */
+export interface NavigationEvent {
+	/** URL of the page. */
+	readonly url: ImmutableURL;
+	/** Root path of the stack the page is in, or `null` for a floating page. */
+	readonly stack: AbsolutePath | null;
+	/** Position of the page in its stack, where `0` is the root, or `undefined` without the Navigation API. */
+	readonly ordinal: number | undefined;
+	/** Direction of the move, or `undefined` for a replace or a change with no slide. */
+	readonly direction?: NavigationDirection | undefined;
 }
 
 /** One page in a stack: the entry that holds it, plus its saved state. */
@@ -45,38 +56,41 @@ type _Navigation = Pick<
 >;
 
 /**
- * Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
+ * Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
  *
- * - Extends `URLStore`, so its `value` is the current URL.
+ * - It is not a store: it holds no "current page" for the UI. Each change of page (a move, a replace, or the browser back and forward buttons) publishes one `NavigationEvent`, and `<Navigation>` keeps the page it shows in its own state.
+ * - `url`, `stack` and `ordinal` say where the browser history is now. The page on screen can differ for a moment, for example during a swipe-back preview. To read the page on screen, read `Meta`.
+ * - `publish()` sends an event by hand, for example to show the page below during a swipe-back.
  * - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
- * - `stack` is a sub-store that holds the root of the current stack, or `null` for a floating page. It only changes when the stack changes.
  * - A page outside the listed stacks is floating: its stack is `null`. The floating stack has no root page and no tab.
- * - In a listed stack, depth `0` is always the stack's root path.
+ * - In a listed stack, ordinal `0` is always the stack's root path.
  * - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
  * - Owned by `<Navigation>`. Read it with `requireNavigation()`.
  *
- * @see https://shelving.cc/ui/NavigationStore
+ * @see https://shelving.cc/ui/NavigationSequence
  */
-export class NavigationStore extends URLStore {
+export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	/** Root path of each stack, in tab order. With none, every page floats. */
 	readonly stacks: readonly AbsolutePath[];
 
 	/**
-	 * Root path of the current stack, or `null` for a floating page.
-	 * - It starts at the `stack` given to the constructor (default `null`). Without the Navigation API, it stays there.
+	 * Base URL of the app, used to resolve relative URLs and to work out paths.
+	 *
+	 * @see https://shelving.cc/ui/NavigationSequence/base
 	 */
-	readonly stack: Store<AbsolutePath | null>;
+	readonly base: ImmutableURL | undefined;
 
-	/**
-	 * Transition type of the most recent change, read by `<Navigation>` when the value changes.
-	 * - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API.
-	 */
-	transition: TransitionType | null = null;
+	/** URL the browser history is on now. */
+	private _url: ImmutableURL;
+	/** Stack the browser history is on now. Without the Navigation API, it stays at the starting stack. */
+	private _stack: AbsolutePath | null;
+	/** Callbacks waiting for `<Navigation>` to commit the next event. */
+	private _waiting: (() => void)[] = [];
 
 	/** The browser Navigation API, or `undefined` when it is not available. */
 	private readonly _navigation: _Navigation | undefined;
 	/** Transition sent with the next navigation, and whether the browser animates it. */
-	private _info: TransitionType | null | undefined = undefined;
+	private _info: NavigationDirection | null | undefined = undefined;
 	/** `true` while the store changes history itself, so it ignores the events that causes. */
 	private _busy = false;
 
@@ -89,46 +103,86 @@ export class NavigationStore extends URLStore {
 		stack: AbsolutePath | null = null,
 		...stacks: AbsolutePath[]
 	) {
-		super(url, base);
+		super();
+		this.base = getURL(base);
+		this._url = requireURL(url, this.base, NavigationSequence);
 		this.stacks = stacks;
 		this._start = stack !== null && stacks.includes(stack) ? stack : null;
 		this._navigation = _getNavigation();
-		this.stack = new Store<AbsolutePath | null>(this._navigation ? this._getState(this._navigation.currentEntry).stack : this._start);
+		this._stack = this._navigation ? this._getState(this._navigation.currentEntry).stack : this._start;
+	}
+
+	/**
+	 * URL the browser history is on now.
+	 *
+	 * @see https://shelving.cc/ui/NavigationSequence/url
+	 */
+	get url(): ImmutableURL {
+		return this._url;
+	}
+
+	/**
+	 * Root path of the stack the browser history is on now, or `null` for a floating page.
+	 *
+	 * @see https://shelving.cc/ui/NavigationSequence/stack
+	 */
+	get stack(): AbsolutePath | null {
+		return this._stack;
+	}
+
+	/**
+	 * Where the browser history is now, as an event with no direction.
+	 * - `<Navigation>` reads it for its first render, and again when it starts listening, to catch up on changes it missed.
+	 *
+	 * @see https://shelving.cc/ui/NavigationSequence/current
+	 */
+	current(): NavigationEvent {
+		const navigation = this._navigation;
+		return { url: this._url, stack: this._stack, ordinal: navigation ? this._getState(navigation.currentEntry).ordinal : undefined };
+	}
+
+	/**
+	 * Publish an event by hand, without changing history.
+	 * - For example, a swipe-back publishes the page below with `direction: "back"`, so React runs its back transition, and the swipe scrubs it.
+	 * - Then the real `back()` publishes the same page again, which `<Navigation>` skips, or the swipe publishes the current page again to cancel.
+	 *
+	 * @param event The event to publish.
+	 * @returns A promise that resolves when `<Navigation>` has committed the event.
+	 * @see https://shelving.cc/ui/NavigationSequence/publish
+	 */
+	publish(event: NavigationEvent): Promise<void> {
+		const { promise, resolve } = createDeferred<void>();
+		this._waiting.push(resolve);
+		this.resolve(event);
+		return promise;
+	}
+
+	/**
+	 * Tell waiting `publish()` calls that `<Navigation>` has committed a page.
+	 * - `<Navigation>` calls it after each commit.
+	 *
+	 * @see https://shelving.cc/ui/NavigationSequence/committed
+	 */
+	committed(): void {
+		for (const resolve of this._waiting.splice(0)) resolve();
 	}
 
 	/**
 	 * Path of the current URL relative to the app root (without its `?query`), or `undefined` if the URL is outside the app.
 	 *
-	 * @see https://shelving.cc/ui/NavigationStore/path
+	 * @see https://shelving.cc/ui/NavigationSequence/path
 	 */
 	get path(): AbsolutePath | undefined {
-		return this._getPath(this.value);
-	}
-
-	/**
-	 * Where the app is now: the current stack and depth, and the top depth of each stack.
-	 *
-	 * @returns The position, or `undefined` without the Navigation API.
-	 * @see https://shelving.cc/ui/NavigationStore/position
-	 */
-	get position(): NavigationPosition | undefined {
-		if (!this._navigation) return undefined;
-		const { stack, depth } = this._getState(this._navigation.currentEntry);
-		const tops = new Map<AbsolutePath | null, number>();
-		for (const s of this._getStacks()) {
-			const top = this._getPages(s).at(-1);
-			if (top) tops.set(s, top.depth);
-		}
-		return { stack, depth, tops, parent: this.history(stack).at(-2) };
+		return this._getPath(this._url);
 	}
 
 	/**
 	 * Start listening to the browser (back, forward and swipe).
-	 * - Saves the current stack and depth on the current history entry, if it has none.
+	 * - Saves the current stack and ordinal on the current history entry, if it has none.
 	 * - `<Navigation>` calls it once, when it mounts.
 	 *
 	 * @returns A function that stops listening.
-	 * @see https://shelving.cc/ui/NavigationStore/listen
+	 * @see https://shelving.cc/ui/NavigationSequence/listen
 	 */
 	listen(): () => void {
 		const navigation = this._navigation;
@@ -178,18 +232,18 @@ export class NavigationStore extends URLStore {
 	 * @param stack Root path of the stack, or `null` for the floating stack. Defaults to the current stack.
 	 * @returns Paths relative to the app root, each with its `?query`.
 	 * @example nav.history("/home") // ["/home", "/home/post/2"]
-	 * @see https://shelving.cc/ui/NavigationStore/history
+	 * @see https://shelving.cc/ui/NavigationSequence/history
 	 */
-	history(stack: AbsolutePath | null = this.stack.value): AbsolutePath[] {
+	history(stack: AbsolutePath | null = this._stack): AbsolutePath[] {
 		const pages = this._getPages(stack);
 		const paths = pages.map(p => _getPathWithQuery(p));
-		if (stack !== null && pages[0] && pages[0].depth > 0) paths.unshift(stack);
+		if (stack !== null && pages[0] && pages[0].ordinal > 0) paths.unshift(stack);
 		return paths;
 	}
 
 	/**
 	 * Go forward to a URL, as a link does.
-	 * - The URL is the top page of `stack`: switch to that stack, at the same depth. This is a tab switch.
+	 * - The URL is the top page of `stack`: switch to that stack, at the same ordinal. This is a tab switch.
 	 * - Else push the URL onto `stack`, one level deeper than its top page.
 	 * - The URL you are already on: replace it instead.
 	 * - A change of stack slides by tab order. Else it slides forward.
@@ -198,59 +252,68 @@ export class NavigationStore extends URLStore {
 	 * @param stack Root path of the stack to go to, or `null` for the floating stack. Defaults to the current stack.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.forward("/settings");
-	 * @see https://shelving.cc/ui/NavigationStore/forward
+	 * @see https://shelving.cc/ui/NavigationSequence/forward
 	 */
-	forward(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void {
+	forward(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void {
 		const url = requireURL(possible, this.base, this.forward);
 		if (!this._navigation) {
 			this._push(url, "forward");
 			return;
 		}
-		const current = this.stack.value;
-		if (stack === current && url.href === this.value.href) {
+		const current = this._stack;
+		if (stack === current && url.href === this._url.href) {
 			this.replace(url);
 			return;
 		}
 		const top = this._getPages(stack).at(-1);
-		const depth = top ? (top.url.href === url.href ? top.depth : top.depth + 1) : this._getBottomDepth(url, stack);
-		this._push(url, this._getOrder(current, stack) ?? "forward", { stack, depth });
+		const ordinal = top ? (top.url.href === url.href ? top.ordinal : top.ordinal + 1) : this._getBottomOrdinal(url, stack);
+		this._push(url, this._getOrder(current, stack) ?? "forward", { stack, ordinal });
 	}
 
 	/**
 	 * Go back to a URL, as a back button does.
-	 * - The URL is an earlier page in `stack`: go back to it. When it is the entry just before the current one, this goes back in the browser history. Else it pushes the URL again at that page's depth.
-	 * - The URL is the root of `stack`: push it at depth 0.
+	 * - The URL is an earlier page in `stack`: go back to it. When it is the entry just before the current one, this goes back in the browser history. Else it pushes the URL again at that page's ordinal.
+	 * - The URL is the root of `stack`: push it at ordinal 0.
 	 * - Else push the URL in place of the top page of `stack`.
 	 * - It works when the app was opened at the current page, so a back button always has somewhere to go.
+	 * - If the browser refuses to go back with the Navigation API, it uses `history.back()`.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go back in, or `null` for the floating stack. Defaults to the current stack.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.back("/profile");
-	 * @see https://shelving.cc/ui/NavigationStore/back
+	 * @see https://shelving.cc/ui/NavigationSequence/back
 	 */
-	back(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void {
+	back(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void {
 		const url = requireURL(possible, this.base, this.back);
 		const navigation = this._navigation;
 		if (!navigation) {
 			this._push(url, "back");
 			return;
 		}
-		const current = this.stack.value;
+		const current = this._stack;
 		const pages = this._getPages(stack);
 		const page = pages.slice(0, -1).findLast(p => p.url.href === url.href);
 		if (page && stack === current && page.index === (navigation.currentEntry?.index ?? 0) - 1) {
-			navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" }).finished?.catch(BLACKHOLE);
+			// Some browsers refuse `traverseTo()` in some frames (Safari throws `SecurityError` in a sandboxed iframe), so fall back to `history.back()`.
+			const fallback = (e: unknown) => void (_isAbort(e) || window.history.back());
+			try {
+				const result = navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" });
+				result.committed?.catch(fallback);
+				result.finished?.catch(BLACKHOLE);
+			} catch (e) {
+				fallback(e);
+			}
 			return;
 		}
 		// The URL is an earlier page in the stack, else the root of the stack, else it takes the place of the top page.
-		const depth = page ? page.depth : this._getPath(url) === stack ? 0 : (pages.at(-1)?.depth ?? this._getBottomDepth(url, stack));
-		this._push(url, this._getOrder(current, stack) ?? "back", { stack, depth });
+		const ordinal = page ? page.ordinal : this._getPath(url) === stack ? 0 : (pages.at(-1)?.ordinal ?? this._getBottomOrdinal(url, stack));
+		this._push(url, this._getOrder(current, stack) ?? "back", { stack, ordinal });
 	}
 
 	/**
 	 * Replace the current URL, with no transition.
-	 * - The page stays in the same stack, at the same depth, so a cached page stays mounted.
+	 * - The page stays in the same stack, at the same ordinal, so a cached page stays mounted.
 	 * - Use it for a page that knows its canonical URL, or for in-page tabs.
 	 * - Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
 	 *
@@ -258,9 +321,9 @@ export class NavigationStore extends URLStore {
 	 * @param stack Root path of the stack to move the page into, or `null` for the floating stack. Defaults to the current stack.
 	 * @throws RequiredError If `possible` cannot be resolved to a valid URL.
 	 * @example nav.replace("/login");
-	 * @see https://shelving.cc/ui/NavigationStore/replace
+	 * @see https://shelving.cc/ui/NavigationSequence/replace
 	 */
-	replace(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void {
+	replace(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void {
 		const url = requireURL(possible, this.base, this.replace);
 		const saved = this._navigation?.currentEntry?.getState();
 		let state = _isEntryState(saved) ? saved : undefined;
@@ -268,14 +331,14 @@ export class NavigationStore extends URLStore {
 			const top = this._getPages(stack)
 				.filter(p => p.index !== this._navigation?.currentEntry?.index)
 				.at(-1);
-			state = { stack, depth: this._getPath(url) === stack ? 0 : top ? top.depth + 1 : this._getBottomDepth(url, stack) };
+			state = { stack, ordinal: this._getPath(url) === stack ? 0 : top ? top.ordinal + 1 : this._getBottomOrdinal(url, stack) };
 		}
 		this._write(() => window.history.replaceState(null, "", url.href), state);
 		this._change(url, null, state?.stack);
 	}
 
 	/** Push a URL as a new history entry, with an optional state. */
-	private _push(url: ImmutableURL, transition: TransitionType, state?: NavigationEntryState): void {
+	private _push(url: ImmutableURL, transition: NavigationDirection, state?: NavigationEntryState): void {
 		this._write(() => window.history.pushState(null, "", url.href), state);
 		this._change(url, this._navigation ? transition : null, state?.stack);
 	}
@@ -302,45 +365,45 @@ export class NavigationStore extends URLStore {
 		}
 	}
 
-	/** Set the stack first, then the URL, so both are ready when `<Navigation>` reads them. */
-	private _change(url: PossibleURL, transition: TransitionType | null, stack?: AbsolutePath | null): void {
-		this.transition = transition;
-		if (stack !== undefined) this.stack.value = stack;
-		this.value = url;
+	/** Record where history is now, and publish it as an event. */
+	private _change(url: PossibleURL, direction: NavigationDirection | null, stack?: AbsolutePath | null): void {
+		this._url = requireURL(url, this.base, this._change);
+		if (stack !== undefined) this._stack = stack;
+		this.resolve({ ...this.current(), direction: direction ?? undefined });
 	}
 
-	/** Get the pages in a stack, root first: the newest entry in the stack, then the newest earlier entry at a lower depth, down to depth 0. */
+	/** Get the pages in a stack, root first: the newest entry in the stack, then the newest earlier entry at a lower ordinal, down to ordinal 0. */
 	private _getPages(stack: AbsolutePath | null): _Page[] {
 		const navigation = this._navigation;
 		if (!navigation) return [];
 		const entries = navigation.entries();
 		const pages: _Page[] = [];
-		let depth = Number.POSITIVE_INFINITY;
+		let ordinal = Number.POSITIVE_INFINITY;
 		const current = navigation.currentEntry?.index ?? -1;
-		for (let i = current; i >= 0 && depth > 0; i--) {
+		for (let i = current; i >= 0 && ordinal > 0; i--) {
 			const entry = entries[i];
 			// The current entry may not have its state saved yet (before `listen()`), so use its default.
 			const state = i === current && entry ? this._getState(entry) : entry?.getState();
-			if (!entry?.url || !_isEntryState(state) || state.stack !== stack || state.depth >= depth) continue;
+			if (!entry?.url || !_isEntryState(state) || state.stack !== stack || state.ordinal >= ordinal) continue;
 			const url = requireURL(entry.url, undefined, this._getPages);
 			const path = this._getPath(url);
 			if (!path) continue;
-			depth = state.depth;
+			ordinal = state.ordinal;
 			pages.unshift({ ...state, url, path, index: entry.index, key: entry.key });
 		}
 		return pages;
 	}
 
-	/** Get the saved state of an entry, or for an entry with none (for example the page the app opened at), the starting stack at its bottom depth. */
+	/** Get the saved state of an entry, or for an entry with none (for example the page the app opened at), the starting stack at its bottom ordinal. */
 	private _getState(entry: NavigationHistoryEntry | null): NavigationEntryState {
 		const state = entry?.getState();
 		if (_isEntryState(state) && this._getStacks().includes(state.stack)) return state;
 		const url = entry?.url ? requireURL(entry.url, undefined, this._getState) : undefined;
-		return { stack: this._start, depth: url ? this._getBottomDepth(url, this._start) : 0 };
+		return { stack: this._start, ordinal: url ? this._getBottomOrdinal(url, this._start) : 0 };
 	}
 
-	/** Get the depth of a URL that is the first page of a stack: `0` for the stack's root path or for the floating stack, else `1` so the root stays below it. */
-	private _getBottomDepth(url: ImmutableURL, stack: AbsolutePath | null): number {
+	/** Get the ordinal of a URL that is the first page of a stack: `0` for the stack's root path or for the floating stack, else `1` so the root stays below it. */
+	private _getBottomOrdinal(url: ImmutableURL, stack: AbsolutePath | null): number {
 		return stack === null || this._getPath(url) === stack ? 0 : 1;
 	}
 
@@ -354,19 +417,19 @@ export class NavigationStore extends URLStore {
 		return matchURLPrefix(url, this.base ?? new URL("/", url));
 	}
 
-	/** Direction of a change the store did not make: tab order across stacks, else depth, else position. */
-	private _getDirection(e: NavigationCurrentEntryChangeEvent): TransitionType | null {
+	/** Direction of a change the store did not make: tab order across stacks, else ordinal, else position. */
+	private _getDirection(e: NavigationCurrentEntryChangeEvent): NavigationDirection | null {
 		if (e.navigationType !== "traverse") return null;
 		const from = this._getState(e.from);
 		const to = this._getState(this._navigation?.currentEntry ?? null);
 		const order = this._getOrder(from.stack, to.stack);
 		if (order) return order;
-		if (to.depth !== from.depth) return to.depth < from.depth ? "back" : "forward";
+		if (to.ordinal !== from.ordinal) return to.ordinal < from.ordinal ? "back" : "forward";
 		return (this._navigation?.currentEntry?.index ?? 0) < e.from.index ? "back" : "forward";
 	}
 
 	/** Slide direction between two stacks by tab order, or `undefined` for the same stack. */
-	private _getOrder(from: AbsolutePath | null, to: AbsolutePath | null): TransitionType | undefined {
+	private _getOrder(from: AbsolutePath | null, to: AbsolutePath | null): NavigationDirection | undefined {
 		if (from === to || from === null || to === null) return;
 		const a = this.stacks.indexOf(from);
 		const b = this.stacks.indexOf(to);
@@ -394,7 +457,12 @@ function _isEntryState(state: unknown): state is NavigationEntryState {
 		state !== null &&
 		"stack" in state &&
 		(typeof state.stack === "string" || state.stack === null) &&
-		"depth" in state &&
-		typeof state.depth === "number"
+		"ordinal" in state &&
+		typeof state.ordinal === "number"
 	);
+}
+
+/** Is an error a navigation that was stopped by a newer one? That is not a failure, so it needs no fallback. */
+function _isAbort(e: unknown): boolean {
+	return e instanceof Error && e.name === "AbortError";
 }

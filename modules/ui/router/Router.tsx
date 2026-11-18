@@ -1,11 +1,10 @@
-import { type ReactElement, use } from "react";
+import type { ReactElement } from "react";
 import { NotFoundError } from "../../error/RequestError.js";
 import { UnexpectedError } from "../../error/UnexpectedError.js";
 import { getProps } from "../../util/index.js";
 import { matchPathTemplate, renderPathTemplate } from "../../util/template.js";
 import { MetaContext, type MetaURL, requireMetaURL } from "../misc/MetaContext.js";
 import type { PossibleMeta } from "../util/meta.js";
-import { NavigationPositionContext } from "./NavigationContext.js";
 import type { Routes } from "./Routes.js";
 
 /**
@@ -30,7 +29,7 @@ export interface RouterProps extends PossibleMeta {
  * - When `base` is set, the effective path is the URL after stripping the base prefix.
  * - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
  * - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
- * - Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
+ * - Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationSequence.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
  * - Elsewhere, each path is a new page, so a component route remounts when the path changes.
  * - Returns `null` when there's no URL in context or the URL is outside the base.
  *
@@ -43,8 +42,8 @@ export function Router({ routes, fallback, ...meta }: RouterProps): ReactElement
 	const path = combined;
 
 	// Key the page by its place in the stack when there is one, else by its path.
-	const position = use(NavigationPositionContext);
-	const key = position ? `${position.stack} ${position.depth}` : combined.path;
+	const { stack, ordinal } = combined;
+	const key = ordinal !== undefined ? `${stack ?? null} ${ordinal}` : combined.path;
 
 	const route = _matchRoute(routes, fallback, combined, key);
 	if (route) return <MetaContext value={combined}>{route}</MetaContext>;
