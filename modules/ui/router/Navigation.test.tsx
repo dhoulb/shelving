@@ -37,6 +37,15 @@ describe("Navigation", () => {
 		expect(html).toContain('class="back"');
 	});
 
+	test("renders no back button without an href when the stack has no page before this one", () => {
+		const html = renderToStaticMarkup(
+			<Navigation url="http://x.com/home" stacks={["/home", "/profile"]}>
+				<BackButton>Back</BackButton>
+			</Navigation>,
+		);
+		expect(html).toBe("");
+	});
+
 	test("renders a stack button as a link to its root, selected in the starting stack", () => {
 		const html = renderToStaticMarkup(
 			<Navigation url="http://x.com/profile/settings" stacks={["/home", "/profile"]} stack="/profile">
