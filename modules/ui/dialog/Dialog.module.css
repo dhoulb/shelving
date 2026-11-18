@@ -55,7 +55,7 @@
 	/*
 	 * The children, in normal block layout, `--dialog-width` wide.
 	 * - `margin: auto` centres it on both axes. When it is taller than the screen, the margins drop to 0, so it starts at the top and the dialog scrolls. (`align-items: center` would push the top out of reach.)
-	 * - A pinned `<Modal>` and the close button are `position: fixed`, so this wrapper does not affect them.
+	 * - A pinned `<Modal>` and a `<DialogCloseButton>` are `position: fixed`, so this wrapper does not affect them.
 	 */
 	.content {
 		margin: auto;

@@ -1,10 +1,11 @@
 # Dialog
 
-A native `<dialog>` element opened in modal mode. It opens via `showModal()` when mounted and includes a built-in close button, so it works equally well mounted declaratively in the tree or pushed imperatively through a `DialogsStore`.
+A native `<dialog>` element opened in modal mode. It opens via `showModal()` when mounted, so it works equally well mounted declaratively in the tree or pushed imperatively through a `DialogsStore`.
 
 **Things to know:**
 
-- Closes on a tap anywhere on it, the Escape key, or the built-in `<DialogCloseButton>` (an X icon, top-right).
+- Closes on a tap anywhere on it, or the Escape key.
+- It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>` anywhere inside it. That button is an X icon fixed to the top-right corner.
 - A tap on a control (`<button>`, `<input>`, `<select>`, `<textarea>`, `<label>`) does not close it. A tap anywhere inside a `<Modal>` panel does not close it either, so a form in a `<Modal>` is safe. A tap on a link or a `<nav>` button always closes it.
 - Children render inside a `<Suspense>` boundary, so lazy content can stream in.
 - Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is `--dialog-width` wide (never wider than the screen) and centred on the screen. A centred `<Modal>` fills it. Content taller than the screen starts at the top, and the dialog scrolls.
@@ -83,7 +84,7 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 ## Styling
 
-`Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. Transparent borders as wide as the screen's safe areas keep the content and the close button clear of the notch, rounded corners and home bar. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
+`Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. Transparent borders as wide as the screen's safe areas keep the content and any `<DialogCloseButton>` clear of the notch, rounded corners and home bar. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
 | Variable                | Styles                                                         | Default                       |
 | ----------------------- | -------------------------------------------------------------- | ----------------------------- |
@@ -92,7 +93,7 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 | `--dialog-width`        | Width of the centred content, and so of a centred `<Modal>`    | `var(--width-narrow)` (36rem) |
 | `--dialog-background`   | Overlay fill behind the content                                | `var(--color-backdrop)`       |
 | `--dialog-color`        | Text colour directly on the overlay                            | `var(--tint-100)` (white)     |
-| `--dialog-close-offset` | Inset of the close button from the top-right corner            | `var(--space-small)` (12px)   |
+| `--dialog-close-offset` | Inset of a `<DialogCloseButton>` from the top-right corner     | `var(--space-small)` (12px)   |
 
 The fade uses the `fade` class from `<FadeTransition>`, so `--fade-transition-duration` sets its length. It runs only as the dialog opens and closes; an open dialog stays still while other dialogs open and close.
 
