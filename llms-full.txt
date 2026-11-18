@@ -21378,6 +21378,7 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 **Things to know:**
 
 - Set `href` or `onClick` to make the whole card navigable — a stretched, visually-hidden overlay `<a>` / `<button>` covers the card while the children render normally inside. Real interactive elements inside the card (inline links, buttons) stay clickable and keyboard-focusable.
+- The overlay sits at `z-index: 1`, and the links and buttons inside the card at `z-index: 2`. To put your own absolute layer over the card's content, put it after the content, with no `z-index` and no lasting `transform`. The links and buttons inside it are then lifted above the overlay too. A `transform` makes the layer a stacking context below the overlay. A high `z-index` works, but iOS WebKit can drop that layer for one frame when a page view transition starts.
 - `color=` and `status=` move the tint anchor for the card's scope, so the surface, text, and hover shade all re-derive together — and nested components (`<Tag>`, `<Preformatted>`, `<Button>`) inherit the same tint.
 - A card styles only the box. Lay out its contents with the usual block components (`<Subheading>`, `<Paragraph>`, `<Row>`, …).
 - Cards have no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise a given card.
