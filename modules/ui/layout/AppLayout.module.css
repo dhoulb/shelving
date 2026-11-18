@@ -81,8 +81,11 @@
 		color: var(--app-layout-nav-color, var(--tint-00));
 		box-shadow: var(--app-layout-nav-shadow, none);
 
-		/* No view-transition name of its own. Pages slide sideways in the content slot above it, so they never pass over it.
-		 * A named bar would draw above everything else during any view transition, and jump over a dialog or notice that covers it. */
+		/* No view-transition name of its own by default. Pages slide sideways in the content slot above it, so they never pass over it.
+		 * A named bar would draw above everything else during any view transition, and jump over a dialog or notice that covers it.
+		 * An app can name it for its own transitions only, for example parts of a page that slide in their own layers and would pass over it:
+		 * `:root:active-view-transition-type(tab) { --app-layout-nav-transition-name: app-nav; }` */
+		view-transition-name: var(--app-layout-nav-transition-name, none);
 
 		/* Each item takes an equal share of the bar. */
 		> * {
