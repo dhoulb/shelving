@@ -69,6 +69,7 @@
 	/* The bar. Its transparent bottom border keeps the items clear of the home bar, and its background fills that area. */
 	.nav {
 		/* Box */
+		position: relative; /* Positioned like the content slot, and after it, so the bar and its shadow paint above the pages (for example a page with its own background during a swipe). */
 		display: flex;
 		justify-content: center;
 		border-block-start: var(--app-layout-nav-border, var(--stroke-normal) solid var(--tint-90));

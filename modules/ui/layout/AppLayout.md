@@ -7,6 +7,7 @@ A full-viewport layout with a content slot above a bar of the app's main section
 - The content slot does not scroll. Fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box and keeps its own scroll position.
 - The bar sits below the content slot, not over it. So pages need no extra space at the bottom for the bar.
 - The bar shows at every screen size.
+- The bar paints above the content slot, so its shadow (`--app-layout-nav-shadow`) shows over the pages, even a page with its own background.
 - The content slot stays clear of the notch and the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
 - Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
 - The bar is outside the page cache, so it has one copy and keeps its state.
