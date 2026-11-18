@@ -276,6 +276,7 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	 * - The URL is the root of `stack`: push it at ordinal 0.
 	 * - Else push the URL in place of the top page of `stack`.
 	 * - It works when the app was opened at the current page, so a back button always has somewhere to go.
+	 * - If the browser refuses to go back with the Navigation API, it uses `history.back()`.
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go back in, or `null` for the floating stack. Defaults to the current stack.
@@ -294,7 +295,15 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 		const pages = this._getPages(stack);
 		const page = pages.slice(0, -1).findLast(p => p.url.href === url.href);
 		if (page && stack === current && page.index === (navigation.currentEntry?.index ?? 0) - 1) {
-			navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" }).finished?.catch(BLACKHOLE);
+			// Some browsers refuse `traverseTo()` in some frames (Safari throws `SecurityError` in a sandboxed iframe), so fall back to `history.back()`.
+			const fallback = (e: unknown) => void (_isAbort(e) || window.history.back());
+			try {
+				const result = navigation.traverseTo(page.key, { info: this._getOrder(current, stack) ?? "back" });
+				result.committed?.catch(fallback);
+				result.finished?.catch(BLACKHOLE);
+			} catch (e) {
+				fallback(e);
+			}
 			return;
 		}
 		// The URL is an earlier page in the stack, else the root of the stack, else it takes the place of the top page.
@@ -451,4 +460,9 @@ function _isEntryState(state: unknown): state is NavigationEntryState {
 		"ordinal" in state &&
 		typeof state.ordinal === "number"
 	);
+}
+
+/** Is an error a navigation that was stopped by a newer one? That is not a failure, so it needs no fallback. */
+function _isAbort(e: unknown): boolean {
+	return e instanceof Error && e.name === "AbortError";
 }

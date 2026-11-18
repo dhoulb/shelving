@@ -1,27 +1,32 @@
 # NavigationSequence
 
-The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
+The sequence of navigation events that drives browser history and keeps one stack of pages for each tab. It is not a store: it holds no "current page" for the UI. Each change of page publishes one `NavigationEvent`, and `<Navigation>` keeps the page it shows in its own state. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
 
 **Things to know:**
 
+- Each change of page (a link, a back button, a replace, or the browser back and forward buttons) publishes one `NavigationEvent`: `{ url, stack, ordinal, direction }`.
+- A move has a `direction` (`"forward"` or `"back"`), so `<Navigation>` shows it in a view transition of that type. A replace has no `direction`, so it shows at once.
+- To read the page on screen, read `Meta` (`requireMeta()` or `requireMetaURL()`), not the sequence. The two can differ for a moment, for example during a swipe-back.
+- `NavigationSequence.url`, `NavigationSequence.stack` and `NavigationSequence.path` say where the browser history is now. `NavigationSequence.current()` returns the same as an event with no direction.
 - `NavigationSequence.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
 - A page that is not in a listed stack is **floating**: its stack is `null`. See [Floating pages](#floating-pages).
 - In a listed stack, ordinal `0` is always the stack's root path. A deeper page always has the root below it.
-- `NavigationSequence.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
-- `NavigationSequence.path` is the current path relative to the app root, without its `?query`.
 - `NavigationSequence.history()` returns the pages in the current stack (or a given stack), root first.
-- `NavigationSequence.position` is the current stack and ordinal, the ordinal of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
-- All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- `NavigationSequence.publish()` sends an event by hand, for example to show the page below during a swipe-back. It returns a promise that resolves when `<Navigation>` has committed the event.
+- Events sent in the same microtask merge: only the last one is shown.
+- All URLs resolve against the sequence's `base`. Each method also takes a full same-origin URL.
+- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `ordinal` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
-| Method                  | What it does                                                                                                                                                                                                                                      | Slide                                 |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                              | Forward. Across stacks, by tab order. |
-| `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back                                  |
-| `replace(href, stack?)` | Changes the URL of the current page. The stack, the ordinal and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.          | None                                  |
-| `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
+| Method                  | What it does                                                                                                                                                                                                                                                                                                                | Slide                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                                                                                                        | Forward. Across stacks, by tab order. |
+| `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. If the browser refuses the Navigation API back, it uses `history.back()`. | Back                                  |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the ordinal and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.                                                                                    | None                                  |
+| `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                                                                                                   | —                                     |
+| `current()`             | Returns where the browser history is now, as an event with no direction.                                                                                                                                                                                                                                                    | —                                     |
+| `publish(event)`        | Sends an event by hand. Resolves when `<Navigation>` has committed it.                                                                                                                                                                                                                                                      | The event's `direction`               |
 
 `stack` defaults to the current stack. Pass `null` to name the floating stack.
 
@@ -50,9 +55,9 @@ nav.replace("/home", "/home");
 
 ## How stacks work
 
-The store saves a small state on each browser history entry: the `stack` the page is in, and its `ordinal` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the store walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower ordinal, and so on down to ordinal `0`.
+The sequence saves a small state on each browser history entry: the `stack` the page is in, and its `ordinal` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the sequence walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower ordinal, and so on down to ordinal `0`.
 
-Why ordinal? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the store cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's ordinal. The pages that were above it now have a higher ordinal than the newest entry, so they are no longer in the stack.
+Why ordinal? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the sequence cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's ordinal. The pages that were above it now have a higher ordinal than the newest entry, so they are no longer in the stack.
 
 For example, with tabs `/home` and `/profile`:
 
@@ -79,16 +84,30 @@ function LogoutButton() {
 }
 ```
 
-Read the current stack in a component:
+Read the current stack in a component from `Meta`:
 
 ```tsx
-import { useStore } from "shelving/react";
-import { requireNavigation } from "shelving/ui";
+import { requireMeta } from "shelving/ui";
 
 function TabTitle() {
-	const nav = requireNavigation();
-	const stack = useStore(nav.stack).value;
+	const { stack } = requireMeta();
 	return <h1>{stack === "/profile" ? "Profile" : "Home"}</h1>;
+}
+```
+
+Show the page below during a swipe-back. React runs the back transition, and the swipe scrubs it:
+
+```tsx
+const nav = requireNavigation();
+const { stack = null, ordinal } = requireMetaURL();
+const parent = ordinal ? nav.history(stack)[ordinal - 1] : undefined;
+if (parent) {
+	// Start the swipe: show the page below with the back transition.
+	await nav.publish({ url: requireURL(parent, nav.base), stack, ordinal: ordinal - 1, direction: "back" });
+	// Release: go back for real. It publishes the same page, so it is skipped.
+	nav.back(parent);
+	// Or cancel: show the old page again, with no transition.
+	// await nav.publish({ ...from, direction: undefined });
 }
 ```
 
@@ -99,7 +118,7 @@ const nav = requireNavigation();
 nav.history("/home"); // ["/home", "/home/post/1", "/home/post/1/comments"]
 ```
 
-Make a store by hand only in tests:
+Make a sequence by hand only in tests:
 
 ```tsx
 import { NavigationSequence } from "shelving/ui";

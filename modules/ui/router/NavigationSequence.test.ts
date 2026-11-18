@@ -328,6 +328,48 @@ describe("NavigationSequence", () => {
 			expect(nav.history("/home")).toEqual(["/home"]);
 		});
 
+		test("falls back to history.back() when traverseTo() throws", () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			const win = globals.window as { history: { back?: () => void } };
+			const traverse = fake.traverseTo.bind(fake);
+			win.history.back = () => void traverse(fake.list[fake.index - 1]?.key ?? "");
+			fake.traverseTo = () => {
+				throw new Error("Invalid state");
+			};
+			nav.back("/home");
+			expect(fake.index).toBe(0);
+			expect(nav.history("/home")).toEqual(["/home"]);
+		});
+
+		test("falls back to history.back() when traverseTo() rejects", async () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			let backs = 0;
+			const win = globals.window as { history: { back?: () => void } };
+			win.history.back = () => void backs++;
+			const fail = Object.assign(new Error("Invalid state"), { name: "SecurityError" });
+			fake.traverseTo = () => ({ committed: Promise.reject(fail), finished: Promise.reject(fail) }) as never;
+			nav.back("/home");
+			await Promise.resolve();
+			await Promise.resolve();
+			expect(backs).toBe(1);
+		});
+
+		test("does not fall back when a newer navigation stops the traverse", async () => {
+			const nav = setup();
+			nav.forward("/home/post/1");
+			let backs = 0;
+			const win = globals.window as { history: { back?: () => void } };
+			win.history.back = () => void backs++;
+			const abort = Object.assign(new Error("Stopped"), { name: "AbortError" });
+			fake.traverseTo = () => ({ committed: Promise.reject(abort), finished: Promise.reject(abort) }) as never;
+			nav.back("/home");
+			await Promise.resolve();
+			await Promise.resolve();
+			expect(backs).toBe(0);
+		});
+
 		test("pushes the page again when other stacks are in between", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");

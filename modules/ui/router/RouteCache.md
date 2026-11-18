@@ -6,21 +6,22 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 
 **Things to know:**
 
-- Each page is keyed by its stack and its ordinal in that stack, not by its URL. See `NavigationSequence` for how stacks work.
-- A page leaves the cache when it leaves its stack: when you go back from it, or when its stack goes back to the root. So a page you went back from mounts fresh the next time you open it.
-- After a browser back, the browser forward button shows the next page fresh (from the top), because that page left its stack when you went back.
-- The root page and the top page of each listed stack are never dropped, so each tab always shows the page you left, and always has its root below. Other pages, and every floating page, are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- Each page is keyed by the `stack` and `ordinal` in `Meta`, not by its URL. See `NavigationSequence` for how stacks work.
+- It knows nothing about history. It drops pages only when it has more than `maxCached`: first the pages deeper than the current page in its stack (pages you went back from), then the least recently used.
+- So after a back, the forward button shows the page as you left it, while the cache has room.
+- The current page, the root page of each listed stack, and the last page you saw in each listed stack are never dropped. So each tab always shows the page you left, and always has its root below. Floating pages get no such protection.
+- Keep `maxCached` at `2` or more, so a swipe-back can show the page below and still keep the page you are leaving.
 - When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the cache renders the root page hidden, so a swipe-back can show it. A hidden page runs no effects until it is shown.
 - `NavigationSequence.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
 - The same URL open in two stacks is two separate pages.
 - A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
-- Each kept page is frozen under its own `<Meta>` and `NavigationPositionContext`, so a hidden page never re-renders for another page's URL.
+- Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
 - **Nesting:** layout, then transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. See the usage below.
 - The scroll box goes **inside** the cache, so each kept page has its own scroll box and keeps its own scroll position. A scroll box outside the cache is shared by every page, so pages lose their scroll.
 - Put a page `<Transition>` **around** the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 - Keep the layout **outside** the cache. Chrome in the layout (a sidebar, a tab bar) then has one copy, keeps its own state, and plays its own CSS transitions. Chrome inside the cache gets one copy per kept page.
-- Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
+- With no `ordinal` in `Meta` (no browser Navigation API, or a server render), or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
@@ -28,7 +29,7 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
 <AppLayout nav={<StackBar />}>
-	<HorizontalTransition>
+	<HorizontalTransition default="none">
 		<RouteCache>
 			<Scroll vertical cover>
 				<PageLoader>
