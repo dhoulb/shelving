@@ -1084,7 +1084,7 @@ If every file in that list is in the right place, the client and server share on
    - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
    - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
 4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
-5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. Set `stack` on `<Navigation>` to the stack the app opens in. With no `stack`, the app opens in the `/` stack, which is unstacked: no tab is selected until the user taps a tab, or the app names a stack. Deep links and login pages are unstacked. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
+5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. Set `stack` on `<Navigation>` to the stack the app opens in. With no `stack`, the page floats (its stack is `null`): it is outside every tab, so no tab is selected until the user taps a tab, or the app names a stack. Deep links and login pages float. `/` is a normal stack root, so a Home tab can be `/`. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
 6. **Use the new buttons (optional).**
    - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
    - `<BackButton href="/home"/>` goes back to the page before this one in the current tab, or to `href` when there is none.
@@ -33314,7 +33314,7 @@ The back button for a page header. It goes back to the page before this one in t
 **Things to know:**
 
 - It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
-- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On an unstacked page (for example a deep link), it goes to `href` and stays unstacked. To go into a stack, the user taps a `<StackButton>`.
+- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On a floating page (for example a deep link), it goes to `href` and stays floating. To go into a stack, the user taps a `<StackButton>`.
 - It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationStore.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
@@ -33393,7 +33393,7 @@ Props for `<Navigation>`: the initial `Meta` (url, root and stack), the `stacks`
 ```ts
 {
 	readonly stacks?: readonly AbsolutePath[] | undefined;
-	readonly stack?: AbsolutePath | undefined;
+	readonly stack?: AbsolutePath | null | undefined;
 }
 ```
 
@@ -33401,8 +33401,8 @@ Props for `<Navigation>`: the initial `Meta` (url, root and stack), the `stacks`
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
-| `stack` | `AbsolutePath \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `"/"`. - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
+| `stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - A page outside these stacks is floating: its stack is `null`, and no tab is selected. - With no stacks, every page floats. Read only. Optional. |
+| `stack` | `AbsolutePath \| null \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `null` (floating). - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
 
 
 ---
@@ -33434,7 +33434,7 @@ Give it `stacks` for an app with a tab bar. Each stack is one tab with its own h
 - It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
 - The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
 - When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
-- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. With no `stacks`, the app has one stack, and `stack` is `"/"`.
+- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
 - It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
 - `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
 
@@ -33507,7 +33507,7 @@ const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
 
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else in the `/` stack. A page in the `/` stack, such as a deep link or a login page, is **unstacked**: no tab is selected, and links from it stay unstacked until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationStore`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -33556,8 +33556,8 @@ Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement
 | Param | Type | Description |
 | --- | --- | --- |
 | `meta` | `NavigationProps` |  |
-| `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`. Read only. Optional. |
-| `.stack` | `AbsolutePath \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `"/"`. - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
+| `.stacks` | `readonly AbsolutePath[] \| undefined` | Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`). - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab. - A page outside these stacks is floating: its stack is `null`, and no tab is selected. - With no stacks, every page floats. Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Stack of the page the app opens at (for example `"/home"`), like `url` and `root`. - Read from this prop, else from the surrounding `<Meta>`, else `null` (floating). - Used only when the opening history entry has no saved stack. A reload keeps the stack it had. Read only. Optional. |
 
 ## Returns
 
@@ -33635,7 +33635,7 @@ State that `NavigationStore` saves on each browser history entry.
 
 ```ts
 {
-	readonly stack: AbsolutePath;
+	readonly stack: AbsolutePath | null;
 	readonly depth: number;
 }
 ```
@@ -33644,7 +33644,7 @@ State that `NavigationStore` saves on each browser history entry.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `stack` | `AbsolutePath` | Root path of the stack this page is in. Read only. |
+| `stack` | `AbsolutePath \| null` | Root path of the stack this page is in, or `null` for a floating page. Read only. |
 | `depth` | `number` | Position of this page in its stack, where `0` is the root. Read only. |
 
 
@@ -33663,7 +33663,7 @@ Where the app is now in its stacks: the current stack and depth, the top depth o
 
 ```ts
 {
-	readonly tops: { readonly [stack: AbsolutePath]: number };
+	readonly tops: ReadonlyMap<AbsolutePath | null, number>;
 	readonly parent: AbsolutePath | undefined;
 }
 ```
@@ -33672,7 +33672,7 @@ Where the app is now in its stacks: the current stack and depth, the top depth o
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `tops` | `{ readonly [stack: AbsolutePath]: number }` | Depth of the top page of each stack that has pages. Read only. |
+| `tops` | `ReadonlyMap<AbsolutePath \| null, number>` | Depth of the top page of each stack that has pages, including the floating stack (`null`). Read only. |
 | `parent` | `AbsolutePath \| undefined` | The page before the current one in its stack, or `undefined` at the bottom of the stack. Read only. |
 
 
@@ -33688,7 +33688,9 @@ Store that holds the current navigation URL, drives browser history, and keeps a
 
 - Extends `URLStore`, so its `value` is the current URL.
 - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
-- `stack` is a sub-store that holds the root of the current stack. It only changes when the stack changes.
+- `stack` is a sub-store that holds the root of the current stack, or `null` for a floating page. It only changes when the stack changes.
+- A page outside the listed stacks is floating: its stack is `null`. The floating stack has no root page and no tab.
+- In a listed stack, depth `0` is always the stack's root path.
 - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
 - Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
@@ -33696,9 +33698,11 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 **Things to know:**
 
-- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
-- A page that is not in a listed stack is **unstacked**: it is in the `/` stack. See [Unstacked pages](#unstacked-pages).
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
+- A page that is not in a listed stack is **floating**: its stack is `null`. See [Floating pages](#floating-pages).
+- In a listed stack, depth `0` is always the stack's root path. A deeper page always has the root below it.
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.path` is the current path relative to the app root, without its `?query`.
 - `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
@@ -33713,18 +33717,23 @@ The store that holds the current URL, drives browser history, and keeps one stac
 | `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.            | None                                  |
 | `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
 
-`stack` defaults to the current stack.
+`stack` defaults to the current stack. Pass `null` to name the floating stack.
 
-## Unstacked pages
+## Floating pages
 
-A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else in the `/` stack. A page in the `/` stack is **unstacked**. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else it **floats**: its stack is `null`. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
 
-- On an unstacked page, no `<StackButton>` is selected.
-- Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
-- To leave the `/` stack, tap a `<StackButton>`, or name the stack.
+- The floating stack is outside every tab. It has no root page and no `<StackButton>`, so no stack button is selected on a floating page.
+- Links from a floating page push deeper in the floating stack, even a link to a stack root.
+- To leave the floating stack, tap a `<StackButton>`, or name the stack. To move a page back into it, pass `null` as the `stack`.
+- `<RouteCache>` gives floating pages no protection: they are dropped like any other page past `maxCached`.
+- With no `stacks`, every page floats.
+
+## Opening the app
+
 - To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
 - A deep page the app opens at, in a listed stack, starts at depth 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at depth 0.
-- If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
+- A `stack` that is not in `stacks` is ignored: the page floats.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
 
@@ -33798,7 +33807,7 @@ nav.forward("/home/post/1");
 ## Signatures
 
 ```ts
-new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath = "/", ...stacks: AbsolutePath[])
+new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath | null = null, ...stacks: AbsolutePath[])
 ```
 
 ## Parameters
@@ -33807,7 +33816,7 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 | --- | --- | --- |
 | `url` | `PossibleURL` | Defaults to `typeof window === "undefined" ? "/" : window.location.href`. |
 | `base` | `PossibleURL` | Optional. |
-| `stack` | `AbsolutePath` | Defaults to `"/"`. |
+| `stack` | `AbsolutePath \| null` | Defaults to `null`. |
 | `stacks` | `AbsolutePath[]` |  |
 
 ## Returns
@@ -33820,9 +33829,10 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. A single-stack app has one root. Read only. |
-| `stack` | `Store<AbsolutePath>` | Root path of the current stack. - Always set. With no `stacks`, it is `"/"`. - It starts at the `stack` given to the constructor (default `"/"`). Without the Navigation API, it stays there. Read only. |
+| `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. With none, every page floats. Read only. |
+| `stack` | `Store<AbsolutePath \| null>` | Root path of the current stack, or `null` for a floating page. - It starts at the `stack` given to the constructor (default `null`). Without the Navigation API, it stays there. Read only. |
 | `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
+| `path` | `AbsolutePath \| undefined` | Path of the current URL relative to the app root (without its `?query`), or `undefined` if the URL is outside the app. Read only. |
 | `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 
 ## Methods
@@ -33861,13 +33871,14 @@ listen(): () => void
 
 Get the pages in a stack, root first, or every page in every stack.
 - Read from the browser history entries up to the current one.
-- A stack whose root entry is gone (the browser keeps a limited history) still starts with its root.
+- A listed stack whose root entry is not in the history (a deep link, or the browser keeps a limited history) still starts with its root.
+- The floating stack (`null`) has no root, so it starts with its oldest page.
 - Without the Navigation API this is always empty.
 
 ## Signatures
 
 ```ts
-history(stack: AbsolutePath = this.stack.value): AbsolutePath[]
+history(stack: AbsolutePath | null = this.stack.value): AbsolutePath[]
 ```
 
 
@@ -33887,7 +33898,7 @@ Go forward to a URL, as a link does.
 ## Signatures
 
 ```ts
-forward(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+forward(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
 ```
 
 
@@ -33907,7 +33918,7 @@ Go back to a URL, as a back button does.
 ## Signatures
 
 ```ts
-back(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+back(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
 ```
 
 
@@ -33926,7 +33937,7 @@ Replace the current URL, with no transition.
 ## Signatures
 
 ```ts
-replace(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+replace(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
 ```
 
 
@@ -33952,7 +33963,7 @@ Props for `<RouteCache>`: the `maxCached` size and the content `children` to kee
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The top page of each stack is never dropped, even past the limit, so a tab always shows the page you left. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the top page of each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
 | `children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 
@@ -33969,8 +33980,9 @@ Keep-alive page cache for the pages in the navigation stacks. Put it in a layout
 - Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
 - Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
 - A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
-- The top page of each stack is never dropped. Other pages can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
-- Each kept page is frozen under its own `<MetaContext>`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
+- The root page and the top page of each listed stack are never dropped. Other pages, and every floating page, can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
+- When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the root page is rendered hidden, so a swipe-back can show it.
+- Each kept page is frozen under its own `<MetaContext>` and `NavigationPositionContext`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
 - Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
 
@@ -33983,11 +33995,12 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 - Each page is keyed by its stack and its depth in that stack, not by its URL. See `NavigationStore` for how stacks work.
 - A page leaves the cache when it leaves its stack: when you go back from it, or when its stack goes back to the root. So a page you went back from mounts fresh the next time you open it.
 - After a browser back, the browser forward button shows the next page fresh (from the top), because that page left its stack when you went back.
-- The top page of each stack is never dropped, so each tab always shows the page you left. Other pages are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- The root page and the top page of each listed stack are never dropped, so each tab always shows the page you left, and always has its root below. Other pages, and every floating page, are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the cache renders the root page hidden, so a swipe-back can show it. A hidden page runs no effects until it is shown.
 - `NavigationStore.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
 - The same URL open in two stacks is two separate pages.
 - A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
-- Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
+- Each kept page is frozen under its own `<Meta>` and `NavigationPositionContext`, so a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
 - **Nesting:** layout, then transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. See the usage below.
 - The scroll box goes **inside** the cache, so each kept page has its own scroll box and keeps its own scroll position. A scroll box outside the cache is shared by every page, so pages lose their scroll.
@@ -34060,7 +34073,7 @@ RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `RouteCacheProps` |  |
-| `.maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The top page of each stack is never dropped, even past the limit, so a tab always shows the page you left. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `.maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the top page of each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
 | `.children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 ## Returns
@@ -34425,8 +34438,8 @@ Props for `<StackButton>`: the `stack` it opens, plus the usual `Button` props e
 
 Button for one stack in a tab bar.
 - Tap another stack's button: go to the page you left in that stack. The page slides left or right by tab order.
-- Tap the current stack's button: go back to its root.
-- Tap it again at the root: scroll the page to the top.
+- Tap the current stack's button: go back to its root path.
+- Tap it again on the root path: scroll the page to the top.
 - It is selected while its stack is the current stack.
 - Without the browser Navigation API (and in a server render) it is a plain link to the stack's root.
 
@@ -34435,9 +34448,9 @@ A button for one stack in a tab bar. It acts like a tab button in a phone app.
 **Things to know:**
 
 - Tap another stack's button: go to the page you left in that stack. The page slides left or right, by tab order.
-- Tap the current stack's button: go back to the root of the stack. The page slides back.
-- Tap it again at the root: scroll the page to the top. It scrolls the window, and each visible `<main>` or `[data-scroll]` element.
-- It is selected (`aria-current`) while its stack is the current stack. On an unstacked page (for example a deep link or a login page), no stack button is selected.
+- Tap the current stack's button: go back to the root path of the stack. The page slides back. If the root is not in the history (for example after a deep link), it opens the root.
+- Tap it again on the root path: scroll the page to the top. It scrolls the window, and each visible `<main>` or `[data-scroll]` element.
+- It is selected (`aria-current`) while its stack is the current stack. On a floating page (for example a deep link or a login page), no stack button is selected.
 - `stack` must be one of the `stacks` on `<Navigation>`.
 - It takes the usual `<Button>` props, except `href`, `onClick` and `selected`.
 - Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while its stack is the starting stack.
@@ -38885,7 +38898,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 {
 	readonly root?: ImmutableURL | undefined;
 	readonly url?: ImmutableURL | undefined;
-	readonly stack?: AbsolutePath | undefined;
+	readonly stack?: AbsolutePath | null | undefined;
 	readonly app?: string | undefined;
 	readonly title?: string | undefined;
 	readonly description?: string | undefined;
@@ -38906,7 +38919,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | --- | --- | --- |
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
+| `stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
@@ -39052,7 +39065,7 @@ mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta
 | `meta1` | `Meta` | The existing fully-resolved `Meta` to merge into. |
 | `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `.stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
 | `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |

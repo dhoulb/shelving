@@ -12,5 +12,5 @@ Go back to a URL, as a back button does.
 ## Signatures
 
 ```ts
-back(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+back(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
 ```

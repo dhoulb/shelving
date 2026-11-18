@@ -11,5 +11,5 @@ Replace the current URL, with no transition.
 ## Signatures
 
 ```ts
-replace(possible: PossibleURL, stack: AbsolutePath = this.stack.value): void
+replace(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
 ```

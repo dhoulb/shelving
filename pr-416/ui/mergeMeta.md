@@ -23,7 +23,7 @@ mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta
 | `meta1` | `Meta` | The existing fully-resolved `Meta` to merge into. |
 | `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
-| `.stack` | `AbsolutePath \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `"/"` for an unstacked page. Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
 | `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |

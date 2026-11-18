@@ -9,7 +9,7 @@ State that `NavigationStore` saves on each browser history entry.
 
 ```ts
 {
-	readonly stack: AbsolutePath;
+	readonly stack: AbsolutePath | null;
 	readonly depth: number;
 }
 ```
@@ -18,5 +18,5 @@ State that `NavigationStore` saves on each browser history entry.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `stack` | `AbsolutePath` | Root path of the stack this page is in. Read only. |
+| `stack` | `AbsolutePath \| null` | Root path of the stack this page is in, or `null` for a floating page. Read only. |
 | `depth` | `number` | Position of this page in its stack, where `0` is the root. Read only. |

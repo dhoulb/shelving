@@ -11,7 +11,7 @@ Where the app is now in its stacks: the current stack and depth, the top depth o
 
 ```ts
 {
-	readonly tops: { readonly [stack: AbsolutePath]: number };
+	readonly tops: ReadonlyMap<AbsolutePath | null, number>;
 	readonly parent: AbsolutePath | undefined;
 }
 ```
@@ -20,5 +20,5 @@ Where the app is now in its stacks: the current stack and depth, the top depth o
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `tops` | `{ readonly [stack: AbsolutePath]: number }` | Depth of the top page of each stack that has pages. Read only. |
+| `tops` | `ReadonlyMap<AbsolutePath \| null, number>` | Depth of the top page of each stack that has pages, including the floating stack (`null`). Read only. |
 | `parent` | `AbsolutePath \| undefined` | The page before the current one in its stack, or `undefined` at the bottom of the stack. Read only. |
