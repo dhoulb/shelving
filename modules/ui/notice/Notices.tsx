@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, ViewTransition } from "react";
+import { useSequenceTransition } from "../../react/useSequenceTransition.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import type { Status } from "../style/Status.js";
-import { useTransitionValue } from "../transition/useTransitionValue.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
 import type { ClassProps } from "../util/props.js";
@@ -44,7 +44,7 @@ export interface NoticesProps extends FlexVariants, ClassProps {
  * @see https://shelving.cc/ui/Notices
  */
 export function Notices({ position = "bottom-right", className, ...props }: NoticesProps): ReactElement {
-	const notices = useTransitionValue(NOTICES);
+	const notices = useSequenceTransition(NOTICES, { current: () => NOTICES.value, transition: "notice" });
 	useEffect(() => {
 		// Subscribe to global notices.
 		return subscribeNotices((message, status) => NOTICES.show(message, status));
@@ -64,7 +64,7 @@ export function Notices({ position = "bottom-right", className, ...props }: Noti
  * - Module-private, but named without the `_` prefix: React and the hooks lint rule only treat a capitalised name as a component.
  */
 function NoticeItem({ notice, position }: { notice: NoticeStore<Status>; position: NoticesPosition }): ReactElement {
-	const { children, status } = useTransitionValue(notice);
+	const { children, status } = useSequenceTransition(notice, { current: () => notice.value, transition: "notice" });
 	// New and closed notices slide from the side of the corner, or from the edge when centred. A notice that changes in place is drawn from the corner itself.
 	const [vertical, horizontal] = position.split("-");
 	const side = horizontal === "center" ? vertical : horizontal;

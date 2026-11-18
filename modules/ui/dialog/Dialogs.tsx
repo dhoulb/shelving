@@ -1,8 +1,8 @@
 import { createContext, type ReactElement, type ReactNode, use } from "react";
 import { useInstance } from "../../react/useInstance.js";
+import { useSequenceTransition } from "../../react/useSequenceTransition.js";
 import { ArrayStore } from "../../store/ArrayStore.js";
 import { getRandomKey } from "../../util/random.js";
-import { useTransitionValue } from "../transition/useTransitionValue.js";
 import type { ChildProps } from "../util/props.js";
 import { Dialog } from "./Dialog.js";
 
@@ -98,5 +98,6 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
  * @see https://shelving.cc/ui/Dialogs
  */
 export function Dialogs(): ReactNode {
-	return useTransitionValue(requireDialogs());
+	const dialogs = requireDialogs();
+	return useSequenceTransition(dialogs, { current: () => dialogs.value, transition: "dialog" });
 }
