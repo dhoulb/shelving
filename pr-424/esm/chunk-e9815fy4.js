@@ -1,2 +1,0 @@
-import{t}from"./chunk-m2s2d87e.js";function bc(e){return typeof e==="function"&&e.toString().startsWith("class")}function Ic(e,n){return e instanceof n}function $l(e,n){if(!(e instanceof n))throw new t(`Must be instance of class "${n.name}"`,{received:e,expected:n,caller:$l})}function O(e,n){let r=Object.getOwnPropertyDescriptor(e,n);return r&&typeof r.get==="function"?r.get:void 0}function _n(e,n){let r=Object.getOwnPropertyDescriptor(e.constructor.prototype,n);return r&&typeof r.set==="function"?r.set:void 0}
-export{bc,Ic,$l,O,_n};
