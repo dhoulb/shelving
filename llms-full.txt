@@ -713,7 +713,7 @@ Each tab keeps its own stack of pages, and its back button goes back within that
 3. Put `<BackButton href="/home" />` in each page header. It goes back in the current tab, or to `href` when there is no page before.
 4. Use `<RouteCache>`, so each tab shows the page you left it on.
 
-Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationStore`, `<StackButton>` and `<BackButton>`.
+Use `className="replace"` on in-page tab links (for example `/dave/posts` and `/dave/likes`), so they change the URL without a new page. See `<Navigation>`, `NavigationSequence`, `<StackButton>` and `<BackButton>`.
 
 #### Hide the tab bar on some pages
 
@@ -1083,7 +1083,7 @@ If every file in that list is in the right place, the client and server share on
 3. **Remove `<RouteConfig>`.** `<RouteConfig>` and `RouteContext` are removed.
    - `<RouteConfig path>` kept a page mounted for its tabs (for example `/dave/{tab}`). Instead, add `className="replace"` to each in-page tab link: `<Button href="/dave/posts" className="replace">Posts</Button>`. A replace keeps the same page mounted, with no slide and no new history entry.
    - `<RouteConfig cache={false}>` unmounted a create form when you left it. Instead, clear the form after a successful submit: change the `key` of the `<Form>`, or call `form.reset()` on a plain HTML form. See `<RouteCache>` for an example.
-4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationStore.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
+4. **Canonical URLs.** `<Head>` no longer writes browser history itself. When a page renders a `<Head>` with a `url` that is not the current URL, `<Head>` calls `NavigationSequence.replace()`. You do not need to change anything, but do not also call `window.history.replaceState()` for it.
 5. **Add stacks (optional).** For an app with a tab bar, set `stacks` on `<Navigation>` to the root path of each tab, in tab order: `<Navigation stacks={["/home", "/discover", "/profile"]}>`. Each link then opens a new page in the current tab, wherever it points. Set `stack` on `<Navigation>` to the stack the app opens in. With no `stack`, the page floats (its stack is `null`): it is outside every tab, so no tab is selected until the user taps a tab, or the app names a stack. Deep links and login pages float. `/` is a normal stack root, so a Home tab can be `/`. A login page calls `nav.replace("/home", "/home")` to send the user into the Home tab.
 6. **Use the new buttons (optional).**
    - `<StackButton stack="/home">` is a tab bar button. It goes to the page you left in that tab, goes back to the tab's root when you are already in it, and scrolls to the top at the root.
@@ -1098,7 +1098,7 @@ What changes for users:
 - The browser back button walks the history as before, across tabs. The page slides the right way.
 - When you go back from a page, it leaves the cache. So the browser forward button then shows that page fresh, from the top.
 
-See `<Navigation>`, `NavigationStore`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
+See `<Navigation>`, `NavigationSequence`, `<RouteCache>`, `<StackButton>` and `<BackButton>` for the full details.
 
 ### Layouts are frames
 
@@ -11478,12 +11478,14 @@ function Toggle() {
 - [useMap()](react/useMap.md): Create a mutable Map that persists for the lifetime of the component.
 - [useReduce()](react/useReduce.md): Use memoised value with reduction logic.
 - [useSequence()](react/useSequence.md): Subscribe to an async iterable for the lifetime of the component.
+- [useSequenceTransition()](react/useSequenceTransition.md): Subscribe to an async iterable, and set each value it yields inside a React transition.
 - [useStore()](react/useStore.md): Subscribe to a Shelving Store instance to refresh this component when its value changes.
 
 ## Interfaces
 
 - [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
 - [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
+- [SequenceTransitionOptions](react/SequenceTransitionOptions.md): Options for useSequenceTransition().
 
 
 ---
@@ -12046,6 +12048,108 @@ useSequence(sequence?: AsyncIterable<T>): T | undefined
 | Type | Description |
 | --- | --- |
 | `T \| undefined` |  |
+
+## Throws
+
+| Type | Description |
+| --- | --- |
+| `unknown` | unknown Re-throws (during render) any error thrown by the sequence, for an error boundary to catch. |
+
+
+---
+
+# SequenceTransitionOptions
+
+- Kind: interface
+- Import: `import { SequenceTransitionOptions } from "shelving/react";`
+
+Options for `useSequenceTransition()`.
+
+## Signatures
+
+```ts
+{
+	readonly current: () => T;
+	readonly transition?: string | ((value: T) => string | null | undefined) | undefined;
+	readonly equal?: ((a: T, b: T) => boolean) | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `current` | `() => T` | Read the current value. - Called for the first render, and again when the subscription starts, to catch up on values sent before it started. Read only. |
+| `transition` | `string \| ((value: T) => string \| null \| undefined) \| undefined` | Transition type for a value, or a fixed type for every value. - A value with a type is set inside `startTransition()` with that type, so a `<ViewTransition>` can animate it. - A value with no type (`undefined` or `null`) is set at once, with no transition. Read only. Optional. |
+| `equal` | `((a: T, b: T) => boolean) \| undefined` | Is a new value the same as the shown value? A value that is the same is skipped, so it starts no second transition. Read only. Defaults to `Object.is`. |
+
+
+---
+
+# useSequenceTransition()
+
+- Kind: function
+- Import: `import { useSequenceTransition } from "shelving/react";`
+
+Subscribe to an async iterable, and set each value it yields inside a React transition.
+- Like `useSequence()`, but each value is set with `setState()` inside `startTransition()`, with a transition type, so a `<ViewTransition>` runs for it.
+- It uses `useState()` and not `useSyncExternalStore()`, because React always renders a `useSyncExternalStore()` update at once, outside any transition.
+- The transition type is shared by the whole React root: the next transition commit takes every type that is waiting.
+
+Subscribe to an `AsyncIterable` and set each value it yields inside a React transition, with a transition type. A `<ViewTransition>` (or a `<Transition>` such as `<HorizontalTransition>`) around the content that reads the value then animates each change. `<Navigation>` uses it to slide pages.
+
+**Things to know:**
+
+- It uses `useState()`, not `useSyncExternalStore()`. React always renders a `useSyncExternalStore()` update at once, outside any transition, so a store read can never animate.
+- `current` gives the first value, and is read again when the subscription starts, to catch up on values sent before it started.
+- `transition` is a fixed type, or a function that returns the type for each value. A value with no type is set at once, with no transition.
+- `equal` skips a value that is the same as the value shown, so it starts no second transition. It defaults to `Object.is`.
+- Transition types belong to the whole React root: the next transition commit takes every type that is waiting.
+- If the sequence throws, the error is re-thrown during render, so the nearest error boundary catches it.
+- Memoise the iterable. The subscription restarts when the iterable changes.
+
+## Usage
+
+```tsx
+import { useSequenceTransition } from "shelving/react";
+import { ViewTransition } from "react";
+
+function Slides({ slides }: { slides: SlideSequence }) {
+	const slide = useSequenceTransition(slides, {
+		current: () => slides.current,
+		transition: s => s.direction, // "forward", "back", or undefined for no animation
+		equal: (a, b) => a.id === b.id,
+	});
+	return (
+		<ViewTransition update={{ forward: "slide-forward", back: "slide-back", default: "none" }}>
+			<Slide slide={slide} />
+		</ViewTransition>
+	);
+}
+```
+
+
+## Signatures
+
+```ts
+useSequenceTransition(sequence: AsyncIterable<T>, options: SequenceTransitionOptions<T>): T
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `sequence` | `AsyncIterable<T>` | An object implementing the `AsyncIterable` interface. - Subscription is recreated every time this value changes. - Memoise this value to persist the subscription for the lifetime of the component. |
+| `options` | `SequenceTransitionOptions<T>` |  |
+| `.current` | `() => T` | Read the current value. - Called for the first render, and again when the subscription starts, to catch up on values sent before it started. Read only. |
+| `.transition` | `string \| ((value: T) => string \| null \| undefined) \| undefined` | Transition type for a value, or a fixed type for every value. - A value with a type is set inside `startTransition()` with that type, so a `<ViewTransition>` can animate it. - A value with no type (`undefined` or `null`) is set at once, with no transition. Read only. Optional. |
+| `.equal` | `((a: T, b: T) => boolean) \| undefined` | Is a new value the same as the shown value? A value that is the same is skipped, so it starts no second transition. Read only. Defaults to `Object.is`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `T` | The value shown now. |
 
 ## Throws
 
@@ -20521,7 +20625,7 @@ The components below are listed in the index following this page; this is the sh
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.
 - [getTagClass()](ui/getTagClass.md): Build the combined className string for a <Tag> from its styling variants.
 - [Message()](ui/Message.md): Status-coloured paragraph used for inline feedback messages.
-- [requireNavigation()](ui/requireNavigation.md): Read the current NavigationStore from context, throwing if used outside <Navigation>.
+- [requireNavigation()](ui/requireNavigation.md): Read the current NavigationSequence from context, throwing if used outside <Navigation>.
 - [getBlockClass()](ui/getBlockClass.md): Get the combined className string for a block from its styling variants.
 - [getColorClass()](ui/getColorClass.md): CSS class that applies color tinting to an element.
 - [getDurationClass()](ui/getDurationClass.md): Get the transition-duration class for a component from its duration variant prop.
@@ -20580,7 +20684,7 @@ The components below are listed in the index following this page; this is the sh
 - [FormStore](ui/FormStore.md): Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
-- [NavigationStore](ui/NavigationStore.md): Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
+- [NavigationSequence](ui/NavigationSequence.md): Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
 
 ## Interfaces
 
@@ -20717,8 +20821,8 @@ The components below are listed in the index following this page; this is the sh
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
-- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationStore saves on each browser history entry.
-- [NavigationPosition](ui/NavigationPosition.md): Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
+- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationSequence saves on each browser history entry.
+- [NavigationEvent](ui/NavigationEvent.md): One change of page, published by NavigationSequence.
 - [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache>: the maxCached size and the content children to keep alive for each page in the stacks.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
 - [StackButtonProps](ui/StackButtonProps.md): Props for <StackButton>: the stack it opens, plus the usual Button props except href and onClick.
@@ -20774,6 +20878,7 @@ The components below are listed in the index following this page; this is the sh
 - [TextFormatter](ui/TextFormatter.md): Formats a string for display in a text input.
 - [Mapping](ui/Mapping.md): Dispatch table from a JSX.IntrinsicElements key to a renderer component.
 - [NoticesPosition](ui/NoticesPosition.md): Place on the screen where <Notices> shows the list of notices: a corner, or the centre of the top or bottom edge.
+- [NavigationDirection](ui/NavigationDirection.md): Direction of a move in a NavigationEvent: "forward" or "back".
 - [RouteProps](ui/RouteProps.md): Props for a component that works as a route in the router.
 - [RouteComponent](ui/RouteComponent.md): React component usable as a route value — a function or class component accepting RouteProps.
 - [Route](ui/Route.md): Valid route values:
@@ -20823,8 +20928,7 @@ The components below are listed in the index following this page; this is the sh
 - [EMPTY_LOADING](ui/EMPTY_LOADING.md): Loading spinner in an <Empty>, for a list or form that is still loading. The empty message replaces it in the same place.
 - [LOADING_NOTICE](ui/LOADING_NOTICE.md): Shared loading <Notice> element showing the loading spinner.
 - [NOTICES](ui/NOTICES.md): Global NoticesStore shown by <Notices>, accepting any of the default statuses.
-- [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationStore, provided by <Navigation>.
-- [NavigationPositionContext](ui/NavigationPositionContext.md): React context holding where the app is in its stacks, published by <Navigation> with each URL change.
+- [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationSequence, provided by <Navigation>.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
 - [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.
@@ -33077,7 +33181,7 @@ close(): void
 Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
 - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
 - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
-- When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationStore.replace()` with it. Outside `<Navigation>` it does not touch history.
+- When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationSequence.replace()` with it. It only does this for the page the browser history is on (the same `stack` and `ordinal`), so a page shown ahead of history, such as a swipe-back preview, leaves history alone. Outside `<Navigation>` it does not touch history.
 
 Low-level emitter of hoistable head metadata from the current `Meta` context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
 
@@ -33319,7 +33423,7 @@ The back button for a page header. It goes back to the page before this one in t
 
 - It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
 - It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On a floating page (for example a deep link), it goes to `href` and stays floating. To go into a stack, the user taps a `<StackButton>`.
-- It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationStore.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
+- It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationSequence.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
 - Without the browser Navigation API, and in a server render, it links to `href`.
@@ -33417,28 +33521,29 @@ Props for `<Navigation>`: the initial `Meta` (url, root and stack), the `stacks`
 - Import: `import { Navigation } from "shelving/ui";`
 
 Top-level navigation provider, with one stack of pages for each tab.
-- Owns a single `NavigationStore` made from the surrounding `<Meta>` url and root.
-- Turns clicks on same-origin links into `NavigationStore.forward()`, or `NavigationStore.back()` for a link with `className="back"`, or `NavigationStore.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
-- Publishes the URL and the current `stack` into `Meta`, and the position in the stacks into `NavigationPositionContext`, all in one render.
-- Publishes each change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition. A replace, or a change the browser already animated (for example a swipe-back), has no transition.
+- Owns a single `NavigationSequence` made from the surrounding `<Meta>` url and root.
+- Turns clicks on same-origin links into `NavigationSequence.forward()`, or `NavigationSequence.back()` for a link with `className="back"`, or `NavigationSequence.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
+- Holds the page it shows in its own state, and publishes its `url`, `stack` and `ordinal` into `Meta`. Read the current page from `Meta`.
+- Takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` type, so a `<Transition>` around the routes runs a view transition. A replace has no transition. An event for the page already shown is skipped.
 - Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
 
-Exactly one `<Navigation>` per app. Nested routers share its store.
+Exactly one `<Navigation>` per app. Nested routers share its sequence.
 
-The top-level navigation provider for a client-side app. It owns one `NavigationStore`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
+The top-level navigation provider for a client-side app. It owns one `NavigationSequence`, turns link clicks into navigation, holds the page it shows in its own state, and publishes that page into `<Meta>`, so each `<Router>` re-renders when the page changes. Use exactly one `<Navigation>` per app. Nested routers all share its sequence.
 
 Give it `stacks` for an app with a tab bar. Each stack is one tab with its own history of pages, like a phone app: each tab remembers where you left it, and a back button goes back within its tab.
 
 **Things to know:**
 
-- Same-origin link clicks become `NavigationStore.forward()`, so the page slides forward.
-- A link with `className="back"` calls `NavigationStore.back()`, so the page slides back. `<BackButton>` sets this class for you.
-- A link with `className="replace"` calls `NavigationStore.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
+- Same-origin link clicks become `NavigationSequence.forward()`, so the page slides forward.
+- A link with `className="back"` calls `NavigationSequence.back()`, so the page slides back. `<BackButton>` sets this class for you.
+- A link with `className="replace"` calls `NavigationSequence.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
 - Clicks with a modifier key (Cmd, Ctrl, Shift, Alt), a middle-click, and links with `download` or a `target` other than `_self` go to the browser as usual.
-- It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
-- The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
+- It takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition. An event for the page already shown is skipped.
+- The browser back and forward buttons slide too. Inside a stack the direction comes from the ordinal of the page. Across stacks it comes from tab order.
 - When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
-- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
+- It publishes `url`, `stack` (the root of the current stack) and `ordinal` (the page's place in its stack) into `<Meta>`, so any component can read the page on screen with `requireMeta()`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
+- When it starts listening it reads the current history entry, so a `replace()` sent before that (for example from a page's first effect) is not lost.
 - It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
 - `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
 
@@ -33484,7 +33589,7 @@ const TABS = (
 <App root="https://example.com/">
 	<Navigation stacks={STACKS}>
 		<AppLayout nav={TABS}>
-			<HorizontalTransition>
+			<HorizontalTransition default="none">
 				<RouteCache>
 					<Scroll vertical cover>
 						<PageLoader>
@@ -33509,9 +33614,9 @@ const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
 <Navigation stacks={STACKS} stack={stack}>
 ```
 
-Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+Put the transition **outside** `<RouteCache>`, around the whole cache, with no `key`. A page change is an update of the transition, and it slides by type. Set `default="none"`, so a change with no type (a replace) does not animate. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`. The app also works with no `<RouteCache>`: put the transition around the `<Router>`.
 
-The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationSequence`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -33535,7 +33640,7 @@ Each link pushes a new page onto the current stack, wherever it points. So a lin
 
 ### Imperative navigation
 
-Read the store from anywhere in the tree with `requireNavigation()`:
+Read the sequence from anywhere in the tree with `requireNavigation()`:
 
 ```tsx
 import { requireNavigation } from "shelving/ui";
@@ -33546,7 +33651,7 @@ nav.back("/home"); // Go back to a page.
 nav.replace("/login"); // Change the URL of the current page.
 ```
 
-See `NavigationStore` for what each method does.
+See `NavigationSequence` for what each method does.
 
 
 ## Signatures
@@ -33577,12 +33682,12 @@ Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement
 - Kind: constant
 - Import: `import { NavigationContext } from "shelving/ui";`
 
-React context holding the current `NavigationStore`, provided by `<Navigation>`.
+React context holding the current `NavigationSequence`, provided by `<Navigation>`.
 
 ## Examples
 
 ```ts
-<NavigationContext value={store}>…</NavigationContext>
+<NavigationContext value={nav}>…</NavigationContext>
 ```
 
 
@@ -33593,19 +33698,19 @@ React context holding the current `NavigationStore`, provided by `<Navigation>`.
 - Kind: function
 - Import: `import { requireNavigation } from "shelving/ui";`
 
-Read the current `NavigationStore` from context, throwing if used outside `<Navigation>`.
+Read the current `NavigationSequence` from context, throwing if used outside `<Navigation>`.
 
 ## Signatures
 
 ```ts
-requireNavigation(): NavigationStore
+requireNavigation(): NavigationSequence
 ```
 
 ## Returns
 
 | Type | Description |
 | --- | --- |
-| `NavigationStore` | The current `NavigationStore`. |
+| `NavigationSequence` | The current `NavigationSequence`. |
 
 ## Throws
 
@@ -33616,31 +33721,19 @@ requireNavigation(): NavigationStore
 
 ---
 
-# NavigationPositionContext
-
-- Kind: constant
-- Import: `import { NavigationPositionContext } from "shelving/ui";`
-
-React context holding where the app is in its stacks, published by `<Navigation>` with each URL change.
-- `undefined` without the browser Navigation API, during a server render, or outside `<Navigation>`.
-- `<RouteCache>`, `<Router>` and `<BackButton>` read it, so they change in the same render as the URL.
-
-
----
-
 # NavigationEntryState
 
 - Kind: interface
 - Import: `import { NavigationEntryState } from "shelving/ui";`
 
-State that `NavigationStore` saves on each browser history entry.
+State that `NavigationSequence` saves on each browser history entry.
 
 ## Signatures
 
 ```ts
 {
 	readonly stack: AbsolutePath | null;
-	readonly depth: number;
+	readonly ordinal: number;
 }
 ```
 
@@ -33649,26 +33742,44 @@ State that `NavigationStore` saves on each browser history entry.
 | Property | Type | Description |
 | --- | --- | --- |
 | `stack` | `AbsolutePath \| null` | Root path of the stack this page is in, or `null` for a floating page. Read only. |
-| `depth` | `number` | Position of this page in its stack, where `0` is the root. Read only. |
+| `ordinal` | `number` | Position of this page in its stack, where `0` is the root. Read only. |
 
 
 ---
 
-# NavigationPosition
+# NavigationDirection
+
+- Kind: type
+- Import: `import { NavigationDirection } from "shelving/ui";`
+
+Direction of a move in a `NavigationEvent`: `"forward"` or `"back"`.
+
+## Signatures
+
+```ts
+"forward" | "back"
+```
+
+
+---
+
+# NavigationEvent
 
 - Kind: interface
-- Import: `import { NavigationPosition } from "shelving/ui";`
-- Extends: `NavigationEntryState`
+- Import: `import { NavigationEvent } from "shelving/ui";`
 
-Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
-- `undefined` when the browser has no Navigation API, or during a server render.
+One change of page, published by `NavigationSequence`.
+- A move (a link, a back button, the browser back and forward buttons) has a `direction`, so `<Navigation>` shows it inside a view transition of that type.
+- A replace has no `direction`, so it shows at once with no transition.
 
 ## Signatures
 
 ```ts
 {
-	readonly tops: ReadonlyMap<AbsolutePath | null, number>;
-	readonly parent: AbsolutePath | undefined;
+	readonly url: ImmutableURL;
+	readonly stack: AbsolutePath | null;
+	readonly ordinal: number | undefined;
+	readonly direction?: NavigationDirection | undefined;
 }
 ```
 
@@ -33676,50 +33787,58 @@ Where the app is now in its stacks: the current stack and depth, the top depth o
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `tops` | `ReadonlyMap<AbsolutePath \| null, number>` | Depth of the top page of each stack that has pages, including the floating stack (`null`). Read only. |
-| `parent` | `AbsolutePath \| undefined` | The page before the current one in its stack, or `undefined` at the bottom of the stack. Read only. |
+| `url` | `ImmutableURL` | URL of the page. Read only. |
+| `stack` | `AbsolutePath \| null` | Root path of the stack the page is in, or `null` for a floating page. Read only. |
+| `ordinal` | `number \| undefined` | Position of the page in its stack, where `0` is the root, or `undefined` without the Navigation API. Read only. |
+| `direction` | `NavigationDirection \| undefined` | Direction of the move, or `undefined` for a replace or a change with no slide. Read only. Optional. |
 
 
 ---
 
-# NavigationStore
+# NavigationSequence
 
 - Kind: class
-- Import: `import { NavigationStore } from "shelving/ui";`
-- Extends: `URLStore`
+- Import: `import { NavigationSequence } from "shelving/ui";`
+- Extends: `DeferredSequence<NavigationEvent>`
 
-Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
+Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
 
-- Extends `URLStore`, so its `value` is the current URL.
+- It is not a store: it holds no "current page" for the UI. Each change of page (a move, a replace, or the browser back and forward buttons) publishes one `NavigationEvent`, and `<Navigation>` keeps the page it shows in its own state.
+- `url`, `stack` and `ordinal` say where the browser history is now. The page on screen can differ for a moment, for example during a swipe-back preview. To read the page on screen, read `Meta`.
+- `publish()` sends an event by hand, for example to show the page below during a swipe-back.
 - With the browser Navigation API, each history entry saves a `NavigationEntryState`, and each stack is read from `navigation.entries()` when it is needed. Nothing else is kept.
-- `stack` is a sub-store that holds the root of the current stack, or `null` for a floating page. It only changes when the stack changes.
 - A page outside the listed stacks is floating: its stack is `null`. The floating stack has no root page and no tab.
-- In a listed stack, depth `0` is always the stack's root path.
+- In a listed stack, ordinal `0` is always the stack's root path.
 - Without the Navigation API (older browsers and server renders) there are no stacks: `stack` stays the starting stack, `history()` is empty, and `stack` arguments are ignored.
 - Owned by `<Navigation>`. Read it with `requireNavigation()`.
 
-The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
+The sequence of navigation events that drives browser history and keeps one stack of pages for each tab. It is not a store: it holds no "current page" for the UI. Each change of page publishes one `NavigationEvent`, and `<Navigation>` keeps the page it shows in its own state. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
 
 **Things to know:**
 
-- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
+- Each change of page (a link, a back button, a replace, or the browser back and forward buttons) publishes one `NavigationEvent`: `{ url, stack, ordinal, direction }`.
+- A move has a `direction` (`"forward"` or `"back"`), so `<Navigation>` shows it in a view transition of that type. A replace has no `direction`, so it shows at once.
+- To read the page on screen, read `Meta` (`requireMeta()` or `requireMetaURL()`), not the sequence. The two can differ for a moment, for example during a swipe-back.
+- `NavigationSequence.url`, `NavigationSequence.stack` and `NavigationSequence.path` say where the browser history is now. `NavigationSequence.current()` returns the same as an event with no direction.
+- `NavigationSequence.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
 - A page that is not in a listed stack is **floating**: its stack is `null`. See [Floating pages](#floating-pages).
-- In a listed stack, depth `0` is always the stack's root path. A deeper page always has the root below it.
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
-- `NavigationStore.path` is the current path relative to the app root, without its `?query`.
-- `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
-- `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
-- All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
-- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
+- In a listed stack, ordinal `0` is always the stack's root path. A deeper page always has the root below it.
+- `NavigationSequence.history()` returns the pages in the current stack (or a given stack), root first.
+- `NavigationSequence.publish()` sends an event by hand, for example to show the page below during a swipe-back. It returns a promise that resolves when `<Navigation>` has committed the event.
+- Events sent in the same microtask merge: only the last one is shown.
+- All URLs resolve against the sequence's `base`. Each method also takes a full same-origin URL.
+- Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `ordinal` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
 ## Methods
 
-| Method                  | What it does                                                                                                                                                                                                                                      | Slide                                 |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                              | Forward. Across stacks, by tab order. |
-| `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back                                  |
-| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.            | None                                  |
-| `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
+| Method                  | What it does                                                                                                                                                                                                                                                                                                                | Slide                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                                                                                                        | Forward. Across stacks, by tab order. |
+| `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. If the browser refuses the Navigation API back, it uses `history.back()`. | Back                                  |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the ordinal and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.                                                                                    | None                                  |
+| `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                                                                                                   | —                                     |
+| `current()`             | Returns where the browser history is now, as an event with no direction.                                                                                                                                                                                                                                                    | —                                     |
+| `publish(event)`        | Sends an event by hand. Resolves when `<Navigation>` has committed it.                                                                                                                                                                                                                                                      | The event's `direction`               |
 
 `stack` defaults to the current stack. Pass `null` to name the floating stack.
 
@@ -33736,7 +33855,7 @@ A page changes stack only when you say so: with a `<StackButton>`, or with a `st
 ## Opening the app
 
 - To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
-- A deep page the app opens at, in a listed stack, starts at depth 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at depth 0.
+- A deep page the app opens at, in a listed stack, starts at ordinal 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at ordinal 0.
 - A `stack` that is not in `stacks` is ignored: the page floats.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
@@ -33748,23 +33867,23 @@ nav.replace("/home", "/home");
 
 ## How stacks work
 
-The store saves a small state on each browser history entry: the `stack` the page is in, and its `depth` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the store walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower depth, and so on down to depth `0`.
+The sequence saves a small state on each browser history entry: the `stack` the page is in, and its `ordinal` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the sequence walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower ordinal, and so on down to ordinal `0`.
 
-Why depth? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the store cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's depth. The pages that were above it now have a higher depth than the newest entry, so they are no longer in the stack.
+Why ordinal? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the sequence cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's ordinal. The pages that were above it now have a higher ordinal than the newest entry, so they are no longer in the stack.
 
 For example, with tabs `/home` and `/profile`:
 
-| Step                | New history entry        | Home stack              | Profile stack |
-| ------------------- | ------------------------ | ----------------------- | ------------- |
-| Start at `/home`    | `/home` (depth 0)        | `/home`                 | —             |
-| Open a post         | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | —             |
-| Tap the Profile tab | `/profile` (depth 0)     | `/home`, `/home/post/1` | `/profile`    |
-| Tap the Home tab    | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | `/profile`    |
-| Tap the back button | `/home` (depth 0)        | `/home`                 | `/profile`    |
+| Step                | New history entry          | Home stack              | Profile stack |
+| ------------------- | -------------------------- | ----------------------- | ------------- |
+| Start at `/home`    | `/home` (ordinal 0)        | `/home`                 | —             |
+| Open a post         | `/home/post/1` (ordinal 1) | `/home`, `/home/post/1` | —             |
+| Tap the Profile tab | `/profile` (ordinal 0)     | `/home`, `/home/post/1` | `/profile`    |
+| Tap the Home tab    | `/home/post/1` (ordinal 1) | `/home`, `/home/post/1` | `/profile`    |
+| Tap the back button | `/home` (ordinal 0)        | `/home`                 | `/profile`    |
 
 When the page you go back to is the entry just before the current one, `back()` goes back in the browser history and pushes nothing.
 
-The browser back and forward buttons walk the history entries one at a time, as usual. Each entry knows its stack and depth, so the stacks are always right and the slide goes the right way.
+The browser back and forward buttons walk the history entries one at a time, as usual. Each entry knows its stack and ordinal, so the stacks are always right and the slide goes the right way.
 
 ## Usage
 
@@ -33777,16 +33896,30 @@ function LogoutButton() {
 }
 ```
 
-Read the current stack in a component:
+Read the current stack in a component from `Meta`:
 
 ```tsx
-import { useStore } from "shelving/react";
-import { requireNavigation } from "shelving/ui";
+import { requireMeta } from "shelving/ui";
 
 function TabTitle() {
-	const nav = requireNavigation();
-	const stack = useStore(nav.stack).value;
+	const { stack } = requireMeta();
 	return <h1>{stack === "/profile" ? "Profile" : "Home"}</h1>;
+}
+```
+
+Show the page below during a swipe-back. React runs the back transition, and the swipe scrubs it:
+
+```tsx
+const nav = requireNavigation();
+const { stack = null, ordinal } = requireMetaURL();
+const parent = ordinal ? nav.history(stack)[ordinal - 1] : undefined;
+if (parent) {
+	// Start the swipe: show the page below with the back transition.
+	await nav.publish({ url: requireURL(parent, nav.base), stack, ordinal: ordinal - 1, direction: "back" });
+	// Release: go back for real. It publishes the same page, so it is skipped.
+	nav.back(parent);
+	// Or cancel: show the old page again, with no transition.
+	// await nav.publish({ ...from, direction: undefined });
 }
 ```
 
@@ -33797,13 +33930,13 @@ const nav = requireNavigation();
 nav.history("/home"); // ["/home", "/home/post/1", "/home/post/1/comments"]
 ```
 
-Make a store by hand only in tests:
+Make a sequence by hand only in tests:
 
 ```tsx
-import { NavigationStore } from "shelving/ui";
+import { NavigationSequence } from "shelving/ui";
 
 // URL, root, starting stack, then the stacks in tab order.
-const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
+const nav = new NavigationSequence("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
 nav.forward("/home/post/1");
 ```
 
@@ -33811,7 +33944,7 @@ nav.forward("/home/post/1");
 ## Signatures
 
 ```ts
-new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath | null = null, ...stacks: AbsolutePath[])
+new NavigationSequence(url: PossibleURL = typeof window === "undefined" ? "/" : window.location.href, base?: PossibleURL, stack: AbsolutePath | null = null, ...stacks: AbsolutePath[])
 ```
 
 ## Parameters
@@ -33827,36 +33960,91 @@ new NavigationStore(url: PossibleURL = typeof window === "undefined" ? "/" : win
 
 | Type | Description |
 | --- | --- |
-| `NavigationStore` |  |
+| `NavigationSequence` |  |
 
 ## Properties
 
 | Property | Type | Description |
 | --- | --- | --- |
 | `stacks` | `readonly AbsolutePath[]` | Root path of each stack, in tab order. With none, every page floats. Read only. |
-| `stack` | `Store<AbsolutePath \| null>` | Root path of the current stack, or `null` for a floating page. - It starts at the `stack` given to the constructor (default `null`). Without the Navigation API, it stays there. Read only. |
-| `transition` | `TransitionType \| null` | Transition type of the most recent change, read by `<Navigation>` when the value changes. - `null` means no transition: a replace, a change the browser already animated (for example a swipe-back), or no Navigation API. Defaults to `null`. |
+| `base` | `ImmutableURL \| undefined` | Base URL of the app, used to resolve relative URLs and to work out paths. Read only. |
+| `url` | `ImmutableURL` | URL the browser history is on now. Read only. |
+| `stack` | `AbsolutePath \| null` | Root path of the stack the browser history is on now, or `null` for a floating page. Read only. |
 | `path` | `AbsolutePath \| undefined` | Path of the current URL relative to the app root (without its `?query`), or `undefined` if the URL is outside the app. Read only. |
-| `position` | `NavigationPosition \| undefined` | Where the app is now: the current stack and depth, and the top depth of each stack. Read only. |
 
 ## Methods
 
-- [NavigationStore.listen()](ui/NavigationStore/listen.md): Start listening to the browser (back, forward and swipe).
-- [NavigationStore.history()](ui/NavigationStore/history.md): Get the pages in a stack, root first, or every page in every stack.
-- [NavigationStore.forward()](ui/NavigationStore/forward.md): Go forward to a URL, as a link does.
-- [NavigationStore.back()](ui/NavigationStore/back.md): Go back to a URL, as a back button does.
-- [NavigationStore.replace()](ui/NavigationStore/replace.md): Replace the current URL, with no transition.
+- [NavigationSequence.current()](ui/NavigationSequence/current.md): Where the browser history is now, as an event with no direction.
+- [NavigationSequence.publish()](ui/NavigationSequence/publish.md): Publish an event by hand, without changing history.
+- [NavigationSequence.committed()](ui/NavigationSequence/committed.md): Tell waiting publish() calls that <Navigation> has committed a page.
+- [NavigationSequence.listen()](ui/NavigationSequence/listen.md): Start listening to the browser (back, forward and swipe).
+- [NavigationSequence.history()](ui/NavigationSequence/history.md): Get the pages in a stack, root first, or every page in every stack.
+- [NavigationSequence.forward()](ui/NavigationSequence/forward.md): Go forward to a URL, as a link does.
+- [NavigationSequence.back()](ui/NavigationSequence/back.md): Go back to a URL, as a back button does.
+- [NavigationSequence.replace()](ui/NavigationSequence/replace.md): Replace the current URL, with no transition.
 
 
 ---
 
-# NavigationStore.listen()
+# NavigationSequence.current()
 
 - Kind: method
-- Member of: `NavigationStore`
+- Member of: `NavigationSequence`
+
+Where the browser history is now, as an event with no direction.
+- `<Navigation>` reads it for its first render, and again when it starts listening, to catch up on changes it missed.
+
+## Signatures
+
+```ts
+current(): NavigationEvent
+```
+
+
+---
+
+# NavigationSequence.publish()
+
+- Kind: method
+- Member of: `NavigationSequence`
+
+Publish an event by hand, without changing history.
+- For example, a swipe-back publishes the page below with `direction: "back"`, so React runs its back transition, and the swipe scrubs it.
+- Then the real `back()` publishes the same page again, which `<Navigation>` skips, or the swipe publishes the current page again to cancel.
+
+## Signatures
+
+```ts
+publish(event: NavigationEvent): Promise<void>
+```
+
+
+---
+
+# NavigationSequence.committed()
+
+- Kind: method
+- Member of: `NavigationSequence`
+
+Tell waiting `publish()` calls that `<Navigation>` has committed a page.
+- `<Navigation>` calls it after each commit.
+
+## Signatures
+
+```ts
+committed(): void
+```
+
+
+---
+
+# NavigationSequence.listen()
+
+- Kind: method
+- Member of: `NavigationSequence`
 
 Start listening to the browser (back, forward and swipe).
-- Saves the current stack and depth on the current history entry, if it has none.
+- Saves the current stack and ordinal on the current history entry, if it has none.
 - `<Navigation>` calls it once, when it mounts.
 
 ## Signatures
@@ -33868,10 +34056,10 @@ listen(): () => void
 
 ---
 
-# NavigationStore.history()
+# NavigationSequence.history()
 
 - Kind: method
-- Member of: `NavigationStore`
+- Member of: `NavigationSequence`
 
 Get the pages in a stack, root first, or every page in every stack.
 - Read from the browser history entries up to the current one.
@@ -33882,19 +34070,19 @@ Get the pages in a stack, root first, or every page in every stack.
 ## Signatures
 
 ```ts
-history(stack: AbsolutePath | null = this.stack.value): AbsolutePath[]
+history(stack: AbsolutePath | null = this._stack): AbsolutePath[]
 ```
 
 
 ---
 
-# NavigationStore.forward()
+# NavigationSequence.forward()
 
 - Kind: method
-- Member of: `NavigationStore`
+- Member of: `NavigationSequence`
 
 Go forward to a URL, as a link does.
-- The URL is the top page of `stack`: switch to that stack, at the same depth. This is a tab switch.
+- The URL is the top page of `stack`: switch to that stack, at the same ordinal. This is a tab switch.
 - Else push the URL onto `stack`, one level deeper than its top page.
 - The URL you are already on: replace it instead.
 - A change of stack slides by tab order. Else it slides forward.
@@ -33902,46 +34090,47 @@ Go forward to a URL, as a link does.
 ## Signatures
 
 ```ts
-forward(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
+forward(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void
 ```
 
 
 ---
 
-# NavigationStore.back()
+# NavigationSequence.back()
 
 - Kind: method
-- Member of: `NavigationStore`
+- Member of: `NavigationSequence`
 
 Go back to a URL, as a back button does.
-- The URL is an earlier page in `stack`: go back to it. When it is the entry just before the current one, this goes back in the browser history. Else it pushes the URL again at that page's depth.
-- The URL is the root of `stack`: push it at depth 0.
+- The URL is an earlier page in `stack`: go back to it. When it is the entry just before the current one, this goes back in the browser history. Else it pushes the URL again at that page's ordinal.
+- The URL is the root of `stack`: push it at ordinal 0.
 - Else push the URL in place of the top page of `stack`.
 - It works when the app was opened at the current page, so a back button always has somewhere to go.
+- If the browser refuses to go back with the Navigation API, it uses `history.back()`.
 
 ## Signatures
 
 ```ts
-back(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
+back(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void
 ```
 
 
 ---
 
-# NavigationStore.replace()
+# NavigationSequence.replace()
 
 - Kind: method
-- Member of: `NavigationStore`
+- Member of: `NavigationSequence`
 
 Replace the current URL, with no transition.
-- The page stays in the same stack, at the same depth, so a cached page stays mounted.
+- The page stays in the same stack, at the same ordinal, so a cached page stays mounted.
 - Use it for a page that knows its canonical URL, or for in-page tabs.
 - Pass a `stack` to move the page into that stack: at its root if the URL is the root, else on top of its pages. For example, a login page calls `replace("/home", "/home")`.
 
 ## Signatures
 
 ```ts
-replace(possible: PossibleURL, stack: AbsolutePath | null = this.stack.value): void
+replace(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void
 ```
 
 
@@ -33967,7 +34156,7 @@ Props for `<RouteCache>`: the `maxCached` size and the content `children` to kee
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the top page of each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the last page you saw in each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Keep it at `2` or more, so a swipe-back can show the page below and still keep the page you are leaving. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
 | `children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 
@@ -33981,14 +34170,14 @@ Props for `<RouteCache>`: the `maxCached` size and the content `children` to kee
 Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box.
 
 - Put a page transition around it, and a `<Scroll vertical cover>` inside it, so each kept page scrolls in its own box.
-- Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
-- Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
-- A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
-- The root page and the top page of each listed stack are never dropped. Other pages, and every floating page, can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
+- Keeps each page mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
+- Each page is keyed by the `stack` and `ordinal` in `Meta`, not by its URL. So `NavigationSequence.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
+- It knows nothing about history. It only drops pages when it has more than `maxCached`: first the pages deeper than the current page in its stack (pages you went back from), then the least recently used. So after a back, a forward shows the page as you left it, and a cancelled swipe-back still has the page it started from.
+- The root page and the last page you saw in each listed stack are never dropped. Floating pages (stack `null`) get no such protection.
 - When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the root page is rendered hidden, so a swipe-back can show it.
-- Each kept page is frozen under its own `<MetaContext>` and `NavigationPositionContext`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
+- Each kept page is frozen under its own `<MetaContext>`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
-- Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
+- With no `ordinal` in `Meta` (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
 
 A keep-alive cache for the pages in the navigation stacks. Put it in a layout's content slot, around a `<Scroll vertical cover>` box. It keeps each page in the stacks mounted but hidden (with React's [`<Activity>`](https://react.dev/reference/react/Activity)), so when you go back to a page, or switch back to a tab, the page is exactly as you left it: scroll position, toggles, searches, form input and focus.
 
@@ -33996,21 +34185,22 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 
 **Things to know:**
 
-- Each page is keyed by its stack and its depth in that stack, not by its URL. See `NavigationStore` for how stacks work.
-- A page leaves the cache when it leaves its stack: when you go back from it, or when its stack goes back to the root. So a page you went back from mounts fresh the next time you open it.
-- After a browser back, the browser forward button shows the next page fresh (from the top), because that page left its stack when you went back.
-- The root page and the top page of each listed stack are never dropped, so each tab always shows the page you left, and always has its root below. Other pages, and every floating page, are dropped (least recently used first) past `maxCached`, and mount fresh when you come back to them.
+- Each page is keyed by the `stack` and `ordinal` in `Meta`, not by its URL. See `NavigationSequence` for how stacks work.
+- It knows nothing about history. It drops pages only when it has more than `maxCached`: first the pages deeper than the current page in its stack (pages you went back from), then the least recently used.
+- So after a back, the forward button shows the page as you left it, while the cache has room.
+- The current page, the root page of each listed stack, and the last page you saw in each listed stack are never dropped. So each tab always shows the page you left, and always has its root below. Floating pages get no such protection.
+- Keep `maxCached` at `2` or more, so a swipe-back can show the page below and still keep the page you are leaving.
 - When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the cache renders the root page hidden, so a swipe-back can show it. A hidden page runs no effects until it is shown.
-- `NavigationStore.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
+- `NavigationSequence.replace()` and `className="replace"` links keep the same page mounted. A replace to another URL for the same component (for example from `/post/1` to `/post/2`) keeps its state. To reset the state, wrap the page content in an element with a `key`, for example `<Fragment key={id}>`.
 - The same URL open in two stacks is two separate pages.
 - A form that makes something stays in the cache with its input. Clear it after a successful submit, so it is empty the next time you see it (see the example below).
-- Each kept page is frozen under its own `<Meta>` and `NavigationPositionContext`, so a hidden page never re-renders for another page's URL.
+- Each kept page is frozen under its own `<Meta>`, so a hidden page never re-renders for another page's URL.
 - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so subscriptions, observers (for example infinite scroll) and timers pause and resume as the page is hidden and shown.
 - **Nesting:** layout, then transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. See the usage below.
 - The scroll box goes **inside** the cache, so each kept page has its own scroll box and keeps its own scroll position. A scroll box outside the cache is shared by every page, so pages lose their scroll.
 - Put a page `<Transition>` **around** the `<RouteCache>`, not inside it. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 - Keep the layout **outside** the cache. Chrome in the layout (a sidebar, a tab bar) then has one copy, keeps its own state, and plays its own CSS transitions. Chrome inside the cache gets one copy per kept page.
-- Without the browser Navigation API, or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
+- With no `ordinal` in `Meta` (no browser Navigation API, or a server render), or with `maxCached={0}`, there is no cache: the current page renders directly and unmounts when you leave it.
 
 ## Usage
 
@@ -34018,7 +34208,7 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
 <AppLayout nav={<StackBar />}>
-	<HorizontalTransition>
+	<HorizontalTransition default="none">
 		<RouteCache>
 			<Scroll vertical cover>
 				<PageLoader>
@@ -34077,7 +34267,7 @@ RouteCache({ maxCached = 10, children }: RouteCacheProps): ReactNode
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `RouteCacheProps` |  |
-| `.maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the top page of each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
+| `.maxCached` | `number \| undefined` | Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it. - The root page and the last page you saw in each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below. - Floating pages get no such protection. - Keep it at `2` or more, so a swipe-back can show the page below and still keep the page you are leaving. - Set to `0` (or less) to turn the cache off and unmount each page as you leave it. Read only. Defaults to `10`. |
 | `.children` | `ReactNode` | The content to render for the current page and keep alive (hidden) for the other pages in the stacks. Read only. |
 
 ## Returns
@@ -34126,7 +34316,7 @@ Match the current URL against `routes` and render the matched element.
 - When `base` is set, the effective path is the URL after stripping the base prefix.
 - Nest by putting another `<Router>` inside a route's value; pass `base="/section"` (or wrap in `<Meta>`) to scope.
 - Route `{placeholders}` are passed as props to function/component route values along with merged URL `?query` params. They are not published into context — descendants of a `ReactElement`-valued route can't see them automatically.
-- Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
+- Inside `<Navigation>` with the Navigation API, each page in a stack is a new page: a link mounts a new page, and `NavigationSequence.replace()` keeps the same page mounted (it re-renders with the new URL). A replace that renders another component still mounts it fresh.
 - Elsewhere, each path is a new page, so a component route remounts when the path changes.
 - Returns `null` when there's no URL in context or the URL is outside the base.
 
@@ -34138,7 +34328,7 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 - `<Router>` accepts `PossibleMeta` props (`url`, `base`, etc.) to override the surrounding context — this is how nested routers scope themselves.
 - With a `base` set, the path used for matching is the URL after `matchURLPrefix()` strips the base prefix; URLs outside the base render as `null`.
 - Pass `fallback` to control no-match behaviour. An explicit `null` renders nothing; leaving it `undefined` throws a `NotFoundError`.
-- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationStore.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
+- Inside `<Navigation>` with stacks, each page in a stack is a new page: a link mounts a new page, and `NavigationSequence.replace()` keeps the same page mounted (it re-renders with the new URL). Elsewhere each path is a new page.
 - `<Router>` itself does not cache pages — wrap it in a `<RouteCache>` (with a `<Scroll vertical cover>` between them) to keep recently-visited pages mounted but hidden so back/forward navigation restores their state.
 
 ## Usage
@@ -36942,7 +37132,7 @@ A direction-aware `<Transition>` preset that slides its children horizontally �
 **Things to know:**
 
 - Slides right by default and when the type is `"forward"`; slides left when the type is `"back"`.
-- Inside `<Navigation>` the direction is automatic: a link click or `NavigationStore.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationStore.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationStore.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click or `NavigationSequence.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationSequence.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationSequence.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full width apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
@@ -37087,7 +37277,7 @@ The base View Transition wrapper. It wraps its children in React 19's `<ViewTran
 
 - Set `default` for the base transition; `forward` and `back` default to it and let you pick a direction-aware variant. The class names must correspond to `::view-transition-old(.className)` / `::view-transition-new(.className)` rules in your CSS.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`, from `Transition.module.css`).
-- Direction is driven by the active view-transition type. `<Navigation>` sets it for each page change (`"forward"` for a link or `NavigationStore.forward()`, `"back"` for the browser back button). For any other change, call `setTransitionType("forward")` (or `"back"`) inside a `startTransition()` callback; the variants read that type to choose the correct slide.
+- Direction is driven by the active view-transition type. `<Navigation>` sets it for each page change (`"forward"` for a link or `NavigationSequence.forward()`, `"back"` for the browser back button). For any other change, call `setTransitionType("forward")` (or `"back"`) inside a `startTransition()` callback; the variants read that type to choose the correct slide.
 - React runs a view transition only for a transition update (`startTransition()`, `useDeferredValue()` or a Suspense reveal). A sync update, for example a `useStore()` change, swaps the content with no animation.
 - The preset variants honour `prefers-reduced-motion: reduce` — positional movement (slides, collapse) is removed while opacity-only fades are kept (see each preset's page). Custom transition classes should ship their own `@media (prefers-reduced-motion: reduce)` override; `animation: none` on the `::view-transition-*` pseudo-elements makes the swap an instant cut while the DOM update still happens.
 
@@ -37352,7 +37542,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 **Things to know:**
 
 - Slides down by default and when the type is `"forward"`; slides up when the type is `"back"`.
-- Inside `<Navigation>` the direction is automatic: a link click or `NavigationStore.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationStore.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationStore.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click or `NavigationSequence.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationSequence.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationSequence.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
@@ -38426,7 +38616,7 @@ Reads a React context and throws `RequiredError` if the value is `null` or `unde
 ```ts
 import { requireContext } from "shelving/ui";
 
-function requireNavigation(): NavigationStore {
+function requireNavigation(): NavigationSequence {
 	return requireContext(NavigationContext, requireNavigation);
 }
 ```
@@ -38903,6 +39093,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 	readonly root?: ImmutableURL | undefined;
 	readonly url?: ImmutableURL | undefined;
 	readonly stack?: AbsolutePath | null | undefined;
+	readonly ordinal?: number | undefined;
 	readonly app?: string | undefined;
 	readonly title?: string | undefined;
 	readonly description?: string | undefined;
@@ -38924,6 +39115,7 @@ Combined meta data for a website page — title, URLs, description, CSP, tags, l
 | `root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
 | `stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
+| `ordinal` | `number \| undefined` | Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. Read only. Optional. |
 | `app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `description` | `string \| undefined` | Description of the current page. Read only. Optional. |
@@ -39070,6 +39262,7 @@ mergeMeta(meta1: Meta, meta2: PossibleMeta, caller: AnyCaller = mergeMeta): Meta
 | `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
 | `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
 | `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
+| `.ordinal` | `number \| undefined` | Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. Read only. Optional. |
 | `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
 | `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
 | `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |

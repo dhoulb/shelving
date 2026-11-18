@@ -87,9 +87,11 @@ function Toggle() {
 - [useMap()](react/useMap.md): Create a mutable Map that persists for the lifetime of the component.
 - [useReduce()](react/useReduce.md): Use memoised value with reduction logic.
 - [useSequence()](react/useSequence.md): Subscribe to an async iterable for the lifetime of the component.
+- [useSequenceTransition()](react/useSequenceTransition.md): Subscribe to an async iterable, and set each value it yields inside a React transition.
 - [useStore()](react/useStore.md): Subscribe to a Shelving Store instance to refresh this component when its value changes.
 
 ## Interfaces
 
 - [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
 - [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
+- [SequenceTransitionOptions](react/SequenceTransitionOptions.md): Options for useSequenceTransition().

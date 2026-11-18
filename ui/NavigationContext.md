@@ -3,10 +3,10 @@
 - Kind: constant
 - Import: `import { NavigationContext } from "shelving/ui";`
 
-React context holding the current `NavigationStore`, provided by `<Navigation>`.
+React context holding the current `NavigationSequence`, provided by `<Navigation>`.
 
 ## Examples
 
 ```ts
-<NavigationContext value={store}>…</NavigationContext>
+<NavigationContext value={nav}>…</NavigationContext>
 ```

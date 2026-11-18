@@ -265,7 +265,7 @@ The components below are listed in the index following this page; this is the sh
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.
 - [getTagClass()](ui/getTagClass.md): Build the combined className string for a <Tag> from its styling variants.
 - [Message()](ui/Message.md): Status-coloured paragraph used for inline feedback messages.
-- [requireNavigation()](ui/requireNavigation.md): Read the current NavigationStore from context, throwing if used outside <Navigation>.
+- [requireNavigation()](ui/requireNavigation.md): Read the current NavigationSequence from context, throwing if used outside <Navigation>.
 - [getBlockClass()](ui/getBlockClass.md): Get the combined className string for a block from its styling variants.
 - [getColorClass()](ui/getColorClass.md): CSS class that applies color tinting to an element.
 - [getDurationClass()](ui/getDurationClass.md): Get the transition-duration class for a component from its duration variant prop.
@@ -324,7 +324,7 @@ The components below are listed in the index following this page; this is the sh
 - [FormStore](ui/FormStore.md): Reactive store holding the current (possibly partial and invalid) value of a form, plus its field messages.
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
-- [NavigationStore](ui/NavigationStore.md): Store that holds the current navigation URL, drives browser history, and keeps a stack of pages for each tab.
+- [NavigationSequence](ui/NavigationSequence.md): Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
 
 ## Interfaces
 
@@ -461,8 +461,8 @@ The components below are listed in the index following this page; this is the sh
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
 - [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
-- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationStore saves on each browser history entry.
-- [NavigationPosition](ui/NavigationPosition.md): Where the app is now in its stacks: the current stack and depth, the top depth of each stack, and the page before the current one.
+- [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationSequence saves on each browser history entry.
+- [NavigationEvent](ui/NavigationEvent.md): One change of page, published by NavigationSequence.
 - [RouteCacheProps](ui/RouteCacheProps.md): Props for <RouteCache>: the maxCached size and the content children to keep alive for each page in the stacks.
 - [RouterProps](ui/RouterProps.md): Props for <Router> — the routes to match against plus an optional fallback.
 - [StackButtonProps](ui/StackButtonProps.md): Props for <StackButton>: the stack it opens, plus the usual Button props except href and onClick.
@@ -518,6 +518,7 @@ The components below are listed in the index following this page; this is the sh
 - [TextFormatter](ui/TextFormatter.md): Formats a string for display in a text input.
 - [Mapping](ui/Mapping.md): Dispatch table from a JSX.IntrinsicElements key to a renderer component.
 - [NoticesPosition](ui/NoticesPosition.md): Place on the screen where <Notices> shows the list of notices: a corner, or the centre of the top or bottom edge.
+- [NavigationDirection](ui/NavigationDirection.md): Direction of a move in a NavigationEvent: "forward" or "back".
 - [RouteProps](ui/RouteProps.md): Props for a component that works as a route in the router.
 - [RouteComponent](ui/RouteComponent.md): React component usable as a route value — a function or class component accepting RouteProps.
 - [Route](ui/Route.md): Valid route values:
@@ -567,8 +568,7 @@ The components below are listed in the index following this page; this is the sh
 - [EMPTY_LOADING](ui/EMPTY_LOADING.md): Loading spinner in an <Empty>, for a list or form that is still loading. The empty message replaces it in the same place.
 - [LOADING_NOTICE](ui/LOADING_NOTICE.md): Shared loading <Notice> element showing the loading spinner.
 - [NOTICES](ui/NOTICES.md): Global NoticesStore shown by <Notices>, accepting any of the default statuses.
-- [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationStore, provided by <Navigation>.
-- [NavigationPositionContext](ui/NavigationPositionContext.md): React context holding where the app is in its stacks, published by <Navigation> with each URL change.
+- [NavigationContext](ui/NavigationContext.md): React context holding the current NavigationSequence, provided by <Navigation>.
 - [STATUSES](ui/STATUSES.md): Tuple of the status names selectable via the status variant prop.
 - [TINT_CLASS](ui/TINT_CLASS.md): CSS class that (re)calculates the full ladder of tint shades from the current global tint colour.
 - [FADE_TRANSITION_CLASS](ui/FADE_TRANSITION_CLASS.md): View transition class that fades content in and out.

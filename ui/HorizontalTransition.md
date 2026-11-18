@@ -10,7 +10,7 @@ A direction-aware `<Transition>` preset that slides its children horizontally �
 **Things to know:**
 
 - Slides right by default and when the type is `"forward"`; slides left when the type is `"back"`.
-- Inside `<Navigation>` the direction is automatic: a link click or `NavigationStore.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationStore.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationStore.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
+- Inside `<Navigation>` the direction is automatic: a link click or `NavigationSequence.forward()` sets the `"forward"` type, and a `className="back"` link or `NavigationSequence.back()` sets `"back"`. The browser back and forward buttons set the type from the page's place in its stack. `NavigationSequence.replace()` has no transition. Outside `<Navigation>`, set the direction with `setTransitionType("forward" | "back")` inside a `startTransition()` callback — see `<Transition>`.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
 - The old and new content slide a full width apart, so they sit edge to edge and never overlap.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.

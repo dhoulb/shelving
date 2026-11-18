@@ -4,28 +4,29 @@
 - Import: `import { Navigation } from "shelving/ui";`
 
 Top-level navigation provider, with one stack of pages for each tab.
-- Owns a single `NavigationStore` made from the surrounding `<Meta>` url and root.
-- Turns clicks on same-origin links into `NavigationStore.forward()`, or `NavigationStore.back()` for a link with `className="back"`, or `NavigationStore.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
-- Publishes the URL and the current `stack` into `Meta`, and the position in the stacks into `NavigationPositionContext`, all in one render.
-- Publishes each change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` around the routes runs a view transition. A replace, or a change the browser already animated (for example a swipe-back), has no transition.
+- Owns a single `NavigationSequence` made from the surrounding `<Meta>` url and root.
+- Turns clicks on same-origin links into `NavigationSequence.forward()`, or `NavigationSequence.back()` for a link with `className="back"`, or `NavigationSequence.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
+- Holds the page it shows in its own state, and publishes its `url`, `stack` and `ordinal` into `Meta`. Read the current page from `Meta`.
+- Takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` type, so a `<Transition>` around the routes runs a view transition. A replace has no transition. An event for the page already shown is skipped.
 - Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
 
-Exactly one `<Navigation>` per app. Nested routers share its store.
+Exactly one `<Navigation>` per app. Nested routers share its sequence.
 
-The top-level navigation provider for a client-side app. It owns one `NavigationStore`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
+The top-level navigation provider for a client-side app. It owns one `NavigationSequence`, turns link clicks into navigation, holds the page it shows in its own state, and publishes that page into `<Meta>`, so each `<Router>` re-renders when the page changes. Use exactly one `<Navigation>` per app. Nested routers all share its sequence.
 
 Give it `stacks` for an app with a tab bar. Each stack is one tab with its own history of pages, like a phone app: each tab remembers where you left it, and a back button goes back within its tab.
 
 **Things to know:**
 
-- Same-origin link clicks become `NavigationStore.forward()`, so the page slides forward.
-- A link with `className="back"` calls `NavigationStore.back()`, so the page slides back. `<BackButton>` sets this class for you.
-- A link with `className="replace"` calls `NavigationStore.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
+- Same-origin link clicks become `NavigationSequence.forward()`, so the page slides forward.
+- A link with `className="back"` calls `NavigationSequence.back()`, so the page slides back. `<BackButton>` sets this class for you.
+- A link with `className="replace"` calls `NavigationSequence.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
 - Clicks with a modifier key (Cmd, Ctrl, Shift, Alt), a middle-click, and links with `download` or a `target` other than `_self` go to the browser as usual.
-- It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
-- The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
+- It takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition. An event for the page already shown is skipped.
+- The browser back and forward buttons slide too. Inside a stack the direction comes from the ordinal of the page. Across stacks it comes from tab order.
 - When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
-- It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
+- It publishes `url`, `stack` (the root of the current stack) and `ordinal` (the page's place in its stack) into `<Meta>`, so any component can read the page on screen with `requireMeta()`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
+- When it starts listening it reads the current history entry, so a `replace()` sent before that (for example from a page's first effect) is not lost.
 - It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
 - `<Router>` works with no `<Navigation>` (server renders, static renders, tests). `<Navigation>` only makes the URL live on the client.
 
@@ -71,7 +72,7 @@ const TABS = (
 <App root="https://example.com/">
 	<Navigation stacks={STACKS}>
 		<AppLayout nav={TABS}>
-			<HorizontalTransition>
+			<HorizontalTransition default="none">
 				<RouteCache>
 					<Scroll vertical cover>
 						<PageLoader>
@@ -96,9 +97,9 @@ const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
 <Navigation stacks={STACKS} stack={stack}>
 ```
 
-Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
+Put the transition **outside** `<RouteCache>`, around the whole cache, with no `key`. A page change is an update of the transition, and it slides by type. Set `default="none"`, so a change with no type (a replace) does not animate. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`. The app also works with no `<RouteCache>`: put the transition around the `<Router>`.
 
-The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationSequence`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -122,7 +123,7 @@ Each link pushes a new page onto the current stack, wherever it points. So a lin
 
 ### Imperative navigation
 
-Read the store from anywhere in the tree with `requireNavigation()`:
+Read the sequence from anywhere in the tree with `requireNavigation()`:
 
 ```tsx
 import { requireNavigation } from "shelving/ui";
@@ -133,7 +134,7 @@ nav.back("/home"); // Go back to a page.
 nav.replace("/login"); // Change the URL of the current page.
 ```
 
-See `NavigationStore` for what each method does.
+See `NavigationSequence` for what each method does.
 
 
 ## Signatures

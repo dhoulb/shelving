@@ -3,19 +3,19 @@
 - Kind: function
 - Import: `import { requireNavigation } from "shelving/ui";`
 
-Read the current `NavigationStore` from context, throwing if used outside `<Navigation>`.
+Read the current `NavigationSequence` from context, throwing if used outside `<Navigation>`.
 
 ## Signatures
 
 ```ts
-requireNavigation(): NavigationStore
+requireNavigation(): NavigationSequence
 ```
 
 ## Returns
 
 | Type | Description |
 | --- | --- |
-| `NavigationStore` | The current `NavigationStore`. |
+| `NavigationSequence` | The current `NavigationSequence`. |
 
 ## Throws
 
