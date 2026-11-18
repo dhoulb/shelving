@@ -1,9 +1,6 @@
 /** How much shorter the visual viewport must be than the window before the on-screen keyboard counts as open, in pixels. */
 const _GAP = 100;
 
-/** How long the viewport must stay the same size before the keyboard counts as still, in milliseconds. */
-const _QUIET = 100;
-
 /** The longest `waitForKeyboard()` waits, in milliseconds. */
 const _MAX = 500;
 
@@ -27,8 +24,8 @@ export function isKeyboardOpen(): boolean {
 /**
  * Lower the on-screen keyboard, and wait until it is down.
  * - Blurs the focused text field, if there is one, so the keyboard starts to close.
- * - When the keyboard is open (`isKeyboardOpen()`) or a field was just blurred, it waits until the keyboard is down and the
- *   viewport has stopped changing size, for at most half a second.
+ * - While the keyboard is open or closing (`isKeyboardOpen()`), it checks once each frame and goes on when the keyboard is
+ *   down, or after half a second at most.
  * - Returns nothing when there is nothing to wait for, so a caller can go on at once without a promise.
  * - Use it before a page slide: a keyboard that closes during a view transition resizes the page in the middle of it.
  *
@@ -38,36 +35,22 @@ export function isKeyboardOpen(): boolean {
  */
 export function waitForKeyboard(): Promise<void> | void {
 	if (typeof window === "undefined") return;
-	const blurred = _blurTextField();
-	if (!blurred && !isKeyboardOpen()) return;
+	_blurTextField();
+	if (!isKeyboardOpen()) return;
 	return new Promise<void>(resolve => {
-		const viewport = window.visualViewport;
 		const start = performance.now();
-		let changed = start;
-		const onResize = () => {
-			changed = performance.now();
-		};
-		const done = () => {
-			viewport?.removeEventListener("resize", onResize);
-			window.removeEventListener("resize", onResize);
-			resolve();
-		};
 		const check = (now: number) => {
-			if (now - start >= _MAX || (!isKeyboardOpen() && now - changed >= _QUIET)) return done();
+			if (now - start >= _MAX || !isKeyboardOpen()) return resolve();
 			requestAnimationFrame(check);
 		};
-		viewport?.addEventListener("resize", onResize);
-		window.addEventListener("resize", onResize);
 		requestAnimationFrame(check);
 	});
 }
 
-/** Blur the focused element when it takes typed text (and so shows the on-screen keyboard), and say if it did. */
-function _blurTextField(): boolean {
+/** Blur the focused element when it takes typed text (and so shows the on-screen keyboard). */
+function _blurTextField(): void {
 	const el = document.activeElement;
-	if (!(el instanceof HTMLElement) || !_isTextField(el)) return false;
-	el.blur();
-	return true;
+	if (el instanceof HTMLElement && _isTextField(el)) el.blur();
 }
 
 /** Does an element take typed text? */
