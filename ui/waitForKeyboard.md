@@ -5,8 +5,8 @@
 
 Lower the on-screen keyboard, and wait until it is down.
 - Blurs the focused text field, if there is one, so the keyboard starts to close.
-- When the keyboard is open (`isKeyboardOpen()`) or a field was just blurred, it waits until the keyboard is down and the
-  viewport has stopped changing size, for at most half a second.
+- While the keyboard is open or closing (`isKeyboardOpen()`), it checks once each frame and goes on when the keyboard is
+  down, or after half a second at most.
 - Returns nothing when there is nothing to wait for, so a caller can go on at once without a promise.
 - Use it before a page slide: a keyboard that closes during a view transition resizes the page in the middle of it.
 
