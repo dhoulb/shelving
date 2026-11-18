@@ -31,6 +31,7 @@ A page changes stack only when you say so: with a `<StackButton>`, or with a `st
 - Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
 - To leave the `/` stack, tap a `<StackButton>`, or name the stack.
 - To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
+- A deep page the app opens at, in a listed stack, starts at depth 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at depth 0.
 - If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
 
 For example, a login page sends the user home after they log in, and names the Home stack:

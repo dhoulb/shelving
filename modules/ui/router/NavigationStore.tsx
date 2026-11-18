@@ -320,11 +320,18 @@ export class NavigationStore extends URLStore {
 		return pages;
 	}
 
-	/** Get the saved state of an entry, or for an entry with none (the page the app opened at), the starting stack at depth 0. */
+	/**
+	 * Get the saved state of an entry, or a default for an entry with none (for example the page the app opened at).
+	 * - The default is the starting stack, at depth 0 for its root, else depth 1, so the stack root stays below a deep page.
+	 * - The unstacked `"/"` stack (when it is not in `stacks`) has no root page, so its default is always depth 0.
+	 */
 	private _getState(entry: NavigationHistoryEntry | null): NavigationEntryState {
 		const state = entry?.getState();
 		if (_isEntryState(state) && this._getStacks().includes(state.stack)) return state;
-		return { stack: this._start, depth: 0 };
+		const stack = this._start;
+		const path = entry?.url ? this._getPath(requireURL(entry.url, undefined, this._getState)) : undefined;
+		const depth = this.stacks.includes(stack) && path && path !== stack ? 1 : 0;
+		return { stack, depth };
 	}
 
 	/** Get every stack a page can be in: the listed stacks, plus the unstacked `"/"` stack. */

@@ -141,7 +141,29 @@ describe("NavigationStore", () => {
 	test("opens in the starting stack", () => {
 		const nav = setup("/profile/settings", "/profile");
 		expect(nav.stack.value).toBe("/profile");
-		expect(getEntries()).toEqual(["/profile/settings /profile@0"]);
+		expect(getEntries()).toEqual(["/profile/settings /profile@1"]);
+	});
+
+	test("opens a stack root at depth 0", () => {
+		setup("/profile", "/profile");
+		expect(getEntries()).toEqual(["/profile /profile@0"]);
+	});
+
+	test("keeps the stack root below a deep page the app opens at", () => {
+		const nav = setup("/discover/fitness", "/discover");
+		expect(nav.history()).toEqual(["/discover", "/discover/fitness"]);
+		expect(nav.position?.parent).toBe("/discover");
+		nav.back("/discover");
+		expect(getEntries()).toEqual(["/discover/fitness /discover@1", "/discover /discover@0"]);
+		expect(nav.history()).toEqual(["/discover"]);
+	});
+
+	test("keeps the root below a deep page in a single-stack app", () => {
+		fake = new FakeNavigation(`${ORIGIN}/a/b`);
+		globals.navigation = fake;
+		globals.window = { location: { href: `${ORIGIN}/a/b` } };
+		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`);
+		expect(nav.history()).toEqual(["/", "/a/b"]);
 	});
 
 	test("opens a stack root in / with no starting stack", () => {
