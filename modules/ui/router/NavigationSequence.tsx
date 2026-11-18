@@ -3,6 +3,7 @@ import { createDeferred } from "../../util/async.js";
 import { BLACKHOLE } from "../../util/function.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { getURL, type ImmutableURL, matchURLPrefix, type PossibleURL, requireURL } from "../../util/url.js";
+import { waitForKeyboard } from "../util/keyboard.js";
 
 /**
  * State that `NavigationSequence` saves on each browser history entry.
@@ -247,6 +248,7 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	 * - Else push the URL onto `stack`, one level deeper than its top page.
 	 * - The URL you are already on: replace it instead.
 	 * - A change of stack slides by tab order. Else it slides forward.
+	 * - Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go to, or `null` for the floating stack. Defaults to the current stack.
@@ -256,6 +258,10 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	 */
 	forward(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void {
 		const url = requireURL(possible, this.base, this.forward);
+		_afterKeyboard(() => this._forward(url, stack));
+	}
+
+	private _forward(url: ImmutableURL, stack: AbsolutePath | null): void {
 		if (!this._navigation) {
 			this._push(url, "forward");
 			return;
@@ -277,6 +283,7 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	 * - Else push the URL in place of the top page of `stack`.
 	 * - It works when the app was opened at the current page, so a back button always has somewhere to go.
 	 * - If the browser refuses to go back with the Navigation API, it uses `history.back()`.
+	 * - Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 	 *
 	 * @param possible The destination URL, resolved against `base`.
 	 * @param stack Root path of the stack to go back in, or `null` for the floating stack. Defaults to the current stack.
@@ -286,6 +293,10 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 	 */
 	back(possible: PossibleURL, stack: AbsolutePath | null = this._stack): void {
 		const url = requireURL(possible, this.base, this.back);
+		_afterKeyboard(() => this._back(url, stack));
+	}
+
+	private _back(url: ImmutableURL, stack: AbsolutePath | null): void {
 		const navigation = this._navigation;
 		if (!navigation) {
 			this._push(url, "back");
@@ -436,6 +447,18 @@ export class NavigationSequence extends DeferredSequence<NavigationEvent> {
 		if (a < 0 || b < 0) return;
 		return b > a ? "forward" : "back";
 	}
+}
+
+/**
+ * Lower the on-screen keyboard, then run `go`: at once when no keyboard is up, else when it is down (`waitForKeyboard()`).
+ * - Every move waits here, before the history changes, for two reasons:
+ *   - iOS Safari takes the snapshot for its own back swipe when the history changes. With the keyboard up, that snapshot keeps the keyboard's empty space.
+ *   - A keyboard that closes during a page slide resizes the page in the middle of the slide, and the slide's snapshot is too short.
+ */
+function _afterKeyboard(go: () => void): void {
+	const waiting = waitForKeyboard();
+	if (waiting) void waiting.then(go);
+	else go();
 }
 
 /** Get the browser Navigation API, or `undefined` if it is missing or unusable (for example in a sandboxed frame). */

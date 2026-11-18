@@ -52,6 +52,7 @@ export function waitForKeyboard(): Promise<void> | void {
 
 /** Blur the focused element when it takes typed text (and so shows the on-screen keyboard). */
 function _blurTextField(): void {
+	if (typeof document === "undefined") return;
 	const el = document.activeElement;
 	if (el instanceof HTMLElement && _isTextField(el)) el.blur();
 }
