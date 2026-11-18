@@ -9,7 +9,7 @@ Compute a value once and recompute it only when its arguments change (by deep eq
 ```tsx
 import { useLazy } from "shelving/react";
 
-const sorted = useLazy((items) => [...items].sort(), items);
+const sorted = useLazy(items => [...items].sort(), items);
 ```
 
 The result is recomputed only when `items` changes. Because arguments are compared by deep equality, a value that is equal-but-not-identical across renders does not trigger recomputation.

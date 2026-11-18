@@ -11,16 +11,16 @@ Pass an initial value (or `NONE`) and a callback. The callback receives an `Abor
 ```ts
 import { FetchStore, NONE } from "shelving/store";
 
-const store = new FetchStore<User>(NONE, async (signal) => {
-  const res = await fetch("/api/me", { signal });
-  return res.json();
+const store = new FetchStore<User>(NONE, async signal => {
+	const res = await fetch("/api/me", { signal });
+	return res.json();
 });
 
-console.log(store.loading);    // true — reading this triggered the fetch
+console.log(store.loading); // true — reading this triggered the fetch
 const user = await store.next; // wait for the first value
 
-store.invalidate();            // mark stale; the next read re-fetches
-await store.refresh();         // re-fetch now
+store.invalidate(); // mark stale; the next read re-fetches
+await store.refresh(); // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.

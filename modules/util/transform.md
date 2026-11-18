@@ -30,10 +30,7 @@ import { mapProps, transformObject } from "shelving/util";
 mapProps({ a: 1, b: 2 }, ([, v]) => v * 10); // { a: 10, b: 20 }
 
 // Selectively transform named properties; same ref returned if nothing changed.
-const result = transformObject(
-  { name: "dave", age: 30 },
-  { name: s => s.toUpperCase() },
-); // { name: "DAVE", age: 30 }
+const result = transformObject({ name: "dave", age: 30 }, { name: s => s.toUpperCase() }); // { name: "DAVE", age: 30 }
 ```
 
 ### Dictionaries
@@ -51,7 +48,10 @@ import { mapEntries, mapEntryValues } from "shelving/util";
 
 // mapEntries passes the full [key, value] entry to the transform.
 // mapEntryValues passes only the value.
-const entries: [string, number][] = [["a", 1], ["b", 2]];
+const entries: [string, number][] = [
+	["a", 1],
+	["b", 2],
+];
 Array.from(mapEntryValues(entries, v => v * 2)); // [["a", 2], ["b", 4]]
 ```
 
@@ -61,6 +61,6 @@ Array.from(mapEntryValues(entries, v => v * 2)); // [["a", 2], ["b", 4]]
 import { mapSequence } from "shelving/util";
 
 async function* process(stream: AsyncIterable<string>) {
-  yield* mapSequence(stream, line => line.trim());
+	yield* mapSequence(stream, line => line.trim());
 }
 ```

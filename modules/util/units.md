@@ -17,11 +17,11 @@ These helpers model physical units of measure — mass, length, speed, area, vol
 import { MASS_UNITS, LENGTH_UNITS, TEMPERATURE_UNITS, SPEED_UNITS } from "shelving/util";
 
 // Via the UnitList directly.
-MASS_UNITS.convert(1, "kilogram", "pound");  // ≈ 2.205
+MASS_UNITS.convert(1, "kilogram", "pound"); // ≈ 2.205
 
 // Via a Unit instance.
 const km = LENGTH_UNITS.require("kilometer");
-km.to(5, "mile");    // ≈ 3.107
+km.to(5, "mile"); // ≈ 3.107
 km.from(26.2, "mile"); // ≈ 42.165
 
 // Temperature (function-based conversion).
@@ -33,26 +33,26 @@ TEMPERATURE_UNITS.convert(100, "celsius", "fahrenheit"); // 212
 ```ts
 import { MASS_UNITS, VOLUME_UNITS } from "shelving/util";
 
-MASS_UNITS.require("kilogram").format(2.5);                   // "2.5 kg"
+MASS_UNITS.require("kilogram").format(2.5); // "2.5 kg"
 VOLUME_UNITS.require("liter").format(1, { unitDisplay: "long" }); // "1 liter"
 
 // US and imperial volume units are marked, e.g. "1 US pt" and "1 pt Imp.".
-VOLUME_UNITS.require("imperial-pint").format(1);              // "1 pt Imp."
+VOLUME_UNITS.require("imperial-pint").format(1); // "1 pt Imp."
 
 // Short name on its own, e.g. for a dropdown of units.
-MASS_UNITS.require("kilogram").formatAbbr();                  // "kg"
+MASS_UNITS.require("kilogram").formatAbbr(); // "kg"
 ```
 
 ### Available unit lists and key types
 
-| Export | Key type |
-| --- | --- |
-| `PERCENT_UNITS` | `PercentUnitKey` |
-| `POINT_UNITS` | `PointUnitKey` |
-| `ANGLE_UNITS` | `AngleUnitKey` |
-| `MASS_UNITS` | `MassUnitKey` |
-| `LENGTH_UNITS` | `LengthUnitKey` |
-| `SPEED_UNITS` | `SpeedUnitKey` |
-| `AREA_UNITS` | `AreaUnitKey` |
-| `VOLUME_UNITS` | `VolumeUnitKey` |
+| Export              | Key type             |
+| ------------------- | -------------------- |
+| `PERCENT_UNITS`     | `PercentUnitKey`     |
+| `POINT_UNITS`       | `PointUnitKey`       |
+| `ANGLE_UNITS`       | `AngleUnitKey`       |
+| `MASS_UNITS`        | `MassUnitKey`        |
+| `LENGTH_UNITS`      | `LengthUnitKey`      |
+| `SPEED_UNITS`       | `SpeedUnitKey`       |
+| `AREA_UNITS`        | `AreaUnitKey`        |
+| `VOLUME_UNITS`      | `VolumeUnitKey`      |
 | `TEMPERATURE_UNITS` | `TemperatureUnitKey` |

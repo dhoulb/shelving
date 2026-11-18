@@ -240,14 +240,14 @@ This applies to **"See also" lists** and **inline references** alike. Don't limi
 
 **Token display style.** Format a token so its kind reads from the text. The resolver strips these decorations before lookup, so the styled form resolves directly:
 
-| Kind | Style | Example |
-|---|---|---|
-| Function | trailing parens | `formatDate()` |
-| Method | qualified, trailing parens | `Store.get()` |
-| Property | qualified | `Store.value` |
-| Component | angle brackets | `<Section>` |
-| Class / interface / type / constant | bare name | `BooleanSchema`, `STRING` |
-| Module | `shelving/` package prefix | `shelving/schema`, `shelving/firebase` |
+| Kind                                | Style                      | Example                                |
+| ----------------------------------- | -------------------------- | -------------------------------------- |
+| Function                            | trailing parens            | `formatDate()`                         |
+| Method                              | qualified, trailing parens | `Store.get()`                          |
+| Property                            | qualified                  | `Store.value`                          |
+| Component                           | angle brackets             | `<Section>`                            |
+| Class / interface / type / constant | bare name                  | `BooleanSchema`, `STRING`              |
+| Module                              | `shelving/` package prefix | `shelving/schema`, `shelving/firebase` |
 
 - **Methods and properties use the qualified `Owner.member` form** — `` `Store.get()` ``, `` `Store.value` `` — never a bare leading-dot `` `.get()` ``. A bare member has no owner to resolve against; the qualified form resolves to the member's page, or falls back to the owner's page when the member has none of its own.
 - **Generics stay in the backtick text** as one span — `` `Schema<T>` ``, `` `ItemStore<I, T>` `` — not split into a name plus a trailing `` `<T>` `` chip. The resolver trims the generics for lookup.
@@ -285,32 +285,32 @@ The `schema` module ships **sugar** — pre-built shortcuts that make schema-cre
 
 **Sugar instances.** Open the docblock with one line that states the class it instantiates (as a plain backtick reference, which auto-links) and the equivalent constructor call, since that first line becomes the card `description`:
 
-  ```ts
-  /**
-   * Sugar instance of `StringSchema` for an unconstrained string. Equivalent to `new StringSchema({})`.
-   *
-   * @example STRING.validate(123); // Returns "123"
-   * @see https://shelving.cc/schema/STRING
-   */
-  export const STRING = new StringSchema({});
-  ```
+```ts
+/**
+ * Sugar instance of `StringSchema` for an unconstrained string. Equivalent to `new StringSchema({})`.
+ *
+ * @example STRING.validate(123); // Returns "123"
+ * @see https://shelving.cc/schema/STRING
+ */
+export const STRING = new StringSchema({});
+```
 
-  When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: `` Equivalent to `NULLABLE(TITLE)`. ``, and name the wrapped sugar instance as a plain backtick reference (`` `TITLE` ``).
+When the instance is built by composing a sugar factory rather than `new` (e.g. `NULLABLE_TITLE = NULLABLE(TITLE)`), name the equivalent factory call instead: ``Equivalent to `NULLABLE(TITLE)`.``, and name the wrapped sugar instance as a plain backtick reference (`` `TITLE` ``).
 
 **Sugar factories.** Write them as regular `function` declarations, not arrow-consts. A `function` declaration classifies as `kind: "function"` on the docs site (an arrow-const wrongly shows as a `constant`), gives a named stack trace, and is the preferred form for public-API exports anyway (see the styleguide's Functions section). Mark a factory in its docblock with a short line naming the class it builds, on its own paragraph after the summary:
 
-  ```ts
-  /**
-   * Create a `DataSchema` for a set of properties.
-   *
-   * Sugar factory for `DataSchema`.
-   */
-  export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
-  	return new DataSchema({ props });
-  }
-  ```
+```ts
+/**
+ * Create a `DataSchema` for a set of properties.
+ *
+ * Sugar factory for `DataSchema`.
+ */
+export function DATA<T extends Data>(props: Schemas<T>): DataSchema<T> {
+	return new DataSchema({ props });
+}
+```
 
-- The canonical wording is exactly `` Sugar factory for `ClassName`. `` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with the class name as a plain backtick reference that auto-links to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
+- The canonical wording is exactly ``Sugar factory for `ClassName`.`` — plain text (no `*asterisks*` or `_underscores_`; the `markup` renderer would make those bold or italic respectively), with the class name as a plain backtick reference that auto-links to its docs page. When a factory composes other factories (e.g. `NULLABLE_DATA` wraps a `DataSchema` in a `NullableSchema`), name the class it ultimately returns
 
 ### Docblock standards
 
@@ -319,10 +319,10 @@ General docblock voice and tag standards are in the styleguide. These points are
 - **Overridden methods and constructors don't get their own pages.** The extractor publishes a page per public token, but a method that `override`s a base-class method, and every class `constructor`, are not among them. Keep their docblocks minimal or omit them entirely, and **never give them a `@see` tag** — it would point at a page that doesn't exist. Document the behaviour once on the base method; an `override` only needs a short line when it changes the contract in a way worth noting, and a constructor rarely needs anything (its options bag is documented on the `*Options` interface, which flattens onto the class page).
 - **Strong first line (becomes the `description`).** The extractor lifts the first paragraph as the `description` shown on cards and `<meta>` tags, so it must stand alone.
 - **`@example`.** Delete an `@example` when a sibling `.md` page already carries usage examples for the token (don't maintain the same example in two places — the `.md` wins).
-- **Don't duplicate a documented token's docs at the call site.** The docs renderer resolves each `@param` / `@returns` / `@throws` *type* by exact name against the docs tree. When that type is a **documented ("internal") token**, the row already links it and falls back to the token's own `description`; an **options-bag / props parameter** additionally **flattens** into one row per interface member, each carrying that member's own description and `@default`. (Heritage is **not** flattened — only the interface's directly-declared members appear.) So a JSDoc rule that merely restates what the token already says is redundant noise.
+- **Don't duplicate a documented token's docs at the call site.** The docs renderer resolves each `@param` / `@returns` / `@throws` _type_ by exact name against the docs tree. When that type is a **documented ("internal") token**, the row already links it and falls back to the token's own `description`; an **options-bag / props parameter** additionally **flattens** into one row per interface member, each carrying that member's own description and `@default`. (Heritage is **not** flattened — only the interface's directly-declared members appear.) So a JSDoc rule that merely restates what the token already says is redundant noise.
   - **Drop** the rule when its type is a documented token and the prose adds nothing beyond that token's own description. The flagship cases are the **`@param options` umbrella line and every `@param options.x` sub-line** of an options bag whose type is a documented interface (e.g. a `*SchemaOptions` or a `*Props`), and any `@returns` / `@throws` whose text just restates its documented token.
   - **Keep** the rule when its type is **not** a documented token (primitives / builtins like `string`, `number`, `boolean`, `RegExp`, `URL`, `unknown`, plain arrays / unions — there's no page to fall back to), when it gives a **positional parameter its role** (e.g. `@param arr The array to read from` stays even though `ImmutableArray` is documented), or when it explains **custom usage** the token can't (e.g. a schema `@throws` enumerating the specific `string` validation messages).
-  - **Move, don't lose.** Per-subclass / per-call specifics that lived in a dropped constructor `@param` — a member's description, or a fixed default like "max defaults to 16" — move **onto the options / props interface member** as `/** description */` + `@default 16`, so the flattened row still shows them. Defaults of *inherited* (non-redeclared) options that have nowhere to flatten are simply dropped — they're minor and visible in source.
+  - **Move, don't lose.** Per-subclass / per-call specifics that lived in a dropped constructor `@param` — a member's description, or a fixed default like "max defaults to 16" — move **onto the options / props interface member** as `/** description */` + `@default 16`, so the flattened row still shows them. Defaults of _inherited_ (non-redeclared) options that have nowhere to flatten are simply dropped — they're minor and visible in source.
   - **Where it bites:** mainly options bags (schemas) and React component props, but it applies anywhere a rule references a documented token.
   - **Naming a destructured bag.** A parameter destructured inline in the signature (`{ min, max }: StringSchemaOptions`) has no name of its own, so the Param column derives one: an explicit `@param` name wins, else the rest element (`...options`), else a type-derived fallback (`props` for a `*Props` type, otherwise `options`). The signature still shows the full `{ … }`. Most options bags already end with `...options` and need nothing; when a bag has no rest element and the fallback reads wrong, add a one-word `@param options` (or `@param props`) line to name it — preferred over adding an overload, since it doesn't change the type contract.
 - **`@see` docs-site link.** Every token published on the docs site gets a `@see` block tag pointing at its page, so VS Code hover reveals a clickable link. Prefer the `@see` block tag over inline `{@link}` — it renders better in the hover popup. The URL pattern mirrors the docs-site routing:

@@ -16,13 +16,13 @@ Typed wrappers and combinators for working with regular expressions. They let yo
 ```ts
 import { isMatch, notMatch, allMatch, anyMatch, noneMatch } from "shelving/util";
 
-isMatch("hello", /^hell/);    // true
-isMatch("hello", "hello");    // true  (string Matchable = exact equality)
-notMatch("world", /^hell/);   // true
+isMatch("hello", /^hell/); // true
+isMatch("hello", "hello"); // true  (string Matchable = exact equality)
+notMatch("world", /^hell/); // true
 
-allMatch("hello world", /hello/, /world/);  // true
-anyMatch("hello", /foo/, /hell/);           // true
-noneMatch("hello", /foo/, /bar/);           // true
+allMatch("hello world", /hello/, /world/); // true
+anyMatch("hello", /foo/, /hell/); // true
+noneMatch("hello", /foo/, /bar/); // true
 ```
 
 ### Building and escaping regexps
@@ -30,9 +30,9 @@ noneMatch("hello", /foo/, /bar/);           // true
 ```ts
 import { getRegExp, getRegExpSource, escapeRegExp, createRegExpAny, createRegExpAll } from "shelving/util";
 
-getRegExp("\\d+", "g");         // /\d+/g
-getRegExpSource(/\d+/);         // "\\d+"
-escapeRegExp("1 + 1 = 2");      // "1 \\+ 1 \\= 2"
+getRegExp("\\d+", "g"); // /\d+/g
+getRegExpSource(/\d+/); // "\\d+"
+escapeRegExp("1 + 1 = 2"); // "1 \\+ 1 \\= 2"
 
 createRegExpAny([/foo/, /bar/]); // /(?:foo)|(?:bar)/
 createRegExpAll([/foo/, /bar/]); // /^(?=.*?(?:foo))(?=.*?(?:bar))/
@@ -45,11 +45,11 @@ import { getMatch, requireMatch, getMatchGroups, requireMatchGroups } from "shel
 
 const DATE_RE = /(?<year>\d{4})-(?<month>\d{2})/;
 
-getMatch("2024-03", DATE_RE);         // RegExpExecArray | undefined
-getMatchGroups("2024-03", DATE_RE);   // { year: "2024", month: "03" } | undefined
+getMatch("2024-03", DATE_RE); // RegExpExecArray | undefined
+getMatchGroups("2024-03", DATE_RE); // { year: "2024", month: "03" } | undefined
 
-requireMatch("no-date", DATE_RE);         // throws ValueError
-requireMatchGroups("no-date", DATE_RE);   // throws ValueError
+requireMatch("no-date", DATE_RE); // throws ValueError
+requireMatchGroups("no-date", DATE_RE); // throws ValueError
 ```
 
 ### Type guards
@@ -57,7 +57,7 @@ requireMatchGroups("no-date", DATE_RE);   // throws ValueError
 ```ts
 import { isRegExp, assertRegExp } from "shelving/util";
 
-isRegExp(/foo/);      // true
-isRegExp("foo");      // false
-assertRegExp("foo");  // throws RequiredError
+isRegExp(/foo/); // true
+isRegExp("foo"); // false
+assertRegExp("foo"); // throws RequiredError
 ```

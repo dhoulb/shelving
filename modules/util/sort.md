@@ -16,12 +16,12 @@ A quicksort implementation and type-aware comparators that handle mixed-type val
 ```ts
 import { sortArray } from "shelving/util";
 
-sortArray([3, 1, 2]);              // [1, 2, 3]
-sortArray(["banana", "apple"]);    // ["apple", "banana"]
-sortArray([true, null, 1, "a"]);   // [1, "a", true, null]  (cross-type order)
+sortArray([3, 1, 2]); // [1, 2, 3]
+sortArray(["banana", "apple"]); // ["apple", "banana"]
+sortArray([true, null, 1, "a"]); // [1, "a", true, null]  (cross-type order)
 
 // Iterable input is materialised to an array
-sortArray(new Set([3, 1, 2]));     // [1, 2, 3]
+sortArray(new Set([3, 1, 2])); // [1, 2, 3]
 ```
 
 ### Sorting descending
@@ -29,7 +29,7 @@ sortArray(new Set([3, 1, 2]));     // [1, 2, 3]
 ```ts
 import { sortArray, compareDescending } from "shelving/util";
 
-sortArray([1, 3, 2], compareDescending);  // [3, 2, 1]
+sortArray([1, 3, 2], compareDescending); // [3, 2, 1]
 ```
 
 ### Custom comparator with extra arguments
@@ -40,8 +40,7 @@ import type { Compare } from "shelving/util";
 
 type Item = { name: string; score: number };
 
-const byField: Compare<Item, [keyof Item]> = (a, b, field) =>
-  String(a[field]).localeCompare(String(b[field]));
+const byField: Compare<Item, [keyof Item]> = (a, b, field) => String(a[field]).localeCompare(String(b[field]));
 
 sortArray(items, byField, "score");
 sortArray(items, byField, "name");
@@ -52,8 +51,8 @@ sortArray(items, byField, "name");
 ```ts
 import { compareAscending, compareDescending } from "shelving/util";
 
-compareAscending(1, 2);      // negative  (1 comes before 2)
-compareAscending("b", "a");  // positive  ("b" comes after "a")
-compareAscending(1, 1);      // 0
-compareDescending(1, 2);     // positive  (reversed)
+compareAscending(1, 2); // negative  (1 comes before 2)
+compareAscending("b", "a"); // positive  ("b" comes after "a")
+compareAscending(1, 1); // 0
+compareDescending(1, 2); // positive  (reversed)
 ```

@@ -32,19 +32,25 @@ Mount `<Dialog>` directly when its lifetime matches a React state variable.
 import { Dialog, Modal } from "shelving/ui";
 
 function ConfirmDelete({ onConfirm, onClose }: { onConfirm: () => void; onClose: () => void }) {
-  return (
-    <Dialog onClose={onClose}>
-      <Modal>
-        <p>Delete this item?</p>
-        <button type="button" onClick={onConfirm}>Delete</button>
-      </Modal>
-    </Dialog>
-  );
+	return (
+		<Dialog onClose={onClose}>
+			<Modal>
+				<p>Delete this item?</p>
+				<button type="button" onClick={onConfirm}>
+					Delete
+				</button>
+			</Modal>
+		</Dialog>
+	);
 }
 
 // In the parent. Open and close inside `startTransition()` so the dialog animates in and out.
-<button type="button" onClick={() => startTransition(() => setShowConfirm(true))}>Delete</button>
-{showConfirm && <ConfirmDelete onConfirm={handleDelete} onClose={() => startTransition(() => setShowConfirm(false))} />}
+<button type="button" onClick={() => startTransition(() => setShowConfirm(true))}>
+	Delete
+</button>;
+{
+	showConfirm && <ConfirmDelete onConfirm={handleDelete} onClose={() => startTransition(() => setShowConfirm(false))} />;
+}
 ```
 
 ### Imperative
@@ -55,15 +61,21 @@ Set up the context once near the app root (see `<DialogsContext>` and `<Dialogs>
 import { Modal, requireDialogs } from "shelving/ui";
 
 function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
-  const dialogs = requireDialogs();
-  const open = () =>
-    dialogs.show(
-      <Modal>
-        <p>Delete this item?</p>
-        <button type="button" onClick={onConfirm}>Delete</button>
-      </Modal>,
-    );
-  return <button type="button" onClick={open}>Delete</button>;
+	const dialogs = requireDialogs();
+	const open = () =>
+		dialogs.show(
+			<Modal>
+				<p>Delete this item?</p>
+				<button type="button" onClick={onConfirm}>
+					Delete
+				</button>
+			</Modal>,
+		);
+	return (
+		<button type="button" onClick={open}>
+			Delete
+		</button>
+	);
 }
 ```
 
@@ -73,14 +85,14 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 `Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. Transparent borders as wide as the screen's safe areas keep the content and the close button clear of the notch, rounded corners and home bar. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--dialog-padding` | Top and bottom padding around the centred content (one length) | `var(--space-normal)` (16px) |
-| `--dialog-indent` | Left and right padding around the centred content (one length) | `var(--space-normal)` (16px) |
-| `--dialog-width` | Width of the centred content, and so of a centred `<Modal>` | `var(--width-narrow)` (36rem) |
-| `--dialog-background` | Overlay fill behind the content | `var(--color-backdrop)` |
-| `--dialog-color` | Text colour directly on the overlay | `var(--tint-100)` (white) |
-| `--dialog-close-offset` | Inset of the close button from the top-right corner | `var(--space-small)` (12px) |
+| Variable                | Styles                                                         | Default                       |
+| ----------------------- | -------------------------------------------------------------- | ----------------------------- |
+| `--dialog-padding`      | Top and bottom padding around the centred content (one length) | `var(--space-normal)` (16px)  |
+| `--dialog-indent`       | Left and right padding around the centred content (one length) | `var(--space-normal)` (16px)  |
+| `--dialog-width`        | Width of the centred content, and so of a centred `<Modal>`    | `var(--width-narrow)` (36rem) |
+| `--dialog-background`   | Overlay fill behind the content                                | `var(--color-backdrop)`       |
+| `--dialog-color`        | Text colour directly on the overlay                            | `var(--tint-100)` (white)     |
+| `--dialog-close-offset` | Inset of the close button from the top-right corner            | `var(--space-small)` (12px)   |
 
 The fade uses the `fade` class from `<FadeTransition>`, so `--fade-transition-duration` sets its length. It runs only as the dialog opens and closes; an open dialog stays still while other dialogs open and close.
 

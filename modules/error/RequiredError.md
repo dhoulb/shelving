@@ -8,8 +8,8 @@ Thrown when something required was absent — a missing argument, an empty looku
 import { RequiredError } from "shelving/error";
 
 function getUser(id: string | undefined): User {
-  if (!id) throw new RequiredError("User ID is required");
-  // ...
+	if (!id) throw new RequiredError("User ID is required");
+	// ...
 }
 ```
 

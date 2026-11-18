@@ -12,11 +12,11 @@ import { DeferredSequence, LazySequence } from "shelving/sequence";
 const deferred = new DeferredSequence<number>();
 
 const seq = new LazySequence(deferred, () => {
-  const id = setInterval(() => deferred.resolve(Date.now()), 500);
-  return () => clearInterval(id); // StopCallback — runs when the last iterator finishes.
+	const id = setInterval(() => deferred.resolve(Date.now()), 500);
+	return () => clearInterval(id); // StopCallback — runs when the last iterator finishes.
 });
 
 for await (const ts of seq) {
-  console.log(ts); // the interval runs only for the duration of this loop
+	console.log(ts); // the interval runs only for the duration of this loop
 }
 ```

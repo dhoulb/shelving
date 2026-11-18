@@ -11,11 +11,7 @@ Pass an initial payload, an initial value (or `NONE`), and a callback that recei
 ```ts
 import { PayloadFetchStore, NONE } from "shelving/store";
 
-const store = new PayloadFetchStore<string, User>(
-  "u_1",
-  NONE,
-  async (id, signal) => (await fetch(`/api/users/${id}`, { signal })).json(),
-);
+const store = new PayloadFetchStore<string, User>("u_1", NONE, async (id, signal) => (await fetch(`/api/users/${id}`, { signal })).json());
 
 const first = await store.next; // fetches for "u_1"
 

@@ -68,7 +68,7 @@ renderTemplate("{name}-{date}", { name: "Dave" });
 ```ts
 import { getPlaceholders } from "shelving/util";
 
-getPlaceholders("{username}@{domain}");        // ["username", "domain"]
-getPlaceholders(":country/:city");             // ["country", "city"]
-getPlaceholders("*-*");                        // ["0", "1"]
+getPlaceholders("{username}@{domain}"); // ["username", "domain"]
+getPlaceholders(":country/:city"); // ["country", "city"]
+getPlaceholders("*-*"); // ["0", "1"]
 ```

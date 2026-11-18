@@ -16,8 +16,8 @@ Type definitions and helper functions for working with `Map` instances. Covers t
 ```ts
 import { isMap, assertMap, getMap } from "shelving/util";
 
-isMap(new Map());           // true
-isMap({});                  // false
+isMap(new Map()); // true
+isMap({}); // false
 
 // Convert a plain object or iterable of entries to a Map.
 const m = getMap({ a: 1, b: 2 });
@@ -31,15 +31,18 @@ getMap(m); // same reference — no copy
 ```ts
 import { getMapItem, requireMapItem, isMapItem, assertMapItem } from "shelving/util";
 
-const scores = new Map([["alice", 42], ["bob", 7]]);
+const scores = new Map([
+	["alice", 42],
+	["bob", 7],
+]);
 
-getMapItem(scores, "alice");    // 42
-getMapItem(scores, "carol");    // undefined
+getMapItem(scores, "alice"); // 42
+getMapItem(scores, "carol"); // undefined
 
-requireMapItem(scores, "alice");  // 42
-requireMapItem(scores, "carol");  // throws RequiredError
+requireMapItem(scores, "alice"); // 42
+requireMapItem(scores, "carol"); // throws RequiredError
 
-isMapItem(scores, "bob");       // true
+isMapItem(scores, "bob"); // true
 ```
 
 ### Mutating maps
@@ -49,9 +52,12 @@ import { setMapItem, setMapItems, removeMapItems } from "shelving/util";
 
 const m: Map<string, number> = new Map();
 
-setMapItem(m, "x", 10);                           // sets "x" → 10, returns 10
-setMapItems(m, [["y", 20], ["z", 30]]);            // bulk set
-removeMapItems(m, "x", "y");                       // removes "x" and "y"
+setMapItem(m, "x", 10); // sets "x" → 10, returns 10
+setMapItems(m, [
+	["y", 20],
+	["z", 30],
+]); // bulk set
+removeMapItems(m, "x", "y"); // removes "x" and "y"
 ```
 
 ### Limiting size

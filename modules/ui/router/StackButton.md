@@ -20,13 +20,19 @@ import { Navigation, StackButton } from "shelving/ui";
 import { HomeIcon, SearchIcon, UserIcon } from "./icons.js";
 
 <Navigation stacks={["/home", "/discover", "/profile"]}>
-  {/* … */}
-  <nav className="tab-bar">
-    <StackButton stack="/home" title="Home"><HomeIcon/></StackButton>
-    <StackButton stack="/discover" title="Discover"><SearchIcon/></StackButton>
-    <StackButton stack="/profile" title="Profile"><UserIcon/></StackButton>
-  </nav>
-</Navigation>
+	{/* … */}
+	<nav className="tab-bar">
+		<StackButton stack="/home" title="Home">
+			<HomeIcon />
+		</StackButton>
+		<StackButton stack="/discover" title="Discover">
+			<SearchIcon />
+		</StackButton>
+		<StackButton stack="/profile" title="Profile">
+			<UserIcon />
+		</StackButton>
+	</nav>
+</Navigation>;
 ```
 
 ## Styling

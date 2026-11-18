@@ -12,8 +12,8 @@ Helpers for working with promises and async values: detecting sync/async values,
 ```ts
 import { isAsync, notAsync, throwAsync, assertAsync, assertNotAsync } from "shelving/util";
 
-isAsync(promise);      // true
-notAsync("hello");     // true
+isAsync(promise); // true
+notAsync("hello"); // true
 
 // Suspense-style: throw the promise if async, return value if sync
 const value = throwAsync(maybePromise);

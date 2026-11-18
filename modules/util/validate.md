@@ -18,14 +18,14 @@ These helpers define the `Validator<T>` interface and utility functions for appl
 import { getValid, requireValid } from "shelving/util";
 
 const positiveNumber = {
-  validate(v: unknown) {
-    if (typeof v !== "number" || v <= 0) throw "Must be a positive number";
-    return v;
-  },
+	validate(v: unknown) {
+		if (typeof v !== "number" || v <= 0) throw "Must be a positive number";
+		return v;
+	},
 };
 
-getValid(-1, positiveNumber);     // undefined
-getValid(5, positiveNumber);      // 5
+getValid(-1, positiveNumber); // undefined
+getValid(5, positiveNumber); // 5
 requireValid(-1, positiveNumber); // throws RequiredError("Must be a positive number")
 ```
 
@@ -47,8 +47,13 @@ validateDictionary({ a: 1, b: -1 }, positiveNumber);
 import { validateData } from "shelving/util";
 
 const validators = {
-  name: { validate: (v: unknown) => { if (typeof v !== "string") throw "Must be string"; return v; } },
-  age:  positiveNumber,
+	name: {
+		validate: (v: unknown) => {
+			if (typeof v !== "string") throw "Must be string";
+			return v;
+		},
+	},
+	age: positiveNumber,
 };
 
 validateData({ name: "Alice", age: 30, extra: true }, validators);
@@ -61,5 +66,5 @@ validateData({ name: "Alice", age: 30, extra: true }, validators);
 import type { ValidatorType, ValidatorsType } from "shelving/util";
 
 type MyNumber = ValidatorType<typeof positiveNumber>; // number
-type MyShape = ValidatorsType<typeof validators>;     // { name: string; age: number }
+type MyShape = ValidatorsType<typeof validators>; // { name: string; age: number }
 ```

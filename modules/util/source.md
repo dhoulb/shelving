@@ -14,22 +14,26 @@ Two helpers for traversing a chain of `Sourceable` objects — objects with a `.
 import { getSource, requireSource } from "shelving/util";
 import type { Sourceable } from "shelving/util";
 
-class Database { query() { /* ... */ } }
+class Database {
+	query() {
+		/* ... */
+	}
+}
 
 class CachedDatabase implements Sourceable<Database> {
-  constructor(readonly source: Database) {}
+	constructor(readonly source: Database) {}
 }
 
 class LoggedDatabase implements Sourceable<CachedDatabase> {
-  constructor(readonly source: CachedDatabase) {}
+	constructor(readonly source: CachedDatabase) {}
 }
 
 const db = new LoggedDatabase(new CachedDatabase(new Database()));
 
-getSource(Database, db);      // the inner Database instance
+getSource(Database, db); // the inner Database instance
 getSource(CachedDatabase, db); // the CachedDatabase instance
-getSource(Database, {});       // undefined  (no .source chain)
+getSource(Database, {}); // undefined  (no .source chain)
 
-requireSource(Database, db);       // the inner Database instance
-requireSource(Database, "oops");   // throws RequiredError
+requireSource(Database, db); // the inner Database instance
+requireSource(Database, "oops"); // throws RequiredError
 ```

@@ -70,6 +70,7 @@
 
 	.sidebar {
 		/* Box */
+		position: relative; /* Positioned like the content slot, so neither area paints over the other. */
 		display: flow-root;
 		border-right: var(--sidebar-layout-border, none);
 

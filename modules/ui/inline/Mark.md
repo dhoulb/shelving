@@ -15,20 +15,22 @@ Highlighted text — renders a `<mark>` element to call attention to a run of te
 ```tsx live
 import { Mark } from "shelving/ui";
 
-<p>Files are stored in <Mark>UTF-8</Mark> encoding.</p>
+<p>
+	Files are stored in <Mark>UTF-8</Mark> encoding.
+</p>;
 ```
 
 ## Styling
 
 `Mark` highlights with a translucent wash of `--color-yellow` — `color-mix(…, transparent)`, so the text underneath stays legible — with the text painted from `--tint-00`. Override `--mark-tint` to change the highlight hue, `--mark-background` to replace the fill outright, or `--mark-color` for the text.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--mark-tint` | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)` |
-| `--mark-background` | Background fill | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
-| `--mark-color` | Text colour | `var(--tint-00)` |
-| `--mark-indent` | Left and right padding (one length) | `var(--space-xxsmall)` |
-| `--mark-radius` | Corner radius | `var(--radius-xxsmall)` |
-| `--mark-weight` | Font weight | `var(--weight-strong)` |
+| Variable            | Styles                                                         | Default                                                                   |
+| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `--mark-tint`       | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)`                                                     |
+| `--mark-background` | Background fill                                                | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
+| `--mark-color`      | Text colour                                                    | `var(--tint-00)`                                                          |
+| `--mark-indent`     | Left and right padding (one length)                            | `var(--space-xxsmall)`                                                    |
+| `--mark-radius`     | Corner radius                                                  | `var(--radius-xxsmall)`                                                   |
+| `--mark-weight`     | Font weight                                                    | `var(--weight-strong)`                                                    |
 
 **Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder step `--tint-00`.

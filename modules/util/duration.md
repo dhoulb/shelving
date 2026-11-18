@@ -23,9 +23,9 @@ const now = "now";
 getDuration(now, launch);
 // { years: 0, months: 0, weeks: 1, days: 3, hours: 5, minutes: 0, seconds: 0, milliseconds: 0 }
 
-getDaysUntil(launch);          // e.g. 10  (calendar days from today)
+getDaysUntil(launch); // e.g. 10  (calendar days from today)
 getMonthsAgo(new Date("2024-01-15")); // e.g. 16
-getMilliseconds(now, launch);  // raw ms difference
+getMilliseconds(now, launch); // raw ms difference
 ```
 
 ### Checking relative position
@@ -33,9 +33,9 @@ getMilliseconds(now, launch);  // raw ms difference
 ```ts
 import { isPast, isFuture, isToday } from "shelving/util";
 
-isPast(new Date("2020-01-01"));   // true
+isPast(new Date("2020-01-01")); // true
 isFuture(new Date("2099-12-31")); // true
-isToday(new Date());              // true
+isToday(new Date()); // true
 ```
 
 ### Formatting for display
@@ -43,10 +43,10 @@ isToday(new Date());              // true
 ```ts
 import { formatWhen, formatUntil, formatAgo, formatDuration } from "shelving/util";
 
-formatWhen(new Date(Date.now() + 5 * 60_000));  // "in 5min"
-formatWhen(new Date(Date.now() - 10_000));      // "just now"
-formatAgo(new Date("2024-01-01"));              // e.g. "16mo"
-formatUntil(new Date("2026-01-01"));            // e.g. "7mo"
+formatWhen(new Date(Date.now() + 5 * 60_000)); // "in 5min"
+formatWhen(new Date(Date.now() - 10_000)); // "just now"
+formatAgo(new Date("2024-01-01")); // e.g. "16mo"
+formatUntil(new Date("2026-01-01")); // e.g. "7mo"
 
 formatDuration({ years: 1, months: 2, days: 3 }); // "1 year, 2 months, 3 days"
 formatDuration({ hours: 2, minutes: 30 }, { style: "narrow" }); // "2hr 30min"
@@ -58,5 +58,5 @@ formatDuration({ hours: 2, minutes: 30 }, { style: "narrow" }); // "2hr 30min"
 import { getBestDurationUnit, DURATION_UNITS } from "shelving/util";
 
 const unit = getBestDurationUnit(3 * 24 * 60 * 60 * 1000); // → "day" Unit
-unit.format(unit.from(3 * 24 * 60 * 60 * 1000));           // "3d"
+unit.format(unit.from(3 * 24 * 60 * 60 * 1000)); // "3d"
 ```

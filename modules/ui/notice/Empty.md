@@ -17,7 +17,7 @@ import { Empty, Paragraph } from "shelving/ui";
 
 <Empty>
 	<Paragraph>No challenges yet.</Paragraph>
-</Empty>
+</Empty>;
 ```
 
 ### Loading list
@@ -27,7 +27,7 @@ import { EMPTY_LOADING, Loader } from "shelving/ui";
 
 <Loader fallback={EMPTY_LOADING}>
 	<LoadChallenges />
-</Loader>
+</Loader>;
 ```
 
 ## Styling

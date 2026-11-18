@@ -16,14 +16,14 @@ These helpers work specifically with hierarchical `scheme://host` URLs (a strict
 ```ts
 import { getURL, requireURL, getBasedURI, isURL, assertURL } from "shelving/util";
 
-getURL("https://example.com/page");          // ImmutableURL
-getURL("not-a-url");                         // undefined
+getURL("https://example.com/page"); // ImmutableURL
+getURL("not-a-url"); // undefined
 getURL("/page", "https://example.com/app/"); // https://example.com/app/page
 getBasedURI("/page", "https://example.com/app/b"); // resolves as https://example.com/app/b/page
 
-requireURL("https://example.com");           // ImmutableURL or throws RequiredError
-isURL(new URL("https://x.com"));             // true
-isURL(new URL("mailto:hi@example.com"));     // false
+requireURL("https://example.com"); // ImmutableURL or throws RequiredError
+isURL(new URL("https://x.com")); // true
+isURL(new URL("mailto:hi@example.com")); // false
 ```
 
 ### Base URLs
@@ -31,9 +31,9 @@ isURL(new URL("mailto:hi@example.com"));     // false
 ```ts
 import { getBaseURL, requireBaseURL, isBaseURL } from "shelving/util";
 
-getBaseURL("https://example.com/app");    // https://example.com/app/  (slash appended)
-getBaseURL("https://example.com/app/");  // same ref (already a base URL)
-isBaseURL(new URL("https://x.com/"));    // true
+getBaseURL("https://example.com/app"); // https://example.com/app/  (slash appended)
+getBaseURL("https://example.com/app/"); // same ref (already a base URL)
+isBaseURL(new URL("https://x.com/")); // true
 ```
 
 ### Path matching
@@ -62,8 +62,8 @@ import { isURLActive, isURLProud } from "shelving/util";
 const current = "https://example.com/app/settings/profile";
 
 isURLActive(current, "https://example.com/app/settings/profile"); // true (exact)
-isURLActive(current, "https://example.com/app/settings");         // false
+isURLActive(current, "https://example.com/app/settings"); // false
 
-isURLProud(current, "https://example.com/app/settings");          // true (ancestor)
-isURLProud(current, "https://example.com/other");                  // false
+isURLProud(current, "https://example.com/app/settings"); // true (ancestor)
+isURLProud(current, "https://example.com/other"); // false
 ```

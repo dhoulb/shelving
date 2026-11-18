@@ -9,12 +9,12 @@ An **entity** is a compact `"type:id"` string that encodes both the kind of reso
 ```ts
 import { getEntity, requireEntity, EMPTY_ENTITY } from "shelving/util";
 
-getEntity("challenge:a1b2c3");  // ["challenge", "a1b2c3"]
-getEntity(null);                // [undefined, undefined]  (EMPTY_ENTITY)
-getEntity("bad-value");         // [undefined, undefined]  (EMPTY_ENTITY)
+getEntity("challenge:a1b2c3"); // ["challenge", "a1b2c3"]
+getEntity(null); // [undefined, undefined]  (EMPTY_ENTITY)
+getEntity("bad-value"); // [undefined, undefined]  (EMPTY_ENTITY)
 
 requireEntity("challenge:a1b2c3"); // ["challenge", "a1b2c3"]
-requireEntity("bad-value");        // throws RequiredError
+requireEntity("bad-value"); // throws RequiredError
 ```
 
 ### Using the `Entity<T>` type
@@ -25,7 +25,7 @@ import type { Entity, EntityType } from "shelving/util";
 type ChallengeEntity = Entity<"challenge">; // "challenge:${string}"
 
 function handleEntity(e: ChallengeEntity) {
-  const [type, id] = requireEntity(e);
-  // type is narrowed to "challenge"
+	const [type, id] = requireEntity(e);
+	// type is narrowed to "challenge"
 }
 ```

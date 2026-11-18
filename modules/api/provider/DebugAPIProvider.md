@@ -7,12 +7,10 @@ It is the noisy counterpart to `LoggingAPIProvider`: use `DebugAPIProvider` whil
 ## Usage
 
 ```ts
-import { ClientAPIProvider, DebugAPIProvider } from "shelving/api"
+import { ClientAPIProvider, DebugAPIProvider } from "shelving/api";
 
-const provider = new DebugAPIProvider(
-  new ClientAPIProvider({ url: "https://api.example.com" })
-)
+const provider = new DebugAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
 
-await provider.call(getUser, { id: "u_123" })
+await provider.call(getUser, { id: "u_123" });
 // Console shows the full request and response, including bodies.
 ```

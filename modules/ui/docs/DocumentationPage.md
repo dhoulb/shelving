@@ -17,7 +17,7 @@ Used automatically by `<TreeApp>`. To render a single page manually, spread the 
 import { DocumentationPage } from "shelving/ui";
 
 // `element` is a `tree-documentation` element from DirectoryExtractor (see /extract).
-<DocumentationPage {...element.props} />
+<DocumentationPage {...element.props} />;
 ```
 
 To replace this renderer across the whole site, wrap the app in `TreePageMapping`.
@@ -26,8 +26,8 @@ To replace this renderer across the whole site, wrap the app in `TreePageMapping
 import { TreeApp, TreePageMapping } from "shelving/ui";
 
 <TreePageMapping mapping={{ "tree-documentation": MyDocumentationPage }}>
-  <TreeApp tree={tree} />
-</TreePageMapping>
+	<TreeApp tree={tree} />
+</TreePageMapping>;
 ```
 
 ## Styling

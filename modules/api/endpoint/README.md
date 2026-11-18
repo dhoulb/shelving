@@ -8,14 +8,14 @@ Declarative, typed descriptions of API routes. An `Endpoint` captures an HTTP me
 
 `Endpoint<P, R>` holds everything needed to build a request and validate its response. Factory functions create endpoints concisely:
 
-| Factory | HTTP method |
-|---|---|
-| `GET(path, payload, result)` | GET |
-| `POST(path, payload, result)` | POST |
-| `PUT(path, payload, result)` | PUT |
-| `PATCH(path, payload, result)` | PATCH |
-| `DELETE(path, payload, result)` | DELETE |
-| `HEAD(path, payload, result)` | HEAD |
+| Factory                         | HTTP method |
+| ------------------------------- | ----------- |
+| `GET(path, payload, result)`    | GET         |
+| `POST(path, payload, result)`   | POST        |
+| `PUT(path, payload, result)`    | PUT         |
+| `PATCH(path, payload, result)`  | PATCH       |
+| `DELETE(path, payload, result)` | DELETE      |
+| `HEAD(path, payload, result)`   | HEAD        |
 
 All three arguments are optional. Omit `payload` or `result` to get `undefined` typed fields.
 
@@ -24,17 +24,17 @@ All three arguments are optional. Omit `payload` or `result` to get `undefined` 
 Paths may contain `{placeholder}` segments. When the provider builds a request, matching payload keys are substituted into the path. For `GET` and `HEAD`, remaining payload keys become `?query` params. For all other methods, remaining keys go into the JSON body.
 
 ```ts
-import { GET, POST, DELETE } from "shelving/api"
-import { STRING, NUMBER, BOOLEAN, DATA } from "shelving/schema"
+import { GET, POST, DELETE } from "shelving/api";
+import { STRING, NUMBER, BOOLEAN, DATA } from "shelving/schema";
 
 // Payload field `id` fills the {id} placeholder; no query params.
-const getUser = GET("/users/{id}", DATA({ id: STRING }), DATA({ name: STRING, email: STRING }))
+const getUser = GET("/users/{id}", DATA({ id: STRING }), DATA({ name: STRING, email: STRING }));
 
 // Extra payload fields go to the body.
-const createUser = POST("/users", DATA({ name: STRING, email: STRING }), DATA({ id: STRING }))
+const createUser = POST("/users", DATA({ name: STRING, email: STRING }), DATA({ id: STRING }));
 
 // Payload-free endpoint.
-const deleteUser = DELETE("/users/{id}", DATA({ id: STRING }))
+const deleteUser = DELETE("/users/{id}", DATA({ id: STRING }));
 ```
 
 ### Server-side handler wiring
@@ -42,19 +42,19 @@ const deleteUser = DELETE("/users/{id}", DATA({ id: STRING }))
 `Endpoint.handler(callback)` pairs an endpoint with an implementation. Pass the resulting `EndpointHandler` objects to `handleEndpoints()`, which matches an incoming `Request` against the list, validates the payload, invokes the callback, and returns a `Response`.
 
 ```ts
-import { handleEndpoints } from "shelving/api"
+import { handleEndpoints } from "shelving/api";
 
 const handlers = [
-  getUser.handler(async ({ id }, _request, ctx) => ctx.db.users.get(id)),
-  createUser.handler(async ({ name, email }, _request, ctx) => ctx.db.users.create({ name, email })),
-]
+	getUser.handler(async ({ id }, _request, ctx) => ctx.db.users.get(id)),
+	createUser.handler(async ({ name, email }, _request, ctx) => ctx.db.users.create({ name, email })),
+];
 
 // Cloudflare Worker (or any fetch-based runtime):
 export default {
-  fetch(request: Request, env: Env) {
-    return handleEndpoints("https://api.example.com", handlers, request, { db: env.db })
-  },
-}
+	fetch(request: Request, env: Env) {
+		return handleEndpoints("https://api.example.com", handlers, request, { db: env.db });
+	},
+};
 ```
 
 `handleEndpoints` strips the base URL path prefix before matching, so it works behind a sub-path mount. It throws `NotFoundError` if no handler matches and `MethodNotAllowedError` for unsupported methods.
@@ -62,8 +62,7 @@ export default {
 ### Callback signature
 
 ```ts
-type EndpointCallback<P, R, C = void> =
-  (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>
+type EndpointCallback<P, R, C = void> = (payload: P, request: Request, context: C) => R | Response | Promise<R | Response>;
 ```
 
 Return `R` to let `handleEndpoints()` validate and serialise the result, or return a raw `Response` to bypass serialisation entirely.

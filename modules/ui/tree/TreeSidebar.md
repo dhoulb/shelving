@@ -17,5 +17,5 @@ The default sidebar for a tree-based site: a "home" link, a search-as-you-type f
 import { TreeSidebar } from "shelving/ui";
 
 // A home link + children menu combined — the default sidebar.
-<TreeSidebar />
+<TreeSidebar />;
 ```

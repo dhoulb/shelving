@@ -16,12 +16,12 @@ A `Collection<N, I, T>` carries three things:
 
 It also exposes schemas for API results. Each one points back at the collection with `source`, so `HydratingAPIProvider` knows which collection a result belongs to:
 
-| Schema | Validates | Hydrates |
-|---|---|---|
-| `collection.item` (`CollectionItemSchema`) | One complete item (`id` + data) | Sets the item. `NULLABLE(collection.item)` deletes it on `null`. |
-| `collection.items` (`CollectionItemsSchema`) | A list of complete items | Sets each item. |
-| `collection.query` (`CollectionQuerySchema`) | A `Query` — each key must be `id` or a prop path, and each value must match its prop schema | Nothing on its own. |
-| `collection.queryItems` (`CollectionQueryItemsSchema`) | `QueryItems`: a query and the complete list of items that answer it | Sets each item, and marks the query as loaded. |
+| Schema                                                 | Validates                                                                                   | Hydrates                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `collection.item` (`CollectionItemSchema`)             | One complete item (`id` + data)                                                             | Sets the item. `NULLABLE(collection.item)` deletes it on `null`. |
+| `collection.items` (`CollectionItemsSchema`)           | A list of complete items                                                                    | Sets each item.                                                  |
+| `collection.query` (`CollectionQuerySchema`)           | A `Query` — each key must be `id` or a prop path, and each value must match its prop schema | Nothing on its own.                                              |
+| `collection.queryItems` (`CollectionQueryItemsSchema`) | `QueryItems`: a query and the complete list of items that answer it                         | Sets each item, and marks the query as loaded.                   |
 
 `collection.updates` (`UpdatesSchema`) validates an `Updates` object for the item data in the same way. `ValidationDBProvider` uses it, and `collection.query`.
 
@@ -35,14 +35,14 @@ It also exposes schemas for API results. Each one points back at the collection 
 
 The module exports helper types to extract typed parts from a `Collection` variable without repetition:
 
-| Type | Extracts |
-|---|---|
-| `CollectionName<C>` | The string literal name |
-| `CollectionIdentifier<C>` | The identifier type `I` |
-| `CollectionData<C>` | The data type `T` |
-| `CollectionItem<C>` | `Item<I, T>` |
+| Type                        | Extracts                  |
+| --------------------------- | ------------------------- |
+| `CollectionName<C>`         | The string literal name   |
+| `CollectionIdentifier<C>`   | The identifier type `I`   |
+| `CollectionData<C>`         | The data type `T`         |
+| `CollectionItem<C>`         | `Item<I, T>`              |
 | `OptionalCollectionItem<C>` | `Item<I, T> \| undefined` |
-| `CollectionItems<C>` | `readonly Item<I, T>[]` |
+| `CollectionItems<C>`        | `readonly Item<I, T>[]`   |
 
 ## Usage
 
@@ -54,15 +54,15 @@ import { STRING, BOOLEAN, INTEGER } from "shelving/schema";
 
 // String (UUID) identifiers.
 const POSTS = COLLECTION("posts", STRING, {
-  title:     STRING,
-  body:      STRING,
-  published: BOOLEAN,
+	title: STRING,
+	body: STRING,
+	published: BOOLEAN,
 });
 
 // Auto-increment integer identifiers.
 const COMMENTS = COLLECTION("comments", INTEGER, {
-  postId:  INTEGER,
-  message: STRING,
+	postId: INTEGER,
+	message: STRING,
 });
 ```
 
@@ -83,6 +83,6 @@ POSTS.validate({ title: "" });
 ```ts
 import type { CollectionItem, CollectionData } from "shelving/db";
 
-type Post = CollectionData<typeof POSTS>;      // { title: string; body: string; published: boolean }
-type PostItem = CollectionItem<typeof POSTS>;  // { id: string; title: string; body: string; published: boolean }
+type Post = CollectionData<typeof POSTS>; // { title: string; body: string; published: boolean }
+type PostItem = CollectionItem<typeof POSTS>; // { id: string; title: string; body: string; published: boolean }
 ```

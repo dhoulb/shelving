@@ -13,11 +13,11 @@ A `Color` class and accompanying helpers for parsing, representing, and converti
 ```ts
 import { getColor, requireColor } from "shelving/util";
 
-const c = getColor("#ff6600");   // Color instance
-const c2 = getColor("F60");      // 3-digit shorthand, no '#'
-getColor("not-a-color");         // undefined
+const c = getColor("#ff6600"); // Color instance
+const c2 = getColor("F60"); // 3-digit shorthand, no '#'
+getColor("not-a-color"); // undefined
 
-requireColor("#ff6600");         // same but throws RequiredError on failure
+requireColor("#ff6600"); // same but throws RequiredError on failure
 ```
 
 ### Converting and inspecting
@@ -26,12 +26,12 @@ requireColor("#ff6600");         // same but throws RequiredError on failure
 import { getColor } from "shelving/util";
 
 const c = getColor("#3399ff")!;
-c.hex;        // "#3399ff"
-c.rgb;        // "rgb(51, 153, 255)"
-c.rgba;       // "rgba(51, 153, 255, 1)"
-c.luminance;  // number
-c.isLight;    // boolean
-c.isDark;     // boolean
+c.hex; // "#3399ff"
+c.rgb; // "rgb(51, 153, 255)"
+c.rgba; // "rgba(51, 153, 255, 1)"
+c.luminance; // number
+c.isLight; // boolean
+c.isDark; // boolean
 ```
 
 ### Type guard and assertion
@@ -39,8 +39,8 @@ c.isDark;     // boolean
 ```ts
 import { isColor, assertColor } from "shelving/util";
 
-isColor(value);          // true if Color instance
-assertColor(value);      // throws RequiredError if not
+isColor(value); // true if Color instance
+assertColor(value); // throws RequiredError if not
 ```
 
 ### Using the class directly
@@ -50,5 +50,5 @@ import { Color } from "shelving/util";
 
 const white = new Color(255, 255, 255);
 const transparent = new Color(0, 0, 0, 0);
-Color.from("#abc");  // same as getColor
+Color.from("#abc"); // same as getColor
 ```

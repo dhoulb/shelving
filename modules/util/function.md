@@ -14,8 +14,8 @@ Core type definitions and small utilities for working with functions. This file 
 ```ts
 import { isFunction, assertFunction } from "shelving/util";
 
-isFunction(() => {});   // true
-isFunction("hello");    // false
+isFunction(() => {}); // true
+isFunction("hello"); // false
 
 assertFunction(callback); // throws RequiredError if not a function
 ```
@@ -39,6 +39,6 @@ const result = transform(value); // returns value unchanged
 import type { Callback, ValueCallback, ErrorCallback } from "shelving/util";
 
 const onDone: Callback = () => console.log("done");
-const onValue: ValueCallback<string> = (v) => console.log(v);
-const onError: ErrorCallback = (err) => console.error(err);
+const onValue: ValueCallback<string> = v => console.log(v);
+const onError: ErrorCallback = err => console.error(err);
 ```

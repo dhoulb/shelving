@@ -15,16 +15,16 @@ Small print — renders a `<small>` element for side comments and fine print suc
 import { Paragraph, Small } from "shelving/ui";
 
 <Paragraph>
-  Upgrade any time. <Small>Terms apply.</Small>
-</Paragraph>
+	Upgrade any time. <Small>Terms apply.</Small>
+</Paragraph>;
 ```
 
 ## Styling
 
 `Small` mutes its text colour to a lighter tint step and inherits size and weight from its surroundings.
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable        | Styles      | Default          |
+| --------------- | ----------- | ---------------- |
 | `--small-color` | Text colour | `var(--tint-70)` |
 
 **Global tokens it reads:** the tint-ladder step `--tint-70`.

@@ -13,13 +13,13 @@ These helpers read `process.env` safely across Node, edge runtimes, and browser 
 import { getEnv, requireEnv, getEnvBoolean, requireEnvBoolean } from "shelving/util";
 
 // Safe read — returns undefined if missing.
-const port = getEnv("PORT");             // "3000" | undefined
+const port = getEnv("PORT"); // "3000" | undefined
 
 // Throws RequiredError if missing.
 const secret = requireEnv("API_SECRET"); // "abc123" or throws
 
 // Boolean env var — returns true/false/undefined.
-const debug = getEnvBoolean("DEBUG");    // true | false | undefined
+const debug = getEnvBoolean("DEBUG"); // true | false | undefined
 
 // Throws if the value isn't a recognised boolean.
 const verbose = requireEnvBoolean("VERBOSE"); // true | false or throws

@@ -15,14 +15,14 @@ Show a live preview of TSX and CSS in an `<iframe>` of the playground frame page
 ```tsx
 import { DocumentationFrame } from "shelving/ui";
 
-<DocumentationFrame code={`import { Button } from "shelving/ui";\n<Button>Hi</Button>`} css=":root { --radius-normal: 4px; }" />
+<DocumentationFrame code={`import { Button } from "shelving/ui";\n<Button>Hi</Button>`} css=":root { --radius-normal: 4px; }" />;
 ```
 
 ## Styling
 
 The frame has no border, radius, or margin. It fills the width of its parent, so the parent sets the look around it (see `<DocumentationLive>`). The space around the preview comes from padding inside the frame page.
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable                           | Styles                                | Default |
+| ---------------------------------- | ------------------------------------- | ------- |
 | `--documentation-frame-background` | Fill behind the frame before it loads | `white` |
-| `--documentation-frame-height` | Minimum height (one length) | `4rem` |
+| `--documentation-frame-height`     | Minimum height (one length)           | `4rem`  |

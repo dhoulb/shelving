@@ -12,15 +12,15 @@
 import { FirestoreProvider } from "shelving/firebase";
 
 const provider = new FirestoreProvider({
-  project: "my-project",
-  token: () => auth.getAccessToken(), // e.g. from `google-auth-library`
+	project: "my-project",
+	token: () => auth.getAccessToken(), // e.g. from `google-auth-library`
 });
 
 const id = await provider.addItem(POSTS, { title: "Hello", body: "First post.", published: false });
 
 await provider.transact(async db => {
-  const post = await db.requireItem(POSTS, id);
-  await db.updateItem(POSTS, id, { published: true, "+=views": 1 });
+	const post = await db.requireItem(POSTS, id);
+	await db.updateItem(POSTS, id, { published: true, "+=views": 1 });
 });
 ```
 
@@ -36,8 +36,8 @@ await provider.transact(async db => {
 
 ```ts
 const provider = new FirestoreProvider({
-  project: "demo-project",
-  host: `http://${process.env.FIRESTORE_EMULATOR_HOST}`,
+	project: "demo-project",
+	host: `http://${process.env.FIRESTORE_EMULATOR_HOST}`,
 });
 ```
 

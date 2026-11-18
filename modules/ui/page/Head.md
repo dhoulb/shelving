@@ -15,7 +15,6 @@ import { Page, Head } from "shelving/ui";
 
 // <Page> already renders <Head> for you; render it directly only for custom shells.
 <Page title="Settings">
-  <Head/>
-  …
-</Page>
+	<Head />…
+</Page>;
 ```

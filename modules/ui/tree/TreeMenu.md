@@ -16,7 +16,7 @@ import { TreeMenu } from "shelving/ui";
 import { useTreeMap } from "shelving/ui";
 
 // Just the navigation menu from the flattened root's children.
-<TreeMenu tree={useTreeMap().get("/")} />
+<TreeMenu tree={useTreeMap().get("/")} />;
 ```
 
 Override the menu-item renderer for one element type:
@@ -25,6 +25,6 @@ Override the menu-item renderer for one element type:
 import { TreeApp, TreeMenuMapping } from "shelving/ui";
 
 <TreeMenuMapping mapping={{ "tree-element": MyMenuItem }}>
-  <TreeApp tree={tree} />
-</TreeMenuMapping>
+	<TreeApp tree={tree} />
+</TreeMenuMapping>;
 ```

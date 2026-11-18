@@ -21,7 +21,11 @@ Make a module that exports a component with the same name, then point the path a
 ```tsx
 // icons/CloseIcon.tsx
 export function CloseIcon(props: SVGProps<SVGSVGElement>) {
-	return <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon" {...props}>…</svg>;
+	return (
+		<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon" {...props}>
+			…
+		</svg>
+	);
 }
 ```
 
@@ -37,21 +41,21 @@ export function CloseIcon(props: SVGProps<SVGSVGElement>) {
 
 ## Icons
 
-| Module | Default | Used in |
-|---|---|---|
-| `CloseIcon` | Heroicons `XMarkIcon` | `<Dialog>`, `<SidebarLayout>` |
-| `AddIcon` | Heroicons `PlusIcon` | `<ArrayInput>`, `<DictionaryInput>` |
-| `RemoveIcon` | Heroicons `XMarkIcon` | `<ArrayInput>`, `<DictionaryInput>`, `<ImageInput>` |
-| `MenuIcon` | Heroicons `Bars3Icon` | `<SidebarLayout>` |
-| `UpIcon` | Heroicons `ChevronUpIcon` | `<Details>` |
-| `DownIcon` | Heroicons `ChevronDownIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
-| `LeftIcon` | Heroicons `ChevronLeftIcon` | Not used by shelving yet. Here so an app can use one set of arrows. |
-| `RightIcon` | Heroicons `ChevronRightIcon` | `<TreeBreadcrumbs>` |
-| `ExpandIcon` | Heroicons `ArrowsPointingOutIcon` | `<FullscreenButton>` |
-| `ShrinkIcon` | Heroicons `ArrowsPointingInIcon` | `<FullscreenButton>` |
-| `RetryIcon` | Heroicons `ArrowPathIcon` | `<RetryButton>` |
-| `LoadingIcon` | Shelving `<Loading>` spinner | `<Icon status="loading">`, `LOADING` |
-| `SuccessIcon` | Heroicons `CheckCircleIcon` | `<Icon status="success">` |
-| `ErrorIcon` | Heroicons `XCircleIcon` | `<Icon status="error">` |
-| `WarningIcon` | Heroicons `ExclamationTriangleIcon` | `<Icon status="warning">`, `<Icon status="danger">` |
-| `InfoIcon` | Heroicons `InformationCircleIcon` | `<Icon>` (the default status) |
+| Module        | Default                             | Used in                                                             |
+| ------------- | ----------------------------------- | ------------------------------------------------------------------- |
+| `CloseIcon`   | Heroicons `XMarkIcon`               | `<Dialog>`, `<SidebarLayout>`                                       |
+| `AddIcon`     | Heroicons `PlusIcon`                | `<ArrayInput>`, `<DictionaryInput>`                                 |
+| `RemoveIcon`  | Heroicons `XMarkIcon`               | `<ArrayInput>`, `<DictionaryInput>`, `<ImageInput>`                 |
+| `MenuIcon`    | Heroicons `Bars3Icon`               | `<SidebarLayout>`                                                   |
+| `UpIcon`      | Heroicons `ChevronUpIcon`           | `<Details>`                                                         |
+| `DownIcon`    | Heroicons `ChevronDownIcon`         | Not used by shelving yet. Here so an app can use one set of arrows. |
+| `LeftIcon`    | Heroicons `ChevronLeftIcon`         | Not used by shelving yet. Here so an app can use one set of arrows. |
+| `RightIcon`   | Heroicons `ChevronRightIcon`        | `<TreeBreadcrumbs>`                                                 |
+| `ExpandIcon`  | Heroicons `ArrowsPointingOutIcon`   | `<FullscreenButton>`                                                |
+| `ShrinkIcon`  | Heroicons `ArrowsPointingInIcon`    | `<FullscreenButton>`                                                |
+| `RetryIcon`   | Heroicons `ArrowPathIcon`           | `<RetryButton>`                                                     |
+| `LoadingIcon` | Shelving `<Loading>` spinner        | `<Icon status="loading">`, `LOADING`                                |
+| `SuccessIcon` | Heroicons `CheckCircleIcon`         | `<Icon status="success">`                                           |
+| `ErrorIcon`   | Heroicons `XCircleIcon`             | `<Icon status="error">`                                             |
+| `WarningIcon` | Heroicons `ExclamationTriangleIcon` | `<Icon status="warning">`, `<Icon status="danger">`                 |
+| `InfoIcon`    | Heroicons `InformationCircleIcon`   | `<Icon>` (the default status)                                       |

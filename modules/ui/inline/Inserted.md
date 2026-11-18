@@ -16,18 +16,18 @@ Inserted text — renders an `<ins>` element to mark content that has been added
 import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 <Paragraph>
-  Was <Deleted>$50</Deleted> <Inserted>$35</Inserted>.
-</Paragraph>
+	Was <Deleted>$50</Deleted> <Inserted>$35</Inserted>.
+</Paragraph>;
 ```
 
 ## Styling
 
 `Inserted` colours its text directly from `--color-green` (not the tint ladder), so insertions stay a consistent green regardless of the surrounding tint. Override `--inserted-color` to recolour.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--inserted-color` | Text colour | `var(--color-green)` |
+| Variable                | Styles          | Default                          |
+| ----------------------- | --------------- | -------------------------------- |
+| `--inserted-color`      | Text colour     | `var(--color-green)`             |
 | `--inserted-decoration` | Text decoration | `underline var(--stroke-normal)` |
-| `--inserted-weight` | Font weight | `var(--weight-strong)` |
+| `--inserted-weight`     | Font weight     | `var(--weight-strong)`           |
 
 **Global tokens it reads:** `--color-green`, `--stroke-normal`, and `--weight-strong`.

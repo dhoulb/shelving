@@ -17,17 +17,17 @@ Type guards, conversions, rounding, clamping, and arithmetic utilities for numbe
 ```ts
 import { isNumber, isInteger, getNumber, getInteger, requireNumber, requireInteger } from "shelving/util";
 
-isNumber(42);           // true
-isNumber(NaN);          // false
-isNumber(5, 1, 10);     // true  (within range)
-isNumber(0, 1, 10);     // false (below min)
+isNumber(42); // true
+isNumber(NaN); // false
+isNumber(5, 1, 10); // true  (within range)
+isNumber(0, 1, 10); // false (below min)
 
 getNumber("$1,200.50"); // 1200.5  (non-numeric chars stripped)
-getNumber("hello");     // undefined
+getNumber("hello"); // undefined
 getNumber(new Date(0)); // 0  (milliseconds)
 
 requireNumber("42", 0, 100); // 42
-requireInteger("7");         // 7
+requireInteger("7"); // 7
 ```
 
 ### Rounding and truncation
@@ -35,9 +35,9 @@ requireInteger("7");         // 7
 ```ts
 import { roundNumber, truncateNumber, roundStep } from "shelving/util";
 
-roundNumber(3.14159, 2);  // 3.14
-truncateNumber(3.99, 1);  // 3.9
-roundStep(17, 5);         // 15  (nearest multiple of 5)
+roundNumber(3.14159, 2); // 3.14
+truncateNumber(3.99, 1); // 3.9
+roundStep(17, 5); // 15  (nearest multiple of 5)
 ```
 
 ### Clamping and wrapping
@@ -45,11 +45,11 @@ roundStep(17, 5);         // 15  (nearest multiple of 5)
 ```ts
 import { boundNumber, wrapNumber, isBetween } from "shelving/util";
 
-boundNumber(12, 2, 8);  // 8   (clamped to max)
-wrapNumber(12, 2, 8);   // 6   (wraps around)
-wrapNumber(-2, 2, 8);   // 4   (wraps in reverse)
+boundNumber(12, 2, 8); // 8   (clamped to max)
+wrapNumber(12, 2, 8); // 6   (wraps around)
+wrapNumber(-2, 2, 8); // 4   (wraps in reverse)
 
-isBetween(5, 1, 10);    // true
+isBetween(5, 1, 10); // true
 ```
 
 ### Utilities
@@ -57,7 +57,7 @@ isBetween(5, 1, 10);    // true
 ```ts
 import { getPercent, sumNumbers, getClosestNumber } from "shelving/util";
 
-getPercent(25, 200);              // 12.5  (25 is 12.5% of 200)
-sumNumbers([1, 2, 3, 4]);         // 10
-getClosestNumber([1, 5, 10], 4);  // 5
+getPercent(25, 200); // 12.5  (25 is 12.5% of 200)
+sumNumbers([1, 2, 3, 4]); // 10
+getClosestNumber([1, 5, 10], 4); // 5
 ```

@@ -11,28 +11,28 @@ Schema-driven input dispatch. `SchemaInput` inspects a `Schema` instance and ren
 
 The schema-to-input mapping:
 
-| Schema type | Rendered as |
-|---|---|
-| `StringSchema` | `<TextInput>` |
-| `NumberSchema` | `<NumberInput>` (formatted on blur) |
-| `DateSchema` | `<DateInput>` |
-| `BooleanSchema` | `<CheckboxInput>` |
-| `ChoiceSchema` (`input: "radio"`, the default for ≤ 8 options) | `<ChoiceRadioInputs>` |
-| `ChoiceSchema` (`input: "select"`, the default for > 8 options) | `<SelectInput>` |
-| `ArraySchema` | `<ArrayInput>` |
-| `DictionarySchema` | `<DictionaryInput>` |
-| `DataSchema` | `<DataInput>` |
+| Schema type                                                     | Rendered as                         |
+| --------------------------------------------------------------- | ----------------------------------- |
+| `StringSchema`                                                  | `<TextInput>`                       |
+| `NumberSchema`                                                  | `<NumberInput>` (formatted on blur) |
+| `DateSchema`                                                    | `<DateInput>`                       |
+| `BooleanSchema`                                                 | `<CheckboxInput>`                   |
+| `ChoiceSchema` (`input: "radio"`, the default for ≤ 8 options)  | `<ChoiceRadioInputs>`               |
+| `ChoiceSchema` (`input: "select"`, the default for > 8 options) | `<SelectInput>`                     |
+| `ArraySchema`                                                   | `<ArrayInput>`                      |
+| `DictionarySchema`                                              | `<DictionaryInput>`                 |
+| `DataSchema`                                                    | `<DataInput>`                       |
 
 The shared value-input prop contract (`ValueInputProps<O>`):
 
-| Prop | Contract |
-|---|---|
-| `name` | HTML field name |
-| `value` | Current value |
-| `onValue(v)` | Called on every change |
-| `required` | Marks the field as required |
-| `disabled` | Disables the control |
-| `message` | Inline error string |
+| Prop         | Contract                    |
+| ------------ | --------------------------- |
+| `name`       | HTML field name             |
+| `value`      | Current value               |
+| `onValue(v)` | Called on every change      |
+| `required`   | Marks the field as required |
+| `disabled`   | Disables the control        |
+| `message`    | Inline error string         |
 
 `<DataInput>` renders a row of `SchemaInput` elements for each property of a nested data object, and propagates sub-field errors from a `"key: message\n…"` formatted `message` string. `ArrayInput` and `DictionaryInput` both accept an `items` schema to render a repeatable list of sub-inputs with add/remove buttons.
 
@@ -53,5 +53,5 @@ import { StringSchema, NumberSchema } from "shelving/schema";
 ```tsx
 import { SchemaField } from "shelving/ui";
 
-<SchemaField name="email" schema={EMAIL_SCHEMA} /> // <Field> wrapping a <TextInput>
+<SchemaField name="email" schema={EMAIL_SCHEMA} />; // <Field> wrapping a <TextInput>
 ```

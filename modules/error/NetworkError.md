@@ -8,11 +8,11 @@ Thrown on a network-level failure — a connection refused, a server unreachable
 import { NetworkError } from "shelving/error";
 
 async function fetchData(url: string): Promise<Response> {
-  try {
-    return await fetch(url);
-  } catch {
-    throw new NetworkError("Could not reach server");
-  }
+	try {
+		return await fetch(url);
+	} catch {
+		throw new NetworkError("Could not reach server");
+	}
 }
 ```
 

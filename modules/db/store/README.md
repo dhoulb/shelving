@@ -41,13 +41,13 @@ You do not usually create these stores directly. `DBCache` manages them so only 
 import { ItemStore, QueryStore } from "shelving/db";
 
 const itemStore = new ItemStore(POSTS, "abc", provider);
-await itemStore.refresh();        // Fetches from provider.
-console.log(itemStore.value);     // { id: "abc", title: "…", … } or undefined
+await itemStore.refresh(); // Fetches from provider.
+console.log(itemStore.value); // { id: "abc", title: "…", … } or undefined
 
 const queryStore = new QueryStore(POSTS, { published: true, $order: "title" }, provider);
 await queryStore.refresh();
 for (const post of queryStore) {
-  console.log(post.id, post.title);
+	console.log(post.id, post.title);
 }
 ```
 
@@ -67,16 +67,18 @@ const store = cache.getItem(POSTS, "abc");
 
 ```tsx
 function Messages({ squad }: { squad: string }) {
-  const messages = useQuery(MESSAGES, { squad, $order: "!when" }).value; // Every cached message, newest first.
-  const first = useAPI(LIST_MESSAGES, { squad, $order: "!when", $limit: 50 }); // Loads the first page into the memory.
-  const [page, setPage] = useState<QueryItems<string, MessageData>>();
-  const next = getQueryItemsAfter((page ?? first.value).messages);
-  return (
-    <>
-      {messages.map(message => <Message key={message.id} message={message} />)}
-      {next && <Button onClick={async () => setPage(await API.call(LIST_MESSAGES, next))}>Show older</Button>}
-    </>
-  );
+	const messages = useQuery(MESSAGES, { squad, $order: "!when" }).value; // Every cached message, newest first.
+	const first = useAPI(LIST_MESSAGES, { squad, $order: "!when", $limit: 50 }); // Loads the first page into the memory.
+	const [page, setPage] = useState<QueryItems<string, MessageData>>();
+	const next = getQueryItemsAfter((page ?? first.value).messages);
+	return (
+		<>
+			{messages.map(message => (
+				<Message key={message.id} message={message} />
+			))}
+			{next && <Button onClick={async () => setPage(await API.call(LIST_MESSAGES, next))}>Show older</Button>}
+		</>
+	);
 }
 ```
 
