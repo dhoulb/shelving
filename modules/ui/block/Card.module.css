@@ -8,11 +8,11 @@
 
 @layer defaults {
 	.card {
-		/* Children — lift above the overlay so they remain clickable. */
+		/* Children — positioned, and after the overlay, so they paint above it and stay clickable.
+		 * No z-index: iOS WebKit can drop a z-indexed layer for one frame when a page view transition starts. */
 		a:any-link,
 		button:enabled {
 			position: relative;
-			z-index: 2;
 		}
 	}
 }
@@ -44,9 +44,10 @@
 	/* Under `.card` so it beats the `.prose a` link rule, and the hidden link text stays hidden inside `<Prose>`. */
 	.card > .overlay {
 		/* Box */
+
+		/* First in the card, positioned, with no z-index: it paints above the card's text, and below its positioned links and buttons. */
 		position: absolute;
 		inset: 0;
-		z-index: 1;
 		border: 0;
 		border-radius: inherit;
 
@@ -54,7 +55,7 @@
 		background: transparent;
 		cursor: pointer;
 
-		/* Focus ring — drawn on the overlay so it paints above positioned children (e.g. `.panel`). The offset pushes it out over the card border, so it sits fully inside the card edge. */
+		/* Focus ring — drawn on the overlay. The offset pushes it out over the card border, so it sits fully inside the card edge. */
 		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
 		outline-offset: calc(var(--card-stroke, 0px) - var(--stroke-focus));
 
@@ -70,9 +71,13 @@
 
 @layer overrides {
 	.card > .overlay {
-		/* Show the focus ring only while the overlay is keyboard-focused. */
+		/* Show the focus ring only while the overlay is keyboard-focused. Then lift it, so the ring paints above positioned children (e.g. `.panel`). */
 		&:not(:focus-visible) {
 			outline-color: transparent;
+		}
+
+		&:focus-visible {
+			z-index: 3;
 		}
 	}
 }
