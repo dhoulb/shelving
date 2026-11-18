@@ -1,4 +1,4 @@
-/** How much shorter the visual viewport must be than the window before the on-screen keyboard counts as open, in pixels. */
+/** How far the keyboard must squash or push up the visual viewport before it counts as open, in pixels. */
 const _GAP = 100;
 
 /** The longest `waitForKeyboard()` waits, in milliseconds. */
@@ -6,11 +6,13 @@ const _MAX = 500;
 
 /**
  * Is the on-screen keyboard open (or still closing)?
- * - On iOS (Safari, home-screen web apps and `WKWebView`) the keyboard makes the visual viewport shorter than the window.
- * - Returns `false` when the page is zoomed in, because a zoomed visual viewport is also shorter than the window.
+ * - On iOS (Safari, home-screen web apps and `WKWebView`) the keyboard makes the visual viewport shorter than the window,
+ *   or pushes it up (`visualViewport.offsetTop`). When the page cannot scroll, iOS shrinks the window too, so only the push
+ *   shows the keyboard.
+ * - Returns `false` when the page is zoomed in, because a zoomed visual viewport is also shorter than the window and moves.
  * - Returns `false` where the keyboard resizes the whole page (Android Chrome by default), and with no on-screen keyboard.
  *
- * @returns `true` when the visual viewport is much shorter than the window.
+ * @returns `true` when the visual viewport is much shorter than the window, or pushed up.
  * @example if (isKeyboardOpen()) await waitForKeyboard();
  * @see https://shelving.cc/ui/isKeyboardOpen
  */
@@ -18,7 +20,7 @@ export function isKeyboardOpen(): boolean {
 	if (typeof window === "undefined") return false;
 	const viewport = window.visualViewport;
 	if (!viewport || Math.abs(viewport.scale - 1) > 0.01) return false;
-	return window.innerHeight - viewport.height > _GAP;
+	return window.innerHeight - viewport.height > _GAP || viewport.offsetTop > _GAP;
 }
 
 /**
