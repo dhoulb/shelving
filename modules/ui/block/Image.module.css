@@ -1,5 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Space.module.css");
+@import url("../style/Duration.module.css");
 
 @layer components {
 	.image,
@@ -12,5 +13,31 @@
 		/* Contents */
 		object-position: center center;
 		object-fit: cover; /* Don't distort when resized. */
+	}
+
+	/* Hidden until it loads, then it fades in once. Only with scripts on: without them, `data-loaded` is never set. */
+	@media (scripting: enabled) {
+		.image:not([data-loaded]) {
+			opacity: 0;
+		}
+	}
+
+	/* The fade is an animation only while `data-loaded="fade"`, so no opacity animation stays on the image after it. WebKit keeps a layer after an opacity animation, and that layer flickers during a view transition. */
+	.image[data-loaded="fade"] {
+		animation-name: image-fade;
+		animation-duration: var(--image-fade-duration, var(--duration-normal));
+		animation-timing-function: ease-out;
+	}
+}
+
+@keyframes image-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.image[data-loaded="fade"] {
+		animation-name: none;
 	}
 }
