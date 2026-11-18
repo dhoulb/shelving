@@ -25,13 +25,6 @@ export interface SequenceTransitionOptions<T> {
 	 * @default Object.is
 	 */
 	readonly equal?: ((a: T, b: T) => boolean) | undefined;
-	/**
-	 * Wait before a value with a transition type is set, for example until the on-screen keyboard is down.
-	 * - Return a promise to wait for it, or nothing to set the value at once.
-	 * - A newer value that arrives while it waits wins: the older value is never set.
-	 * - Values with no transition type never wait.
-	 */
-	readonly wait?: ((value: T) => PromiseLike<void> | void) | undefined;
 }
 
 /**
@@ -57,25 +50,16 @@ export function useSequenceTransition<T>(sequence: AsyncIterable<T>, options: Se
 	const valueRef = useRef(value);
 
 	useEffect(() => {
-		// Counts the values, so a value that waited is set only when no newer value came in while it waited.
-		let count = 0;
 		const set = (next: T) => {
-			const { transition, equal = Object.is, wait } = optionsRef.current;
+			const { transition, equal = Object.is } = optionsRef.current;
 			if (equal(valueRef.current, next)) return;
 			valueRef.current = next;
-			const n = ++count;
 			const type = typeof transition === "function" ? transition(next) : transition;
 			if (!type) return setValue(next);
-			const show = () => {
-				if (n !== count) return;
-				startTransition(() => {
-					addTransitionType(type);
-					setValue(next);
-				});
-			};
-			const waiting = wait?.(next);
-			if (waiting) waiting.then(show, show);
-			else show();
+			startTransition(() => {
+				addTransitionType(type);
+				setValue(next);
+			});
 		};
 		set(optionsRef.current.current());
 		return runSequence(sequence, set, setError);
