@@ -21,7 +21,7 @@ import { StringSchema } from "shelving/schema";
 
 const SEARCH = new StringSchema({ title: "Search", one: "user" });
 
-<QueryRadiosInput name="user" schema={SEARCH} onQuery={search} value={user} onValue={setUser} />
+<QueryRadiosInput name="user" schema={SEARCH} onQuery={search} value={user} onValue={setUser} />;
 ```
 
 ### Inline list with avatars
@@ -34,7 +34,7 @@ const SEARCH = new StringSchema({ title: "Search", one: "user" });
 	onQuery={search}
 	formatter={user => <Avatar user={user} />}
 	onValue={setUser}
-/>
+/>;
 ```
 
 ## Styling

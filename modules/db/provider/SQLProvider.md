@@ -13,8 +13,11 @@ import { SQLiteProvider } from "shelving/db";
 
 // A concrete subclass implements exec() against a specific driver.
 class D1Provider extends SQLiteProvider {
-  async exec(strings, ...values) {
-    return this.db.prepare(strings.join("?")).bind(...values).all();
-  }
+	async exec(strings, ...values) {
+		return this.db
+			.prepare(strings.join("?"))
+			.bind(...values)
+			.all();
+	}
 }
 ```

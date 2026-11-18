@@ -20,7 +20,7 @@ const stored = await hashPassword("correct-horse-battery");
 
 // On sign-in — compare the plain-text password against the stored hash.
 const ok = await verifyPassword("correct-horse-battery", stored); // true
-const bad = await verifyPassword("wrong-password", stored);       // false
+const bad = await verifyPassword("wrong-password", stored); // false
 ```
 
 ### Generating random bytes

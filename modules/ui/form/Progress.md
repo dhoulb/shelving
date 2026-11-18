@@ -19,7 +19,7 @@ A continuous horizontal progress bar for the completion of a task. Rendered as a
 import { Progress } from "shelving/ui";
 
 // 75% full.
-<Progress value={3} max={4} />
+<Progress value={3} max={4} />;
 ```
 
 ### Custom range
@@ -28,7 +28,7 @@ import { Progress } from "shelving/ui";
 import { Progress } from "shelving/ui";
 
 // 50% full — value 15 within the 10–20 range.
-<Progress value={15} min={10} max={20} />
+<Progress value={15} min={10} max={20} />;
 ```
 
 ### Status and colour
@@ -57,20 +57,20 @@ import { Progress } from "shelving/ui";
 
 `Progress` paints a track (the element / `::-webkit-progress-bar`) and a fill (`::-webkit-progress-value` / `::-moz-progress-bar`) from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the bar or a tinted ancestor scope) to recolour the fill and track together — reach for a per-property hook only for a single surgical change. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--progress-height` | Bar thickness | `0.375rem` (6px) |
-| `--progress-radius` | Corner radius | `999px` (pill) |
-| `--progress-background` | Track fill | `var(--tint-90)` |
-| `--progress-color` | Fill colour | `var(--tint-50)` |
-| `--progress-duration` | Indeterminate flow-loop duration | `1.5s` |
+| Variable                | Styles                           | Default          |
+| ----------------------- | -------------------------------- | ---------------- |
+| `--progress-height`     | Bar thickness                    | `0.375rem` (6px) |
+| `--progress-radius`     | Corner radius                    | `999px` (pill)   |
+| `--progress-background` | Track fill                       | `var(--tint-90)` |
+| `--progress-color`      | Fill colour                      | `var(--tint-50)` |
+| `--progress-duration`   | Indeterminate flow-loop duration | `1.5s`           |
 
 **Global tokens it reads** — move these to retheme broadly rather than overriding the hooks directly: the tint-ladder steps `--tint-50` (fill) and `--tint-90` (track), plus `--duration-fast` (the fill's grow transition). To recolour a bar, prefer `color=` / `status=` (or a tinted ancestor scope) over the per-component hooks.
 
 ```css
 /* Theme: a chunkier, square-cornered bar. */
 :root {
-  --progress-height: 0.75rem;
-  --progress-radius: var(--radius-small);
+	--progress-height: 0.75rem;
+	--progress-radius: var(--radius-small);
 }
 ```

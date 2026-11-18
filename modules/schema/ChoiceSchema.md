@@ -12,7 +12,7 @@ import { CHOICE } from "shelving/schema";
 // Array form — keys and labels are the same.
 const STATUS = CHOICE(["draft", "published", "archived"] as const);
 STATUS.validate("published"); // "published"
-STATUS.validate("deleted");   // throws "Unknown value"
+STATUS.validate("deleted"); // throws "Unknown value"
 
 // Object form — keys are validated values, object values are display labels.
 const Priority = CHOICE({ low: "Low priority", high: "High priority" });

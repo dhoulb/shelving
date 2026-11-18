@@ -10,8 +10,8 @@ The return value is `undefined` until the first emission. If the sequence throws
 import { useSequence } from "shelving/react";
 
 function LiveCounter({ counter }: { counter: AsyncIterable<number> }) {
-  const count = useSequence(counter); // undefined until first emission.
-  return <span>{count ?? "—"}</span>;
+	const count = useSequence(counter); // undefined until first emission.
+	return <span>{count ?? "—"}</span>;
 }
 ```
 

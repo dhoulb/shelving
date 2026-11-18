@@ -8,8 +8,8 @@ Thrown when a value was present but invalid in its context — for example data 
 import { ValueError } from "shelving/error";
 
 function parseConfig(raw: unknown): Config {
-  if (!isConfig(raw)) throw new ValueError("Invalid config from server", { received: raw });
-  return raw;
+	if (!isConfig(raw)) throw new ValueError("Invalid config from server", { received: raw });
+	return raw;
 }
 ```
 

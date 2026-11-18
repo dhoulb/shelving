@@ -10,11 +10,15 @@ Create a mutable `Map` that persists for the lifetime of the component. The same
 import { useMap } from "shelving/react";
 
 function Gallery({ ids }: { ids: string[] }) {
-  const seen = useMap<string, boolean>(); // Same Map on every render.
-  return <>{ids.map(id => {
-    const isNew = !seen.has(id);
-    seen.set(id, true);
-    return <Thumbnail key={id} id={id} highlight={isNew} />;
-  })}</>;
+	const seen = useMap<string, boolean>(); // Same Map on every render.
+	return (
+		<>
+			{ids.map(id => {
+				const isNew = !seen.has(id);
+				seen.set(id, true);
+				return <Thumbnail key={id} id={id} highlight={isNew} />;
+			})}
+		</>
+	);
 }
 ```

@@ -20,24 +20,24 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 import { Menu, MenuItem, PageLoader, RouteCache, Router, Scroll, SidebarLayout } from "shelving/ui";
 
 function AppShell() {
-  const nav = (
-    <Menu>
-      <MenuItem href="/dashboard">Dashboard</MenuItem>
-      <MenuItem href="/users">Users</MenuItem>
-      <MenuItem href="/settings">Settings</MenuItem>
-    </Menu>
-  );
-  return (
-    <SidebarLayout sidebar={nav}>
-      <RouteCache>
-        <Scroll vertical cover>
-          <PageLoader>
-            <Router routes={ROUTES}/>
-          </PageLoader>
-        </Scroll>
-      </RouteCache>
-    </SidebarLayout>
-  );
+	const nav = (
+		<Menu>
+			<MenuItem href="/dashboard">Dashboard</MenuItem>
+			<MenuItem href="/users">Users</MenuItem>
+			<MenuItem href="/settings">Settings</MenuItem>
+		</Menu>
+	);
+	return (
+		<SidebarLayout sidebar={nav}>
+			<RouteCache>
+				<Scroll vertical cover>
+					<PageLoader>
+						<Router routes={ROUTES} />
+					</PageLoader>
+				</Scroll>
+			</RouteCache>
+		</SidebarLayout>
+	);
 }
 ```
 
@@ -45,15 +45,15 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--sidebar-layout-width` | Width of the side column (and drawer) | `17.5rem` |
-| `--sidebar-layout-background` | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white) |
-| `--sidebar-layout-color` | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black) |
-| `--sidebar-layout-sidebar-background` | Sidebar column fill | `var(--tint-90)` (one shade darker than the page) |
-| `--sidebar-layout-sidebar-color` | Sidebar column text colour | `var(--tint-00)` (black) |
-| `--sidebar-layout-border` | Divider between sidebar and content, e.g. `1px solid var(--tint-90)` | `none` |
-| `--sidebar-layout-shadow` | Drop shadow of the open drawer on a narrow screen | `var(--shadow-large)` |
+| Variable                              | Styles                                                                      | Default                                           |
+| ------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
+| `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                         |
+| `--sidebar-layout-background`         | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white)                         |
+| `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                          |
+| `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-90)` (one shade darker than the page) |
+| `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                          |
+| `--sidebar-layout-border`             | Divider between sidebar and content, e.g. `1px solid var(--tint-90)`        | `none`                                            |
+| `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                             |
 
 The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
 

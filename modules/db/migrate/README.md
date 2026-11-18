@@ -60,11 +60,11 @@ import { COLLECTION } from "shelving/db";
 import { STRING, NUMBER, BOOLEAN, ARRAY } from "shelving/schema";
 
 const PRODUCTS = COLLECTION("products", STRING, {
-  name:   STRING,
-  price:  NUMBER,
-  active: BOOLEAN,
-  // Arrays stay in data — no generated column created for them.
-  tags:   ARRAY(STRING),
+	name: STRING,
+	price: NUMBER,
+	active: BOOLEAN,
+	// Arrays stay in data — no generated column created for them.
+	tags: ARRAY(STRING),
 });
 // Generated columns: name TEXT, price REAL, active INTEGER (all extracted from data JSON).
 ```

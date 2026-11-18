@@ -9,14 +9,14 @@ Typed database provider abstraction. Define your schema once as a `Collection`, 
 A `Collection` is a declarative description of a database table or collection. It extends `DataSchema` and carries three things: a string `name`, an `id` schema (the identifier type), and a data schema (the shape of each record).
 
 ```ts
-import { COLLECTION } from "shelving/db"
-import { STRING, BOOLEAN } from "shelving/schema"
+import { COLLECTION } from "shelving/db";
+import { STRING, BOOLEAN } from "shelving/schema";
 
 const POSTS = COLLECTION("posts", STRING, {
-  title:     STRING,
-  body:      STRING,
-  published: BOOLEAN,
-})
+	title: STRING,
+	body: STRING,
+	published: BOOLEAN,
+});
 ```
 
 `Collection` is the single source of truth for both runtime validation and TypeScript types. All provider methods are generic over the collection so the compiler tracks `id` and `data` types automatically.
@@ -25,12 +25,12 @@ const POSTS = COLLECTION("posts", STRING, {
 
 `DBProvider` is the abstract base class every backend implements. Its surface covers:
 
-| Category | Methods |
-|---|---|
-| Single item | `DBProvider.getItem()`, `DBProvider.requireItem()`, `DBProvider.addItem()`, `DBProvider.setItem()`, `DBProvider.updateItem()`, `DBProvider.deleteItem()` |
-| Single item (realtime) | `DBProvider.getItemSequence()` |
-| Queries | `DBProvider.getQuery()`, `DBProvider.countQuery()`, `DBProvider.setQuery()`, `DBProvider.updateQuery()`, `DBProvider.deleteQuery()`, `DBProvider.getFirst()`, `DBProvider.requireFirst()` |
-| Query (realtime) | `DBProvider.getQuerySequence()` |
+| Category               | Methods                                                                                                                                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Single item            | `DBProvider.getItem()`, `DBProvider.requireItem()`, `DBProvider.addItem()`, `DBProvider.setItem()`, `DBProvider.updateItem()`, `DBProvider.deleteItem()`                                  |
+| Single item (realtime) | `DBProvider.getItemSequence()`                                                                                                                                                            |
+| Queries                | `DBProvider.getQuery()`, `DBProvider.countQuery()`, `DBProvider.setQuery()`, `DBProvider.updateQuery()`, `DBProvider.deleteQuery()`, `DBProvider.getFirst()`, `DBProvider.requireFirst()` |
+| Query (realtime)       | `DBProvider.getQuerySequence()`                                                                                                                                                           |
 
 `.getItemSequence()` and `.getQuerySequence()` return `AsyncIterable` — iterate them with `for await...of` to receive realtime updates as data changes.
 
@@ -67,50 +67,50 @@ Cloud providers live in the `shelving/cloudflare` and `shelving/firebase` siblin
 ### Define a collection and build a provider chain
 
 ```ts
-import { COLLECTION, MemoryDBProvider, ValidationDBProvider } from "shelving/db"
-import { STRING, BOOLEAN } from "shelving/schema"
+import { COLLECTION, MemoryDBProvider, ValidationDBProvider } from "shelving/db";
+import { STRING, BOOLEAN } from "shelving/schema";
 
 const POSTS = COLLECTION("posts", STRING, {
-  title:     STRING,
-  body:      STRING,
-  published: BOOLEAN,
-})
+	title: STRING,
+	body: STRING,
+	published: BOOLEAN,
+});
 
 // In production replace MemoryDBProvider with a real backend (Firestore, D1, …).
-const provider = new ValidationDBProvider(new MemoryDBProvider())
+const provider = new ValidationDBProvider(new MemoryDBProvider());
 ```
 
 ### Read and write items
 
 ```ts
 // Add a new item — returns the generated id.
-const id = await provider.addItem(POSTS, { title: "Hello world", body: "First post.", published: false })
+const id = await provider.addItem(POSTS, { title: "Hello world", body: "First post.", published: false });
 
 // Read it back.
-const post = await provider.getItem(POSTS, id)
+const post = await provider.getItem(POSTS, id);
 
 // Partial update.
-await provider.updateItem(POSTS, id, { published: true })
+await provider.updateItem(POSTS, id, { published: true });
 
 // Delete.
-await provider.deleteItem(POSTS, id)
+await provider.deleteItem(POSTS, id);
 ```
 
 ### Query items
 
 ```ts
 const posts = await provider.getQuery(POSTS, {
-  published: true,
-  $order: "title",
-  $limit: 10,
-})
+	published: true,
+	$order: "title",
+	$limit: 10,
+});
 ```
 
 ### Realtime subscriptions
 
 ```ts
 for await (const post of provider.getItemSequence(POSTS, id)) {
-  console.log(post) // emits whenever this item changes
+	console.log(post); // emits whenever this item changes
 }
 ```
 
@@ -119,11 +119,11 @@ for await (const post of provider.getItemSequence(POSTS, id)) {
 The `shelving/react` module's `createDBContext()` is the primary way to use a provider in a React app. It creates a context that wraps a provider (in a client app, typically a `MemoryDBProvider` that `HydratingAPIProvider` fills) and exposes typed hooks — `DBContext.useItem()` and `DBContext.useQuery()` — that return reactive `Store` instances and suspend automatically while loading.
 
 ```ts
-import { createDBContext } from "shelving/react"
-import { MemoryDBProvider } from "shelving/db"
+import { createDBContext } from "shelving/react";
+import { MemoryDBProvider } from "shelving/db";
 
-export const DB = new MemoryDBProvider()
-export const { DBContext, useItem, useQuery } = createDBContext(DB)
+export const DB = new MemoryDBProvider();
+export const { DBContext, useItem, useQuery } = createDBContext(DB);
 ```
 
 See the `shelving/react` module for full usage.

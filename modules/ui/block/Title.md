@@ -26,24 +26,24 @@ import { Title, Paragraph } from "shelving/ui";
 import { Panel, Block, Title } from "shelving/ui";
 
 <Panel as="header" color="primary">
-  <Block width="narrow">
-    <Title>Welcome</Title>
-  </Block>
-</Panel>
+	<Block width="narrow">
+		<Title>Welcome</Title>
+	</Block>
+</Panel>;
 ```
 
 ## Styling
 
 `Title` exposes hooks for its rhythm and type. It inherits text colour by default; set `--title-color` only to override that.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--title-color` | Text colour | `inherit` |
-| `--title-space-before` | Top margin | `var(--space-section)` (2rem) |
-| `--title-space` | Bottom margin | `var(--space-paragraph)` (16px) |
-| `--title-font` | Font family | `var(--font-title)` |
-| `--title-weight` | Font weight | `var(--weight-strong)` (700) |
-| `--title-size` | Font size | `var(--size-xxxlarge)` |
-| `--title-leading` | Line height | `var(--leading)` |
+| Variable               | Styles        | Default                         |
+| ---------------------- | ------------- | ------------------------------- |
+| `--title-color`        | Text colour   | `inherit`                       |
+| `--title-space-before` | Top margin    | `var(--space-section)` (2rem)   |
+| `--title-space`        | Bottom margin | `var(--space-paragraph)` (16px) |
+| `--title-font`         | Font family   | `var(--font-title)`             |
+| `--title-weight`       | Font weight   | `var(--weight-strong)` (700)    |
+| `--title-size`         | Font size     | `var(--size-xxxlarge)`          |
+| `--title-leading`      | Line height   | `var(--leading)`                |
 
 **Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading`.

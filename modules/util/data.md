@@ -14,8 +14,8 @@ The `Data` type and its helpers are the foundation of Shelving's data layer. A `
 import { isData, assertData } from "shelving/util";
 
 isData({ name: "Alice" }); // true
-isData(new Map());         // false
-isData(null);              // false
+isData(new Map()); // false
+isData(null); // false
 
 assertData(value); // throws RequiredError if value is not a plain object
 ```
@@ -27,10 +27,10 @@ import { isDataProp, assertDataProp, getDataProps, getDataKeys } from "shelving/
 
 const doc = { name: "Alice", age: 30 };
 
-isDataProp(doc, "name");  // true
+isDataProp(doc, "name"); // true
 isDataProp(doc, "email"); // false
 
-getDataKeys(doc);  // ["name", "age"]
+getDataKeys(doc); // ["name", "age"]
 getDataProps(doc); // [["name", "Alice"], ["age", 30]]
 ```
 
@@ -41,9 +41,9 @@ import { getDataProp, splitDataPath, joinDataPath } from "shelving/util";
 
 const doc = { user: { address: { city: "London" } } };
 
-getDataProp(doc, "user.address.city");           // "London"
-getDataProp(doc, ["user", "address", "city"]);   // "London"
-getDataProp(doc, "user.missing.key");            // undefined
+getDataProp(doc, "user.address.city"); // "London"
+getDataProp(doc, ["user", "address", "city"]); // "London"
+getDataProp(doc, "user.missing.key"); // undefined
 
 splitDataPath("user.address.city"); // ["user", "address", "city"]
 joinDataPath(["user", "address", "city"]); // "user.address.city"
@@ -53,17 +53,17 @@ joinDataPath(["user", "address", "city"]); // "user.address.city"
 
 `data.ts` exports a rich set of mapped types for working with typed data objects:
 
-| Type | Purpose |
-| ---- | ------- |
-| `Data` | Base plain-object type |
-| `PartialData<T>` | All keys optional |
-| `DataKey<T>` | Union of string keys |
-| `DataValue<T>` | Union of value types |
-| `LeafData<T>` | Flat object with only leaf paths |
-| `LeafDataPath<T>` | Union of dotted leaf paths |
-| `BranchData<T>` | Flat object including intermediate object paths |
-| `NestedData` | One level of nesting: `{ Group: { key: value } }` |
-| `FlatData<T>` | Flattened union of nested data |
+| Type              | Purpose                                           |
+| ----------------- | ------------------------------------------------- |
+| `Data`            | Base plain-object type                            |
+| `PartialData<T>`  | All keys optional                                 |
+| `DataKey<T>`      | Union of string keys                              |
+| `DataValue<T>`    | Union of value types                              |
+| `LeafData<T>`     | Flat object with only leaf paths                  |
+| `LeafDataPath<T>` | Union of dotted leaf paths                        |
+| `BranchData<T>`   | Flat object including intermediate object paths   |
+| `NestedData`      | One level of nesting: `{ Group: { key: value } }` |
+| `FlatData<T>`     | Flattened union of nested data                    |
 
 ```ts
 import type { Data, LeafDataPath } from "shelving/util";

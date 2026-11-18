@@ -12,9 +12,9 @@ import { UndoDBProvider } from "shelving/db";
 const local = new UndoDBProvider(memory);
 await runServiceLogic(local); // Applies locally right away.
 try {
-  await api.push(local.writes); // Send the writes to the server.
+	await api.push(local.writes); // Send the writes to the server.
 } catch {
-  await local.undo(); // Server failed — restore the local copy.
+	await local.undo(); // Server failed — restore the local copy.
 }
 ```
 

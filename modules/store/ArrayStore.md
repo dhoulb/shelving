@@ -9,13 +9,13 @@ import { ArrayStore } from "shelving/store";
 
 const tags = new ArrayStore<string>(["a", "b"]);
 
-tags.add("c");          // ["a", "b", "c"]
-tags.delete("a");       // ["b", "c"]
-tags.toggle("b");       // ["c"] — removes if present, adds if not
+tags.add("c"); // ["a", "b", "c"]
+tags.delete("a"); // ["b", "c"]
+tags.toggle("b"); // ["c"] — removes if present, adds if not
 
-console.log(tags.first);   // "c"   (throws if empty)
-console.log(tags.count);   // 1
-console.log(tags.exists);  // true
+console.log(tags.first); // "c"   (throws if empty)
+console.log(tags.count); // 1
+console.log(tags.exists); // true
 
 for (const tag of tags) console.log(tag); // ArrayStore is iterable
 ```

@@ -20,6 +20,7 @@
 					"fix": "safe"
 				},
 				"useHookAtTopLevel": "error",
+				"noComponentHookFactories": "off",
 				"noUnknownFunction": "error",
 				"noUnknownUnit": "error"
 			},

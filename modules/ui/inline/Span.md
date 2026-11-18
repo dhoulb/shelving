@@ -25,7 +25,9 @@ import { Span } from "shelving/ui";
 ```tsx live
 import { Span } from "shelving/ui";
 
-<Span color="purple" tint="40">on-brand accent</Span>
+<Span color="purple" tint="40">
+	on-brand accent
+</Span>;
 ```
 
 ## Styling

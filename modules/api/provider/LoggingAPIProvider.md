@@ -7,18 +7,16 @@ The constructor takes the `source` provider plus three optional callbacks — `o
 ## Usage
 
 ```ts
-import { ClientAPIProvider, LoggingAPIProvider } from "shelving/api"
+import { ClientAPIProvider, LoggingAPIProvider } from "shelving/api";
 
 // Default console logging.
-const provider = new LoggingAPIProvider(
-  new ClientAPIProvider({ url: "https://api.example.com" })
-)
+const provider = new LoggingAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
 
 // Or route logs into your own logger.
 const custom = new LoggingAPIProvider(
-  new ClientAPIProvider({ url: "https://api.example.com" }),
-  (request) => logger.info("api request", request.url),
-  (response, request) => logger.info("api response", request.url, response.status),
-  (reason, request) => logger.error("api error", request.url, reason),
-)
+	new ClientAPIProvider({ url: "https://api.example.com" }),
+	request => logger.info("api request", request.url),
+	(response, request) => logger.info("api response", request.url, response.status),
+	(reason, request) => logger.error("api error", request.url, reason),
+);
 ```

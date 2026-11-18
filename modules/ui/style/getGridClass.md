@@ -17,8 +17,8 @@ The grid variant props lay out a component's children in equal-width columns —
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable     | Styles                                   | Default                     |
+| ------------ | ---------------------------------------- | --------------------------- |
 | `--grid-gap` | Space between cells when no `gap` is set | `var(--space-small)` (12px) |
 
 **Global tokens it reads:** `--space-small`, plus the `--space-*` token of the `gap` variant.

@@ -13,12 +13,12 @@ Convert any JavaScript value to a readable debug string. Use these when building
 ```ts
 import { debug } from "shelving/util";
 
-debug(null);              // "null"
-debug(42);                // "42"
-debug("hello\nworld");    // '"hello\\nworld"'
+debug(null); // "null"
+debug(42); // "42"
+debug("hello\nworld"); // '"hello\\nworld"'
 debug(new Date("2024-01-01")); // "2024-01-01T00:00:00.000Z"
-debug([1, 2, 3]);         // "[\n\t1,\n\t2,\n\t3\n]"
-debug({ a: 1 }, 0);       // "{}" (depth 0 suppresses contents)
+debug([1, 2, 3]); // "[\n\t1,\n\t2,\n\t3\n]"
+debug({ a: 1 }, 0); // "{}" (depth 0 suppresses contents)
 ```
 
 ### Strings, objects, arrays, maps, sets
@@ -26,9 +26,9 @@ debug({ a: 1 }, 0);       // "{}" (depth 0 suppresses contents)
 ```ts
 import { debugString, debugObject, debugArray, debugMap, debugSet } from "shelving/util";
 
-debugString('say "hi"');    // '"say \\"hi\\""'
-debugObject({ x: 1 });      // "{\n\t\"x\": 1\n}"
-debugArray([1, 2]);          // "[\n\t1,\n\t2\n]"
+debugString('say "hi"'); // '"say \\"hi\\""'
+debugObject({ x: 1 }); // "{\n\t\"x\": 1\n}"
+debugArray([1, 2]); // "[\n\t1,\n\t2\n]"
 ```
 
 ### HTTP requests and responses
@@ -37,8 +37,8 @@ debugArray([1, 2]);          // "[\n\t1,\n\t2\n]"
 import { debugRequest, debugResponse, debugHeaders } from "shelving/util";
 import { debugFullRequest, debugFullResponse } from "shelving/util";
 
-debugRequest(req);   // "GET https://example.com/api"
-debugResponse(res);  // "200 OK"
+debugRequest(req); // "GET https://example.com/api"
+debugResponse(res); // "200 OK"
 
 // Async — includes headers and body:
 const full = await debugFullRequest(req);
@@ -50,6 +50,6 @@ const full2 = await debugFullResponse(res);
 ```ts
 import { indent } from "shelving/util";
 
-indent("single line");    // " single line"  (leading space)
-indent("line1\nline2");   // "\n\tline1\n\tline2"
+indent("single line"); // " single line"  (leading space)
+indent("line1\nline2"); // "\n\tline1\n\tline2"
 ```

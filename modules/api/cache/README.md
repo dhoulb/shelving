@@ -28,29 +28,29 @@ APICache
 Direct use of `APICache` or `EndpointCache` is rarely necessary outside of `CachedAPIProvider`. They power the `shelving/react` integration via `createAPIContext()`.
 
 ```ts
-import { APICache } from "shelving/api"
-import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api"
+import { APICache } from "shelving/api";
+import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api";
 
-const inner = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
-const cache = new APICache(inner)
+const inner = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
+const cache = new APICache(inner);
 
 // Fetch (or return cached) result.
-const user = await cache.call(getUser, { id: "u_1" })
+const user = await cache.call(getUser, { id: "u_1" });
 
 // Get the EndpointCache for one endpoint.
-const userCache = cache.get(getUser)
+const userCache = cache.get(getUser);
 
 // Get the EndpointStore for a specific payload — reactive, subscribable.
-const store = userCache.get({ id: "u_1" })
+const store = userCache.get({ id: "u_1" });
 for await (const value of store) {
-  console.log(value) // emits whenever the value changes
+	console.log(value); // emits whenever the value changes
 }
 
 // Invalidation.
-cache.invalidate(getUser, { id: "u_1" })  // mark one store stale
-cache.invalidateAll(getUser)              // mark all stores for getUser stale
-cache.refresh(getUser, { id: "u_1" })     // trigger re-fetch for one store
-cache.refreshAll(getUser)                 // trigger re-fetch for all stores
+cache.invalidate(getUser, { id: "u_1" }); // mark one store stale
+cache.invalidateAll(getUser); // mark all stores for getUser stale
+cache.refresh(getUser, { id: "u_1" }); // trigger re-fetch for one store
+cache.refreshAll(getUser); // trigger re-fetch for all stores
 ```
 
 Cache instances implement `AsyncDisposable` — `await using cache = new APICache(...)` disposes all stores cleanly.

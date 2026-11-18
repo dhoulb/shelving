@@ -17,13 +17,16 @@ A landmark content region — renders a `<section>` with block-level spacing and
 import { Section, Heading, Definitions } from "shelving/ui";
 
 <Section width="narrow">
-  <Heading>Account details</Heading>
-  <Definitions>
-    <dt>Name</dt><dd>Alice Smith</dd>
-    <dt>Email</dt><dd>alice@example.com</dd>
-    <dt>Plan</dt><dd>Pro</dd>
-  </Definitions>
-</Section>
+	<Heading>Account details</Heading>
+	<Definitions>
+		<dt>Name</dt>
+		<dd>Alice Smith</dd>
+		<dt>Email</dt>
+		<dd>alice@example.com</dd>
+		<dt>Plan</dt>
+		<dd>Pro</dd>
+	</Definitions>
+</Section>;
 ```
 
 ### Landmark elements
@@ -40,9 +43,9 @@ import { Header, Nav, Footer } from "shelving/ui";
 
 `Section` exposes hooks for its width and rhythm; it paints no colour of its own, so it inherits the surrounding tint.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--section-width` | Content width | `var(--width-normal)` (55rem) |
+| Variable          | Styles                            | Default                       |
+| ----------------- | --------------------------------- | ----------------------------- |
+| `--section-width` | Content width                     | `var(--width-normal)` (55rem) |
 | `--section-space` | Outer block margin (top + bottom) | `var(--space-section)` (2rem) |
 
 **Global tokens it reads:** `--space-section` and `--width-normal` (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) and the `indent` variant (inline padding, via `getIndentClass()`) come from the shared `shelving/ui` styling system.

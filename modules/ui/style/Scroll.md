@@ -18,8 +18,8 @@ A box that scrolls its content on one or both axes. Use it for a wide table on a
 import { Scroll, Table } from "shelving/ui";
 
 <Scroll horizontal>
-  <Table>…</Table>
-</Scroll>
+	<Table>…</Table>
+</Scroll>;
 ```
 
 ### A scroll box for each page
@@ -30,30 +30,30 @@ Put `<Scroll vertical cover>` inside `<RouteCache>`, so each kept page has its o
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
 <AppLayout nav={<StackBar />}>
-  <HorizontalTransition>
-    <RouteCache>
-      <Scroll vertical cover>
-        <PageLoader>
-          <Router routes={ROUTES} />
-        </PageLoader>
-      </Scroll>
-    </RouteCache>
-  </HorizontalTransition>
-</AppLayout>
+	<HorizontalTransition>
+		<RouteCache>
+			<Scroll vertical cover>
+				<PageLoader>
+					<Router routes={ROUTES} />
+				</PageLoader>
+			</Scroll>
+		</RouteCache>
+	</HorizontalTransition>
+</AppLayout>;
 ```
 
 ### A chat
 
 ```tsx
 <Scroll vertical cover reverse>
-  <div>{messages}</div>
-</Scroll>
+	<div>{messages}</div>
+</Scroll>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable                | Styles                                  | Default                                        |
+| ----------------------- | --------------------------------------- | ---------------------------------------------- |
 | `--scroll-focus-border` | Outline when the box has keyboard focus | `var(--stroke-focus) solid var(--color-focus)` |
 
 **Global tokens it reads** — `--stroke-focus`, `--stroke-normal`, and `--color-focus`.

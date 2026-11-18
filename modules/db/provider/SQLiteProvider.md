@@ -10,10 +10,15 @@ It is abstract — a concrete subclass implements `exec()` against a specific SQ
 import { SQLiteProvider } from "shelving/db";
 
 class D1Provider extends SQLiteProvider {
-  constructor(private d1: D1Database) { super(); }
-  async exec(strings, ...values) {
-    return this.d1.prepare(strings.join("?")).bind(...values).all();
-  }
+	constructor(private d1: D1Database) {
+		super();
+	}
+	async exec(strings, ...values) {
+		return this.d1
+			.prepare(strings.join("?"))
+			.bind(...values)
+			.all();
+	}
 }
 ```
 

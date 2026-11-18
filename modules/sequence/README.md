@@ -27,11 +27,11 @@ const deferred = new DeferredSequence<number>();
 
 // The interval starts on the first `for await` and stops when the last one ends.
 const clock = new LazySequence(deferred, () => {
-  const id = setInterval(() => deferred.resolve(Date.now()), 1000);
-  return () => clearInterval(id);
+	const id = setInterval(() => deferred.resolve(Date.now()), 1000);
+	return () => clearInterval(id);
 });
 
 for await (const ts of clock) {
-  console.log(ts); // a timestamp every second, only while iterating
+	console.log(ts); // a timestamp every second, only while iterating
 }
 ```

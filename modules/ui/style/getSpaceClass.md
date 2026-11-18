@@ -14,19 +14,19 @@ The following `:root` variables are defined by this module and can be overridden
 
 ### Scale
 
-| Variable | Default | Notes |
-|---|---|---|
-| `--space-xxsmall` | `var(--space-normal) * 0.25` | 4px |
-| `--space-xsmall` | `var(--space-normal) * 0.5` | 8px |
-| `--space-small` | `var(--space-normal) * 0.75` | 12px |
-| `--space-normal` | 1rem | 16px - base spacing unit (the root of the scale). |
-| `--space-large` | `var(--space-normal) * 1.5` | 24px |
-| `--space-xlarge` | `var(--space-normal) * 2` | 32px |
-| `--space-xxlarge` | `var(--space-normal) * 3` | 48px |
+| Variable          | Default                      | Notes                                             |
+| ----------------- | ---------------------------- | ------------------------------------------------- |
+| `--space-xxsmall` | `var(--space-normal) * 0.25` | 4px                                               |
+| `--space-xsmall`  | `var(--space-normal) * 0.5`  | 8px                                               |
+| `--space-small`   | `var(--space-normal) * 0.75` | 12px                                              |
+| `--space-normal`  | 1rem                         | 16px - base spacing unit (the root of the scale). |
+| `--space-large`   | `var(--space-normal) * 1.5`  | 24px                                              |
+| `--space-xlarge`  | `var(--space-normal) * 2`    | 32px                                              |
+| `--space-xxlarge` | `var(--space-normal) * 3`    | 48px                                              |
 
 ### Semantic
 
-| Variable | Default | Used for |
-|---|---|---|
-| `--space-section` | `2rem` | Top margin for titles / headings / section blocks. |
-| `--space-paragraph` | `var(--space-normal)` | Default block-space for most prose elements. |
+| Variable            | Default               | Used for                                           |
+| ------------------- | --------------------- | -------------------------------------------------- |
+| `--space-section`   | `2rem`                | Top margin for titles / headings / section blocks. |
+| `--space-paragraph` | `var(--space-normal)` | Default block-space for most prose elements.       |

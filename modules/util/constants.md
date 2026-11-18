@@ -45,8 +45,8 @@ const formatted = `42${NNBSP}°C`;
 import { ABORT, NONE, SKIP } from "shelving/util";
 
 function process(value: unknown): string | typeof ABORT {
-  if (cancelled) return ABORT;
-  return String(value);
+	if (cancelled) return ABORT;
+	return String(value);
 }
 ```
 

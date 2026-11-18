@@ -16,14 +16,16 @@ import { Navigation, Router } from "shelving/ui";
 
 // Server-side render — pass the request URL to <HTML>.
 renderToString(
-  <HTML app="My App" root="https://example.com/" url={requestUrl} language="en">
-    <Navigation>
-      <Router routes={{
-        "/": HomePage,
-        "/about": AboutPage,
-      }}/>
-    </Navigation>
-  </HTML>
+	<HTML app="My App" root="https://example.com/" url={requestUrl} language="en">
+		<Navigation>
+			<Router
+				routes={{
+					"/": HomePage,
+					"/about": AboutPage,
+				}}
+			/>
+		</Navigation>
+	</HTML>,
 );
 ```
 

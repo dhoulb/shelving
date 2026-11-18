@@ -16,12 +16,12 @@ General-purpose utilities for working with any `Iterable<T>` — arrays, sets, g
 ```ts
 import { isIterable, hasItems, countItems } from "shelving/util";
 
-isIterable([1, 2, 3]);      // true
-isIterable(new Set());      // true
-isIterable("hello");        // false (strings are not iterable here)
+isIterable([1, 2, 3]); // true
+isIterable(new Set()); // true
+isIterable("hello"); // false (strings are not iterable here)
 
-hasItems([]);               // false
-hasItems(new Set([1]));     // true
+hasItems([]); // false
+hasItems(new Set([1])); // true
 
 countItems(new Set([1, 2, 3])); // 3
 ```
@@ -31,10 +31,10 @@ countItems(new Set([1, 2, 3])); // 3
 ```ts
 import { limitItems, pickItems, omitItems, getChunks } from "shelving/util";
 
-Array.from(limitItems([1, 2, 3, 4, 5], 3));     // [1, 2, 3]
-Array.from(pickItems([1, 2, 3, 4], 2, 4));       // [2, 4]
-Array.from(omitItems([1, 2, 3, 4], 2, 4));       // [1, 3]
-Array.from(getChunks([1, 2, 3, 4, 5], 2));       // [[1, 2], [3, 4], [5]]
+Array.from(limitItems([1, 2, 3, 4, 5], 3)); // [1, 2, 3]
+Array.from(pickItems([1, 2, 3, 4], 2, 4)); // [2, 4]
+Array.from(omitItems([1, 2, 3, 4], 2, 4)); // [1, 3]
+Array.from(getChunks([1, 2, 3, 4, 5], 2)); // [[1, 2], [3, 4], [5]]
 ```
 
 ### Ranges and merging
@@ -42,8 +42,8 @@ Array.from(getChunks([1, 2, 3, 4, 5], 2));       // [[1, 2], [3, 4], [5]]
 ```ts
 import { getRange, mergeItems, interleaveItems, flattenItems } from "shelving/util";
 
-Array.from(getRange(1, 5));   // [1, 2, 3, 4, 5]
-Array.from(getRange(5, 1));   // [5, 4, 3, 2, 1]
+Array.from(getRange(1, 5)); // [1, 2, 3, 4, 5]
+Array.from(getRange(5, 1)); // [5, 4, 3, 2, 1]
 
 Array.from(mergeItems([1, 2], [3, 4])); // [1, 2, 3, 4]
 

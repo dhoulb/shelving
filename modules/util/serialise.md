@@ -15,11 +15,11 @@ A single `serialise()` function that converts any JavaScript value to a stable, 
 import { serialise } from "shelving/util";
 
 // Primitives
-serialise(true);        // "true"
-serialise(42);          // "42"
-serialise("hello");     // '"hello"'
-serialise(null);        // "null"
-serialise(undefined);   // '{"$type":"undefined"}'
+serialise(true); // "true"
+serialise(42); // "42"
+serialise("hello"); // '"hello"'
+serialise(null); // "null"
+serialise(undefined); // '{"$type":"undefined"}'
 
 // Arrays
 serialise([1, "two", null]); // '[1,"two",null]'
@@ -31,7 +31,7 @@ serialise({ b: 2, a: 1 }); // '{"a":1,"b":2}'
 serialise(new Date("2024-01-01")); // '{"$type":"Date","value":"Mon Jan 01 2024 ..."}'
 
 // Symbols and functions
-serialise(Symbol("tag"));    // '{"$type":"symbol","description":"tag"}'
+serialise(Symbol("tag")); // '{"$type":"symbol","description":"tag"}'
 serialise(function foo() {}); // '{"$type":"function","name":"foo"}'
 ```
 

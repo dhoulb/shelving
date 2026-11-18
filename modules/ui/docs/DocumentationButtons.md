@@ -17,13 +17,13 @@ Used automatically by `<DocumentationPage>` and `<DocumentationCard>`. To render
 ```tsx
 import { DocumentationButtons } from "shelving/ui";
 
-<DocumentationButtons class="Store" extends="AbstractStore" implements={["Serializable"]} />
+<DocumentationButtons class="Store" extends="AbstractStore" implements={["Serializable"]} />;
 ```
 
 Drop a relation by omitting it, or tighten spacing with `space`.
 
 ```tsx
-<DocumentationButtons extends="AbstractStore" space="none" />
+<DocumentationButtons extends="AbstractStore" space="none" />;
 ```
 
 ## Styling

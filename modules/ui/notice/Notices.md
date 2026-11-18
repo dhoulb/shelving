@@ -19,25 +19,25 @@ Mount once near the root of your app:
 import { Notices } from "shelving/ui";
 
 export function AppLayout({ children }) {
-  return (
-    <>
-      {children}
-      <Notices />
-    </>
-  );
+	return (
+		<>
+			{children}
+			<Notices />
+		</>
+	);
 }
 ```
 
 Show the list in the top-left corner:
 
 ```tsx
-<Notices position="top-left" />
+<Notices position="top-left" />;
 ```
 
 Show the list at the top of the screen, in the centre:
 
 ```tsx
-<Notices position="top-center" />
+<Notices position="top-center" />;
 ```
 
 Dispatch notices from anywhere — no context required:
@@ -50,8 +50,8 @@ notifyError("Could not connect.");
 
 // Wrap an async callback — dispatches success or error automatically.
 callNotified(async () => {
-  await saveProfile(data);
-  return "Profile updated.";
+	await saveProfile(data);
+	return "Profile updated.";
 });
 ```
 
@@ -71,12 +71,12 @@ notice.close(); // Or close it immediately.
 
 `Notices` positions the list in the place that `position` sets. Each notice is only as wide as its content and is aligned to the side of that corner, or to the centre. The list is never wider than `--notices-width`, and keeps `--notices-offset` clear at both sides on a narrow screen. The offset also adds the safe area of the device (`env(safe-area-inset-*)`). Clicks pass through the gaps between notices to the page. Each item is a `<Notice>`, which has its own hooks. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--notices-offset` | Distance of the list from the top or bottom edge, and from the left and right edges | `var(--space-normal)` (16px) |
-| `--notices-width` | Maximum width of the list and of each notice | `var(--width-narrow)` |
-| `--notices-shadow` | Drop shadow under each notice in the list (sets `--notice-shadow`) | `var(--shadow-normal)` |
-| `--notices-gap` | Gap between notices | `var(--space-small)` (12px) |
-| `--notices-transition-duration` | Length of the slide in, slide out, and move | `var(--duration-fast)` (150ms) |
+| Variable                        | Styles                                                                              | Default                        |
+| ------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------ |
+| `--notices-offset`              | Distance of the list from the top or bottom edge, and from the left and right edges | `var(--space-normal)` (16px)   |
+| `--notices-width`               | Maximum width of the list and of each notice                                        | `var(--width-narrow)`          |
+| `--notices-shadow`              | Drop shadow under each notice in the list (sets `--notice-shadow`)                  | `var(--shadow-normal)`         |
+| `--notices-gap`                 | Gap between notices                                                                 | `var(--space-small)` (12px)    |
+| `--notices-transition-duration` | Length of the slide in, slide out, and move                                         | `var(--duration-fast)` (150ms) |
 
 **Global tokens it reads** — move these to retheme broadly: `--space-normal`, `--space-small`, `--shadow-normal`, `--width-narrow`, and `--duration-fast`.

@@ -20,12 +20,12 @@ import { flattenTree } from "shelving/util";
 const map = flattenTree(root);
 
 // Flat keys — what cross-references (`extends` / `overrides`) and README links resolve through.
-map.get("Store");                  // the `Store` element
-map.get("Store.get");              // the `Store.get` member (qualified `Class.member` key)
-map.get("Store")?.props.path;      // "/store/Store" — its stamped canonical URL
+map.get("Store"); // the `Store` element
+map.get("Store.get"); // the `Store.get` member (qualified `Class.member` key)
+map.get("Store")?.props.path; // "/store/Store" — its stamped canonical URL
 
 // Canonical path keys — what the router resolves a URL to.
-map.get("/store/Store");           // the same `Store` element
+map.get("/store/Store"); // the same `Store` element
 map.get("/store/Store")?.props.children; // …with its (stamped) children, so the map doubles as the tree
 
 // Merge several trees into one lookup (later writers win on the rare key collision).
@@ -39,14 +39,14 @@ import type { DocumentationElement } from "shelving/util";
 
 // A tree-documentation element carries structured API docs.
 const el: DocumentationElement = {
-  type: "tree-documentation",
-  key: "getFirst",
-  props: {
-    name: "getFirst",
-    kind: "function",
-    signatures: ["getFirst<T>(arr: T[]): T | undefined"],
-    params: [{ name: "arr", type: "T[]" }],
-    returns: [{ type: "T | undefined" }],
-  },
+	type: "tree-documentation",
+	key: "getFirst",
+	props: {
+		name: "getFirst",
+		kind: "function",
+		signatures: ["getFirst<T>(arr: T[]): T | undefined"],
+		params: [{ name: "arr", type: "T[]" }],
+		returns: [{ type: "T | undefined" }],
+	},
 };
 ```

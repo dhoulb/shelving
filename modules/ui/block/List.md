@@ -26,18 +26,18 @@ import { List } from "shelving/ui";
 ```tsx
 import { List } from "shelving/ui";
 
-<List gap="small">{items.map(item => item.label)}</List>
+<List gap="small">{items.map(item => item.label)}</List>;
 ```
 
 ## Styling
 
 `List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; apply `color=` (on the list or an ancestor scope) to recolour the markers, or reach for a per-property hook for a single change.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--list-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-| `--list-gap` | Space between items | `var(--space-xsmall)` |
-| `--list-indent` | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
-| `--list-marker-color` | Bullet / number colour | `var(--tint-80)` |
+| Variable              | Styles                               | Default                               |
+| --------------------- | ------------------------------------ | ------------------------------------- |
+| `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
+| `--list-gap`          | Space between items                  | `var(--space-xsmall)`                 |
+| `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
+| `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, and the tint-ladder step `--tint-80`. The `gap` variant comes from the shared `shelving/ui` styling system.

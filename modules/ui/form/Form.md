@@ -21,21 +21,21 @@ import { Form } from "shelving/ui";
 import { DATA, StringSchema, NumberSchema } from "shelving/schema";
 
 const PRODUCT_SCHEMA = DATA({
-  name: new StringSchema({ title: "Name", min: 1, max: 100 }),
-  price: new NumberSchema({ title: "Price", min: 0 }),
+	name: new StringSchema({ title: "Name", min: 1, max: 100 }),
+	price: new NumberSchema({ title: "Price", min: 0 }),
 });
 
 export function NewProductForm() {
-  return (
-    <Form
-      schema={PRODUCT_SCHEMA}
-      submit="Create product"
-      onSubmit={async data => {
-        await createProduct(data);
-        return "Product created"; // dispatched as a success notice
-      }}
-    />
-  );
+	return (
+		<Form
+			schema={PRODUCT_SCHEMA}
+			submit="Create product"
+			onSubmit={async data => {
+				await createProduct(data);
+				return "Product created"; // dispatched as a success notice
+			}}
+		/>
+	);
 }
 ```
 
@@ -46,23 +46,23 @@ import { Form } from "shelving/ui";
 import { DATA, StringSchema, NumberSchema, BOOLEAN } from "shelving/schema";
 
 const LISTING_SCHEMA = DATA({
-  title: new StringSchema({ title: "Title", min: 1, max: 80 }),
-  price: new NumberSchema({ title: "Price", min: 0 }),
-  published: BOOLEAN,
+	title: new StringSchema({ title: "Title", min: 1, max: 80 }),
+	price: new NumberSchema({ title: "Price", min: 0 }),
+	published: BOOLEAN,
 });
 
 export function ListingForm({ listing }: { listing?: typeof LISTING_SCHEMA.type }) {
-  return (
-    <Form
-      schema={LISTING_SCHEMA}
-      data={listing}
-      submit={listing ? "Save changes" : "Publish listing"}
-      onSubmit={async data => {
-        await saveListing(data);
-        return listing ? "Listing updated" : "Listing published";
-      }}
-    />
-  );
+	return (
+		<Form
+			schema={LISTING_SCHEMA}
+			data={listing}
+			submit={listing ? "Save changes" : "Publish listing"}
+			onSubmit={async data => {
+				await saveListing(data);
+				return listing ? "Listing updated" : "Listing published";
+			}}
+		/>
+	);
 }
 ```
 
@@ -74,19 +74,21 @@ Provide explicit `children` when you need control over field order, groupings, o
 import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from "shelving/ui";
 
 <Form schema={LISTING_SCHEMA} data={listing} onSubmit={handleSubmit}>
-  <Field title="Title" required>
-    <FormInput name="title" />
-  </Field>
-  <Field title="Price">
-    <FormInput name="price" />
-  </Field>
-  <FormInput name="published" />
-  <footer>
-    <SubmitButton>Save changes</SubmitButton>
-    <Button plain onClick={onCancel}>Cancel</Button>
-    <FormMessage />
-  </footer>
-</Form>
+	<Field title="Title" required>
+		<FormInput name="title" />
+	</Field>
+	<Field title="Price">
+		<FormInput name="price" />
+	</Field>
+	<FormInput name="published" />
+	<footer>
+		<SubmitButton>Save changes</SubmitButton>
+		<Button plain onClick={onCancel}>
+			Cancel
+		</Button>
+		<FormMessage />
+	</footer>
+</Form>;
 ```
 
 ## Notices and error surfacing
