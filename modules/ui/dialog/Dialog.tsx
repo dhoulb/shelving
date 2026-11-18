@@ -19,9 +19,10 @@ export interface DialogProps extends OptionalChildProps {
 }
 
 /**
- * Modal `<dialog>` element that opens on mount and includes a close button.
+ * Modal `<dialog>` element that opens on mount.
  *
- * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, the close button, or the Escape key.
+ * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, or the Escape key.
+ * - It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>`.
  * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
  * - It knows nothing about transitions. It fades in and out only when the update that mounts or unmounts it is a transition, e.g. from `<Dialogs>` or your own `startTransition()`. A `<Modal>` pinned to an edge then slides in its own layer.
  * - A change inside an open dialog (new content, a Suspense reveal) runs no view transition. The page ignores taps while one runs.
@@ -52,9 +53,6 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 					{...props}
 				>
 					<div className={getModuleClass(styles, "content")}>{children}</div>
-					<div className={getModuleClass(styles, "close")}>
-						<DialogCloseButton />
-					</div>
 				</dialog>
 			</ViewTransition>
 		</Suspense>
@@ -110,7 +108,9 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
 
 /**
  * Button that closes its wrapping `<dialog>`, showing an X icon by default.
- * - Styled with the shared `Button` classes (positioning comes from the `<Dialog>`'s own `.close` wrapper rules).
+ * - A `<Dialog>` has no close button of its own. Put this anywhere inside the dialog to add one.
+ * - It is fixed to the top-right corner of the screen, clear of the safe areas.
+ * - Styled with the shared `Button` classes.
  * - `plain` by default so only the icon shows until hover or focus — pass `plain={false}` for a solid button.
  *
  * @kind component
@@ -126,7 +126,7 @@ export function DialogCloseButton({
 		<button
 			type="button"
 			title="Close"
-			className={getClass(getButtonClass({ plain, ...variants }), className)}
+			className={getClass(getModuleClass(styles, "close"), getButtonClass({ plain, ...variants }), className)}
 			onClick={_closeOnButtonClick}
 		>
 			{children}
