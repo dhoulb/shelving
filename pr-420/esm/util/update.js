@@ -1,1 +1,1 @@
-import{mr,Qe}from"../chunk-8wtrypf1.js";import"../chunk-dqrf9k43.js";import"../chunk-ja5s4he5.js";import"../chunk-p7kb4pzq.js";import"../chunk-yyzgx7cd.js";import"../chunk-7nkm2zy8.js";import"../chunk-t8rkhq2a.js";export{mr as getUpdates,Qe as updateData};
+import{mr,Qe}from"../chunk-vjrjrhe9.js";import"../chunk-dqrf9k43.js";import"../chunk-4bzjm2wq.js";import"../chunk-4bfc9b4e.js";import"../chunk-0nx7rz3m.js";import"../chunk-z2sx2n1v.js";import"../chunk-t8rkhq2a.js";export{mr as getUpdates,Qe as updateData};
