@@ -11,10 +11,10 @@ Small set of guards and assertions for `undefined`. Useful in filter pipelines a
 import { isUndefined, isDefined, assertDefined, requireDefined, notUndefined, getUndefined } from "shelving/util";
 
 isUndefined(undefined); // true
-isUndefined(null);      // false
+isUndefined(null); // false
 
-isDefined(0);           // true
-isDefined(undefined);   // false
+isDefined(0); // true
+isDefined(undefined); // false
 
 // Filter undefined values from an array:
 const values = [1, undefined, 3, undefined, 5];

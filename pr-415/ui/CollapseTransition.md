@@ -19,11 +19,11 @@ A `<Transition>` preset that collapses its children in and out by animating thei
 import { CollapseTransition } from "shelving/ui";
 
 function Details({ open }: { open: boolean }) {
-  return open ? (
-    <CollapseTransition>
-      <Panel>…</Panel>
-    </CollapseTransition>
-  ) : null;
+	return open ? (
+		<CollapseTransition>
+			<Panel>…</Panel>
+		</CollapseTransition>
+	) : null;
 }
 ```
 

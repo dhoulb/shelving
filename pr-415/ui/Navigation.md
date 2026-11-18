@@ -45,10 +45,10 @@ Stacks and slides use the browser [Navigation API](https://developer.mozilla.org
 import { App, Navigation, Router } from "shelving/ui";
 
 <App root="https://example.com/">
-  <Navigation>
-    <Router routes={ROUTES}/>
-  </Navigation>
-</App>
+	<Navigation>
+		<Router routes={ROUTES} />
+	</Navigation>
+</App>;
 ```
 
 ### App with a tab bar
@@ -60,27 +60,29 @@ import { App, AppLayout, HorizontalTransition, Navigation, PageLoader, RouteCach
 
 const STACKS = ["/home", "/discover", "/profile"] as const;
 
-const TABS = <>
-  <StackButton stack="/home">Home</StackButton>
-  <StackButton stack="/discover">Discover</StackButton>
-  <StackButton stack="/profile">Profile</StackButton>
-</>;
+const TABS = (
+	<>
+		<StackButton stack="/home">Home</StackButton>
+		<StackButton stack="/discover">Discover</StackButton>
+		<StackButton stack="/profile">Profile</StackButton>
+	</>
+);
 
 <App root="https://example.com/">
-  <Navigation stacks={STACKS}>
-    <AppLayout nav={TABS}>
-      <HorizontalTransition>
-        <RouteCache>
-          <Scroll vertical cover>
-            <PageLoader>
-              <Router routes={ROUTES}/>
-            </PageLoader>
-          </Scroll>
-        </RouteCache>
-      </HorizontalTransition>
-    </AppLayout>
-  </Navigation>
-</App>
+	<Navigation stacks={STACKS}>
+		<AppLayout nav={TABS}>
+			<HorizontalTransition>
+				<RouteCache>
+					<Scroll vertical cover>
+						<PageLoader>
+							<Router routes={ROUTES} />
+						</PageLoader>
+					</Scroll>
+				</RouteCache>
+			</HorizontalTransition>
+		</AppLayout>
+	</Navigation>
+</App>;
 ```
 
 The tab bar is in the layout, outside the cache, so it stays still while pages slide. See "Composing an app" on `<App>` for the full nesting rules.
@@ -126,9 +128,9 @@ Read the store from anywhere in the tree with `requireNavigation()`:
 import { requireNavigation } from "shelving/ui";
 
 const nav = requireNavigation();
-nav.forward("/home/post/1");  // Open a page in the current stack.
-nav.back("/home");            // Go back to a page.
-nav.replace("/login");        // Change the URL of the current page.
+nav.forward("/home/post/1"); // Open a page in the current stack.
+nav.back("/home"); // Go back to a page.
+nav.replace("/login"); // Change the URL of the current page.
 ```
 
 See `NavigationStore` for what each method does.

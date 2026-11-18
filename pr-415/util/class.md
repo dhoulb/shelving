@@ -12,11 +12,11 @@ Type utilities and runtime helpers for working with class constructors and insta
 ```ts
 import { isConstructor, isInstance, assertInstance } from "shelving/util";
 
-isConstructor(class Foo {});    // true
-isConstructor(function () {});  // false — regular function, not a class
+isConstructor(class Foo {}); // true
+isConstructor(function () {}); // false — regular function, not a class
 
-isInstance(new Map(), Map);     // true
-isInstance({}, Map);            // false
+isInstance(new Map(), Map); // true
+isInstance({}, Map); // false
 
 assertInstance(value, MyClass); // throws RequiredError if not an instance
 ```
@@ -27,8 +27,12 @@ assertInstance(value, MyClass); // throws RequiredError if not an instance
 import { getGetter, getSetter } from "shelving/util";
 
 class MyClass {
-  get name() { return this._name; }
-  set name(v) { this._name = v; }
+	get name() {
+		return this._name;
+	}
+	set name(v) {
+		this._name = v;
+	}
 }
 
 const obj = new MyClass();

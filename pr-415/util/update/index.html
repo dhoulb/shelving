@@ -2,18 +2,18 @@
 
 const doc = { title: &quot;Draft&quot;, count: 5, tags: [&quot;a&quot;, &quot;b&quot;] };
 
-updateData(doc, { title: &quot;Published&quot; });        // { title: &quot;Published&quot;, count: 5, tags: [...] }
-updateData(doc, { &quot;=title&quot;: &quot;Final&quot; });         // same effect, more precise
-updateData(doc, { &quot;+=count&quot;: 3 });              // { ..., count: 8, ... }
-updateData(doc, { &quot;-=count&quot;: 1 });              // { ..., count: 4, ... }
-updateData(doc, { &quot;+[]tags&quot;: &quot;c&quot; });            // { ..., tags: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;] }
-updateData(doc, { &quot;-[]tags&quot;: &quot;a&quot; });            // { ..., tags: [&quot;b&quot;] }
-updateData(doc, { &quot;+[]tags&quot;: [&quot;c&quot;, &quot;d&quot;] });     // add multiple at once</code></pre></figure><h3 id="nested-paths">Nested paths</h3><figure><pre><code>import { updateData } from &quot;shelving/util&quot;;
+updateData(doc, { title: &quot;Published&quot; }); // { title: &quot;Published&quot;, count: 5, tags: [...] }
+updateData(doc, { &quot;=title&quot;: &quot;Final&quot; }); // same effect, more precise
+updateData(doc, { &quot;+=count&quot;: 3 }); // { ..., count: 8, ... }
+updateData(doc, { &quot;-=count&quot;: 1 }); // { ..., count: 4, ... }
+updateData(doc, { &quot;+[]tags&quot;: &quot;c&quot; }); // { ..., tags: [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;] }
+updateData(doc, { &quot;-[]tags&quot;: &quot;a&quot; }); // { ..., tags: [&quot;b&quot;] }
+updateData(doc, { &quot;+[]tags&quot;: [&quot;c&quot;, &quot;d&quot;] }); // add multiple at once</code></pre></figure><h3 id="nested-paths">Nested paths</h3><figure><pre><code>import { updateData } from &quot;shelving/util&quot;;
 
 const doc = { user: { name: &quot;Alice&quot;, score: 10 } };
 
-updateData(doc, { &quot;=user.name&quot;: &quot;Bob&quot; });       // { user: { name: &quot;Bob&quot;, score: 10 } }
-updateData(doc, { &quot;+=user.score&quot;: 5 });         // { user: { name: &quot;Alice&quot;, score: 15 } }</code></pre></figure><h3 id="inspecting-updates">Inspecting updates</h3><figure><pre><code>import { getUpdates } from &quot;shelving/util&quot;;
+updateData(doc, { &quot;=user.name&quot;: &quot;Bob&quot; }); // { user: { name: &quot;Bob&quot;, score: 10 } }
+updateData(doc, { &quot;+=user.score&quot;: 5 }); // { user: { name: &quot;Alice&quot;, score: 15 } }</code></pre></figure><h3 id="inspecting-updates">Inspecting updates</h3><figure><pre><code>import { getUpdates } from &quot;shelving/util&quot;;
 
 getUpdates({ &quot;+=count&quot;: 1, &quot;-[]tags&quot;: &quot;old&quot; });
 // [

@@ -20,13 +20,13 @@ Core helpers for checking, converting, sanitising, and transforming strings. Use
 ```ts
 import { isString, getString, requireString } from "shelving/util";
 
-isString("hi");       // true
-isString(42);         // false
+isString("hi"); // true
+isString(42); // false
 
-getString(42);         // "42"
-getString(true);       // "true"
+getString(42); // "42"
+getString(true); // "true"
 getString(new Date()); // ISO string e.g. "2024-01-15T00:00:00.000Z"
-getString({});         // undefined
+getString({}); // undefined
 ```
 
 ### Length checks
@@ -35,7 +35,7 @@ getString({});         // undefined
 import { isStringLength, assertStringLength } from "shelving/util";
 
 isStringLength("hello", 1, 10); // true
-isStringLength("", 1);          // false
+isStringLength("", 1); // false
 ```
 
 ### Sanitising user input
@@ -43,7 +43,7 @@ isStringLength("", 1);          // false
 ```ts
 import { sanitizeText, sanitizeMultilineText } from "shelving/util";
 
-sanitizeText("  Hello\x00  World  ");  // "Hello World"
+sanitizeText("  Hello\x00  World  "); // "Hello World"
 sanitizeMultilineText("line1\r\nline2\n\n\nline3"); // "line1\nline2\n\nline3"
 ```
 
@@ -53,10 +53,10 @@ sanitizeMultilineText("line1\r\nline2\n\n\nline3"); // "line1\nline2\n\nline3"
 import { simplifyString, getSlug, requireSlug, getRef } from "shelving/util";
 
 simplifyString("Héllo Wörld! 😂"); // "hello world"
-getSlug("Hello World!");           // "hello-world"
-getSlug("!!!");                    // undefined (empty after simplification)
-requireSlug("!!!");                // throws RequiredError
-getRef("Hello World");             // "helloworld" (no separator)
+getSlug("Hello World!"); // "hello-world"
+getSlug("!!!"); // undefined (empty after simplification)
+requireSlug("!!!"); // throws RequiredError
+getRef("Hello World"); // "helloworld" (no separator)
 ```
 
 ### Word splitting and limiting
@@ -64,10 +64,10 @@ getRef("Hello World");             // "helloworld" (no separator)
 ```ts
 import { getWords, limitString, splitString, getFirstLine } from "shelving/util";
 
-getWords(`hello "world foo" bar`);  // ["hello", "world foo", "bar"]
+getWords(`hello "world foo" bar`); // ["hello", "world foo", "bar"]
 limitString("A long string here", 10); // "A long…"
-splitString("a/b/c", "/", 2);         // ["a", "b/c"]  — excess joins last segment
-getFirstLine("line one\nline two");    // "line one"
+splitString("a/b/c", "/", 2); // ["a", "b/c"]  — excess joins last segment
+getFirstLine("line one\nline two"); // "line one"
 ```
 
 ### Joining

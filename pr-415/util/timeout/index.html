@@ -3,11 +3,11 @@
 // Create with a default callback and delay.
 const t = new Timeout(() =&gt; console.log(&quot;done!&quot;), 500);
 
-t.set();           // starts a 500 ms timer
-t.set();           // cancels the previous timer, starts a fresh 500 ms timer
-t.exists;          // true
-t.clear();         // cancels the timer
-t.exists;          // false
+t.set(); // starts a 500 ms timer
+t.set(); // cancels the previous timer, starts a fresh 500 ms timer
+t.exists; // true
+t.clear(); // cancels the timer
+t.exists; // false
 
 // Override callback or delay per call.
 t.set(() =&gt; save(), 1000);</code></pre></figure><h3 id="debouncing">Debouncing</h3><figure><pre><code>const debounced = new Timeout(doSearch, 300);

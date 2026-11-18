@@ -4,25 +4,31 @@ import { createDBContext } from &quot;shelving/react&quot;;
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
 function UserCard({ id }: { id: string }) {
-  const store = useItem(Users, id); // ItemStore — suspends while loading.
-  const user = store.value;
-  return &lt;div&gt;{user.name}&lt;/div&gt;;
+	const store = useItem(Users, id); // ItemStore — suspends while loading.
+	const user = store.value;
+	return &lt;div&gt;{user.name}&lt;/div&gt;;
 }
 
 function UserList() {
-  const store = useQuery(Users, { $order: &quot;name&quot; }); // QueryStore.
-  const users = store.value;
-  return &lt;ul&gt;{users.map(u =&gt; &lt;li key={u.id}&gt;{u.name}&lt;/li&gt;)}&lt;/ul&gt;;
+	const store = useQuery(Users, { $order: &quot;name&quot; }); // QueryStore.
+	const users = store.value;
+	return (
+		&lt;ul&gt;
+			{users.map(u =&gt; (
+				&lt;li key={u.id}&gt;{u.name}&lt;/li&gt;
+			))}
+		&lt;/ul&gt;
+	);
 }
 
 function App() {
-  return (
-    &lt;DBContext&gt;
-      &lt;ErrorBoundary fallback={&lt;p&gt;Error&lt;/p&gt;}&gt;
-        &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
-          &lt;UserList /&gt;
-        &lt;/Suspense&gt;
-      &lt;/ErrorBoundary&gt;
-    &lt;/DBContext&gt;
-  );
+	return (
+		&lt;DBContext&gt;
+			&lt;ErrorBoundary fallback={&lt;p&gt;Error&lt;/p&gt;}&gt;
+				&lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+					&lt;UserList /&gt;
+				&lt;/Suspense&gt;
+			&lt;/ErrorBoundary&gt;
+		&lt;/DBContext&gt;
+	);
 }</code></pre></figure><p>Both hooks accept nullish arguments — passing <code class="code_nt1Inw">undefined</code> for the collection, id, or query returns <code class="code_nt1Inw">undefined</code> instead of a store, keeping the hook call unconditional. Calling either hook outside a <a href="https://shelving.cc/pr-415/react/DBContext" class="link_2NDd3g"><code class="code_nt1Inw">&lt;DBContext&gt;</code></a> throws a <a href="https://shelving.cc/pr-415/error/RequiredError" class="link_2NDd3g"><code class="code_nt1Inw">RequiredError</code></a>.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/react/createDBContext","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

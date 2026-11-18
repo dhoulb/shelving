@@ -28,10 +28,10 @@ A log-in screen, in the middle of a layout's scroll box:
 
 ```tsx
 <Page title="Log in">
-  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
-    <LoginForm />
-  </Block>
-</Page>
+	<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+		<LoginForm />
+	</Block>
+</Page>;
 ```
 
 

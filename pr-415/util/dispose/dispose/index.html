@@ -10,15 +10,15 @@ await awaitDispose(asyncConnection, syncResource, () =&gt; doCleanup(), pendingW
 // All three run even if the first throws.
 dispose(resourceA, resourceB, resourceC);</code></pre></figure><h3 id="type-guards">Type guards</h3><figure><pre><code>import { isDisposable, isAsyncDisposable } from &quot;shelving/util&quot;;
 
-isDisposable(obj);      // true if obj[Symbol.dispose] is a function
+isDisposable(obj); // true if obj[Symbol.dispose] is a function
 isAsyncDisposable(obj); // true if obj[Symbol.asyncDispose] is a function</code></pre></figure><h3 id="disposablemap">DisposableMap</h3><figure><pre><code>import { DisposableMap } from &quot;shelving/util&quot;;
 
 const cache = new DisposableMap&lt;string, Connection&gt;();
 
-cache.set(&quot;db&quot;, openConnection());     // stored
-cache.set(&quot;db&quot;, reopenConnection());   // old connection disposed automatically
-cache.delete(&quot;db&quot;);                    // connection disposed
-cache[Symbol.dispose]();               // all remaining connections disposed</code></pre></figure><h3 id="disposableset">DisposableSet</h3><figure><pre><code>import { DisposableSet } from &quot;shelving/util&quot;;
+cache.set(&quot;db&quot;, openConnection()); // stored
+cache.set(&quot;db&quot;, reopenConnection()); // old connection disposed automatically
+cache.delete(&quot;db&quot;); // connection disposed
+cache[Symbol.dispose](); // all remaining connections disposed</code></pre></figure><h3 id="disposableset">DisposableSet</h3><figure><pre><code>import { DisposableSet } from &quot;shelving/util&quot;;
 
 const listeners = new DisposableSet&lt;EventListener&gt;();
 listeners.add(new EventListener());

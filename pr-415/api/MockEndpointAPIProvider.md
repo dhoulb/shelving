@@ -14,18 +14,16 @@ The constructor takes the `handlers` array, a `context` value passed to every ha
 ## Usage
 
 ```ts
-import { MockEndpointAPIProvider } from "shelving/api"
+import { MockEndpointAPIProvider } from "shelving/api";
 
-const handlers = [
-  getUser.handler(async ({ id }) => ({ id, name: "Alice", email: "alice@example.com" })),
-]
+const handlers = [getUser.handler(async ({ id }) => ({ id, name: "Alice", email: "alice@example.com" }))];
 
-const api = new MockEndpointAPIProvider(handlers, undefined)
+const api = new MockEndpointAPIProvider(handlers, undefined);
 
-const user = await api.call(getUser, { id: "u_1" })
+const user = await api.call(getUser, { id: "u_1" });
 // user == { id: "u_1", name: "Alice", email: "alice@example.com" }
 
-console.log(api.requestCalls) // inspect recorded calls
+console.log(api.requestCalls); // inspect recorded calls
 ```
 
 

@@ -19,11 +19,11 @@ import { Timeout } from "shelving/util";
 // Create with a default callback and delay.
 const t = new Timeout(() => console.log("done!"), 500);
 
-t.set();           // starts a 500 ms timer
-t.set();           // cancels the previous timer, starts a fresh 500 ms timer
-t.exists;          // true
-t.clear();         // cancels the timer
-t.exists;          // false
+t.set(); // starts a 500 ms timer
+t.set(); // cancels the previous timer, starts a fresh 500 ms timer
+t.exists; // true
+t.clear(); // cancels the timer
+t.exists; // false
 
 // Override callback or delay per call.
 t.set(() => save(), 1000);

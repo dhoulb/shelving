@@ -9,21 +9,31 @@ Type guards, assertions, and utility types for `null` and nullish (`null | undef
 
 ```ts
 import {
-  isNull, notNull, assertNull, assertNotNull, requireNotNull,
-  isNullish, notNullish, assertNullish, assertNotNullish, requireNotNullish,
-  getNull, type Nullable, type Nullish,
+	isNull,
+	notNull,
+	assertNull,
+	assertNotNull,
+	requireNotNull,
+	isNullish,
+	notNullish,
+	assertNullish,
+	assertNotNullish,
+	requireNotNullish,
+	getNull,
+	type Nullable,
+	type Nullish,
 } from "shelving/util";
 
 // Null checks.
-isNull(null);            // true
-notNull(null);           // false
-requireNotNull(null);    // throws RequiredError
-requireNotNull("hi");    // "hi"
+isNull(null); // true
+notNull(null); // false
+requireNotNull(null); // throws RequiredError
+requireNotNull("hi"); // "hi"
 
 // Nullish checks (null or undefined).
-isNullish(undefined);    // true
-isNullish(0);            // false
-notNullish(0);           // true
+isNullish(undefined); // true
+isNullish(0); // false
+notNullish(0); // true
 requireNotNullish(null); // throws RequiredError
 
 // Filter null values from an array using notNull as a type-guard predicate.

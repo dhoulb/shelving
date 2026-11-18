@@ -24,13 +24,17 @@ const strings = Array.from(filterItems(["a", 1, "b", 2], isString));
 
 // Immutable array filter — same ref when nothing changes.
 const arr = ["a", "b", "c"];
-const filtered = filterArray(arr, (s) => s !== "b"); // ["a", "c"]
-filterArray(arr, () => true) === arr;                 // true  (same reference)
+const filtered = filterArray(arr, s => s !== "b"); // ["a", "c"]
+filterArray(arr, () => true) === arr; // true  (same reference)
 
 // Async stream filter.
-async function* source() { yield 1; yield 2; yield 3; }
-for await (const n of filterSequence(source(), (n) => n > 1)) {
-  console.log(n); // 2, 3
+async function* source() {
+	yield 1;
+	yield 2;
+	yield 3;
+}
+for await (const n of filterSequence(source(), n => n > 1)) {
+	console.log(n); // 2, 3
 }
 ```
 

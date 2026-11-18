@@ -13,17 +13,30 @@ An **entry** is a `readonly [key, value]` pair — the shape produced by `Map.en
 import { getEntries, getEntryKeys, getEntryValues } from "shelving/util";
 
 const obj = { a: 1, b: 2 };
-const map = new Map([["c", 3], ["d", 4]]);
+const map = new Map([
+	["c", 3],
+	["d", 4],
+]);
 const arr = [10, 20, 30];
 const set = new Set(["x", "y"]);
 
 // getEntries accepts objects, Maps, arrays, Sets, or any Entry iterable — including multiple at once.
-for (const [k, v] of getEntries(obj, map)) { /* ... */ }
-for (const [i, v] of getEntries(arr)) { /* ... */ }
-for (const [k] of getEntries(set)) { /* ... */ } // Sets yield [value, value] entries
+for (const [k, v] of getEntries(obj, map)) {
+	/* ... */
+}
+for (const [i, v] of getEntries(arr)) {
+	/* ... */
+}
+for (const [k] of getEntries(set)) {
+	/* ... */
+} // Sets yield [value, value] entries
 
-for (const k of getEntryKeys(getEntries(obj))) { /* k = "a", "b" */ }
-for (const v of getEntryValues(getEntries(map))) { /* v = 3, 4 */ }
+for (const k of getEntryKeys(getEntries(obj))) {
+	/* k = "a", "b" */
+}
+for (const v of getEntryValues(getEntries(map))) {
+	/* v = 3, 4 */
+}
 ```
 
 ### Extracting from a single entry
@@ -32,7 +45,7 @@ for (const v of getEntryValues(getEntries(map))) { /* v = 3, 4 */ }
 import { getEntryKey, getEntryValue } from "shelving/util";
 
 const entry = ["name", "Alice"] as const;
-getEntryKey(entry);   // "name"
+getEntryKey(entry); // "name"
 getEntryValue(entry); // "Alice"
 ```
 

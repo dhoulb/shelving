@@ -4,32 +4,38 @@ import { createDBContext } from &quot;shelving/react&quot;;
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
 function UserCard({ id }: { id: string }) {
-  const user = useItem(Users, id).value; // Suspends while loading.
-  return &lt;li&gt;{user.name}&lt;/li&gt;;
+	const user = useItem(Users, id).value; // Suspends while loading.
+	return &lt;li&gt;{user.name}&lt;/li&gt;;
 }
 
 function UserList() {
-  const users = useQuery(Users, { $order: &quot;name&quot; }).value;
-  return &lt;ul&gt;{users.map(u =&gt; &lt;UserCard key={u.id} id={u.id} /&gt;)}&lt;/ul&gt;;
+	const users = useQuery(Users, { $order: &quot;name&quot; }).value;
+	return (
+		&lt;ul&gt;
+			{users.map(u =&gt; (
+				&lt;UserCard key={u.id} id={u.id} /&gt;
+			))}
+		&lt;/ul&gt;
+	);
 }
 
 function App() {
-  return (
-    &lt;DBContext&gt;
-      &lt;ErrorBoundary fallback={&lt;p&gt;Something went wrong.&lt;/p&gt;}&gt;
-        &lt;Suspense fallback={&lt;p&gt;Loading…&lt;/p&gt;}&gt;
-          &lt;UserList /&gt;
-        &lt;/Suspense&gt;
-      &lt;/ErrorBoundary&gt;
-    &lt;/DBContext&gt;
-  );
+	return (
+		&lt;DBContext&gt;
+			&lt;ErrorBoundary fallback={&lt;p&gt;Something went wrong.&lt;/p&gt;}&gt;
+				&lt;Suspense fallback={&lt;p&gt;Loading…&lt;/p&gt;}&gt;
+					&lt;UserList /&gt;
+				&lt;/Suspense&gt;
+			&lt;/ErrorBoundary&gt;
+		&lt;/DBContext&gt;
+	);
 }</code></pre></figure><h3 id="building-a-store-inside-a-component">Building a store inside a component</h3><p>A store that depends on props can&#x27;t live at module scope. <a href="https://shelving.cc/pr-415/react/useInstance" class="link_2NDd3g"><code class="code_nt1Inw">useInstance()</code></a> constructs it once and keeps it stable across renders, while <a href="https://shelving.cc/pr-415/react/useStore" class="link_2NDd3g"><code class="code_nt1Inw">useStore()</code></a> subscribes the component to its updates.</p><figure><pre><code>import { useInstance, useStore } from &quot;shelving/react&quot;;
 import { BooleanStore } from &quot;shelving/store&quot;;
 
 function Toggle() {
-  const open = useInstance(BooleanStore); // Created once, stable across renders.
-  useStore(open); // Re-render whenever the store changes.
-  return &lt;button onClick={() =&gt; open.toggle()}&gt;{open.value ? &quot;Open&quot; : &quot;Closed&quot;}&lt;/button&gt;;
+	const open = useInstance(BooleanStore); // Created once, stable across renders.
+	useStore(open); // Re-render whenever the store changes.
+	return &lt;button onClick={() =&gt; open.toggle()}&gt;{open.value ? &quot;Open&quot; : &quot;Closed&quot;}&lt;/button&gt;;
 }</code></pre></figure></div></section><section class="section_IIDW3Q block_3K4IUA"><h2 class="heading_Wx8_nw block_3K4IUA">Functions</h2><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/createAPIContext" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">createAPIContext()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Create an API context.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">createAPIContext(provider: APIProvider&lt;P, R&gt;): APIContext&lt;P, R&gt;</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/createDBContext" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">createDBContext()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Create a data context</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">createDBContext(provider: DBProvider&lt;I, T&gt;): DBContext&lt;I, T&gt;</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useInstance" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useInstance()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Use a memoised class instance.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useInstance(Constructor: new (...a: A) =&gt; T, ...args: A): T</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useLazy" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useLazy()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Use a memoised value with lazy initialisation.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useLazy(value: (...args: A) =&gt; T, ...args: A): T</pre><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useLazy(value: T, ...args: Arguments): T</pre><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useLazy(value: Lazy&lt;T, A&gt;, ...args: A): T</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useMap" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useMap()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Create a mutable Map that persists for the lifetime of the component.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useMap(): Map&lt;K, V&gt;</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useReduce" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useReduce()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Use memoised value with reduction logic.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useReduce(reduce: (previous: T | undefined, ...a: A) =&gt; T, ...args: A): T</pre><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useReduce(reduce: (previous: T | undefined, ...a: A) =&gt; T | undefined, ...args: A): T | undefined</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useSequence" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useSequence()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Subscribe to an async iterable for the lifetime of the component.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useSequence(sequence?: AsyncIterable&lt;T&gt;): T | undefined</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w blue_-9zNog"><a href="https://shelving.cc/pr-415/react/useStore" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">useStore()<span class="tag_i6ISOQ tint tint_tcXn_w blue_-9zNog">function</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Subscribe to a Shelving Store instance to refresh this component when its value changes.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useStore(store: T): T</pre><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">useStore(store?: T | undefined): T | undefined</pre></div></article></section><section class="section_IIDW3Q block_3K4IUA"><h2 class="heading_Wx8_nw block_3K4IUA">Interfaces</h2><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w green_-9zNog"><a href="https://shelving.cc/pr-415/react/APIContext" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">APIContext<span class="tag_i6ISOQ tint tint_tcXn_w green_-9zNog">interface</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">Bundle of hooks and a provider component returned by createAPIContext()</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">{
 	useAPI&lt;PP extends P, RR extends R&gt;(this: void, endpoint: Endpoint&lt;PP, RR&gt;, payload: PP): EndpointStore&lt;PP, RR&gt;;
 	useAPI&lt;PP extends P, RR extends R&gt;(this: void, endpoint: Nullish&lt;Endpoint&lt;PP, RR&gt;&gt;, payload: PP): EndpointStore&lt;PP, RR&gt; | undefined;

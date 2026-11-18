@@ -2,17 +2,17 @@
 import { useStore } from &quot;shelving/react&quot;;
 
 function UserCard({ store }: { store: Store&lt;User&gt; }) {
-  useStore(store); // Subscribe — re-renders when the store updates.
-  const user = store.value; // Throws Promise (loading) or reason (error).
-  return &lt;div&gt;{user.name}&lt;/div&gt;;
+	useStore(store); // Subscribe — re-renders when the store updates.
+	const user = store.value; // Throws Promise (loading) or reason (error).
+	return &lt;div&gt;{user.name}&lt;/div&gt;;
 }
 
 function App() {
-  return (
-    &lt;ErrorBoundary fallback={&lt;p&gt;Something went wrong.&lt;/p&gt;}&gt;
-      &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
-        &lt;UserCard store={userStore} /&gt;
-      &lt;/Suspense&gt;
-    &lt;/ErrorBoundary&gt;
-  );
+	return (
+		&lt;ErrorBoundary fallback={&lt;p&gt;Something went wrong.&lt;/p&gt;}&gt;
+			&lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+				&lt;UserCard store={userStore} /&gt;
+			&lt;/Suspense&gt;
+		&lt;/ErrorBoundary&gt;
+	);
 }</code></pre></figure><p>The argument is optional — passing <code class="code_nt1Inw">undefined</code> is allowed (the hook is still called unconditionally, satisfying the rules of hooks) and returns <code class="code_nt1Inw">undefined</code>.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/react/useStore","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

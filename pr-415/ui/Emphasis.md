@@ -21,16 +21,16 @@ Emphasised text — renders an `<em>` element for stress emphasis, the kind that
 import { Paragraph, Emphasis } from "shelving/ui";
 
 <Paragraph>
-  You were meant to turn <Emphasis>left</Emphasis>.
-</Paragraph>
+	You were meant to turn <Emphasis>left</Emphasis>.
+</Paragraph>;
 ```
 
 ## Styling
 
 `Emphasis` only sets its font style and inherits everything else from its surroundings.
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable           | Styles     | Default  |
+| ------------------ | ---------- | -------- |
 | `--emphasis-style` | Font style | `italic` |
 
 

@@ -24,12 +24,12 @@ Unlike a generator, a `Sequence` places no one-shot constraint on iteration — 
 import { Sequence } from "shelving/sequence";
 
 class CountdownSequence extends Sequence<number, void, void> {
-  constructor(private n: number) { super(); }
-  async next() {
-    return this.n > 0
-      ? { done: false as const, value: this.n-- }
-      : { done: true as const, value: undefined };
-  }
+	constructor(private n: number) {
+		super();
+	}
+	async next() {
+		return this.n > 0 ? { done: false as const, value: this.n-- } : { done: true as const, value: undefined };
+	}
 }
 ```
 

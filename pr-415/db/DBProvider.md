@@ -19,10 +19,10 @@ Concrete backends implement the abstract methods; the base class derives `requir
 Type code that accepts "any database" against `DBProvider` so an in-memory store, a validated chain, or a SQL backend are all interchangeable:
 
 ```ts
-import type { DBProvider } from "shelving/db"
+import type { DBProvider } from "shelving/db";
 
 async function publishPost(provider: DBProvider, id: string) {
-  await provider.updateItem(POSTS, id, { published: true });
+	await provider.updateItem(POSTS, id, { published: true });
 }
 ```
 
@@ -38,10 +38,10 @@ The derived reads (`requireItem`, `getFirst`, `requireFirst`) and the default `c
 
 ```ts
 await provider.transact(async db => {
-  const from = await db.requireItem(ACCOUNTS, "alice");
-  const to = await db.requireItem(ACCOUNTS, "bob");
-  await db.updateItem(ACCOUNTS, "alice", { balance: from.balance - 100 });
-  await db.updateItem(ACCOUNTS, "bob", { balance: to.balance + 100 });
+	const from = await db.requireItem(ACCOUNTS, "alice");
+	const to = await db.requireItem(ACCOUNTS, "bob");
+	await db.updateItem(ACCOUNTS, "alice", { balance: from.balance - 100 });
+	await db.updateItem(ACCOUNTS, "bob", { balance: to.balance + 100 });
 });
 ```
 

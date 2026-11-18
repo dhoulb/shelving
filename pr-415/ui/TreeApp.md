@@ -21,11 +21,11 @@ The entry point for a tree-based documentation site. Given a `TreeElement` from 
 - Only directories and files (plus `kind: "module"` symbols) appear in the navigation — code symbols are kept off the sidebar but still get their own pages.
 - Every renderer is overridable. Each dispatch layer is a `[Mapping, Mapper]` pair built by `createMapper()`; wrap the app (or any subtree) in the matching `*Mapping` component to swap a renderer for one element type without touching anything else:
 
-  | Mapping pair | Overrides |
-  |---|---|
+  | Mapping pair                           | Overrides                                         |
+  | -------------------------------------- | ------------------------------------------------- |
   | `TreePageMapping` / `TreeRouterMapper` | Full-page renderer (dispatched by `<TreeRouter>`) |
-  | `TreeMenuMapping` / `TreeMenuMapper` | Sidebar menu item |
-  | `TreeCardMapping` / `TreeCardMapper` | Card in a listing |
+  | `TreeMenuMapping` / `TreeMenuMapper`   | Sidebar menu item                                 |
+  | `TreeCardMapping` / `TreeCardMapper`   | Card in a listing                                 |
 
 ## Usage
 
@@ -35,7 +35,7 @@ The entry point for a tree-based documentation site. Given a `TreeElement` from 
 import { TreeApp } from "shelving/ui";
 
 // `tree` is a TreeElement returned by DirectoryExtractor (see /extract).
-<TreeApp tree={tree} />
+<TreeApp tree={tree} />;
 ```
 
 That single line produces a complete documentation site.
@@ -45,7 +45,7 @@ That single line produces a complete documentation site.
 Extra `routes` are merged before the tree routes, so they take precedence on conflicts.
 
 ```tsx
-<TreeApp tree={tree} routes={{ "/changelog": ChangelogPage }} />
+<TreeApp tree={tree} routes={{ "/changelog": ChangelogPage }} />;
 ```
 
 ### Overriding a renderer
@@ -56,8 +56,8 @@ Wrap the app (or any subtree) in a `*Mapping` component to replace the renderer 
 import { TreeApp, TreePageMapping } from "shelving/ui";
 
 <TreePageMapping mapping={{ "tree-element": MyTreePage }}>
-  <TreeApp tree={tree} />
-</TreePageMapping>
+	<TreeApp tree={tree} />
+</TreePageMapping>;
 ```
 
 The same pattern works for `TreeMenuMapping` (sidebar items) and `TreeCardMapping` (cards inside directory listings).

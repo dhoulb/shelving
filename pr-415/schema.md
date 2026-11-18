@@ -29,35 +29,35 @@ Schema functionality in Shelving follows the **robustness principle**: "be conse
 
 Every schema carries optional display metadata set at construction time:
 
-| Property      | Default         | Purpose                                            |
-| ------------- | --------------- | -------------------------------------------------- |
+| Property             | Default         | Purpose                                           |
+| -------------------- | --------------- | ------------------------------------------------- |
 | `Schema.one`         | `"value"`       | Singular noun, e.g. `"product"`                   |
 | `Schema.many`        | `one + "s"`     | Plural noun, e.g. `"products"`                    |
 | `Schema.title`       | `""`            | Human-readable label for a field                  |
 | `Schema.description` | `""`            | Longer description for a field                    |
 | `Schema.placeholder` | `""`            | Placeholder text for an input                     |
 | `Schema.value`       | schema-specific | Default used when `validate(undefined)` is called |
-| `Schema.format()`      | schema-specific | Display formatter for downstream form and UI use  |
+| `Schema.format()`    | schema-specific | Display formatter for downstream form and UI use  |
 
 ### Sugar instances and factories
 
 For convenience the `shelving/schema` module offers sugar constants and factories to improve the readability of code that creates complex schemas. Sugar instances are pre-instantiated copies of `Schema` classes — by convention an instantiated schema is named in `ALL_CAPS`, a convention you will find it convenient to use in your own codebase too. Sugar factories are functions like `OPTIONAL()` and `DATA()` that build a configured schema for you.
 
 | Sugar instance / factory | Validated type       |
-| ----------------------- | -------------------- |
-| `STRING`                | `string`             |
-| `NUMBER`                | `number`             |
-| `CURRENCY_AMOUNT(code)` | `number`             |
-| `BOOLEAN`               | `boolean`            |
-| `DATA(props)`           | `T` (plain object)   |
-| `ARRAY(itemSchema)`     | `readonly T[]`       |
-| `CHOICE(options)`       | union of string keys |
-| `NULLABLE(schema)`      | `T \| null`          |
-| `OPTIONAL(schema)`      | `T \| undefined`     |
-| `PARTIAL(schema)`       | `Partial<T>`         |
-| `ITEM(idSchema, props)` | `{ id: I } & T`      |
-| `UPDATES(dataSchema)`   | `Updates<T>`         |
-| `QUERY(dataSchema)`     | `Query<T>`           |
+| ------------------------ | -------------------- |
+| `STRING`                 | `string`             |
+| `NUMBER`                 | `number`             |
+| `CURRENCY_AMOUNT(code)`  | `number`             |
+| `BOOLEAN`                | `boolean`            |
+| `DATA(props)`            | `T` (plain object)   |
+| `ARRAY(itemSchema)`      | `readonly T[]`       |
+| `CHOICE(options)`        | union of string keys |
+| `NULLABLE(schema)`       | `T \| null`          |
+| `OPTIONAL(schema)`       | `T \| undefined`     |
+| `PARTIAL(schema)`        | `Partial<T>`         |
+| `ITEM(idSchema, props)`  | `{ id: I } & T`      |
+| `UPDATES(dataSchema)`    | `Updates<T>`         |
+| `QUERY(dataSchema)`      | `Query<T>`           |
 
 ## Usage
 
@@ -67,10 +67,10 @@ Schemas compose: primitives, wrappers (`NULLABLE()`, `OPTIONAL()`, `ARRAY()`), a
 import { ITEM, STRING, REQUIRED_STRING, NUMBER, ARRAY, OPTIONAL, INTEGER } from "shelving/schema";
 
 const PRODUCT = ITEM(INTEGER, {
-  name: REQUIRED_STRING,
-  price: NUMBER,
-  tags: ARRAY(STRING),
-  notes: OPTIONAL(STRING),
+	name: REQUIRED_STRING,
+	price: NUMBER,
+	tags: ARRAY(STRING),
+	notes: OPTIONAL(STRING),
 });
 
 PRODUCT.validate({ id: 1, name: "Widget", price: 9.99, tags: "a,b" });

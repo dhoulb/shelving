@@ -15,15 +15,15 @@ Dispatches a `notice` event so the global `<Notices>` list can display it. This 
 - The event bubbles, so any ancestor subscribed with `subscribeNotices()` receives it; it defaults to dispatching on `window`.
 - A family of helpers builds on `notify`:
 
-| Function | What it does |
-|---|---|
-| `notify(message, status?, el?)` | Dispatch a notice event (defaults to `window`) |
-| `notifySuccess(message, el?)` | Shorthand for a `"success"` notice |
-| `notifyError(message, el?)` | Shorthand for an `"error"` notice |
-| `notifyThrown(thrown, el?)` | Extract a message from a caught value and dispatch an error |
-| `callNotified(callback, ...args)` | Run a callback; dispatch success or error automatically |
-| `awaitNotified(promise)` | Same for an already-pending promise |
-| `subscribeNotices(callback, el?)` | Listen for notice events; returns an unsubscribe function |
+| Function                          | What it does                                                |
+| --------------------------------- | ----------------------------------------------------------- |
+| `notify(message, status?, el?)`   | Dispatch a notice event (defaults to `window`)              |
+| `notifySuccess(message, el?)`     | Shorthand for a `"success"` notice                          |
+| `notifyError(message, el?)`       | Shorthand for an `"error"` notice                           |
+| `notifyThrown(thrown, el?)`       | Extract a message from a caught value and dispatch an error |
+| `callNotified(callback, ...args)` | Run a callback; dispatch success or error automatically     |
+| `awaitNotified(promise)`          | Same for an already-pending promise                         |
+| `subscribeNotices(callback, el?)` | Listen for notice events; returns an unsubscribe function   |
 
 ## Usage
 
@@ -39,8 +39,8 @@ import { callNotified } from "shelving/ui";
 
 // Return a string for success; throw for error.
 callNotified(async () => {
-  await saveData();
-  return "Saved!";
+	await saveData();
+	return "Saved!";
 });
 ```
 

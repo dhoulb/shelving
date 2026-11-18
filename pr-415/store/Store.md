@@ -38,7 +38,7 @@ Iterating emits the current value first (if one exists), then each subsequent va
 
 ```ts
 for await (const v of store) {
-  console.log(v); // 43, then any future values
+	console.log(v); // 43, then any future values
 }
 ```
 
@@ -46,9 +46,9 @@ for await (const v of store) {
 
 ```ts
 if (store.loading) {
-  // No value yet — safe to check without risk of throwing.
+	// No value yet — safe to check without risk of throwing.
 } else {
-  console.log(store.value);
+	console.log(store.value);
 }
 ```
 
@@ -58,8 +58,10 @@ if (store.loading) {
 
 ```ts
 store.starter = () => {
-  const id = setInterval(() => { store.value = Date.now(); }, 1000);
-  return () => clearInterval(id);
+	const id = setInterval(() => {
+		store.value = Date.now();
+	}, 1000);
+	return () => clearInterval(id);
 };
 ```
 
@@ -69,7 +71,7 @@ store.starter = () => {
 
 ```ts
 for await (const _ of store.through(someStream)) {
-  // store.value is updated on each iteration
+	// store.value is updated on each iteration
 }
 ```
 

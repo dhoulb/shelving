@@ -15,11 +15,11 @@ Lightweight, deterministic string-to-number hashing. Useful for consistently map
 ```ts
 import { hashString, hashStringBetween } from "shelving/util";
 
-hashString("alice");              // 510  (stable across calls)
-hashString("bob");                // 307
+hashString("alice"); // 510  (stable across calls)
+hashString("bob"); // 307
 
 // Map a username to one of 10 avatar colours.
-const colorIndex = hashStringBetween("alice", 0, 10);  // 0–9
+const colorIndex = hashStringBetween("alice", 0, 10); // 0–9
 ```
 
 

@@ -16,11 +16,11 @@ Encode and decode data to and from standard Base64 and URL-safe Base64 (Base64UR
 ```ts
 import { encodeBase64, decodeBase64String, decodeBase64Bytes } from "shelving/util";
 
-encodeBase64("hello");           // "aGVsbG8="
-encodeBase64("hello", false);   // "aGVsbG8"  (no padding)
+encodeBase64("hello"); // "aGVsbG8="
+encodeBase64("hello", false); // "aGVsbG8"  (no padding)
 
 decodeBase64String("aGVsbG8="); // "hello"
-decodeBase64Bytes("aGVsbG8=");  // Uint8Array
+decodeBase64Bytes("aGVsbG8="); // Uint8Array
 ```
 
 ### URL-safe Base64 (Base64URL)
@@ -28,11 +28,11 @@ decodeBase64Bytes("aGVsbG8=");  // Uint8Array
 ```ts
 import { encodeBase64URL, decodeBase64URLString, decodeBase64URLBytes } from "shelving/util";
 
-encodeBase64URL("hello");            // "aGVsbG8"  (no padding by default)
-encodeBase64URL("hello", true);     // "aGVsbG8="
+encodeBase64URL("hello"); // "aGVsbG8"  (no padding by default)
+encodeBase64URL("hello", true); // "aGVsbG8="
 
-decodeBase64URLString("aGVsbG8");   // "hello"
-decodeBase64URLBytes("aGVsbG8");    // Uint8Array
+decodeBase64URLString("aGVsbG8"); // "hello"
+decodeBase64URLBytes("aGVsbG8"); // Uint8Array
 ```
 
 ### Encoding binary data

@@ -27,8 +27,8 @@ The base View Transition wrapper. It wraps its children in React 19's `<ViewTran
 import { Transition } from "shelving/ui";
 
 <Transition default="zoom" forward="zoomIn" back="zoomOut">
-  {children}
-</Transition>
+	{children}
+</Transition>;
 ```
 
 ### Overlay
@@ -37,8 +37,8 @@ import { Transition } from "shelving/ui";
 import { FadeTransition } from "shelving/ui";
 
 <FadeTransition overlay>
-  <Notification/>
-</FadeTransition>
+	<Notification />
+</FadeTransition>;
 ```
 
 ### Page transitions
@@ -50,10 +50,10 @@ import { HorizontalTransition, Navigation, Router } from "shelving/ui";
 
 // Slides right on forward, left on back:
 <Navigation>
-  <HorizontalTransition>
-    <Router routes={ROUTES}/>
-  </HorizontalTransition>
-</Navigation>
+	<HorizontalTransition>
+		<Router routes={ROUTES} />
+	</HorizontalTransition>
+</Navigation>;
 ```
 
 ### Setting the direction with `setTransitionType()`
@@ -63,17 +63,17 @@ import { HorizontalTransition, setTransitionType } from "shelving/ui";
 import { startTransition, useState } from "react";
 
 function Steps() {
-  const [step, setStep] = useState(0);
-  const go = (direction: "forward" | "back") =>
-    startTransition(() => {
-      setTransitionType(direction);
-      setStep(s => s + (direction === "forward" ? 1 : -1));
-    });
-  return (
-    <HorizontalTransition>
-      <Step key={step} step={step} onNext={() => go("forward")} onBack={() => go("back")}/>
-    </HorizontalTransition>
-  );
+	const [step, setStep] = useState(0);
+	const go = (direction: "forward" | "back") =>
+		startTransition(() => {
+			setTransitionType(direction);
+			setStep(s => s + (direction === "forward" ? 1 : -1));
+		});
+	return (
+		<HorizontalTransition>
+			<Step key={step} step={step} onNext={() => go("forward")} onBack={() => go("back")} />
+		</HorizontalTransition>
+	);
 }
 ```
 
@@ -81,9 +81,9 @@ function Steps() {
 
 Transitions are driven by CSS `::view-transition-*` pseudo-element rules keyed on the transition class names, not by per-component `--variable` hooks. `<Transition>` itself only ships the `overlay` rule:
 
-| Variable | Styles | Default |
-|---|---|---|
-| _(none)_ | `<Transition>` exposes no own custom properties | — |
+| Variable | Styles                                          | Default |
+| -------- | ----------------------------------------------- | ------- |
+| _(none)_ | `<Transition>` exposes no own custom properties | —       |
 
 The `overlay` variant sets `z-index: 100` on `::view-transition-group(.overlay)`. The preset variants document their own timing/distance hooks (`--fade-transition-duration`, `--vertical-transition-size` / `-duration`, `--horizontal-transition-size` / `-duration`) on their pages.
 

@@ -11,7 +11,7 @@ A compact link tile summarising a documented symbol — the default card rendere
 
 **Things to know:**
 
-- It leads with the symbol's signature(s) via `<DocumentationSignatures>` (the same calm code blocks as `<DocumentationPage>`). The signature already carries the name (and `readonly` for properties), so there is no separate title or kind tag — the card's *colour* carries the kind. Symbols with no signature (classes, interfaces, modules) fall back to a plain-name heading.
+- It leads with the symbol's signature(s) via `<DocumentationSignatures>` (the same calm code blocks as `<DocumentationPage>`). The signature already carries the name (and `readonly` for properties), so there is no separate title or kind tag — the card's _colour_ carries the kind. Symbols with no signature (classes, interfaces, modules) fall back to a plain-name heading.
 - Below the heading it renders the symbol's `<DocumentationButtons>` relations, then a prose lead-in. The `member of` relation is dropped — a member card almost always sits on its own class's page already.
 - The card links to the element's stamped `path` (the canonical URL set by `flattenTree()` — see `<TreeProvider>`).
 
@@ -23,7 +23,7 @@ Used automatically via `<TreeCards>` (which `<DocumentationPage>` uses for its c
 import { DocumentationCard } from "shelving/ui";
 
 // `element` is a `tree-documentation` element from DirectoryExtractor (see /extract).
-<DocumentationCard {...element.props} />
+<DocumentationCard {...element.props} />;
 ```
 
 To replace this renderer across the whole site, wrap the app in `TreeCardMapping`.

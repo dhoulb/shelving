@@ -47,7 +47,9 @@ import { Button } from "shelving/ui";
 import { Button } from "shelving/ui";
 
 // No outer margin: it sits flush with the content around it.
-<Button full space="none" onClick={start}>Start</Button>
+<Button full space="none" onClick={start}>
+	Start
+</Button>;
 ```
 
 ### A row of buttons
@@ -57,9 +59,13 @@ import { Button } from "shelving/ui";
 import { Row } from "shelving/ui";
 
 <Row gap="small" right>
-  <Button plain onClick={cancel}>Cancel</Button>
-  <Button solid color="primary" onClick={submit}>Continue</Button>
-</Row>
+	<Button plain onClick={cancel}>
+		Cancel
+	</Button>
+	<Button solid color="primary" onClick={submit}>
+		Continue
+	</Button>
+</Row>;
 ```
 
 ### Tabs
@@ -68,12 +74,12 @@ import { Row } from "shelving/ui";
 import { Button, Row } from "shelving/ui";
 
 <Row gap="xsmall">
-  {SECTIONS.map(({ key, label }) => (
-    <Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
-      {label}
-    </Button>
-  ))}
-</Row>
+	{SECTIONS.map(({ key, label }) => (
+		<Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
+			{label}
+		</Button>
+	))}
+</Row>;
 ```
 
 ### A one-off treatment
@@ -82,7 +88,9 @@ import { Button, Row } from "shelving/ui";
 import { Button } from "shelving/ui";
 
 // `.spongy-press` lives in the app's own stylesheet — use it for what the theme hooks below can't express.
-<Button className="spongy-press" onClick={claim}>Claim</Button>
+<Button className="spongy-press" onClick={claim}>
+	Claim
+</Button>;
 ```
 
 ### Reusing the button class
@@ -92,8 +100,9 @@ import { getButtonClass } from "shelving/ui";
 
 // Style an arbitrary element as a button.
 <label className={getButtonClass({ color: "primary", solid: true, small: true })}>
-  Upload<input type="file" hidden />
-</label>
+	Upload
+	<input type="file" hidden />
+</label>;
 ```
 
 ## Styling
@@ -112,75 +121,75 @@ The `--button-*` colour hooks without a look in their name paint the default loo
 
 Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--button-background` | Surface fill | `var(--tint-90)` |
-| `--button-hover-background` | Surface fill on hover / focus | `var(--tint-85)` |
-| `--button-hover-border` | Border on hover / focus | `var(--button-stroke) solid transparent` |
-| `--button-hover-transform` | Transform on hover / focus | `none` |
-| `--button-text` | Label colour | `var(--tint-50)` |
-| `--button-border` | Border shorthand | `var(--button-stroke) solid transparent` |
-| `--button-stroke` | Border / outline thickness | `var(--stroke-normal)` (2px) |
-| `--button-radius` | Corner radius | `var(--radius-xsmall)` (8px) |
-| `--button-padding` | Top and bottom padding (one length) | `var(--space-small)` (12px) |
-| `--button-indent` | Left and right padding (one length) | `var(--space-small)` (12px) |
-| `--button-small-padding` | Top and bottom padding when `small` (one length) | `var(--space-xxsmall)` (4px) |
-| `--button-small-indent` | Left and right padding when `small` (one length) | `var(--space-xxsmall)` (4px) |
-| `--button-icon-size` | Icon size, and the base of the minimum height | `var(--size-icon)` (24px) |
-| `--button-height` | Minimum height | `--button-icon-size` + 2 × `--button-padding` + 2 × `--button-stroke` (52px) |
-| `--button-small-height` | Minimum height when `small` | `--button-icon-size` + 2 × `--button-small-padding` + 2 × `--button-stroke` (36px) |
-| `--button-gap` | Gap between icon and label | `var(--space-small)` (12px) |
-| `--button-small-gap` | Gap between icon and label when `small` | `var(--space-xxsmall)` (4px) |
-| `--button-space` | Outer block margin | `var(--space-small)` (12px) |
-| `--button-font` | Font family | `var(--font-body)` |
-| `--button-weight` | Font weight | `var(--weight-normal)` (400) |
-| `--button-size` | Font size | `var(--size-normal)` |
-| `--button-leading` | Line height | `var(--leading)` |
-| `--button-shadow` | Box shadow (never on `plain`) | `none` |
-| `--button-active-background` | Surface fill while pressed | `var(--button-hover-background)` |
-| `--button-active-border` | Border while pressed | `var(--button-hover-border)` |
-| `--button-active-shadow` | Box shadow while pressed | `var(--button-shadow)` |
-| `--button-active-transform` | Transform while pressed | `var(--button-hover-transform)` |
-| `--button-transition` | Transition | `all var(--duration-fast)` (150ms) |
-| `--button-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
-| `--button-disabled-opacity` | Opacity when disabled | `0.5` |
-| `--button-solid-background` | Surface fill when `solid` | `var(--tint-50)` |
-| `--button-solid-text` | Label colour when `solid` | `var(--tint-100)` (white) |
-| `--button-solid-hover-background` | Surface fill on hover / focus when `solid` | `var(--tint-55)` |
-| `--button-solid-active-background` | Surface fill while pressed when `solid` | `var(--button-solid-hover-background)` |
-| `--button-plain-text` | Label colour when `plain` or `outline` | `var(--tint-50)` |
-| `--button-plain-border` | Resting border when `plain` | `var(--button-stroke) solid transparent` |
-| `--button-outline-border` | Resting border when `outline` | `var(--button-stroke) solid var(--tint-80)` |
-| `--button-unselected-background` | Resting fill when `selected={false}` | `transparent` |
-| `--button-plain-hover-background` | Fill on hover / focus when `plain` or `outline` | `var(--button-hover-background)` |
-| `--button-plain-hover-border` | Border on hover / focus when `plain` or `outline` | `var(--button-hover-border)` (transparent) |
-| `--button-plain-active-background` | Fill while pressed when `plain` or `outline` | `var(--button-plain-hover-background)` |
-| `--button-plain-active-border` | Border while pressed when `plain` or `outline` | `var(--button-plain-hover-border)` |
+| Variable                           | Styles                                            | Default                                                                            |
+| ---------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `--button-background`              | Surface fill                                      | `var(--tint-90)`                                                                   |
+| `--button-hover-background`        | Surface fill on hover / focus                     | `var(--tint-85)`                                                                   |
+| `--button-hover-border`            | Border on hover / focus                           | `var(--button-stroke) solid transparent`                                           |
+| `--button-hover-transform`         | Transform on hover / focus                        | `none`                                                                             |
+| `--button-text`                    | Label colour                                      | `var(--tint-50)`                                                                   |
+| `--button-border`                  | Border shorthand                                  | `var(--button-stroke) solid transparent`                                           |
+| `--button-stroke`                  | Border / outline thickness                        | `var(--stroke-normal)` (2px)                                                       |
+| `--button-radius`                  | Corner radius                                     | `var(--radius-xsmall)` (8px)                                                       |
+| `--button-padding`                 | Top and bottom padding (one length)               | `var(--space-small)` (12px)                                                        |
+| `--button-indent`                  | Left and right padding (one length)               | `var(--space-small)` (12px)                                                        |
+| `--button-small-padding`           | Top and bottom padding when `small` (one length)  | `var(--space-xxsmall)` (4px)                                                       |
+| `--button-small-indent`            | Left and right padding when `small` (one length)  | `var(--space-xxsmall)` (4px)                                                       |
+| `--button-icon-size`               | Icon size, and the base of the minimum height     | `var(--size-icon)` (24px)                                                          |
+| `--button-height`                  | Minimum height                                    | `--button-icon-size` + 2 × `--button-padding` + 2 × `--button-stroke` (52px)       |
+| `--button-small-height`            | Minimum height when `small`                       | `--button-icon-size` + 2 × `--button-small-padding` + 2 × `--button-stroke` (36px) |
+| `--button-gap`                     | Gap between icon and label                        | `var(--space-small)` (12px)                                                        |
+| `--button-small-gap`               | Gap between icon and label when `small`           | `var(--space-xxsmall)` (4px)                                                       |
+| `--button-space`                   | Outer block margin                                | `var(--space-small)` (12px)                                                        |
+| `--button-font`                    | Font family                                       | `var(--font-body)`                                                                 |
+| `--button-weight`                  | Font weight                                       | `var(--weight-normal)` (400)                                                       |
+| `--button-size`                    | Font size                                         | `var(--size-normal)`                                                               |
+| `--button-leading`                 | Line height                                       | `var(--leading)`                                                                   |
+| `--button-shadow`                  | Box shadow (never on `plain`)                     | `none`                                                                             |
+| `--button-active-background`       | Surface fill while pressed                        | `var(--button-hover-background)`                                                   |
+| `--button-active-border`           | Border while pressed                              | `var(--button-hover-border)`                                                       |
+| `--button-active-shadow`           | Box shadow while pressed                          | `var(--button-shadow)`                                                             |
+| `--button-active-transform`        | Transform while pressed                           | `var(--button-hover-transform)`                                                    |
+| `--button-transition`              | Transition                                        | `all var(--duration-fast)` (150ms)                                                 |
+| `--button-focus-border`            | Focus outline                                     | `var(--stroke-focus) solid var(--color-focus)`                                     |
+| `--button-disabled-opacity`        | Opacity when disabled                             | `0.5`                                                                              |
+| `--button-solid-background`        | Surface fill when `solid`                         | `var(--tint-50)`                                                                   |
+| `--button-solid-text`              | Label colour when `solid`                         | `var(--tint-100)` (white)                                                          |
+| `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`        | `var(--tint-55)`                                                                   |
+| `--button-solid-active-background` | Surface fill while pressed when `solid`           | `var(--button-solid-hover-background)`                                             |
+| `--button-plain-text`              | Label colour when `plain` or `outline`            | `var(--tint-50)`                                                                   |
+| `--button-plain-border`            | Resting border when `plain`                       | `var(--button-stroke) solid transparent`                                           |
+| `--button-outline-border`          | Resting border when `outline`                     | `var(--button-stroke) solid var(--tint-80)`                                        |
+| `--button-unselected-background`   | Resting fill when `selected={false}`              | `transparent`                                                                      |
+| `--button-plain-hover-background`  | Fill on hover / focus when `plain` or `outline`   | `var(--button-hover-background)`                                                   |
+| `--button-plain-hover-border`      | Border on hover / focus when `plain` or `outline` | `var(--button-hover-border)` (transparent)                                         |
+| `--button-plain-active-background` | Fill while pressed when `plain` or `outline`      | `var(--button-plain-hover-background)`                                             |
+| `--button-plain-active-border`     | Border while pressed when `plain` or `outline`    | `var(--button-plain-hover-border)`                                                 |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
 :root {
-  --button-radius: 999px;
-  --button-indent: var(--space-normal);
+	--button-radius: 999px;
+	--button-indent: var(--space-normal);
 }
 ```
 
 ```css
 /* Theme: outline buttons use the label colour for their edge. */
 :root {
-  --button-outline-border: var(--stroke-normal) solid var(--tint-50);
+	--button-outline-border: var(--stroke-normal) solid var(--tint-50);
 }
 ```
 
 ```css
 /* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. */
 :root {
-  --button-shadow: 0 0.25rem 0 var(--tint-30);
-  --button-active-transform: translateY(0.2rem);
-  --button-active-shadow: 0 0.05rem 0 var(--tint-30);
-  --button-transition: all var(--duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
+	--button-shadow: 0 0.25rem 0 var(--tint-30);
+	--button-active-transform: translateY(0.2rem);
+	--button-active-shadow: 0 0.05rem 0 var(--tint-30);
+	--button-transition: all var(--duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 ```
 

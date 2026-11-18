@@ -11,11 +11,11 @@ This module's main job is to **define and document the transition/animation timi
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.
 
-| Variable | Default | Used for |
-|---|---|---|
-| `--duration-fast` | `150ms` | Snappy UI feedback — hovers, small toggles. |
-| `--duration-normal` | `300ms` | Default transitions. |
-| `--duration-slow` | `600ms` | Deliberate, large movements. |
+| Variable            | Default | Used for                                    |
+| ------------------- | ------- | ------------------------------------------- |
+| `--duration-fast`   | `150ms` | Snappy UI feedback — hovers, small toggles. |
+| `--duration-normal` | `300ms` | Default transitions.                        |
+| `--duration-slow`   | `600ms` | Deliberate, large movements.                |
 
 
 ## Signatures

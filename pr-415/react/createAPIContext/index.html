@@ -10,19 +10,19 @@ const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: &quot;ht
 const { APIContext, useAPI } = createAPIContext(provider);
 
 function UserCard({ id }: { id: string }) {
-  const store = useAPI(getUser, { id }); // Returns an EndpointStore; component suspends while loading.
-  const user = store.value;
-  return &lt;div&gt;{user.name}&lt;/div&gt;;
+	const store = useAPI(getUser, { id }); // Returns an EndpointStore; component suspends while loading.
+	const user = store.value;
+	return &lt;div&gt;{user.name}&lt;/div&gt;;
 }
 
 function App() {
-  return (
-    &lt;APIContext&gt;
-      &lt;ErrorBoundary fallback={&lt;p&gt;Error&lt;/p&gt;}&gt;
-        &lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
-          &lt;UserCard id=&quot;u_123&quot; /&gt;
-        &lt;/Suspense&gt;
-      &lt;/ErrorBoundary&gt;
-    &lt;/APIContext&gt;
-  );
+	return (
+		&lt;APIContext&gt;
+			&lt;ErrorBoundary fallback={&lt;p&gt;Error&lt;/p&gt;}&gt;
+				&lt;Suspense fallback={&lt;p&gt;Loading...&lt;/p&gt;}&gt;
+					&lt;UserCard id=&quot;u_123&quot; /&gt;
+				&lt;/Suspense&gt;
+			&lt;/ErrorBoundary&gt;
+		&lt;/APIContext&gt;
+	);
 }</code></pre></figure><p><code class="code_nt1Inw">useAPI</code> accepts a nullish endpoint — passing <code class="code_nt1Inw">undefined</code> returns <code class="code_nt1Inw">undefined</code> instead of a store, which keeps the hook call unconditional. Calling <code class="code_nt1Inw">useAPI</code> outside an <a href="https://shelving.cc/pr-415/react/APIContext" class="link_2NDd3g"><code class="code_nt1Inw">&lt;APIContext&gt;</code></a> throws a <a href="https://shelving.cc/pr-415/error/RequiredError" class="link_2NDd3g"><code class="code_nt1Inw">RequiredError</code></a>.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/react/createAPIContext","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

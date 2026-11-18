@@ -3,12 +3,14 @@ import { Navigation, Router } from &quot;shelving/ui&quot;;
 
 // Server-side render — pass the request URL to &lt;HTML&gt;.
 renderToString(
-  &lt;HTML app=&quot;My App&quot; root=&quot;https://example.com/&quot; url={requestUrl} language=&quot;en&quot;&gt;
-    &lt;Navigation&gt;
-      &lt;Router routes={{
-        &quot;/&quot;: HomePage,
-        &quot;/about&quot;: AboutPage,
-      }}/&gt;
-    &lt;/Navigation&gt;
-  &lt;/HTML&gt;
+	&lt;HTML app=&quot;My App&quot; root=&quot;https://example.com/&quot; url={requestUrl} language=&quot;en&quot;&gt;
+		&lt;Navigation&gt;
+			&lt;Router
+				routes={{
+					&quot;/&quot;: HomePage,
+					&quot;/about&quot;: AboutPage,
+				}}
+			/&gt;
+		&lt;/Navigation&gt;
+	&lt;/HTML&gt;,
 );</code></pre></figure><p>For client-side-only roots that don&#x27;t need an <code class="code_nt1Inw">&lt;html&gt;</code> shell, use <a href="https://shelving.cc/pr-415/ui/App" class="link_2NDd3g"><code class="code_nt1Inw">&lt;App&gt;</code></a> from <a href="https://shelving.cc/pr-415/ui" class="link_2NDd3g"><code class="code_nt1Inw">shelving/ui</code></a> instead.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/ui/HTML","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

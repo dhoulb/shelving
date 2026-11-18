@@ -9,12 +9,7 @@ const token = await encodeToken({ sub: &quot;user_123&quot;, role: &quot;admin&q
 const payload = await verifyToken(token, secret);
 // { sub: &quot;user_123&quot;, role: &quot;admin&quot;, nbf: ..., iat: ..., exp: ... }</code></pre></figure><h3 id="parsing-a-token-without-verifying">Parsing a token without verifying</h3><figure><pre><code>import { splitToken } from &quot;shelving/util&quot;;
 
-const { headerData, payloadData } = splitToken(token);</code></pre></figure><h3 id="working-with-bearer-tokens-on-requests">Working with Bearer tokens on requests</h3><figure><pre><code>import {
-  setRequestToken,
-  getRequestToken,
-  requireRequestToken,
-  verifyRequestToken,
-} from &quot;shelving/util&quot;;
+const { headerData, payloadData } = splitToken(token);</code></pre></figure><h3 id="working-with-bearer-tokens-on-requests">Working with Bearer tokens on requests</h3><figure><pre><code>import { setRequestToken, getRequestToken, requireRequestToken, verifyRequestToken } from &quot;shelving/util&quot;;
 
 // Attach a token to an outgoing request.
 setRequestToken(request, token);

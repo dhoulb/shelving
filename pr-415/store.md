@@ -19,18 +19,18 @@ Observable value containers for reactive state. A `Store<T>` holds a single curr
 
 **Subclasses**
 
-| Class | Description |
-|---|---|
-| `DataStore<T>` | Adds `DataStore.data`, `DataStore.update()`, `DataStore.get()`, `DataStore.set()` helpers for object values. |
-| `OptionalDataStore<T>` | Like `DataStore` but the value may be `undefined`; `OptionalDataStore.exists` and `OptionalDataStore.require()` handle the absent case. |
-| `ArrayStore<T>` | Stores an array; adds `ArrayStore.first`, `ArrayStore.last`, `ArrayStore.count`, `ArrayStore.add()`, `ArrayStore.delete()`, `ArrayStore.toggle()`. |
-| `DictionaryStore<T>` | Stores a string-keyed object; adds `DictionaryStore.get()`, `DictionaryStore.set()`, `DictionaryStore.delete()`, `DictionaryStore.update()`. |
-| `BooleanStore` | Stores a boolean; adds `BooleanStore.toggle()`. |
-| `PathStore` | Stores an absolute path; adds `PathStore.isActive()` / `PathStore.isProud()` route helpers. |
-| `URLStore` | Stores a URL; adds query-param helpers and `URLStore.isActive()` / `URLStore.isProud()`. |
-| `BusyStore<T>` | Adds a `BusyStore.busy` boolean store that is `true` while awaiting a value. |
-| `FetchStore<T>` | Fetches its value from a callback; adds `FetchStore.refresh()` / `FetchStore.invalidate()`. |
-| `PayloadFetchStore<P, R>` | A `FetchStore` driven by a `PayloadFetchStore.payload` store — changing the payload re-fetches. |
+| Class                     | Description                                                                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DataStore<T>`            | Adds `DataStore.data`, `DataStore.update()`, `DataStore.get()`, `DataStore.set()` helpers for object values.                                       |
+| `OptionalDataStore<T>`    | Like `DataStore` but the value may be `undefined`; `OptionalDataStore.exists` and `OptionalDataStore.require()` handle the absent case.            |
+| `ArrayStore<T>`           | Stores an array; adds `ArrayStore.first`, `ArrayStore.last`, `ArrayStore.count`, `ArrayStore.add()`, `ArrayStore.delete()`, `ArrayStore.toggle()`. |
+| `DictionaryStore<T>`      | Stores a string-keyed object; adds `DictionaryStore.get()`, `DictionaryStore.set()`, `DictionaryStore.delete()`, `DictionaryStore.update()`.       |
+| `BooleanStore`            | Stores a boolean; adds `BooleanStore.toggle()`.                                                                                                    |
+| `PathStore`               | Stores an absolute path; adds `PathStore.isActive()` / `PathStore.isProud()` route helpers.                                                        |
+| `URLStore`                | Stores a URL; adds query-param helpers and `URLStore.isActive()` / `URLStore.isProud()`.                                                           |
+| `BusyStore<T>`            | Adds a `BusyStore.busy` boolean store that is `true` while awaiting a value.                                                                       |
+| `FetchStore<T>`           | Fetches its value from a callback; adds `FetchStore.refresh()` / `FetchStore.invalidate()`.                                                        |
+| `PayloadFetchStore<P, R>` | A `FetchStore` driven by a `PayloadFetchStore.payload` store — changing the payload re-fetches.                                                    |
 
 `ItemStore` and `QueryStore` in the `shelving/db` module extend `FetchStore` directly, adding database-aware fetch and subscription logic.
 
@@ -46,9 +46,9 @@ import { Store, NONE } from "shelving/store";
 const store = new Store<number>(NONE);
 
 async function connect(stream: AsyncIterable<number>) {
-  for await (const _ of store.through(stream)) {
-    // store.value is updated on each iteration; any consumers re-render
-  }
+	for await (const _ of store.through(stream)) {
+		// store.value is updated on each iteration; any consumers re-render
+	}
 }
 ```
 

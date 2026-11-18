@@ -22,8 +22,8 @@ import { useReduce } from "shelving/react";
 import { isDeepEqual } from "shelving/util";
 
 const stable = useReduce((prev, next) => {
-  if (prev && isDeepEqual(prev, next)) return prev; // Preserve reference if equal.
-  return next;
+	if (prev && isDeepEqual(prev, next)) return prev; // Preserve reference if equal.
+	return next;
 }, incoming);
 ```
 

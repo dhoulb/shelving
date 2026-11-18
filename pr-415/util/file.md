@@ -16,17 +16,17 @@ Tiny helpers for splitting filenames into base name and extension. They exist so
 ```ts
 import { splitFileExtension, getFileExtension, requireFileExtension } from "shelving/util";
 
-splitFileExtension("array.ts");       // ["array", "ts"]
+splitFileExtension("array.ts"); // ["array", "ts"]
 splitFileExtension("archive.tar.gz"); // ["archive.tar", "gz"]
-splitFileExtension("no-ext");         // ["no-ext", undefined]
-splitFileExtension(".gitignore");     // [undefined, "gitignore"]
-splitFileExtension(undefined);        // [undefined, undefined]
+splitFileExtension("no-ext"); // ["no-ext", undefined]
+splitFileExtension(".gitignore"); // [undefined, "gitignore"]
+splitFileExtension(undefined); // [undefined, undefined]
 
-getFileExtension("index.html");       // "html"
-getFileExtension("no-ext");           // undefined
+getFileExtension("index.html"); // "html"
+getFileExtension("no-ext"); // undefined
 
-requireFileExtension("style.css");    // "css"
-requireFileExtension("no-ext");       // throws RequiredError
+requireFileExtension("style.css"); // "css"
+requireFileExtension("no-ext"); // throws RequiredError
 ```
 
 

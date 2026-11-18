@@ -41,26 +41,26 @@ Layouts do not include a cache. The app composes it, so it can also choose the t
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll } from "shelving/ui";
 
 <AppLayout nav={<StackBar />}>
-  <HorizontalTransition>
-    <RouteCache>
-      <Scroll vertical cover>
-        <PageLoader>
-          <Router routes={ROUTES}/>
-        </PageLoader>
-      </Scroll>
-    </RouteCache>
-  </HorizontalTransition>
-</AppLayout>
+	<HorizontalTransition>
+		<RouteCache>
+			<Scroll vertical cover>
+				<PageLoader>
+					<Router routes={ROUTES} />
+				</PageLoader>
+			</Scroll>
+		</RouteCache>
+	</HorizontalTransition>
+</AppLayout>;
 ```
 
 Keep fewer pages:
 
 ```tsx
 <RouteCache maxCached={5}>
-  <Scroll vertical cover>
-    <Router routes={ROUTES}/>
-  </Scroll>
-</RouteCache>
+	<Scroll vertical cover>
+		<Router routes={ROUTES} />
+	</Scroll>
+</RouteCache>;
 ```
 
 Clear a create form after it saves. Change the `key` of the `<Form>`, so it mounts again with no input:
@@ -70,19 +70,19 @@ import { useState } from "react";
 import { Form, requireNavigation } from "shelving/ui";
 
 function NewPostPage() {
-  const nav = requireNavigation();
-  const [formKey, setFormKey] = useState(0);
-  return (
-    <Form
-      key={formKey}
-      schema={POST_SCHEMA}
-      onSubmit={async data => {
-        const id = await createPost(data);
-        setFormKey(k => k + 1);
-        nav.forward(`/post/${id}`);
-      }}
-    />
-  );
+	const nav = requireNavigation();
+	const [formKey, setFormKey] = useState(0);
+	return (
+		<Form
+			key={formKey}
+			schema={POST_SCHEMA}
+			onSubmit={async data => {
+				const id = await createPost(data);
+				setFormKey(k => k + 1);
+				nav.forward(`/post/${id}`);
+			}}
+		/>
+	);
 }
 ```
 

@@ -2,6 +2,6 @@
 import { isDeepEqual } from &quot;shelving/util&quot;;
 
 const stable = useReduce((prev, next) =&gt; {
-  if (prev &amp;&amp; isDeepEqual(prev, next)) return prev; // Preserve reference if equal.
-  return next;
+	if (prev &amp;&amp; isDeepEqual(prev, next)) return prev; // Preserve reference if equal.
+	return next;
 }, incoming);</code></pre></figure><p>Here <code class="code_nt1Inw">stable</code> keeps the same reference for as long as the incoming value is deeply equal, even though <code class="code_nt1Inw">incoming</code> is a fresh object each render.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/react/useReduce","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

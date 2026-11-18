@@ -22,7 +22,7 @@ Reads a React context and throws `RequiredError` if the value is `null` or `unde
 import { requireContext } from "shelving/ui";
 
 function requireNavigation(): NavigationStore {
-  return requireContext(NavigationContext, requireNavigation);
+	return requireContext(NavigationContext, requireNavigation);
 }
 ```
 

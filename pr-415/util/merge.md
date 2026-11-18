@@ -38,10 +38,7 @@ shallowMerge(obj, {}) === obj; // true
 ```ts
 import { deepMerge } from "shelving/util";
 
-deepMerge(
-  { user: { name: "Alice", role: "viewer" } },
-  { user: { role: "admin" } },
-);
+deepMerge({ user: { name: "Alice", role: "viewer" } }, { user: { role: "admin" } });
 // { user: { name: "Alice", role: "admin" } }
 ```
 
@@ -51,7 +48,7 @@ deepMerge(
 import { mergeObject, mergeArray } from "shelving/util";
 
 // Use a custom recursor (e.g. deepMerge) for object merging.
-mergeObject({ a: 1 }, { b: 2 }, deepMerge);  // { a: 1, b: 2 }
+mergeObject({ a: 1 }, { b: 2 }, deepMerge); // { a: 1, b: 2 }
 
 // Merge two arrays (unique items only).
 mergeArray([1, 2, 3], [3, 4, 5]); // [1, 2, 3, 4, 5]

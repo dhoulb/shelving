@@ -21,11 +21,11 @@ Wraps one page (or screen) inside an app, applying its per-page metadata. It mer
 import { Page, Section } from "shelving/ui";
 
 function UserPage({ id }: { id: string }) {
-  return (
-    <Page title="User profile" url={`/users/${id}`} description="View user details.">
-      <Section>…</Section>
-    </Page>
-  );
+	return (
+		<Page title="User profile" url={`/users/${id}`} description="View user details.">
+			<Section>…</Section>
+		</Page>
+	);
 }
 ```
 
@@ -35,14 +35,14 @@ A page renders no layout. The layout goes outside the page, above the router, so
 import { Block, FixedLayout, Page, Scroll } from "shelving/ui";
 
 <FixedLayout>
-  <Scroll vertical cover>
-    <Page title="Sign in">
-      <Block height="full" middle width="narrow">
-        <LoginForm/>
-      </Block>
-    </Page>
-  </Scroll>
-</FixedLayout>
+	<Scroll vertical cover>
+		<Page title="Sign in">
+			<Block height="full" middle width="narrow">
+				<LoginForm />
+			</Block>
+		</Page>
+	</Scroll>
+</FixedLayout>;
 ```
 
 

@@ -2,33 +2,35 @@
 
 // The signed-out screens: one layout around their own router.
 &lt;FixedLayout&gt;
-  &lt;Scroll vertical cover&gt;
-    &lt;Router routes={{
-      &quot;/login&quot;: LoginPage,
-      &quot;/register&quot;: RegisterPage,
-    }} /&gt;
-  &lt;/Scroll&gt;
-&lt;/FixedLayout&gt;
+	&lt;Scroll vertical cover&gt;
+		&lt;Router
+			routes={{
+				&quot;/login&quot;: LoginPage,
+				&quot;/register&quot;: RegisterPage,
+			}}
+		/&gt;
+	&lt;/Scroll&gt;
+&lt;/FixedLayout&gt;;
 
 // Each page centres its own content.
 function LoginPage() {
-  return (
-    &lt;Page title=&quot;Log in&quot;&gt;
-      &lt;Block height=&quot;full&quot; middle width=&quot;narrow&quot; padding=&quot;xxlarge&quot; indent=&quot;normal&quot;&gt;
-        &lt;LoginForm /&gt;
-      &lt;/Block&gt;
-    &lt;/Page&gt;
-  );
+	return (
+		&lt;Page title=&quot;Log in&quot;&gt;
+			&lt;Block height=&quot;full&quot; middle width=&quot;narrow&quot; padding=&quot;xxlarge&quot; indent=&quot;normal&quot;&gt;
+				&lt;LoginForm /&gt;
+			&lt;/Block&gt;
+		&lt;/Page&gt;
+	);
 }</code></pre></figure><p>An app-level error, outside every other layout:</p><figure><pre><code>import { Catcher, ErrorPage, type ErrorProps, FixedLayout, Scroll } from &quot;shelving/ui&quot;;
 
 function AppError({ reason }: ErrorProps) {
-  return (
-    &lt;FixedLayout&gt;
-      &lt;Scroll vertical cover&gt;
-        &lt;ErrorPage reason={reason} /&gt;
-      &lt;/Scroll&gt;
-    &lt;/FixedLayout&gt;
-  );
+	return (
+		&lt;FixedLayout&gt;
+			&lt;Scroll vertical cover&gt;
+				&lt;ErrorPage reason={reason} /&gt;
+			&lt;/Scroll&gt;
+		&lt;/FixedLayout&gt;
+	);
 }
 
-&lt;Catcher as={AppError}&gt;…&lt;/Catcher&gt;</code></pre></figure><h2 id="styling">Styling</h2><table><thead><tr><th>Variable</th><th>Styles</th><th>Default</th></tr></thead><tbody><tr><td><code class="code_nt1Inw">--fixed-layout-background</code></td><td>Page background while the layout is mounted</td><td><code class="code_nt1Inw">var(--tint-100)</code> (white)</td></tr><tr><td><code class="code_nt1Inw">--fixed-layout-color</code></td><td>Text colour for the layout</td><td><code class="code_nt1Inw">var(--tint-00)</code> (black)</td></tr></tbody></table><p><strong>Global tokens it reads</strong> — <code class="code_nt1Inw">--tint-00</code> and <code class="code_nt1Inw">--tint-100</code>.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/ui/FixedLayout","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>
+&lt;Catcher as={AppError}&gt;…&lt;/Catcher&gt;;</code></pre></figure><h2 id="styling">Styling</h2><table><thead><tr><th>Variable</th><th>Styles</th><th>Default</th></tr></thead><tbody><tr><td><code class="code_nt1Inw">--fixed-layout-background</code></td><td>Page background while the layout is mounted</td><td><code class="code_nt1Inw">var(--tint-100)</code> (white)</td></tr><tr><td><code class="code_nt1Inw">--fixed-layout-color</code></td><td>Text colour for the layout</td><td><code class="code_nt1Inw">var(--tint-00)</code> (black)</td></tr></tbody></table><p><strong>Global tokens it reads</strong> — <code class="code_nt1Inw">--tint-00</code> and <code class="code_nt1Inw">--tint-100</code>.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/ui/FixedLayout","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

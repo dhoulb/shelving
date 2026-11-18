@@ -5,8 +5,8 @@ notifyError(&quot;Could not connect.&quot;);</code></pre></figure><figure><pre><
 
 // Return a string for success; throw for error.
 callNotified(async () =&gt; {
-  await saveData();
-  return &quot;Saved!&quot;;
+	await saveData();
+	return &quot;Saved!&quot;;
 });</code></pre></figure><figure><pre><code>import { subscribeNotices } from &quot;shelving/ui&quot;;
 
 const stop = subscribeNotices((message, status) =&gt; show(message, status));

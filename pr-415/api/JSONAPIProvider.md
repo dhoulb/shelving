@@ -14,13 +14,11 @@ Because it extends `ClientAPIProvider`, it is a concrete network provider: const
 ## Usage
 
 ```ts
-import { JSONAPIProvider, ValidationAPIProvider } from "shelving/api"
+import { JSONAPIProvider, ValidationAPIProvider } from "shelving/api";
 
-const provider = new ValidationAPIProvider(
-  new JSONAPIProvider({ url: "https://api.example.com" })
-)
+const provider = new ValidationAPIProvider(new JSONAPIProvider({ url: "https://api.example.com" }));
 
-const user = await provider.call(getUser, { id: "u_123" })
+const user = await provider.call(getUser, { id: "u_123" });
 ```
 
 

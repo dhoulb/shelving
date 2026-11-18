@@ -11,12 +11,12 @@ This module's main job is to **define and document the border-thickness design t
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.
 
-| Variable | Default | Used for |
-|---|---|---|
-| `--stroke` | `2px` | Base border thickness — the root of the scale. |
-| `--stroke-normal` | `calc(var(--stroke) * 1)` | Default borders. |
-| `--stroke-thick` | `calc(var(--stroke) * 1.5)` | Heavier borders. |
-| `--stroke-focus` | `var(--stroke-thick)` | Focus-outline thickness. |
+| Variable          | Default                     | Used for                                       |
+| ----------------- | --------------------------- | ---------------------------------------------- |
+| `--stroke`        | `2px`                       | Base border thickness — the root of the scale. |
+| `--stroke-normal` | `calc(var(--stroke) * 1)`   | Default borders.                               |
+| `--stroke-thick`  | `calc(var(--stroke) * 1.5)` | Heavier borders.                               |
+| `--stroke-focus`  | `var(--stroke-thick)`       | Focus-outline thickness.                       |
 
 
 ## Signatures

@@ -18,10 +18,10 @@ Compute the minimal transformation needed to turn one value into another. Used i
 ```ts
 import { deepDiff, SAME } from "shelving/util";
 
-deepDiff(1, 1);               // SAME
-deepDiff("a", "b");           // "b"
-deepDiff([1, 2], [1, 2]);     // SAME
-deepDiff([1, 2], [1, 3]);     // [1, 3]  (full array)
+deepDiff(1, 1); // SAME
+deepDiff("a", "b"); // "b"
+deepDiff([1, 2], [1, 2]); // SAME
+deepDiff([1, 2], [1, 3]); // [1, 3]  (full array)
 ```
 
 ### Object diff
@@ -29,7 +29,7 @@ deepDiff([1, 2], [1, 3]);     // [1, 3]  (full array)
 ```ts
 import { deepDiff, deepDiffObject, SAME } from "shelving/util";
 
-const left  = { a: 1, b: 2, c: 3 };
+const left = { a: 1, b: 2, c: 3 };
 const right = { a: 1, b: 99 };
 
 deepDiff(left, right);
@@ -44,7 +44,7 @@ deepDiff(left, left); // SAME
 import { deepDiffArray, SAME } from "shelving/util";
 
 deepDiffArray([1, 2, 3], [1, 2, 3]); // SAME
-deepDiffArray([1, 2], [1, 3]);        // [1, 3]
+deepDiffArray([1, 2], [1, 3]); // [1, 3]
 ```
 
 ### Checking for changes

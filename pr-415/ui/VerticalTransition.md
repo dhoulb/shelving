@@ -34,8 +34,8 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 import { VerticalTransition } from "shelving/ui";
 
 <VerticalTransition>
-  <Router routes={ROUTES}/>
-</VerticalTransition>
+	<Router routes={ROUTES} />
+</VerticalTransition>;
 ```
 
 ## Use the class without the component
@@ -47,16 +47,16 @@ import { ViewTransition } from "react";
 import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
 
 <ViewTransition enter={SLIDE_DOWN_TRANSITION_CLASS} exit={SLIDE_DOWN_TRANSITION_CLASS}>
-  <div className="panel">…</div>
-</ViewTransition>
+	<div className="panel">…</div>
+</ViewTransition>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--vertical-transition-size` | Slide distance for the enter/leave keyframes. A percentage is of the element's own height. | `100%` |
-| `--vertical-transition-duration` | Duration of the slide keyframes | `var(--duration-normal)` |
+| Variable                         | Styles                                                                                     | Default                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------ |
+| `--vertical-transition-size`     | Slide distance for the enter/leave keyframes. A percentage is of the element's own height. | `100%`                   |
+| `--vertical-transition-duration` | Duration of the slide keyframes                                                            | `var(--duration-normal)` |
 
 **Global tokens it reads** — `--duration-normal`.
 

@@ -2,6 +2,6 @@
 import { APICache } from &quot;shelving/api&quot;;
 
 function MyComponent({ provider }: { provider: APIProvider }) {
-  const cache = useInstance(APICache, provider); // Stable across renders.
-  // ...rebuilt only when `provider` changes.
+	const cache = useInstance(APICache, provider); // Stable across renders.
+	// ...rebuilt only when `provider` changes.
 }</code></pre></figure><p>Arguments are compared by deep equality, so passing equal-but-not-identical values (a fresh object literal each render) does not trigger reconstruction.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/react/useInstance","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

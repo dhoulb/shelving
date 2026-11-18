@@ -22,34 +22,34 @@ A `<menu>` list of `<MenuItem>` children — the container for URL-aware navigat
 import { Menu, MenuItem } from "shelving/ui";
 
 <Menu>
-  <MenuItem href="/dashboard">Dashboard</MenuItem>
-  <MenuItem href="/users">
-    Users
-    <Menu>
-      <MenuItem href="/users/active">Active</MenuItem>
-      <MenuItem href="/users/archived">Archived</MenuItem>
-    </Menu>
-  </MenuItem>
-  <MenuItem href="/settings">Settings</MenuItem>
-</Menu>
+	<MenuItem href="/dashboard">Dashboard</MenuItem>
+	<MenuItem href="/users">
+		Users
+		<Menu>
+			<MenuItem href="/users/active">Active</MenuItem>
+			<MenuItem href="/users/archived">Archived</MenuItem>
+		</Menu>
+	</MenuItem>
+	<MenuItem href="/settings">Settings</MenuItem>
+</Menu>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--menu-gap` | Vertical gap between items | `0` |
-| `--menu-font` | Font family | `var(--font-body)` |
-| `--menu-size` | Font size | `var(--size-normal)` |
-| `--menu-leading` | Line height | `var(--leading)` |
-| `--menu-color` | Text colour | `var(--tint-00)` |
-| `--menu-nested-space` | Block margin around a nested submenu | `var(--space-xxsmall)` |
-| `--menu-padding` | Item link top and bottom padding (one length) | `var(--space-small)` |
-| `--menu-indent` | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)` |
-| `--menu-small-indent` | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)` |
-| `--menu-nested-border` | Nested submenu left-border width | `var(--stroke-focus)` |
-| `--menu-nested-color-border` | Nested submenu left-border colour | `var(--tint-50)` |
-| `--menu-nested-indent` | Nested submenu left padding | `var(--space-xsmall)` |
+| Variable                     | Styles                                                                                             | Default                |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
+| `--menu-gap`                 | Vertical gap between items                                                                         | `0`                    |
+| `--menu-font`                | Font family                                                                                        | `var(--font-body)`     |
+| `--menu-size`                | Font size                                                                                          | `var(--size-normal)`   |
+| `--menu-leading`             | Line height                                                                                        | `var(--leading)`       |
+| `--menu-color`               | Text colour                                                                                        | `var(--tint-00)`       |
+| `--menu-nested-space`        | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
+| `--menu-padding`             | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
+| `--menu-indent`              | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)`   |
+| `--menu-small-indent`        | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)`  |
+| `--menu-nested-border`       | Nested submenu left-border width                                                                   | `var(--stroke-focus)`  |
+| `--menu-nested-color-border` | Nested submenu left-border colour                                                                  | `var(--tint-50)`       |
+| `--menu-nested-indent`       | Nested submenu left padding                                                                        | `var(--space-xsmall)`  |
 
 Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 

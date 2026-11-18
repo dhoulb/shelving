@@ -18,8 +18,8 @@ export const getMyMembersQuery = (user: string): Query&lt;MemberItem&gt; =&gt; (
 
 // Server handler.
 MY_SQUADS.handler(async (_payload, _request, { user }) =&gt; ({
-  squads: await getMySquads(user),
-  members: { query: getMyMembersQuery(user), items: await getMyMembers(user) },
+	squads: await getMySquads(user),
+	members: { query: getMyMembersQuery(user), items: await getMyMembers(user) },
 }));</code></pre></figure><h2 id="paging">Paging</h2><p>Page an endpoint with <a href="https://shelving.cc/pr-415/util/query/getQueryItemsAfter" class="link_2NDd3g"><code class="code_nt1Inw">getQueryItemsAfter()</code></a>. It takes the cursor from the last page, never from the cache:</p><figure><pre><code>const page = await API.call(LIST_MESSAGES, { squad, $order: &quot;!when&quot;, $limit: 30 });
 const next = getQueryItemsAfter(page.messages); // `undefined` when there are no more.
 if (next) await API.call(LIST_MESSAGES, next);</code></pre></figure></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/api/HydratingAPIProvider","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

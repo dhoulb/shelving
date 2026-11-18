@@ -35,10 +35,10 @@ import { HorizontalTransition, Navigation, Router } from "shelving/ui";
 
 // Links slide right, the browser back button slides left.
 <Navigation>
-  <HorizontalTransition>
-    <Router routes={ROUTES}/>
-  </HorizontalTransition>
-</Navigation>
+	<HorizontalTransition>
+		<Router routes={ROUTES} />
+	</HorizontalTransition>
+</Navigation>;
 ```
 
 ## Use the class without the component
@@ -50,16 +50,16 @@ import { ViewTransition } from "react";
 import { SLIDE_RIGHT_TRANSITION_CLASS } from "shelving/ui";
 
 <ViewTransition enter={SLIDE_RIGHT_TRANSITION_CLASS} exit={SLIDE_RIGHT_TRANSITION_CLASS}>
-  <div className="panel">…</div>
-</ViewTransition>
+	<div className="panel">…</div>
+</ViewTransition>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--horizontal-transition-size` | Slide distance for the enter/leave keyframes. A percentage is of the element's own width. | `100%` |
-| `--horizontal-transition-duration` | Duration of the slide keyframes | `var(--duration-normal)` |
+| Variable                           | Styles                                                                                    | Default                  |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ |
+| `--horizontal-transition-size`     | Slide distance for the enter/leave keyframes. A percentage is of the element's own width. | `100%`                   |
+| `--horizontal-transition-duration` | Duration of the slide keyframes                                                           | `var(--duration-normal)` |
 
 **Global tokens it reads** — `--duration-normal`.
 

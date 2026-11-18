@@ -42,8 +42,12 @@ const data = store.validated; // Fully-typed data, or throws a string message.
 import { requireForm } from "shelving/ui";
 
 function ResetButton() {
-  const store = requireForm();
-  return <Button plain onClick={() => store.set("name", "")}>Clear name</Button>;
+	const store = requireForm();
+	return (
+		<Button plain onClick={() => store.set("name", "")}>
+			Clear name
+		</Button>
+	);
 }
 ```
 

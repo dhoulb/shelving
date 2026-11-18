@@ -20,10 +20,10 @@ import { DataStore } from "shelving/store";
 
 const state = new DataStore<{ name: string; count: number }>({ name: "Dave", count: 0 });
 
-state.update({ count: 1 });   // Partial update — merges into the current value.
-state.set("count", 2);        // Set a single named prop.
+state.update({ count: 1 }); // Partial update — merges into the current value.
+state.set("count", 2); // Set a single named prop.
 console.log(state.get("name")); // "Dave"
-console.log(state.data);        // { name: "Dave", count: 2 }
+console.log(state.data); // { name: "Dave", count: 2 }
 ```
 
 ### `OptionalDataStore`
@@ -34,9 +34,9 @@ import { OptionalDataStore, NONE } from "shelving/store";
 const profile = new OptionalDataStore<{ name: string }>(NONE);
 
 profile.value = { name: "Dave" };
-console.log(profile.exists);        // true
+console.log(profile.exists); // true
 console.log(profile.require().name); // "Dave" — throws RequiredError if absent
-profile.delete();                    // value is now undefined
+profile.delete(); // value is now undefined
 ```
 
 

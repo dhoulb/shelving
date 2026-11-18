@@ -18,8 +18,8 @@ import { useInstance } from "shelving/react";
 import { APICache } from "shelving/api";
 
 function MyComponent({ provider }: { provider: APIProvider }) {
-  const cache = useInstance(APICache, provider); // Stable across renders.
-  // ...rebuilt only when `provider` changes.
+	const cache = useInstance(APICache, provider); // Stable across renders.
+	// ...rebuilt only when `provider` changes.
 }
 ```
 

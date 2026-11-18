@@ -15,12 +15,12 @@ Pair the tree with the `shelving/ui` and you have a complete static documentatio
 
 An `Extractor` converts an input into a `TreeElement`. Extractors are composable — an outer extractor delegates to inner ones.
 
-| Extractor | Input | Output |
-|---|---|---|
-| `DirectoryExtractor` | a directory path | a `tree-element` node, recursing into subdirectories |
-| `FileExtractor` | a file | a `tree-element` node holding the raw text |
-| `MarkupExtractor` | a `.md` file | a `tree-element` node with `title` taken from the first `# heading` |
-| `TypescriptExtractor` | a `.ts` / `.tsx` file | a `tree-element` node whose children are the exported symbols |
+| Extractor             | Input                 | Output                                                              |
+| --------------------- | --------------------- | ------------------------------------------------------------------- |
+| `DirectoryExtractor`  | a directory path      | a `tree-element` node, recursing into subdirectories                |
+| `FileExtractor`       | a file                | a `tree-element` node holding the raw text                          |
+| `MarkupExtractor`     | a `.md` file          | a `tree-element` node with `title` taken from the first `# heading` |
+| `TypescriptExtractor` | a `.ts` / `.tsx` file | a `tree-element` node whose children are the exported symbols       |
 
 `DirectoryExtractor` is the entry point. It walks a directory, dispatches each file to a `FileExtractor` by extension, and recurses into subdirectories.
 
@@ -35,7 +35,7 @@ The tree is plain, JSON-serialisable data. The docs build writes it to `tree.jso
 
 ### Index files
 
-A directory's index file — `README.md` by default — is *absorbed* into the directory element. Its title, description, and content become the directory's own. This is why writing a `README.md` is all it takes to give a directory an intro page.
+A directory's index file — `README.md` by default — is _absorbed_ into the directory element. Its title, description, and content become the directory's own. This is why writing a `README.md` is all it takes to give a directory an intro page.
 
 ### Same-key merging
 
@@ -64,7 +64,7 @@ const root = await new DirectoryExtractor().extract("/path/to/modules");
 ```tsx
 import { TreeApp } from "shelving/ui";
 
-<TreeApp tree={root} />
+<TreeApp tree={root} />;
 ```
 
 Internally `<TreeApp>` wires together:
@@ -87,9 +87,9 @@ Internally `<TreeApp>` wires together:
 
 ```ts
 new DirectoryExtractor({
-  extractors: { md: new MarkupExtractor() },  // file extension → extractor
-  ignore: [/\.test\.tsx?$/i],                   // entries to skip
-  base: "/abs/path",                            // base for resolving relative paths
+	extractors: { md: new MarkupExtractor() }, // file extension → extractor
+	ignore: [/\.test\.tsx?$/i], // entries to skip
+	base: "/abs/path", // base for resolving relative paths
 });
 ```
 
@@ -99,7 +99,7 @@ By default, test files, hidden files, underscore-prefixed files, and `node_modul
 
 ### Overriding page renderers
 
-The tree components render through *mappings* — wrap a subtree to swap a renderer for one element type:
+The tree components render through _mappings_ — wrap a subtree to swap a renderer for one element type:
 
 - `<TreePageMapping>` — the full-page component for an element type.
 - `<TreeMenuMapping>` — the sidebar menu renderer.
@@ -107,8 +107,8 @@ The tree components render through *mappings* — wrap a subtree to swap a rende
 
 ```tsx
 <TreePageMapping mapping={{ "tree-element": MyTreePage }}>
-  <TreeApp tree={root} />
-</TreePageMapping>
+	<TreeApp tree={root} />
+</TreePageMapping>;
 ```
 
 

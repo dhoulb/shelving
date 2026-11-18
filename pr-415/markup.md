@@ -61,21 +61,21 @@ const node = MARKUP_PARSER.parse(source);
 
 `MarkupParser` is constructed with `MarkupOptions`:
 
-| Option | Type | Description |
-|---|---|---|
-| `rules` | `MarkupRules` | Rules to apply. Defaults to `MARKUP_RULES` (all block + inline rules). |
-| `rel` | `string` | `rel` attribute applied to every rendered link, e.g. `"nofollow ugc"`. |
-| `url` | `ImmutableURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`). |
-| `root` | `ImmutableURL` | Site root URL — base for resolving site-absolute paths (`/foo`). |
-| `schemes` | `URISchemes` | Allowed URI schemes for links. Defaults to `["http:", "https:"]`. |
-| `context` | `string` | Default starting context. Defaults to `"block"`. |
+| Option    | Type           | Description                                                            |
+| --------- | -------------- | ---------------------------------------------------------------------- |
+| `rules`   | `MarkupRules`  | Rules to apply. Defaults to `MARKUP_RULES` (all block + inline rules). |
+| `rel`     | `string`       | `rel` attribute applied to every rendered link, e.g. `"nofollow ugc"`. |
+| `url`     | `ImmutableURL` | Current page URL — base for resolving relative refs (`./foo`, `#x`).   |
+| `root`    | `ImmutableURL` | Site root URL — base for resolving site-absolute paths (`/foo`).       |
+| `schemes` | `URISchemes`   | Allowed URI schemes for links. Defaults to `["http:", "https:"]`.      |
+| `context` | `string`       | Default starting context. Defaults to `"block"`.                       |
 
 ```ts
 const parser = new MarkupParser({
-  rel: "nofollow ugc",
-  url: requireURL("https://example.com/page/"),
-  root: requireURL("https://example.com/"),
-  schemes: ["http:", "https:", "mailto:"],
+	rel: "nofollow ugc",
+	url: requireURL("https://example.com/page/"),
+	root: requireURL("https://example.com/"),
+	schemes: ["http:", "https:", "mailto:"],
 });
 ```
 
@@ -99,11 +99,9 @@ Build custom rules with `createMarkupRule()` and combine them with the defaults:
 ```tsx
 import { createMarkupRule, MARKUP_RULES, MarkupParser } from "shelving/markup";
 
-const HIGHLIGHT_RULE = createMarkupRule<{ text: string }>(
-  /==(?<text>[^=]+)==/,
-  (key, { text }) => <mark key={key}>{text}</mark>,
-  ["inline"],
-);
+const HIGHLIGHT_RULE = createMarkupRule<{ text: string }>(/==(?<text>[^=]+)==/, (key, { text }) => <mark key={key}>{text}</mark>, [
+	"inline",
+]);
 
 const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });
 ```

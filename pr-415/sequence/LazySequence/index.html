@@ -3,10 +3,10 @@
 const deferred = new DeferredSequence&lt;number&gt;();
 
 const seq = new LazySequence(deferred, () =&gt; {
-  const id = setInterval(() =&gt; deferred.resolve(Date.now()), 500);
-  return () =&gt; clearInterval(id); // StopCallback — runs when the last iterator finishes.
+	const id = setInterval(() =&gt; deferred.resolve(Date.now()), 500);
+	return () =&gt; clearInterval(id); // StopCallback — runs when the last iterator finishes.
 });
 
 for await (const ts of seq) {
-  console.log(ts); // the interval runs only for the duration of this loop
+	console.log(ts); // the interval runs only for the duration of this loop
 }</code></pre></figure></div></section><section class="section_IIDW3Q block_3K4IUA"><h2 class="heading_Wx8_nw block_3K4IUA">Methods</h2><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w aqua_-9zNog"><a href="https://shelving.cc/pr-415/sequence/LazySequence/start" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">LazySequence.start()<span class="tag_i6ISOQ tint tint_tcXn_w aqua_-9zNog">method</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">An iterator started iterating.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">start(iterator: LazyIterator&lt;T, R, N&gt;): void</pre></div></article><article class="card_IjfBpA block_3K4IUA tint tint_tcXn_w aqua_-9zNog"><a href="https://shelving.cc/pr-415/sequence/LazySequence/stop" title="Open" class="overlay_IjfBpA">Go</a><div><h3 class="subheading__aWEeg block_3K4IUA space-none_YpPdTw"><div class="block_3K4IUA left_dKRqQA wrap_dKRqQA flex_bN4Hsg left_bN4Hsg wrap_bN4Hsg gap-xsmall_92qe0w">LazySequence.stop()<span class="tag_i6ISOQ tint tint_tcXn_w aqua_-9zNog">method</span></div></h3><p class="paragraph_fyfRhQ block_3K4IUA">An iterator stopped iterating.</p><pre class="preformatted_o5lldw wrap_o5lldw block_3K4IUA wrap_dKRqQA">stop(iterator: LazyIterator&lt;T, R, N&gt;): void</pre></div></article></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/sequence/LazySequence","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

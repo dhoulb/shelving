@@ -3,9 +3,9 @@
 const local = new UndoDBProvider(memory);
 await runServiceLogic(local); // Applies locally right away.
 try {
-  await api.push(local.writes); // Send the writes to the server.
+	await api.push(local.writes); // Send the writes to the server.
 } catch {
-  await local.undo(); // Server failed — restore the local copy.
+	await local.undo(); // Server failed — restore the local copy.
 }</code></pre></figure><p>Things to know:</p><ul><li>The extra read happens only for the first write that touches each item — skipped when the log already establishes the item&#x27;s state (an earlier read observed it, a query returned it, or an earlier add created it). Over a local <a href="https://shelving.cc/pr-415/db/MemoryDBProvider" class="link_2NDd3g"><code class="code_nt1Inw">MemoryDBProvider</code></a> the reads are effectively free anyway.</li><li><a href="https://shelving.cc/pr-415/db/UndoDBProvider/undo" class="link_2NDd3g"><code class="code_nt1Inw">UndoDBProvider.undo()</code></a> restores touched items unconditionally, so concurrent writes made to those items since the recording are overwritten.</li><li><a href="https://shelving.cc/pr-415/db/UndoDBProvider/undo" class="link_2NDd3g"><code class="code_nt1Inw">UndoDBProvider.undo()</code></a> writes directly to <code class="code_nt1Inw">source</code> without recording, so the log still describes the original operations afterwards.</li></ul></div></section><section class="section_IIDW3Q block_3K4IUA"><h2 class="heading_Wx8_nw block_3K4IUA">Examples</h2><pre class="preformatted_o5lldw block_3K4IUA">const local = new UndoDBProvider(memory);
  await runServiceLogic(local); // Applies locally right away.
  try {

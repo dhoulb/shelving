@@ -22,11 +22,19 @@ A grid container that arranges its children in equal-width columns. Renders a `<
 import { Card, Grid, Paragraph } from "shelving/ui";
 
 <Grid gap="small">
-  <Card><Paragraph>Running</Paragraph></Card>
-  <Card><Paragraph>Cycling</Paragraph></Card>
-  <Card><Paragraph>Swimming</Paragraph></Card>
-  <Card><Paragraph>Rowing</Paragraph></Card>
-</Grid>
+	<Card>
+		<Paragraph>Running</Paragraph>
+	</Card>
+	<Card>
+		<Paragraph>Cycling</Paragraph>
+	</Card>
+	<Card>
+		<Paragraph>Swimming</Paragraph>
+	</Card>
+	<Card>
+		<Paragraph>Rowing</Paragraph>
+	</Card>
+</Grid>;
 ```
 
 ### A list of tiles
@@ -35,8 +43,10 @@ import { Card, Grid, Paragraph } from "shelving/ui";
 import { Grid } from "shelving/ui";
 
 <Grid as="ul" columns={3} gap="normal">
-  {badges.map(badge => <li key={badge.id}>{badge.name}</li>)}
-</Grid>
+	{badges.map(badge => (
+		<li key={badge.id}>{badge.name}</li>
+	))}
+</Grid>;
 ```
 
 ### Days of the week
@@ -45,8 +55,10 @@ import { Grid } from "shelving/ui";
 import { Grid } from "shelving/ui";
 
 <Grid as="ol" columns={7} gap="xsmall">
-  {days.map(day => <li key={day.date}>{day.label}</li>)}
-</Grid>
+	{days.map(day => (
+		<li key={day.date}>{day.label}</li>
+	))}
+</Grid>;
 ```
 
 ## Styling

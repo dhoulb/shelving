@@ -12,7 +12,7 @@
 // Array form — keys and labels are the same.
 const STATUS = CHOICE([&quot;draft&quot;, &quot;published&quot;, &quot;archived&quot;] as const);
 STATUS.validate(&quot;published&quot;); // &quot;published&quot;
-STATUS.validate(&quot;deleted&quot;);   // throws &quot;Unknown value&quot;
+STATUS.validate(&quot;deleted&quot;); // throws &quot;Unknown value&quot;
 
 // Object form — keys are validated values, object values are display labels.
 const Priority = CHOICE({ low: &quot;Low priority&quot;, high: &quot;High priority&quot; });</code></pre></figure><p><a href="https://shelving.cc/pr-415/schema/ChoiceSchema" class="link_2NDd3g" aria-current="page"><code class="code_nt1Inw">ChoiceSchema</code></a> is iterable and exposes <code class="code_nt1Inw">.keys()</code> and <code class="code_nt1Inw">.entries()</code> for building select menus. It does not implicitly default to the first option; pass <code class="code_nt1Inw">value</code> if you want a preselected choice.</p><h2 id="input-control">Input control</h2><p><code class="code_nt1Inw">input</code> tells a form UI which control to show. It defaults from the number of options: <code class="code_nt1Inw">&quot;radio&quot;</code> for 8 or fewer, <code class="code_nt1Inw">&quot;select&quot;</code> for more. Set it to always use one control:</p><figure><pre><code>import { ChoiceSchema } from &quot;shelving/schema&quot;;

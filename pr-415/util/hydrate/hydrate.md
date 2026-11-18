@@ -26,7 +26,10 @@ Serialise and deserialise class instances across a network boundary. `dehydrate(
 import { hydrate, dehydrate, type Hydrations } from "shelving/util";
 
 class Money {
-  constructor(readonly amount: number, readonly currency: string) {}
+	constructor(
+		readonly amount: number,
+		readonly currency: string,
+	) {}
 }
 
 const HYDRATIONS: Hydrations = { Money };
@@ -36,9 +39,9 @@ const HYDRATIONS: Hydrations = { Money };
 
 ```ts
 const serverValue = {
-  price: new Money(9.99, "GBP"),
-  tags: new Set(["sale", "new"]),
-  createdAt: new Date("2024-01-01"),
+	price: new Money(9.99, "GBP"),
+	tags: new Set(["sale", "new"]),
+	createdAt: new Date("2024-01-01"),
 };
 
 const plain = dehydrate(serverValue, HYDRATIONS);

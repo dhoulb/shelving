@@ -21,19 +21,19 @@ Deleted text — renders a `<del>` element to mark content that has been removed
 import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 <Paragraph>
-  Was <Deleted>$50</Deleted> <Inserted>$35</Inserted>.
-</Paragraph>
+	Was <Deleted>$50</Deleted> <Inserted>$35</Inserted>.
+</Paragraph>;
 ```
 
 ## Styling
 
 `Deleted` colours its text directly from `--color-red` (not the tint ladder), so deletions stay a consistent red regardless of the surrounding tint. Override `--deleted-color` to recolour.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--deleted-color` | Text colour | `var(--color-red)` |
+| Variable               | Styles          | Default                             |
+| ---------------------- | --------------- | ----------------------------------- |
+| `--deleted-color`      | Text colour     | `var(--color-red)`                  |
 | `--deleted-decoration` | Text decoration | `line-through var(--stroke-normal)` |
-| `--deleted-weight` | Font weight | `var(--weight-strong)` |
+| `--deleted-weight`     | Font weight     | `var(--weight-strong)`              |
 
 **Global tokens it reads:** `--color-red`, `--stroke-normal`, and `--weight-strong`.
 

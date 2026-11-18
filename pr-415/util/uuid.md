@@ -21,12 +21,12 @@ randomUUID(); // "550e8400e29b41d4a716446655440000"  (no dashes)
 
 // Parse and normalise an existing UUID.
 getUUID("550e8400-e29b-41d4-a716-446655440000"); // "550e8400e29b41d4a716446655440000"
-getUUID("INVALID");                              // undefined
-getUUID("");                                     // undefined
+getUUID("INVALID"); // undefined
+getUUID(""); // undefined
 
 // Require a valid UUID or throw.
 requireUUID("550e8400-e29b-41d4-a716-446655440000"); // "550e8400e29b41d4a716446655440000"
-requireUUID("bad-value");                            // throws RequiredError
+requireUUID("bad-value"); // throws RequiredError
 ```
 
 

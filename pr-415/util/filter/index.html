@@ -7,13 +7,17 @@ const strings = Array.from(filterItems([&quot;a&quot;, 1, &quot;b&quot;, 2], isS
 
 // Immutable array filter — same ref when nothing changes.
 const arr = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;];
-const filtered = filterArray(arr, (s) =&gt; s !== &quot;b&quot;); // [&quot;a&quot;, &quot;c&quot;]
-filterArray(arr, () =&gt; true) === arr;                 // true  (same reference)
+const filtered = filterArray(arr, s =&gt; s !== &quot;b&quot;); // [&quot;a&quot;, &quot;c&quot;]
+filterArray(arr, () =&gt; true) === arr; // true  (same reference)
 
 // Async stream filter.
-async function* source() { yield 1; yield 2; yield 3; }
-for await (const n of filterSequence(source(), (n) =&gt; n &gt; 1)) {
-  console.log(n); // 2, 3
+async function* source() {
+	yield 1;
+	yield 2;
+	yield 3;
+}
+for await (const n of filterSequence(source(), n =&gt; n &gt; 1)) {
+	console.log(n); // 2, 3
 }</code></pre></figure><h3 id="using-extra-arguments">Using extra arguments</h3><figure><pre><code>import { filterItems } from &quot;shelving/util&quot;;
 import { isInArray } from &quot;shelving/util&quot;;
 

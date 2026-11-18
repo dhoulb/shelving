@@ -5,5 +5,5 @@ const store = new BusyStore&lt;number&gt;(NONE);
 store.value = fetchNextValue(); // assigning a promise — store.busy becomes true
 
 for await (const busy of store.busy) {
-  console.log(busy ? &quot;loading…&quot; : &quot;idle&quot;);
+	console.log(busy ? &quot;loading…&quot; : &quot;idle&quot;);
 }</code></pre></figure></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/store/BusyStore","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

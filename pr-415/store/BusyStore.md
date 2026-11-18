@@ -24,7 +24,7 @@ const store = new BusyStore<number>(NONE);
 store.value = fetchNextValue(); // assigning a promise — store.busy becomes true
 
 for await (const busy of store.busy) {
-  console.log(busy ? "loading…" : "idle");
+	console.log(busy ? "loading…" : "idle");
 }
 ```
 

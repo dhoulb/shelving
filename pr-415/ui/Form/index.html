@@ -2,55 +2,57 @@
 import { DATA, StringSchema, NumberSchema } from &quot;shelving/schema&quot;;
 
 const PRODUCT_SCHEMA = DATA({
-  name: new StringSchema({ title: &quot;Name&quot;, min: 1, max: 100 }),
-  price: new NumberSchema({ title: &quot;Price&quot;, min: 0 }),
+	name: new StringSchema({ title: &quot;Name&quot;, min: 1, max: 100 }),
+	price: new NumberSchema({ title: &quot;Price&quot;, min: 0 }),
 });
 
 export function NewProductForm() {
-  return (
-    &lt;Form
-      schema={PRODUCT_SCHEMA}
-      submit=&quot;Create product&quot;
-      onSubmit={async data =&gt; {
-        await createProduct(data);
-        return &quot;Product created&quot;; // dispatched as a success notice
-      }}
-    /&gt;
-  );
+	return (
+		&lt;Form
+			schema={PRODUCT_SCHEMA}
+			submit=&quot;Create product&quot;
+			onSubmit={async data =&gt; {
+				await createProduct(data);
+				return &quot;Product created&quot;; // dispatched as a success notice
+			}}
+		/&gt;
+	);
 }</code></pre></figure><h3 id="edit-form-with-seeded-data">Edit form with seeded data</h3><figure><pre><code>import { Form } from &quot;shelving/ui&quot;;
 import { DATA, StringSchema, NumberSchema, BOOLEAN } from &quot;shelving/schema&quot;;
 
 const LISTING_SCHEMA = DATA({
-  title: new StringSchema({ title: &quot;Title&quot;, min: 1, max: 80 }),
-  price: new NumberSchema({ title: &quot;Price&quot;, min: 0 }),
-  published: BOOLEAN,
+	title: new StringSchema({ title: &quot;Title&quot;, min: 1, max: 80 }),
+	price: new NumberSchema({ title: &quot;Price&quot;, min: 0 }),
+	published: BOOLEAN,
 });
 
 export function ListingForm({ listing }: { listing?: typeof LISTING_SCHEMA.type }) {
-  return (
-    &lt;Form
-      schema={LISTING_SCHEMA}
-      data={listing}
-      submit={listing ? &quot;Save changes&quot; : &quot;Publish listing&quot;}
-      onSubmit={async data =&gt; {
-        await saveListing(data);
-        return listing ? &quot;Listing updated&quot; : &quot;Listing published&quot;;
-      }}
-    /&gt;
-  );
+	return (
+		&lt;Form
+			schema={LISTING_SCHEMA}
+			data={listing}
+			submit={listing ? &quot;Save changes&quot; : &quot;Publish listing&quot;}
+			onSubmit={async data =&gt; {
+				await saveListing(data);
+				return listing ? &quot;Listing updated&quot; : &quot;Listing published&quot;;
+			}}
+		/&gt;
+	);
 }</code></pre></figure><h3 id="custom-layout">Custom layout</h3><p>Provide explicit <code class="code_nt1Inw">children</code> when you need control over field order, groupings, or extra buttons. <a href="https://shelving.cc/pr-415/ui/FormInput" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormInput&gt;</code></a> uses <a href="https://shelving.cc/pr-415/ui/useField" class="link_2NDd3g"><code class="code_nt1Inw">useField()</code></a> to pull the current value, error, and schema from context, then delegates to <a href="https://shelving.cc/pr-415/ui/SchemaInput" class="link_2NDd3g"><code class="code_nt1Inw">&lt;SchemaInput&gt;</code></a> so each field renders the correct control type.</p><figure><pre><code>import { Form, Field, FormInput, SubmitButton, Button, FormMessage } from &quot;shelving/ui&quot;;
 
 &lt;Form schema={LISTING_SCHEMA} data={listing} onSubmit={handleSubmit}&gt;
-  &lt;Field title=&quot;Title&quot; required&gt;
-    &lt;FormInput name=&quot;title&quot; /&gt;
-  &lt;/Field&gt;
-  &lt;Field title=&quot;Price&quot;&gt;
-    &lt;FormInput name=&quot;price&quot; /&gt;
-  &lt;/Field&gt;
-  &lt;FormInput name=&quot;published&quot; /&gt;
-  &lt;footer&gt;
-    &lt;SubmitButton&gt;Save changes&lt;/SubmitButton&gt;
-    &lt;Button plain onClick={onCancel}&gt;Cancel&lt;/Button&gt;
-    &lt;FormMessage /&gt;
-  &lt;/footer&gt;
-&lt;/Form&gt;</code></pre></figure><h2 id="notices-and-error-surfacing">Notices and error surfacing</h2><p>When an <code class="code_nt1Inw">onSubmit</code> callback returns a non-empty <code class="code_nt1Inw">ReactNode</code>, <a href="https://shelving.cc/pr-415/ui/Form" class="link_2NDd3g" aria-current="page"><code class="code_nt1Inw">Form</code></a> dispatches it as a success notice. When it throws a <strong>string</strong>, the string is parsed into field messages — any line matching <code class="code_nt1Inw">&quot;fieldName: message&quot;</code> maps to that field&#x27;s error display; an unmatched remainder appears as the form-wide message shown by <a href="https://shelving.cc/pr-415/ui/FormMessage" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormMessage&gt;</code></a>. Non-string throws become global error notices. The string-splitting rule comes from <a href="https://shelving.cc/pr-415/schema" class="link_2NDd3g"><code class="code_nt1Inw">shelving/schema</code></a>.</p><ul><li><a href="https://shelving.cc/pr-415/ui/FormMessage" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormMessage&gt;</code></a> renders the top-level <code class="code_nt1Inw">&quot;&quot;</code> message inline as a <a href="https://shelving.cc/pr-415/ui/Message" class="link_2NDd3g"><code class="code_nt1Inw">&lt;Message&gt;</code></a>.</li><li><a href="https://shelving.cc/pr-415/ui/FormNotice" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormNotice&gt;</code></a> renders it as a larger <a href="https://shelving.cc/pr-415/ui/Notice" class="link_2NDd3g"><code class="code_nt1Inw">&lt;Notice&gt;</code></a> block.</li><li><a href="https://shelving.cc/pr-415/ui/FormNotify" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormNotify&gt;</code></a> (no JSX output) forwards the message to the global notice system via a side effect instead.</li></ul><h2 id="styling">Styling</h2><p><a href="https://shelving.cc/pr-415/ui/Form" class="link_2NDd3g" aria-current="page"><code class="code_nt1Inw">Form</code></a> exposes no own hooks. It renders a plain <code class="code_nt1Inw">&lt;form&gt;</code> styled by the shared block variants from <a href="https://shelving.cc/pr-415/ui/getBlockClass" class="link_2NDd3g"><code class="code_nt1Inw">getBlockClass()</code></a>, so it inherits its layout from the standard <code class="code_nt1Inw">space</code>, <a href="https://shelving.cc/pr-415/util/debug/indent" class="link_2NDd3g"><code class="code_nt1Inw">indent</code></a>, <code class="code_nt1Inw">padding</code>, <code class="code_nt1Inw">width</code>, <code class="code_nt1Inw">color</code>, and typography variants — set <code class="code_nt1Inw">&lt;Form indent=&quot;normal&quot;&gt;</code> to inset the form&#x27;s content from the edges, or <code class="code_nt1Inw">&lt;Form space=&quot;large&quot;&gt;</code> to change its outer block margin.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/ui/Form","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>
+	&lt;Field title=&quot;Title&quot; required&gt;
+		&lt;FormInput name=&quot;title&quot; /&gt;
+	&lt;/Field&gt;
+	&lt;Field title=&quot;Price&quot;&gt;
+		&lt;FormInput name=&quot;price&quot; /&gt;
+	&lt;/Field&gt;
+	&lt;FormInput name=&quot;published&quot; /&gt;
+	&lt;footer&gt;
+		&lt;SubmitButton&gt;Save changes&lt;/SubmitButton&gt;
+		&lt;Button plain onClick={onCancel}&gt;
+			Cancel
+		&lt;/Button&gt;
+		&lt;FormMessage /&gt;
+	&lt;/footer&gt;
+&lt;/Form&gt;;</code></pre></figure><h2 id="notices-and-error-surfacing">Notices and error surfacing</h2><p>When an <code class="code_nt1Inw">onSubmit</code> callback returns a non-empty <code class="code_nt1Inw">ReactNode</code>, <a href="https://shelving.cc/pr-415/ui/Form" class="link_2NDd3g" aria-current="page"><code class="code_nt1Inw">Form</code></a> dispatches it as a success notice. When it throws a <strong>string</strong>, the string is parsed into field messages — any line matching <code class="code_nt1Inw">&quot;fieldName: message&quot;</code> maps to that field&#x27;s error display; an unmatched remainder appears as the form-wide message shown by <a href="https://shelving.cc/pr-415/ui/FormMessage" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormMessage&gt;</code></a>. Non-string throws become global error notices. The string-splitting rule comes from <a href="https://shelving.cc/pr-415/schema" class="link_2NDd3g"><code class="code_nt1Inw">shelving/schema</code></a>.</p><ul><li><a href="https://shelving.cc/pr-415/ui/FormMessage" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormMessage&gt;</code></a> renders the top-level <code class="code_nt1Inw">&quot;&quot;</code> message inline as a <a href="https://shelving.cc/pr-415/ui/Message" class="link_2NDd3g"><code class="code_nt1Inw">&lt;Message&gt;</code></a>.</li><li><a href="https://shelving.cc/pr-415/ui/FormNotice" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormNotice&gt;</code></a> renders it as a larger <a href="https://shelving.cc/pr-415/ui/Notice" class="link_2NDd3g"><code class="code_nt1Inw">&lt;Notice&gt;</code></a> block.</li><li><a href="https://shelving.cc/pr-415/ui/FormNotify" class="link_2NDd3g"><code class="code_nt1Inw">&lt;FormNotify&gt;</code></a> (no JSX output) forwards the message to the global notice system via a side effect instead.</li></ul><h2 id="styling">Styling</h2><p><a href="https://shelving.cc/pr-415/ui/Form" class="link_2NDd3g" aria-current="page"><code class="code_nt1Inw">Form</code></a> exposes no own hooks. It renders a plain <code class="code_nt1Inw">&lt;form&gt;</code> styled by the shared block variants from <a href="https://shelving.cc/pr-415/ui/getBlockClass" class="link_2NDd3g"><code class="code_nt1Inw">getBlockClass()</code></a>, so it inherits its layout from the standard <code class="code_nt1Inw">space</code>, <a href="https://shelving.cc/pr-415/util/debug/indent" class="link_2NDd3g"><code class="code_nt1Inw">indent</code></a>, <code class="code_nt1Inw">padding</code>, <code class="code_nt1Inw">width</code>, <code class="code_nt1Inw">color</code>, and typography variants — set <code class="code_nt1Inw">&lt;Form indent=&quot;normal&quot;&gt;</code> to inset the form&#x27;s content from the edges, or <code class="code_nt1Inw">&lt;Form space=&quot;large&quot;&gt;</code> to change its outer block margin.</p></div></section></div></div><!--/$--></div><!--/&--></div><button type="button" class="overlay_RA9qqw" aria-label="Close menu"></button></main><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-415/ui/Form","root":"https://shelving.cc/pr-415/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-415/client-dgvwk28b.css"],"modules":["https://shelving.cc/pr-415/client-f4p72e8g.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>

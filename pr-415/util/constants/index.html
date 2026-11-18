@@ -14,8 +14,8 @@ const label = `100${NBSP}km`;
 const formatted = `42${NNBSP}°C`;</code></pre></figure><h3 id="control-symbols">Control symbols</h3><figure><pre><code>import { ABORT, NONE, SKIP } from &quot;shelving/util&quot;;
 
 function process(value: unknown): string | typeof ABORT {
-  if (cancelled) return ABORT;
-  return String(value);
+	if (cancelled) return ABORT;
+	return String(value);
 }</code></pre></figure><h3 id="status-icons">Status icons</h3><figure><pre><code>import { WAITING, SUCCESS, FAILURE, UP, DOWN, LEFT, RIGHT } from &quot;shelving/util&quot;;
 
 console.log(`${SUCCESS} Done`);

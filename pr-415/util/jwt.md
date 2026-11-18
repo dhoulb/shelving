@@ -41,12 +41,7 @@ const { headerData, payloadData } = splitToken(token);
 ### Working with Bearer tokens on requests
 
 ```ts
-import {
-  setRequestToken,
-  getRequestToken,
-  requireRequestToken,
-  verifyRequestToken,
-} from "shelving/util";
+import { setRequestToken, getRequestToken, requireRequestToken, verifyRequestToken } from "shelving/util";
 
 // Attach a token to an outgoing request.
 setRequestToken(request, token);

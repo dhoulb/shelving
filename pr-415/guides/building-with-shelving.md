@@ -8,7 +8,7 @@ Follow the file and folder names in this guide exactly. The layout works because
 
 1. **Three top-level packages.** All source code lives in `shared/`, `api/`, or `app/`. `shared/` is the contract layer; `api/` is the server; `app/` is the client.
 2. **The contract lives in `shared/`.** Database schemas, endpoint definitions, domain logic, and utilities used by both sides are defined once in `shared/` and imported by both `api/` and `app/`. Neither side ever redeclares a type or a validation rule the other side also needs.
-3. **Schema-first.** Data shapes are defined as Shelving schemas (runtime validators), and TypeScript types are *derived* from them with `ValidatorType`. You never write a type by hand and a validator separately.
+3. **Schema-first.** Data shapes are defined as Shelving schemas (runtime validators), and TypeScript types are _derived_ from them with `ValidatorType`. You never write a type by hand and a validator separately.
 4. **Hard boundaries, mechanically enforced.** `app/` must never import from `api/`, and `api/` must never import from `app/`. This is enforced by the linter, not by convention (see [Boundaries](#boundaries)).
 5. **Dependency injection via a context object, owned by the composition root.** Handlers and services never construct their own providers (database, external APIs). They receive a single context object, so the same code runs against real providers in production, debug/in-memory providers locally, and mock providers in tests. The full context type (`APIContext`) is defined in `api/` — never in `shared/`. Shared code stays generic over a context type `C`, and declares only small named context slices — reusable ones like `DatabaseContext` in `shared/util/context.ts`, adapter-specific ones alongside each adapter (see [Dependency injection](#dependency-injection-context-slices-and-the-composition-root)).
 6. **Group by domain, not by file type.** Feature code sits in a folder named after the domain entity it handles, with its components, styles, helpers, and tests together.
@@ -186,7 +186,7 @@ The composition root's `APIContext` satisfies `CRMContext` structurally, so the 
 
 Flat folder, one file per topic (`phone.ts`, `cookie.ts`, `env.ts`, …), each with a co-located `<topic>.test.ts`. Two files deserve special mention:
 
-- **`shared/util/env.ts`** — parses *public* environment variables only. It starts with a comment warning that these values are inlined into client bundles. Required values throw at module load: `if (!process.env.API_URL) throw new ReferenceError(...)`. Export parsed values (e.g. `URL` objects via `requireURL`), not raw strings.
+- **`shared/util/env.ts`** — parses _public_ environment variables only. It starts with a comment warning that these values are inlined into client bundles. Required values throw at module load: `if (!process.env.API_URL) throw new ReferenceError(...)`. Export parsed values (e.g. `URL` objects via `requireURL`), not raw strings.
 - **`shared/util/context.ts`** — declares small, descriptive, **reusable context slices** — `DatabaseContext { db: DBProvider }` and the like — that shared service callbacks reuse when they need context. What it must **never** declare is the full server context: the "large bundle" shape is owned by `api/util/context.ts`, where `APIContext` composes these slices into its final shape. Nothing in `app/` ever imports the full server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
 
 ## Dependency injection: context slices and the composition root
@@ -197,7 +197,7 @@ Everything server-side receives its dependencies through a single context object
 
 The server's full DI context is defined in **`api/util/context.ts`**, named `APIContext`, with `APIHandlers = EndpointHandlers<APIContext>` alongside. It does **not** live in `shared/`. This mirrors `app/util/context.ts` — each side owns its own context file. Nothing in `app/` ever imports the server context, and defining it in `shared/` forces generic shared code to depend on the whole application environment.
 
-What `shared/` *does* declare is **slices**: small, descriptive interfaces that each name one capability. The full context only ever exists at the composition root, as a composition of slices.
+What `shared/` _does_ declare is **slices**: small, descriptive interfaces that each name one capability. The full context only ever exists at the composition root, as a composition of slices.
 
 ### Shared code never names the full context
 
@@ -304,12 +304,12 @@ One file per domain entity; functions named as verbs (`createOrder`, not `orderC
 
 ### `api/config/` — server-side configuration
 
-Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` defines *what the data looks like* (schemas — needed by the client to render forms), `api/config/<area>/` defines *what the server does with it* (processors, forwarding/mapping to external systems — server-only because it encodes business rules and touches secret-bearing providers). The `api/config/<area>/index.ts` barrel uses `satisfies { [K in keyof typeof SHARED_CONFIG]: ... }` to force a compile error if a shared config entry is missing its server counterpart.
+Mirrors `shared/config/` folder-for-folder. Where `shared/config/<area>/` defines _what the data looks like_ (schemas — needed by the client to render forms), `api/config/<area>/` defines _what the server does with it_ (processors, forwarding/mapping to external systems — server-only because it encodes business rules and touches secret-bearing providers). The `api/config/<area>/index.ts` barrel uses `satisfies { [K in keyof typeof SHARED_CONFIG]: ... }` to force a compile error if a shared config entry is missing its server counterpart.
 
 ### `api/util/` — server-only utilities
 
 - **`api/util/context.ts`** — defines `APIContext` (the DI context interface, composed by extending the reusable slices from `shared/util/context.ts` and each adapter's own slice) and `APIHandlers = EndpointHandlers<APIContext>`. See [Dependency injection](#dependency-injection-context-slices-and-the-composition-root).
-- **`api/util/env.ts`** — parses *secret* environment variables (API keys etc.). Starts with a comment: "these values are server-side secrets — only import this file in API code, never in APP code."
+- **`api/util/env.ts`** — parses _secret_ environment variables (API keys etc.). Starts with a comment: "these values are server-side secrets — only import this file in API code, never in APP code."
 - **`api/util/middleware.ts`** — request middleware as higher-order functions named `with*`: `withCORS(handler)`, `withLogging(handler)`. Each takes a `RequestHandler` and returns a new one.
 - **`api/util/test.ts`** — the mock-context factory described above, plus shared test fixtures.
 
@@ -399,12 +399,12 @@ With no layout, the document body scrolls. This is fine for a site or a small ap
 
 ```tsx
 <App app="My site" root="https://example.com/">
-  <Navigation>
-    <PageLoader>
-      <Router routes={ROUTES} />
-    </PageLoader>
-  </Navigation>
-</App>
+	<Navigation>
+		<PageLoader>
+			<Router routes={ROUTES} />
+		</PageLoader>
+	</Navigation>
+</App>;
 ```
 
 #### A full-screen app with its own scroll box
@@ -413,12 +413,12 @@ Use `<FixedLayout>`. It locks the body and gives one full-screen content slot in
 
 ```tsx
 <FixedLayout>
-  <Scroll vertical cover>
-    <PageLoader>
-      <Router routes={ROUTES} />
-    </PageLoader>
-  </Scroll>
-</FixedLayout>
+	<Scroll vertical cover>
+		<PageLoader>
+			<Router routes={ROUTES} />
+		</PageLoader>
+	</Scroll>
+</FixedLayout>;
 ```
 
 #### Content in the middle of the screen
@@ -427,10 +427,10 @@ A layout never centres. The page centres its own content with `<Block height="fu
 
 ```tsx
 <Page title="Log in">
-  <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
-    <LoginForm />
-  </Block>
-</Page>
+	<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+		<LoginForm />
+	</Block>
+</Page>;
 ```
 
 #### A sidebar
@@ -439,10 +439,10 @@ Use `<SidebarLayout sidebar>`. On a narrow screen the sidebar becomes a drawer w
 
 ```tsx
 <SidebarLayout sidebar={<Menu />}>
-  <Scroll vertical cover>
-    <Router routes={ROUTES} />
-  </Scroll>
-</SidebarLayout>
+	<Scroll vertical cover>
+		<Router routes={ROUTES} />
+	</Scroll>
+</SidebarLayout>;
 ```
 
 #### A tab bar
@@ -451,10 +451,10 @@ Use `<AppLayout nav>`. It puts the content slot above a bar, at every screen siz
 
 ```tsx
 <AppLayout nav={<StackBar />}>
-  <Scroll vertical cover>
-    <Router routes={ROUTES} />
-  </Scroll>
-</AppLayout>
+	<Scroll vertical cover>
+		<Router routes={ROUTES} />
+	</Scroll>
+</AppLayout>;
 ```
 
 #### A custom layout with a custom scroll area
@@ -469,21 +469,38 @@ A frame does not scroll, centre, cache or transition. The app puts those in the 
 
 ```tsx
 export function TopBarLayout({ bar, children }: TopBarLayoutProps): ReactElement {
-  return (
-    <div className={LAYOUT_CLASS}>
-      <header className={BAR_CLASS}>{bar}</header>
-      <main className={CONTENT_CLASS}>{children}</main>
-    </div>
-  );
+	return (
+		<div className={LAYOUT_CLASS}>
+			<header className={BAR_CLASS}>{bar}</header>
+			<main className={CONTENT_CLASS}>{children}</main>
+		</div>
+	);
 }
 ```
 
 ```css
 @layer components {
-  html:has(.layout) { height: 100dvh; overflow: hidden; }
-  body:has(.layout) { position: fixed; inset: 0; margin: 0; }
-  .layout { position: absolute; inset: 0; display: flex; flex-direction: column; }
-  .content { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+	html:has(.layout) {
+		height: 100dvh;
+		overflow: hidden;
+	}
+	body:has(.layout) {
+		position: fixed;
+		inset: 0;
+		margin: 0;
+	}
+	.layout {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.content {
+		position: relative;
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
+	}
 }
 ```
 
@@ -499,12 +516,12 @@ By default a page unmounts when you leave it, so its scroll position, toggles an
 
 ```tsx
 <RouteCache>
-  <Scroll vertical cover>
-    <PageLoader>
-      <Router routes={ROUTES} />
-    </PageLoader>
-  </Scroll>
-</RouteCache>
+	<Scroll vertical cover>
+		<PageLoader>
+			<Router routes={ROUTES} />
+		</PageLoader>
+	</Scroll>
+</RouteCache>;
 ```
 
 Keep the layout **outside** the cache, so the chrome has one copy and keeps its own state. Clear a create form after it saves, because the cache keeps its input. See `<RouteCache>`.
@@ -515,12 +532,14 @@ Put a page transition, for example `<HorizontalTransition>`, **around** `<RouteC
 
 ```tsx
 <AppLayout nav={<StackBar />}>
-  <HorizontalTransition>
-    <RouteCache>
-      <Scroll vertical cover>…</Scroll>
-    </RouteCache>
-  </HorizontalTransition>
-</AppLayout>
+	<HorizontalTransition>
+		<RouteCache>
+			<Scroll vertical cover>
+				…
+			</Scroll>
+		</RouteCache>
+	</HorizontalTransition>
+</AppLayout>;
 ```
 
 #### Tab stacks, like a phone app
@@ -540,12 +559,12 @@ All pages in one stack share one layout, because they share one cache. So a page
 
 ```tsx
 function Shell() {
-  const { path } = requireMetaURL();
-  return (
-    <AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
-      <Content />
-    </AppLayout>
-  );
+	const { path } = requireMetaURL();
+	return (
+		<AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
+			<Content />
+		</AppLayout>
+	);
 }
 ```
 
@@ -555,8 +574,17 @@ The layout picker is plain React, so any rule works: the session, the path, or b
 
 ```tsx
 function Shell({ signedIn }: { signedIn: boolean }) {
-  if (!signedIn) return <FixedLayout><Content routes={LOGIN_ROUTES} /></FixedLayout>;
-  return <AppLayout nav={<StackBar />}><Content routes={ROUTES} /></AppLayout>;
+	if (!signedIn)
+		return (
+			<FixedLayout>
+				<Content routes={LOGIN_ROUTES} />
+			</FixedLayout>
+		);
+	return (
+		<AppLayout nav={<StackBar />}>
+			<Content routes={ROUTES} />
+		</AppLayout>
+	);
 }
 ```
 
@@ -568,13 +596,13 @@ A page, an error page or a loading state never renders a layout. `<PageLoader>` 
 
 ```tsx
 function AppError({ reason }: ErrorProps) {
-  return (
-    <FixedLayout>
-      <Scroll vertical cover>
-        <ErrorPage reason={reason} />
-      </Scroll>
-    </FixedLayout>
-  );
+	return (
+		<FixedLayout>
+			<Scroll vertical cover>
+				<ErrorPage reason={reason} />
+			</Scroll>
+		</FixedLayout>
+	);
 }
 ```
 
@@ -587,7 +615,7 @@ Three mechanisms keep the packages honest:
    - Files under `api/**` may not import `app/**` — "API code must not import client modules".
    - `shared/**` imports neither, by construction (nothing in it references the other packages).
 2. **The env split.** Public env vars are parsed only in `shared/util/env.ts`; secret env vars only in `api/util/env.ts`. A secret can never leak into a client bundle because the only file that reads it is un-importable from `app/`.
-3. **Path aliases.** Cross-package imports of `shared/` go through bare aliases defined in `tsconfig.json` `paths`, which also enforce that folders with barrels are imported *as* the barrel:
+3. **Path aliases.** Cross-package imports of `shared/` go through bare aliases defined in `tsconfig.json` `paths`, which also enforce that folders with barrels are imported _as_ the barrel:
 
 ```jsonc
 "paths": {
@@ -660,12 +688,12 @@ This is a **key part of the workflow**, not an afterthought. Every code pull req
 
 The setup is four workflows in `.github/workflows/`. The hosting below is described using Cloudflare (Pages for the static app bundle, Workers for the API) as the example technology — any host that supports named/branch deployments for static sites and named serverless deployments for the API works the same way.
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `deploy-preview.yml` | PR `opened` / `synchronize` / `reopened` | Full test gate, then deploy a per-PR preview environment and post a sticky PR comment with the URLs |
-| `deploy-prod.yml` | Push to `main` | Full test gate, then deploy to production |
-| `smoke.yml` | `deployment_status` success (+ manual dispatch) | Run `@smoke`-tagged e2e tests against the freshly deployed URL |
-| `teardown-preview.yml` | PR `closed` | Delete the per-PR deployments and update the sticky comment |
+| Workflow               | Trigger                                         | What it does                                                                                        |
+| ---------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `deploy-preview.yml`   | PR `opened` / `synchronize` / `reopened`        | Full test gate, then deploy a per-PR preview environment and post a sticky PR comment with the URLs |
+| `deploy-prod.yml`      | Push to `main`                                  | Full test gate, then deploy to production                                                           |
+| `smoke.yml`            | `deployment_status` success (+ manual dispatch) | Run `@smoke`-tagged e2e tests against the freshly deployed URL                                      |
+| `teardown-preview.yml` | PR `closed`                                     | Delete the per-PR deployments and update the sticky comment                                         |
 
 ### The preview workflow (`deploy-preview.yml`)
 
@@ -678,8 +706,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore:
-      - '**/*.md'
-      - 'docs/**'
+      - "**/*.md"
+      - "docs/**"
 
 permissions:
   contents: read
@@ -709,7 +737,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: bunx playwright install chromium
-      - run: bun run test        # the FULL gate: lint + type + unit + e2e
+      - run: bun run test # the FULL gate: lint + type + unit + e2e
 
   deploy:
     needs: test
@@ -757,8 +785,8 @@ jobs:
 The load-bearing decisions, each worth copying:
 
 1. **Deterministic URLs derived from the PR number.** The slug `pr-<n>` names everything: the Pages branch alias (`pr-<n>.<project>.pages.dev`), the Worker (`pr-<n>-api`), the concurrency group. Anyone — human or LLM — can compute the preview URLs from the PR number alone, without reading the PR comment or querying the host.
-2. **`paths-ignore` for docs.** Both deploy workflows ignore `'**/*.md'` and `'docs/**'`. Deploying because a README changed is pure waste. The trade-off (see gotchas below) is that docs-only PRs get *no* preview, which agents must know about.
-3. **Deploy gated on the full test gate.** The `deploy` job has `needs: test`, and `test` runs the *entire* local gate (`bun run test` = lint + type + unit + e2e), not a subset. Partial gates let e2e regressions reach deployed previews.
+2. **`paths-ignore` for docs.** Both deploy workflows ignore `'**/*.md'` and `'docs/**'`. Deploying because a README changed is pure waste. The trade-off (see gotchas below) is that docs-only PRs get _no_ preview, which agents must know about.
+3. **Deploy gated on the full test gate.** The `deploy` job has `needs: test`, and `test` runs the _entire_ local gate (`bun run test` = lint + type + unit + e2e), not a subset. Partial gates let e2e regressions reach deployed previews.
 4. **Per-PR concurrency with `cancel-in-progress`.** Group `preview-pr-<n>` means a new push cancels the previous in-flight run — only the latest commit's preview survives, and runs for different PRs never queue behind each other.
 5. **One multi-line env secret per environment.** The whole `.env` file lives in a single repo secret (`ENV_PREVIEW`, `ENV_PROD`) that the workflow writes to disk before building. One place to rotate, and the `[ -s .env ]` guard fails fast if the secret is missing/empty. Because builds use `--env=inline`, env values are frozen into the bundle — changing an env value means rebuilding and redeploying, not editing host config.
 6. **The sticky PR comment.** The comment starts with a fixed marker line (`### Preview Environment`); each deploy finds the existing comment by that marker and updates it rather than posting a new one. The PR thread stays clean and always shows the current state.
@@ -782,8 +810,8 @@ Runs the `@smoke` subset of the e2e suite against whatever was just deployed:
 
 ```yaml
 on:
-  deployment_status:      # fired by any deploy job that declares `environment:`
-  workflow_dispatch:      # manual runs against the configured APP_URL
+  deployment_status: # fired by any deploy job that declares `environment:`
+  workflow_dispatch: # manual runs against the configured APP_URL
 
 jobs:
   smoke:
@@ -793,7 +821,7 @@ jobs:
       - name: Use deployment URL as APP_URL
         if: github.event.deployment_status.environment_url
         run: echo "APP_URL=${{ github.event.deployment_status.environment_url }}" >> "$GITHUB_ENV"
-      - run: bun run smoke   # bun test e2e -t @smoke, against $APP_URL
+      - run: bun run smoke # bun test e2e -t @smoke, against $APP_URL
 ```
 
 Notes:
@@ -815,7 +843,7 @@ Previews are disposable — tear them down when the PR closes (merged or not):
 ### Gotchas (read these before touching CI)
 
 - **`.md` and `docs/**` changes do not trigger previews or deploys.** This is the `paths-ignore` working as intended, but it has consequences an LLM must anticipate: a docs-only PR gets no preview environment and its deploy-gated checks may show as skipped; a docs-only merge to `main` does **not** redeploy production. If you genuinely need a preview for a docs-only PR, include a code change or run the deploy manually. Conversely: don't wait for a preview URL to appear on a docs-only PR — it never will.
-- **A new push cancels the in-flight deploy.** If you push twice quickly, the first run is cancelled mid-way by `cancel-in-progress` — a cancelled run is not a failure. Judge preview state by the *latest* run and the commit SHA in the sticky comment.
+- **A new push cancels the in-flight deploy.** If you push twice quickly, the first run is cancelled mid-way by `cancel-in-progress` — a cancelled run is not a failure. Judge preview state by the _latest_ run and the commit SHA in the sticky comment.
 - **Env is frozen at build time.** With `--env=inline` builds, changing `ENV_PREVIEW`/`ENV_PROD` does nothing to already-deployed bundles. Rebuild and redeploy (push a commit, or re-run the deploy workflow).
 - **Preview and production must not share state.** The per-PR worker gets its own bindings; keep preview database/KV namespaces separate from production (e.g. a `preview_id` binding alongside the production id in the worker config).
 - **Smoke failures against previews can be opaque** (process kills with no output). The diagnostic loop: reduce the failing e2e test to its first steps, add `console.debug` checkpoints around suspect boundaries, re-push to re-trigger the preview + smoke run, and read which checkpoints printed in the Actions logs.
@@ -872,10 +900,10 @@ Adding a feature called `order` touches these files, in this order:
 
 1. `shared/collection/order.ts` — collection schema, create/pick variants, result schema, derived types. Add to `shared/collection/index.ts`.
 2. `shared/endpoint/order.ts` — `export const ORDER_ENDPOINT = POST("/order", CREATE_ORDER, ORDER_RESULT);`. Add to `shared/endpoint/index.ts`.
-3. *(If both sides need config/domain classes)* `shared/config/order/` and/or `shared/order/`, with barrels.
+3. _(If both sides need config/domain classes)_ `shared/config/order/` and/or `shared/order/`, with barrels.
 4. `api/services/order.ts` — `createOrder(create, context)` doing the actual work, plus `order.test.ts` using the mock context.
 5. `api/handlers/order.ts` — `ORDER_HANDLERS` attaching the endpoint to the service. Spread into `api/handlers/index.ts`.
-6. *(If the server needs its own config)* `api/config/order/`, keeping the `satisfies` completeness check in its barrel.
+6. _(If the server needs its own config)_ `api/config/order/`, keeping the `satisfies` completeness check in its barrel.
 7. `app/order/OrderPage.tsx` (+ feature-local components/styles/tests in `app/order/`).
 8. Register the route in `app/App.tsx`.
 9. Run the full test gate locally, then open a PR — CI runs the same gate and deploys a preview environment at the deterministic per-PR URLs. Verify the feature against the live preview (smoke tests run against it automatically) before merging.

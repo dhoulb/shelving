@@ -29,9 +29,9 @@ getItem("abc", item) === item; // true
 ```ts
 import { getIdentifier, getIdentifiers, hasIdentifier } from "shelving/util";
 
-getIdentifier(item);              // "abc"
-hasIdentifier(item, "abc");       // true
-hasIdentifier(item, "xyz");       // false
+getIdentifier(item); // "abc"
+hasIdentifier(item, "abc"); // true
+hasIdentifier(item, "xyz"); // false
 
 const ids = Array.from(getIdentifiers([item1, item2]));
 // ["abc", "def"]
@@ -45,7 +45,7 @@ import type { Item, Items, OptionalItem, Identifier } from "shelving/util";
 type ProductItem = Item<string, { name: string; price: number }>;
 
 function findProduct(id: string, products: Items<string, { name: string; price: number }>): OptionalItem {
-  return products.find(p => hasIdentifier(p, id));
+	return products.find(p => hasIdentifier(p, id));
 }
 ```
 

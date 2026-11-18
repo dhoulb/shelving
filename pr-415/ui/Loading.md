@@ -41,12 +41,12 @@ import { Icon, LOADING, Loading } from "shelving/ui";
 
 Size, centring, and overall colour come from wrapping it in `<Icon>` — its `--icon-color` / `--icon-size` hooks and `color` / `status` / `size` / `tint` variants drive the spinner (see the `Icon` Styling section). On top of that, the two arcs expose their own hooks:
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--loading-track` | Track (background arc) stroke | `var(--tint-70)` |
-| `--loading-indicator` | Indicator (moving arc) stroke | `var(--tint-80)` |
-| `--loading-stroke-width` | Stroke width of both arcs | `2.5` |
-| `--loading-length` | `stroke-dasharray` of the indicator arc | `28 100` |
+| Variable                 | Styles                                  | Default          |
+| ------------------------ | --------------------------------------- | ---------------- |
+| `--loading-track`        | Track (background arc) stroke           | `var(--tint-70)` |
+| `--loading-indicator`    | Indicator (moving arc) stroke           | `var(--tint-80)` |
+| `--loading-stroke-width` | Stroke width of both arcs               | `2.5`            |
+| `--loading-length`       | `stroke-dasharray` of the indicator arc | `28 100`         |
 
 **Global tokens it reads** — the tint-ladder steps `--tint-70` / `--tint-80` for the arc strokes (rebound by the `color` / `status` / `tint` variants on the wrapping `<Icon>`).
 

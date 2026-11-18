@@ -13,8 +13,8 @@ npm install shelving
 Shelving is an ES module. Import from the main package or from individual module subpaths:
 
 ```ts
-import { STRING, DataSchema } from "shelving"
-import { MemoryDBProvider } from "shelving/db"
+import { STRING, DataSchema } from "shelving";
+import { MemoryDBProvider } from "shelving/db";
 ```
 
 ## For AI agents
@@ -35,6 +35,7 @@ The docs are also published as Markdown for LLMs and coding agents:
 See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 
 ## Modules
+
 
 ## Pages
 

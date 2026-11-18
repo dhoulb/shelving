@@ -16,13 +16,13 @@ The constructor takes an optional `RequestHandler` and an optional `source` prov
 ## Usage
 
 ```ts
-import { MockAPIProvider } from "shelving/api"
+import { MockAPIProvider } from "shelving/api";
 
-const api = new MockAPIProvider((request) => new Response(JSON.stringify({ id: "u_1", name: "Alice" })))
+const api = new MockAPIProvider(request => new Response(JSON.stringify({ id: "u_1", name: "Alice" })));
 
-const user = await api.call(getUser, { id: "u_1" })
+const user = await api.call(getUser, { id: "u_1" });
 
-console.log(api.requestCalls) // inspect every recorded request
+console.log(api.requestCalls); // inspect every recorded request
 ```
 
 For tests that exercise client and server logic together, use `MockEndpointAPIProvider`, which routes the mock transport through a real handler array.
