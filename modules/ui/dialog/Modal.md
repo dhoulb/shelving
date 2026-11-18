@@ -15,6 +15,8 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - It has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width up to `--modal-width`, and centred on a wider screen. A left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place. `Modal` has no transition of its own: it animates only when its `<Dialog>` does (see `Dialog`).
+- In a `<Dialog>` with `onClose` (every dialog from `DialogsStore.show()`), a pinned panel can be swiped toward its edge to close the dialog: down for `bottom`, up for `top`, and so on. The swipe scrubs the same slide-out with the finger, through `useSwipe()`. Release past about a third, or flick, to close. Otherwise the panel slides back, and the dialog keeps its state.
+- A swipeable panel shows a grab handle: a short rounded bar on the side away from its edge.
 
 ## Usage
 
@@ -124,5 +126,6 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-max-height`          | Maximum height of a `top` or `bottom` panel (it scrolls past this)                                                                                | `100%`                                  |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms)          |
 | `--modal-shadow`              | Drop shadow (the `shadow` variant wins over it)                                                                                                   | `var(--shadow-large)`                   |
+| `--modal-handle-color`        | Colour of the grab handle on a swipeable pinned panel                                                                                             | `var(--tint-80)`                        |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-xsmall`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.

@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement, Ref } from "react";
 import { Icon } from "../misc/Icon.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
@@ -17,6 +17,8 @@ const NOTICE_CLASS = getModuleClass(NOTICE_CSS, "notice");
 export interface NoticeProps extends BlockVariants, FlexVariants, StatusVariants, OptionalChildProps, ClassProps {
 	/** Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). */
 	icon?: ReactElement | false | undefined;
+	/** Ref to the notice's `<aside>` element. */
+	ref?: Ref<HTMLElement> | undefined;
 }
 
 /**
@@ -32,11 +34,13 @@ export function Notice({
 	children, //
 	icon,
 	className,
+	ref,
 	...props
 }: NoticeProps) {
 	const { status } = props;
 	return (
 		<aside
+			ref={ref}
 			role={status === "danger" || status === "error" ? "alert" : "status"}
 			className={getClass(
 				NOTICE_CLASS, //

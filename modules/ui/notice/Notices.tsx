@@ -1,7 +1,8 @@
-import { type ReactElement, useEffect, ViewTransition } from "react";
+import { type ReactElement, useEffect, useRef, ViewTransition } from "react";
 import { useSequenceTransition } from "../../react/useSequenceTransition.js";
 import { type FlexVariants, getFlexClass } from "../style/Flex.js";
 import type { Status } from "../style/Status.js";
+import { type SwipeDirection, useSwipe } from "../transition/useSwipe.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { subscribeNotices } from "../util/notice.js";
 import type { ClassProps } from "../util/props.js";
@@ -68,13 +69,25 @@ function NoticeItem({ notice, position }: { notice: NoticeStore<Status>; positio
 	// New and closed notices slide from the side of the corner, or from the edge when centred. A notice that changes in place is drawn from the corner itself.
 	const [vertical, horizontal] = position.split("-");
 	const side = horizontal === "center" ? vertical : horizontal;
+	// Swipe a notice toward its side to close it. A notice holds no state, so a cancelled swipe just adds it back.
+	const ref = useRef<HTMLElement>(null);
+	useSwipe(ref, {
+		direction: _DIRECTIONS[side as keyof typeof _DIRECTIONS] ?? "right",
+		start: () => notice.close(),
+		cancel: () => NOTICES.add(notice),
+	});
 	return (
 		<ViewTransition
 			enter={getModuleClass(NOTICES_TRANSITION_CSS, `notice-${side}`)}
 			exit={getModuleClass(NOTICES_TRANSITION_CSS, `notice-${side}`)}
 			update={getModuleClass(NOTICES_TRANSITION_CSS, `notice-update-${position}`)}
 		>
-			<Notice status={status}>{children}</Notice>
+			<Notice ref={ref} status={status}>
+				{children}
+			</Notice>
 		</ViewTransition>
 	);
 }
+
+/** Which way the finger moves to swipe a notice away, for the side it slides out to. */
+const _DIRECTIONS = { top: "up", right: "right", bottom: "down", left: "left" } as const satisfies Record<string, SwipeDirection>;

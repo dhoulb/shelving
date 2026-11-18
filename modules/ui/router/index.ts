@@ -1,4 +1,5 @@
 export * from "./BackButton.js";
+export * from "./BackSwipe.js";
 export * from "./Navigation.js";
 export * from "./NavigationContext.js";
 export * from "./NavigationSequence.js";

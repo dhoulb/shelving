@@ -1,4 +1,18 @@
-import { type MouseEvent, memo, type ReactElement, Suspense, ViewTransition } from "react";
+/// <reference types="react/canary" />
+import {
+	Activity,
+	addTransitionType,
+	type MouseEvent,
+	memo,
+	type ReactElement,
+	Suspense,
+	startTransition,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState,
+	ViewTransition,
+} from "react";
 import { CloseIcon } from "shelving/icon/CloseIcon";
 import type { Callback } from "../../util/function.js";
 import { type ButtonVariants, getButtonClass } from "../button/Button.js";
@@ -6,6 +20,7 @@ import { FADE_TRANSITION_CLASS } from "../transition/FadeTransition.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import styles from "./Dialog.module.css";
+import { type DialogControl, DialogControlContext } from "./DialogControl.js";
 import modalStyles from "./Modal.module.css";
 
 /**
@@ -29,33 +44,64 @@ export interface DialogProps extends OptionalChildProps {
  * - With `onClose`, it is declarative: a close request calls `onClose()`, and the dialog stays open until it unmounts, so a view transition can capture it as it leaves.
  * - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
  * - Wraps content in `<Suspense>` so lazy children can stream in.
+ * - With `onClose`, a `<Modal>` pinned to an edge can swipe it away. During the swipe the dialog is hidden in an `<Activity>`, not unmounted, so a cancelled swipe keeps its state.
  *
  * @kind component
  * @see https://shelving.cc/ui/Dialog
  */
 export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
+	const [hidden, setHidden] = useState(false);
+	const hiddenRef = useRef(hidden);
+	hiddenRef.current = hidden;
+	const waiting = useRef<(() => void)[]>([]);
+	// Resolve `show()` calls once React has committed the shown dialog.
+	useLayoutEffect(() => {
+		if (!hidden) for (const resolve of waiting.current.splice(0)) resolve();
+	}, [hidden]);
+	const control = useMemo<DialogControl | undefined>(
+		() =>
+			onClose && {
+				hide: () =>
+					startTransition(() => {
+						addTransitionType("dialog");
+						setHidden(true);
+					}),
+				show: () =>
+					new Promise<void>(resolve => {
+						if (!hiddenRef.current) return resolve();
+						waiting.current.push(resolve);
+						setHidden(false);
+					}),
+				close: onClose,
+			},
+		[onClose],
+	);
 	return (
-		<Suspense fallback={null}>
-			{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. No update transition: the page ignores taps while a view transition runs, so a change inside an open dialog must not start one. */}
-			<ViewTransition default="none" enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
-				{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
-				<dialog
-					ref={_showModal}
-					className={getModuleClass(styles, "dialog")}
-					onClick={_closeOnClick}
-					onCancel={e => {
-						// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
-						if (!onClose || !e.cancelable) return;
-						e.preventDefault();
-						onClose();
-					}}
-					onClose={onClose}
-					{...props}
-				>
-					<div className={getModuleClass(styles, "content")}>{children}</div>
-				</dialog>
-			</ViewTransition>
-		</Suspense>
+		<Activity mode={hidden ? "hidden" : "visible"}>
+			<DialogControlContext value={control}>
+				<Suspense fallback={null}>
+					{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. No update transition: the page ignores taps while a view transition runs, so a change inside an open dialog must not start one. */}
+					<ViewTransition default="none" enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
+						{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
+						<dialog
+							ref={_showModal}
+							className={getModuleClass(styles, "dialog")}
+							onClick={_closeOnClick}
+							onCancel={e => {
+								// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
+								if (!onClose || !e.cancelable) return;
+								e.preventDefault();
+								onClose();
+							}}
+							onClose={onClose}
+							{...props}
+						>
+							<div className={getModuleClass(styles, "content")}>{children}</div>
+						</dialog>
+					</ViewTransition>
+				</Suspense>
+			</DialogControlContext>
+		</Activity>
 	);
 });
 

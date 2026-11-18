@@ -1,10 +1,12 @@
-import type { ReactElement } from "react";
+import { type ReactElement, use, useRef } from "react";
 import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getRadiusClass, type RadiusVariants } from "../style/Radius.js";
 import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
+import { type SwipeDirection, useSwipe } from "../transition/useSwipe.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
+import { DialogControlContext } from "./DialogControl.js";
 import styles from "./Modal.module.css";
 
 /**
@@ -46,17 +48,30 @@ export interface ModalProps
  * - Centred by default. It fades in and out with its `<Dialog>`.
  * - Has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it.
  * - `top`, `right`, `bottom`, or `left` pins it to that edge. It then takes its own layer in the `<Dialog>` view transition, and slides in from that edge and out to it.
+ * - A pinned panel in a `<Dialog>` with `onClose` can be swiped toward its edge to close the dialog. The swipe scrubs the same slide, and shows a grab handle on the inner side. A swipe that goes back closes nothing, and the dialog keeps its state.
  *
  * @kind component
  * @see https://shelving.cc/ui/Modal
  */
 export function Modal({ children, className, ...props }: ModalProps): ReactElement {
 	const side = _getSide(props);
+	const ref = useRef<HTMLElement>(null);
+	const control = use(DialogControlContext);
+	const swipe = !!(side && control);
+	useSwipe(ref, {
+		direction: side ? _DIRECTIONS[side] : "down",
+		disabled: !swipe,
+		start: () => control?.hide(),
+		cancel: () => control?.show(),
+		commit: () => control?.close(),
+	});
 	return (
 		<aside
+			ref={ref}
 			className={getClass(
 				getModuleClass(styles, "modal"), //
 				side && getModuleClass(styles, side),
+				swipe && getModuleClass(styles, "swipe"),
 				getPaddingClass(props),
 				getIndentClass(props),
 				getRadiusClass(props),
@@ -68,6 +83,9 @@ export function Modal({ children, className, ...props }: ModalProps): ReactEleme
 		</aside>
 	);
 }
+
+/** Which way the finger moves to swipe a pinned panel away. */
+const _DIRECTIONS: { readonly [K in keyof ModalVariants]-?: SwipeDirection } = { top: "up", right: "right", bottom: "down", left: "left" };
 
 /** Get the edge a modal is pinned to, if any. */
 function _getSide({ top, right, bottom, left }: ModalVariants): keyof ModalVariants | undefined {
