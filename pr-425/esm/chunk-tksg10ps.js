@@ -1,2 +1,0 @@
-import{vr,Ze,Je}from"./chunk-h7k36gtf.js";import{s}from"./chunk-zq10dwjt.js";import{Ot,pt}from"./chunk-xc0zcha9.js";class ur extends pt{payload;constructor(o,e,r,i=0){let t=new Ot(o),y=r&&(async(a)=>{if(i>0)await Je(vr(i),Ze(a));let n=t.loading?await Je(t.next,Ze(a)):t.value;return r(n,a)});super(e,y);this.payload=t,p(this)}async[Symbol.asyncDispose](){await s(this.payload,super[Symbol.asyncDispose]())}}async function p(o){for await(let e of o.payload.next)o.invalidate(),o.refresh()}
-export{ur};
