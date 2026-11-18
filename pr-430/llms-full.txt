@@ -12072,7 +12072,6 @@ Options for `useSequenceTransition()`.
 	readonly current: () => T;
 	readonly transition?: string | ((value: T) => string | null | undefined) | undefined;
 	readonly equal?: ((a: T, b: T) => boolean) | undefined;
-	readonly wait?: ((value: T) => PromiseLike<void> | void) | undefined;
 }
 ```
 
@@ -12083,7 +12082,6 @@ Options for `useSequenceTransition()`.
 | `current` | `() => T` | Read the current value. - Called for the first render, and again when the subscription starts, to catch up on values sent before it started. Read only. |
 | `transition` | `string \| ((value: T) => string \| null \| undefined) \| undefined` | Transition type for a value, or a fixed type for every value. - A value with a type is set inside `startTransition()` with that type, so a `<ViewTransition>` can animate it. - A value with no type (`undefined` or `null`) is set at once, with no transition. Read only. Optional. |
 | `equal` | `((a: T, b: T) => boolean) \| undefined` | Is a new value the same as the shown value? A value that is the same is skipped, so it starts no second transition. Read only. Defaults to `Object.is`. |
-| `wait` | `((value: T) => PromiseLike<void> \| void) \| undefined` | Wait before a value with a transition type is set, for example until the on-screen keyboard is down. - Return a promise to wait for it, or nothing to set the value at once. - A newer value that arrives while it waits wins: the older value is never set. - Values with no transition type never wait. Read only. Optional. |
 
 
 ---
@@ -12146,7 +12144,6 @@ useSequenceTransition(sequence: AsyncIterable<T>, options: SequenceTransitionOpt
 | `.current` | `() => T` | Read the current value. - Called for the first render, and again when the subscription starts, to catch up on values sent before it started. Read only. |
 | `.transition` | `string \| ((value: T) => string \| null \| undefined) \| undefined` | Transition type for a value, or a fixed type for every value. - A value with a type is set inside `startTransition()` with that type, so a `<ViewTransition>` can animate it. - A value with no type (`undefined` or `null`) is set at once, with no transition. Read only. Optional. |
 | `.equal` | `((a: T, b: T) => boolean) \| undefined` | Is a new value the same as the shown value? A value that is the same is skipped, so it starts no second transition. Read only. Defaults to `Object.is`. |
-| `.wait` | `((value: T) => PromiseLike<void> \| void) \| undefined` | Wait before a value with a transition type is set, for example until the on-screen keyboard is down. - Return a promise to wait for it, or nothing to set the value at once. - A newer value that arrives while it waits wins: the older value is never set. - Values with no transition type never wait. Read only. Optional. |
 
 ## Returns
 
@@ -31198,15 +31195,16 @@ function StackBar() {
 
 ## Styling
 
-| Variable                      | Styles                                                | Default                                     |
-| ----------------------------- | ----------------------------------------------------- | ------------------------------------------- |
-| `--app-layout-background`     | Page background while the layout is mounted           | `var(--tint-100)` (white)                   |
-| `--app-layout-color`          | Text colour for the layout                            | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-background` | Bar fill (also fills the home-bar area below it)      | `var(--tint-100)` (white)                   |
-| `--app-layout-nav-color`      | Bar text and icon colour                              | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-border`     | Line above the bar                                    | `var(--stroke-normal) solid var(--tint-90)` |
-| `--app-layout-nav-shadow`     | Shadow of the bar, for example a soft shadow above it | `none`                                      |
-| `--app-layout-nav-item-width` | Largest width of one bar item                         | `6rem`                                      |
+| Variable                           | Styles                                                                                                                                                                                                         | Default                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--app-layout-background`          | Page background while the layout is mounted                                                                                                                                                                    | `var(--tint-100)` (white)                   |
+| `--app-layout-color`               | Text colour for the layout                                                                                                                                                                                     | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-background`      | Bar fill (also fills the home-bar area below it)                                                                                                                                                               | `var(--tint-100)` (white)                   |
+| `--app-layout-nav-color`           | Bar text and icon colour                                                                                                                                                                                       | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-border`          | Line above the bar                                                                                                                                                                                             | `var(--stroke-normal) solid var(--tint-90)` |
+| `--app-layout-nav-shadow`          | Shadow of the bar, for example a soft shadow above it                                                                                                                                                          | `none`                                      |
+| `--app-layout-nav-transition-name` | View-transition name of the bar. Set it only for your own transition types (for example under `:root:active-view-transition-type(tab)`), so the bar stays above parts of a page that slide in their own layers | `none`                                      |
+| `--app-layout-nav-item-width`      | Largest width of one bar item                                                                                                                                                                                  | `6rem`                                      |
 
 The bar keeps its items clear of the home bar and the rounded screen corners with safe-area insets.
 
@@ -33570,7 +33568,7 @@ BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props 
 Swipe from the left edge of the screen to go back one page in the current stack, by scrubbing the normal back slide.
 
 - It renders nothing. Put it inside `<Navigation>`, next to the pages.
-- When the swipe starts, it publishes the page below as a `"back"` event with `NavigationSequence.publish()`. History does not change. `<Navigation>` shows that page in a back transition, and `useSwipe()` scrubs it.
+- When the swipe starts, it lowers the on-screen keyboard (`waitForKeyboard()`), then publishes the page below as a `"back"` event with `NavigationSequence.publish()`. History does not change. `<Navigation>` shows that page in a back transition, and `useSwipe()` scrubs it.
 - On release it plays the slide to the end and calls `NavigationSequence.back()`, which publishes the same page again (skipped, so no second slide). Or it plays the slide back and publishes the page it started on again. A cancelled swipe never changes the URL.
 - On the bottom page of a stack, or on a floating page, it does nothing, so it never goes back into another tab.
 - It ignores touches in a `<nav>` and in dialogs.
@@ -33652,8 +33650,7 @@ Top-level navigation provider, with one stack of pages for each tab.
 - Owns a single `NavigationSequence` made from the surrounding `<Meta>` url and root.
 - Turns clicks on same-origin links into `NavigationSequence.forward()`, or `NavigationSequence.back()` for a link with `className="back"`, or `NavigationSequence.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
 - Holds the page it shows in its own state, and publishes its `url`, `stack` and `ordinal` into `Meta`. Read the current page from `Meta`.
-- Before a move slides, it lowers the on-screen keyboard and waits until it is down (`waitForKeyboard()`), because a keyboard that closes during the slide resizes the page in the middle of it.
-- For a link click it waits before it changes the history too, because iOS Safari takes the snapshot for its own back swipe at that moment.
+- Each move lowers the on-screen keyboard before it changes the history: see `NavigationSequence.forward()`.
 - Takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` type, so a `<Transition>` around the routes runs a view transition. A replace has no transition. An event for the page already shown is skipped.
 - Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
 
@@ -34216,6 +34213,7 @@ Go forward to a URL, as a link does.
 - Else push the URL onto `stack`, one level deeper than its top page.
 - The URL you are already on: replace it instead.
 - A change of stack slides by tab order. Else it slides forward.
+- Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 
 ## Signatures
 
@@ -34237,6 +34235,7 @@ Go back to a URL, as a back button does.
 - Else push the URL in place of the top page of `stack`.
 - It works when the app was opened at the current page, so a back button always has somewhere to go.
 - If the browser refuses to go back with the Navigation API, it uses `history.back()`.
+- Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 
 ## Signatures
 

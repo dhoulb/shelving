@@ -9,6 +9,7 @@ Go back to a URL, as a back button does.
 - Else push the URL in place of the top page of `stack`.
 - It works when the app was opened at the current page, so a back button always has somewhere to go.
 - If the browser refuses to go back with the Navigation API, it uses `history.back()`.
+- Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 
 ## Signatures
 

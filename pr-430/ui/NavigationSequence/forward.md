@@ -8,6 +8,7 @@ Go forward to a URL, as a link does.
 - Else push the URL onto `stack`, one level deeper than its top page.
 - The URL you are already on: replace it instead.
 - A change of stack slides by tab order. Else it slides forward.
+- Lowers the on-screen keyboard first (see `_afterKeyboard()`).
 
 ## Signatures
 
