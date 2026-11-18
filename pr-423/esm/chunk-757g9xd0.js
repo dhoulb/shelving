@@ -1,0 +1,2 @@
+import{Uo}from"./chunk-70w34c25.js";function pr(r=Number.MIN_SAFE_INTEGER,e=Number.MAX_SAFE_INTEGER){return Math.round(Math.random()*(e-r)+r)}function lc(r,e,t){let n;do n=pr(e,t);while(n===r);return n}function _e(r=12){return Array.from({length:r},o).join("")}var m="0123456789abcdefghjkmnpqrstvwxyz";function o(){return Ll(m)}function Ll(r){return r[pr(0,r.length-1)]}function uc(r){return Uo(r[pr(0,r.length-1)])}
+export{pr,lc,_e,Ll,uc};
