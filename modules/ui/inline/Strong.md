@@ -16,16 +16,16 @@ Strong importance — renders a `<strong>` element for text that carries strong 
 import { Paragraph, Strong } from "shelving/ui";
 
 <Paragraph>
-  Press save before leaving. <Strong>Unsaved changes will be lost.</Strong>
-</Paragraph>
+	Press save before leaving. <Strong>Unsaved changes will be lost.</Strong>
+</Paragraph>;
 ```
 
 ## Styling
 
 `Strong` only sets its font weight and inherits colour and size from its surroundings.
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable          | Styles      | Default                |
+| ----------------- | ----------- | ---------------------- |
 | `--strong-weight` | Font weight | `var(--weight-strong)` |
 
 **Global tokens it reads:** `--weight-strong`.

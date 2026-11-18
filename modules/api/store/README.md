@@ -35,24 +35,24 @@ In normal use you don't create `EndpointStore` directly. `EndpointCache` creates
 Direct instantiation is useful when you need a single reactive handle outside the cache layer:
 
 ```ts
-import { EndpointStore } from "shelving/api"
-import { ClientAPIProvider, ValidationAPIProvider, GET } from "shelving/api"
-import { DATA, STRING } from "shelving/schema"
+import { EndpointStore } from "shelving/api";
+import { ClientAPIProvider, ValidationAPIProvider, GET } from "shelving/api";
+import { DATA, STRING } from "shelving/schema";
 
-const getUser = GET("/users/{id}", DATA({ id: STRING }), DATA({ name: STRING }))
-const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }))
+const getUser = GET("/users/{id}", DATA({ id: STRING }), DATA({ name: STRING }));
+const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
 
-const store = new EndpointStore(getUser, { id: "u_1" }, provider)
+const store = new EndpointStore(getUser, { id: "u_1" }, provider);
 
 // Subscribe to value changes.
 for await (const user of store) {
-  console.log(user.name)
+	console.log(user.name);
 }
 
 // Change the payload — cancels the previous fetch, starts a new one.
-store.payload.value = { id: "u_2" }
+store.payload.value = { id: "u_2" };
 
 // Explicit invalidation.
-store.invalidate()
-await store.refresh()
+store.invalidate();
+await store.refresh();
 ```

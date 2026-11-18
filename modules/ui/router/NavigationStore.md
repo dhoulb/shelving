@@ -14,12 +14,12 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 ## Methods
 
-| Method | What it does | Slide |
-|---|---|---|
-| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace. | Forward. Across stacks, by tab order. |
-| `back(href, stack?)` | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back |
-| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages. | None |
-| `history(stack?)` | Returns the pages in `stack`, root first. | — |
+| Method                  | What it does                                                                                                                                                                                                                                      | Slide                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                              | Forward. Across stacks, by tab order. |
+| `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back                                  |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.            | None                                  |
+| `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
 
 `stack` defaults to the current stack.
 
@@ -48,13 +48,13 @@ Why depth? A browser history entry cannot be changed or removed. So when you go 
 
 For example, with tabs `/home` and `/profile`:
 
-| Step | New history entry | Home stack | Profile stack |
-|---|---|---|---|
-| Start at `/home` | `/home` (depth 0) | `/home` | — |
-| Open a post | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | — |
-| Tap the Profile tab | `/profile` (depth 0) | `/home`, `/home/post/1` | `/profile` |
-| Tap the Home tab | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | `/profile` |
-| Tap the back button | `/home` (depth 0) | `/home` | `/profile` |
+| Step                | New history entry        | Home stack              | Profile stack |
+| ------------------- | ------------------------ | ----------------------- | ------------- |
+| Start at `/home`    | `/home` (depth 0)        | `/home`                 | —             |
+| Open a post         | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | —             |
+| Tap the Profile tab | `/profile` (depth 0)     | `/home`, `/home/post/1` | `/profile`    |
+| Tap the Home tab    | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | `/profile`    |
+| Tap the back button | `/home` (depth 0)        | `/home`                 | `/profile`    |
 
 When the page you go back to is the entry just before the current one, `back()` goes back in the browser history and pushes nothing.
 
@@ -66,8 +66,8 @@ The browser back and forward buttons walk the history entries one at a time, as 
 import { Button, requireNavigation } from "shelving/ui";
 
 function LogoutButton() {
-  const nav = requireNavigation();
-  return <Button onClick={() => nav.replace("/login")}>Log out</Button>;
+	const nav = requireNavigation();
+	return <Button onClick={() => nav.replace("/login")}>Log out</Button>;
 }
 ```
 
@@ -78,9 +78,9 @@ import { useStore } from "shelving/react";
 import { requireNavigation } from "shelving/ui";
 
 function TabTitle() {
-  const nav = requireNavigation();
-  const stack = useStore(nav.stack).value;
-  return <h1>{stack === "/profile" ? "Profile" : "Home"}</h1>;
+	const nav = requireNavigation();
+	const stack = useStore(nav.stack).value;
+	return <h1>{stack === "/profile" ? "Profile" : "Home"}</h1>;
 }
 ```
 

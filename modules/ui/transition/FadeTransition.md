@@ -14,11 +14,11 @@ A `<Transition>` preset that fades its children in and out by animating opacity.
 import { FadeTransition } from "shelving/ui";
 
 function Panel({ visible }: { visible: boolean }) {
-  return visible ? (
-    <FadeTransition>
-      <div className="panel">…</div>
-    </FadeTransition>
-  ) : null;
+	return visible ? (
+		<FadeTransition>
+			<div className="panel">…</div>
+		</FadeTransition>
+	) : null;
 }
 ```
 
@@ -31,14 +31,14 @@ import { ViewTransition } from "react";
 import { FADE_TRANSITION_CLASS } from "shelving/ui";
 
 <ViewTransition enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
-  <div className="panel">…</div>
-</ViewTransition>
+	<div className="panel">…</div>
+</ViewTransition>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable                     | Styles                                                                                                                            | Default                |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
 | `--fade-transition-duration` | Duration of the fade in, the fade out, and the crossfade when content changes in place (also the group's size and position morph) | `var(--duration-fast)` |
 
 **Global tokens it reads** — `--duration-fast`.

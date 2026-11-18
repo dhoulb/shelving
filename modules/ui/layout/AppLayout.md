@@ -21,37 +21,45 @@ A full-viewport layout with a content slot above a bar of the app's main section
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
 
 function StackBar() {
-  return <>
-    <StackButton stack="/home" title="Home"><HomeIcon /></StackButton>
-    <StackButton stack="/discover" title="Discover"><SearchIcon /></StackButton>
-    <StackButton stack="/profile" title="Profile"><ProfileIcon /></StackButton>
-  </>;
+	return (
+		<>
+			<StackButton stack="/home" title="Home">
+				<HomeIcon />
+			</StackButton>
+			<StackButton stack="/discover" title="Discover">
+				<SearchIcon />
+			</StackButton>
+			<StackButton stack="/profile" title="Profile">
+				<ProfileIcon />
+			</StackButton>
+		</>
+	);
 }
 
 <AppLayout nav={<StackBar />}>
-  <HorizontalTransition>
-    <RouteCache>
-      <Scroll vertical cover>
-        <PageLoader>
-          <Router routes={ROUTES} />
-        </PageLoader>
-      </Scroll>
-    </RouteCache>
-  </HorizontalTransition>
-</AppLayout>
+	<HorizontalTransition>
+		<RouteCache>
+			<Scroll vertical cover>
+				<PageLoader>
+					<Router routes={ROUTES} />
+				</PageLoader>
+			</Scroll>
+		</RouteCache>
+	</HorizontalTransition>
+</AppLayout>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--app-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
-| `--app-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
-| `--app-layout-nav-background` | Bar fill (also fills the home-bar area below it) | `var(--tint-100)` (white) |
-| `--app-layout-nav-color` | Bar text and icon colour | `var(--tint-00)` (black) |
-| `--app-layout-nav-border` | Line above the bar | `var(--stroke-normal) solid var(--tint-90)` |
-| `--app-layout-nav-shadow` | Shadow of the bar, for example a soft shadow above it | `none` |
-| `--app-layout-nav-item-width` | Largest width of one bar item | `6rem` |
+| Variable                      | Styles                                                | Default                                     |
+| ----------------------------- | ----------------------------------------------------- | ------------------------------------------- |
+| `--app-layout-background`     | Page background while the layout is mounted           | `var(--tint-100)` (white)                   |
+| `--app-layout-color`          | Text colour for the layout                            | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-background` | Bar fill (also fills the home-bar area below it)      | `var(--tint-100)` (white)                   |
+| `--app-layout-nav-color`      | Bar text and icon colour                              | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-border`     | Line above the bar                                    | `var(--stroke-normal) solid var(--tint-90)` |
+| `--app-layout-nav-shadow`     | Shadow of the bar, for example a soft shadow above it | `none`                                      |
+| `--app-layout-nav-item-width` | Largest width of one bar item                         | `6rem`                                      |
 
 The bar keeps its items clear of the home bar and the rounded screen corners with safe-area insets.
 

@@ -18,7 +18,7 @@ import { createRequest, createJSONRequest, createHeadRequest } from "shelving/ut
 
 // Smart constructor — picks content type from payload.
 createRequest("POST", "https://api.example.com/items", { name: "Widget" });
-createRequest("GET",  "https://api.example.com/items", { status: "active" });
+createRequest("GET", "https://api.example.com/items", { status: "active" });
 // GET → appends ?status=active to URL
 
 // Explicit JSON request.

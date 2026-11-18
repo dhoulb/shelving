@@ -1,6 +1,6 @@
 # ClassProps
 
-The shared `className` prop most components accept — an app class merged *after* the classes the component computes for itself.
+The shared `className` prop most components accept — an app class merged _after_ the classes the component computes for itself.
 
 **Things to know:**
 

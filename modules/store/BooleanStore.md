@@ -9,7 +9,7 @@ import { BooleanStore } from "shelving/store";
 
 const open = new BooleanStore(); // defaults to false
 
-open.toggle();        // true
-open.value = 0;       // false — assigned values are coerced to boolean
+open.toggle(); // true
+open.value = 0; // false — assigned values are coerced to boolean
 console.log(open.value); // false
 ```

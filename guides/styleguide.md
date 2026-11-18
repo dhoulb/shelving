@@ -7,7 +7,7 @@ The rules here are portable: they describe the style itself, not this repository
 ## Philosophy
 
 - **Reuse before writing.** Before writing a new function, component, or type, scan the codebase for something that already does the job — exactly, or closely enough that a parameter or variant covers the difference. Compose existing primitives rather than reinvent.
-- **Immutability by default.** Data in, new data out. Helpers that "change" a value return an updated copy — and intentionally return the *original reference* when nothing changed, so equality checks stay cheap.
+- **Immutability by default.** Data in, new data out. Helpers that "change" a value return an updated copy — and intentionally return the _original reference_ when nothing changed, so equality checks stay cheap.
 - **Contracts in names.** A function's prefix (`get*`, `require*`, `assert*`, `create*`, …) is a promise about its behaviour. Callers depend on it, so pick the prefix that matches the contract exactly.
 - **Terse inside, descriptive outside.** Exported names are clear and descriptive; inside a small function body, very short names are preferred.
 
@@ -46,27 +46,27 @@ The rules here are portable: they describe the style itself, not this repository
 
 Pick the prefix that matches the contract — they are not interchangeable.
 
-| Prefix | Contract | Examples |
-|---|---|---|
-| `is*` | Boolean type guard returning `value is T` | `isArray`, `isString` |
-| `has*` | Boolean predicate (possession / state, not type) | `hasItems` |
-| `assert*` | Throws if invalid; uses `asserts value is T` | `assertArray` |
-| `validate*` | Throws on invalid; returns the validated value (also strips/coerces) | `validateData` |
-| `get*` | Returns value or `undefined` — never throws for "missing"; may return input unchanged when already valid | `getString` |
-| `require*` | Returns value or throws | `requireFirst` |
-| `create*` | Always returns a freshly constructed instance — never returns the input, never `undefined` | `createDeferred` |
-| `with*` | Immutable updated copy with a value set | `withProp` |
-| `omit*` | Immutable updated copy with keys removed | `omitProp` |
-| `add*` | Immutable updated copy with an item added | `addArrayItem` |
-| `update*` | Immutable updated copy with changes applied | `updateData` |
-| `toggle*` | Immutable updated copy with a value toggled | `toggleArrayItem` |
-| `merge*` | New value combining multiple inputs | `mergeObject` |
-| `to*` | Pure conversion to another shape | `toStringValue` |
-| `format*` | Value → display string | `formatDate` |
-| `parse*` | String → structured value (inverse of `format*`) | `parseRequest` |
-| `match*` | Result of matching / filtering | `matchQuery` |
-| `await*` | Async counterpart of an otherwise-sync helper | `awaitArray` |
-| `run*` | Executes a callback or sequence | `runSequence` |
+| Prefix      | Contract                                                                                                 | Examples              |
+| ----------- | -------------------------------------------------------------------------------------------------------- | --------------------- |
+| `is*`       | Boolean type guard returning `value is T`                                                                | `isArray`, `isString` |
+| `has*`      | Boolean predicate (possession / state, not type)                                                         | `hasItems`            |
+| `assert*`   | Throws if invalid; uses `asserts value is T`                                                             | `assertArray`         |
+| `validate*` | Throws on invalid; returns the validated value (also strips/coerces)                                     | `validateData`        |
+| `get*`      | Returns value or `undefined` — never throws for "missing"; may return input unchanged when already valid | `getString`           |
+| `require*`  | Returns value or throws                                                                                  | `requireFirst`        |
+| `create*`   | Always returns a freshly constructed instance — never returns the input, never `undefined`               | `createDeferred`      |
+| `with*`     | Immutable updated copy with a value set                                                                  | `withProp`            |
+| `omit*`     | Immutable updated copy with keys removed                                                                 | `omitProp`            |
+| `add*`      | Immutable updated copy with an item added                                                                | `addArrayItem`        |
+| `update*`   | Immutable updated copy with changes applied                                                              | `updateData`          |
+| `toggle*`   | Immutable updated copy with a value toggled                                                              | `toggleArrayItem`     |
+| `merge*`    | New value combining multiple inputs                                                                      | `mergeObject`         |
+| `to*`       | Pure conversion to another shape                                                                         | `toStringValue`       |
+| `format*`   | Value → display string                                                                                   | `formatDate`          |
+| `parse*`    | String → structured value (inverse of `format*`)                                                         | `parseRequest`        |
+| `match*`    | Result of matching / filtering                                                                           | `matchQuery`          |
+| `await*`    | Async counterpart of an otherwise-sync helper                                                            | `awaitArray`          |
+| `run*`      | Executes a callback or sequence                                                                          | `runSequence`         |
 
 - **Pairing rule:** `get*` / `require*` and `is*` / `assert*` come as pairs over the same target. If you add a new `require*`, consider whether a sibling `get*` belongs alongside it; same for `assert*` / `is*`.
 - **`get*` vs `create*`:** a helper that unconditionally constructs a brand-new instance is `create*`. Reserve `get*` for "look up, coerce, or normalise" — helpers that may return the input unchanged or return `undefined`. Most construction is written inline as `new X(...)`; `create*` is for the few helpers that wrap construction.
@@ -75,12 +75,12 @@ Pick the prefix that matches the contract — they are not interchangeable.
 
 Reserved for the UI layer — don't repurpose them for unrelated helpers:
 
-| Prefix | Contract |
-|---|---|
-| `notify*` | Dispatches a notice / custom event |
-| `call*` | Runs a callback, dispatching notices on return / throw |
-| `handle*` | Top-level request / event entry point |
-| `on*` | Event-handler **prop** name on a component (not a function name) |
+| Prefix    | Contract                                                         |
+| --------- | ---------------------------------------------------------------- |
+| `notify*` | Dispatches a notice / custom event                               |
+| `call*`   | Runs a callback, dispatching notices on return / throw           |
+| `handle*` | Top-level request / event entry point                            |
+| `on*`     | Event-handler **prop** name on a component (not a function name) |
 
 ## Imports & exports
 
@@ -179,7 +179,7 @@ if (n.startsWith("44")) return formatUK(n.slice(2));
 
 - Short single-line `//` comments label sections of a function. Sentence case, ending in a period: `// Stop the page reloading.`
 - Group several file-level constants under a `// Constants.` label.
-- Comment the *why* or the section purpose — never restate what the code says.
+- Comment the _why_ or the section purpose — never restate what the code says.
 - The trailing-empty-comment trick — `Foo, //` — deliberately forces the formatter to keep an argument list multi-line:
 
   ```ts

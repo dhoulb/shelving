@@ -18,28 +18,30 @@ The back button for a page header. It goes back to the page before this one in t
 import { BackButton } from "shelving/ui";
 
 function PostPage({ id }: { id: string }) {
-  return (
-    <>
-      <header>
-        <BackButton href="/home"/>
-        <h1>Post</h1>
-      </header>
-      {/* … */}
-    </>
-  );
+	return (
+		<>
+			<header>
+				<BackButton href="/home" />
+				<h1>Post</h1>
+			</header>
+			{/* … */}
+		</>
+	);
 }
 ```
 
 With a label:
 
 ```tsx
-<BackButton href="/profile">Back to profile</BackButton>
+<BackButton href="/profile">Back to profile</BackButton>;
 ```
 
 To go back to one fixed page (not to the page before), use a link with `className="back"`:
 
 ```tsx
-<Button href="/profile" className="back">Profile</Button>
+<Button href="/profile" className="back">
+	Profile
+</Button>;
 ```
 
 ## Styling

@@ -10,10 +10,12 @@ It is abstract — a concrete subclass implements `exec()` against a specific Po
 import { PostgresProvider } from "shelving/db";
 
 class BunPostgresProvider extends PostgresProvider {
-  constructor(private sql: Bun.SQL) { super(); }
-  async exec(strings, ...values) {
-    return this.sql(strings, ...values);
-  }
+	constructor(private sql: Bun.SQL) {
+		super();
+	}
+	async exec(strings, ...values) {
+		return this.sql(strings, ...values);
+	}
 }
 ```
 

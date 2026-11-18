@@ -16,10 +16,16 @@ Helpers for working with `AsyncIterable` sequences — repeating, driving, mergi
 import { runSequence } from "shelving/util";
 
 const stop = runSequence(
-  myAsyncIterable,
-  value => { console.log("next:", value); },
-  err   => { console.error("error:", err); },
-  final => { console.log("done:", final); },
+	myAsyncIterable,
+	value => {
+		console.log("next:", value);
+	},
+	err => {
+		console.error("error:", err);
+	},
+	final => {
+		console.log("done:", final);
+	},
 );
 
 // Later, cancel it:
@@ -34,7 +40,7 @@ import { repeatUntil } from "shelving/util";
 const abortPromise = new Promise<void>(resolve => setTimeout(resolve, 5000));
 
 for await (const value of repeatUntil(myAsyncIterable, abortPromise)) {
-  console.log(value); // stops after 5 seconds
+	console.log(value); // stops after 5 seconds
 }
 ```
 
@@ -44,7 +50,7 @@ for await (const value of repeatUntil(myAsyncIterable, abortPromise)) {
 import { repeatDelay } from "shelving/util";
 
 for await (const count of repeatDelay(1000)) {
-  console.log("tick", count); // fires every 1 second, forever
+	console.log("tick", count); // fires every 1 second, forever
 }
 ```
 
@@ -54,7 +60,7 @@ for await (const count of repeatDelay(1000)) {
 import { callSequence } from "shelving/util";
 
 for await (const item of callSequence(myAsyncIterable, item => analytics.track(item))) {
-  // item is yielded unchanged after the callback runs
+	// item is yielded unchanged after the callback runs
 }
 ```
 
@@ -64,7 +70,7 @@ for await (const item of callSequence(myAsyncIterable, item => analytics.track(i
 import { mergeSequences } from "shelving/util";
 
 for await (const item of mergeSequences(sequenceA, sequenceB)) {
-  // exhausts sequenceA, then exhausts sequenceB
+	// exhausts sequenceA, then exhausts sequenceB
 }
 ```
 
@@ -73,6 +79,6 @@ for await (const item of mergeSequences(sequenceA, sequenceB)) {
 ```ts
 import { isSequence } from "shelving/util";
 
-isSequence(myAsyncIterable);  // true
-isSequence([1, 2, 3]);        // false  (sync iterables are not async iterables)
+isSequence(myAsyncIterable); // true
+isSequence([1, 2, 3]); // false  (sync iterables are not async iterables)
 ```

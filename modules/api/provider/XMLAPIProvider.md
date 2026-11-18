@@ -7,10 +7,10 @@ Because it extends `ClientAPIProvider`, it is a concrete network provider: const
 ## Usage
 
 ```ts
-import { XMLAPIProvider } from "shelving/api"
+import { XMLAPIProvider } from "shelving/api";
 
-const provider = new XMLAPIProvider({ url: "https://legacy.example.com" })
+const provider = new XMLAPIProvider({ url: "https://legacy.example.com" });
 
 // The result is the raw response text.
-const xml = await provider.call(getFeed, { channel: "news" })
+const xml = await provider.call(getFeed, { channel: "news" });
 ```

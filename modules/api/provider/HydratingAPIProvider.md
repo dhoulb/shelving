@@ -42,8 +42,8 @@ export const getMyMembersQuery = (user: string): Query<MemberItem> => ({ user, $
 
 // Server handler.
 MY_SQUADS.handler(async (_payload, _request, { user }) => ({
-  squads: await getMySquads(user),
-  members: { query: getMyMembersQuery(user), items: await getMyMembers(user) },
+	squads: await getMySquads(user),
+	members: { query: getMyMembersQuery(user), items: await getMyMembers(user) },
 }));
 ```
 

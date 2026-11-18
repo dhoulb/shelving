@@ -13,19 +13,19 @@ import { Suspense } from "react";
 import { useStore } from "shelving/react";
 
 function UserCard({ store }: { store: Store<User> }) {
-  useStore(store); // Subscribe — re-renders when the store updates.
-  const user = store.value; // Throws Promise (loading) or reason (error).
-  return <div>{user.name}</div>;
+	useStore(store); // Subscribe — re-renders when the store updates.
+	const user = store.value; // Throws Promise (loading) or reason (error).
+	return <div>{user.name}</div>;
 }
 
 function App() {
-  return (
-    <ErrorBoundary fallback={<p>Something went wrong.</p>}>
-      <Suspense fallback={<p>Loading...</p>}>
-        <UserCard store={userStore} />
-      </Suspense>
-    </ErrorBoundary>
-  );
+	return (
+		<ErrorBoundary fallback={<p>Something went wrong.</p>}>
+			<Suspense fallback={<p>Loading...</p>}>
+				<UserCard store={userStore} />
+			</Suspense>
+		</ErrorBoundary>
+	);
 }
 ```
 

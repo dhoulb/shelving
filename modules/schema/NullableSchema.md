@@ -10,8 +10,8 @@ Wraps another schema to allow `null` as a valid value. Following the robustness 
 import { NULLABLE, NUMBER } from "shelving/schema";
 
 const NULLABLE_NUMBER = NULLABLE(NUMBER);
-NULLABLE_NUMBER.validate(null);       // null
-NULLABLE_NUMBER.validate(undefined);  // null
-NULLABLE_NUMBER.validate("");         // null
-NULLABLE_NUMBER.validate(42);         // 42
+NULLABLE_NUMBER.validate(null); // null
+NULLABLE_NUMBER.validate(undefined); // null
+NULLABLE_NUMBER.validate(""); // null
+NULLABLE_NUMBER.validate(42); // 42
 ```

@@ -10,33 +10,33 @@ The following `:root` variables are defined by this module and can be overridden
 
 ### Palette
 
-| Variable | Default | Notes |
-|---|---|---|
-| `--color-gray` | `oklch(60% 0.01 240)` | Neutral anchor — also the default tint when nothing moves it. |
-| `--color-red` | `oklch(62% 0.2 30)` | |
-| `--color-orange` | `oklch(74% 0.157 60)` | |
-| `--color-yellow` | `oklch(86% 0.16 92)` | |
-| `--color-green` | `oklch(72% 0.185 130)` | |
-| `--color-aqua` | `oklch(72% 0.121 185)` | |
-| `--color-blue` | `oklch(57% 0.216 260)` | |
-| `--color-purple` | `oklch(58% 0.25 300)` | |
-| `--color-pink` | `oklch(68% 0.239 350)` | |
+| Variable         | Default                | Notes                                                         |
+| ---------------- | ---------------------- | ------------------------------------------------------------- |
+| `--color-gray`   | `oklch(60% 0.01 240)`  | Neutral anchor — also the default tint when nothing moves it. |
+| `--color-red`    | `oklch(62% 0.2 30)`    |                                                               |
+| `--color-orange` | `oklch(74% 0.157 60)`  |                                                               |
+| `--color-yellow` | `oklch(86% 0.16 92)`   |                                                               |
+| `--color-green`  | `oklch(72% 0.185 130)` |                                                               |
+| `--color-aqua`   | `oklch(72% 0.121 185)` |                                                               |
+| `--color-blue`   | `oklch(57% 0.216 260)` |                                                               |
+| `--color-purple` | `oklch(58% 0.25 300)`  |                                                               |
+| `--color-pink`   | `oklch(68% 0.239 350)` |                                                               |
 
 ### Semantic
 
-| Variable | Default | Used for |
-|---|---|---|
-| `--color-link` | `var(--color-blue)` | Link colour. |
-| `--color-focus` | `var(--color-blue)` | Focus outlines. |
-| `--color-success` | `var(--color-green)` | `status="success"`. |
-| `--color-warning` | `var(--color-orange)` | `status="warning"`. |
-| `--color-failure` | `var(--color-red)` | `status="error"` / `status="danger"`. |
-| `--color-backdrop` | `#0006` | The backdrop that dims the page behind `<Dialog>` and an open `<SidebarLayout>` drawer. |
+| Variable           | Default               | Used for                                                                                |
+| ------------------ | --------------------- | --------------------------------------------------------------------------------------- |
+| `--color-link`     | `var(--color-blue)`   | Link colour.                                                                            |
+| `--color-focus`    | `var(--color-blue)`   | Focus outlines.                                                                         |
+| `--color-success`  | `var(--color-green)`  | `status="success"`.                                                                     |
+| `--color-warning`  | `var(--color-orange)` | `status="warning"`.                                                                     |
+| `--color-failure`  | `var(--color-red)`    | `status="error"` / `status="danger"`.                                                   |
+| `--color-backdrop` | `#0006`               | The backdrop that dims the page behind `<Dialog>` and an open `<SidebarLayout>` drawer. |
 
 ### Brand
 
-| Variable | Default | Used for |
-|---|---|---|
-| `--color-primary` | `var(--color-blue)` | `color="primary"`. |
+| Variable            | Default               | Used for             |
+| ------------------- | --------------------- | -------------------- |
+| `--color-primary`   | `var(--color-blue)`   | `color="primary"`.   |
 | `--color-secondary` | `var(--color-purple)` | `color="secondary"`. |
-| `--color-tertiary` | `var(--color-pink)` | `color="tertiary"`. |
+| `--color-tertiary`  | `var(--color-pink)`   | `color="tertiary"`.  |

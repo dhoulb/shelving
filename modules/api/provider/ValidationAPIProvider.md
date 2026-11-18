@@ -7,13 +7,11 @@ Place it just inside the network provider so everything above it works with vali
 ## Usage
 
 ```ts
-import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api"
+import { ClientAPIProvider, ValidationAPIProvider } from "shelving/api";
 
-const provider = new ValidationAPIProvider(
-  new ClientAPIProvider({ url: "https://api.example.com" })
-)
+const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https://api.example.com" }));
 
 // Payload validated against the endpoint's payload schema before sending;
 // result validated against its result schema before returning.
-const user = await provider.call(getUser, { id: "u_123" })
+const user = await provider.call(getUser, { id: "u_123" });
 ```

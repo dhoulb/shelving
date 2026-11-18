@@ -31,25 +31,31 @@ import { createDBContext } from "shelving/react";
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
 function UserCard({ id }: { id: string }) {
-  const user = useItem(Users, id).value; // Suspends while loading.
-  return <li>{user.name}</li>;
+	const user = useItem(Users, id).value; // Suspends while loading.
+	return <li>{user.name}</li>;
 }
 
 function UserList() {
-  const users = useQuery(Users, { $order: "name" }).value;
-  return <ul>{users.map(u => <UserCard key={u.id} id={u.id} />)}</ul>;
+	const users = useQuery(Users, { $order: "name" }).value;
+	return (
+		<ul>
+			{users.map(u => (
+				<UserCard key={u.id} id={u.id} />
+			))}
+		</ul>
+	);
 }
 
 function App() {
-  return (
-    <DBContext>
-      <ErrorBoundary fallback={<p>Something went wrong.</p>}>
-        <Suspense fallback={<p>Loading…</p>}>
-          <UserList />
-        </Suspense>
-      </ErrorBoundary>
-    </DBContext>
-  );
+	return (
+		<DBContext>
+			<ErrorBoundary fallback={<p>Something went wrong.</p>}>
+				<Suspense fallback={<p>Loading…</p>}>
+					<UserList />
+				</Suspense>
+			</ErrorBoundary>
+		</DBContext>
+	);
 }
 ```
 
@@ -62,8 +68,8 @@ import { useInstance, useStore } from "shelving/react";
 import { BooleanStore } from "shelving/store";
 
 function Toggle() {
-  const open = useInstance(BooleanStore); // Created once, stable across renders.
-  useStore(open); // Re-render whenever the store changes.
-  return <button onClick={() => open.toggle()}>{open.value ? "Open" : "Closed"}</button>;
+	const open = useInstance(BooleanStore); // Created once, stable across renders.
+	useStore(open); // Re-render whenever the store changes.
+	return <button onClick={() => open.toggle()}>{open.value ? "Open" : "Closed"}</button>;
 }
 ```

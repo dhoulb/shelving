@@ -12,34 +12,34 @@ Rules declare which contexts they apply in. Block rules fire in a `"block"` cont
 
 ## Available rule sets
 
-| Export | Contents |
-|---|---|
-| `MARKUP_RULES` | All block and inline rules — the default, use this unless you have a reason not to |
-| `MARKUP_RULES_BLOCK` | Block-only rules: fenced code, heading, separator, lists, blockquote, table, paragraph |
-| `MARKUP_RULES_INLINE` | Inline-only rules: inline code, link, autolink, strong/em/del/ins/mark, linebreak |
+| Export                | Contents                                                                               |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `MARKUP_RULES`        | All block and inline rules — the default, use this unless you have a reason not to     |
+| `MARKUP_RULES_BLOCK`  | Block-only rules: fenced code, heading, separator, lists, blockquote, table, paragraph |
+| `MARKUP_RULES_INLINE` | Inline-only rules: inline code, link, autolink, strong/em/del/ins/mark, linebreak      |
 
 ## Block rules
 
-| Rule constant | Element | Syntax |
-|---|---|---|
-| `FENCED_RULE` | `<pre><code>` | ` ``` ` or `~~~` fenced code block; optional info after the fence (language, flags, and a quoted title — see `parseFencedInfo()`) |
-| `HEADING_RULE` | `<h1>`–`<h6>` | `#` through `######` followed by a space |
-| `SEPARATOR_RULE` | `<hr>` | Three or more repeated `-`, `*`, `•`, `+`, `_`, or `=` characters |
-| `UNORDERED_RULE` | `<ul>` | Lines starting with `-`, `*`, `•`, or `+`; nest with a tab; blank lines between items make the list loose (`<p>`-wrapped); items starting with `[ ]` / `[x]` render a todo checkbox |
-| `ORDERED_RULE` | `<ol>` | Lines starting with a number followed by `.`, `)`, or `:`; blank lines between items make the list loose (`<p>`-wrapped) |
-| `BLOCKQUOTE_RULE` | `<blockquote>` | Lines starting with `>` |
-| `TABLE_RULE` | `<table>` | Pipe table: header row, `\|---|` delimiter row, body rows |
-| `PARAGRAPH_RULE` | `<p>` | Any remaining block content (priority `-10`, matches last) |
+| Rule constant     | Element        | Syntax                                                                                                                                                                              |
+| ----------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FENCED_RULE`     | `<pre><code>`  | ` ``` ` or `~~~` fenced code block; optional info after the fence (language, flags, and a quoted title — see `parseFencedInfo()`)                                                   |
+| `HEADING_RULE`    | `<h1>`–`<h6>`  | `#` through `######` followed by a space                                                                                                                                            |
+| `SEPARATOR_RULE`  | `<hr>`         | Three or more repeated `-`, `*`, `•`, `+`, `_`, or `=` characters                                                                                                                   |
+| `UNORDERED_RULE`  | `<ul>`         | Lines starting with `-`, `*`, `•`, or `+`; nest with a tab; blank lines between items make the list loose (`<p>`-wrapped); items starting with `[ ]` / `[x]` render a todo checkbox |
+| `ORDERED_RULE`    | `<ol>`         | Lines starting with a number followed by `.`, `)`, or `:`; blank lines between items make the list loose (`<p>`-wrapped)                                                            |
+| `BLOCKQUOTE_RULE` | `<blockquote>` | Lines starting with `>`                                                                                                                                                             |
+| `TABLE_RULE`      | `<table>`      | Pipe table: header row, `\|---                                                                                                                                                      | ` delimiter row, body rows |
+| `PARAGRAPH_RULE`  | `<p>`          | Any remaining block content (priority `-10`, matches last)                                                                                                                          |
 
 ## Inline rules
 
-| Rule constant | Element | Syntax |
-|---|---|---|
-| `CODE_RULE` | `<code>` | `` `backtick-wrapped` `` text (priority `10`) |
-| `LINK_RULE` | `<a>` | `[title](url)` |
-| `AUTOLINK_RULE` | `<a>` | Bare URL starting with any scheme, e.g. `https://example.com` |
-| `INLINE_RULE` | `<strong>`, `<em>`, `<del>`, `<ins>`, `<mark>` | `*bold*`, `_italic_`, `~del~`, `+ins+`, `=mark=` |
-| `LINEBREAK_RULE` | `<br>` | Any single `\n` newline inside inline content |
+| Rule constant    | Element                                        | Syntax                                                        |
+| ---------------- | ---------------------------------------------- | ------------------------------------------------------------- |
+| `CODE_RULE`      | `<code>`                                       | `` `backtick-wrapped` `` text (priority `10`)                 |
+| `LINK_RULE`      | `<a>`                                          | `[title](url)`                                                |
+| `AUTOLINK_RULE`  | `<a>`                                          | Bare URL starting with any scheme, e.g. `https://example.com` |
+| `INLINE_RULE`    | `<strong>`, `<em>`, `<del>`, `<ins>`, `<mark>` | `*bold*`, `_italic_`, `~del~`, `+ins+`, `=mark=`              |
+| `LINEBREAK_RULE` | `<br>`                                         | Any single `\n` newline inside inline content                 |
 
 ## Adding a custom rule
 
@@ -49,10 +49,10 @@ Use `createMarkupRule()` from `shelving/markup` to build a typed rule, then merg
 import { createMarkupRule, MARKUP_RULES, MarkupParser } from "shelving/markup";
 
 const HIGHLIGHT_RULE = createMarkupRule<{ text: string }>(
-  /==(?<text>[^=]+)==/,
-  (key, { text }) => <mark key={key}>{text}</mark>,
-  ["inline"],
-  5, // optional priority; default is 0
+	/==(?<text>[^=]+)==/,
+	(key, { text }) => <mark key={key}>{text}</mark>,
+	["inline"],
+	5, // optional priority; default is 0
 );
 
 const parser = new MarkupParser({ rules: [...MARKUP_RULES, HIGHLIGHT_RULE] });

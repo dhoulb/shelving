@@ -35,29 +35,29 @@ import { Title, Heading, Subheading } from "shelving/ui";
 ```tsx live
 import { Heading } from "shelving/ui";
 
-<Heading color="red">Danger zone</Heading>
+<Heading color="red">Danger zone</Heading>;
 ```
 
 ## Styling
 
 `Heading` exposes hooks for its rhythm and type. It inherits text colour by default (so it picks up the surrounding tint); set `--heading-color` only to override that.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--heading-color` | Text colour | `inherit` |
-| `--heading-space-before` | Top margin | `var(--space-section)` (2rem) |
-| `--heading-space` | Bottom margin | `var(--space-paragraph)` (16px) |
-| `--heading-font` | Font family | `var(--font-title)` |
-| `--heading-weight` | Font weight | `var(--weight-strong)` (700) |
-| `--heading-size` | Font size | `var(--size-xxlarge)` |
-| `--heading-leading` | Line height | `var(--leading)` |
+| Variable                 | Styles        | Default                         |
+| ------------------------ | ------------- | ------------------------------- |
+| `--heading-color`        | Text colour   | `inherit`                       |
+| `--heading-space-before` | Top margin    | `var(--space-section)` (2rem)   |
+| `--heading-space`        | Bottom margin | `var(--space-paragraph)` (16px) |
+| `--heading-font`         | Font family   | `var(--font-title)`             |
+| `--heading-weight`       | Font weight   | `var(--weight-strong)` (700)    |
+| `--heading-size`         | Font size     | `var(--size-xxlarge)`           |
+| `--heading-leading`      | Line height   | `var(--leading)`                |
 
 **Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxlarge`, and `--leading`. (`<Title>` and `<Subheading>` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
 
 ```css
 /* Theme: serif headings, a touch larger. */
 :root {
-  --heading-font: var(--font-serif);
-  --heading-size: 3rem;
+	--heading-font: var(--font-serif);
+	--heading-size: 3rem;
 }
 ```

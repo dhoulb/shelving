@@ -36,15 +36,15 @@ import { getClass, getModuleClass, getTypographyClass } from "shelving/ui";
 import BUTTON_CSS from "./Button.module.css";
 
 export function Button({ children, ...variants }: ButtonProps): ReactElement {
-  return (
-    <button
-      className={getClass(
-        getModuleClass(BUTTON_CSS, "button", variants), //
-        getTypographyClass(variants),
-      )}
-    >
-      {children}
-    </button>
-  );
+	return (
+		<button
+			className={getClass(
+				getModuleClass(BUTTON_CSS, "button", variants), //
+				getTypographyClass(variants),
+			)}
+		>
+			{children}
+		</button>
+	);
 }
 ```

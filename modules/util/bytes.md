@@ -12,11 +12,11 @@ Type guards, conversion, and assertion for `Uint8Array<ArrayBuffer>` byte sequen
 ```ts
 import { isBytes, assertBytes } from "shelving/util";
 
-isBytes(new Uint8Array(4));    // true
+isBytes(new Uint8Array(4)); // true
 isBytes(new Uint8Array(4).buffer); // false — that's an ArrayBuffer
 
-assertBytes(value);            // throws RequiredError if not a Bytes
-assertBytes(value, 16, 64);   // also enforces byte-length bounds
+assertBytes(value); // throws RequiredError if not a Bytes
+assertBytes(value, 16, 64); // also enforces byte-length bounds
 ```
 
 ### Converting to bytes
@@ -24,11 +24,11 @@ assertBytes(value, 16, 64);   // also enforces byte-length bounds
 ```ts
 import { getBytes, requireBytes } from "shelving/util";
 
-getBytes("hello");                       // Uint8Array (UTF-8)
-getBytes(new ArrayBuffer(8));            // Uint8Array wrapping the buffer
-getBytes(new Uint8Array([1, 2, 3]));     // returned as-is
-getBytes(42);                            // undefined
+getBytes("hello"); // Uint8Array (UTF-8)
+getBytes(new ArrayBuffer(8)); // Uint8Array wrapping the buffer
+getBytes(new Uint8Array([1, 2, 3])); // returned as-is
+getBytes(42); // undefined
 
-requireBytes("hello");                   // same as getBytes but throws on failure
-requireBytes(value, 8);                  // also requires at least 8 bytes
+requireBytes("hello"); // same as getBytes but throws on failure
+requireBytes(value, 8); // also requires at least 8 bytes
 ```

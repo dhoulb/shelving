@@ -1,4 +1,5 @@
 ---
+
 name: shelving
 description: Use when you write or change code that imports from the `shelving` npm package — schemas, database or API providers, stores, React hooks, UI components, or `shelving/util/*` helpers.
 ---

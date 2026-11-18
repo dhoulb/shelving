@@ -42,16 +42,16 @@ function Counter() {
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--documentation-live-bezel` | Space above and below the speaker slot, which sets the thickness of the top and the chin (one length) | `2.25rem` |
-| `--documentation-live-body` | Fill of the phone | `oklch(92% 0 0deg)` (light grey) |
-| `--documentation-live-detail` | Colour of the speaker slot and home button | `oklch(80% 0 0deg)` |
-| `--documentation-live-edge` | Width of the phone edge left and right of the screen (one length) | `0.75rem` |
-| `--documentation-live-gap` | Space between the code and the phone (one length) | `var(--space-normal)` (16px) |
-| `--documentation-live-height` | Height of the screen (one length) | `26rem` |
-| `--documentation-live-radius` | Corner radius of the phone | `2.5rem` |
-| `--documentation-live-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-| `--documentation-live-width` | Width of the phone (one length) | `22rem` |
+| Variable                      | Styles                                                                                                | Default                          |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `--documentation-live-bezel`  | Space above and below the speaker slot, which sets the thickness of the top and the chin (one length) | `2.25rem`                        |
+| `--documentation-live-body`   | Fill of the phone                                                                                     | `oklch(92% 0 0deg)` (light grey) |
+| `--documentation-live-detail` | Colour of the speaker slot and home button                                                            | `oklch(80% 0 0deg)`              |
+| `--documentation-live-edge`   | Width of the phone edge left and right of the screen (one length)                                     | `0.75rem`                        |
+| `--documentation-live-gap`    | Space between the code and the phone (one length)                                                     | `var(--space-normal)` (16px)     |
+| `--documentation-live-height` | Height of the screen (one length)                                                                     | `26rem`                          |
+| `--documentation-live-radius` | Corner radius of the phone                                                                            | `2.5rem`                         |
+| `--documentation-live-space`  | Outer block margin (top + bottom)                                                                     | `var(--space-paragraph)` (16px)  |
+| `--documentation-live-width`  | Width of the phone (one length)                                                                       | `22rem`                          |
 
 Global tokens: `--space-normal`, `--space-xsmall`, `--space-paragraph`, `--font-label`, `--size-small`. The code block is a raw `<pre>` with `--preformatted-space` set to `0`, so it takes the other `.prose pre` styles of `<Preformatted>`. The code and phone are side by side when the screen is 75rem or wider.

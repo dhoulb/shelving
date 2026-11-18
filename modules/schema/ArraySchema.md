@@ -10,12 +10,12 @@ Validates a value into a `readonly` array, validating each element against an `i
 import { ARRAY, STRING, NUMBER } from "shelving/schema";
 
 const TAGS = ARRAY(STRING);
-TAGS.validate(["a", "b"]);     // ["a", "b"]
-TAGS.validate("a,b,c");        // ["a", "b", "c"]  (split on comma)
-TAGS.validate(undefined);      // []
+TAGS.validate(["a", "b"]); // ["a", "b"]
+TAGS.validate("a,b,c"); // ["a", "b", "c"]  (split on comma)
+TAGS.validate(undefined); // []
 
 const NUMBERS = ARRAY(NUMBER);
-NUMBERS.validate([1, 2]);      // [1, 2]
-NUMBERS.validate("1,2,3");     // [1, 2, 3]  (split on comma, each coerced)
-NUMBERS.validate(undefined);   // []
+NUMBERS.validate([1, 2]); // [1, 2]
+NUMBERS.validate("1,2,3"); // [1, 2, 3]  (split on comma, each coerced)
+NUMBERS.validate(undefined); // []
 ```

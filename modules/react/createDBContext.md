@@ -13,27 +13,33 @@ import { createDBContext } from "shelving/react";
 const { DBContext, useItem, useQuery } = createDBContext(dbProvider);
 
 function UserCard({ id }: { id: string }) {
-  const store = useItem(Users, id); // ItemStore — suspends while loading.
-  const user = store.value;
-  return <div>{user.name}</div>;
+	const store = useItem(Users, id); // ItemStore — suspends while loading.
+	const user = store.value;
+	return <div>{user.name}</div>;
 }
 
 function UserList() {
-  const store = useQuery(Users, { $order: "name" }); // QueryStore.
-  const users = store.value;
-  return <ul>{users.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+	const store = useQuery(Users, { $order: "name" }); // QueryStore.
+	const users = store.value;
+	return (
+		<ul>
+			{users.map(u => (
+				<li key={u.id}>{u.name}</li>
+			))}
+		</ul>
+	);
 }
 
 function App() {
-  return (
-    <DBContext>
-      <ErrorBoundary fallback={<p>Error</p>}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <UserList />
-        </Suspense>
-      </ErrorBoundary>
-    </DBContext>
-  );
+	return (
+		<DBContext>
+			<ErrorBoundary fallback={<p>Error</p>}>
+				<Suspense fallback={<p>Loading...</p>}>
+					<UserList />
+				</Suspense>
+			</ErrorBoundary>
+		</DBContext>
+	);
 }
 ```
 

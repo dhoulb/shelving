@@ -8,7 +8,7 @@ The anchor defaults to `--color-gray`, so the default ladder is a neutral grey r
 
 ## The recompute trick
 
-The ladder is computed at `:root` and *recomputed* under `TINT_CLASS` (the `.tint` class). That recomputation is the whole trick: move the anchor at any scope, apply `TINT_CLASS`, and all 21 shades (and `--tint-contrast`) rebuild from the new hue at that scope. Colour and status classes are exactly that — they only move the anchor:
+The ladder is computed at `:root` and _recomputed_ under `TINT_CLASS` (the `.tint` class). That recomputation is the whole trick: move the anchor at any scope, apply `TINT_CLASS`, and all 21 shades (and `--tint-contrast`) rebuild from the new hue at that scope. Colour and status classes are exactly that — they only move the anchor:
 
 ```css
 /* Color.module.css — a colour variant just moves the anchor. */
@@ -28,15 +28,15 @@ The ladder is computed at `:root` and *recomputed* under `TINT_CLASS` (the `.tin
 
 Components paint from the ladder by convention:
 
-| Step | Used for |
-|---|---|
-| `--tint-00` | Body text, headings — maximum contrast |
-| `--tint-50` | The hue itself — accents, labels, `Tag` backgrounds, `<Button>` backgrounds |
-| `--tint-80` | Borders of boxes and controls — `<Card>`, `<Input>`, `<Notice>` |
-| `--tint-90` | Surfaces — `<Card>`, `Preformatted` backgrounds; light rules — `<Divider>`, `<Table>` rows, `<Blockquote>` |
-| `--tint-95` | Hover state of those surfaces |
-| `--tint-100` | The page background; text on `--tint-50` backgrounds |
-| `--tint-contrast` | Text on `--tint-50` backgrounds when the anchor can be light or dark |
+| Step              | Used for                                                                                                   |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `--tint-00`       | Body text, headings — maximum contrast                                                                     |
+| `--tint-50`       | The hue itself — accents, labels, `Tag` backgrounds, `<Button>` backgrounds                                |
+| `--tint-80`       | Borders of boxes and controls — `<Card>`, `<Input>`, `<Notice>`                                            |
+| `--tint-90`       | Surfaces — `<Card>`, `Preformatted` backgrounds; light rules — `<Divider>`, `<Table>` rows, `<Blockquote>` |
+| `--tint-95`       | Hover state of those surfaces                                                                              |
+| `--tint-100`      | The page background; text on `--tint-50` backgrounds                                                       |
+| `--tint-contrast` | Text on `--tint-50` backgrounds when the anchor can be light or dark                                       |
 
 Pairings follow contrast: long text reads at `00`-on-`90` or `00`-on-`100`; short labels read at `100`-on-`50`, or at `contrast`-on-`50` when the anchor can be light.
 
@@ -65,4 +65,4 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 
 `TINT_CLASS` adds a plain global `tint` class (as well as its hashed module class) for this purpose, so `tint` is a reserved class name. Do not use `* { … }` for this: it declares the variable on every element, which adds style-recalc cost on large pages.
 
-**Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is *recomputed* from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.
+**Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is _recomputed_ from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.

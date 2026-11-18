@@ -8,7 +8,7 @@ Thrown when a received response indicates an error — the HTTP 4xx/5xx range. I
 import { ResponseError } from "shelving/error";
 
 function checkResponse(res: Response): void {
-  if (!res.ok) throw new ResponseError(res.statusText, { code: res.status });
+	if (!res.ok) throw new ResponseError(res.statusText, { code: res.status });
 }
 ```
 

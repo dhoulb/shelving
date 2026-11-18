@@ -13,9 +13,9 @@ To save creating a new instance of `BooleanSchema` for trivial uses, you can use
 ```ts
 import { BOOLEAN } from "shelving/schema";
 
-BOOLEAN.validate(true);          // true
-BOOLEAN.validate("false");       // false  (coerced)
-BOOLEAN.validate("no");          // false  (coerced)
-BOOLEAN.validate(1);             // true   (truthiness)
-BOOLEAN.validate(undefined);     // false  (default)
+BOOLEAN.validate(true); // true
+BOOLEAN.validate("false"); // false  (coerced)
+BOOLEAN.validate("no"); // false  (coerced)
+BOOLEAN.validate(1); // true   (truthiness)
+BOOLEAN.validate(undefined); // false  (default)
 ```

@@ -19,21 +19,21 @@ const provider = new ValidationAPIProvider(new ClientAPIProvider({ url: "https:/
 const { APIContext, useAPI } = createAPIContext(provider);
 
 function UserCard({ id }: { id: string }) {
-  const store = useAPI(getUser, { id }); // Returns an EndpointStore; component suspends while loading.
-  const user = store.value;
-  return <div>{user.name}</div>;
+	const store = useAPI(getUser, { id }); // Returns an EndpointStore; component suspends while loading.
+	const user = store.value;
+	return <div>{user.name}</div>;
 }
 
 function App() {
-  return (
-    <APIContext>
-      <ErrorBoundary fallback={<p>Error</p>}>
-        <Suspense fallback={<p>Loading...</p>}>
-          <UserCard id="u_123" />
-        </Suspense>
-      </ErrorBoundary>
-    </APIContext>
-  );
+	return (
+		<APIContext>
+			<ErrorBoundary fallback={<p>Error</p>}>
+				<Suspense fallback={<p>Loading...</p>}>
+					<UserCard id="u_123" />
+				</Suspense>
+			</ErrorBoundary>
+		</APIContext>
+	);
 }
 ```
 

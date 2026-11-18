@@ -12,12 +12,12 @@ Override only the methods you need and call `super` to delegate the rest:
 import { ThroughDBProvider } from "shelving/db";
 
 class TimingDBProvider extends ThroughDBProvider {
-  override async getItem(collection, id) {
-    const t = performance.now();
-    const result = await super.getItem(collection, id);
-    console.log(`getItem took ${performance.now() - t}ms`);
-    return result;
-  }
+	override async getItem(collection, id) {
+		const t = performance.now();
+		const result = await super.getItem(collection, id);
+		console.log(`getItem took ${performance.now() - t}ms`);
+		return result;
+	}
 }
 ```
 

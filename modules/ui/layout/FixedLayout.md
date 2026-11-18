@@ -17,23 +17,25 @@ import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
 
 // The signed-out screens: one layout around their own router.
 <FixedLayout>
-  <Scroll vertical cover>
-    <Router routes={{
-      "/login": LoginPage,
-      "/register": RegisterPage,
-    }} />
-  </Scroll>
-</FixedLayout>
+	<Scroll vertical cover>
+		<Router
+			routes={{
+				"/login": LoginPage,
+				"/register": RegisterPage,
+			}}
+		/>
+	</Scroll>
+</FixedLayout>;
 
 // Each page centres its own content.
 function LoginPage() {
-  return (
-    <Page title="Log in">
-      <Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
-        <LoginForm />
-      </Block>
-    </Page>
-  );
+	return (
+		<Page title="Log in">
+			<Block height="full" middle width="narrow" padding="xxlarge" indent="normal">
+				<LoginForm />
+			</Block>
+		</Page>
+	);
 }
 ```
 
@@ -43,23 +45,23 @@ An app-level error, outside every other layout:
 import { Catcher, ErrorPage, type ErrorProps, FixedLayout, Scroll } from "shelving/ui";
 
 function AppError({ reason }: ErrorProps) {
-  return (
-    <FixedLayout>
-      <Scroll vertical cover>
-        <ErrorPage reason={reason} />
-      </Scroll>
-    </FixedLayout>
-  );
+	return (
+		<FixedLayout>
+			<Scroll vertical cover>
+				<ErrorPage reason={reason} />
+			</Scroll>
+		</FixedLayout>
+	);
 }
 
-<Catcher as={AppError}>…</Catcher>
+<Catcher as={AppError}>…</Catcher>;
 ```
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable                    | Styles                                      | Default                   |
+| --------------------------- | ------------------------------------------- | ------------------------- |
 | `--fixed-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
-| `--fixed-layout-color` | Text colour for the layout | `var(--tint-00)` (black) |
+| `--fixed-layout-color`      | Text colour for the layout                  | `var(--tint-00)` (black)  |
 
 **Global tokens it reads** — `--tint-00` and `--tint-100`.
