@@ -59,15 +59,16 @@ function StackBar() {
 
 ## Styling
 
-| Variable                      | Styles                                                | Default                                     |
-| ----------------------------- | ----------------------------------------------------- | ------------------------------------------- |
-| `--app-layout-background`     | Page background while the layout is mounted           | `var(--tint-100)` (white)                   |
-| `--app-layout-color`          | Text colour for the layout                            | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-background` | Bar fill (also fills the home-bar area below it)      | `var(--tint-100)` (white)                   |
-| `--app-layout-nav-color`      | Bar text and icon colour                              | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-border`     | Line above the bar                                    | `var(--stroke-normal) solid var(--tint-90)` |
-| `--app-layout-nav-shadow`     | Shadow of the bar, for example a soft shadow above it | `none`                                      |
-| `--app-layout-nav-item-width` | Largest width of one bar item                         | `6rem`                                      |
+| Variable                           | Styles                                                                                                                                                                                                         | Default                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `--app-layout-background`          | Page background while the layout is mounted                                                                                                                                                                    | `var(--tint-100)` (white)                   |
+| `--app-layout-color`               | Text colour for the layout                                                                                                                                                                                     | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-background`      | Bar fill (also fills the home-bar area below it)                                                                                                                                                               | `var(--tint-100)` (white)                   |
+| `--app-layout-nav-color`           | Bar text and icon colour                                                                                                                                                                                       | `var(--tint-00)` (black)                    |
+| `--app-layout-nav-border`          | Line above the bar                                                                                                                                                                                             | `var(--stroke-normal) solid var(--tint-90)` |
+| `--app-layout-nav-shadow`          | Shadow of the bar, for example a soft shadow above it                                                                                                                                                          | `none`                                      |
+| `--app-layout-nav-transition-name` | View-transition name of the bar. Set it only for your own transition types (for example under `:root:active-view-transition-type(tab)`), so the bar stays above parts of a page that slide in their own layers | `none`                                      |
+| `--app-layout-nav-item-width`      | Largest width of one bar item                                                                                                                                                                                  | `6rem`                                      |
 
 The bar keeps its items clear of the home bar and the rounded screen corners with safe-area insets.
 
