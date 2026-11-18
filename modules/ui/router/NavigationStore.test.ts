@@ -78,7 +78,7 @@ const globals = globalThis as { navigation?: unknown; window?: unknown };
 let fake: FakeNavigation;
 
 /** Open the app at `path`, in `stack` (by default the stack whose root is `path`, else `/`). */
-function setup(path = "/home", stack = (STACKS as readonly string[]).includes(path) ? path : "/"): NavigationStore {
+function setup(path = "/home", stack: string | null = (STACKS as readonly string[]).includes(path) ? path : null): NavigationStore {
 	fake = new FakeNavigation(`${ORIGIN}${path}`);
 	globals.navigation = fake;
 	globals.window = {
@@ -90,14 +90,14 @@ function setup(path = "/home", stack = (STACKS as readonly string[]).includes(pa
 		addEventListener: () => undefined,
 		removeEventListener: () => undefined,
 	};
-	const nav = new NavigationStore(`${ORIGIN}${path}`, `${ORIGIN}/`, stack as `/${string}`, ...STACKS);
+	const nav = new NavigationStore(`${ORIGIN}${path}`, `${ORIGIN}/`, stack as `/${string}` | null, ...STACKS);
 	nav.listen();
 	return nav;
 }
 
 function getEntries(): string[] {
 	return fake.list.map(e => {
-		const s = e.state as { stack: string; depth: number } | undefined;
+		const s = e.state as { stack: string | null; depth: number } | undefined;
 		return `${new URL(e.url).pathname}${s ? ` ${s.stack}@${s.depth}` : ""}`;
 	});
 }
@@ -120,11 +120,14 @@ describe("NavigationStore", () => {
 		expect(nav.position).toBe(undefined);
 	});
 
-	test("defaults to one stack at the root", () => {
-		expect(new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`).stack.value).toBe("/");
+	test("floats every page with no stacks", () => {
+		expect(new NavigationStore(`${ORIGIN}/home`, `${ORIGIN}/`).stack.value).toBe(null);
 		fake = new FakeNavigation(`${ORIGIN}/a/b`);
 		globals.navigation = fake;
-		expect(new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`).stack.value).toBe("/");
+		globals.window = { location: { href: `${ORIGIN}/a/b` } };
+		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`);
+		expect(nav.stack.value).toBe(null);
+		expect(nav.history()).toEqual(["/a/b"]);
 	});
 
 	test("keeps the starting stack without the Navigation API", () => {
@@ -162,14 +165,28 @@ describe("NavigationStore", () => {
 		fake = new FakeNavigation(`${ORIGIN}/a/b`);
 		globals.navigation = fake;
 		globals.window = { location: { href: `${ORIGIN}/a/b` } };
-		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`);
+		const nav = new NavigationStore(`${ORIGIN}/a/b`, `${ORIGIN}/`, "/", "/");
 		expect(nav.history()).toEqual(["/", "/a/b"]);
 	});
 
-	test("opens a stack root in / with no starting stack", () => {
-		const nav = setup("/profile", "/");
-		expect(nav.stack.value).toBe("/");
-		expect(getEntries()).toEqual(["/profile /@0"]);
+	test("treats / as a normal stack when it is listed", () => {
+		fake = new FakeNavigation(`${ORIGIN}/post/1`);
+		globals.navigation = fake;
+		globals.window = { location: { href: `${ORIGIN}/post/1` } };
+		const nav = new NavigationStore(`${ORIGIN}/post/1`, `${ORIGIN}/`, null, "/", "/discover");
+		expect(nav.stack.value).toBe(null);
+		expect(nav.history("/")).toEqual([]);
+	});
+
+	test("opens a stack root as floating with no starting stack", () => {
+		const nav = setup("/profile", null);
+		expect(nav.stack.value).toBe(null);
+		expect(getEntries()).toEqual(["/profile null@0"]);
+	});
+
+	test("floats a starting stack that is not listed", () => {
+		const nav = setup("/other/1", "/other");
+		expect(nav.stack.value).toBe(null);
 	});
 
 	test("keeps the saved stack after a reload", () => {
@@ -181,27 +198,34 @@ describe("NavigationStore", () => {
 		expect(nav.stack.value).toBe("/home");
 	});
 
-	describe("unstacked pages", () => {
-		test("open any other page in the unstacked / stack", () => {
+	describe("floating pages", () => {
+		test("open any other page in the floating stack", () => {
 			const nav = setup("/profile/settings");
-			expect(nav.stack.value).toBe("/");
-			expect(getEntries()).toEqual(["/profile/settings /@0"]);
+			expect(nav.stack.value).toBe(null);
+			expect(getEntries()).toEqual(["/profile/settings null@0"]);
 		});
 
-		test("push links deeper in the unstacked stack", () => {
+		test("push links deeper in the floating stack", () => {
 			const nav = setup("/login");
 			nav.forward("/login/reset");
-			expect(nav.stack.value).toBe("/");
+			expect(nav.stack.value).toBe(null);
 			expect(nav.history()).toEqual(["/login", "/login/reset"]);
 		});
 
-		test("stay unstacked when a link or a replace goes to a stack root", () => {
+		test("stay floating when a link or a replace goes to a stack root", () => {
 			const nav = setup("/login");
 			nav.forward("/home");
-			expect(getEntries().at(-1)).toBe("/home /@1");
+			expect(getEntries().at(-1)).toBe("/home null@1");
 			nav.replace("/profile");
-			expect(getEntries().at(-1)).toBe("/profile /@1");
-			expect(nav.stack.value).toBe("/");
+			expect(getEntries().at(-1)).toBe("/profile null@1");
+			expect(nav.stack.value).toBe(null);
+		});
+
+		test("move back into the floating stack when forward names it", () => {
+			const nav = setup("/home");
+			nav.forward("/login", null);
+			expect(nav.stack.value).toBe(null);
+			expect(getEntries().at(-1)).toBe("/login null@0");
 		});
 
 		test("move into a stack when forward names it", () => {
@@ -221,7 +245,7 @@ describe("NavigationStore", () => {
 		test("move onto the top of a stack when a replace names it", () => {
 			const nav = setup("/home");
 			nav.forward("/home/post/1");
-			nav.forward("/login", "/");
+			nav.forward("/login", null);
 			nav.replace("/home/post/2", "/home");
 			expect(getEntries().at(-1)).toBe("/home/post/2 /home@2");
 			expect(nav.history("/home")).toEqual(["/home", "/home/post/1", "/home/post/2"]);
@@ -241,6 +265,13 @@ describe("NavigationStore", () => {
 	});
 
 	describe("forward()", () => {
+		test("keeps the root below the first page of an empty stack", () => {
+			const nav = setup("/login");
+			nav.forward("/discover/fitness", "/discover");
+			expect(getEntries().at(-1)).toBe("/discover/fitness /discover@1");
+			expect(nav.history("/discover")).toEqual(["/discover", "/discover/fitness"]);
+		});
+
 		test("pushes one level deeper in the current stack", () => {
 			const nav = setup();
 			nav.forward("/home/post/1");
@@ -396,11 +427,25 @@ describe("NavigationStore", () => {
 		});
 	});
 
+	test("path is the current path relative to the root", () => {
+		const nav = setup("/home");
+		nav.forward("/home/post/1?x=1");
+		expect(nav.path).toBe("/home/post/1");
+	});
+
 	test("position has the depth of each stack's top page and the parent", () => {
 		const nav = setup();
 		nav.forward("/home/post/1");
 		nav.forward("/profile", "/profile");
 		nav.forward("/home/post/1", "/home");
-		expect(nav.position).toEqual({ stack: "/home", depth: 1, tops: { "/home": 1, "/profile": 0 }, parent: "/home" });
+		expect(nav.position).toEqual({
+			stack: "/home",
+			depth: 1,
+			tops: new Map([
+				["/home", 1],
+				["/profile", 0],
+			]),
+			parent: "/home",
+		});
 	});
 });

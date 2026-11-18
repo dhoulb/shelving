@@ -48,10 +48,20 @@ describe("Navigation", () => {
 		expect(html).toContain('<a href="http://x.com/profile" aria-current="true">Profile</a>');
 	});
 
-	test("selects no stack button on an unstacked page", () => {
+	test("selects no stack button on a floating page", () => {
 		const html = renderToStaticMarkup(
 			<Navigation url="http://x.com/settings" stacks={["/home", "/profile"]}>
 				<StackButton stack="/home">Home</StackButton>
+				<StackButton stack="/profile">Profile</StackButton>
+			</Navigation>,
+		);
+		expect(html).not.toContain("aria-current");
+	});
+
+	test("selects no stack button on a floating page when / is a stack", () => {
+		const html = renderToStaticMarkup(
+			<Navigation url="http://x.com/post/1" stacks={["/", "/profile"]}>
+				<StackButton stack="/">Home</StackButton>
 				<StackButton stack="/profile">Profile</StackButton>
 			</Navigation>,
 		);

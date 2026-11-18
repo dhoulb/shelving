@@ -1,13 +1,15 @@
 import { Activity, type ReactNode, use, useRef } from "react";
 import type { AbsolutePath } from "../../util/path.js";
 import { MetaContext, requireMetaURL } from "../misc/MetaContext.js";
+import { type Meta, mergeMeta } from "../util/meta.js";
 import { NavigationPositionContext } from "./NavigationContext.js";
+import type { NavigationPosition } from "./NavigationStore.js";
 
 /** A cached page: the rendered node, where it is in its stack, and a `used` tick for least-recently-used eviction. */
 interface _CacheEntry {
 	node: ReactNode;
 	used: number;
-	readonly stack: AbsolutePath;
+	readonly stack: AbsolutePath | null;
 	readonly depth: number;
 }
 
@@ -19,7 +21,8 @@ interface _CacheEntry {
 export interface RouteCacheProps {
 	/**
 	 * Number of pages to keep mounted (but hidden), so the whole state of each one (scroll position, toggles, searches, form input, focus) is still there when you come back to it.
-	 * - The top page of each stack is never dropped, even past the limit, so a tab always shows the page you left.
+	 * - The root page and the top page of each listed stack are never dropped, even past the limit, so a tab always shows the page you left and always has its root below.
+	 * - Floating pages get no such protection.
 	 * - Set to `0` (or less) to turn the cache off and unmount each page as you leave it.
 	 *
 	 * @default 10
@@ -36,8 +39,9 @@ export interface RouteCacheProps {
  * - Keeps each page in the stacks mounted but hidden (with React's `<Activity>`), so going back to a page, or switching back to a tab, shows it exactly as you left it.
  * - Each page is keyed by its stack and its depth in that stack, not by its URL. So `NavigationStore.replace()` (a canonical URL, an in-page tab) keeps the same page mounted, and the same URL open in two tabs is two separate pages.
  * - A page leaves the cache as soon as it leaves its stack: when you go back from it, or when a stack is popped to its root. After a browser back, a browser forward shows that page fresh.
- * - The top page of each stack is never dropped. Other pages can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
- * - Each kept page is frozen under its own `<MetaContext>`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
+ * - The root page and the top page of each listed stack are never dropped. Other pages, and every floating page, can be dropped past `maxCached`, and show fresh (from the top) when you come back to them.
+ * - When the current page is deeper than its stack's root and the root page is not cached (for example after a deep link), the root page is rendered hidden, so a swipe-back can show it.
+ * - Each kept page is frozen under its own `<MetaContext>` and `NavigationPositionContext`, so the same `children` element renders a different page for each URL, and a hidden page never re-renders for another page's URL.
  * - `<Activity mode="hidden">` keeps a hidden page's state but unmounts its effects, so its subscriptions and timers pause and resume as it is hidden and shown.
  * - Without the browser Navigation API (older browsers, server renders), or with `maxCached` of `0`, it renders the current page directly with no cache.
  *
@@ -70,16 +74,24 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 	const entry = map.get(key) ?? { node: null, used: 0, stack, depth };
 	map.set(key, entry);
 
-	// Snapshot the children under the live URL (frozen), so each kept page keeps rendering for the URL it last had.
-	entry.node = <MetaContext value={meta}>{children}</MetaContext>;
+	// Snapshot the children under the live URL and position (frozen), so each kept page keeps rendering for the URL it last had.
+	entry.node = _getNode(children, meta, position);
 	entry.used = ++usedRef.current;
 
-	// Drop the pages that have left their stack.
-	for (const [k, { stack: s, depth: d }] of map) if (k !== key && !(d <= (tops[s] ?? -1))) map.delete(k);
+	// A listed stack always has its root page below a deeper page, so render the root (hidden) if it is not cached.
+	const rootKey = `${stack} 0`;
+	if (stack !== null && depth > 0 && !map.has(rootKey)) {
+		const rootMeta = { ...mergeMeta(meta, { url: stack, stack }, RouteCache), path: stack, params: {} };
+		const rootPosition = { stack, depth: 0, tops, parent: undefined };
+		map.set(rootKey, { node: _getNode(children, rootMeta, rootPosition), used: 0, stack, depth: 0 });
+	}
 
-	// Drop the least-recently-used pages past the limit, but never the current page or the top page of a stack.
+	// Drop the pages that have left their stack.
+	for (const [k, { stack: s, depth: d }] of map) if (k !== key && !(d <= (tops.get(s) ?? -1))) map.delete(k);
+
+	// Drop the least-recently-used pages past the limit, but never the current page, or the root or top page of a listed stack.
 	while (map.size > maxCached) {
-		const lru = _findLeastRecentlyUsed(map, (k, { stack: s, depth: d }) => k !== key && tops[s] !== d);
+		const lru = _findLeastRecentlyUsed(map, (k, { stack: s, depth: d }) => k !== key && (s === null || (d !== 0 && tops.get(s) !== d)));
 		if (lru === undefined) break;
 		map.delete(lru);
 	}
@@ -90,6 +102,15 @@ export function RouteCache({ maxCached = 10, children }: RouteCacheProps): React
 			{cached.node}
 		</Activity>
 	));
+}
+
+/** Freeze `children` under a URL and a position. */
+function _getNode(children: ReactNode, meta: Meta, position: NavigationPosition): ReactNode {
+	return (
+		<NavigationPositionContext value={position}>
+			<MetaContext value={meta}>{children}</MetaContext>
+		</NavigationPositionContext>
+	);
 }
 
 /** Find the key of the least-recently-used entry that may be dropped, or `undefined` if none may. */
