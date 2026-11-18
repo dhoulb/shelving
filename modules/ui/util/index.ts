@@ -2,6 +2,7 @@ export * from "./context.js";
 export * from "./css.js";
 export * from "./event.js";
 export * from "./focus.js";
+export * from "./keyboard.js";
 export * from "./meta.js";
 export * from "./notice.js";
 export * from "./props.js";
