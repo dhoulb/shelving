@@ -15,6 +15,24 @@
 			position: relative;
 		}
 	}
+
+	/* The content of a clickable card lets taps through to the overlay under it, so a tap anywhere on the card opens it.
+	 * Positioned content (for example a list with `position: relative`) paints above the overlay, so without this it
+	 * would catch the tap. Links, buttons and form fields take taps again. */
+	.content {
+		pointer-events: none;
+
+		a:any-link,
+		button:enabled,
+		input,
+		select,
+		textarea,
+		label,
+		summary,
+		[tabindex]:not([tabindex="-1"]) {
+			pointer-events: auto;
+		}
+	}
 }
 
 @layer components {
