@@ -4,9 +4,11 @@ The store that holds the current URL, drives browser history, and keeps one stac
 
 **Things to know:**
 
-- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. With no stacks the app has one stack at `/`.
-- A page that is not in a listed stack is **unstacked**: it is in the `/` stack. See [Unstacked pages](#unstacked-pages).
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack. It is always set: with no stacks it is `"/"`. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
+- A page that is not in a listed stack is **floating**: its stack is `null`. See [Floating pages](#floating-pages).
+- In a listed stack, depth `0` is always the stack's root path. A deeper page always has the root below it.
+- `NavigationStore.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationStore.path` is the current path relative to the app root, without its `?query`.
 - `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
 - `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
@@ -21,17 +23,23 @@ The store that holds the current URL, drives browser history, and keeps one stac
 | `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.            | None                                  |
 | `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
 
-`stack` defaults to the current stack.
+`stack` defaults to the current stack. Pass `null` to name the floating stack.
 
-## Unstacked pages
+## Floating pages
 
-A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else in the `/` stack. A page in the `/` stack is **unstacked**. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
+A page changes stack only when you say so: with a `<StackButton>`, or with a `stack` argument to `forward()`, `back()` or `replace()`. Links never change stack. The page the app opens at starts in the `stack` set on `<Navigation>` (or the surrounding `<Meta>`), else it **floats**: its stack is `null`. For example: a deep link into the app, a fresh open of `/post/9`, or a login page.
 
-- On an unstacked page, no `<StackButton>` is selected.
-- Links from an unstacked page push deeper in the `/` stack, even a link to a stack root.
-- To leave the `/` stack, tap a `<StackButton>`, or name the stack.
+- The floating stack is outside every tab. It has no root page and no `<StackButton>`, so no stack button is selected on a floating page.
+- Links from a floating page push deeper in the floating stack, even a link to a stack root.
+- To leave the floating stack, tap a `<StackButton>`, or name the stack. To move a page back into it, pass `null` as the `stack`.
+- `<RouteCache>` gives floating pages no protection: they are dropped like any other page past `maxCached`.
+- With no `stacks`, every page floats.
+
+## Opening the app
+
 - To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
-- If you list `/` as one of the `stacks`, it is a normal tab, and unstacked pages open in it.
+- A deep page the app opens at, in a listed stack, starts at depth 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at depth 0.
+- A `stack` that is not in `stacks` is ignored: the page floats.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
 

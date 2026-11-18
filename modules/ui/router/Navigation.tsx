@@ -18,21 +18,22 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {
 	/**
 	 * Root path of each stack, in tab order, for an app with a tab bar (for example `["/home", "/discover", "/profile"]`).
 	 * - Each stack keeps its own pages, so each tab remembers where you left it, and a back button goes back within its tab.
-	 * - With no stacks, the app has one stack at `"/"`, and `stack` in `Meta` is `"/"`.
+	 * - A page outside these stacks is floating: its stack is `null`, and no tab is selected.
+	 * - With no stacks, every page floats.
 	 */
 	readonly stacks?: readonly AbsolutePath[] | undefined;
 	/**
 	 * Stack of the page the app opens at (for example `"/home"`), like `url` and `root`.
-	 * - Read from this prop, else from the surrounding `<Meta>`, else `"/"`.
+	 * - Read from this prop, else from the surrounding `<Meta>`, else `null` (floating).
 	 * - Used only when the opening history entry has no saved stack. A reload keeps the stack it had.
 	 */
-	readonly stack?: AbsolutePath | undefined;
+	readonly stack?: AbsolutePath | null | undefined;
 }
 
 /** What `<Navigation>` publishes on each change. */
 interface _Published {
 	readonly url: ImmutableURL;
-	readonly stack: AbsolutePath;
+	readonly stack: AbsolutePath | null;
 	readonly position: NavigationPosition | undefined;
 }
 
@@ -51,7 +52,7 @@ interface _Published {
  */
 export function Navigation({ children, stacks = [], ...meta }: NavigationProps): ReactElement {
 	const current = requireMeta(meta);
-	const nav = useInstance(NavigationStore, current.url, current.root, current.stack ?? "/", ...stacks);
+	const nav = useInstance(NavigationStore, current.url, current.root, current.stack ?? null, ...stacks);
 
 	// React runs a `<ViewTransition>` only for a transition update, and `useSyncExternalStore()` always renders a sync update.
 	// So keep the published values in state, and copy each store change into it inside `startTransition()`.
