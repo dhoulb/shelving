@@ -7,6 +7,7 @@ Top-level navigation provider, with one stack of pages for each tab.
 - Owns a single `NavigationSequence` made from the surrounding `<Meta>` url and root.
 - Turns clicks on same-origin links into `NavigationSequence.forward()`, or `NavigationSequence.back()` for a link with `className="back"`, or `NavigationSequence.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
 - Holds the page it shows in its own state, and publishes its `url`, `stack` and `ordinal` into `Meta`. Read the current page from `Meta`.
+- Before a move slides, it lowers the on-screen keyboard and waits until it is down (`waitForKeyboard()`), because a keyboard that closes during the slide resizes the page in the middle of it.
 - Takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` type, so a `<Transition>` around the routes runs a view transition. A replace has no transition. An event for the page already shown is skipped.
 - Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
 

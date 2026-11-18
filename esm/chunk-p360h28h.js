@@ -1,0 +1,2 @@
+import{T}from"./chunk-thyncyeq.js";import{o}from"./chunk-a8b74r80.js";import{at}from"./chunk-k64ndv5r.js";function Op([t]){return t}function Up([,t]){return t}function*Bp(t){for(let[e]of t)yield e}function*qp(t){for(let[,e]of t)yield e}function*jp(...t){for(let e of t)if(o(e)||at(e))yield*e.entries();else if(T(e))yield*e;else yield*Object.entries(e)}
+export{Op,Up,Bp,qp,jp};
