@@ -105,7 +105,7 @@ The components below are listed in the index following this page; this is the sh
 - [Clickable](ui/Clickable.md): Render an <a href="">, a <button>, or a plain <span>, from the href, onClick and disabled props.
 - [FullscreenButton](ui/FullscreenButton.md): Button to toggle the surrounding <figure> element or <body> element in/out of fullscreen mode.
 - [RetryButton](ui/RetryButton.md): Button that retries the nearest <Catcher> error boundary when clicked.
-- [Dialog](ui/Dialog.md): Modal <dialog> element that opens on mount and includes a close button.
+- [Dialog](ui/Dialog.md): Modal <dialog> element that opens on mount.
 - [DialogCloseButton](ui/DialogCloseButton.md): Button that closes its wrapping <dialog>, showing an X icon by default.
 - [DialogsContext](ui/DialogsContext.md): Provider that creates a fresh DialogsStore and shares it with its subtree.
 - [Dialogs](ui/Dialogs.md): Render the open dialogs from the current DialogsContext.
