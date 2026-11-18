@@ -1,2 +1,0 @@
-import{ot}from"./chunk-mycyphth.js";import{t}from"./chunk-m2s2d87e.js";function at(e){return e instanceof Set}function bs(e,n=bs){if(!at(e))throw new t("Must be set",{received:e,caller:n})}function $p(e){return at(e)?e:new Set(e)}function Fp(e,n){return n>e.size?e:new Set(ot(e,n))}function Is(e,n){return e.has(n)}function Ts(e,n,o=Ts){if(!Is(e,n))throw new t("Item must exist in set",{item:n,set:e,caller:o})}function Vp(e,n){return e.add(n),n}function Kp(e,...n){for(let o of n)e.add(o)}function Qp(e,...n){for(let o of n)e.delete(o)}
-export{at,bs,$p,Fp,Is,Ts,Vp,Kp,Qp};
