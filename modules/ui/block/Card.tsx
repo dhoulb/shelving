@@ -47,7 +47,7 @@ export function Card({ as: Element = "article", children, href, onClick, title =
 			)}
 		>
 			{overlay}
-			{overlay ? <div>{children}</div> : children}
+			{overlay ? <div className={getModuleClass(CARD_CSS, "content")}>{children}</div> : children}
 		</Element>
 	);
 }
