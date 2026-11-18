@@ -21,9 +21,9 @@ Core immutable helpers for reading and updating plain objects, plus utility type
 ```ts
 import { isObject, assertObject, isPlainObject, assertPlainObject } from "shelving/util";
 
-isObject(null);           // false
-isObject([]);             // true  (arrays are objects)
-isPlainObject([]);        // false
+isObject(null); // false
+isObject([]); // true  (arrays are objects)
+isPlainObject([]); // false
 isPlainObject(new Map()); // false
 isPlainObject({ a: 1 }); // true
 ```
@@ -35,16 +35,16 @@ import { withProp, withProps, omitProp, omitProps, pickProps } from "shelving/ut
 
 const obj = { a: 1, b: 2, c: 3 };
 
-withProp(obj, "b", 99);         // { a: 1, b: 99, c: 3 }
-withProp(obj, "b", 2);          // same ref — value unchanged
+withProp(obj, "b", 99); // { a: 1, b: 99, c: 3 }
+withProp(obj, "b", 2); // same ref — value unchanged
 
 withProps(obj, { b: 99, c: 0 }); // { a: 1, b: 99, c: 0 }
-withProps(obj, {});               // same ref
+withProps(obj, {}); // same ref
 
-omitProp(obj, "b");             // { a: 1, c: 3 }
-omitProps(obj, "a", "c");       // { b: 2 }
+omitProp(obj, "b"); // { a: 1, c: 3 }
+omitProps(obj, "a", "c"); // { b: 2 }
 
-pickProps(obj, "a", "c");       // { a: 1, c: 3 }
+pickProps(obj, "a", "c"); // { a: 1, c: 3 }
 ```
 
 ### Mutable updates (by reference)
@@ -53,7 +53,7 @@ pickProps(obj, "a", "c");       // { a: 1, c: 3 }
 import { setProp, setProps, deleteProp, deleteProps } from "shelving/util";
 
 const obj = { a: 1, b: 2, c: 3 };
-setProp(obj, "a", 99);          // obj.a is now 99; returns 99
+setProp(obj, "a", 99); // obj.a is now 99; returns 99
 setProps(obj, { b: 10, c: 20 });
 deleteProp(obj, "a");
 deleteProps(obj, "b", "c");
@@ -64,11 +64,11 @@ deleteProps(obj, "b", "c");
 ```ts
 import { isProp, assertProp, getProps, getKeys, getProp, fromProp } from "shelving/util";
 
-isProp(obj, "a");               // true if "a" is an own key
-getProps(obj);                  // entries as [key, value][] array
-getKeys(obj);                   // keys as string[] array
-getProp(obj, "a");              // obj.a — with type-safe return
-fromProp("id", "abc");          // { id: "abc" }
+isProp(obj, "a"); // true if "a" is an own key
+getProps(obj); // entries as [key, value][] array
+getKeys(obj); // keys as string[] array
+getProp(obj, "a"); // obj.a — with type-safe return
+fromProp("id", "abc"); // { id: "abc" }
 ```
 
 ### Cloning
@@ -76,11 +76,14 @@ fromProp("id", "abc");          // { id: "abc" }
 ```ts
 import { cloneObject, cloneObjectWith, getObject } from "shelving/util";
 
-cloneObject(obj);               // shallow copy, prototype preserved
-cloneObjectWith(obj, "a", 99);  // same as withProp but always allocates
+cloneObject(obj); // shallow copy, prototype preserved
+cloneObjectWith(obj, "a", 99); // same as withProp but always allocates
 
 // Build an object from an iterable of [key, value] pairs.
-getObject([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
+getObject([
+	["a", 1],
+	["b", 2],
+]); // { a: 1, b: 2 }
 ```
 
 ### Utility types
@@ -88,10 +91,10 @@ getObject([["a", 1], ["b", 2]]); // { a: 1, b: 2 }
 ```ts
 import type { Mutable, DeepPartial, DeepMutable, DeepReadonly, PickProps, OmitProps } from "shelving/util";
 
-type W = DeepReadonly<{ a: { b: number } }>;  // recursively readonly
-type X = DeepPartial<{ a: { b: number } }>;   // recursively optional
-type Y = PickProps<User, string>;              // only string-valued props
-type Z = OmitProps<User, string>;             // exclude string-valued props
+type W = DeepReadonly<{ a: { b: number } }>; // recursively readonly
+type X = DeepPartial<{ a: { b: number } }>; // recursively optional
+type Y = PickProps<User, string>; // only string-valued props
+type Z = OmitProps<User, string>; // exclude string-valued props
 ```
 
 

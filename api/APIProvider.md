@@ -17,10 +17,10 @@ You never instantiate `APIProvider` directly — use the concrete `ClientAPIProv
 Code that accepts "any provider" should type against `APIProvider` so a bare client, a validated chain, or a mock are all interchangeable:
 
 ```ts
-import type { APIProvider } from "shelving/api"
+import type { APIProvider } from "shelving/api";
 
 async function loadUser(provider: APIProvider, id: string) {
-  return provider.call(getUser, { id }); // works with any provider in the chain
+	return provider.call(getUser, { id }); // works with any provider in the chain
 }
 ```
 

@@ -29,7 +29,7 @@ setInterval(() => seq.resolve("ping"), 1000);
 
 // Consume in one or more places simultaneously:
 for await (const msg of seq) {
-  console.log(msg); // "ping" every second
+	console.log(msg); // "ping" every second
 }
 ```
 

@@ -20,7 +20,7 @@ import { walkElements, filterElements, queryElements } from "shelving/util";
 
 // Flatten any Elements shape to a flat iterable.
 for (const el of walkElements(someElements)) {
-  console.log(el.type, el.key);
+	console.log(el.type, el.key);
 }
 
 // Filter by a match function.

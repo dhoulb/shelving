@@ -25,8 +25,8 @@ A collapsible panel. The title is always visible. The content shows when the use
 import { Details, Paragraph } from "shelving/ui";
 
 <Details title="What is shelving?">
-  <Paragraph>A TypeScript data toolkit.</Paragraph>
-</Details>
+	<Paragraph>A TypeScript data toolkit.</Paragraph>
+</Details>;
 ```
 
 ### Open by default
@@ -35,8 +35,8 @@ import { Details, Paragraph } from "shelving/ui";
 import { Details, Paragraph } from "shelving/ui";
 
 <Details title="Release notes" open>
-  <Paragraph>Bug fixes and small improvements.</Paragraph>
-</Details>
+	<Paragraph>Bug fixes and small improvements.</Paragraph>
+</Details>;
 ```
 
 ### Exclusive group (FAQ)
@@ -57,15 +57,15 @@ import { Details, Paragraph } from "shelving/ui";
 
 `Details` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` to an ancestor scope to recolour the chevron and divider together.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--details-space` | Outer block margin, and the padding above a divider | `var(--space-paragraph)` (16px) |
-| `--details-border` | Divider between panels next to each other | `var(--stroke-normal) solid var(--tint-90)` |
-| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)` |
-| `--details-radius` | Corner radius of the title's focus ring | `var(--radius-xsmall)` (8px) |
-| `--details-icon-color` | Chevron colour | `var(--tint-50)` |
-| `--details-transition` | Open/close animation and chevron turn | `all var(--duration-fast)` (150ms) |
-| `--details-gap` | Space between the title and the content | `var(--space-paragraph)` (16px) |
+| Variable                 | Styles                                                          | Default                                     |
+| ------------------------ | --------------------------------------------------------------- | ------------------------------------------- |
+| `--details-space`        | Outer block margin, and the padding above a divider             | `var(--space-paragraph)` (16px)             |
+| `--details-border`       | Divider between panels next to each other                       | `var(--stroke-normal) solid var(--tint-90)` |
+| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)`                            |
+| `--details-radius`       | Corner radius of the title's focus ring                         | `var(--radius-xsmall)` (8px)                |
+| `--details-icon-color`   | Chevron colour                                                  | `var(--tint-50)`                            |
+| `--details-transition`   | Open/close animation and chevron turn                           | `all var(--duration-fast)` (150ms)          |
+| `--details-gap`          | Space between the title and the content                         | `var(--space-paragraph)` (16px)             |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-normal`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--duration-fast` and `--size-icon` (chevron size, from `getFlexClass`).
 

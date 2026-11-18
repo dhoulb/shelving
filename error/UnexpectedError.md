@@ -16,7 +16,7 @@ Thrown when something that should never happen did — an invariant was violated
 import { UnexpectedError } from "shelving/error";
 
 function assertNever(x: never): never {
-  throw new UnexpectedError("Unhandled case", { received: x });
+	throw new UnexpectedError("Unhandled case", { received: x });
 }
 ```
 

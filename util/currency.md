@@ -15,8 +15,8 @@ Validate ISO 4217 currency codes and retrieve display metadata (symbol, smallest
 ```ts
 import { getCurrencyCode, requireCurrencyCode, CURRENCY_CODES } from "shelving/util";
 
-getCurrencyCode("gbp");   // "GBP"
-getCurrencyCode("XYZ");   // undefined
+getCurrencyCode("gbp"); // "GBP"
+getCurrencyCode("XYZ"); // undefined
 
 requireCurrencyCode("GBP"); // "GBP"
 requireCurrencyCode("XYZ"); // throws RequiredError

@@ -22,8 +22,8 @@ To save creating a new instance of `NumberSchema` for trivial uses, you can use 
 ```ts
 import { NUMBER } from "shelving/schema";
 
-NUMBER.validate("3.14");         // 3.14   (strings coerced)
-NUMBER.validate(undefined);      // 0      (default)
+NUMBER.validate("3.14"); // 3.14   (strings coerced)
+NUMBER.validate(undefined); // 0      (default)
 ```
 
 ### Custom number schemas
@@ -34,8 +34,8 @@ Construct a `NumberSchema` to apply range and step constraints:
 import { NumberSchema } from "shelving/schema";
 
 const RATING = new NumberSchema({ title: "Rating", min: 1, max: 5, step: 1 });
-RATING.validate(3);              // 3
-RATING.validate(0);              // throws "Minimum 1"
+RATING.validate(3); // 3
+RATING.validate(0); // throws "Minimum 1"
 ```
 
 

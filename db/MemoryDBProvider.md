@@ -27,7 +27,7 @@ const post = await provider.getItem(POSTS, id);
 
 // Realtime — emits whenever the item changes.
 for await (const next of provider.getItemSequence(POSTS, id)) {
-  console.log(next);
+	console.log(next);
 }
 ```
 
@@ -50,8 +50,8 @@ table.setQueryTime({ user: "dave" }); // `items` is the complete answer to this 
 
 ```ts
 await provider.transact(async db => {
-  const post = await db.requireItem(POSTS, id);
-  await db.updateItem(POSTS, id, { title: `${post.title}!` });
+	const post = await db.requireItem(POSTS, id);
+	await db.updateItem(POSTS, id, { title: `${post.title}!` });
 });
 ```
 

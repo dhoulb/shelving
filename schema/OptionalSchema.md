@@ -21,7 +21,7 @@ import { OPTIONAL, NUMBER } from "shelving/schema";
 
 const OPTIONAL_NUMBER = OPTIONAL(NUMBER);
 OPTIONAL_NUMBER.validate(undefined); // undefined
-OPTIONAL_NUMBER.validate(42);        // 42
+OPTIONAL_NUMBER.validate(42); // 42
 ```
 
 

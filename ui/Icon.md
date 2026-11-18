@@ -27,10 +27,10 @@ import { Icon } from "shelving/ui";
 
 ## Styling
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--icon-color` | Icon colour | `var(--tint-50)` (the status tint, e.g. `--color-failure` for `status="error"`) |
-| `--icon-size` | Icon width / height | `var(--size-icon)` (1.5rem) |
+| Variable       | Styles              | Default                                                                         |
+| -------------- | ------------------- | ------------------------------------------------------------------------------- |
+| `--icon-color` | Icon colour         | `var(--tint-50)` (the status tint, e.g. `--color-failure` for `status="error"`) |
+| `--icon-size`  | Icon width / height | `var(--size-icon)` (1.5rem)                                                     |
 
 **Global tokens it reads** — the status tint anchor `--tint-50`, `--size-icon` (the unset-`size` default), plus the size tokens `--size-small` / `--size-normal` / `--size-large` / `--size-xlarge` / `--size-xxlarge` used by the `size` prop.
 

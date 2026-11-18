@@ -18,14 +18,14 @@ The constructor takes `{ url, options?, timeout? }` — a base URL that endpoint
 ## Usage
 
 ```ts
-import { ClientAPIProvider } from "shelving/api"
+import { ClientAPIProvider } from "shelving/api";
 
 const provider = new ClientAPIProvider({
-  url: "https://api.example.com",
-  timeout: 10_000,
-})
+	url: "https://api.example.com",
+	timeout: 10_000,
+});
 
-const user = await provider.call(getUser, { id: "u_123" })
+const user = await provider.call(getUser, { id: "u_123" });
 ```
 
 In practice you wrap it — e.g. `new ValidationAPIProvider(new ClientAPIProvider({ url }))` — so payloads and results are validated. See `shelving/api` for building a provider chain.

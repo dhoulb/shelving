@@ -43,7 +43,7 @@ dispose(resourceA, resourceB, resourceC);
 ```ts
 import { isDisposable, isAsyncDisposable } from "shelving/util";
 
-isDisposable(obj);      // true if obj[Symbol.dispose] is a function
+isDisposable(obj); // true if obj[Symbol.dispose] is a function
 isAsyncDisposable(obj); // true if obj[Symbol.asyncDispose] is a function
 ```
 
@@ -54,10 +54,10 @@ import { DisposableMap } from "shelving/util";
 
 const cache = new DisposableMap<string, Connection>();
 
-cache.set("db", openConnection());     // stored
-cache.set("db", reopenConnection());   // old connection disposed automatically
-cache.delete("db");                    // connection disposed
-cache[Symbol.dispose]();               // all remaining connections disposed
+cache.set("db", openConnection()); // stored
+cache.set("db", reopenConnection()); // old connection disposed automatically
+cache.delete("db"); // connection disposed
+cache[Symbol.dispose](); // all remaining connections disposed
 ```
 
 ### DisposableSet

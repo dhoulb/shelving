@@ -18,11 +18,11 @@ Typed helpers for working with JavaScript `Set` objects. Covers type guards, con
 ```ts
 import { isSet, assertSet, getSet } from "shelving/util";
 
-isSet(new Set([1, 2]));  // true
-isSet([1, 2]);           // false
-assertSet("oops");       // throws RequiredError
+isSet(new Set([1, 2])); // true
+isSet([1, 2]); // false
+assertSet("oops"); // throws RequiredError
 
-getSet([1, 2, 2, 3]);    // Set { 1, 2, 3 }  (deduplicates)
+getSet([1, 2, 2, 3]); // Set { 1, 2, 3 }  (deduplicates)
 getSet(new Set([1, 2])); // same reference returned
 ```
 
@@ -33,8 +33,8 @@ import { isSetItem, assertSetItem } from "shelving/util";
 
 const roles = new Set(["admin", "editor"]);
 
-isSetItem(roles, "admin");   // true
-isSetItem(roles, "guest");   // false
+isSetItem(roles, "admin"); // true
+isSetItem(roles, "guest"); // false
 assertSetItem(roles, "guest"); // throws RequiredError
 ```
 
@@ -45,9 +45,9 @@ import { addSetItem, addSetItems, deleteSetItems } from "shelving/util";
 
 const s: Set<string> = new Set();
 
-addSetItem(s, "a");           // adds "a", returns "a"
-addSetItems(s, "b", "c");     // adds "b" and "c"
-deleteSetItems(s, "a", "b");  // removes "a" and "b"
+addSetItem(s, "a"); // adds "a", returns "a"
+addSetItems(s, "b", "c"); // adds "b" and "c"
+deleteSetItems(s, "a", "b"); // removes "a" and "b"
 ```
 
 ### Limiting a set
@@ -56,7 +56,7 @@ deleteSetItems(s, "a", "b");  // removes "a" and "b"
 import { limitSet } from "shelving/util";
 
 const s = new Set([1, 2, 3, 4, 5]);
-limitSet(s, 3);  // Set { 1, 2, 3 }
+limitSet(s, 3); // Set { 1, 2, 3 }
 limitSet(s, 10); // same Set reference (no copy needed)
 ```
 

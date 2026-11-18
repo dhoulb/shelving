@@ -19,7 +19,7 @@ Reach for these fixtures whenever a test needs a schema, a collection, or a hand
 import { BASIC_SCHEMA, basics, basic1 } from "shelving/test";
 
 BASIC_SCHEMA.validate(basic1); // Passes.
-basics.length;                 // 9, in unsorted order.
+basics.length; // 9, in unsorted order.
 ```
 
 ### People
@@ -44,11 +44,11 @@ await provider.addItem(BASICS_COLLECTION, basic1);
 
 ## Assertion helpers
 
-| Helper | Use |
-|---|---|
-| `expectOrderedItems()` | Assert an iterable of items has exactly these ids, in this order. |
-| `expectUnorderedItems()` | The same, but order does not matter. |
-| `EXPECT_PROMISELIKE` | A matcher for "this value looks like a promise". |
+| Helper                   | Use                                                               |
+| ------------------------ | ----------------------------------------------------------------- |
+| `expectOrderedItems()`   | Assert an iterable of items has exactly these ids, in this order. |
+| `expectUnorderedItems()` | The same, but order does not matter.                              |
+| `EXPECT_PROMISELIKE`     | A matcher for "this value looks like a promise".                  |
 
 `expectOrderedItems()` and `expectUnorderedItems()` compare by `id`, so a failure reports the ids that were wrong — far more readable than a deep object diff. Both trim their own stack frame, so the reported failure points at your test.
 

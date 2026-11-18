@@ -20,12 +20,12 @@ These helpers work with any valid URI — including non-hierarchical ones like `
 ```ts
 import { getURI, requireURI, isURI, assertURI } from "shelving/util";
 
-getURI("https://example.com/path");   // ImmutableURI
-getURI("not-a-uri");                  // undefined
-getURI(null);                         // undefined
+getURI("https://example.com/path"); // ImmutableURI
+getURI("not-a-uri"); // undefined
+getURI(null); // undefined
 
-requireURI("https://example.com");    // ImmutableURI or throws RequiredError
-isURI(new URL("https://x.com"));      // true
+requireURI("https://example.com"); // ImmutableURI or throws RequiredError
+isURI(new URL("https://x.com")); // true
 ```
 
 ### Reading query params
@@ -35,10 +35,10 @@ import { getURIParams, getURIParam, requireURIParam } from "shelving/util";
 
 const uri = "https://example.com/search?q=shelving&page=2";
 
-getURIParams(uri);              // { q: "shelving", page: "2" }
-getURIParam(uri, "q");          // "shelving"
-getURIParam(uri, "missing");    // undefined
-requireURIParam(uri, "q");      // "shelving"
+getURIParams(uri); // { q: "shelving", page: "2" }
+getURIParam(uri, "q"); // "shelving"
+getURIParam(uri, "missing"); // undefined
+requireURIParam(uri, "q"); // "shelving"
 requireURIParam(uri, "missing"); // throws RequiredError
 ```
 
@@ -49,10 +49,10 @@ import { withURIParam, withURIParams, omitURIParams, clearURIParams } from "shel
 
 const base = "https://example.com/search?q=shelving";
 
-withURIParam(base, "page", 2);              // "https://example.com/search?q=shelving&page=2"
+withURIParam(base, "page", 2); // "https://example.com/search?q=shelving&page=2"
 withURIParams(base, { page: 3, lang: "en" }); // adds both params
-omitURIParams(base, "q");                   // "https://example.com/search"
-clearURIParams(base);                       // "https://example.com/search"
+omitURIParams(base, "q"); // "https://example.com/search"
+clearURIParams(base); // "https://example.com/search"
 ```
 
 ### Working with URI schemes

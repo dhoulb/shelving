@@ -26,11 +26,11 @@ The `width` variant prop sets a component's inline-size — `<Card width="narrow
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.
 
-| Variable | Default | Used for |
-|---|---|---
+| Variable         | Default | Used for                                                   |
+| ---------------- | ------- | ---------------------------------------------------------- |
 | `--width-narrow` | `36rem` | Focused single-purpose column, e.g. forms and login pages. |
-| `--width-normal` | `48rem` | Standard content column. |
-| `--width-wide` | `80rem` | Full dashboard-style content. |
+| `--width-normal` | `48rem` | Standard content column.                                   |
+| `--width-wide`   | `80rem` | Full dashboard-style content.                              |
 
 
 ## Signatures

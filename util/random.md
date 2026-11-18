@@ -18,10 +18,10 @@ Small utilities for generating random numbers, characters, and short human-reada
 ```ts
 import { getRandom, getRandomExcept } from "shelving/util";
 
-getRandom(1, 10);            // integer between 1 and 10 inclusive
-getRandom();                 // integer anywhere in safe integer range
+getRandom(1, 10); // integer between 1 and 10 inclusive
+getRandom(); // integer anywhere in safe integer range
 
-getRandomExcept(5, 1, 10);  // integer between 1 and 10, never 5
+getRandomExcept(5, 1, 10); // integer between 1 and 10, never 5
 ```
 
 ### Random keys and characters
@@ -29,12 +29,12 @@ getRandomExcept(5, 1, 10);  // integer between 1 and 10, never 5
 ```ts
 import { getRandomKey, getRandomCharacter, getRandomItem } from "shelving/util";
 
-getRandomKey();      // e.g. "xs23r34hhsdx"  (12 chars, default)
-getRandomKey(6);     // e.g. "e4m29k"         (6 chars)
+getRandomKey(); // e.g. "xs23r34hhsdx"  (12 chars, default)
+getRandomKey(6); // e.g. "e4m29k"         (6 chars)
 
-getRandomCharacter("ABCDE");  // one of "A", "B", "C", "D", or "E"
+getRandomCharacter("ABCDE"); // one of "A", "B", "C", "D", or "E"
 
-getRandomItem(["apple", "banana", "cherry"]);  // one element at random
+getRandomItem(["apple", "banana", "cherry"]); // one element at random
 ```
 
 

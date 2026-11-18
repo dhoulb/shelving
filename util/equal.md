@@ -21,14 +21,14 @@ Strict and structural equality predicates used throughout the library. The three
 ```ts
 import { isEqual, isShallowEqual, isDeepEqual } from "shelving/util";
 
-isEqual(1, 1);                                     // true
-isEqual("a", "b");                                 // false
+isEqual(1, 1); // true
+isEqual("a", "b"); // false
 
-isShallowEqual({ a: 1 }, { a: 1 });                // true
+isShallowEqual({ a: 1 }, { a: 1 }); // true
 isShallowEqual({ a: { b: 1 } }, { a: { b: 1 } }); // false (nested object not ===)
 
-isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } });    // true
-isDeepEqual([1, [2, 3]], [1, [2, 3]]);             // true
+isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } }); // true
+isDeepEqual([1, [2, 3]], [1, [2, 3]]); // true
 ```
 
 ### Object and array checks
@@ -36,12 +36,12 @@ isDeepEqual([1, [2, 3]], [1, [2, 3]]);             // true
 ```ts
 import { isObjectEqual, isObjectMatch, isArrayEqual, isMapEqual } from "shelving/util";
 
-isObjectEqual({ a: 1, b: 2 }, { a: 1, b: 2 });    // true (exact key match)
-isObjectEqual({ a: 1, b: 2 }, { a: 1 });           // false (extra key in left)
-isObjectMatch({ a: 1, b: 2 }, { a: 1 });           // true  (subset match)
+isObjectEqual({ a: 1, b: 2 }, { a: 1, b: 2 }); // true (exact key match)
+isObjectEqual({ a: 1, b: 2 }, { a: 1 }); // false (extra key in left)
+isObjectMatch({ a: 1, b: 2 }, { a: 1 }); // true  (subset match)
 
-isArrayEqual([1, 2, 3], [1, 2, 3]);                // true
-isArrayEqual([1, 2], [1, 2, 3]);                   // false
+isArrayEqual([1, 2, 3], [1, 2, 3]); // true
+isArrayEqual([1, 2], [1, 2, 3]); // false
 
 // Pass isDeepEqual as recursor for nested structure.
 isObjectEqual({ x: [1, 2] }, { x: [1, 2] }, isDeepEqual); // true
@@ -52,8 +52,8 @@ isObjectEqual({ x: [1, 2] }, { x: [1, 2] }, isDeepEqual); // true
 ```ts
 import { isInArray, isArrayWith } from "shelving/util";
 
-isInArray("y", ["x", "y", "z"]);   // true  — is "y" in the array?
-isArrayWith(["x", "y"], "x");      // true  — is the left value an array containing "x"?
+isInArray("y", ["x", "y", "z"]); // true  — is "y" in the array?
+isArrayWith(["x", "y"], "x"); // true  — is the left value an array containing "x"?
 ```
 
 ### Comparison predicates
@@ -61,9 +61,9 @@ isArrayWith(["x", "y"], "x");      // true  — is the left value an array conta
 ```ts
 import { isLess, isGreater, isEqualLess, isEqualGreater } from "shelving/util";
 
-isLess(3, 5);         // true
-isGreater(5, 3);      // true
-isEqualLess(5, 5);    // true
+isLess(3, 5); // true
+isGreater(5, 3); // true
+isEqualLess(5, 5); // true
 ```
 
 ### Assertions
@@ -72,7 +72,7 @@ isEqualLess(5, 5);    // true
 import { assertEqual, assertNot } from "shelving/util";
 
 assertEqual(value, expectedValue); // asserts value === expectedValue, narrows type
-assertNot(value, null);            // asserts value !== null, narrows type
+assertNot(value, null); // asserts value !== null, narrows type
 ```
 
 

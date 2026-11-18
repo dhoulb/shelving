@@ -19,18 +19,18 @@ The smallest single-screen app — `<App>` wraps a layout and some content:
 import { App, FixedLayout, Paragraph, Scroll, Section, Title } from "shelving/ui";
 
 function HelloApp() {
-  return (
-    <App app="My app">
-      <FixedLayout>
-        <Scroll vertical cover>
-          <Section width="narrow">
-            <Title>Hello</Title>
-            <Paragraph>Welcome to the app.</Paragraph>
-          </Section>
-        </Scroll>
-      </FixedLayout>
-    </App>
-  );
+	return (
+		<App app="My app">
+			<FixedLayout>
+				<Scroll vertical cover>
+					<Section width="narrow">
+						<Title>Hello</Title>
+						<Paragraph>Welcome to the app.</Paragraph>
+					</Section>
+				</Scroll>
+			</FixedLayout>
+		</App>
+	);
 }
 ```
 
@@ -42,16 +42,18 @@ For a multi-page app, wrap the routes in `<Navigation>` and `<Router>`:
 import { App, Navigation, Router } from "shelving/ui";
 
 export function MyApp() {
-  return (
-    <App app="My app" root="https://example.com/" url="/">
-      <Navigation>
-        <Router routes={{
-          "/": HomePage,
-          "/about": AboutPage,
-        }} />
-      </Navigation>
-    </App>
-  );
+	return (
+		<App app="My app" root="https://example.com/" url="/">
+			<Navigation>
+				<Router
+					routes={{
+						"/": HomePage,
+						"/about": AboutPage,
+					}}
+				/>
+			</Navigation>
+		</App>
+	);
 }
 ```
 
@@ -81,75 +83,103 @@ Nesting rules:
 ```tsx
 import { useStore } from "shelving/react";
 import {
-  App, AppLayout, Catcher, DialogsContext, Dialogs, ErrorPage, FixedLayout, HorizontalTransition,
-  Navigation, Notices, PageLoader, requireMetaURL, RouteCache, Router, type ErrorProps, type Routes,
-  Scroll, StackButton,
+	App,
+	AppLayout,
+	Catcher,
+	DialogsContext,
+	Dialogs,
+	ErrorPage,
+	FixedLayout,
+	HorizontalTransition,
+	Navigation,
+	Notices,
+	PageLoader,
+	requireMetaURL,
+	RouteCache,
+	Router,
+	type ErrorProps,
+	type Routes,
+	Scroll,
+	StackButton,
 } from "shelving/ui";
 
 const STACKS = ["/home", "/discover", "/profile"] as const;
 
 /** 1–2. Contexts and the app-level catcher. No layout here. */
 export function MyApp() {
-  const session = useStore(SESSION).value;
-  return (
-    <App key={session?.id ?? "out"} app="My app" root="https://example.com/">
-      <Navigation stacks={STACKS} stack="/home">
-        <DialogsContext>
-          <Catcher as={AppError}>
-            <Shell signedIn={!!session} />
-          </Catcher>
-          <Dialogs />
-          <Notices />
-        </DialogsContext>
-      </Navigation>
-    </App>
-  );
+	const session = useStore(SESSION).value;
+	return (
+		<App key={session?.id ?? "out"} app="My app" root="https://example.com/">
+			<Navigation stacks={STACKS} stack="/home">
+				<DialogsContext>
+					<Catcher as={AppError}>
+						<Shell signedIn={!!session} />
+					</Catcher>
+					<Dialogs />
+					<Notices />
+				</DialogsContext>
+			</Navigation>
+		</App>
+	);
 }
 
 /** 3–4. Pick the layout. Plain React, so any rule works. */
 function Shell({ signedIn }: { signedIn: boolean }) {
-  const { path } = requireMetaURL();
-  if (!signedIn) return <FixedLayout><Content routes={LOGIN_ROUTES} /></FixedLayout>;
-  return (
-    <AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
-      <Content routes={ROUTES} />
-    </AppLayout>
-  );
+	const { path } = requireMetaURL();
+	if (!signedIn)
+		return (
+			<FixedLayout>
+				<Content routes={LOGIN_ROUTES} />
+			</FixedLayout>
+		);
+	return (
+		<AppLayout nav={path.startsWith("/squad/") ? false : <StackBar />}>
+			<Content routes={ROUTES} />
+		</AppLayout>
+	);
 }
 
 /** 5. The content of a layout's slot. */
 function Content({ routes }: { routes: Routes }) {
-  return (
-    <HorizontalTransition>
-      <RouteCache>
-        <Scroll vertical cover>
-          <PageLoader>
-            <Router routes={routes} />
-          </PageLoader>
-        </Scroll>
-      </RouteCache>
-    </HorizontalTransition>
-  );
+	return (
+		<HorizontalTransition>
+			<RouteCache>
+				<Scroll vertical cover>
+					<PageLoader>
+						<Router routes={routes} />
+					</PageLoader>
+				</Scroll>
+			</RouteCache>
+		</HorizontalTransition>
+	);
 }
 
 /** The tab bar, in the layout, outside the cache. */
 function StackBar() {
-  return <>
-    <StackButton stack="/home" title="Home"><HomeIcon /></StackButton>
-    <StackButton stack="/discover" title="Discover"><SearchIcon /></StackButton>
-    <StackButton stack="/profile" title="Profile"><ProfileIcon /></StackButton>
-  </>;
+	return (
+		<>
+			<StackButton stack="/home" title="Home">
+				<HomeIcon />
+			</StackButton>
+			<StackButton stack="/discover" title="Discover">
+				<SearchIcon />
+			</StackButton>
+			<StackButton stack="/profile" title="Profile">
+				<ProfileIcon />
+			</StackButton>
+		</>
+	);
 }
 
 /** An error outside every layout: the app picks one here. */
 function AppError({ reason }: ErrorProps) {
-  return (
-    <FixedLayout>
-      <Scroll vertical cover>
-        <ErrorPage reason={reason} />
-      </Scroll>
-    </FixedLayout>
-  );
+	return (
+		<FixedLayout>
+			<Scroll vertical cover>
+				<ErrorPage reason={reason} />
+			</Scroll>
+		</FixedLayout>
+	);
 }
 ```
 

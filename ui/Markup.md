@@ -24,8 +24,8 @@ Parses a markup string and renders the resulting React nodes inline. Defaults to
 import { Prose, Markup } from "shelving/ui";
 
 <Prose>
-  <Markup>{article.body}</Markup>
-</Prose>
+	<Markup>{article.body}</Markup>
+</Prose>;
 ```
 
 ```tsx
@@ -33,8 +33,8 @@ import { Markup } from "shelving/ui";
 
 // Custom rule set or base URL via MarkupOptions props.
 <Markup rules={INLINE_ONLY} root="https://example.com">
-  {comment.body}
-</Markup>
+	{comment.body}
+</Markup>;
 ```
 
 

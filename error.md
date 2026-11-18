@@ -18,26 +18,27 @@ Each subclass sets its own `caller` default, so you only need to supply `caller`
 
 ```ts
 function requirePositive(n: number): number {
-  if (n <= 0) throw new ValueError("Value must be positive", {
-    caller: requirePositive, // stack starts here, not inside ValueError
-    received: n,
-    expected: "> 0",
-  });
-  return n;
+	if (n <= 0)
+		throw new ValueError("Value must be positive", {
+			caller: requirePositive, // stack starts here, not inside ValueError
+			received: n,
+			expected: "> 0",
+		});
+	return n;
 }
 ```
 
 ## Choosing the right class
 
-| Class | When to throw |
-|---|---|
-| `RequiredError` | Something required was absent (also thrown by `require*()` helpers) |
-| `ValueError` | A value was present but invalid in context (e.g. data from a database failed validation) |
-| `NetworkError` | Network-level failure — connection refused, server unreachable |
-| `RequestError` | The request was malformed or unacceptable (HTTP 4xx range; `RequestError.code` defaults to `400`) |
-| `ResponseError` | The received response indicated an error (HTTP 4xx/5xx; `ResponseError.code` defaults to `400`) |
-| `UnexpectedError` | Something that should never happen did — an invariant was violated |
-| `UnsupportedError` | A method or feature is not supported — by a backend, an environment, or an implementation |
+| Class              | When to throw                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `RequiredError`    | Something required was absent (also thrown by `require*()` helpers)                               |
+| `ValueError`       | A value was present but invalid in context (e.g. data from a database failed validation)          |
+| `NetworkError`     | Network-level failure — connection refused, server unreachable                                    |
+| `RequestError`     | The request was malformed or unacceptable (HTTP 4xx range; `RequestError.code` defaults to `400`) |
+| `ResponseError`    | The received response indicated an error (HTTP 4xx/5xx; `ResponseError.code` defaults to `400`)   |
+| `UnexpectedError`  | Something that should never happen did — an invariant was violated                                |
+| `UnsupportedError` | A method or feature is not supported — by a backend, an environment, or an implementation         |
 
 `RequestError` has named subclasses for common HTTP status codes: `UnauthorizedError` (401), `ForbiddenError` (403), `NotFoundError` (404), `MethodNotAllowedError` (405), and `UnprocessableError` (422).
 
@@ -51,10 +52,10 @@ Any extra fields in the options bag land on the error instance and will appear i
 
 ```ts
 throw new ValueError("Unexpected status", {
-  received: status,
-  expected: ["active", "inactive"],
-  entity: "subscription",
-  cause: originalError,
+	received: status,
+	expected: ["active", "inactive"],
+	entity: "subscription",
+	cause: originalError,
 });
 ```
 

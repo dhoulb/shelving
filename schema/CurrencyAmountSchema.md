@@ -19,8 +19,8 @@ A `NumberSchema` subclass for monetary amounts. It rounds to the currency's mino
 import { CurrencyAmountSchema } from "shelving/schema";
 
 const PRICE = new CurrencyAmountSchema({ title: "Price", currency: "GBP", min: 0 });
-PRICE.validate("12.345");        // 12.35   (rounded to minor units)
-PRICE.format(12.3);              // "£12.30"
+PRICE.validate("12.345"); // 12.35   (rounded to minor units)
+PRICE.format(12.3); // "£12.30"
 ```
 
 

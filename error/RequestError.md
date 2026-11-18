@@ -19,10 +19,10 @@ Thrown when an incoming request is malformed or unacceptable — the HTTP 4xx ra
 import { RequestError, NotFoundError } from "shelving/error";
 
 function loadDocument(id: string): Document {
-  if (!isValidId(id)) throw new RequestError("Malformed document ID", { received: id });
-  const doc = documents.get(id);
-  if (!doc) throw new NotFoundError("Document not found", { received: id }); // .code === 404
-  return doc;
+	if (!isValidId(id)) throw new RequestError("Malformed document ID", { received: id });
+	const doc = documents.get(id);
+	if (!doc) throw new NotFoundError("Document not found", { received: id }); // .code === 404
+	return doc;
 }
 ```
 

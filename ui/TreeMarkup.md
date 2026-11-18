@@ -27,8 +27,8 @@ import { TreeMarkup } from "shelving/ui";
 
 // Inline code spans link automatically: `BooleanSchema` → /schema/BooleanSchema.
 <Prose>
-  <TreeMarkup>{element.props.content}</TreeMarkup>
-</Prose>
+	<TreeMarkup>{element.props.content}</TreeMarkup>
+</Prose>;
 ```
 
 

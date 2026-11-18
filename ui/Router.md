@@ -31,37 +31,39 @@ A pure URL matcher: it reads the current URL from the surrounding `<Meta>` conte
 import { HTML, Navigation, Router } from "shelving/ui";
 
 <HTML url={initialUrl} root="https://example.com/">
-  <Navigation>
-    <Router routes={{
-      "/": HomePage,
-      "/users/{id}": UserPage,
-      "/about": AboutPage,
-    }}/>
-  </Navigation>
-</HTML>
+	<Navigation>
+		<Router
+			routes={{
+				"/": HomePage,
+				"/users/{id}": UserPage,
+				"/about": AboutPage,
+			}}
+		/>
+	</Navigation>
+</HTML>;
 ```
 
 ### Route value types
 
-| Value | Behaviour |
-|---|---|
-| Component | Rendered as `<Component {...params}/>` with merged placeholder + query props. |
-| `AbsolutePath` string | Redirects to that path (placeholders resolved against the source). |
-| `ReactElement` | Rendered as-is — use for layout wrapping or composing inner routers. |
-| `null` / `false` | Skipped, as if the route were absent — lets a route be conditionally disabled. |
+| Value                 | Behaviour                                                                      |
+| --------------------- | ------------------------------------------------------------------------------ |
+| Component             | Rendered as `<Component {...params}/>` with merged placeholder + query props.  |
+| `AbsolutePath` string | Redirects to that path (placeholders resolved against the source).             |
+| `ReactElement`        | Rendered as-is — use for layout wrapping or composing inner routers.           |
+| `null` / `false`      | Skipped, as if the route were absent — lets a route be conditionally disabled. |
 
 ### Placeholder syntax
 
 All forms produce the same matched value — pick whichever reads best:
 
-| Form | Single segment | Catchall (one+ segments, also matches empty) |
-|---|---|---|
-| Anonymous | `*` (named `"0"`) | `**` / `***` (named `"0"`) |
-| Colon | `:name` | `:name*` / `:name**` |
-| Single brace | `{name}` | `{...name}` / `{name*}` |
-| Square bracket | `[name]` | `[...name]` / `[name*]` |
-| Dollar brace | `${name}` | `${...name}` / `${name*}` |
-| Double brace | `{{name}}` | `{{...name}}` / `{{name*}}` |
+| Form           | Single segment    | Catchall (one+ segments, also matches empty) |
+| -------------- | ----------------- | -------------------------------------------- |
+| Anonymous      | `*` (named `"0"`) | `**` / `***` (named `"0"`)                   |
+| Colon          | `:name`           | `:name*` / `:name**`                         |
+| Single brace   | `{name}`          | `{...name}` / `{name*}`                      |
+| Square bracket | `[name]`          | `[...name]` / `[name*]`                      |
+| Dollar brace   | `${name}`         | `${...name}` / `${name*}`                    |
+| Double brace   | `{{name}}`        | `{{...name}}` / `{{name*}}`                  |
 
 Modifier chars are tolerant: one-or-more stars and three-or-more dots are all equivalent, so `{path*}`, `{path**}`, `{...path}`, and `{....path}` behave the same. Catchall placeholders allow empty values, so a trailing catchall matches the trailing-slash-absent variant — `/files/{...path}` matches `/files`, `/files/`, and `/files/a/b/c`.
 
@@ -71,21 +73,23 @@ Put layout JSX as the route value with another `<Router>` inside. Since `<Router
 
 ```tsx
 const SIDEBARRED_ROUTES = {
-  "/users": <UsersPage/>,
-  "/users/{id}": <UserPage/>,
-  "/settings": <SettingsPage/>,
+	"/users": <UsersPage />,
+	"/users/{id}": <UserPage />,
+	"/settings": <SettingsPage />,
 };
 
-<Router routes={{
-  "/": <HomePage/>,
-  "/{...path}": (
-    <SidebarLayout sidebar={<Nav/>}>
-      <Scroll vertical cover>
-        <Router routes={SIDEBARRED_ROUTES}/>
-      </Scroll>
-    </SidebarLayout>
-  ),
-}}/>
+<Router
+	routes={{
+		"/": <HomePage />,
+		"/{...path}": (
+			<SidebarLayout sidebar={<Nav />}>
+				<Scroll vertical cover>
+					<Router routes={SIDEBARRED_ROUTES} />
+				</Scroll>
+			</SidebarLayout>
+		),
+	}}
+/>;
 ```
 
 ### Section / microsite pattern
@@ -94,21 +98,23 @@ A self-contained "section" — its own URL prefix and routes — composes via a 
 
 ```tsx
 const USER_ROUTES = {
-  "/": UsersPage,
-  "/{id}": UserPage,
-  "/{id}/edit": UserEditPage,
+	"/": UsersPage,
+	"/{id}": UserPage,
+	"/{id}/edit": UserEditPage,
 };
 
 export function UserRouter({ path = "/" }: { path?: AbsolutePath }) {
-  return <Router routes={USER_ROUTES} url={path}/>;
+	return <Router routes={USER_ROUTES} url={path} />;
 }
 
 // At the call site — the top-level router stays a flat list of section prefixes:
-<Router routes={{
-  "/": <HomePage/>,
-  "/users/{...path}": ({ path }) => <UserRouter path={path}/>,
-  "/blog/{...path}":  ({ path }) => <BlogRouter path={path}/>,
-}}/>
+<Router
+	routes={{
+		"/": <HomePage />,
+		"/users/{...path}": ({ path }) => <UserRouter path={path} />,
+		"/blog/{...path}": ({ path }) => <BlogRouter path={path} />,
+	}}
+/>;
 ```
 
 The outer router captures everything under `/users` into `path`; the inner router treats it as its starting URL, so its `"/"` matches the bare `/users` and `/{id}` matches `/users/123`.
@@ -119,22 +125,25 @@ The two patterns compose — wrap a group of routes in a layout, then route furt
 
 ```tsx
 const SIDEBARRED_ROUTES = {
-  "/": <Dashboard/>,
-  "/users/{...path}": ({ path }) => <UserRouter path={path}/>,
-  "/blog/{...path}":  ({ path }) => <BlogRouter path={path}/>,
-  "/settings": <SettingsPage/>,
+	"/": <Dashboard />,
+	"/users/{...path}": ({ path }) => <UserRouter path={path} />,
+	"/blog/{...path}": ({ path }) => <BlogRouter path={path} />,
+	"/settings": <SettingsPage />,
 };
 
-<Router routes={{
-  "/login": <LoginPage/>,                       // no sidebar
-  "/{...path}": (                                // everything else wrapped
-    <SidebarLayout sidebar={<Nav/>}>
-      <Scroll vertical cover>
-        <Router routes={SIDEBARRED_ROUTES}/>
-      </Scroll>
-    </SidebarLayout>
-  ),
-}}/>
+<Router
+	routes={{
+		"/login": <LoginPage />, // no sidebar
+		"/{...path}": // everything else wrapped
+			(
+				<SidebarLayout sidebar={<Nav />}>
+					<Scroll vertical cover>
+						<Router routes={SIDEBARRED_ROUTES} />
+					</Scroll>
+				</SidebarLayout>
+			),
+	}}
+/>;
 ```
 
 ### Keeping page state
@@ -147,9 +156,9 @@ By default a page is unmounted when you navigate away and mounted fresh when you
 
 ```tsx
 renderToString(
-  <HTML url={path} root="https://example.com/">
-    <Router routes={ROUTES}/>
-  </HTML>
+	<HTML url={path} root="https://example.com/">
+		<Router routes={ROUTES} />
+	</HTML>,
 );
 ```
 

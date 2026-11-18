@@ -38,9 +38,9 @@ import { Catcher, ErrorPage, RetryButton } from "shelving/ui";
 
 // Custom error renderer plus a retry button anywhere in the subtree.
 <Catcher as={ErrorPage}>
-  <RiskyComponent />
-  <RetryButton small />
-</Catcher>
+	<RiskyComponent />
+	<RetryButton small />
+</Catcher>;
 ```
 
 

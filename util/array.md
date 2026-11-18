@@ -16,11 +16,11 @@ Typed helpers for reading, validating, and immutably transforming arrays. All im
 ```ts
 import { isArray, assertArray, requireArray } from "shelving/util";
 
-isArray(value);           // true if Array
-isArray(value, 1);        // true if Array with at least 1 item
-isArray(value, 2, 5);     // true if Array with 2–5 items
+isArray(value); // true if Array
+isArray(value, 1); // true if Array with at least 1 item
+isArray(value, 2, 5); // true if Array with 2–5 items
 
-assertArray(value, 1);    // throws RequiredError if empty or not an array
+assertArray(value, 1); // throws RequiredError if empty or not an array
 requireArray(iterable, 1); // converts iterable then asserts, returns ImmutableArray
 ```
 
@@ -29,26 +29,33 @@ requireArray(iterable, 1); // converts iterable then asserts, returns ImmutableA
 ```ts
 import { getFirst, requireFirst, getLast, requireLast, getNext, getPrev } from "shelving/util";
 
-getFirst([10, 20, 30]);          // 10
-requireFirst([]);                // throws RequiredError
-getLast([10, 20, 30]);           // 30
-getNext([1, 2, 3], 2);           // 3
-getPrev([1, 2, 3], 2);           // 1
+getFirst([10, 20, 30]); // 10
+requireFirst([]); // throws RequiredError
+getLast([10, 20, 30]); // 30
+getNext([1, 2, 3], 2); // 3
+getPrev([1, 2, 3], 2); // 1
 ```
 
 ### Immutable updates
 
 ```ts
-import { withArrayItem, withArrayItems, omitArrayItem, omitArrayItems,
-         toggleArrayItem, withArrayIndex, omitArrayIndex } from "shelving/util";
+import {
+	withArrayItem,
+	withArrayItems,
+	omitArrayItem,
+	omitArrayItems,
+	toggleArrayItem,
+	withArrayIndex,
+	omitArrayIndex,
+} from "shelving/util";
 
-withArrayItem(["a", "b"], "c");          // ["a", "b", "c"]
-withArrayItem(["a", "b"], "b");          // same ref — already present
-omitArrayItem(["a", "b", "c"], "b");     // ["a", "c"]
-toggleArrayItem(["a", "b"], "b");        // ["a"]
-toggleArrayItem(["a", "b"], "c");        // ["a", "b", "c"]
-withArrayIndex([10, 20, 30], 1, 99);     // [10, 99, 30]
-omitArrayIndex([10, 20, 30], 1);         // [10, 30]
+withArrayItem(["a", "b"], "c"); // ["a", "b", "c"]
+withArrayItem(["a", "b"], "b"); // same ref — already present
+omitArrayItem(["a", "b", "c"], "b"); // ["a", "c"]
+toggleArrayItem(["a", "b"], "b"); // ["a"]
+toggleArrayItem(["a", "b"], "c"); // ["a", "b", "c"]
+withArrayIndex([10, 20, 30], 1, 99); // [10, 99, 30]
+omitArrayIndex([10, 20, 30], 1); // [10, 30]
 ```
 
 ### Mutable updates (by reference)
@@ -57,22 +64,21 @@ omitArrayIndex([10, 20, 30], 1);         // [10, 30]
 import { addArrayItem, addArrayItems, deleteArrayItem, deleteArrayItems } from "shelving/util";
 
 const arr = ["a", "b"];
-addArrayItem(arr, "c");      // arr is now ["a", "b", "c"]; returns "c"
-addArrayItem(arr, "b");      // no-op — already present
-deleteArrayItem(arr, "a");   // arr is now ["b", "c"]
+addArrayItem(arr, "c"); // arr is now ["a", "b", "c"]; returns "c"
+addArrayItem(arr, "b"); // no-op — already present
+deleteArrayItem(arr, "a"); // arr is now ["b", "c"]
 ```
 
 ### Filtering and shaping
 
 ```ts
-import { getUniqueArray, limitArray, interleaveArray,
-         pickArrayItems, shuffleArray } from "shelving/util";
+import { getUniqueArray, limitArray, interleaveArray, pickArrayItems, shuffleArray } from "shelving/util";
 
-getUniqueArray([1, 2, 2, 3]);           // [1, 2, 3]
-limitArray([1, 2, 3, 4, 5], 3);         // [1, 2, 3]
+getUniqueArray([1, 2, 2, 3]); // [1, 2, 3]
+limitArray([1, 2, 3, 4, 5], 3); // [1, 2, 3]
 interleaveArray(["a", "b", "c"], ", "); // ["a", ", ", "b", ", ", "c"]
-pickArrayItems([1, 2, 3, 4], 2, 4);     // [2, 4]
-shuffleArray([1, 2, 3]);                // randomised copy
+pickArrayItems([1, 2, 3, 4], 2, 4); // [2, 4]
+shuffleArray([1, 2, 3]); // randomised copy
 ```
 
 ### Membership checks
@@ -80,7 +86,7 @@ shuffleArray([1, 2, 3]);                // randomised copy
 ```ts
 import { isArrayItem, assertArrayItem } from "shelving/util";
 
-isArrayItem(["x", "y"], "x");    // true
+isArrayItem(["x", "y"], "x"); // true
 assertArrayItem(["x", "y"], "z"); // throws RequiredError
 ```
 

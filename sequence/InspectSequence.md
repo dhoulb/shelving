@@ -17,18 +17,20 @@ Useful in tests and diagnostics when you need to assert on what a sequence produ
 import { InspectSequence } from "shelving/sequence";
 
 async function* numbers() {
-  yield 10; yield 20; yield 30;
+	yield 10;
+	yield 20;
+	yield 30;
 }
 
 const watch = new InspectSequence(numbers());
 for await (const n of watch) {
-  console.log("yielded", n);
+	console.log("yielded", n);
 }
 
-console.log(watch.count);  // 3
-console.log(watch.first);  // 10
-console.log(watch.last);   // 30
-console.log(watch.done);   // true
+console.log(watch.count); // 3
+console.log(watch.first); // 10
+console.log(watch.last); // 30
+console.log(watch.done); // true
 ```
 
 `first`, `last`, and `returned` throw an `UnexpectedError` if read before the relevant values exist — e.g. `first` before iteration has yielded anything, or `returned` before iteration is `done`.

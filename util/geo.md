@@ -17,15 +17,15 @@ Country codes, names, and address formatting. Provides the `COUNTRIES` lookup (I
 ```ts
 import { getCountry, requireCountry, formatCountry } from "shelving/util";
 
-getCountry("gb");          // "GB"
-getCountry("XX");          // undefined  (unknown code)
-getCountry("detect");      // "US"  (inferred from navigator.language in browser)
+getCountry("gb"); // "GB"
+getCountry("XX"); // undefined  (unknown code)
+getCountry("detect"); // "US"  (inferred from navigator.language in browser)
 
-requireCountry("gb");      // "GB"
-requireCountry("XX");      // throws RequiredError
+requireCountry("gb"); // "GB"
+requireCountry("XX"); // throws RequiredError
 
-formatCountry("GB");       // "United Kingdom"
-formatCountry("XX");       // "XX"  (passthrough for unknown codes)
+formatCountry("GB"); // "United Kingdom"
+formatCountry("XX"); // "XX"  (passthrough for unknown codes)
 ```
 
 ### Formatting addresses
@@ -34,12 +34,12 @@ formatCountry("XX");       // "XX"  (passthrough for unknown codes)
 import { formatAddress } from "shelving/util";
 
 const addr = {
-  address1: "10 Downing Street",
-  address2: "",
-  city: "London",
-  state: "England",
-  postcode: "SW1A 2AA",
-  country: "GB",
+	address1: "10 Downing Street",
+	address2: "",
+	city: "London",
+	state: "England",
+	postcode: "SW1A 2AA",
+	country: "GB",
 };
 
 formatAddress(addr);

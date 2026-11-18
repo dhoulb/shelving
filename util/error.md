@@ -21,14 +21,14 @@ These are **not** the typed error classes — see `shelving/error` for `Required
 import { isError, getMessage, requireMessage, logError } from "shelving/util";
 
 isError(new Error("boom")); // true
-isError("boom");            // false
+isError("boom"); // false
 
 getMessage(new Error("boom")); // "boom"
-getMessage("boom");             // "boom"
-getMessage(42);                 // undefined
+getMessage("boom"); // "boom"
+getMessage(42); // undefined
 
 requireMessage(new Error("oops")); // "oops"
-requireMessage(42);                // throws RequiredError
+requireMessage(42); // throws RequiredError
 
 logError(new Error("fatal")); // console.error(...)
 ```

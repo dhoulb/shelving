@@ -17,13 +17,13 @@
 
 ### Key prefix syntax
 
-| Key syntax | Action |
-| --- | --- |
-| `key` or `=key` | Set field to value |
-| `+=key` | Increment number |
-| `-=key` | Decrement number |
-| `+[]key` | Add item(s) to array |
-| `-[]key` | Remove item(s) from array |
+| Key syntax      | Action                    |
+| --------------- | ------------------------- |
+| `key` or `=key` | Set field to value        |
+| `+=key`         | Increment number          |
+| `-=key`         | Decrement number          |
+| `+[]key`        | Add item(s) to array      |
+| `-[]key`        | Remove item(s) from array |
 
 Use plain `key` for most sets. Use `=key` when TypeScript inference gets confused by deeply-nested paths — the `=` prefix forces leaf-only matching and is more precise.
 
@@ -34,13 +34,13 @@ import { updateData } from "shelving/util";
 
 const doc = { title: "Draft", count: 5, tags: ["a", "b"] };
 
-updateData(doc, { title: "Published" });        // { title: "Published", count: 5, tags: [...] }
-updateData(doc, { "=title": "Final" });         // same effect, more precise
-updateData(doc, { "+=count": 3 });              // { ..., count: 8, ... }
-updateData(doc, { "-=count": 1 });              // { ..., count: 4, ... }
-updateData(doc, { "+[]tags": "c" });            // { ..., tags: ["a", "b", "c"] }
-updateData(doc, { "-[]tags": "a" });            // { ..., tags: ["b"] }
-updateData(doc, { "+[]tags": ["c", "d"] });     // add multiple at once
+updateData(doc, { title: "Published" }); // { title: "Published", count: 5, tags: [...] }
+updateData(doc, { "=title": "Final" }); // same effect, more precise
+updateData(doc, { "+=count": 3 }); // { ..., count: 8, ... }
+updateData(doc, { "-=count": 1 }); // { ..., count: 4, ... }
+updateData(doc, { "+[]tags": "c" }); // { ..., tags: ["a", "b", "c"] }
+updateData(doc, { "-[]tags": "a" }); // { ..., tags: ["b"] }
+updateData(doc, { "+[]tags": ["c", "d"] }); // add multiple at once
 ```
 
 ### Nested paths
@@ -50,8 +50,8 @@ import { updateData } from "shelving/util";
 
 const doc = { user: { name: "Alice", score: 10 } };
 
-updateData(doc, { "=user.name": "Bob" });       // { user: { name: "Bob", score: 10 } }
-updateData(doc, { "+=user.score": 5 });         // { user: { name: "Alice", score: 15 } }
+updateData(doc, { "=user.name": "Bob" }); // { user: { name: "Bob", score: 10 } }
+updateData(doc, { "+=user.score": 5 }); // { user: { name: "Alice", score: 15 } }
 ```
 
 ### Inspecting updates

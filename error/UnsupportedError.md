@@ -15,9 +15,9 @@ Thrown when functionality is called but is not supported — a backend that can'
 import { UnsupportedError } from "shelving/error";
 
 class KVProvider {
-  getQuery(): Promise<Items> {
-    throw new UnsupportedError("KVProvider does not support querying items");
-  }
+	getQuery(): Promise<Items> {
+		throw new UnsupportedError("KVProvider does not support querying items");
+	}
 }
 ```
 

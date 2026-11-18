@@ -13,13 +13,13 @@ Manage processes that have a start callback and an optional stop callback. `Star
 import { Starter } from "shelving/util";
 
 const starter = new Starter(() => {
-  const id = setInterval(tick, 1000);
-  return () => clearInterval(id); // returned function is the stop callback
+	const id = setInterval(tick, 1000);
+	return () => clearInterval(id); // returned function is the stop callback
 });
 
 starter.start(); // begins the interval
 starter.start(); // no-op — already started
-starter.stop();  // calls the stop callback
+starter.stop(); // calls the stop callback
 ```
 
 ### Using as a disposable
@@ -28,9 +28,9 @@ starter.stop();  // calls the stop callback
 
 ```ts
 {
-  using starter = new Starter(myStartCallback);
-  starter.start();
-  // starter.stop() called automatically when block exits
+	using starter = new Starter(myStartCallback);
+	starter.start();
+	// starter.stop() called automatically when block exits
 }
 ```
 
@@ -40,8 +40,8 @@ starter.stop();  // calls the stop callback
 import { getStarter, type PossibleStarter } from "shelving/util";
 
 function setup(s: PossibleStarter<[]>) {
-  const starter = getStarter(s); // wraps a function; passes a Starter through unchanged
-  starter.start();
+	const starter = getStarter(s); // wraps a function; passes a Starter through unchanged
+	starter.start();
 }
 ```
 

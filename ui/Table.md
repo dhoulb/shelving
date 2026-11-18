@@ -30,14 +30,23 @@ A data table — renders a `<table>`. Compose the usual `<thead>` / `<tbody>` / 
 import { Table } from "shelving/ui";
 
 <Table>
-  <thead>
-    <tr><th>Name</th><th>Plan</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Alice</td><td>Pro</td></tr>
-    <tr><td>Bob</td><td>Free</td></tr>
-  </tbody>
-</Table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Plan</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>Alice</td>
+			<td>Pro</td>
+		</tr>
+		<tr>
+			<td>Bob</td>
+			<td>Free</td>
+		</tr>
+	</tbody>
+</Table>;
 ```
 
 ### Cell padding
@@ -46,13 +55,15 @@ import { Table } from "shelving/ui";
 import { Button, Cell, Table } from "shelving/ui";
 
 <Table padding="small">
-  <tbody>
-    <tr>
-      <Cell width="full">Alice</Cell>
-      <Cell width="fit" padding="none"><Button small>Remove</Button></Cell>
-    </tr>
-  </tbody>
-</Table>
+	<tbody>
+		<tr>
+			<Cell width="full">Alice</Cell>
+			<Cell width="fit" padding="none">
+				<Button small>Remove</Button>
+			</Cell>
+		</tr>
+	</tbody>
+</Table>;
 ```
 
 ## Styling
@@ -61,19 +72,19 @@ import { Button, Cell, Table } from "shelving/ui";
 
 `--table-padding` sets the top and bottom padding of each cell, and `--table-indent` the left and right. Each takes one length. The table's `padding` and `indent` variants set these hooks. The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--table-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
-| `--table-padding` | Cell top and bottom padding (one length) | `var(--space-xsmall)` (8px) |
-| `--table-indent` | Cell left and right padding (one length) | `var(--space-xsmall)` (8px) |
-| `--table-border` | Cell border shorthand | `var(--table-stroke)` |
-| `--table-stroke` | Cell border thickness/colour | `var(--stroke-normal) solid var(--tint-90)` |
-| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)` |
-| `--table-label-font` | Label font for `<thead>` / `<tfoot>` `<th>` | `var(--font-label)` |
-| `--table-label-weight` | Label weight | `var(--weight-label)` |
-| `--table-label-size` | Label size | `var(--size-label)` |
-| `--table-label-case` | Label letter case | `var(--case-label)` |
-| `--table-label-color` | Label colour | `var(--tint-70)` |
+| Variable                | Styles                                                 | Default                                     |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------- |
+| `--table-space`         | Outer block margin (top + bottom)                      | `var(--space-paragraph)` (16px)             |
+| `--table-padding`       | Cell top and bottom padding (one length)               | `var(--space-xsmall)` (8px)                 |
+| `--table-indent`        | Cell left and right padding (one length)               | `var(--space-xsmall)` (8px)                 |
+| `--table-border`        | Cell border shorthand                                  | `var(--table-stroke)`                       |
+| `--table-stroke`        | Cell border thickness/colour                           | `var(--stroke-normal) solid var(--tint-90)` |
+| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)`                      |
+| `--table-label-font`    | Label font for `<thead>` / `<tfoot>` `<th>`            | `var(--font-label)`                         |
+| `--table-label-weight`  | Label weight                                           | `var(--weight-label)`                       |
+| `--table-label-size`    | Label size                                             | `var(--size-label)`                         |
+| `--table-label-case`    | Label letter case                                      | `var(--case-label)`                         |
+| `--table-label-color`   | Label colour                                           | `var(--tint-70)`                            |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-90`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
 
@@ -103,7 +114,6 @@ The following table will be defined with two fixed width cells and a longer cell
 
 The following table does the same but with a minimum width on the description column:
 
-
 ```TableWidths.tsx
 <Table>
   <tr>
@@ -113,6 +123,7 @@ The following table does the same but with a minimum width on the description co
   </tr>
 </Table>
 ```
+
 
 ## Signatures
 

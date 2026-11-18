@@ -26,11 +26,11 @@ import { PostgresMigrator } from "shelving/db";
 import { USERS } from "./collections.js";
 
 const sql = new SQL({
-  hostname: "localhost",
-  port: 5432,
-  database: "mydb",
-  username: "postgres",
-  password: "secret",
+	hostname: "localhost",
+	port: 5432,
+	database: "mydb",
+	username: "postgres",
+	password: "secret",
 });
 
 const provider = new BunPostgresProvider(sql);
@@ -48,10 +48,10 @@ await migrator.migrate(USERS);
 
 ```ts
 await provider.transact(async tx => {
-  const from = await tx.requireItem(ACCOUNTS, "alice");
-  const to = await tx.requireItem(ACCOUNTS, "bob");
-  await tx.updateItem(ACCOUNTS, "alice", { balance: from.balance - 100 });
-  await tx.updateItem(ACCOUNTS, "bob", { balance: to.balance + 100 });
+	const from = await tx.requireItem(ACCOUNTS, "alice");
+	const to = await tx.requireItem(ACCOUNTS, "bob");
+	await tx.updateItem(ACCOUNTS, "alice", { balance: from.balance - 100 });
+	await tx.updateItem(ACCOUNTS, "bob", { balance: to.balance + 100 });
 });
 ```
 

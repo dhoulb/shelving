@@ -21,9 +21,9 @@ When several properties fail, the errors are joined by `\n` with each field name
 import { DATA, BOOLEAN, StringSchema, NumberSchema } from "shelving/schema";
 
 const PRODUCT = DATA({
-  name: new StringSchema({ title: "Name", min: 1, max: 100 }),
-  price: new NumberSchema({ title: "Price", min: 0 }),
-  available: BOOLEAN,
+	name: new StringSchema({ title: "Name", min: 1, max: 100 }),
+	price: new NumberSchema({ title: "Price", min: 0 }),
+	available: BOOLEAN,
 });
 
 PRODUCT.validate({ name: "Widget", price: 9.99, available: true });
@@ -48,8 +48,8 @@ const NameOnly = PRODUCT.pick("name");
 import { ITEM, STRING, INTEGER, NUMBER } from "shelving/schema";
 
 const PRODUCT_ITEM = ITEM(INTEGER, {
-  name: STRING,
-  price: NUMBER,
+	name: STRING,
+	price: NUMBER,
 }); // Validates: { id: number, name: string, price: number }
 ```
 

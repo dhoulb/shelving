@@ -18,12 +18,14 @@ Wraps a source `AsyncIterator` and presents it as a full `Sequence`. Use it to t
 import { ThroughSequence } from "shelving/sequence";
 
 async function* numbers() {
-  yield 1; yield 2; yield 3;
+	yield 1;
+	yield 2;
+	yield 3;
 }
 
 const seq = new ThroughSequence(numbers());
 for await (const n of seq) {
-  console.log(n); // 1, 2, 3
+	console.log(n); // 1, 2, 3
 }
 ```
 

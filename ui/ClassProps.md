@@ -8,7 +8,7 @@ Props for a component that accepts an additional `className`, merged _after_ the
 - Merged last so an app's own (unlayered) stylesheet reliably beats the library's `@layer components` rules.
 - Component hooks (`--card-background` etc.) and the tint ladder remain the primary theming surface; `className` is the escape hatch for one-off treatments they can't express.
 
-The shared `className` prop most components accept — an app class merged *after* the classes the component computes for itself.
+The shared `className` prop most components accept — an app class merged _after_ the classes the component computes for itself.
 
 **Things to know:**
 

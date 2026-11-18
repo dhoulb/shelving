@@ -29,21 +29,21 @@ import { Tag } from "shelving/ui";
 
 `Tag` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the tag or an ancestor scope) to recolour the whole tag at once.
 
-| Variable | Styles | Default |
-|---|---|---|
-| `--tag-background` | Surface fill | `var(--tint-50)` |
-| `--tag-hover-background` | Surface fill when an interactive tag is hovered | `var(--tint-55)` |
-| `--tag-color` | Text colour | `var(--tint-100)` |
-| `--tag-padding` | Inner top and bottom padding (one length) | `0` |
-| `--tag-indent` | Inner left and right padding (one length) | `var(--space-xxsmall)` (4px) |
-| `--tag-border` | Border shorthand | `0` |
-| `--tag-radius` | Corner radius | `var(--radius-xxsmall)` |
-| `--tag-font` | Font family | `var(--font-body)` |
-| `--tag-size` | Font size | `var(--size-small)` |
-| `--tag-weight` | Font weight | `var(--weight-strong)` |
-| `--tag-leading` | Line height | `var(--leading)` |
-| `--tag-case` | Text transform | `var(--case-label)` |
-| `--tag-focus-border` | Focus outline | `var(--stroke-focus) solid var(--color-focus)` |
+| Variable                 | Styles                                          | Default                                        |
+| ------------------------ | ----------------------------------------------- | ---------------------------------------------- |
+| `--tag-background`       | Surface fill                                    | `var(--tint-50)`                               |
+| `--tag-hover-background` | Surface fill when an interactive tag is hovered | `var(--tint-55)`                               |
+| `--tag-color`            | Text colour                                     | `var(--tint-100)`                              |
+| `--tag-padding`          | Inner top and bottom padding (one length)       | `0`                                            |
+| `--tag-indent`           | Inner left and right padding (one length)       | `var(--space-xxsmall)` (4px)                   |
+| `--tag-border`           | Border shorthand                                | `0`                                            |
+| `--tag-radius`           | Corner radius                                   | `var(--radius-xxsmall)`                        |
+| `--tag-font`             | Font family                                     | `var(--font-body)`                             |
+| `--tag-size`             | Font size                                       | `var(--size-small)`                            |
+| `--tag-weight`           | Font weight                                     | `var(--weight-strong)`                         |
+| `--tag-leading`          | Line height                                     | `var(--leading)`                               |
+| `--tag-case`             | Text transform                                  | `var(--case-label)`                            |
+| `--tag-focus-border`     | Focus outline                                   | `var(--stroke-focus) solid var(--color-focus)` |
 
 **Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
 

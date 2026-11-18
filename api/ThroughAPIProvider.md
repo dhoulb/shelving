@@ -18,18 +18,23 @@ The pass-through base class for wrapping providers. `ThroughAPIProvider` takes a
 Override `fetch()` (or `call()`) and call `super` to delegate the rest. For example, a provider that injects an `Authorization` header:
 
 ```ts
-import { ThroughAPIProvider } from "shelving/api"
-import type { APIProvider } from "shelving/api"
+import { ThroughAPIProvider } from "shelving/api";
+import type { APIProvider } from "shelving/api";
 
 class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
-  constructor(source: APIProvider<P, R>, readonly token: string) { super(source) }
+	constructor(
+		source: APIProvider<P, R>,
+		readonly token: string,
+	) {
+		super(source);
+	}
 
-  override fetch(request: Request): Promise<Response> {
-    const authed = new Request(request, {
-      headers: { ...Object.fromEntries(request.headers), Authorization: `Bearer ${this.token}` },
-    })
-    return super.fetch(authed)
-  }
+	override fetch(request: Request): Promise<Response> {
+		const authed = new Request(request, {
+			headers: { ...Object.fromEntries(request.headers), Authorization: `Bearer ${this.token}` },
+		});
+		return super.fetch(authed);
+	}
 }
 ```
 

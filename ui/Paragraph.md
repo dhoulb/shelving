@@ -21,7 +21,7 @@ A block of body text — renders a `<p>`. The default container for running pros
 ```tsx live
 import { Paragraph } from "shelving/ui";
 
-<Paragraph>The best widget on the market.</Paragraph>
+<Paragraph>The best widget on the market.</Paragraph>;
 ```
 
 ### With inline annotations
@@ -30,16 +30,16 @@ import { Paragraph } from "shelving/ui";
 import { Paragraph, Strong, Link } from "shelving/ui";
 
 <Paragraph>
-  <Strong>Note:</Strong> read our <Link href="/privacy">privacy policy</Link> first.
-</Paragraph>
+	<Strong>Note:</Strong> read our <Link href="/privacy">privacy policy</Link> first.
+</Paragraph>;
 ```
 
 ## Styling
 
 `Paragraph` exposes a single hook for its own block margin; it paints no colour of its own, so it inherits the surrounding text colour. Apply `color=` / `status=` to set the tint scope for any ladder-reading inline content inside it.
 
-| Variable | Styles | Default |
-|---|---|---|
+| Variable            | Styles                            | Default                         |
+| ------------------- | --------------------------------- | ------------------------------- |
 | `--paragraph-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
 
 **Global tokens it reads:** `--space-paragraph`.
