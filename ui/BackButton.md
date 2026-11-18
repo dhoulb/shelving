@@ -6,6 +6,7 @@
 Back button for the current stack.
 - Goes back to the page before this one in the current stack, wherever you came from.
 - Goes to `href` when the stack has no page before this one: the app was opened at this page, or the browser has no Navigation API.
+- Renders nothing when the stack has no page before this one and there is no `href` (for example, at the root of a stack).
 - It is a plain link with `className="back"`, so it slides back, and it works in a server render and with a middle-click.
 
 The back button for a page header. It goes back to the page before this one in the current stack, wherever you came from.
@@ -13,7 +14,8 @@ The back button for a page header. It goes back to the page before this one in t
 **Things to know:**
 
 - It goes to the page before this one in the current stack. If you opened a post from a search, it goes back to the search.
-- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. So a back button always has somewhere to go. Set `href` to the page's natural parent. On a floating page (for example a deep link), it goes to `href` and stays floating. To go into a stack, the user taps a `<StackButton>`.
+- It goes to `href` when the stack has no page before this one: for example, when the app was opened at this page. Set `href` to the page's natural parent. On a floating page (for example a deep link), it goes to `href` and stays floating. To go into a stack, the user taps a `<StackButton>`.
+- Without `href`, it renders nothing when the stack has no page before this one: for example, at the root of a stack, or on a deep link. Use this for a back button that shows only when there is somewhere to go back to.
 - It is a plain link with `className="back"`. `<Navigation>` turns a click into `NavigationSequence.back()`, so the page slides back. A middle-click opens the link in a new browser tab.
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
@@ -38,6 +40,12 @@ function PostPage({ id }: { id: string }) {
 }
 ```
 
+Only when there is a page to go back to (nothing at the root of a stack):
+
+```tsx
+<BackButton />;
+```
+
 With a label:
 
 ```tsx
@@ -60,7 +68,7 @@ To go back to one fixed page (not to the page before), use a link with `classNam
 ## Signatures
 
 ```ts
-BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props }: BackButtonProps): ReactElement
+BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props }: BackButtonProps): ReactElement | null
 ```
 
 ## Parameters
@@ -68,10 +76,10 @@ BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props 
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `BackButtonProps` |  |
-| `.href` | `AbsolutePath` | Where to go back to when the current stack has no page before this one (for example, the app was opened at this page). Read only. |
+| `.href` | `AbsolutePath \| undefined` | Where to go back to when the current stack has no page before this one (for example, the app was opened at this page). Without it, the button does not show then. Read only. Optional. |
 
 ## Returns
 
 | Type | Description |
 | --- | --- |
-| `ReactElement` |  |
+| `ReactElement \| null` |  |

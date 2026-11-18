@@ -461,7 +461,7 @@ The components below are listed in the index following this page; this is the sh
 - [NoticesProps](ui/NoticesProps.md): Props for <Notices> — the place for the list, and flex styling variants for the notices container.
 - [HTMLProps](ui/HTMLProps.md): Props for <HTML> — initial Meta (language/root/app) plus the page children.
 - [PageProps](ui/PageProps.md): Props for <Page> — per-page Meta (title, description, etc.) plus the page children.
-- [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: the href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
+- [BackButtonProps](ui/BackButtonProps.md): Props for <BackButton>: an optional href to go back to when the stack has no page before this one, plus the usual Button props except onClick.
 - [NavigationProps](ui/NavigationProps.md): Props for <Navigation>: the initial Meta (url, root and stack), the stacks, and optional children.
 - [NavigationEntryState](ui/NavigationEntryState.md): State that NavigationSequence saves on each browser history entry.
 - [NavigationEvent](ui/NavigationEvent.md): One change of page, published by NavigationSequence.
