@@ -111,7 +111,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
  * - A `<Dialog>` has no close button of its own. Put this anywhere inside the dialog to add one.
  * - It is fixed to the top-right corner of the screen, clear of the safe areas.
  * - Styled with the shared `Button` classes.
- * - `plain` by default so only the icon shows until hover or focus — pass `plain={false}` for a solid button.
+ * - `plain` and `small` by default, so only a small icon shows until hover or focus. Pass `plain={false}` for a solid button, or `small={false}` for a normal size.
  *
  * @kind component
  * @see https://shelving.cc/ui/DialogCloseButton
@@ -119,6 +119,7 @@ export interface DialogCloseButtonProps extends ButtonVariants, OptionalChildPro
 export function DialogCloseButton({
 	children = <CloseIcon />,
 	plain = true,
+	small = true,
 	className,
 	...variants
 }: DialogCloseButtonProps): ReactElement {
@@ -126,7 +127,7 @@ export function DialogCloseButton({
 		<button
 			type="button"
 			title="Close"
-			className={getClass(getModuleClass(styles, "close"), getButtonClass({ plain, ...variants }), className)}
+			className={getClass(getModuleClass(styles, "close"), getButtonClass({ plain, small, ...variants }), className)}
 			onClick={_closeOnButtonClick}
 		>
 			{children}
