@@ -101,6 +101,8 @@ export function useSwipe(target: RefObject<Element | null> | Document, options: 
 			node?.removeEventListener("touchmove", onMove);
 			node?.removeEventListener("touchend", onEnd);
 			node?.removeEventListener("touchcancel", onEnd);
+			document.removeEventListener("touchend", onEnd, true);
+			document.removeEventListener("touchcancel", onEnd, true);
 			node = undefined;
 		};
 
@@ -108,7 +110,9 @@ export function useSwipe(target: RefObject<Element | null> | Document, options: 
 			const touch = (e as TouchEvent).touches[0];
 			const { disabled, edge, direction, ignore } = optionsRef.current;
 			pending = false;
-			if (disabled || _active || gesture || (e as TouchEvent).touches.length !== 1 || !touch) return;
+			// A new touch while a swipe still runs means its end was lost: end it now, so it never stays stuck halfway.
+			if (gesture) onEnd(e);
+			if (disabled || _active || (e as TouchEvent).touches.length !== 1 || !touch) return;
 			if (!(e.target instanceof Element) || e.target.closest(_FIELDS) || (ignore && e.target.closest(ignore))) return;
 			// A touch inside a dialog never swipes something behind the dialog.
 			if (e.target.closest("dialog") !== (capture ? null : (el as Element).closest("dialog"))) return;
@@ -123,6 +127,9 @@ export function useSwipe(target: RefObject<Element | null> | Document, options: 
 			node.addEventListener("touchmove", onMove, { passive: false });
 			node.addEventListener("touchend", onEnd, { passive: true });
 			node.addEventListener("touchcancel", onEnd, { passive: true });
+			// Also on the document, in case the browser sends the end somewhere else.
+			document.addEventListener("touchend", onEnd, { capture: true, passive: true });
+			document.addEventListener("touchcancel", onEnd, { capture: true, passive: true });
 		};
 
 		const onMove = (e: Event) => {
@@ -154,6 +161,8 @@ export function useSwipe(target: RefObject<Element | null> | Document, options: 
 		};
 
 		const onEnd = (e: Event) => {
+			// The document and the touched node both get the end. Act on it once.
+			if (!pending && !gesture) return detach();
 			pending = false;
 			detach();
 			const ended = gesture;
@@ -175,8 +184,14 @@ export function useSwipe(target: RefObject<Element | null> | Document, options: 
 		// A swipe on `document` listens in the capture phase, so it decides before a swipe on an element below it.
 		const listen = { capture, passive: true };
 		el.addEventListener("touchstart", onStart, listen);
+		// A touchmove listener that is not passive must be on the target before the touch starts, or Safari scrolls the page and ignores `preventDefault()`.
+		const block = (e: Event) => {
+			if (gesture && e.cancelable) e.preventDefault();
+		};
+		el.addEventListener("touchmove", block, { capture, passive: false });
 		return () => {
 			el.removeEventListener("touchstart", onStart, listen);
+			el.removeEventListener("touchmove", block, { capture });
 			// A swipe that runs now ends on its own: the update may unmount this component (for example a closed notice).
 			if (!gesture) detach();
 		};

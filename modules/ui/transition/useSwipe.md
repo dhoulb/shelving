@@ -11,6 +11,7 @@ Swipe an element (or the whole page) to make a change, and scrub the change's vi
 - It does not start on a field, inside an element that can still scroll the other way, or inside a `<dialog>` that does not hold the target.
 - `edge` limits the start to a strip along the screen edge the finger moves away from, for example `24` for swipe-back from the left edge.
 - Only one swipe runs at a time. A swipe on `document` decides first, so an edge swipe wins over a swipe on an element below it.
+- While a swipe runs, the page does not scroll (also in Safari). If the end of a touch is lost, the next touch ends the swipe, so it never stays stuck halfway.
 - The swipe keeps working when `start` takes the touched element out of the page. If the content can keep state, hide it in a React `<Activity>` instead of unmounting it, so `cancel` can show it again as it was.
 
 ## Usage
