@@ -36,6 +36,7 @@ export interface NavigationProps extends PossibleMeta, OptionalChildProps {
  * - Turns clicks on same-origin links into `NavigationSequence.forward()`, or `NavigationSequence.back()` for a link with `className="back"`, or `NavigationSequence.replace()` for a link with `className="replace"`. Clicks with a modifier key, or on links with `download` or a `target`, are left to the browser.
  * - Holds the page it shows in its own state, and publishes its `url`, `stack` and `ordinal` into `Meta`. Read the current page from `Meta`.
  * - Before a move slides, it lowers the on-screen keyboard and waits until it is down (`waitForKeyboard()`), because a keyboard that closes during the slide resizes the page in the middle of it.
+ * - For a link click it waits before it changes the history too, because iOS Safari takes the snapshot for its own back swipe at that moment.
  * - Takes each `NavigationEvent` with `useSequenceTransition()`. A move is set inside `startTransition()` with its `"forward"` or `"back"` type, so a `<Transition>` around the routes runs a view transition. A replace has no transition. An event for the page already shown is skipped.
  * - Uses the browser Navigation API. Without it (older browsers, server renders) there are no stacks and no transitions.
  *
@@ -74,9 +75,15 @@ export function Navigation({ children, stacks = [], ...meta }: NavigationProps):
 			if (anchor.hasAttribute("download") || (anchor.target && anchor.target !== "_self")) return;
 			e.preventDefault();
 			const { classList, href } = anchor;
-			if (classList.contains("back")) nav.back(href);
-			else if (classList.contains("replace")) nav.replace(href);
-			else nav.forward(href);
+			const go = () => {
+				if (classList.contains("back")) nav.back(href);
+				else if (classList.contains("replace")) nav.replace(href);
+				else nav.forward(href);
+			};
+			// Lower the keyboard before the history changes, because iOS Safari takes the snapshot for its own back swipe then.
+			const waiting = classList.contains("replace") ? undefined : waitForKeyboard();
+			if (waiting) void waiting.then(go);
+			else go();
 			return false; // `return false` stops iOS web app opening every link in a new window.
 		};
 		document.addEventListener("click", onClick);

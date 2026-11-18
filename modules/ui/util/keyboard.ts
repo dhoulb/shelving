@@ -27,7 +27,7 @@ export function isKeyboardOpen(): boolean {
  * Lower the on-screen keyboard, and wait until it is down.
  * - Blurs the focused text field, if there is one, so the keyboard starts to close.
  * - While the keyboard is open or closing (`isKeyboardOpen()`), it checks once each frame and goes on when the keyboard is
- *   down, or after half a second at most.
+ *   down, or after half a second at most. It then waits one more frame, so the page paints at full height first.
  * - Returns nothing when there is nothing to wait for, so a caller can go on at once without a promise.
  * - Use it before a page slide: a keyboard that closes during a view transition resizes the page in the middle of it.
  *
@@ -42,7 +42,8 @@ export function waitForKeyboard(): Promise<void> | void {
 	return new Promise<void>(resolve => {
 		const start = performance.now();
 		const check = (now: number) => {
-			if (now - start >= _MAX || !isKeyboardOpen()) return resolve();
+			// When the keyboard is down, wait one more frame so the page paints at full height before anything snapshots it.
+			if (now - start >= _MAX || !isKeyboardOpen()) return void requestAnimationFrame(() => resolve());
 			requestAnimationFrame(check);
 		};
 		requestAnimationFrame(check);
