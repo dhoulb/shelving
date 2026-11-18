@@ -20561,6 +20561,7 @@ The components below are listed in the index following this page; this is the sh
 - [HTML](ui/HTML.md): Render the full <html> document shell wrapping <head> and <body>.
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [BackButton](ui/BackButton.md): Back button for the current stack.
+- [BackSwipe](ui/BackSwipe.md): Swipe from the left edge of the screen to go back one page in the current stack, by scrubbing the normal back slide.
 - [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
 - [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a <Scroll vertical cover> box.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
@@ -20646,6 +20647,7 @@ The components below are listed in the index following this page; this is the sh
 - [getStrokeClass()](ui/getStrokeClass.md): Get the border-thickness class for a component from its stroke variant prop.
 - [getTypographyClass()](ui/getTypographyClass.md): Get the typography class for a component from its typographic variant props.
 - [getWidthClass()](ui/getWidthClass.md): Get the width class for a component from its width / grow variant props.
+- [useSwipe()](ui/useSwipe.md): Swipe a target to complete a change, and scrub the change's view transition with the finger.
 - [setTransitionType()](ui/setTransitionType.md): Type-safe passthrough for React's addTransitionType() that checks type is one of our known view-transition types.
 - [useTreeMap()](ui/useTreeMap.md): Use the flattened tree lookup map from context.
 - [getTreeElement()](ui/getTreeElement.md): Resolve a reference string to its tree element — by exact key first, then by a normalised key with the prose display decorations stripped.
@@ -20689,6 +20691,7 @@ The components below are listed in the index following this page; this is the sh
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
 - [NavigationSequence](ui/NavigationSequence.md): Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
+- [TransitionScrub](ui/TransitionScrub.md): Take manual control of the view transition that an update starts.
 
 ## Interfaces
 
@@ -20725,6 +20728,7 @@ The components below are listed in the index following this page; this is the sh
 - [SubmitButtonProps](ui/SubmitButtonProps.md): Component props for <SubmitButton>, a form submit button.
 - [DialogProps](ui/DialogProps.md): Props for <Dialog> — optional children content and an onClose callback.
 - [DialogCloseButtonProps](ui/DialogCloseButtonProps.md): Props for <DialogCloseButton> — button styling variants and optional children to override the X icon.
+- [DialogControl](ui/DialogControl.md): Controls for the nearest <Dialog>, so a <Modal> inside it can swipe it away.
 - [DialogsContextProps](ui/DialogsContextProps.md): Props for <DialogsContext> — the children subtree the dialogs store is provided to.
 - [DialogsProps](ui/DialogsProps.md): Props for <Dialogs> — takes no props (branded empty interface).
 - [ModalVariants](ui/ModalVariants.md): Variant props for <Modal> — pin the panel to one edge of the screen.
@@ -20855,6 +20859,7 @@ The components below are listed in the index following this page; this is the sh
 - [HorizontalTransitionProps](ui/HorizontalTransitionProps.md): Props for the HorizontalTransition component — the shared transition variant props.
 - [TransitionVariants](ui/TransitionVariants.md): Variant props shared by every transition component.
 - [TransitionProps](ui/TransitionProps.md): React props for <Transition> component.
+- [SwipeOptions](ui/SwipeOptions.md): Options for useSwipe().
 - [VerticalTransitionProps](ui/VerticalTransitionProps.md): Props for the VerticalTransition component — the shared transition variant props.
 - [TreeAppProps](ui/TreeAppProps.md): Props for the TreeApp component — the tree to render plus optional extra routes and app meta.
 - [TreeBreadcrumbsProps](ui/TreeBreadcrumbsProps.md): Props for the TreeBreadcrumbs component — typography, space, and flex variant props.
@@ -20903,6 +20908,7 @@ The components below are listed in the index following this page; this is the sh
 - [CaseVariant](ui/CaseVariant.md): Allowed values for text case for components that support TypographyVariants
 - [FontVariant](ui/FontVariant.md): Allowed values for font family for components that support TypographyVariants
 - [WidthVariant](ui/WidthVariant.md): Enumerated width selectable via the width variant prop.
+- [SwipeDirection](ui/SwipeDirection.md): Which way the finger moves to complete a swipe.
 - [TransitionClasses](ui/TransitionClasses.md): Map of view-transition types to their CSS class names in { type: className } format.
 - [TransitionType](ui/TransitionType.md): Known view-transition type names that all transitions support — the keys of TransitionClasses.
 - [Classes](ui/Classes.md): Set of classnames that can be joined into a single className string.
@@ -20918,6 +20924,7 @@ The components below are listed in the index following this page; this is the sh
 ## Constants
 
 - [RetryContext](ui/RetryContext.md): Context for providing a "retry" callback to descendant <RetryButton> elements.
+- [DialogControlContext](ui/DialogControlContext.md): Context with the controls for the nearest <Dialog>, or undefined outside one (or in a <Dialog> with no onClose).
 - [DOCUMENTATION_LIVE_RULE](ui/DOCUMENTATION_LIVE_RULE.md): Markup rule that renders a fenced code block with a live flag as a <DocumentationLive> example, e.g. tsx live "Card with a link" `.
 - [DOCUMENTATION_MARKUP_RULES](ui/DOCUMENTATION_MARKUP_RULES.md): Markup rules for docs site content: DOCUMENTATION_LIVE_RULE then TREE_MARKUP_RULES, so fenced code blocks with a live flag run.
 - [PLAYGROUND_FRAME_PATH](ui/PLAYGROUND_FRAME_PATH.md): Path of the frame page that runs playground code, relative to the docs site root.
@@ -24066,6 +24073,7 @@ Modal `<dialog>` element that opens on mount.
 - With `onClose`, it is declarative: a close request calls `onClose()`, and the dialog stays open until it unmounts, so a view transition can capture it as it leaves.
 - Children sit in one wrapper in normal block layout, `--dialog-width` wide and centred on the screen. Content taller than the screen scrolls from its top.
 - Wraps content in `<Suspense>` so lazy children can stream in.
+- With `onClose`, a `<Modal>` pinned to an edge can swipe it away. During the swipe the dialog is hidden in an `<Activity>`, not unmounted, so a cancelled swipe keeps its state.
 
 A native `<dialog>` element opened in modal mode. It opens via `showModal()` when mounted, so it works equally well mounted declaratively in the tree or pushed imperatively through a `DialogsStore`.
 
@@ -24088,6 +24096,7 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
   - A `Dialog` you mount from a store read with `useStore()` never animates. `useStore()` applies each change at once, so `startTransition()` around the store write does not help.
 - To open a dialog from app code, use `requireDialogs()` and `DialogsStore.show()`. Pass the `DialogsStore` into any function that opens one.
 - A browser without view transitions shows and hides the dialog at once.
+- With `onClose`, a pinned `<Modal>` inside can swipe the dialog away. During the swipe, the dialog is hidden in a React `<Activity>`, not unmounted, so a swipe that goes back shows it again with its state (typed text, scroll place).
 - Pair with `DialogsStore`, `<DialogsContext>`, and `<Dialogs>` to open dialogs imperatively from anywhere in the app.
 
 ## Usage
@@ -24253,6 +24262,45 @@ DialogCloseButton({
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
+
+
+---
+
+# DialogControl
+
+- Kind: interface
+- Import: `import { DialogControl } from "shelving/ui";`
+
+Controls for the nearest `<Dialog>`, so a `<Modal>` inside it can swipe it away.
+- Internal: not exported from the `shelving/ui` barrel.
+
+## Signatures
+
+```ts
+{
+	readonly hide: () => void;
+	readonly show: () => Promise<void>;
+	readonly close: () => void;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `hide` | `() => void` | Hide the dialog in a `"dialog"` transition, so its exit transition runs. It stays mounted, with its state. Read only. |
+| `show` | `() => Promise<void>` | Show the hidden dialog again at once, with no transition. Resolves after React commits it. Read only. |
+| `close` | `() => void` | Close the dialog for real (calls its `onClose`). Read only. |
+
+
+---
+
+# DialogControlContext
+
+- Kind: constant
+- Import: `import { DialogControlContext } from "shelving/ui";`
+
+Context with the controls for the nearest `<Dialog>`, or `undefined` outside one (or in a `<Dialog>` with no `onClose`).
 
 
 ---
@@ -24474,6 +24522,7 @@ Styled `<aside>` panel for content inside a `<Dialog>`, with dark text on a ligh
 - Centred by default. It fades in and out with its `<Dialog>`.
 - Has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it.
 - `top`, `right`, `bottom`, or `left` pins it to that edge. It then takes its own layer in the `<Dialog>` view transition, and slides in from that edge and out to it.
+- A pinned panel in a `<Dialog>` with `onClose` can be swiped toward its edge to close the dialog. The swipe scrubs the same slide, and shows a grab handle on the inner side. A swipe that goes back closes nothing, and the dialog keeps its state.
 
 The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the content a shadowed surface with dark text on a light fill.
 
@@ -24490,6 +24539,8 @@ The panel inside a `<Dialog>`. `<Dialog>` dims the page; `Modal` gives the conte
 - It has a `--shadow-large` drop shadow by default. Set `shadow="none"`, `shadow="small"` or `shadow="normal"` to change it, the same as on `<Card>`.
 - Set `top`, `right`, `bottom`, or `left` to pin the panel to that edge of the screen. A top or bottom panel is full width up to `--modal-width`, and centred on a wider screen. A left or right panel is full height. Use these for mobile menus, bottom sheets, and side menus.
 - A centred panel fades in and out with its `<Dialog>`. A pinned panel slides in from its edge and out to it, in its own view-transition layer. With reduced motion, a pinned panel fades in place. `Modal` has no transition of its own: it animates only when its `<Dialog>` does (see `Dialog`).
+- In a `<Dialog>` with `onClose` (every dialog from `DialogsStore.show()`), a pinned panel can be swiped toward its edge to close the dialog: down for `bottom`, up for `top`, and so on. The swipe scrubs the same slide-out with the finger, through `useSwipe()`. Release past about a third, or flick, to close. Otherwise the panel slides back, and the dialog keeps its state.
+- A swipeable panel shows a grab handle: a short rounded bar on the side away from its edge.
 
 ## Usage
 
@@ -24599,8 +24650,9 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 | `--modal-max-height`          | Maximum height of a `top` or `bottom` panel (it scrolls past this)                                                                                | `100%`                                  |
 | `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms)          |
 | `--modal-shadow`              | Drop shadow (the `shadow` variant wins over it)                                                                                                   | `var(--shadow-large)`                   |
+| `--modal-handle-color`        | Colour of the grab handle on a swipeable pinned panel                                                                                             | `var(--tint-80)`                        |
 
-**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-xsmall`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.
 
 
 ## Signatures
@@ -32775,6 +32827,7 @@ Props for `<Notice>` — flex/colour/status styling variants, optional `children
 ```ts
 {
 	icon?: ReactElement | false | undefined;
+	ref?: Ref<HTMLElement> | undefined;
 }
 ```
 
@@ -32783,6 +32836,7 @@ Props for `<Notice>` — flex/colour/status styling variants, optional `children
 | Property | Type | Description |
 | --- | --- | --- |
 | `icon` | `ReactElement \| false \| undefined` | Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). Optional. |
+| `ref` | `Ref<HTMLElement> \| undefined` | Ref to the notice's `<aside>` element. Optional. |
 
 
 ---
@@ -32851,6 +32905,7 @@ Notice({
 	children, //
 	icon,
 	className,
+	ref,
 	...props
 }: NoticeProps): void
 ```
@@ -32861,6 +32916,7 @@ Notice({
 | --- | --- | --- |
 | `props` | `NoticeProps` |  |
 | `.icon` | `ReactElement \| false \| undefined` | Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). Optional. |
+| `.ref` | `Ref<HTMLElement> \| undefined` | Ref to the notice's `<aside>` element. Optional. |
 
 
 ---
@@ -32937,6 +32993,7 @@ Renders the global list of active notices and subscribes to incoming `"notice"` 
 - The list shows in the bottom-right corner. Set `position` to `"top-left"`, `"top-center"`, `"top-right"`, `"bottom-left"`, `"bottom-center"`, or `"bottom-right"` to choose a different place.
 - Notices animate with [view transitions](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). `Notices` renders the store inside transitions, so a notice animates with no `startTransition()` of your own. A single `<Notice>` knows nothing about transitions, the same as `<Dialog>`. A new notice slides in from the side of its corner, and a closed notice slides out to that side. In a centred list, notices slide in and out from the top or bottom edge. The other notices move to their new places. A notice that changes in place (for example from loading to success) changes at once, with no animation.
 - The list has its own layer in every view transition, so it stays still above a page that slides under it.
+- Swipe a notice toward the side it slides out to (up or down in a centred list) to close it. The swipe scrubs the slide-out with the finger, through `useSwipe()`. A swipe that goes back adds the notice back.
 - With reduced motion, notices fade in and out in place, and the others move at once. A browser without view transitions shows the changes at once.
 
 ## Usage
@@ -33501,6 +33558,60 @@ BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props 
 | Type | Description |
 | --- | --- |
 | `ReactElement \| null` |  |
+
+
+---
+
+# BackSwipe
+
+- Kind: component
+- Import: `import { BackSwipe } from "shelving/ui";`
+
+Swipe from the left edge of the screen to go back one page in the current stack, by scrubbing the normal back slide.
+
+- It renders nothing. Put it inside `<Navigation>`, next to the pages.
+- When the swipe starts, it publishes the page below as a `"back"` event with `NavigationSequence.publish()`. History does not change. `<Navigation>` shows that page in a back transition, and `useSwipe()` scrubs it.
+- On release it plays the slide to the end and calls `NavigationSequence.back()`, which publishes the same page again (skipped, so no second slide). Or it plays the slide back and publishes the page it started on again. A cancelled swipe never changes the URL.
+- On the bottom page of a stack, or on a floating page, it does nothing, so it never goes back into another tab.
+- It ignores touches in a `<nav>` and in dialogs.
+
+Swipe from the left edge of the screen to go back one page in the current stack, by scrubbing the normal back slide with the finger.
+
+**Things to know:**
+
+- It renders nothing. Put it inside `<Navigation>`, next to the pages.
+- It is built on `useSwipe()`. When the swipe starts, it publishes the page below as a `"back"` event with `NavigationSequence.publish()`. History does not change yet. `<Navigation>` shows that page in a back transition, with every transition the layout has, and the finger scrubs it.
+- On release past about a third, or after a flick, the slide ends and it calls `NavigationSequence.back()`. That publishes the same page again, which `<Navigation>` skips, so there is no second slide.
+- A swipe that goes back plays the slide back and publishes the page it started on again. The URL never changes.
+- On the bottom page of a stack, or on a floating page, it does nothing, so it never goes back into another tab.
+- It ignores touches in a `<nav>` and in dialogs.
+- Browsers and web apps on iOS have their own edge swipe. Render `BackSwipe` only where the app owns the gesture, for example in a native wrapper.
+
+## Usage
+
+```tsx
+import { BackSwipe, Navigation, RouteCache, Router } from "shelving/ui";
+
+<Navigation>
+	<BackSwipe />
+	<RouteCache>
+		<Router routes={ROUTES} />
+	</RouteCache>
+</Navigation>;
+```
+
+
+## Signatures
+
+```ts
+BackSwipe(): null
+```
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `null` |  |
 
 
 ---
@@ -37390,6 +37501,279 @@ Transition({ children, default: d, forward = d, back = d, overlay = false }: Tra
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<ViewTransition>` element wrapping the children. |
+
+
+---
+
+# TransitionScrub
+
+- Kind: class
+- Import: `import { TransitionScrub } from "shelving/ui";`
+
+Take manual control of the view transition that an update starts.
+
+- The constructor runs `update()` at once and catches the next view transition that starts (for example the one React starts for a state change inside `startTransition()`).
+- When the transition is ready, it pauses every animation of the transition, so `seek()` can move it by hand.
+- `finish()` plays it to the end. `cancel()` plays it back to the start, runs an undo, and ends it.
+- Without view transitions (older browsers), or if `update()` starts none, the update still happens: `seek()` does nothing, `finish()` ends at once, and `cancel()` just runs the undo.
+- If `update()` returns `false`, nothing is caught, and `started` is `false`.
+- Only one view transition runs at a time. A new one skips this one, which ends it at its end state.
+
+Take manual control of the view transition that an update starts: move it to any point, then play it to the end, or play it back and undo the update.
+
+**Things to know:**
+
+- The constructor runs the update at once and catches the next view transition that starts. With React, that is the transition React starts for a state change inside `startTransition()`.
+- When the transition is ready, every animation in it is paused. `TransitionScrub.seek()` moves them, from `0` (start) to `1` (end).
+- `TransitionScrub.finish()` plays from where it is to the end. `TransitionScrub.cancel()` plays back to the start, runs your undo, waits for it, and then ends the transition. The undo must put the page back as it was before the update.
+- If the update returns `false`, nothing is caught and `TransitionScrub.started` is `false`.
+- Without view transitions, or when the update starts none within a second, the update still happens: `seek()` does nothing, `finish()` ends at once, and `cancel()` only runs the undo.
+- Only one view transition runs at a time. Another one that starts skips this one to its end.
+- `useSwipe()` drives a `TransitionScrub` from a finger. Use the class directly for other inputs, such as a slider.
+
+## Usage
+
+```ts
+import { TransitionScrub } from "shelving/ui";
+
+const scrub = new TransitionScrub(() => dialogs.delete(dialog));
+scrub.seek(0.4); // 40% of the way through the close.
+await scrub.finish(); // Play to the end.
+// Or play back to the start and undo the change:
+await scrub.cancel(() => dialogs.add(dialog));
+```
+
+
+## Signatures
+
+```ts
+new TransitionScrub(update: () => unknown)
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `update` | `() => unknown` | A change that starts a view transition. Return `false` to start nothing. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `TransitionScrub` |  |
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `started` | `boolean` | `false` if `update()` returned `false`, so there is nothing to scrub. Read only. |
+
+## Methods
+
+- [TransitionScrub.seek()](ui/TransitionScrub/seek.md): Move the transition to a point, from 0 (start) to 1 (end).
+- [TransitionScrub.finish()](ui/TransitionScrub/finish.md): Play the transition from where it is to the end, then end it.
+- [TransitionScrub.cancel()](ui/TransitionScrub/cancel.md): Play the transition back to the start, run undo(), and then end the transition.
+
+
+---
+
+# TransitionScrub.seek()
+
+- Kind: method
+- Member of: `TransitionScrub`
+
+Move the transition to a point, from `0` (start) to `1` (end).
+- Safe to call before the transition is ready: it moves there as soon as it is.
+
+## Signatures
+
+```ts
+seek(progress: number): void
+```
+
+
+---
+
+# TransitionScrub.finish()
+
+- Kind: method
+- Member of: `TransitionScrub`
+
+Play the transition from where it is to the end, then end it.
+
+## Signatures
+
+```ts
+finish(): Promise<void>
+```
+
+
+---
+
+# TransitionScrub.cancel()
+
+- Kind: method
+- Member of: `TransitionScrub`
+
+Play the transition back to the start, run `undo()`, and then end the transition.
+- `undo()` must put back the state from before the update, so the page matches the start of the transition when it ends.
+- If `undo()` returns a promise (for example one that resolves after React commits), it waits for it before it ends the transition.
+
+## Signatures
+
+```ts
+cancel(undo: () => PromiseLike<void> | void): Promise<void>
+```
+
+
+---
+
+# SwipeDirection
+
+- Kind: type
+- Import: `import { SwipeDirection } from "shelving/ui";`
+
+Which way the finger moves to complete a swipe.
+
+## Signatures
+
+```ts
+"up" | "down" | "left" | "right"
+```
+
+
+---
+
+# SwipeOptions
+
+- Kind: interface
+- Import: `import { SwipeOptions } from "shelving/ui";`
+
+Options for `useSwipe()`.
+
+## Signatures
+
+```ts
+{
+	readonly direction: SwipeDirection;
+	readonly start: () => unknown;
+	readonly cancel: () => PromiseLike<void> | void;
+	readonly commit?: (() => void) | undefined;
+	readonly edge?: number | undefined;
+	readonly distance?: number | undefined;
+	readonly ignore?: string | undefined;
+	readonly disabled?: boolean | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `direction` | `SwipeDirection` | Which way the finger moves to complete the swipe. Read only. |
+| `start` | `() => unknown` | Make the change that starts the view transition, for example close a dialog inside `startTransition()`. - Return `false` to start no swipe (for example when there is nothing to go back to). Read only. |
+| `cancel` | `() => PromiseLike<void> \| void` | Put back the state from before `start()`, when the swipe is cancelled. - Return a promise that resolves after React commits, so the transition ends on the right page. Read only. |
+| `commit` | `(() => void) \| undefined` | Finish the change for real, after the slide reaches the end. Read only. Optional. |
+| `edge` | `number \| undefined` | Start only when the finger goes down this close to the screen edge it moves away from, in pixels (for example `24` for swipe-back). - Leave it out to start anywhere on the target. Read only. Optional. |
+| `distance` | `number \| undefined` | Part of the target's size a slow drag must pass to complete. Read only. Defaults to `0.35`. |
+| `ignore` | `string \| undefined` | Never start a swipe on an element inside one that matches this selector, for example `"nav"`. Read only. Optional. |
+| `disabled` | `boolean \| undefined` | Turn the swipe off. Read only. Optional. |
+
+
+---
+
+# useSwipe()
+
+- Kind: function
+- Import: `import { useSwipe } from "shelving/ui";`
+
+Swipe a target to complete a change, and scrub the change's view transition with the finger.
+
+- When the finger moves the right way, it calls `start()` and catches the view transition that starts, with `TransitionScrub`.
+- While the finger moves, the transition follows it. Progress is the drag distance divided by the target's size in that direction (the screen size for `document`).
+- On release, past `distance` or after a flick, it plays the transition to the end and calls `commit()`. Otherwise it plays it back and calls `cancel()`.
+- It does not start when the finger is on a field, inside an element that can still scroll that way, or inside a `<dialog>` that does not hold the target.
+- Only one swipe runs at a time. A swipe on `document` listens first, so an edge swipe wins over a swipe on an element below it.
+
+Swipe an element (or the whole page) to make a change, and scrub the change's view transition with the finger.
+
+**Things to know:**
+
+- Give it three functions. `start` makes the change, inside a transition, so React starts a view transition. `cancel` puts back the state from before. `commit` finishes the change for real after the slide ends.
+- `start` runs when the finger has moved a few pixels in `direction`. Return `false` from it to start no swipe.
+- While the finger moves, the transition follows it through `TransitionScrub`. Progress is the drag distance divided by the target's size in that direction (the screen size for `document`).
+- On release past `distance` (default 35%), or after a flick, the slide plays to the end and `commit` runs. Otherwise the slide plays back and `cancel` runs. Return a promise from `cancel` that resolves after React commits, so the slide ends on the right state.
+- It does not start on a field, inside an element that can still scroll the other way, or inside a `<dialog>` that does not hold the target.
+- `edge` limits the start to a strip along the screen edge the finger moves away from, for example `24` for swipe-back from the left edge.
+- Only one swipe runs at a time. A swipe on `document` decides first, so an edge swipe wins over a swipe on an element below it.
+- The swipe keeps working when `start` takes the touched element out of the page. If the content can keep state, hide it in a React `<Activity>` instead of unmounting it, so `cancel` can show it again as it was.
+
+## Usage
+
+### Swipe a panel down to close it
+
+`<Modal>` does this for every pinned panel in a `<Dialog>`:
+
+```tsx
+const ref = useRef<HTMLElement>(null);
+useSwipe(ref, {
+	direction: "down",
+	start: () => dialog.hide(), // Hide in a transition.
+	cancel: () => dialog.show(), // Show again at once.
+	commit: () => dialog.close(),
+});
+```
+
+### Swipe a notice away
+
+A notice holds no state, so removing it and adding it back is enough:
+
+```tsx
+useSwipe(ref, {
+	direction: "right",
+	start: () => notice.close(),
+	cancel: () => NOTICES.add(notice),
+});
+```
+
+### Swipe between tabs
+
+```tsx
+useSwipe(ref, {
+	direction: "left",
+	start: () => {
+		if (!next) return false;
+		startTransition(() => {
+			addTransitionType("tab-forward");
+			setShown(next);
+		});
+	},
+	cancel: () => flushSync(() => setShown(current)),
+	commit: () => setTab(next),
+});
+```
+
+
+## Signatures
+
+```ts
+useSwipe(target: RefObject<Element | null> | Document, options: SwipeOptions): void
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `target` | `RefObject<Element \| null> \| Document` | The element to swipe, or `document` for the whole page. |
+| `options` | `SwipeOptions` | What the swipe does. |
+| `.direction` | `SwipeDirection` | Which way the finger moves to complete the swipe. Read only. |
+| `.start` | `() => unknown` | Make the change that starts the view transition, for example close a dialog inside `startTransition()`. - Return `false` to start no swipe (for example when there is nothing to go back to). Read only. |
+| `.cancel` | `() => PromiseLike<void> \| void` | Put back the state from before `start()`, when the swipe is cancelled. - Return a promise that resolves after React commits, so the transition ends on the right page. Read only. |
+| `.commit` | `(() => void) \| undefined` | Finish the change for real, after the slide reaches the end. Read only. Optional. |
+| `.edge` | `number \| undefined` | Start only when the finger goes down this close to the screen edge it moves away from, in pixels (for example `24` for swipe-back). - Leave it out to start anywhere on the target. Read only. Optional. |
+| `.distance` | `number \| undefined` | Part of the target's size a slow drag must pass to complete. Read only. Defaults to `0.35`. |
+| `.ignore` | `string \| undefined` | Never start a swipe on an element inside one that matches this selector, for example `"nav"`. Read only. Optional. |
+| `.disabled` | `boolean \| undefined` | Turn the swipe off. Read only. Optional. |
 
 
 ---

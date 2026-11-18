@@ -62,6 +62,7 @@ Notice({
 	children, //
 	icon,
 	className,
+	ref,
 	...props
 }: NoticeProps): void
 ```
@@ -72,3 +73,4 @@ Notice({
 | --- | --- | --- |
 | `props` | `NoticeProps` |  |
 | `.icon` | `ReactElement \| false \| undefined` | Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). Optional. |
+| `.ref` | `Ref<HTMLElement> \| undefined` | Ref to the notice's `<aside>` element. Optional. |

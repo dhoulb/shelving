@@ -198,6 +198,7 @@ The components below are listed in the index following this page; this is the sh
 - [HTML](ui/HTML.md): Render the full <html> document shell wrapping <head> and <body>.
 - [Page](ui/Page.md): Wrap a single page (or screen) within an app, applying its meta and head tags.
 - [BackButton](ui/BackButton.md): Back button for the current stack.
+- [BackSwipe](ui/BackSwipe.md): Swipe from the left edge of the screen to go back one page in the current stack, by scrubbing the normal back slide.
 - [Navigation](ui/Navigation.md): Top-level navigation provider, with one stack of pages for each tab.
 - [RouteCache](ui/RouteCache.md): Keep-alive page cache for the pages in the navigation stacks. Put it in a layout's content slot, around a <Scroll vertical cover> box.
 - [Router](ui/Router.md): Match the current URL against routes and render the matched element.
@@ -283,6 +284,7 @@ The components below are listed in the index following this page; this is the sh
 - [getStrokeClass()](ui/getStrokeClass.md): Get the border-thickness class for a component from its stroke variant prop.
 - [getTypographyClass()](ui/getTypographyClass.md): Get the typography class for a component from its typographic variant props.
 - [getWidthClass()](ui/getWidthClass.md): Get the width class for a component from its width / grow variant props.
+- [useSwipe()](ui/useSwipe.md): Swipe a target to complete a change, and scrub the change's view transition with the finger.
 - [setTransitionType()](ui/setTransitionType.md): Type-safe passthrough for React's addTransitionType() that checks type is one of our known view-transition types.
 - [useTreeMap()](ui/useTreeMap.md): Use the flattened tree lookup map from context.
 - [getTreeElement()](ui/getTreeElement.md): Resolve a reference string to its tree element — by exact key first, then by a normalised key with the prose display decorations stripped.
@@ -326,6 +328,7 @@ The components below are listed in the index following this page; this is the sh
 - [NoticesStore](ui/NoticesStore.md): Store holding the live list of NoticeStore notices currently shown.
 - [NoticeStore](ui/NoticeStore.md): Store holding a single notice's content and status, owned by a NoticesStore.
 - [NavigationSequence](ui/NavigationSequence.md): Sequence of navigation events that drives browser history and keeps a stack of pages for each tab.
+- [TransitionScrub](ui/TransitionScrub.md): Take manual control of the view transition that an update starts.
 
 ## Interfaces
 
@@ -362,6 +365,7 @@ The components below are listed in the index following this page; this is the sh
 - [SubmitButtonProps](ui/SubmitButtonProps.md): Component props for <SubmitButton>, a form submit button.
 - [DialogProps](ui/DialogProps.md): Props for <Dialog> — optional children content and an onClose callback.
 - [DialogCloseButtonProps](ui/DialogCloseButtonProps.md): Props for <DialogCloseButton> — button styling variants and optional children to override the X icon.
+- [DialogControl](ui/DialogControl.md): Controls for the nearest <Dialog>, so a <Modal> inside it can swipe it away.
 - [DialogsContextProps](ui/DialogsContextProps.md): Props for <DialogsContext> — the children subtree the dialogs store is provided to.
 - [DialogsProps](ui/DialogsProps.md): Props for <Dialogs> — takes no props (branded empty interface).
 - [ModalVariants](ui/ModalVariants.md): Variant props for <Modal> — pin the panel to one edge of the screen.
@@ -492,6 +496,7 @@ The components below are listed in the index following this page; this is the sh
 - [HorizontalTransitionProps](ui/HorizontalTransitionProps.md): Props for the HorizontalTransition component — the shared transition variant props.
 - [TransitionVariants](ui/TransitionVariants.md): Variant props shared by every transition component.
 - [TransitionProps](ui/TransitionProps.md): React props for <Transition> component.
+- [SwipeOptions](ui/SwipeOptions.md): Options for useSwipe().
 - [VerticalTransitionProps](ui/VerticalTransitionProps.md): Props for the VerticalTransition component — the shared transition variant props.
 - [TreeAppProps](ui/TreeAppProps.md): Props for the TreeApp component — the tree to render plus optional extra routes and app meta.
 - [TreeBreadcrumbsProps](ui/TreeBreadcrumbsProps.md): Props for the TreeBreadcrumbs component — typography, space, and flex variant props.
@@ -540,6 +545,7 @@ The components below are listed in the index following this page; this is the sh
 - [CaseVariant](ui/CaseVariant.md): Allowed values for text case for components that support TypographyVariants
 - [FontVariant](ui/FontVariant.md): Allowed values for font family for components that support TypographyVariants
 - [WidthVariant](ui/WidthVariant.md): Enumerated width selectable via the width variant prop.
+- [SwipeDirection](ui/SwipeDirection.md): Which way the finger moves to complete a swipe.
 - [TransitionClasses](ui/TransitionClasses.md): Map of view-transition types to their CSS class names in { type: className } format.
 - [TransitionType](ui/TransitionType.md): Known view-transition type names that all transitions support — the keys of TransitionClasses.
 - [Classes](ui/Classes.md): Set of classnames that can be joined into a single className string.
@@ -555,6 +561,7 @@ The components below are listed in the index following this page; this is the sh
 ## Constants
 
 - [RetryContext](ui/RetryContext.md): Context for providing a "retry" callback to descendant <RetryButton> elements.
+- [DialogControlContext](ui/DialogControlContext.md): Context with the controls for the nearest <Dialog>, or undefined outside one (or in a <Dialog> with no onClose).
 - [DOCUMENTATION_LIVE_RULE](ui/DOCUMENTATION_LIVE_RULE.md): Markup rule that renders a fenced code block with a live flag as a <DocumentationLive> example, e.g. tsx live "Card with a link" `.
 - [DOCUMENTATION_MARKUP_RULES](ui/DOCUMENTATION_MARKUP_RULES.md): Markup rules for docs site content: DOCUMENTATION_LIVE_RULE then TREE_MARKUP_RULES, so fenced code blocks with a live flag run.
 - [PLAYGROUND_FRAME_PATH](ui/PLAYGROUND_FRAME_PATH.md): Path of the frame page that runs playground code, relative to the docs site root.

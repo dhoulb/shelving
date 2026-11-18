@@ -11,6 +11,7 @@ Props for `<Notice>` — flex/colour/status styling variants, optional `children
 ```ts
 {
 	icon?: ReactElement | false | undefined;
+	ref?: Ref<HTMLElement> | undefined;
 }
 ```
 
@@ -19,3 +20,4 @@ Props for `<Notice>` — flex/colour/status styling variants, optional `children
 | Property | Type | Description |
 | --- | --- | --- |
 | `icon` | `ReactElement \| false \| undefined` | Icon for the notice (or `null` or `false` to hide the icon, defaults to `<StatusIcon>`). Optional. |
+| `ref` | `Ref<HTMLElement> \| undefined` | Ref to the notice's `<aside>` element. Optional. |
