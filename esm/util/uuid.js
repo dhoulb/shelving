@@ -1,1 +1,1 @@
-import{Om,co,Um}from"../chunk-jasbfznw.js";export{co as getUUID,Om as randomUUID,Um as requireUUID};
+import{Um,fo,Bm}from"../chunk-ge2gwwr1.js";export{fo as getUUID,Um as randomUUID,Bm as requireUUID};

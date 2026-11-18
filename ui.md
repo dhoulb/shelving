@@ -283,7 +283,6 @@ The components below are listed in the index following this page; this is the sh
 - [getStrokeClass()](ui/getStrokeClass.md): Get the border-thickness class for a component from its stroke variant prop.
 - [getTypographyClass()](ui/getTypographyClass.md): Get the typography class for a component from its typographic variant props.
 - [getWidthClass()](ui/getWidthClass.md): Get the width class for a component from its width / grow variant props.
-- [useTransitionValue()](ui/useTransitionValue.md): Read a store's value, and re-render inside startTransition() when it changes, so <ViewTransition> boundaries animate.
 - [setTransitionType()](ui/setTransitionType.md): Type-safe passthrough for React's addTransitionType() that checks type is one of our known view-transition types.
 - [useTreeMap()](ui/useTreeMap.md): Use the flattened tree lookup map from context.
 - [getTreeElement()](ui/getTreeElement.md): Resolve a reference string to its tree element — by exact key first, then by a normalised key with the prose display decorations stripped.
