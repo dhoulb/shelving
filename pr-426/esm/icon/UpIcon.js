@@ -1,1 +1,1 @@
-import{Xi}from"../chunk-ce346r0y.js";export{Xi as UpIcon};
+import{dp}from"../chunk-vh4s2ezw.js";export{dp as UpIcon};
