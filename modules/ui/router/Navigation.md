@@ -1,17 +1,17 @@
 # Navigation
 
-The top-level navigation provider for a client-side app. It owns one `NavigationStore`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
+The top-level navigation provider for a client-side app. It owns one `NavigationSequence`, turns link clicks into navigation, and publishes the live URL into `<Meta>`, so each `<Router>` re-renders when the URL changes. Use exactly one `<Navigation>` per app. Nested routers all share its store.
 
 Give it `stacks` for an app with a tab bar. Each stack is one tab with its own history of pages, like a phone app: each tab remembers where you left it, and a back button goes back within its tab.
 
 **Things to know:**
 
-- Same-origin link clicks become `NavigationStore.forward()`, so the page slides forward.
-- A link with `className="back"` calls `NavigationStore.back()`, so the page slides back. `<BackButton>` sets this class for you.
-- A link with `className="replace"` calls `NavigationStore.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
+- Same-origin link clicks become `NavigationSequence.forward()`, so the page slides forward.
+- A link with `className="back"` calls `NavigationSequence.back()`, so the page slides back. `<BackButton>` sets this class for you.
+- A link with `className="replace"` calls `NavigationSequence.replace()`. It changes the URL with no new history entry and no slide, and keeps the same page mounted. Use it for tabs inside a page.
 - Clicks with a modifier key (Cmd, Ctrl, Shift, Alt), a middle-click, and links with `download` or a `target` other than `_self` go to the browser as usual.
 - It publishes each page change inside `startTransition()` with a `"forward"` or `"back"` transition type, so a `<Transition>` such as `<HorizontalTransition>` slides the page. A replace has no transition.
-- The browser back and forward buttons slide too. Inside a stack the direction comes from the depth of the page. Across stacks it comes from tab order.
+- The browser back and forward buttons slide too. Inside a stack the direction comes from the ordinal of the page. Across stacks it comes from tab order.
 - When the browser already animated the change (for example a swipe-back on a phone), there is no view transition, so the page does not slide twice.
 - It publishes `stack` (the root of the current stack) into `<Meta>` beside `url`, so any component can read the current tab with `requireMeta().stack`. On a floating page (outside every stack) `stack` is `null`. With no `stacks`, every page floats.
 - It reads the start URL and root from the surrounding `<Meta>`, so set `url` and `root` on an ancestor `<App>` or `<HTML>`. In the browser the URL falls back to `window.location.href`.
@@ -86,7 +86,7 @@ const stack = STACKS.find(s => path === s || path.startsWith(`${s}/`));
 
 Put the transition **outside** `<RouteCache>`, around the whole cache. Safari (iOS 18) loses the exit animation when each page has its own `<ViewTransition>`.
 
-The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationStore`.
+The app opens in the `stack` you set on `<Navigation>` (or on the surrounding `<Meta>`, like `url` and `root`), else the page **floats**: its stack is `null`. A floating page, such as a deep link or a login page, is outside every tab: no tab is selected, and links from it stay floating until you tap a tab or name a stack (for example `nav.replace("/home", "/home")` after a login). `/` is a normal stack root, so a Home tab at `/` is never mixed up with floating pages. See `NavigationSequence`.
 
 Each link pushes a new page onto the current stack, wherever it points. So a link from `/home` to `/profile/settings` opens the settings page in the Home tab, and the Profile tab stays where it was. Tap a `<StackButton>` to change tab.
 
@@ -121,4 +121,4 @@ nav.back("/home"); // Go back to a page.
 nav.replace("/login"); // Change the URL of the current page.
 ```
 
-See `NavigationStore` for what each method does.
+See `NavigationSequence` for what each method does.

@@ -2,8 +2,9 @@ import { type ReactElement, use } from "react";
 import { LeftIcon } from "../../icon/LeftIcon.js";
 import type { AbsolutePath } from "../../util/path.js";
 import { Button, type ButtonProps } from "../button/Button.js";
+import { requireMeta } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
-import { NavigationPositionContext } from "./NavigationContext.js";
+import { NavigationContext } from "./NavigationContext.js";
 
 /**
  * Props for `<BackButton>`: the `href` to go back to when the stack has no page before this one, plus the usual `Button` props except `onClick`.
@@ -25,9 +26,11 @@ export interface BackButtonProps extends Omit<ButtonProps, "href" | "onClick"> {
  * @see https://shelving.cc/ui/BackButton
  */
 export function BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props }: BackButtonProps): ReactElement {
-	const position = use(NavigationPositionContext);
+	const nav = use(NavigationContext);
+	const { stack = null, ordinal } = requireMeta();
+	const parent = nav && ordinal ? nav.history(stack)[ordinal - 1] : undefined;
 	return (
-		<Button {...props} title={title} href={position?.parent ?? href} className={getClass("back", className)}>
+		<Button {...props} title={title} href={parent ?? href} className={getClass("back", className)}>
 			{children}
 		</Button>
 	);

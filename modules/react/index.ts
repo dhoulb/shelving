@@ -5,4 +5,5 @@ export * from "./useLazy.js";
 export * from "./useMap.js";
 export * from "./useReduce.js";
 export * from "./useSequence.js";
+export * from "./useSequenceTransition.js";
 export * from "./useStore.js";

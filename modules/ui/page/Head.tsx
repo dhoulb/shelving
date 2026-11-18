@@ -12,7 +12,7 @@ const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
  * Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
  * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
  * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
- * - When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationStore.replace()` with it. Outside `<Navigation>` it does not touch history.
+ * - When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationSequence.replace()` with it. It only does this for the page the browser history is on (the same `stack` and `ordinal`), so a page shown ahead of history, such as a swipe-back preview, leaves history alone. Outside `<Navigation>` it does not touch history.
  *
  * @kind component
  * @see https://shelving.cc/ui/Head
@@ -21,11 +21,15 @@ export function Head(): ReactElement {
 	const meta = requireMeta();
 	const { url, title, app, description, links, tags, stylesheets, modules, scripts } = meta;
 
-	// A page can set its canonical URL in meta. Replace the browser URL with it, through the navigation store so the history entry keeps its stack.
+	// A page can set its canonical URL in meta. Replace the browser URL with it, through the navigation sequence so the history entry keeps its stack.
+	// Only for the page history is on: a page shown ahead of history (a swipe-back preview) must not change it.
 	const nav = use(NavigationContext);
+	const { stack = null, ordinal } = meta;
 	useEffect(() => {
-		if (nav && url && url.href !== nav.value.href) nav.replace(url);
-	}, [nav, url]);
+		if (!nav || !url) return;
+		const current = nav.current();
+		if (current.stack === stack && current.ordinal === ordinal && url.href !== current.url.href) nav.replace(url);
+	}, [nav, url, stack, ordinal]);
 
 	const fullTitle = joinTitles(title, app);
 	return (

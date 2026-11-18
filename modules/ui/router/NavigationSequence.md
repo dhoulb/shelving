@@ -1,16 +1,16 @@
-# NavigationStore
+# NavigationSequence
 
 The store that holds the current URL, drives browser history, and keeps one stack of pages for each tab. It extends `URLStore`, so its `value` is the current URL. `<Navigation>` owns it. Read it with `requireNavigation()`, and do not make your own.
 
 **Things to know:**
 
-- `NavigationStore.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
+- `NavigationSequence.stacks` is the root path of each stack, in tab order, from the `stacks` prop on `<Navigation>`. `/` is a normal stack root, like any other path.
 - A page that is not in a listed stack is **floating**: its stack is `null`. See [Floating pages](#floating-pages).
-- In a listed stack, depth `0` is always the stack's root path. A deeper page always has the root below it.
-- `NavigationStore.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
-- `NavigationStore.path` is the current path relative to the app root, without its `?query`.
-- `NavigationStore.history()` returns the pages in the current stack (or a given stack), root first.
-- `NavigationStore.position` is the current stack and depth, the depth of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
+- In a listed stack, ordinal `0` is always the stack's root path. A deeper page always has the root below it.
+- `NavigationSequence.stack` is a sub-store that holds the root of the current stack, or `null` on a floating page. It changes only when the stack changes, so `useStore(nav.stack)` re-renders only on a tab change.
+- `NavigationSequence.path` is the current path relative to the app root, without its `?query`.
+- `NavigationSequence.history()` returns the pages in the current stack (or a given stack), root first.
+- `NavigationSequence.position` is the current stack and ordinal, the ordinal of the top page of each stack, and the page before this one. `<RouteCache>` and `<BackButton>` use it.
 - All URLs resolve against the store's `base`. Each method also takes a full same-origin URL.
 - Without the browser Navigation API there is no stack history: `stack` stays the starting stack, `history()` returns `[]`, `position` is `undefined`, and every `stack` argument is ignored. `forward()` and `back()` push a history entry, and `replace()` replaces it.
 
@@ -20,7 +20,7 @@ The store that holds the current URL, drives browser history, and keeps one stac
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `forward(href, stack?)` | Opens `href` as a new page on top of the stack. If `href` is the top page of another stack, it switches to that stack (a tab switch). If `href` is the current URL, it is a replace.                                                              | Forward. Across stacks, by tab order. |
 | `back(href, stack?)`    | Goes back to `href`. If `href` is in the stack, the stack goes back to it, and the pages above it leave the stack. If `href` is the root of the stack, the stack goes to its root. Otherwise `href` takes the place of the top page of the stack. | Back                                  |
-| `replace(href, stack?)` | Changes the URL of the current page. The stack, the depth and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.            | None                                  |
+| `replace(href, stack?)` | Changes the URL of the current page. The stack, the ordinal and the mounted page stay the same. No new history entry. With another `stack`, the page moves into that stack: at its root if `href` is the root, else on top of its pages.          | None                                  |
 | `history(stack?)`       | Returns the pages in `stack`, root first.                                                                                                                                                                                                         | —                                     |
 
 `stack` defaults to the current stack. Pass `null` to name the floating stack.
@@ -38,7 +38,7 @@ A page changes stack only when you say so: with a `<StackButton>`, or with a `st
 ## Opening the app
 
 - To select a tab when the app starts, set `stack` on `<Navigation>`. The app decides which stack the opening URL belongs to. After a reload, each history entry keeps the stack it had.
-- A deep page the app opens at, in a listed stack, starts at depth 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at depth 0.
+- A deep page the app opens at, in a listed stack, starts at ordinal 1, so the stack root is its parent. A `<StackButton>` or a back gesture then goes to the root. A stack root starts at ordinal 0.
 - A `stack` that is not in `stacks` is ignored: the page floats.
 
 For example, a login page sends the user home after they log in, and names the Home stack:
@@ -50,23 +50,23 @@ nav.replace("/home", "/home");
 
 ## How stacks work
 
-The store saves a small state on each browser history entry: the `stack` the page is in, and its `depth` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the store walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower depth, and so on down to depth `0`.
+The store saves a small state on each browser history entry: the `stack` the page is in, and its `ordinal` in that stack (`0` is the root). See `NavigationEntryState`. To read a stack, the store walks back through the browser history from the current entry. It takes the newest entry in that stack, then the newest earlier entry with a lower ordinal, and so on down to ordinal `0`.
 
-Why depth? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the store cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's depth. The pages that were above it now have a higher depth than the newest entry, so they are no longer in the stack.
+Why ordinal? A browser history entry cannot be changed or removed. So when you go back in one stack while another stack's pages are after it in the history, the store cannot go back in the browser. It pushes a new entry for the page you went back to, at that page's ordinal. The pages that were above it now have a higher ordinal than the newest entry, so they are no longer in the stack.
 
 For example, with tabs `/home` and `/profile`:
 
-| Step                | New history entry        | Home stack              | Profile stack |
-| ------------------- | ------------------------ | ----------------------- | ------------- |
-| Start at `/home`    | `/home` (depth 0)        | `/home`                 | —             |
-| Open a post         | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | —             |
-| Tap the Profile tab | `/profile` (depth 0)     | `/home`, `/home/post/1` | `/profile`    |
-| Tap the Home tab    | `/home/post/1` (depth 1) | `/home`, `/home/post/1` | `/profile`    |
-| Tap the back button | `/home` (depth 0)        | `/home`                 | `/profile`    |
+| Step                | New history entry          | Home stack              | Profile stack |
+| ------------------- | -------------------------- | ----------------------- | ------------- |
+| Start at `/home`    | `/home` (ordinal 0)        | `/home`                 | —             |
+| Open a post         | `/home/post/1` (ordinal 1) | `/home`, `/home/post/1` | —             |
+| Tap the Profile tab | `/profile` (ordinal 0)     | `/home`, `/home/post/1` | `/profile`    |
+| Tap the Home tab    | `/home/post/1` (ordinal 1) | `/home`, `/home/post/1` | `/profile`    |
+| Tap the back button | `/home` (ordinal 0)        | `/home`                 | `/profile`    |
 
 When the page you go back to is the entry just before the current one, `back()` goes back in the browser history and pushes nothing.
 
-The browser back and forward buttons walk the history entries one at a time, as usual. Each entry knows its stack and depth, so the stacks are always right and the slide goes the right way.
+The browser back and forward buttons walk the history entries one at a time, as usual. Each entry knows its stack and ordinal, so the stacks are always right and the slide goes the right way.
 
 ## Usage
 
@@ -102,9 +102,9 @@ nav.history("/home"); // ["/home", "/home/post/1", "/home/post/1/comments"]
 Make a store by hand only in tests:
 
 ```tsx
-import { NavigationStore } from "shelving/ui";
+import { NavigationSequence } from "shelving/ui";
 
 // URL, root, starting stack, then the stacks in tab order.
-const nav = new NavigationStore("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
+const nav = new NavigationSequence("https://example.com/home", "https://example.com/", "/home", "/home", "/profile");
 nav.forward("/home/post/1");
 ```

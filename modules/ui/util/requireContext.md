@@ -13,7 +13,7 @@ Reads a React context and throws `RequiredError` if the value is `null` or `unde
 ```ts
 import { requireContext } from "shelving/ui";
 
-function requireNavigation(): NavigationStore {
+function requireNavigation(): NavigationSequence {
 	return requireContext(NavigationContext, requireNavigation);
 }
 ```
