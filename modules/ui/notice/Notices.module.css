@@ -17,6 +17,9 @@
 		/* The list is as wide as `--notices-width`, so let clicks pass through the gaps to the page. */
 		pointer-events: none;
 
+		/* Take a separate layer in any view transition, so a page that slides under the list does not cover it. `match-element` gives each list a unique name. */
+		view-transition-name: match-element;
+
 		/* Each notice is only as wide as its content, and stays on the side of the list's corner, or in the centre. */
 		& > * {
 			inline-size: auto;
