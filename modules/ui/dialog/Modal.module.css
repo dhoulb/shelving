@@ -89,6 +89,48 @@
 	}
 }
 
+/* A grab handle on a panel that can be swiped away: a short rounded bar on the side away from its edge. */
+@layer components {
+	.modal.swipe::before {
+		content: "";
+		position: absolute;
+		border-radius: 999px;
+		background: var(--modal-handle-color, var(--tint-80));
+	}
+
+	.modal.swipe.top::before,
+	.modal.swipe.bottom::before {
+		left: 50%;
+		width: 36px;
+		height: 5px;
+		translate: -50% 0;
+	}
+
+	.modal.swipe.bottom::before {
+		top: var(--space-xsmall);
+	}
+
+	.modal.swipe.top::before {
+		bottom: var(--space-xsmall);
+	}
+
+	.modal.swipe.left::before,
+	.modal.swipe.right::before {
+		top: 50%;
+		width: 5px;
+		height: 36px;
+		translate: 0 -50%;
+	}
+
+	.modal.swipe.right::before {
+		left: var(--space-xsmall);
+	}
+
+	.modal.swipe.left::before {
+		right: var(--space-xsmall);
+	}
+}
+
 /* Corners that touch a screen edge are square. This is in `overrides` so it beats the `radius` variant, which then sets only the inner corners. */
 @layer overrides {
 	.modal {

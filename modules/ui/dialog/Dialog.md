@@ -21,6 +21,7 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
   - A `Dialog` you mount from a store read with `useStore()` never animates. `useStore()` applies each change at once, so `startTransition()` around the store write does not help.
 - To open a dialog from app code, use `requireDialogs()` and `DialogsStore.show()`. Pass the `DialogsStore` into any function that opens one.
 - A browser without view transitions shows and hides the dialog at once.
+- With `onClose`, a pinned `<Modal>` inside can swipe the dialog away. During the swipe, the dialog is hidden in a React `<Activity>`, not unmounted, so a swipe that goes back shows it again with its state (typed text, scroll place).
 - Pair with `DialogsStore`, `<DialogsContext>`, and `<Dialogs>` to open dialogs imperatively from anywhere in the app.
 
 ## Usage
