@@ -37,7 +37,7 @@ export interface FlexVariants extends GapVariants {
 	 */
 	left?: boolean | undefined;
 	/**
-	 * Rows: Justify the elements to the center (primary axis).
+	 * Rows: Justify the elements to the center (primary axis). When they do not fit, they start at the start edge, so none is cut off.
 	 * Columns: Align the elements to the center (secondary axis).
 	 */
 	center?: boolean | undefined;
@@ -53,7 +53,7 @@ export interface FlexVariants extends GapVariants {
 	top?: boolean | undefined;
 	/**
 	 * Rows: Align the elements to the middle (secondary axis).
-	 * Columns: Justify the elements to the middle (primary axis).
+	 * Columns: Justify the elements to the middle (primary axis). When they do not fit, they start at the top edge.
 	 */
 	middle?: boolean | undefined;
 	/**
