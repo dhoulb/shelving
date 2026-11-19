@@ -39,9 +39,9 @@ Variant props for flex layout — opt-in modifiers any component can mix in via 
 | `between` | `boolean \| undefined` | Rows: Justify the elements with space between them (primary axis). Columns: Justify the elements with space between them (primary axis). Optional. |
 | `around` | `boolean \| undefined` | Rows: Justify the elements with space around them (primary axis). Columns: Justify the elements with space around them (primary axis). Optional. |
 | `left` | `boolean \| undefined` | Rows: Justify the elements to the left (primary axis). Columns: Align the elements to the left (secondary axis). Optional. |
-| `center` | `boolean \| undefined` | Rows: Justify the elements to the center (primary axis). Columns: Align the elements to the center (secondary axis). Optional. |
+| `center` | `boolean \| undefined` | Rows: Justify the elements to the center (primary axis). When they do not fit, they start at the start edge, so none is cut off. Columns: Align the elements to the center (secondary axis). Optional. |
 | `right` | `boolean \| undefined` | Rows: Justify the elements to the right (primary axis). Columns: Align the elements to the right (secondary axis). Optional. |
 | `top` | `boolean \| undefined` | Rows: Align the elements to the top (secondary axis). Columns: Justify the elements to the top (primary axis). Optional. |
-| `middle` | `boolean \| undefined` | Rows: Align the elements to the middle (secondary axis). Columns: Justify the elements to the middle (primary axis). Optional. |
+| `middle` | `boolean \| undefined` | Rows: Align the elements to the middle (secondary axis). Columns: Justify the elements to the middle (primary axis). When they do not fit, they start at the top edge. Optional. |
 | `bottom` | `boolean \| undefined` | Rows: Align the elements to the bottom (secondary axis). Columns: Justify the elements to the bottom (primary axis). Optional. |
 | `baseline` | `boolean \| undefined` | Rows: Align the text baselines of the elements (in rows or columns) Columns: Not-applicable, has no effect. Optional. |
