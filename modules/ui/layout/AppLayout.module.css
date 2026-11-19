@@ -88,6 +88,7 @@
 		 * An app can name it for its own transitions only, for example parts of a page that slide in their own layers and would pass over it:
 		 * `:root:active-view-transition-type(tab) { --app-layout-nav-transition-name: app-nav; }` */
 		view-transition-name: var(--app-layout-nav-transition-name, none);
+		view-transition-class: nav;
 
 		/* Each item takes an equal share of the bar. */
 		> * {
@@ -95,4 +96,13 @@
 			max-width: var(--app-layout-nav-item-width, 6rem);
 		}
 	}
+}
+
+/*
+ * A named bar paints above the page parts that slide in their own layers.
+ * - Why: the browser stacks the layers in the order it finds them, old page first. A part that is only on the new page (a tab that slides in) comes after the bar, so without this it paints over the bar until the slide ends.
+ * - This rule must stay in this file. Bun hashes the `view-transition-class` above and the class name in the selector below the same way only when both are in the same file.
+ */
+::view-transition-group(.nav) {
+	z-index: 1;
 }
