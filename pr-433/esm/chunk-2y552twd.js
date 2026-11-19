@@ -1,2 +1,0 @@
-import{ot}from"./chunk-2na21wbh.js";import{t}from"./chunk-m2s2d87e.js";function at(e){return e instanceof Set}function xs(e,n=xs){if(!at(e))throw new t("Must be set",{received:e,caller:n})}function $m(e){return at(e)?e:new Set(e)}function Fm(e,n){return n>e.size?e:new Set(ot(e,n))}function Ts(e,n){return e.has(n)}function Is(e,n,o=Is){if(!Ts(e,n))throw new t("Item must exist in set",{item:n,set:e,caller:o})}function Vm(e,n){return e.add(n),n}function Km(e,...n){for(let o of n)e.add(o)}function zm(e,...n){for(let o of n)e.delete(o)}
-export{at,xs,$m,Fm,Ts,Is,Vm,Km,zm};
