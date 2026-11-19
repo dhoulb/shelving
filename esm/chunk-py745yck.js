@@ -1,0 +1,2 @@
+import{xt}from"./chunk-z76y9cwy.js";import{zr,Z}from"./chunk-jk9bsst2.js";import{Wo}from"./chunk-5mbeg8sa.js";import{t}from"./chunk-m2s2d87e.js";function Fe(e,i,r=i){if(!e)return;if(xt(e))return e;if(typeof e!=="string")return;if(Wo(e)&&!e.startsWith("//"))return Z(`.${e}`,r);return zr(e,i??r)}function Ar(e,i,r,m=Ar){let n=Fe(e,i,r);if(!n)throw new t("Invalid link",{received:e,caller:m});return n}
+export{Fe,Ar};
