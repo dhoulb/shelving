@@ -101,6 +101,11 @@
 			font-weight: var(--menu-proud-weight, var(--weight-strong));
 		}
 
+		&.selected {
+			background: var(--menu-selected-background, var(--menu-hover-background, var(--tint-90)));
+			color: var(--menu-selected-color, var(--menu-hover-color, var(--tint-00)));
+		}
+
 		&.active {
 			background: var(--menu-active-background, var(--tint-100));
 			color: var(--menu-active-color, var(--tint-00));
