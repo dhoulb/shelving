@@ -6,7 +6,8 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 
 - It is a frame only. It does not scroll or centre. Fill the slot with `<Scroll vertical cover>`, so the content scrolls inside it.
 - Centre the content in the page itself, for example with `<Block height="full" middle width="narrow">`: it puts the content in the middle of the screen, and it still scrolls when it is taller.
-- The slot stays clear of the notch, the home bar and the rounded screen corners (safe-area insets).
+- The slot stays clear of the home bar and the rounded screen corners (safe-area insets).
+- The slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it.
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 

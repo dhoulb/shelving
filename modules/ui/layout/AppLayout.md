@@ -8,7 +8,8 @@ A full-viewport layout with a content slot above a bar of the app's main section
 - The bar sits below the content slot, not over it. So pages need no extra space at the bottom for the bar.
 - The bar shows at every screen size.
 - The bar paints above the content slot, so its shadow (`--app-layout-nav-shadow`) shows over the pages, even a page with its own background.
-- The content slot stays clear of the notch and the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
+- The content slot stays clear of the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
+- The content slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so the page's `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it. A page can pull a full-bleed header up behind the notch: see "Use the top inset" on `<Scroll>`.
 - Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
 - The bar is outside the page cache, so it has one copy and keeps its state.
 - The bar has no view-transition name of its own. Pages slide sideways in the content slot above it, so the bar stays still. A named bar would draw above a dialog or notice that covers it during every view transition.
