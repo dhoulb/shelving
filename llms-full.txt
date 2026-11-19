@@ -31152,7 +31152,8 @@ A full-viewport layout with a content slot above a bar of the app's main section
 - The bar sits below the content slot, not over it. So pages need no extra space at the bottom for the bar.
 - The bar shows at every screen size.
 - The bar paints above the content slot, so its shadow (`--app-layout-nav-shadow`) shows over the pages, even a page with its own background.
-- The content slot stays clear of the notch and the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
+- The content slot stays clear of the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
+- The content slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so the page's `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it. A page can pull a full-bleed header up behind the notch: see "Use the top inset" on `<Scroll>`.
 - Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
 - The bar is outside the page cache, so it has one copy and keeps its state.
 - The bar has no view-transition name of its own. Pages slide sideways in the content slot above it, so the bar stays still. A named bar would draw above a dialog or notice that covers it during every view transition.
@@ -31265,7 +31266,8 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 
 - It is a frame only. It does not scroll or centre. Fill the slot with `<Scroll vertical cover>`, so the content scrolls inside it.
 - Centre the content in the page itself, for example with `<Block height="full" middle width="narrow">`: it puts the content in the middle of the screen, and it still scrolls when it is taller.
-- The slot stays clear of the notch, the home bar and the rounded screen corners (safe-area insets).
+- The slot stays clear of the home bar and the rounded screen corners (safe-area insets).
+- The slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it.
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
@@ -35834,6 +35836,7 @@ A box that scrolls its content on one or both axes. Use it for a wide table on a
 
 - Set `vertical`, `horizontal`, or both. With neither, the box clips its content and does not scroll.
 - Set `cover` to fill the nearest positioned ancestor (`position: absolute; inset: 0`). A layout's content slot is positioned, so `<Scroll vertical cover>` fills it.
+- A `cover` box pads its top by `--scroll-inset-top`, and the content scrolls up under that space. `<AppLayout>` and `<FixedLayout>` set it to the notch (the top safe-area inset). A `cover` box inside another one has no top inset.
 - Set `reverse` to start at the end and stay there when the content grows, for example a chat. Put the content in one child: only the scroll is reversed, so the child keeps its own order. No script is needed.
 - Overscroll stops at the box edge (`overscroll-behavior: none`), so a scroll inside the box never scrolls the page behind it.
 - When the box has keyboard focus, it shows a focus outline.
@@ -35870,6 +35873,19 @@ import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll
 </AppLayout>;
 ```
 
+### Use the top inset
+
+A header with a background can go up behind the notch, so its colour reaches the top of the screen. Pull it up with a negative margin, and pad its content back down:
+
+```css
+.header {
+	margin-top: calc(0px - var(--scroll-inset-top, 0px));
+	padding-top: var(--scroll-inset-top, 0px);
+}
+```
+
+Use this only on the first thing in the page. Other pages keep the empty space at the top.
+
 ### A chat
 
 ```tsx
@@ -35880,9 +35896,10 @@ import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll
 
 ## Styling
 
-| Variable                | Styles                                  | Default                                        |
-| ----------------------- | --------------------------------------- | ---------------------------------------------- |
-| `--scroll-focus-border` | Outline when the box has keyboard focus | `var(--stroke-focus) solid var(--color-focus)` |
+| Variable                | Styles                                                                                         | Default                                        |
+| ----------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `--scroll-focus-border` | Outline when the box has keyboard focus                                                        | `var(--stroke-focus) solid var(--color-focus)` |
+| `--scroll-inset-top`    | Space at the top of a `cover` box that the content scrolls under (layouts set it to the notch) | `0px`                                          |
 
 **Global tokens it reads** — `--stroke-focus`, `--stroke-normal`, and `--color-focus`.
 
