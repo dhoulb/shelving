@@ -56,8 +56,9 @@
 				justify-content: start;
 			}
 
+			/* `safe` starts a row that is wider than its box at the start edge, so no item is cut off where it cannot scroll to. */
 			&.center {
-				justify-content: center;
+				justify-content: safe center;
 			}
 
 			&.right {
@@ -97,7 +98,7 @@
 			}
 
 			&.middle {
-				justify-content: center;
+				justify-content: safe center;
 			}
 
 			&.bottom {

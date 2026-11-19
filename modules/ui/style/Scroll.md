@@ -23,6 +23,24 @@ import { Scroll, Table } from "shelving/ui";
 </Scroll>;
 ```
 
+### A centred row that can overflow
+
+A `<Row center>` is centred while it fits. When it is wider than the box, it starts at the left edge and scrolls, so no item is cut off. Use this for a bar of tabs.
+
+```tsx
+import { Button, Row, Scroll } from "shelving/ui";
+
+<Scroll horizontal>
+	<Row center gap="xsmall">
+		{tabs.map(tab => (
+			<Button key={tab.key} small>
+				{tab.label}
+			</Button>
+		))}
+	</Row>
+</Scroll>;
+```
+
 ### A scroll box for each page
 
 Put `<Scroll vertical cover>` inside `<RouteCache>`, so each kept page has its own scroll box and keeps its own scroll position. The layout gives its content slot `position: relative`, and the scroll box fills it.
