@@ -21,7 +21,8 @@ export interface ButtonVariants extends BlockVariants, FlexVariants, StatusVaria
 	outline?: boolean | undefined;
 	/**
 	 * Whether the button is the selected one in a group, such as a set of tabs.
-	 * - `true` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look.
+	 * - `true` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. A `plain` or `outline`
+	 *   button keeps the default fill while selected, so a toggle shows that it is on.
 	 * - `false` also drops the fill until hover or focus, so the selected button stands out.
 	 * - `undefined` (the default) means the button is not part of a group.
 	 */
@@ -61,6 +62,7 @@ export interface ButtonProps extends ButtonVariants, ClickableProps, ClassProps 
  * - Light by default (a pale fill with dark text). Use `solid` for the main action, or `plain` / `outline` to de-emphasise.
  * - `color=` / `status=` set the colour of every look.
  * - Pass `selected` to make a group of buttons (such as tabs): the selected one keeps its look, the others drop their fill.
+ *   A selected `plain` or `outline` button keeps the default fill, so it works as a toggle.
  * - Accepts all `ButtonVariants` styling props plus the `ClickableProps` (`onClick`, `href`, `disabled`, etc.).
  *
  * @kind component
