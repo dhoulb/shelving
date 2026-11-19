@@ -1,0 +1,1 @@
+import{dr,ze}from"../chunk-ckyr2fjk.js";import"../chunk-3sh86r0a.js";import"../chunk-0nrzkaa4.js";import"../chunk-nzxkdbek.js";import"../chunk-mh2a4gx5.js";import"../chunk-a6fv1hf8.js";import"../chunk-2na21wbh.js";export{dr as getUpdates,ze as updateData};
