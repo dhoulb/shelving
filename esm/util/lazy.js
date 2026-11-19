@@ -1,1 +1,1 @@
-import{co}from"../chunk-xbx6vdq2.js";import"../chunk-1kafd0b7.js";export{co as getLazy};
+import{co}from"../chunk-xpnew1xv.js";import"../chunk-ec5d3ffv.js";export{co as getLazy};
