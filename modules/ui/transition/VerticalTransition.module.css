@@ -92,6 +92,79 @@
 	animation-fill-mode: both;
 }
 
+/*
+ * Enter and exit: an image with no partner uses copies of the keyframes, with an `-only` suffix.
+ * - Why: iOS Safari also starts the animation on the missing image. For example, when the element enters, it starts the slide out
+ *   on the empty old image. Then it does not start an animation with the same name again on the same image name, so when the element
+ *   later leaves for real, the old image does not slide out. It just disappears.
+ * - The copies give the real image a different animation name from the one Safari started on the empty image, so it always runs.
+ * - The empty image matches the rules above, not `:only-child`, so it gets the plain names.
+ * - Duration, timing and fill mode come from the rules above.
+ */
+@keyframes slide-in-from-top-only {
+	from {
+		opacity: 0;
+		transform: translateY(calc(0px - var(--vertical-transition-size)));
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slide-in-from-bottom-only {
+	from {
+		opacity: 0;
+		transform: translateY(var(--vertical-transition-size));
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes slide-out-to-top-only {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(calc(0px - var(--vertical-transition-size)));
+	}
+}
+
+@keyframes slide-out-to-bottom-only {
+	from {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	to {
+		opacity: 0;
+		transform: translateY(var(--vertical-transition-size));
+	}
+}
+
+::view-transition-new(.slide-up):only-child {
+	animation-name: slide-in-from-bottom-only;
+}
+
+::view-transition-old(.slide-up):only-child {
+	animation-name: slide-out-to-top-only;
+}
+
+::view-transition-new(.slide-down):only-child {
+	animation-name: slide-in-from-top-only;
+}
+
+::view-transition-old(.slide-down):only-child {
+	animation-name: slide-out-to-bottom-only;
+}
+
 /* Reduced motion: null the slide distance so the keyframes above degrade to an opacity-only crossfade (reduced-motion-safe), and disable the group's default positional morph. Unlayered so it wins over app-level overrides of the distance hook. */
 @media (prefers-reduced-motion: reduce) {
 	:root {
