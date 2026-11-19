@@ -145,6 +145,19 @@
 				);
 			}
 		}
+
+		/* Selected wins over plain and outline: a selected button keeps a fill (the default fill), also on hover and focus, so a toggle shows that it is on. */
+		&.selected:is(.plain, .outline) {
+			&,
+			&:enabled:hover,
+			&:any-link:hover,
+			&:focus,
+			&:enabled:active,
+			&:any-link:active {
+				background: var(--button-selected-background, var(--button-background, var(--tint-90)));
+				color: var(--button-selected-text, var(--button-text, var(--tint-50)));
+			}
+		}
 	}
 }
 
@@ -162,7 +175,7 @@
 		&:is(.plain, .outline, .unselected) {
 			box-shadow: none;
 
-			&:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
+			&:not(.selected, :enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
 				border: var(--button-plain-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
 				background: transparent;
 			}
