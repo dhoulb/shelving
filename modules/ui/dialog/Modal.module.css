@@ -101,9 +101,26 @@
 	.modal.swipe.top::before,
 	.modal.swipe.bottom::before {
 		left: 50%;
-		width: 36px;
+		width: 108px;
 		height: 5px;
 		translate: -50% 0;
+	}
+
+	/* The side with the handle gets extra padding, so the handle does not sit right on the content. */
+	.modal.swipe.bottom {
+		padding-top: calc(var(--modal-padding, var(--space-normal)) + var(--space-small));
+	}
+
+	.modal.swipe.top {
+		padding-bottom: calc(var(--modal-padding, var(--space-normal)) + var(--space-small));
+	}
+
+	.modal.swipe.right {
+		padding-left: calc(var(--modal-indent, var(--space-normal)) + var(--space-small));
+	}
+
+	.modal.swipe.left {
+		padding-right: calc(var(--modal-indent, var(--space-normal)) + var(--space-small));
 	}
 
 	.modal.swipe.bottom::before {
@@ -118,7 +135,7 @@
 	.modal.swipe.right::before {
 		top: 50%;
 		width: 5px;
-		height: 36px;
+		height: 108px;
 		translate: 0 -50%;
 	}
 
