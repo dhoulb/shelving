@@ -13,6 +13,7 @@ const MENU_ITEM_CLASS = getModuleClass(MENU_CSS, "item");
 const MENU_LINK_CLASS = getModuleClass(MENU_CSS, "link");
 const MENU_PROUD_CLASS = getModuleClass(MENU_CSS, "proud");
 const MENU_ACTIVE_CLASS = getModuleClass(MENU_CSS, "active");
+const MENU_SELECTED_CLASS = getModuleClass(MENU_CSS, "selected");
 const MENU_SMALL_CLASS = getModuleClass(MENU_CSS, "small");
 
 /**
@@ -67,13 +68,14 @@ export interface MenuItemProps extends ClickableProps, ClassProps {
 /**
  * A `<li>` containing an `<a>` link, plus optional submenu content shown when this item is "proud".
  * - Reads the current page URL from `<Meta>` and computes `active` / `proud` against its own `href`.
+ * - Pass `selected` to give an item the hover fill, for example the item that the arrow keys move to in a list of suggestions.
  * - Splits `children` into `[label, ...after]`: label goes inside the `<a>`; `after` is rendered as siblings below it, only when proud.
  * - As tall as a `<Button>` by default, so it is easy to tap. Pass `small` for a denser item.
  *
  * @kind component
  * @see https://shelving.cc/ui/MenuItem
  */
-export function MenuItem({ href, children, small, className, ...props }: MenuItemProps): ReactNode {
+export function MenuItem({ href, children, small, selected, className, ...props }: MenuItemProps): ReactNode {
 	const { url, root } = requireMeta();
 	const link = getLink(href, url, root);
 	const proud = isURLProud(url, link);
@@ -83,12 +85,14 @@ export function MenuItem({ href, children, small, className, ...props }: MenuIte
 		<li className={getClass(MENU_ITEM_CLASS, className)}>
 			<Clickable
 				href={href}
+				selected={selected}
 				{...props}
 				className={getClass(
 					MENU_LINK_CLASS, //
 					small && MENU_SMALL_CLASS,
 					proud && MENU_PROUD_CLASS,
 					active && MENU_ACTIVE_CLASS,
+					selected && MENU_SELECTED_CLASS,
 				)}
 			>
 				{label}
