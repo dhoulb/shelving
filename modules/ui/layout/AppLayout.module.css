@@ -60,8 +60,10 @@
 		min-height: 0;
 		overflow: hidden;
 
-		/* Keep the slot clear of the notch and the rounded corners (an absolute child fills the box inside the borders). The bar handles the bottom. */
-		border-top: env(safe-area-inset-top, 0) solid transparent;
+		/* The slot goes up to the top of the screen. The page's scroll box starts its content below the notch, and the content scrolls up under it. */
+		--scroll-inset-top: env(safe-area-inset-top, 0px);
+
+		/* Keep the slot clear of the rounded corners (an absolute child fills the box inside the borders). The bar handles the bottom. */
 		border-left: env(safe-area-inset-left, 0) solid transparent;
 		border-right: env(safe-area-inset-right, 0) solid transparent;
 	}

@@ -41,13 +41,16 @@
 		color: var(--fixed-layout-color, var(--tint-00));
 	}
 
-	/* The content slot: a positioned box that fills the screen, and that `<Scroll vertical cover>` fills. Transparent borders keep it inside the safe areas (an absolute child fills the box inside the borders). */
+	/* The content slot: a positioned box that fills the screen, and that `<Scroll vertical cover>` fills. Transparent borders keep it inside the safe areas (an absolute child fills the box inside the borders).
+	 * At the top, the slot goes up to the top of the screen. The scroll box starts its content below the notch, and the content scrolls up under it. */
 	.layout {
 		/* Fill the locked body, even inside a mount element such as `<div id="root">`. `absolute`, not `fixed`: iOS Safari paints the status bar from a fixed element at the top edge. */
 		position: absolute;
 		inset: 0;
 		overflow: hidden;
-		border-top: env(safe-area-inset-top, 0) solid transparent;
+
+		--scroll-inset-top: env(safe-area-inset-top, 0px);
+
 		border-bottom: env(safe-area-inset-bottom, 0) solid transparent;
 		border-left: env(safe-area-inset-left, 0) solid transparent;
 		border-right: env(safe-area-inset-right, 0) solid transparent;

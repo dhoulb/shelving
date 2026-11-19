@@ -44,6 +44,15 @@
 	.cover {
 		position: absolute;
 		inset: 0;
+
+		/* Start the content below the top inset (a layout sets it to the notch), but let it scroll up under it. A full-bleed header can go up into it with a negative margin of the same size. */
+		padding-top: var(--scroll-inset-top, 0);
+		scroll-padding-top: var(--scroll-inset-top, 0);
+
+		/* A cover inside a cover is not at the top of the screen, so it has no top inset. */
+		& .cover {
+			--scroll-inset-top: 0px;
+		}
 	}
 
 	/* Start at the end and stay there when the content grows (for example a chat). Only the scroll is reversed: the content keeps its own order inside its one child. */
