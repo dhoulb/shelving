@@ -39,7 +39,7 @@ export function Panel({ as: Element = "section", children, className, ...props }
 				PANEL_CLASS, //
 				getStatusClass(props),
 				getPaddingClass(props),
-				getBlockClass(props),
+				getBlockClass({ ...props, trim: props.trim ?? true }),
 				className,
 			)}
 		>

@@ -35,7 +35,7 @@ export interface DetailsProps extends BlockVariants, ClassProps {
  */
 export function Details({ title, open = false, name, children, className, ...props }: DetailsProps): ReactElement {
 	return (
-		<details className={getClass(DETAILS_CLASS, getBlockClass(props), className)} open={open} name={name}>
+		<details className={getClass(DETAILS_CLASS, getBlockClass({ ...props, trim: props.trim ?? true }), className)} open={open} name={name}>
 			<summary className={DETAILS_SUMMARY_CLASS}>
 				<span>{title}</span>
 				<UpIcon />

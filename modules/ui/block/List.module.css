@@ -35,18 +35,3 @@
 		padding-inline-start: var(--list-indent, 1.8em);
 	}
 }
-
-@layer overrides {
-	.unordered,
-	.ordered,
-	.prose ul,
-	.prose ol {
-		&:first-child {
-			margin-block-start: 0;
-		}
-
-		&:last-child {
-			margin-block-end: 0;
-		}
-	}
-}

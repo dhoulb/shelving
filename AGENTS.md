@@ -188,7 +188,7 @@ export function Paragraph({ children, className, ...props }: ParagraphProps): Re
 }
 ```
 
-`getBlockClass()` adds the shared `.block` class, which resets display and margins and collapses `:first-child` / `:last-child` outer margins in `@layer overrides` (see `style/Block.module.css`). A block component therefore needs no margin overrides of its own. `modules/ui/block/Address.module.css` shows the CSS module shape.
+`getBlockClass()` adds the shared `.block` class, which resets display and margins (see `style/Block.module.css`). Blocks keep their outer margins as the first or last child: margins merge with the parent's margin in normal flow, and `<Row>`, `<Column>` and `<Grid>` set every child's margin to 0. Never add `:first-child` / `:last-child` margin rules. A component with padding passes `trim` (`getTrimClass()`) to trim the outer margins of its first and last children. `modules/ui/block/Address.module.css` shows the CSS module shape.
 
 Checklist:
 
