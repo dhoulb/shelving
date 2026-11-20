@@ -19,14 +19,14 @@
 		/* Children */
 		.title {
 			font-size: var(--field-title-size, var(--size-normal));
-			line-height: var(--field-title-leading, var(--leading));
+			line-height: var(--field-title-leading, var(--leading-auto));
 			font-weight: var(--field-title-weight, var(--weight-strong));
 			color: var(--field-title-color, var(--tint-00));
 		}
 
 		.description {
 			font-size: var(--field-description-size, var(--size-normal));
-			line-height: var(--field-description-leading, var(--leading));
+			line-height: var(--field-description-leading, var(--leading-auto));
 			font-weight: var(--field-description-weight, var(--weight-normal));
 			color: var(--field-description-color, var(--tint-70));
 		}

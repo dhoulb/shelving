@@ -13,7 +13,7 @@
 		font-family: var(--title-font, var(--font-title));
 		font-weight: var(--title-weight, var(--weight-strong));
 		font-size: var(--title-size, var(--size-xxxlarge));
-		line-height: var(--title-leading, var(--leading));
+		line-height: var(--title-leading, var(--leading-auto));
 		color: var(--title-color, inherit);
 		text-wrap: balance;
 	}

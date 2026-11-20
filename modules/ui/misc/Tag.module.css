@@ -35,7 +35,7 @@
 		font-family: var(--tag-font, var(--font-body));
 		font-size: var(--tag-size, var(--size-small));
 		font-weight: var(--tag-weight, var(--weight-strong));
-		line-height: var(--tag-leading, var(--leading));
+		line-height: var(--tag-leading, var(--leading-auto));
 		text-transform: var(--tag-case, var(--case-label));
 		text-decoration: none;
 

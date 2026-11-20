@@ -34,8 +34,8 @@ import { Tag } from "shelving/ui";
 | `--tag-font`             | Font family                                     | `var(--font-body)`                             |
 | `--tag-size`             | Font size                                       | `var(--size-small)`                            |
 | `--tag-weight`           | Font weight                                     | `var(--weight-strong)`                         |
-| `--tag-leading`          | Line height                                     | `var(--leading)`                               |
+| `--tag-leading`          | Line height                                     | `var(--leading-auto)`                          |
 | `--tag-case`             | Text transform                                  | `var(--case-label)`                            |
 | `--tag-focus-border`     | Focus outline                                   | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
+**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading-auto`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
