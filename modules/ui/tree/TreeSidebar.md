@@ -1,6 +1,6 @@
 # TreeSidebar
 
-The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu — three sections separated by dividers. `<TreeApp>` mounts one of these automatically.
+The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu. `<TreeApp>` mounts one of these automatically.
 
 **Things to know:**
 

@@ -1,7 +1,6 @@
 import { type ReactNode, useState } from "react";
 import { filterElements } from "../../util/element.js";
 import { searchTree } from "../../util/tree.js";
-import { Divider } from "../block/Divider.js";
 import { TextInput } from "../input/TextInput.js";
 import { Menu, MenuItem } from "../menu/Menu.js";
 import type { OptionalChildProps } from "../util/index.js";
@@ -16,7 +15,7 @@ import { matchMenuElement, TreeMenuMapper } from "./TreeMenu.js";
 export interface TreeSidebarProps extends OptionalChildProps {}
 
 /**
- * Sidebar built from the surrounding tree, in three sections separated by dividers.
+ * Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
  *
  * - **Middle:** a `<TextInput>` search-as-you-type filter.
  * - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
@@ -41,9 +40,7 @@ export function TreeSidebar({ children }: TreeSidebarProps): ReactNode {
 				<MenuItem href="/">Home</MenuItem>
 			</Menu>
 			{children}
-			<Divider />
 			<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
-			<Divider />
 			<Menu small>
 				{results ? (
 					results.map(el => (
