@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" type="text/css" href="https://shelving.cc/pr-441/client-q8z1gypc.css" data-precedence="default"/><script type="module" src="https://shelving.cc/pr-441/client-j6ftbp20.js" async=""></script><title>Shelving</title><title>Playground - Shelving</title><meta name="description" content="TypeScript data toolkit"/><base href="https://shelving.cc/pr-441/"/></head><body><div class="playground_lxwgOg"><div class="editor_lxwgOg"><div class="block_3K4IUA flex_bN4Hsg between_bN4Hsg"><a href="https://shelving.cc/pr-441/" title="Home" class="block_3K4IUA button_SGK8Zw small_SGK8Zw flex_bN4Hsg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z" clip-rule="evenodd"></path></svg></a><div class="block_3K4IUA center_dKRqQA flex_bN4Hsg center_bN4Hsg gap-xsmall_92qe0w"><button type="button" aria-pressed="true" class="block_3K4IUA button_SGK8Zw small_SGK8Zw selected_SGK8Zw flex_bN4Hsg">TSX</button><button type="button" aria-pressed="false" class="block_3K4IUA button_SGK8Zw small_SGK8Zw unselected_SGK8Zw flex_bN4Hsg">CSS</button></div><button type="button" title="Insert a component" class="block_3K4IUA button_SGK8Zw small_SGK8Zw flex_bN4Hsg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-slot="icon"><path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd"></path></svg></button></div><textarea name="code" minLength="0" rows="16" style="--input-rows:16" placeholder="TSX" class="block_3K4IUA font-code_dKRqQA input_temKoQ text_temKoQ multiline_temKoQ" title="" aria-invalid="false">import { useState } from &quot;react&quot;;
+import { DATA, EMAIL, BOOLEAN, StringSchema } from &quot;shelving/schema&quot;;
+import {
+  App, Block, Button, Card, Definitions, Details, Divider, Form, Grid, Heading,
+  Panel, Paragraph, ResetLayout, Row, Section, Subheading, Table, Tag, Title,
+} from &quot;shelving/ui&quot;;
+
+const SIGNUP = DATA({
+  name: new StringSchema({ title: &quot;Name&quot;, min: 1, max: 60 }),
+  email: EMAIL,
+  updates: BOOLEAN,
+});
+
+function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;Row left&gt;
+      &lt;Button solid onClick={() =&gt; setCount(count + 1)}&gt;Liked {count} times&lt;/Button&gt;
+      &lt;Button outline onClick={() =&gt; setCount(0)}&gt;Reset&lt;/Button&gt;
+    &lt;/Row&gt;
+  );
+}
+
+&lt;App title=&quot;Shelving Playground&quot; url=&quot;https://shelving.cc&quot;&gt;
+
+  &lt;ResetLayout&gt;
+    &lt;Panel color=&quot;primary&quot; padding=&quot;xxlarge&quot;&gt;
+      &lt;Block width=&quot;narrow&quot;&gt;
+        &lt;Title&gt;Shelving playground&lt;/Title&gt;
+        &lt;Paragraph&gt;Edit the TSX or the CSS on the left. The preview updates as you type.&lt;/Paragraph&gt;
+        &lt;Counter /&gt;
+      &lt;/Block&gt;
+    &lt;/Panel&gt;
+
+    &lt;Block width=&quot;narrow&quot; space=&quot;xxlarge&quot; indent=&quot;normal&quot;&gt;
+      &lt;Heading&gt;Projects&lt;/Heading&gt;
+      &lt;Grid&gt;
+        &lt;Card&gt;
+          &lt;Subheading&gt;Trail log&lt;/Subheading&gt;
+          &lt;Paragraph&gt;Record runs and rides offline, then sync.&lt;/Paragraph&gt;
+          &lt;Tag status=&quot;success&quot;&gt;Live&lt;/Tag&gt;
+        &lt;/Card&gt;
+        &lt;Card&gt;
+          &lt;Subheading&gt;Recipe box&lt;/Subheading&gt;
+          &lt;Paragraph&gt;Shared shopping lists for the whole house.&lt;/Paragraph&gt;
+          &lt;Tag status=&quot;warning&quot;&gt;Beta&lt;/Tag&gt;
+        &lt;/Card&gt;
+        &lt;Card&gt;
+          &lt;Subheading&gt;Tide tables&lt;/Subheading&gt;
+          &lt;Paragraph&gt;Local tide times, with alerts for low water.&lt;/Paragraph&gt;
+          &lt;Tag&gt;Draft&lt;/Tag&gt;
+        &lt;/Card&gt;
+      &lt;/Grid&gt;
+    &lt;/Block&gt;
+
+    &lt;Panel color=&quot;primary&quot; padding=&quot;xxlarge&quot;&gt;
+      &lt;Block width=&quot;narrow&quot;&gt;
+        &lt;Heading&gt;Team&lt;/Heading&gt;
+        &lt;Table&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Role&lt;/th&gt;&lt;th&gt;Plan&lt;/th&gt;&lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;
+            &lt;tr&gt;&lt;td&gt;Alice&lt;/td&gt;&lt;td&gt;Owner&lt;/td&gt;&lt;td&gt;Pro&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Bob&lt;/td&gt;&lt;td&gt;Editor&lt;/td&gt;&lt;td&gt;Free&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;Chloe&lt;/td&gt;&lt;td&gt;Viewer&lt;/td&gt;&lt;td&gt;Free&lt;/td&gt;&lt;/tr&gt;
+          &lt;/tbody&gt;
+        &lt;/Table&gt;
+        &lt;Definitions&gt;
+          &lt;dt&gt;Created&lt;/dt&gt;&lt;dd&gt;3 March 2026&lt;/dd&gt;
+          &lt;dt&gt;Storage&lt;/dt&gt;&lt;dd&gt;2.4 GB of 10 GB&lt;/dd&gt;
+        &lt;/Definitions&gt;
+      &lt;/Block&gt;
+    &lt;/Panel&gt;
+
+    &lt;Section width=&quot;narrow&quot; space=&quot;xxlarge&quot; indent=&quot;normal&quot;&gt;
+      &lt;Heading&gt;Join the beta&lt;/Heading&gt;
+      &lt;Card padding=&quot;xlarge&quot; indent=&quot;xlarge&quot;&gt;
+        &lt;Form schema={SIGNUP} submit=&quot;Sign up&quot; onSubmit={data =&gt; `Thanks, ${data.name}!`} /&gt;
+      &lt;/Card&gt;
+    &lt;/Section&gt;
+
+    &lt;Divider /&gt;
+
+    &lt;Section width=&quot;narrow&quot; space=&quot;xxlarge&quot; indent=&quot;normal&quot;&gt;
+      &lt;Heading&gt;FAQ&lt;/Heading&gt;
+      &lt;Details title=&quot;What can I change?&quot;&gt;
+        &lt;Paragraph&gt;Press + above the code to add a component, or a variable to the CSS.&lt;/Paragraph&gt;
+      &lt;/Details&gt;
+    &lt;/Section&gt;
+  &lt;/ResetLayout&gt;
+
+&lt;/App&gt;
+</textarea></div><hr class="handle_lxwgOg" aria-orientation="vertical" aria-label="Resize the editor" aria-valuenow="40" aria-valuemin="20" aria-valuemax="80" tabindex="0"/><iframe class="frame_gaY0sA preview_lxwgOg" src="frame.html#code=aW1wb3J0IHsgdXNlU3RhdGUgfSBmcm9tICJyZWFjdCI7CmltcG9ydCB7IERBVEEsIEVNQUlMLCBCT09MRUFOLCBTdHJpbmdTY2hlbWEgfSBmcm9tICJzaGVsdmluZy9zY2hlbWEiOwppbXBvcnQgewogIEFwcCwgQmxvY2ssIEJ1dHRvbiwgQ2FyZCwgRGVmaW5pdGlvbnMsIERldGFpbHMsIERpdmlkZXIsIEZvcm0sIEdyaWQsIEhlYWRpbmcsCiAgUGFuZWwsIFBhcmFncmFwaCwgUmVzZXRMYXlvdXQsIFJvdywgU2VjdGlvbiwgU3ViaGVhZGluZywgVGFibGUsIFRhZywgVGl0bGUsCn0gZnJvbSAic2hlbHZpbmcvdWkiOwoKY29uc3QgU0lHTlVQID0gREFUQSh7CiAgbmFtZTogbmV3IFN0cmluZ1NjaGVtYSh7IHRpdGxlOiAiTmFtZSIsIG1pbjogMSwgbWF4OiA2MCB9KSwKICBlbWFpbDogRU1BSUwsCiAgdXBkYXRlczogQk9PTEVBTiwKfSk7CgpmdW5jdGlvbiBDb3VudGVyKCkgewogIGNvbnN0IFtjb3VudCwgc2V0Q291bnRdID0gdXNlU3RhdGUoMCk7CiAgcmV0dXJuICgKICAgIDxSb3cgbGVmdD4KICAgICAgPEJ1dHRvbiBzb2xpZCBvbkNsaWNrPXsoKSA9PiBzZXRDb3VudChjb3VudCArIDEpfT5MaWtlZCB7Y291bnR9IHRpbWVzPC9CdXR0b24-CiAgICAgIDxCdXR0b24gb3V0bGluZSBvbkNsaWNrPXsoKSA9PiBzZXRDb3VudCgwKX0-UmVzZXQ8L0J1dHRvbj4KICAgIDwvUm93PgogICk7Cn0KCjxBcHAgdGl0bGU9IlNoZWx2aW5nIFBsYXlncm91bmQiIHVybD0iaHR0cHM6Ly9zaGVsdmluZy5jYyI-CgogIDxSZXNldExheW91dD4KICAgIDxQYW5lbCBjb2xvcj0icHJpbWFyeSIgcGFkZGluZz0ieHhsYXJnZSI-CiAgICAgIDxCbG9jayB3aWR0aD0ibmFycm93Ij4KICAgICAgICA8VGl0bGU-U2hlbHZpbmcgcGxheWdyb3VuZDwvVGl0bGU-CiAgICAgICAgPFBhcmFncmFwaD5FZGl0IHRoZSBUU1ggb3IgdGhlIENTUyBvbiB0aGUgbGVmdC4gVGhlIHByZXZpZXcgdXBkYXRlcyBhcyB5b3UgdHlwZS48L1BhcmFncmFwaD4KICAgICAgICA8Q291bnRlciAvPgogICAgICA8L0Jsb2NrPgogICAgPC9QYW5lbD4KCiAgICA8QmxvY2sgd2lkdGg9Im5hcnJvdyIgc3BhY2U9Inh4bGFyZ2UiIGluZGVudD0ibm9ybWFsIj4KICAgICAgPEhlYWRpbmc-UHJvamVjdHM8L0hlYWRpbmc-CiAgICAgIDxHcmlkPgogICAgICAgIDxDYXJkPgogICAgICAgICAgPFN1YmhlYWRpbmc-VHJhaWwgbG9nPC9TdWJoZWFkaW5nPgogICAgICAgICAgPFBhcmFncmFwaD5SZWNvcmQgcnVucyBhbmQgcmlkZXMgb2ZmbGluZSwgdGhlbiBzeW5jLjwvUGFyYWdyYXBoPgogICAgICAgICAgPFRhZyBzdGF0dXM9InN1Y2Nlc3MiPkxpdmU8L1RhZz4KICAgICAgICA8L0NhcmQ-CiAgICAgICAgPENhcmQ-CiAgICAgICAgICA8U3ViaGVhZGluZz5SZWNpcGUgYm94PC9TdWJoZWFkaW5nPgogICAgICAgICAgPFBhcmFncmFwaD5TaGFyZWQgc2hvcHBpbmcgbGlzdHMgZm9yIHRoZSB3aG9sZSBob3VzZS48L1BhcmFncmFwaD4KICAgICAgICAgIDxUYWcgc3RhdHVzPSJ3YXJuaW5nIj5CZXRhPC9UYWc-CiAgICAgICAgPC9DYXJkPgogICAgICAgIDxDYXJkPgogICAgICAgICAgPFN1YmhlYWRpbmc-VGlkZSB0YWJsZXM8L1N1YmhlYWRpbmc-CiAgICAgICAgICA8UGFyYWdyYXBoPkxvY2FsIHRpZGUgdGltZXMsIHdpdGggYWxlcnRzIGZvciBsb3cgd2F0ZXIuPC9QYXJhZ3JhcGg-CiAgICAgICAgICA8VGFnPkRyYWZ0PC9UYWc-CiAgICAgICAgPC9DYXJkPgogICAgICA8L0dyaWQ-CiAgICA8L0Jsb2NrPgoKICAgIDxQYW5lbCBjb2xvcj0icHJpbWFyeSIgcGFkZGluZz0ieHhsYXJnZSI-CiAgICAgIDxCbG9jayB3aWR0aD0ibmFycm93Ij4KICAgICAgICA8SGVhZGluZz5UZWFtPC9IZWFkaW5nPgogICAgICAgIDxUYWJsZT4KICAgICAgICAgIDx0aGVhZD4KICAgICAgICAgICAgPHRyPjx0aD5OYW1lPC90aD48dGg-Um9sZTwvdGg-PHRoPlBsYW48L3RoPjwvdHI-CiAgICAgICAgICA8L3RoZWFkPgogICAgICAgICAgPHRib2R5PgogICAgICAgICAgICA8dHI-PHRkPkFsaWNlPC90ZD48dGQ-T3duZXI8L3RkPjx0ZD5Qcm88L3RkPjwvdHI-CiAgICAgICAgICAgIDx0cj48dGQ-Qm9iPC90ZD48dGQ-RWRpdG9yPC90ZD48dGQ-RnJlZTwvdGQ-PC90cj4KICAgICAgICAgICAgPHRyPjx0ZD5DaGxvZTwvdGQ-PHRkPlZpZXdlcjwvdGQ-PHRkPkZyZWU8L3RkPjwvdHI-CiAgICAgICAgICA8L3Rib2R5PgogICAgICAgIDwvVGFibGU-CiAgICAgICAgPERlZmluaXRpb25zPgogICAgICAgICAgPGR0PkNyZWF0ZWQ8L2R0PjxkZD4zIE1hcmNoIDIwMjY8L2RkPgogICAgICAgICAgPGR0PlN0b3JhZ2U8L2R0PjxkZD4yLjQgR0Igb2YgMTAgR0I8L2RkPgogICAgICAgIDwvRGVmaW5pdGlvbnM-CiAgICAgIDwvQmxvY2s-CiAgICA8L1BhbmVsPgoKICAgIDxTZWN0aW9uIHdpZHRoPSJuYXJyb3ciIHNwYWNlPSJ4eGxhcmdlIiBpbmRlbnQ9Im5vcm1hbCI-CiAgICAgIDxIZWFkaW5nPkpvaW4gdGhlIGJldGE8L0hlYWRpbmc-CiAgICAgIDxDYXJkIHBhZGRpbmc9InhsYXJnZSIgaW5kZW50PSJ4bGFyZ2UiPgogICAgICAgIDxGb3JtIHNjaGVtYT17U0lHTlVQfSBzdWJtaXQ9IlNpZ24gdXAiIG9uU3VibWl0PXtkYXRhID0-IGBUaGFua3MsICR7ZGF0YS5uYW1lfSFgfSAvPgogICAgICA8L0NhcmQ-CiAgICA8L1NlY3Rpb24-CgogICAgPERpdmlkZXIgLz4KCiAgICA8U2VjdGlvbiB3aWR0aD0ibmFycm93IiBzcGFjZT0ieHhsYXJnZSIgaW5kZW50PSJub3JtYWwiPgogICAgICA8SGVhZGluZz5GQVE8L0hlYWRpbmc-CiAgICAgIDxEZXRhaWxzIHRpdGxlPSJXaGF0IGNhbiBJIGNoYW5nZT8iPgogICAgICAgIDxQYXJhZ3JhcGg-UHJlc3MgKyBhYm92ZSB0aGUgY29kZSB0byBhZGQgYSBjb21wb25lbnQsIG9yIGEgdmFyaWFibGUgdG8gdGhlIENTUy48L1BhcmFncmFwaD4KICAgICAgPC9EZXRhaWxzPgogICAgPC9TZWN0aW9uPgogIDwvUmVzZXRMYXlvdXQ-Cgo8L0FwcD4K&amp;css=LyogQ2hhbmdlIGFueSBzaGVsdmluZyB2YXJpYWJsZSBoZXJlLiBQcmVzcyArIHRvIGFkZCBtb3JlLiAqLwo6cm9vdCB7CiAgLS1jb2xvci1wcmltYXJ5OiB2YXIoLS1jb2xvci1wdXJwbGUpOwogIC0tY29sb3ItZ3JheTogb2tsY2goNjAlIDAuMDQgMzAwZGVnKTsKfQo" title="Playground preview" loading="lazy"></iframe></div><script type="application/json" id="docs-data">{"url":"https://shelving.cc/pr-441/playground","root":"https://shelving.cc/pr-441/","app":"Shelving","description":"TypeScript data toolkit","language":"en","stylesheets":["https://shelving.cc/pr-441/client-q8z1gypc.css"],"modules":["https://shelving.cc/pr-441/client-j6ftbp20.js"],"tags":{"viewport":"width=device-width, initial-scale=1"},"title":""}</script></body></html>
