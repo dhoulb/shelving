@@ -59,18 +59,23 @@ The following `:root` variables are defined by this module and can be overridden
 
 ### Line height
 
-| Variable           | Default                                                | Used for                                                                             |
-| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `--leading-auto`   | `round(clamp(1.05em, calc(1em + 0.5rem), 1.5em), 1px)` | Default: about 1.5 for small text, less for big text.                                |
-| `--leading-single` | `round(1em, 1px)`                                      | One line, no gap. For icons and one-line labels.                                     |
-| `--leading-tight`  | `round(1.25em, 1px)`                                   | Small text in a close group, such as a title and a short description in a tile.      |
-| `--leading-normal` | `round(1.5em, 1px)`                                    | A fixed 1.5 at every size.                                                           |
-| `--leading-loose`  | `round(1.75em, 1px)`                                   | Long body copy.                                                                      |
-| `--leading`        | `var(--leading-auto)`                                  | The current line height. Every font-size variant, component, and the body read this. |
+| Variable           | Default                                                | Used for                                                                        |
+| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `--leading-auto`   | `round(clamp(1.05em, calc(1em + 0.5rem), 1.5em), 1px)` | Default: about 1.5 for small text, less for big text.                           |
+| `--leading-single` | `round(1em, 1px)`                                      | One line, no gap. For icons and one-line labels.                                |
+| `--leading-tight`  | `round(1.25em, 1px)`                                   | Small text in a close group, such as a title and a short description in a tile. |
+| `--leading-normal` | `round(1.5em, 1px)`                                    | A fixed 1.5 at every size.                                                      |
+| `--leading-loose`  | `round(1.75em, 1px)`                                   | Long body copy.                                                                 |
 
 Each value is rounded to a whole pixel, so stacked rows do not move by a pixel when the browser rounds them.
 
-The `leading` prop sets the line height of an element and all the text inside it: `<Column leading="tight">` makes a `<Strong size="small">` inside it tight too. The prop sets `--leading` on the element, and each child reads `--leading` with its own font size. To change the default for the whole app, override `--leading-auto` at `:root`.
+How line height reaches an element:
+
+- The body uses `--leading-auto`. A block that sets its own font size (`<Heading>`, `<Label>`, `<Button>`, …) has a hook, for example `--heading-leading`, that defaults to `--leading-auto`.
+- Inline elements (`<Strong>`, `<Span>`, `<Small>`, …) set no line height. They inherit it.
+- The `size` prop sets `--leading-auto` too. A line height in `em` inherits as a fixed pixel value, so text with a new size needs a new line height.
+- The `leading` prop sets the line height of that element only, and wins over `size` and over component hooks: `<Column size="small" leading="tight">`. Text inside inherits it, unless it sets its own size.
+- To change the default for the whole app, override `--leading-auto` at `:root`.
 
 ### Case
 
@@ -94,7 +99,7 @@ getTypographyClass({ tint, weight, font, case: caseValue, size, leading, ...prop
 | --- | --- | --- |
 | `props` | `TypographyVariants` |  |
 | `.size` | `SizeVariant \| undefined` | Font size of the element. Optional. |
-| `.leading` | `LeadingVariant \| undefined` | Line height of the element and the text inside it. Optional. |
+| `.leading` | `LeadingVariant \| undefined` | Line height of the element. Text inside inherits it, unless it sets its own font size. Optional. |
 | `.tint` | `TintVariant \| undefined` | Set CSS text `color:` to one of the shades of the current tint ladder. Optional. |
 | `.font` | `FontVariant \| undefined` | Font family of the element. Optional. |
 | `.case` | `CaseVariant \| undefined` | Text case of the element. Optional. |

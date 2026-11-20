@@ -32,7 +32,7 @@ Typographic variant props — colour, font-family, weight, case, size, line heig
 | Property | Type | Description |
 | --- | --- | --- |
 | `size` | `SizeVariant \| undefined` | Font size of the element. Optional. |
-| `leading` | `LeadingVariant \| undefined` | Line height of the element and the text inside it. Optional. |
+| `leading` | `LeadingVariant \| undefined` | Line height of the element. Text inside inherits it, unless it sets its own font size. Optional. |
 | `tint` | `TintVariant \| undefined` | Set CSS text `color:` to one of the shades of the current tint ladder. Optional. |
 | `font` | `FontVariant \| undefined` | Font family of the element. Optional. |
 | `case` | `CaseVariant \| undefined` | Text case of the element. Optional. |
