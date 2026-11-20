@@ -70,7 +70,8 @@
 
 	.sidebar {
 		/* Box */
-		position: relative; /* Positioned like the content slot, so neither area paints over the other. */
+		position: relative;
+		z-index: 1; /* Paint above the content slot, so the sidebar's shadow shows over the pages, even a page with its own background. */
 		display: flow-root;
 		border-right: var(--sidebar-layout-border, none);
 
@@ -85,6 +86,7 @@
 		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
 		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
 		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
+		box-shadow: var(--sidebar-layout-sidebar-shadow, none);
 	}
 
 	.content {
@@ -149,6 +151,7 @@
 			max-width: 85vw;
 
 			/* Style */
+			box-shadow: none; /* The closed drawer sits off the screen, so its shadow must not show at the edge. The open drawer has its own shadow (below). */
 			transform: translateX(-100%);
 			transition: transform var(--duration-normal) ease-in-out;
 		}

@@ -11,6 +11,7 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - It is a frame only. The content slot does not scroll: fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box. Content put in the slot without a scroll box does not scroll.
 - The sidebar stays outside the page cache, so it keeps its own scroll position and state as pages change.
+- The sidebar paints above the content slot, so its shadow (`--sidebar-layout-sidebar-shadow`) shows over the pages, even a page with its own background. Cast the shadow toward the content, for example `0.25rem 0 1rem -0.25rem #0003` for a left sidebar (use a negative X offset with `right`).
 - On a narrow screen the menu button floats at the top right of the content slot, above the page.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
@@ -53,6 +54,7 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 | `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-90)` (one shade darker than the page) |
 | `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                          |
 | `--sidebar-layout-border`             | Divider between sidebar and content, e.g. `1px solid var(--tint-90)`        | `none`                                            |
+| `--sidebar-layout-sidebar-shadow`     | Shadow of the sidebar column on a wide screen                               | `none`                                            |
 | `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                             |
 
 The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
