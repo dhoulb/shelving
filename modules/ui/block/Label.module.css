@@ -12,7 +12,7 @@
 		font-family: var(--label-font, var(--font-label));
 		font-weight: var(--label-weight, var(--weight-label));
 		font-size: var(--label-size, var(--size-label));
-		line-height: var(--label-leading, var(--leading));
+		line-height: var(--label-leading, var(--leading-auto));
 		text-transform: var(--definitions-label-case, var(--case-label));
 		color: var(--label-color, var(--tint-70));
 	}

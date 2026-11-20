@@ -135,7 +135,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-font`                    | Font family                                         | `var(--font-body)`                                                                 |
 | `--button-weight`                  | Font weight                                         | `var(--weight-normal)` (400)                                                       |
 | `--button-size`                    | Font size                                           | `var(--size-normal)`                                                               |
-| `--button-leading`                 | Line height                                         | `var(--leading)`                                                                   |
+| `--button-leading`                 | Line height                                         | `var(--leading-auto)`                                                              |
 | `--button-shadow`                  | Box shadow (never on `plain`)                       | `none`                                                                             |
 | `--button-active-background`       | Surface fill while pressed                          | `var(--button-hover-background)`                                                   |
 | `--button-active-border`           | Border while pressed                                | `var(--button-hover-border)`                                                       |
@@ -159,7 +159,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline`        | `var(--button-plain-hover-background)`                                             |
 | `--button-plain-active-border`     | Border while pressed when `plain` or `outline`      | `var(--button-plain-hover-border)`                                                 |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */

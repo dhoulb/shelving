@@ -63,15 +63,21 @@ An app is built from layers, each with one job. Write them in plain sight in `Ap
 3. **Layout picker**: your own component that picks the layout (and its props) from the session, the path, or any other state.
 4. **Layout**: `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`. It draws the chrome (tab bar, sidebar) and gives a content slot. It knows nothing about the cache.
 5. **Content**: transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. Put it in a small component of your own, and reuse it in each layout.
-6. **Page**: `<Page>` with its title, then the page content. A page renders no layout.
+6. **Page**: `<Page>` with its title, then the page content. A page renders no layout, unless the app puts a layout in each page (below).
 
 Nesting rules:
 
-- The layout sits **above** the router. A page, an error page or a loading state never renders a layout.
+- The layout sits **above** the router, or **in each page** (below).
 - The transition goes **around** `<RouteCache>`, not inside it.
 - `<Scroll vertical cover>` goes **inside** `<RouteCache>`, so each page keeps its own scroll.
-- Chrome that keeps state or animates (a tab bar, a sidebar) stays in the layout, **outside** the cache.
-- All pages in one stack must share one layout, because they share one `<RouteCache>`. To change the chrome for some pages (hide the tab bar), change a layout prop from the picker, for example `nav={false}`. Swap to another layout only between sections you do not move back and forth in, such as log-in and the main app.
+- To swap layouts between sections you do not move back and forth in, such as log-in and the main app, pick the layout above the router.
+
+**A layout in each page.** When some pages in a stack need other chrome (a full-screen chat with no tab bar), let each page render its own layout, inside `<RouteCache>`:
+
+- Make one small component for each layout, with the layout, `<Scroll vertical cover>` and `<PageLoader>` inside it, and wrap each route's page in one of them.
+- Then `<Content>` is only the transition, `<RouteCache>` and `<Router>`.
+- During a page slide, a tab bar that both pages have stays still, and a tab bar that only one page has slides with its page. See `<AppLayout>`.
+- Each page has its own copy of the chrome, so keep chrome state (an unread count) in a store, not in the chrome.
 
 ```tsx
 import { useStore } from "shelving/react";

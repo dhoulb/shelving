@@ -50,7 +50,17 @@ export type CaseVariant = "title" | "body" | "label" | "code" | "upper" | "lower
 export type FontVariant = "title" | "body" | "label" | "code" | "serif" | "sans" | "monospace";
 
 /**
- * Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
+ * Allowed values for line height for components that support `TypographyVariants`
+ *
+ * - `auto` is the default: about 1.5 for small text and less for big text.
+ * - `single` is 1, `tight` is 1.25, `normal` is 1.5, and `loose` is 1.75.
+ *
+ * @see https://shelving.cc/ui/LeadingVariant
+ */
+export type LeadingVariant = "auto" | "single" | "tight" | "normal" | "loose";
+
+/**
+ * Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, balance, and truncate, applied via `getTypographyClass()`
  *
  * - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
  *
@@ -59,6 +69,8 @@ export type FontVariant = "title" | "body" | "label" | "code" | "serif" | "sans"
 export interface TypographyVariants extends ColorVariants {
 	/** Font size of the element. */
 	size?: SizeVariant | undefined;
+	/** Line height of the element. Text inside inherits it, unless it sets its own font size. */
+	leading?: LeadingVariant | undefined;
 	/** Set CSS text `color:` to one of the shades of the current tint ladder. */
 	tint?: TintVariant | undefined;
 	/** Font family of the element. */
@@ -77,6 +89,8 @@ export interface TypographyVariants extends ColorVariants {
 	wrap?: boolean | undefined;
 	/** Disable wrapping. */
 	nowrap?: boolean | undefined;
+	/** Balance the length of the lines, so the last line is not much shorter than the others. */
+	balance?: boolean | undefined;
 	/** Cut overflowing text to one line with an ellipsis (on a block or a flex item). */
 	truncate?: boolean | undefined;
 }
@@ -84,14 +98,14 @@ export interface TypographyVariants extends ColorVariants {
 /**
  * Get the typography class for a component from its typographic variant props.
  *
- * Maps the colour, size, weight, font, case, tint, alignment, wrap, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
+ * Maps the colour, size, line height, weight, font, case, tint, alignment, wrap, balance, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
  *
  * @returns The combined typography class string (empty when no variants apply).
  * @example getTypographyClass({ font: "title", size: "large", center: true })
  * @example getTypographyClass({ color: "purple", tint: "40" })
  * @see https://shelving.cc/ui/getTypographyClass
  */
-export function getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: TypographyVariants): string {
+export function getTypographyClass({ tint, weight, font, case: caseValue, size, leading, ...props }: TypographyVariants): string {
 	return getClass(
 		getColorClass(props),
 		getModuleClass(
@@ -101,6 +115,7 @@ export function getTypographyClass({ tint, weight, font, case: caseValue, size, 
 			weight && `weight-${weight}`,
 			font && `font-${font}`,
 			size && `size-${size}`,
+			leading && `leading-${leading}`,
 			props,
 		),
 	);

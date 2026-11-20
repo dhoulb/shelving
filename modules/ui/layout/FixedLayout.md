@@ -9,7 +9,7 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 - The slot stays clear of the home bar and the rounded screen corners (safe-area insets).
 - The slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it.
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
-- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
+- Pick it above the router, or in each page inside `<RouteCache>`, for example for a full-screen page in a stack where the other pages have a tab bar. See "Composing an app" on `<App>`.
 
 ## Usage
 

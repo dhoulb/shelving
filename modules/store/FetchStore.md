@@ -24,3 +24,9 @@ await store.refresh(); // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.
+
+## Failed fetches
+
+- A failed fetch keeps the current value, if the store has one. The page keeps showing the old value, and the next `refresh()` tries again.
+- With no value, the error is saved as `reason`, and reading `value` throws it to the nearest error boundary.
+- A read of `value` a second or more after the failure fetches again, and the store shows as loading. So a `<RetryButton>` in a `<Catcher>` works. A read sooner than that throws the error again, so React's own quick re-render of a failed component does not fetch in a loop.

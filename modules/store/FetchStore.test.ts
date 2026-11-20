@@ -227,3 +227,71 @@ test("refresh() re-fetches after invalidate()", async () => {
 	await store.refresh(1000);
 	expect(calls).toBe(2);
 });
+
+// --- Failed fetches ---
+
+test("a failed fetch keeps the current value", async () => {
+	let fail = false;
+	const store = new FetchStore<number>(NONE, () => (fail ? Promise.reject(new Error("offline")) : Promise.resolve(1)));
+	await store.refresh();
+	fail = true;
+
+	expect(await store.refresh()).toBe(false);
+	expect(store.value).toBe(1);
+	expect(store.reason).toBe(undefined);
+});
+
+test("a failed fetch with a current value tries again on the next refresh", async () => {
+	let calls = 0;
+	const store = new FetchStore<number>(NONE, () => (++calls === 2 ? Promise.reject(new Error("offline")) : Promise.resolve(calls)));
+	await store.refresh();
+	const time = store.time;
+	await store.refresh(); // fails, keeps 1
+
+	expect(store.time).toBe(time); // the failed fetch did not make the value fresh
+	expect(await store.refresh()).toBe(true);
+	expect(store.value).toBe(3);
+});
+
+test("a read soon after a failed fetch throws the error and does not fetch again", async () => {
+	let calls = 0;
+	const err = new Error("offline");
+	const store = new FetchStore<number>(NONE, () => {
+		calls++;
+		return Promise.reject(err);
+	});
+	await store.refresh();
+
+	expect(() => store.value).toThrow(err);
+	expect(() => store.value).toThrow(err);
+	expect(calls).toBe(1);
+});
+
+test("a read a second after a failed fetch fetches again and shows as loading", async () => {
+	const realNow = Date.now;
+	let calls = 0;
+	const store = new FetchStore<number>(NONE, () => (++calls === 1 ? Promise.reject(new Error("offline")) : Promise.resolve(2)));
+	await store.refresh();
+	try {
+		const later = realNow() + 1000;
+		Date.now = () => later;
+		try {
+			store.value;
+			expect.unreachable();
+		} catch (thrown) {
+			expect(thrown).toMatchObject(EXPECT_PROMISELIKE); // loading, not the old error
+		}
+		expect(store.reason).toBe(undefined);
+	} finally {
+		Date.now = realNow;
+	}
+	await runMicrotasks();
+	expect(store.value).toBe(2);
+	expect(calls).toBe(2);
+});
+
+test("setting value still works", () => {
+	const store = new FetchStore<number>(NONE, () => Promise.resolve(1));
+	store.value = 5;
+	expect(store.value).toBe(5);
+});

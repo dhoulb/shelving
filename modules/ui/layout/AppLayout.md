@@ -11,10 +11,14 @@ A full-viewport layout with a content slot above a bar of the app's main section
 - The content slot stays clear of the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
 - The content slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so the page's `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it. A page can pull a full-bleed header up behind the notch: see "Use the top inset" on `<Scroll>`.
 - Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
-- The bar is outside the page cache, so it has one copy and keeps its state.
-- The bar has no view-transition name of its own. Pages slide sideways in the content slot above it, so the bar stays still. A named bar would draw above a dialog or notice that covers it during every view transition.
-- Leave out `nav`, or set it to `false`, to show no bar. The content slot then fills the screen. To hide the bar for some pages, change the prop from the URL, so the layout and its page cache stay mounted: `nav={path.startsWith("/squad/") ? false : <StackBar />}`.
-- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
+- During a page slide (a `"forward"` or `"back"` transition), the bar has its own view-transition name, so it leaves the sliding page:
+  - When both pages have a bar, the old bar fades into the new one in place, so the bar stays still.
+  - When only one page has a bar (for example, a full-screen page with another layout), the bar slides with its page, so the page comes in or leaves as one piece.
+- At other times the bar has no view-transition name, so it never draws above a dialog or notice that covers it.
+- Leave out `nav`, or set it to `false`, to show no bar. The content slot then fills the screen.
+- Put the layout in one of two places. See "Composing an app" on `<App>`:
+  - **Above the router**, once. The bar has one copy and keeps its state. Every page has the bar.
+  - **In each page**, inside `<RouteCache>`. Each page picks its own layout, for example `<FixedLayout>` for a full-screen chat with no bar. Keep the bar's state in a store, because each page has its own copy of the bar.
 
 ## Usage
 

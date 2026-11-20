@@ -1,4 +1,5 @@
 @import url("../style/layers.css");
+@import url("../style/Duration.module.css");
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 
@@ -51,6 +52,9 @@
 		/* Stack the content slot above the bar. */
 		display: flex;
 		flex-direction: column;
+
+		/* Clip the frame. Also, React only names a revealed box for a view transition when its size, position or clip changes, so without a clip a page kept in `<RouteCache>` with its own layout never slides in. */
+		overflow: hidden;
 	}
 
 	/* The content slot: a positioned box that `<Scroll vertical cover>` fills. */
@@ -83,9 +87,8 @@
 		color: var(--app-layout-nav-color, var(--tint-00));
 		box-shadow: var(--app-layout-nav-shadow, none);
 
-		/* No view-transition name of its own by default. Pages slide sideways in the content slot above it, so they never pass over it.
-		 * A named bar would draw above everything else during any view transition, and jump over a dialog or notice that covers it.
-		 * An app can name it for its own transitions only, for example parts of a page that slide in their own layers and would pass over it:
+		/* No view-transition name of its own by default: a named bar draws above everything else during a view transition, and jumps over a dialog or notice that covers it.
+		 * It gets a name during a page slide only (below). An app can also name it for its own transitions, for example parts of a page that slide in their own layers and would pass over it:
 		 * `:root:active-view-transition-type(tab) { --app-layout-nav-transition-name: app-nav; }` */
 		view-transition-name: var(--app-layout-nav-transition-name, none);
 		view-transition-class: nav;
@@ -96,6 +99,13 @@
 			max-width: var(--app-layout-nav-item-width, 6rem);
 		}
 	}
+
+	/* During a page slide (back or forward), the bar takes its own layer, so it leaves the sliding page.
+	 * - Both pages have a bar: the old bar fades into the new one in place, so the bar stays still.
+	 * - Only one page has a bar: it slides with its page (below). */
+	:root:active-view-transition-type(forward, back) .nav {
+		view-transition-name: app-layout-nav;
+	}
 }
 
 /*
@@ -105,4 +115,63 @@
  */
 ::view-transition-group(.nav) {
 	z-index: 1;
+}
+
+/*
+ * A bar that only one of the two pages has slides with its page, so the page comes in or leaves as one piece.
+ * - For example: from a page with a bar to a full-screen page with no bar, the bar slides out with the old page.
+ * - `:only-child` limits the slide to a bar on one side only. Between two pages that both have a bar, it fades in place (the default).
+ * - The same move as `<HorizontalTransition>`, with the same hooks, so reduced motion also makes it a fade.
+ * - These rules must stay in this file, for the same reason as the rule above.
+ * - Longhands only: Bun leaves the keyframes name unhashed in a shorthand that holds a `var()`.
+ */
+@keyframes app-layout-nav-in-from-right {
+	from {
+		opacity: 0;
+		transform: translateX(var(--horizontal-transition-size, 100%));
+	}
+}
+
+@keyframes app-layout-nav-in-from-left {
+	from {
+		opacity: 0;
+		transform: translateX(calc(0px - var(--horizontal-transition-size, 100%)));
+	}
+}
+
+@keyframes app-layout-nav-out-to-left {
+	to {
+		opacity: 0;
+		transform: translateX(calc(0px - var(--horizontal-transition-size, 100%)));
+	}
+}
+
+@keyframes app-layout-nav-out-to-right {
+	to {
+		opacity: 0;
+		transform: translateX(var(--horizontal-transition-size, 100%));
+	}
+}
+
+::view-transition-new(.nav):only-child,
+::view-transition-old(.nav):only-child {
+	animation-duration: var(--horizontal-transition-duration, var(--duration-normal));
+	animation-timing-function: ease-in-out;
+	animation-fill-mode: both;
+}
+
+:root:active-view-transition-type(forward)::view-transition-new(.nav):only-child {
+	animation-name: app-layout-nav-in-from-right;
+}
+
+:root:active-view-transition-type(forward)::view-transition-old(.nav):only-child {
+	animation-name: app-layout-nav-out-to-left;
+}
+
+:root:active-view-transition-type(back)::view-transition-new(.nav):only-child {
+	animation-name: app-layout-nav-in-from-left;
+}
+
+:root:active-view-transition-type(back)::view-transition-old(.nav):only-child {
+	animation-name: app-layout-nav-out-to-right;
 }

@@ -6,10 +6,19 @@
 @layer components {
 	.notices {
 		position: fixed;
-		right: calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-right, 0px));
-		left: calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-left, 0px));
+		inset: auto calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-right, 0px)) auto
+			calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-left, 0px));
 		z-index: 1000;
 		display: flex;
+
+		/* The list is a manual popover in the top layer, so it shows above an open modal `<dialog>`. Undo the browser's popover styles: it is placed by the rules here, and paints nothing itself. */
+		margin: 0;
+		width: auto;
+		height: auto;
+		overflow: visible;
+		border: 0;
+		background: transparent;
+		color: inherit;
 		box-sizing: border-box;
 		max-width: calc(var(--notices-width, var(--width-narrow)) + 2 * var(--space-normal));
 
@@ -23,6 +32,7 @@
 
 		/* Take a separate layer in any view transition, so a page that slides under the list does not cover it. `match-element` gives each list a unique name. */
 		view-transition-name: match-element;
+		view-transition-class: notices;
 
 		/* Each notice is only as wide as its content, and stays on the side of the list's corner, or in the centre. */
 		& > * {
@@ -58,4 +68,12 @@
 		margin-inline: auto;
 		align-items: center;
 	}
+}
+
+/*
+ * In a view transition, the list's layer is above every other layer, including a dialog's, so it does not go under a dialog that fades in.
+ * - This rule must stay in this file. Bun hashes the `view-transition-class` above and the class name in the selector below the same way only when both are in the same file.
+ */
+::view-transition-group(.notices) {
+	z-index: 1000;
 }
