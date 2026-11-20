@@ -18,6 +18,7 @@ export interface FormFooterProps extends OptionalChildProps, ClassProps {
  * Show a form footer with a submit button and the form's error message.
  * - Renders a row containing a `SubmitButton` (and any extra buttons passed as `children`).
  * - Renders a `<FormMessage>` beneath the buttons showing any error set on the form.
+ * - Has paragraph space (`space="paragraph"`), the same as a field, so the gap above the buttons matches the gap between fields.
  *
  * @returns A footer element with the submit row and form message.
  * @kind component
@@ -26,7 +27,7 @@ export interface FormFooterProps extends OptionalChildProps, ClassProps {
  */
 export function FormFooter({ children, submit, className }: FormFooterProps): ReactElement {
 	return (
-		<Footer className={className}>
+		<Footer space="paragraph" className={className}>
 			<Row reverse>
 				<SubmitButton>{submit}</SubmitButton>
 				{children}
