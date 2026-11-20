@@ -20,8 +20,9 @@ export interface AppLayoutProps extends OptionalChildProps {
 /**
  * Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
  * - It is a frame only: the content slot does not scroll. Fill it with `<Scroll vertical cover>`, inside `<RouteCache>`, so each page scrolls in its own box.
- * - The bar sits below the content slot, not over it, and it stays still while a page slides.
- * - Set `nav={false}` to hide the bar, for example for a full-screen page. Change the prop in place (from the URL), so the layout and its page cache stay mounted.
+ * - The bar sits below the content slot, not over it.
+ * - During a page slide, the bar stays still when both pages have it, and slides with its page when only one page has it.
+ * - Render it once above the router, or let each page render its own layout inside `<RouteCache>`, so pages with no bar can use another layout.
  *
  * @kind component
  * @see https://shelving.cc/ui/AppLayout
