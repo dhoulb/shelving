@@ -11,6 +11,7 @@ A collapsible panel. The title is always visible. The content shows when the use
 
 **Things to know:**
 
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - A chevron on the right of the title points down when the panel is closed and up when it is open.
 - The panel animates to its true height where the browser supports `interpolate-size` and `::details-content`. Other browsers open it at once.
 - Give sibling panels the same `name` to make them open exclusively: when one opens, the others close.

@@ -27,7 +27,7 @@ The styling system lives in `style/` and has four moving parts: design tokens, t
 
 **The tint scale.** All colour flows from one anchor variable, `--tint-50`, from which a 21-step ladder is computed and _recomputed_ under `TINT_CLASS` — the heart of how `color=` and `status=` retint a whole subtree. The ladder, the recompute trick, the painting conventions, and the theming guide all live on the `TINT_CLASS` page.
 
-**Cascade layers.** Styles are ordered by `@layer`, lowest to highest priority: `defaults` (`:root` tokens, the tint ladder, body baseline) → `components` (the bulk of the CSS: `.card`, `.button`, …) → `variants` (cross-cutting opt-in modifiers, which always beat components) → `overrides` (top-priority structural fixes like `:first-child` / `:last-child` margin collapses). Unlayered rules beat all layered rules, so a theme should set tokens at `:root` or wrap its rules in `@layer`.
+**Cascade layers.** Styles are ordered by `@layer`, lowest to highest priority: `defaults` (`:root` tokens, the tint ladder, body baseline) → `components` (the bulk of the CSS: `.card`, `.button`, …) → `variants` (cross-cutting opt-in modifiers, which always beat components) → `overrides` (top-priority structural fixes that must beat variants). Unlayered rules beat all layered rules, so a theme should set tokens at `:root` or wrap its rules in `@layer`.
 
 **Styling props.** The cross-cutting visual options are props, each backed by a helper in `style/` that maps the prop to a class. Colour and status move the tint anchor — `getColorClass()` and `getStatusClass()`; font size, weight, family, and case, plus text alignment, tint, and wrapping, all come from `getTypographyClass()`, which extends `ColorVariants` and composes `getColorClass()` so every typographic element also accepts `color` (use `getColorClass()` directly only for colour-without-typography, e.g. `<Icon>`); spacing, block-padding, inline-padding ("indent"), and gap from `getSpaceClass()`, `getPaddingClass()`, `getIndentClass()`, and `getGapClass()`; width constraints from `getWidthClass()`; flex layout from `getFlexClass()`; grid layout from `getGridClass()`; and opt-in scrolling from `getScrollClass()`. Each helper's page lists its exact prop values and what they set. A component opts into the props it wants by extending the matching `*Props` interfaces and composing the `getXxxClass(props)` calls.
 
@@ -282,6 +282,7 @@ The components below are listed in the index following this page; this is the sh
 - [getSpaceClass()](ui/getSpaceClass.md): Get the block spacing class for a component from its space="" variant prop.
 - [getStatusClass()](ui/getStatusClass.md): Get the status tint class for a component from its status variant prop.
 - [getStrokeClass()](ui/getStrokeClass.md): Get the border-thickness class for a component from its stroke variant prop.
+- [getTrimClass()](ui/getTrimClass.md): Get the trim class for a component from its trim variant prop.
 - [getTypographyClass()](ui/getTypographyClass.md): Get the typography class for a component from its typographic variant props.
 - [getWidthClass()](ui/getWidthClass.md): Get the width class for a component from its width / grow variant props.
 - [useSwipe()](ui/useSwipe.md): Swipe a target to complete a change, and scrub the change's view transition with the finger.
@@ -487,6 +488,7 @@ The components below are listed in the index following this page; this is the sh
 - [SpaceVariants](ui/SpaceVariants.md): Variants to control block spacing on components, e.g. space="large".
 - [StatusVariants](ui/StatusVariants.md): Variant props for the semantic status of an element, e.g. status="success".
 - [StrokeVariants](ui/StrokeVariants.md): Variant props for the border thickness of a component, e.g. stroke="thick".
+- [TrimVariants](ui/TrimVariants.md): Variant props to trim the outer margins of a component's first and last children, e.g. trim.
 - [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via getTypographyClass()
 - [WidthVariants](ui/WidthVariants.md): Variant props that set (or unconstrain) a component's width, e.g. width="narrow" or width="12x".
 - [CellProps](ui/CellProps.md): Props for Cell — padding, indent, width, and typography variants plus children.

@@ -20387,7 +20387,7 @@ The styling system lives in `style/` and has four moving parts: design tokens, t
 
 **The tint scale.** All colour flows from one anchor variable, `--tint-50`, from which a 21-step ladder is computed and _recomputed_ under `TINT_CLASS` — the heart of how `color=` and `status=` retint a whole subtree. The ladder, the recompute trick, the painting conventions, and the theming guide all live on the `TINT_CLASS` page.
 
-**Cascade layers.** Styles are ordered by `@layer`, lowest to highest priority: `defaults` (`:root` tokens, the tint ladder, body baseline) → `components` (the bulk of the CSS: `.card`, `.button`, …) → `variants` (cross-cutting opt-in modifiers, which always beat components) → `overrides` (top-priority structural fixes like `:first-child` / `:last-child` margin collapses). Unlayered rules beat all layered rules, so a theme should set tokens at `:root` or wrap its rules in `@layer`.
+**Cascade layers.** Styles are ordered by `@layer`, lowest to highest priority: `defaults` (`:root` tokens, the tint ladder, body baseline) → `components` (the bulk of the CSS: `.card`, `.button`, …) → `variants` (cross-cutting opt-in modifiers, which always beat components) → `overrides` (top-priority structural fixes that must beat variants). Unlayered rules beat all layered rules, so a theme should set tokens at `:root` or wrap its rules in `@layer`.
 
 **Styling props.** The cross-cutting visual options are props, each backed by a helper in `style/` that maps the prop to a class. Colour and status move the tint anchor — `getColorClass()` and `getStatusClass()`; font size, weight, family, and case, plus text alignment, tint, and wrapping, all come from `getTypographyClass()`, which extends `ColorVariants` and composes `getColorClass()` so every typographic element also accepts `color` (use `getColorClass()` directly only for colour-without-typography, e.g. `<Icon>`); spacing, block-padding, inline-padding ("indent"), and gap from `getSpaceClass()`, `getPaddingClass()`, `getIndentClass()`, and `getGapClass()`; width constraints from `getWidthClass()`; flex layout from `getFlexClass()`; grid layout from `getGridClass()`; and opt-in scrolling from `getScrollClass()`. Each helper's page lists its exact prop values and what they set. A component opts into the props it wants by extending the matching `*Props` interfaces and composing the `getXxxClass(props)` calls.
 
@@ -20642,6 +20642,7 @@ The components below are listed in the index following this page; this is the sh
 - [getSpaceClass()](ui/getSpaceClass.md): Get the block spacing class for a component from its space="" variant prop.
 - [getStatusClass()](ui/getStatusClass.md): Get the status tint class for a component from its status variant prop.
 - [getStrokeClass()](ui/getStrokeClass.md): Get the border-thickness class for a component from its stroke variant prop.
+- [getTrimClass()](ui/getTrimClass.md): Get the trim class for a component from its trim variant prop.
 - [getTypographyClass()](ui/getTypographyClass.md): Get the typography class for a component from its typographic variant props.
 - [getWidthClass()](ui/getWidthClass.md): Get the width class for a component from its width / grow variant props.
 - [useSwipe()](ui/useSwipe.md): Swipe a target to complete a change, and scrub the change's view transition with the finger.
@@ -20847,6 +20848,7 @@ The components below are listed in the index following this page; this is the sh
 - [SpaceVariants](ui/SpaceVariants.md): Variants to control block spacing on components, e.g. space="large".
 - [StatusVariants](ui/StatusVariants.md): Variant props for the semantic status of an element, e.g. status="success".
 - [StrokeVariants](ui/StrokeVariants.md): Variant props for the border thickness of a component, e.g. stroke="thick".
+- [TrimVariants](ui/TrimVariants.md): Variant props to trim the outer margins of a component's first and last children, e.g. trim.
 - [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via getTypographyClass()
 - [WidthVariants](ui/WidthVariants.md): Variant props that set (or unconstrain) a component's width, e.g. width="narrow" or width="12x".
 - [CellProps](ui/CellProps.md): Props for Cell — padding, indent, width, and typography variants plus children.
@@ -21566,6 +21568,7 @@ Cards are boxed areas for content to sit within.
 - When `href` or `onClick` is set the card becomes navigable: a stretched overlay `<a>` / `<button>` covers the entire card while the children render normally inside.
 - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
 - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise a card.
 
 A boxed surface that groups a self-contained piece of content. Rendered as an `<article>`, painted from the tint ladder (surface, text) and styled with rounded corners and padding by default.
@@ -21573,6 +21576,7 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 **Things to know:**
 
 - Set `href` or `onClick` to make the whole card navigable — a stretched, visually-hidden overlay `<a>` / `<button>` covers the card while the children render normally inside. Real interactive elements inside the card (inline links, buttons) stay clickable and keyboard-focusable.
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - The overlay comes first in the card and has no `z-index`. Links and buttons inside the card are `position: relative`, so they paint above it and stay clickable. The rest of the content has `pointer-events: none`, so a tap on it (even on positioned content) reaches the overlay. Links, buttons and form fields take taps again. To put your own absolute layer over the card's content, put it after the content, with no `z-index` and no lasting `transform`. A `transform` makes the layer a stacking context, and a `z-index` can make iOS WebKit drop the layer for one frame when a page view transition starts. Only a keyboard-focused overlay gets a `z-index`, so its focus ring shows above the content.
 - `color=` and `status=` move the tint anchor for the card's scope, so the surface, text, and hover shade all re-derive together — and nested components (`<Tag>`, `<Preformatted>`, `<Button>`) inherit the same tint.
 - A card styles only the box. Lay out its contents with the usual block components (`<Subheading>`, `<Paragraph>`, `<Row>`, …).
@@ -21836,6 +21840,7 @@ A collapsible panel. The title is always visible. The content shows when the use
 
 **Things to know:**
 
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - A chevron on the right of the title points down when the panel is closed and up when it is open.
 - The panel animates to its true height where the browser supports `interpolate-size` and `::details-content`. Other browsers open it at once.
 - Give sibling panels the same `name` to make them open exclusively: when one opens, the others close.
@@ -22120,7 +22125,7 @@ A section heading — renders an `<h2>`. It sits in the middle of the three-leve
 - Pick the component that matches the level rather than overriding `level`. Choosing `<Title>` / `Heading` / `<Subheading>` keeps the visual size and the document outline in step, which matters for accessibility and the docs-site table of contents.
 - The `level` prop (`1`–`6`) is an escape hatch for the rare case where the outline level must differ from the visual size — avoid it in normal use.
 - Inside `<Prose>`, an `<h2>` is styled by the same rules (the shared `.prose` styling), so Markdown-rendered headings match component ones.
-- Accepts `color=` and the typography variants; like all block components it collapses its outer margin when it's the first/last child of its container.
+- Accepts `color=` and the typography variants; like all block components it keeps its outer margin, also as the first or last child.
 
 ## Usage
 
@@ -22359,7 +22364,7 @@ A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ord
 - Pass `ordered` to render an `<ol>` with numbered markers; the default is an unordered `<ul>`.
 - Each child becomes one list item — give it plain content, not an `<li>`.
 - Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
-- Like the other block components it carries its own outer block margin and collapses it when it is the first or last child of its container.
+- Like the other block components it carries its own outer block margin, also as the first or last child. Set `space="none"` to remove it.
 - Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
 ## Usage
@@ -22461,6 +22466,7 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - A panel always spans the full width of its container. To constrain the content inside, compose a `<Block>` `width="narrow"` (or `width="wide"`) within it.
 - Block margin is always zero so panels stack flush; control the vertical breathing room with the `padding` variant (`<Panel padding="large">`, `<Panel padding="none">`).
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
 - Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
 
@@ -22549,7 +22555,7 @@ A block of body text — renders a `<p>`. The default container for running pros
 
 **Things to know:**
 
-- Carries its own outer block margin and collapses it when it is the first or last child of its container, so stacked paragraphs space evenly without doubling up at the edges.
+- Carries its own outer block margin, also as the first or last child. In normal flow the margins of stacked paragraphs merge, so they space evenly. A container with padding (such as `<Card>`) trims the margins at its edges.
 - Accepts `color=` and the typography variants (`size`, `serif`, `center`, …) to retint or restyle the text.
 - Fill it with inline annotations such as `<Strong>`, `<Emphasis>`, `<Code>`, `<Mark>`, and `<Link>`.
 - Inside `<Prose>` a raw `<p>` picks up the same styling, so Markdown-rendered paragraphs match component ones.
@@ -34877,7 +34883,7 @@ Variants for block level elements.
 
 Get the combined `className` string for a block from its styling variants.
 
-Composes the base block class and tint ladder with the colour, space, typography, width, and height variant helpers, so anything that wants block-level styling can apply it.
+Composes the base block class with the indent, padding, space, trim, typography, width, and height variant helpers, so anything that wants block-level styling can apply it.
 
 ## Signatures
 
@@ -36130,7 +36136,7 @@ The `space` variant prop sets a block-level element's `margin-block` (top + bott
 
 `getSpaceClass({ space })` maps the prop to a margin class (e.g. `space="large"` → `large`). The same scale also backs `getPaddingClass()` (block padding), `getIndentClass()` (inline padding), and `getGapClass()`, so they all move together when you change `--space-normal`.
 
-`space="auto"` sets `margin-block: auto`. In a flex or grid container, such as a `<Column>`, the auto margins take the free space, so the block sits in the middle (it still keeps auto margins as a first or last child). In normal block flow they do nothing: to centre a block vertically there, use `height="full" middle` (see `getHeightClass()`). `padding` and `gap` have no `auto`.
+`space="auto"` sets `margin-block: auto`. In a flex or grid container, such as a `<Column>`, the auto margins take the free space, so the block sits in the middle. In normal block flow they do nothing: to centre a block vertically there, use `height="full" middle` (see `getHeightClass()`). `padding` and `gap` have no `auto`.
 
 Alongside the named scale, `space`, `padding`, and `indent` also accept numeric multiples of `--space-normal` — `1x` … `10x` (e.g. `padding="5x"` → `calc(var(--space-normal) * 5)`) — for larger one-off blocks like hero panels.
 
@@ -36486,6 +36492,82 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 
 **Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is _recomputed_ from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.
 
+
+
+---
+
+# TrimVariants
+
+- Kind: interface
+- Import: `import { TrimVariants } from "shelving/ui";`
+
+Variant props to trim the outer margins of a component's first and last children, e.g. `trim`.
+
+## Signatures
+
+```ts
+{
+	trim?: boolean | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `trim` | `boolean \| undefined` | Trim the start margin of the first child and the end margin of the last child. Optional. |
+
+
+---
+
+# getTrimClass()
+
+- Kind: function
+- Import: `import { getTrimClass } from "shelving/ui";`
+
+Get the trim class for a component from its `trim` variant prop.
+
+The `trim` variant prop trims the start margin of a block's first child and the end margin of its last child — `<Block padding="large" trim>`. Use it on a box with padding, so the padding is not doubled by the margins of its content.
+
+**Things to know:**
+
+- Blocks keep their outer margins as the first or last child. In normal flow a child's margin merges with its parent's margin, so most containers need no trim. `<Row>`, `<Column>` and `<Grid>` set every child's margin to 0, so they need no trim either.
+- `<Card>`, `<Panel>`, `<Details>` and `<Blockquote>` trim by default. Set `trim={false}` to keep the margins. `<Modal>`, the `<Popover>` panel and table cells always trim.
+- Where the browser has `margin-trim`, it trims the margins itself, also margins that pass through a child from deeper down. Other browsers use a fallback that trims the first and last children three levels deep.
+- The fallback skips a child hidden with `display: none`. React hides old content that way while a `<Suspense>` fallback shows after it, so a loading spinner gets the same margin as the content it replaces.
+
+```tsx
+<Block padding="large" trim>
+	<Paragraph>No space above this paragraph.</Paragraph>
+	<Paragraph>No space below this paragraph.</Paragraph>
+</Block>;
+```
+
+
+## Signatures
+
+```ts
+getTrimClass({ trim }: TrimVariants): string | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `options` | `TrimVariants` |  |
+| `.trim` | `boolean \| undefined` | Trim the start margin of the first child and the end margin of the last child. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `string \| undefined` | The trim class string, or `undefined` when `trim` is not set. |
+
+## Examples
+
+```ts
+getTrimClass({ trim: true }) // "trim"
+```
 
 
 ---

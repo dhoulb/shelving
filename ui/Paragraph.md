@@ -9,7 +9,7 @@ A block of body text — renders a `<p>`. The default container for running pros
 
 **Things to know:**
 
-- Carries its own outer block margin and collapses it when it is the first or last child of its container, so stacked paragraphs space evenly without doubling up at the edges.
+- Carries its own outer block margin, also as the first or last child. In normal flow the margins of stacked paragraphs merge, so they space evenly. A container with padding (such as `<Card>`) trims the margins at its edges.
 - Accepts `color=` and the typography variants (`size`, `serif`, `center`, …) to retint or restyle the text.
 - Fill it with inline annotations such as `<Strong>`, `<Emphasis>`, `<Code>`, `<Mark>`, and `<Link>`.
 - Inside `<Prose>` a raw `<p>` picks up the same styling, so Markdown-rendered paragraphs match component ones.

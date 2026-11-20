@@ -8,6 +8,7 @@ Cards are boxed areas for content to sit within.
 - When `href` or `onClick` is set the card becomes navigable: a stretched overlay `<a>` / `<button>` covers the entire card while the children render normally inside.
 - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
 - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise a card.
 
 A boxed surface that groups a self-contained piece of content. Rendered as an `<article>`, painted from the tint ladder (surface, text) and styled with rounded corners and padding by default.
@@ -15,6 +16,7 @@ A boxed surface that groups a self-contained piece of content. Rendered as an `<
 **Things to know:**
 
 - Set `href` or `onClick` to make the whole card navigable — a stretched, visually-hidden overlay `<a>` / `<button>` covers the card while the children render normally inside. Real interactive elements inside the card (inline links, buttons) stay clickable and keyboard-focusable.
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - The overlay comes first in the card and has no `z-index`. Links and buttons inside the card are `position: relative`, so they paint above it and stay clickable. The rest of the content has `pointer-events: none`, so a tap on it (even on positioned content) reaches the overlay. Links, buttons and form fields take taps again. To put your own absolute layer over the card's content, put it after the content, with no `z-index` and no lasting `transform`. A `transform` makes the layer a stacking context, and a `z-index` can make iOS WebKit drop the layer for one frame when a page view transition starts. Only a keyboard-focused overlay gets a `z-index`, so its focus ring shows above the content.
 - `color=` and `status=` move the tint anchor for the card's scope, so the surface, text, and hover shade all re-derive together — and nested components (`<Tag>`, `<Preformatted>`, `<Button>`) inherit the same tint.
 - A card styles only the box. Lay out its contents with the usual block components (`<Subheading>`, `<Paragraph>`, `<Row>`, …).
