@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { ClientAPIProvider, GET, POST, ValidationAPIProvider } from "shelving/api";
-import { RequiredError, ResponseError } from "shelving/error";
+import { NetworkError, RequiredError, ResponseError } from "shelving/error";
 import { DATA, STRING } from "shelving/schema";
 
 describe("ClientAPIProvider", () => {
@@ -76,6 +76,54 @@ describe("ClientAPIProvider", () => {
 			const endpoint = POST("/items", DATA({ name: STRING }), STRING);
 
 			expect(await provider.call(endpoint, { name: "abc" }, { headers: { "X-Call": "call" } })).toBe("ok");
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
+	});
+
+	test("fetch() throws NetworkError when the request cannot reach the server", async () => {
+		const originalFetch = globalThis.fetch;
+		try {
+			// @ts-expect-error Testing replacement.
+			globalThis.fetch = async () => {
+				throw new TypeError("Load failed");
+			};
+
+			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
+
+			try {
+				await provider.call(endpoint, { id: "1" });
+				expect.unreachable();
+			} catch (thrown) {
+				expect(thrown).toBeInstanceOf(NetworkError);
+				expect(thrown).toMatchObject({ message: "No network connection" });
+				expect((thrown as NetworkError).cause).toBeInstanceOf(TypeError);
+			}
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
+	});
+
+	test("fetch() leaves an aborted request's error as it is", async () => {
+		const originalFetch = globalThis.fetch;
+		try {
+			const controller = new AbortController();
+			// @ts-expect-error Testing replacement.
+			globalThis.fetch = async () => {
+				controller.abort();
+				throw new TypeError("aborted");
+			};
+
+			const provider = new ClientAPIProvider({ url: "https://api.example.com/" });
+			const endpoint = GET("/echo", DATA({ id: STRING }), STRING);
+
+			try {
+				await provider.call(endpoint, { id: "1" }, { signal: controller.signal });
+				expect.unreachable();
+			} catch (thrown) {
+				expect(thrown).not.toBeInstanceOf(NetworkError);
+			}
 		} finally {
 			globalThis.fetch = originalFetch;
 		}
