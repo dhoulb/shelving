@@ -1,3 +1,4 @@
+import { NetworkError } from "../../error/NetworkError.js";
 import { ResponseError } from "../../error/ResponseError.js";
 import { isData } from "../../util/data.js";
 import { getMessage } from "../../util/error.js";
@@ -55,6 +56,7 @@ export interface ClientAPIProviderOptions {
  * - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
  * - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
  * - Parses JSON responses and throws `ResponseError` for non-2xx responses.
+ * - Throws `NetworkError` when a request cannot reach the server.
  * - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
  * - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
  *
@@ -149,9 +151,21 @@ export class ClientAPIProvider<P = unknown, R = unknown> extends APIProvider<P, 
 		return createRequest(method, url, payload, options, caller);
 	}
 
-	/** Sends the request over the network using the global `fetch()` API. */
+	/**
+	 * Sends the request over the network using the global `fetch()` API.
+	 * - Throws `NetworkError` when the request cannot reach the server (no connection, or the server is down).
+	 *   Browsers word this error in their own way (Safari says "Load failed"), so the message is fixed.
+	 */
 	override async fetch(request: Request): Promise<Response> {
-		return fetch(request);
+		try {
+			return await fetch(request);
+		} catch (thrown) {
+			// `fetch()` throws a `TypeError` for a network failure. An abort throws something else, and stays as it is.
+			if (thrown instanceof TypeError && !request.signal.aborted) {
+				throw new NetworkError("No network connection", { cause: thrown, caller: this.fetch });
+			}
+			throw thrown;
+		}
 	}
 
 	/** Parses the response body as JSON. */
