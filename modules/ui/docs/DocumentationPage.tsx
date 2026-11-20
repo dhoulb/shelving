@@ -68,8 +68,8 @@ export function DocumentationPage({
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block color={getDocumentationKindColor(kind)}>
-				<Panel>
-					<Header>
+				<Panel as="header">
+					<Header width="narrow" trim>
 						<TreeBreadcrumbs />
 						<Title>
 							<Row left wrap>
@@ -80,44 +80,46 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				<Block indent="normal" padding="section">
-					{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
-						<Section>
-							<DocumentationSignatures signatures={signatures} />
-							<DocumentationParams params={params} />
-							<DocumentationReturns returns={returns} />
-							<DocumentationThrows throws={throws} />
-							<DocumentationProperties properties={properties} />
-							<DocumentationReferences types={types} />
-						</Section>
-					) : null}
-					{content && (
-						<Section>
-							<Prose>
-								<TreeMarkup rules={DOCUMENTATION_MARKUP_RULES}>{content}</TreeMarkup>
-							</Prose>
-						</Section>
-					)}
-					{examples?.length && (
-						<Section>
-							<Heading>Examples</Heading>
-							{examples.map(({ description }) => (
-								<Preformatted key={description}>{description}</Preformatted>
-							))}
-						</Section>
-					)}
-					{elements.length
-						? Object.entries(KINDS).map(([kind, label]) => {
-								const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
-								return group.length ? (
-									<Section key={kind}>
-										<Heading>{label}</Heading>
-										<TreeCards>{group}</TreeCards>
-									</Section>
-								) : null;
-							})
-						: null}
-				</Block>
+				<Panel plain>
+					<Block width="narrow" trim>
+						{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
+							<Section>
+								<DocumentationSignatures signatures={signatures} />
+								<DocumentationParams params={params} />
+								<DocumentationReturns returns={returns} />
+								<DocumentationThrows throws={throws} />
+								<DocumentationProperties properties={properties} />
+								<DocumentationReferences types={types} />
+							</Section>
+						) : null}
+						{content && (
+							<Section>
+								<Prose>
+									<TreeMarkup rules={DOCUMENTATION_MARKUP_RULES}>{content}</TreeMarkup>
+								</Prose>
+							</Section>
+						)}
+						{examples?.length && (
+							<Section>
+								<Heading>Examples</Heading>
+								{examples.map(({ description }) => (
+									<Preformatted key={description}>{description}</Preformatted>
+								))}
+							</Section>
+						)}
+						{elements.length
+							? Object.entries(KINDS).map(([kind, label]) => {
+									const group = elements.filter(el => (el.props as DocumentationElementProps).kind === kind);
+									return group.length ? (
+										<Section key={kind}>
+											<Heading>{label}</Heading>
+											<TreeCards>{group}</TreeCards>
+										</Section>
+									) : null;
+								})
+							: null}
+					</Block>
+				</Panel>
 			</Block>
 		</Page>
 	);

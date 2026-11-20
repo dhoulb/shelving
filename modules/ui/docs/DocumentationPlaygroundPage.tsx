@@ -1,4 +1,13 @@
-import { type PointerEvent, type ReactNode, type SyntheticEvent, startTransition, useEffect, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	type PointerEvent,
+	type ReactNode,
+	type SyntheticEvent,
+	startTransition,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { AddIcon } from "../../icon/AddIcon.js";
 import { LeftIcon } from "../../icon/LeftIcon.js";
 import { Row } from "../block/Row.js";
@@ -47,7 +56,8 @@ function Counter() {
 <App title="Shelving Playground" url="https://shelving.cc">
 
   <ResetLayout>
-    <Panel color="primary" padding="xxlarge">
+
+    <Panel as="header" color="primary" padding="xxlarge">
       <Block width="narrow" trim>
         <Title>Shelving playground</Title>
         <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
@@ -105,11 +115,9 @@ function Counter() {
           <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
         </Card>
       </Section>
-    </Panel>
 
-    <Divider />
+      <Divider space="none" />
 
-    <Panel plain padding="xxlarge">
       <Section width="narrow" trim>
         <Heading>FAQ</Heading>
         <Details title="What can I change?">
@@ -117,6 +125,7 @@ function Counter() {
         </Details>
       </Section>
     </Panel>
+
   </ResetLayout>
 
 </App>
@@ -137,6 +146,24 @@ const MAX_SPLIT = 80;
 
 /** Time to wait after the last key press before the preview runs again. */
 const DELAY = 400;
+
+/** Text that the Tab key inserts in the editor. */
+const TAB_TEXT = "  ";
+
+/**
+ * Make the Tab key insert two spaces in an editor `<textarea>`, and not move the focus.
+ * - `insertText` keeps the browser's undo history and fires an `input` event, so React sees the change.
+ * - Shift+Tab still moves the focus back, so the keyboard can still leave the editor.
+ */
+function _onEditorKeyDown(e: KeyboardEvent<HTMLDivElement>): void {
+	if (e.key !== "Tab" || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+	if (!(e.target instanceof HTMLTextAreaElement)) return;
+	e.preventDefault();
+	if (!document.execCommand("insertText", false, TAB_TEXT)) {
+		e.target.setRangeText(TAB_TEXT, e.target.selectionStart, e.target.selectionEnd, "end");
+		e.target.dispatchEvent(new Event("input", { bubbles: true }));
+	}
+}
 
 /** Tabs of the editor. */
 type Tab = "code" | "css";
@@ -213,7 +240,8 @@ export function DocumentationPlaygroundPage(): ReactNode {
 	return (
 		<Page title={TITLE}>
 			<div ref={ref} className={PLAYGROUND_CLASS}>
-				<div className={EDITOR_CLASS} onSelect={onCursor}>
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: The key handler catches Tab from the textarea inside. */}
+				<div className={EDITOR_CLASS} onSelect={onCursor} onKeyDown={_onEditorKeyDown}>
 					<Row between>
 						<Button small href="/" title="Home">
 							<LeftIcon />

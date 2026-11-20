@@ -14,7 +14,7 @@ A layout that removes the margin and padding around the page, so content such as
 import { Block, Panel, Paragraph, ResetLayout, Title } from "shelving/ui";
 
 <ResetLayout>
-	<Panel color="primary">
+	<Panel as="header" color="primary">
 		<Block width="narrow">
 			<Title>Edge to edge</Title>
 		</Block>
