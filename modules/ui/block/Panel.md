@@ -7,6 +7,7 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - A panel always spans the full width of its container. To constrain the content inside, compose a `<Block>` `width="narrow"` (or `width="wide"`) within it.
 - Block margin is always zero so panels stack flush; control the vertical breathing room with the `padding` variant (`<Panel padding="large">`, `<Panel padding="none">`).
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
+- Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
 - Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
 

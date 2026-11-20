@@ -38,12 +38,3 @@
 		}
 	}
 }
-
-@layer overrides {
-	.definitions,
-	.prose dl {
-		dt:first-child {
-			margin-block-start: 0;
-		}
-	}
-}

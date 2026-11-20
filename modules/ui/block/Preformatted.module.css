@@ -56,14 +56,6 @@
 @layer overrides {
 	.preformatted,
 	.prose pre {
-		&:first-child {
-			margin-block-start: 0;
-		}
-
-		&:last-child {
-			margin-block-end: 0;
-		}
-
 		&:not(:focus-visible) {
 			outline-color: transparent;
 		}

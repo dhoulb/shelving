@@ -7,7 +7,7 @@ A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ord
 - Pass `ordered` to render an `<ol>` with numbered markers; the default is an unordered `<ul>`.
 - Each child becomes one list item — give it plain content, not an `<li>`.
 - Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
-- Like the other block components it carries its own outer block margin and collapses it when it is the first or last child of its container.
+- Like the other block components it carries its own outer block margin, also as the first or last child. Set `space="none"` to remove it.
 - Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
 ## Usage

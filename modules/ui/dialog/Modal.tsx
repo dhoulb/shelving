@@ -3,6 +3,7 @@ import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
 import { getRadiusClass, type RadiusVariants } from "../style/Radius.js";
 import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
+import { getTrimClass } from "../style/Trim.js";
 import { type SwipeDirection, useSwipe } from "../transition/useSwipe.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
@@ -76,6 +77,7 @@ export function Modal({ children, className, ...props }: ModalProps): ReactEleme
 				getIndentClass(props),
 				getRadiusClass(props),
 				getShadowClass(props),
+				getTrimClass({ trim: true }),
 				className,
 			)}
 		>

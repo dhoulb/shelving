@@ -3,6 +3,7 @@ import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getShadowClass, type ShadowVariants } from "../style/Shadow.js";
 import { getStatusClass, type StatusVariants } from "../style/Status.js";
+import { getTrimClass } from "../style/Trim.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
 import type { BlockElement } from "./Block.js";
@@ -27,6 +28,7 @@ export interface CardProps extends ClickableProps, StatusVariants, BlockVariants
  * - When `href` or `onClick` is set the card becomes navigable: a stretched overlay `<a>` / `<button>` covers the entire card while the children render normally inside.
  * - Real interactive elements inside the card (e.g. inline `<a>` links) stay clickable thanks to `position: relative; z-index: 2` rules in the stylesheet.
  * - Accepts a `status` colour and raw `ColorProps` — the card styles the box; lay out its contents however the use case needs.
+ * - Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
  * - Has no drop shadow by default — set `shadow="small"`, `shadow="normal"` or `shadow="large"` to raise a card.
  *
  * @kind component
@@ -41,13 +43,17 @@ export function Card({ as: Element = "article", children, href, onClick, title =
 			className={getClass(
 				getModuleClass(CARD_CSS, "card"), //
 				getStatusClass(props),
-				getBlockClass(props),
+				getBlockClass({ ...props, trim: props.trim ?? true }),
 				getShadowClass(props),
 				className,
 			)}
 		>
 			{overlay}
-			{overlay ? <div className={getModuleClass(CARD_CSS, "content")}>{children}</div> : children}
+			{overlay ? (
+				<div className={getClass(getModuleClass(CARD_CSS, "content"), getTrimClass({ trim: props.trim ?? true }))}>{children}</div>
+			) : (
+				children
+			)}
 		</Element>
 	);
 }

@@ -10,8 +10,8 @@
  *   • `components` — component-defining CSS. The bulk of the codebase.
  *   • `variants`   — cross-cutting opt-in modifiers (Color, Status, Space, Padding, Gap, Width, Typography,
  *                    Flex, Grid, Scroll). Always beat components.
- *   • `overrides`  — top-priority structural overrides like `:first-child` / `:last-child` margin collapses,
- *                    which must beat variant-set margins.
+ *   • `overrides`  — top-priority structural overrides that must beat variant-set values (for example the
+ *                    margin that a caption takes from its neighbour).
  *
  * Unlayered rules beat all layered rules — themes should override design tokens at `:root` (via inheritance),
  * not via class selectors. Each themed token module documents the `:root` variables it defines and which ones

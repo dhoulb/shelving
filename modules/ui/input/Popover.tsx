@@ -5,6 +5,7 @@ import type { ReactElement, ReactNode } from "react";
 
 import { isTruthy } from "../../util/boolean.js";
 import type { Callback } from "../../util/function.js";
+import { getTrimClass } from "../style/Trim.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { eventPreventDefault } from "../util/event.js";
 import { eventLoopFocus } from "../util/focus.js";
@@ -71,7 +72,10 @@ export function Popover({
 		>
 			{trigger}
 			{open ? (
-				<section className={getClass(getModuleClass(styles, "panel"), className)} onMouseDown={eventPreventDefault}>
+				<section
+					className={getClass(getModuleClass(styles, "panel"), getTrimClass({ trim: true }), className)}
+					onMouseDown={eventPreventDefault}
+				>
 					{popover}
 				</section>
 			) : null}

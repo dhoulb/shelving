@@ -25,7 +25,7 @@ export function Blockquote({ children, className, ...props }: BlockquoteProps): 
 		<blockquote
 			className={getClass(
 				BLOCKQUOTE_CLASS, //
-				getBlockClass(props),
+				getBlockClass({ ...props, trim: props.trim ?? true }),
 				className,
 			)}
 		>

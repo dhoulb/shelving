@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
 import { getIndentClass, type IndentVariants } from "../style/Indent.js";
 import { getPaddingClass, type PaddingVariants } from "../style/Padding.js";
+import { getTrimClass } from "../style/Trim.js";
 import { getTypographyClass, type TypographyVariants } from "../style/Typography.js";
 import { getWidthClass, type WidthVariants } from "../style/Width.js";
 import { getClass } from "../util/css.js";
@@ -34,6 +35,7 @@ export function Cell({ header = false, children, className, ...props }: CellProp
 				getIndentClass(props),
 				getWidthClass(props),
 				getTypographyClass(props),
+				getTrimClass({ trim: true }),
 				className,
 			)}
 		>

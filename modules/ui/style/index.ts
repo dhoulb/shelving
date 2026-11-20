@@ -14,5 +14,6 @@ export * from "./Space.js";
 export * from "./Status.js";
 export * from "./Stroke.js";
 export * from "./Tint.js";
+export * from "./Trim.js";
 export * from "./Typography.js";
 export * from "./Width.js";
