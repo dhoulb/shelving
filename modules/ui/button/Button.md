@@ -98,11 +98,15 @@ import { getButtonClass } from "shelving/ui";
 
 ## Styling
 
-`Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
+`Button` paints from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
+
+`Button.module.css` declares every hook below in `@layer defaults`, so the rules read them with no fallback. Override a hook at `:root`. Override a **tint hook** at `:root, .tint`: these hooks read the ladder, so the module declares them again in every tint scope, and an override at `:root` alone does not reach a button inside a tint scope. The tint hooks are `--button-background`, `--button-text`, `--button-hover-background`, `--button-active-background`, the `--button-solid-*` colour hooks, `--button-plain-text`, `--button-plain-hover-background`, `--button-plain-active-background`, `--button-outline-border`, `--button-selected-background` and `--button-selected-text`. Use `:root, .tint` also for any override whose value reads the ladder.
+
+A hook whose default reads another hook (for example `--button-border` reads `--button-stroke`) resolves at `:root`. So when you change `--button-stroke` in a smaller scope, also set the hooks that read it there.
 
 `--button-padding` sets the top and bottom padding, and `--button-indent` the left and right. Each takes one length, not a shorthand.
 
-Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It reads those hooks, so it stays correct when a theme changes them. Set `--button-height` to replace it. The `small` variant has its own minimum, `--button-small-height`. Inputs use the same formula (`--input-height`), so an input and a button sit at the same height by default.
+Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It reads those hooks, so it stays correct when a theme or a smaller scope changes them. `--button-height` has no root default for this reason. Set it to replace the formula. The `small` variant has its own minimum, `--button-small-height`. Inputs use the same formula (`--input-height`), so an input and a button sit at the same height by default.
 
 The `--button-*` colour hooks without a look in their name paint the default look. `solid` has its own `--button-solid-*` colour hooks.
 
@@ -170,15 +174,17 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 ```
 
 ```css
-/* Theme: outline buttons use the label colour for their edge. */
-:root {
+/* Theme: outline buttons use the label colour for their edge. A tint hook, so override it at `:root, .tint`. */
+:root,
+.tint {
 	--button-outline-border: var(--stroke-normal) solid var(--tint-50);
 }
 ```
 
 ```css
-/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. */
-:root {
+/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. The shadows read the ladder, so override them at `:root, .tint`. */
+:root,
+.tint {
 	--button-shadow: 0 0.25rem 0 var(--tint-30);
 	--button-active-transform: translateY(0.2rem);
 	--button-active-shadow: 0 0.05rem 0 var(--tint-30);

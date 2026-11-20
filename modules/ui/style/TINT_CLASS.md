@@ -63,6 +63,8 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 }
 ```
 
+A component uses the same split for its own defaults. It declares its plain hooks at `:root` and its tint hooks (the hooks whose default reads the ladder) at `:root, .tint`, both in `@layer defaults`. Write the selector as `:root, :global(.tint)` in a `.module.css`, so the class name is not hashed. An app override of a tint hook must also go on `:root, .tint`: an override at `:root` alone loses to the component's own `.tint` declaration inside every tint scope. `<Button>` is the first component to use this pattern.
+
 `TINT_CLASS` adds a plain global `tint` class (as well as its hashed module class) for this purpose, so `tint` is a reserved class name. Do not use `* { … }` for this: it declares the variable on every element, which adds style-recalc cost on large pages.
 
 **Don't override individual ladder steps (`--tint-90`, etc.) at `:root`.** The ladder is _recomputed_ from the anchor inside every `TINT_CLASS` scope — which includes every component that accepts `color=` or `status=` — so a step override at `:root` only reaches untinted regions and produces inconsistent surfaces. Move the anchor (option 1 or 2) instead, and the steps follow.
