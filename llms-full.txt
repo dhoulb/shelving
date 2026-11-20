@@ -25549,6 +25549,7 @@ DocumentationPlaygroundInsert({ type, onInsert, onClose }: DocumentationPlaygrou
 Page where you can write TSX and CSS and see the result run live, like the TypeScript Playground.
 - It fills the whole window: the editor is on the left, in a grey panel, and the preview fills the right.
 - Drag the edge between them (or focus it and press the arrow keys) to change their widths.
+- On a screen narrower than 1024px, the panes do not show side by side. A thin bar of buttons shows above one full-page pane: TSX, CSS, or Preview. Preview is selected at first.
 - The TSX tab holds code that can import from `shelving/*`, `react`, and `react-dom`. Its top-level expressions are shown in the preview.
 - The CSS tab holds CSS that is added after the shelving styles, so you can change any shelving variable.
 - The + button opens a `<DocumentationPlaygroundInsert>` panel. On the TSX tab it lists the shelving components, and on the CSS tab the CSS variables. Press one to insert it at the cursor.
