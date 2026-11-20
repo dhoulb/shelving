@@ -82,11 +82,14 @@
 
 		/* Style */
 
-		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-90 / --tint-00) when the hooks are unset.
-		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
-		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
+		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-100 / --tint-00) when the hooks are unset.
+		 * The sidebar has the same fill as the page: its shadow sets it apart as a distinct column. */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
 		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
-		box-shadow: var(--sidebar-layout-sidebar-shadow, none);
+		box-shadow: var(
+			--sidebar-layout-sidebar-shadow,
+			0.25rem 0 1rem -0.25rem var(--shadow-color)
+		); /* A soft shadow cast right over the content. */
 	}
 
 	.content {
@@ -116,6 +119,7 @@
 		grid-column: 2;
 		border-right: none;
 		border-left: var(--sidebar-layout-border, none);
+		box-shadow: var(--sidebar-layout-sidebar-shadow, -0.25rem 0 1rem -0.25rem var(--shadow-color)); /* Cast left, toward the content. */
 	}
 
 	.main.right .content {

@@ -1,5 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Duration.module.css");
+@import url("../style/Shadow.module.css");
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 
@@ -85,7 +86,7 @@
 		/* Style */
 		background: var(--app-layout-nav-background, var(--tint-100));
 		color: var(--app-layout-nav-color, var(--tint-00));
-		box-shadow: var(--app-layout-nav-shadow, none);
+		box-shadow: var(--app-layout-nav-shadow, 0 -0.25rem 1rem -0.25rem var(--shadow-color)); /* A soft shadow cast up over the pages. */
 
 		/* No view-transition name of its own by default: a named bar draws above everything else during a view transition, and jumps over a dialog or notice that covers it.
 		 * It gets a name during a page slide only (below). An app can also name it for its own transitions, for example parts of a page that slide in their own layers and would pass over it:
