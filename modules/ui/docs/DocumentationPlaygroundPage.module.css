@@ -6,6 +6,8 @@
 /*
  * Full-page playground: the editor panel on the left, the preview on the right, and a drag handle between them.
  * The page owns the whole viewport, so the document does not scroll — each pane scrolls on its own.
+ * Below 64rem (1024px) the panes do not show side by side: a thin bar of buttons shows above one full-page pane.
+ * Keep the 64rem breakpoint the same as `MOBILE` in `DocumentationPlaygroundPage.tsx`.
  */
 
 @layer components {
@@ -26,10 +28,10 @@
 		/* Style */
 		background: var(--documentation-playground-background, white);
 
-		/* Stack the panes on a narrow screen. */
-		@media (width < 50rem) {
-			grid-template-columns: minmax(0, 1fr);
-			grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+		/* Show one pane at a time on a narrow screen: the editor fills the page, or only its bar of buttons shows above the preview. */
+		@media (width < 64rem) {
+			display: flex;
+			flex-direction: column;
 		}
 	}
 
@@ -45,10 +47,27 @@
 
 		/* Style */
 		background: var(--documentation-playground-editor-background, var(--tint-95));
+		border-inline-end: var(--documentation-playground-border, var(--stroke) solid var(--tint-80));
 
 		/* The editor fields fill the panel, with no outer margins of their own. */
 		& > * {
 			margin-block: 0;
+		}
+
+		/* The text box fills the rest of the panel's height. */
+		& > textarea {
+			flex-grow: 1;
+		}
+
+		@media (width < 64rem) {
+			flex: 1 1 0;
+			padding-block: var(--documentation-playground-mobile-padding, var(--space-small));
+			border-inline-end: 0;
+
+			/* While the preview shows, only the bar of buttons shows. */
+			.previewing > & {
+				flex: none;
+			}
 		}
 	}
 
@@ -57,6 +76,15 @@
 		display: block;
 		block-size: 100%;
 		min-block-size: 0;
+
+		@media (width < 64rem) {
+			flex: 1 1 0;
+
+			/* The preview shows only while its tab is active. */
+			.playground:not(.previewing) > & {
+				display: none;
+			}
+		}
 	}
 
 	/* An invisible handle on the edge between the panes. It shows a thin line only while you hover or drag it. */
@@ -94,7 +122,7 @@
 			opacity: 1;
 		}
 
-		@media (width < 50rem) {
+		@media (width < 64rem) {
 			display: none;
 		}
 	}
