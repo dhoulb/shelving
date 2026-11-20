@@ -16,6 +16,7 @@ const EDITOR_CLASS = getModuleClass(DOCUMENTATION_PLAYGROUND_PAGE_CSS, "editor")
 const PREVIEW_CLASS = getModuleClass(DOCUMENTATION_PLAYGROUND_PAGE_CSS, "preview");
 const HANDLE_CLASS = getModuleClass(DOCUMENTATION_PLAYGROUND_PAGE_CSS, "handle");
 const DRAGGING_CLASS = getModuleClass(DOCUMENTATION_PLAYGROUND_PAGE_CSS, "dragging");
+const PREVIEWING_CLASS = getModuleClass(DOCUMENTATION_PLAYGROUND_PAGE_CSS, "previewing");
 
 /** Title shown for the playground page. */
 const TITLE = "Playground";
@@ -130,13 +131,17 @@ const MAX_SPLIT = 80;
 /** Time to wait after the last key press before the preview runs again. */
 const DELAY = 400;
 
-/** Tabs of the editor. */
-type Tab = "code" | "css";
+/** Media query for the mobile layout, where the panes do not show side by side. Keep it the same as the `@media` rules in the CSS. */
+const MOBILE = "(width < 64rem)";
+
+/** Tabs of the editor. The preview tab shows only in the mobile layout. */
+type Tab = "code" | "css" | "preview";
 
 /**
  * Page where you can write TSX and CSS and see the result run live, like the TypeScript Playground.
  * - It fills the whole window: the editor is on the left, in a grey panel, and the preview fills the right.
  * - Drag the edge between them (or focus it and press the arrow keys) to change their widths.
+ * - On a screen narrower than 1024px, the panes do not show side by side. A thin bar of buttons shows above one full-page pane: TSX, CSS, or Preview. Preview is selected at first.
  * - The TSX tab holds code that can import from `shelving/*`, `react`, and `react-dom`. Its top-level expressions are shown in the preview.
  * - The CSS tab holds CSS that is added after the shelving styles, so you can change any shelving variable.
  * - The + button opens a `<DocumentationPlaygroundInsert>` panel. On the TSX tab it lists the shelving components, and on the CSS tab the CSS variables. Press one to insert it at the cursor.
@@ -149,7 +154,12 @@ type Tab = "code" | "css";
  * @see https://shelving.cc/ui/DocumentationPlaygroundPage
  */
 export function DocumentationPlaygroundPage(): ReactNode {
-	const [tab, setTab] = useState<Tab>("code");
+	const [tab, setTab] = useState<Tab>("preview");
+	// Is the mobile layout active? It is `false` on the server, and set in the browser after the first render.
+	const [mobile, setMobile] = useState(false);
+	// The preview tab exists only in the mobile layout, so the wide layout shows the TSX tab in its place.
+	const active: Tab = !mobile && tab === "preview" ? "code" : tab;
+	const editing = active === "preview" ? undefined : active;
 	const [code, setCode] = useState(DEFAULT_CODE);
 	const [css, setCss] = useState(DEFAULT_CSS);
 	const [preview, setPreview] = useState({ code: DEFAULT_CODE, css: DEFAULT_CSS });
@@ -164,6 +174,15 @@ export function DocumentationPlaygroundPage(): ReactNode {
 	const onCursor = (e: SyntheticEvent) => {
 		if (e.target instanceof HTMLTextAreaElement) cursor.current = e.target.selectionStart;
 	};
+
+	// Follow the mobile media query, so the tabs change when the window changes size.
+	useEffect(() => {
+		const query = window.matchMedia(MOBILE);
+		const onChange = () => setMobile(query.matches);
+		onChange();
+		query.addEventListener("change", onChange);
+		return () => query.removeEventListener("change", onChange);
+	}, []);
 
 	// Read the code and CSS from the URL hash (only in the browser, after the first render).
 	useEffect(() => {
@@ -204,7 +223,7 @@ export function DocumentationPlaygroundPage(): ReactNode {
 
 	return (
 		<Page title={TITLE}>
-			<div ref={ref} className={PLAYGROUND_CLASS}>
+			<div ref={ref} className={getClass(PLAYGROUND_CLASS, active === "preview" && PREVIEWING_CLASS)}>
 				<div className={EDITOR_CLASS} onSelect={onCursor}>
 					<Row between>
 						<Button small href="/" title="Home">
@@ -213,7 +232,7 @@ export function DocumentationPlaygroundPage(): ReactNode {
 						<Row center gap="xsmall">
 							<Button
 								small
-								selected={tab === "code"}
+								selected={active === "code"}
 								onClick={() => {
 									setTab("code");
 									cursor.current = undefined;
@@ -223,7 +242,7 @@ export function DocumentationPlaygroundPage(): ReactNode {
 							</Button>
 							<Button
 								small
-								selected={tab === "css"}
+								selected={active === "css"}
 								onClick={() => {
 									setTab("css");
 									cursor.current = undefined;
@@ -231,16 +250,22 @@ export function DocumentationPlaygroundPage(): ReactNode {
 							>
 								CSS
 							</Button>
+							{mobile && (
+								<Button small selected={active === "preview"} onClick={() => setTab("preview")}>
+									Preview
+								</Button>
+							)}
 						</Row>
 						<Button
 							small
-							title={tab === "code" ? "Insert a component" : "Insert a variable"}
+							disabled={!editing}
+							title={editing === "css" ? "Insert a variable" : "Insert a component"}
 							onClick={() => startTransition(() => setInserting({ at: cursor.current }))}
 						>
 							<AddIcon />
 						</Button>
 					</Row>
-					{tab === "code" && (
+					{editing === "code" && (
 						<TextareaInput
 							key={`code-${loaded}`}
 							name="code"
@@ -251,15 +276,15 @@ export function DocumentationPlaygroundPage(): ReactNode {
 							onValue={v => setCode(v ?? "")}
 						/>
 					)}
-					{tab === "css" && (
+					{editing === "css" && (
 						<TextareaInput key={`css-${loaded}`} name="css" title="CSS" font="code" rows={16} value={css} onValue={v => setCss(v ?? "")} />
 					)}
-					{inserting && (
+					{inserting && editing && (
 						<DocumentationPlaygroundInsert
-							type={tab}
+							type={editing}
 							onClose={() => startTransition(() => setInserting(undefined))}
 							onInsert={text => {
-								if (tab === "code") setCode(insertPlaygroundSnippet(code, text, inserting.at));
+								if (editing === "code") setCode(insertPlaygroundSnippet(code, text, inserting.at));
 								else setCss(insertPlaygroundText(css, text, inserting.at));
 								setLoaded(n => n + 1);
 								cursor.current = undefined;
