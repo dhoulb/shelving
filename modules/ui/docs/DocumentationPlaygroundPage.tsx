@@ -48,7 +48,7 @@ function Counter() {
 
   <ResetLayout>
     <Panel color="primary" padding="xxlarge">
-      <Block width="narrow">
+      <Block width="narrow" trim>
         <Title>Shelving playground</Title>
         <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
         <Counter />
@@ -77,7 +77,7 @@ function Counter() {
     </Block>
 
     <Panel color="primary" padding="xxlarge">
-      <Block width="narrow">
+      <Block width="narrow" trim>
         <Heading>Team</Heading>
         <Table>
           <thead>
