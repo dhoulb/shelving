@@ -5,8 +5,8 @@ A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ord
 **Things to know:**
 
 - Pass `ordered` to render an `<ol>` with numbered markers; the default is an unordered `<ul>`.
-- Each child becomes one list item — give it plain content, not an `<li>`.
-- Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
+- Each child becomes one list item — give it plain content, not an `<li>`. A `<ListItem>` child is not wrapped again, so use it to set the space or typography of one item.
+- Items stay in normal flow. Each item has a 12px block margin (`--list-item-space`), and margins merge. A `<p>` inside an item (as in a loose Markdown list) brings its own 16px margin, so those items are 16px apart.
 - Like the other block components it carries its own outer block margin, also as the first or last child. Set `space="none"` to remove it.
 - Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
@@ -21,12 +21,20 @@ import { List } from "shelving/ui";
 <List ordered>{["First", "Second", "Third"]}</List>
 ```
 
-### Tighter spacing
+### Space on one item
 
-```tsx
-import { List } from "shelving/ui";
+```tsx live
+import { List, ListItem } from "shelving/ui";
 
-<List gap="small">{items.map(item => item.label)}</List>;
+<List>
+	{[
+		"Apples",
+		"Oranges",
+		<ListItem key="pears" space="large">
+			Pears
+		</ListItem>,
+	]}
+</List>;
 ```
 
 ## Styling
@@ -36,8 +44,8 @@ import { List } from "shelving/ui";
 | Variable              | Styles                               | Default                               |
 | --------------------- | ------------------------------------ | ------------------------------------- |
 | `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
-| `--list-gap`          | Space between items                  | `var(--space-xsmall)`                 |
+| `--list-item-space`   | Block margin of each `li`            | `var(--space-small)` (12px)           |
 | `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
 | `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
 
-**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, and the tint-ladder step `--tint-80`. The `gap` variant comes from the shared `shelving/ui` styling system.
+**Global tokens it reads:** `--space-paragraph`, `--space-small`, and the tint-ladder step `--tint-80`.

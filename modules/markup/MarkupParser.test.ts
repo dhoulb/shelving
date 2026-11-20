@@ -68,10 +68,8 @@ describe("MarkupParser", () => {
 					props: { children: "PARAGRAPH1" },
 				},
 				{
-					type: "figure",
-					props: {
-						children: { type: "pre", props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } } },
-					},
+					type: "pre",
+					props: { children: { type: "code", props: { children: "LINE1\nLINE2" } } },
 				},
 				{
 					type: "p",
@@ -152,10 +150,8 @@ describe("MarkupParser", () => {
 			});
 			expect(isValidElement(PARSER.parse("```\nCODE"))).toBe(true);
 			expect(PARSER.parse("```\nCODE")).toMatchObject({
-				type: "figure",
-				props: {
-					children: { type: "pre", props: { children: { type: "code" } } },
-				},
+				type: "pre",
+				props: { children: { type: "code" } },
 			});
 			expect(() => renderToString(PARSER.parse("PARAGRAPH"))).not.toThrow();
 			expect(() => renderToString(PARSER.parse("- ITEM"))).not.toThrow();
