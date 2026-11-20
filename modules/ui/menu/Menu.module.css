@@ -18,7 +18,7 @@
 		/* Text */
 		font-family: var(--menu-font, var(--font-body));
 		font-size: var(--menu-size, var(--size-normal));
-		line-height: var(--menu-leading, var(--leading));
+		line-height: var(--menu-leading, var(--leading-auto));
 		color: var(--menu-color, var(--tint-00));
 
 		/* Nested submenu — Blockquote-style left border to signal hierarchy. */

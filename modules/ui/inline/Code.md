@@ -44,10 +44,9 @@ import { Code } from "shelving/ui";
 | `--code-font`       | Font family                                      | `var(--font-code)`      |
 | `--code-weight`     | Font weight                                      | `var(--weight-code)`    |
 | `--code-size`       | Font size                                        | `var(--size-smaller)`   |
-| `--code-leading`    | Line height                                      | `var(--leading)`        |
 | `--code-indent`     | Left and right padding (one length; non-`plain`) | `var(--space-xxsmall)`  |
 | `--code-radius`     | Corner radius (non-`plain`)                      | `var(--radius-xxsmall)` |
 | `--code-background` | Background fill (non-`plain`)                    | `var(--tint-90)`        |
 | `--code-color`      | Text colour (non-`plain`)                        | `var(--tint-00)`        |
 
-**Global tokens it reads:** `--font-code`, `--weight-code`, `--size-smaller`, `--leading`, `--space-xxsmall`, `--radius-xxsmall`, and the tint-ladder steps `--tint-00` / `--tint-90` for the box fill and text.
+**Global tokens it reads:** `--font-code`, `--weight-code`, `--size-smaller`, `--space-xxsmall`, `--radius-xxsmall`, and the tint-ladder steps `--tint-00` / `--tint-90` for the box fill and text.

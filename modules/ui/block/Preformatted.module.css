@@ -33,7 +33,7 @@
 		font-family: var(--preformatted-font, var(--font-code));
 		font-weight: var(--preformatted-weight, var(--weight-code));
 		font-size: var(--preformatted-size, var(--size-normal));
-		line-height: var(--preformatted-leading, var(--leading));
+		line-height: var(--preformatted-leading, var(--leading-auto));
 		text-transform: none;
 		tab-size: 2;
 		white-space: preserve nowrap;

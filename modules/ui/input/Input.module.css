@@ -44,7 +44,7 @@
 		font-family: var(--input-font, var(--font-body));
 		font-weight: var(--input-weight, var(--weight-normal));
 		font-size: var(--input-size, var(--size-normal));
-		line-height: var(--input-leading, var(--leading));
+		line-height: var(--input-leading, var(--leading-auto));
 
 		/* Content */
 		justify-content: start;

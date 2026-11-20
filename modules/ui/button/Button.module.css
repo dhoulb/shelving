@@ -52,7 +52,7 @@
 		font-family: var(--button-font, var(--font-body));
 		font-weight: var(--button-weight, var(--weight-normal));
 		font-size: var(--button-size, var(--size-normal));
-		line-height: var(--button-leading, var(--leading));
+		line-height: var(--button-leading, var(--leading-auto));
 		text-decoration: none;
 
 		/* Pseudo-classes */

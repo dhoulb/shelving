@@ -69,7 +69,7 @@ export type LeadingVariant = "auto" | "single" | "tight" | "normal" | "loose";
 export interface TypographyVariants extends ColorVariants {
 	/** Font size of the element. */
 	size?: SizeVariant | undefined;
-	/** Line height of the element and the text inside it. */
+	/** Line height of the element. Text inside inherits it, unless it sets its own font size. */
 	leading?: LeadingVariant | undefined;
 	/** Set CSS text `color:` to one of the shades of the current tint ladder. */
 	tint?: TintVariant | undefined;

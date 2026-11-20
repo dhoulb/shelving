@@ -52,9 +52,6 @@
 		--leading-normal: round(1.5em, 1px);
 		--leading-loose: round(1.75em, 1px);
 
-		/* Current line height: what text and components read. The `leading` variants change it for a whole subtree. */
-		--leading: var(--leading-auto);
-
 		/* Semantic cases */
 		--case-title: none;
 		--case-body: none;
@@ -66,7 +63,7 @@
 		font-family: var(--font-body);
 		font-weight: var(--weight-body);
 		font-size: var(--size-normal);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 		text-align: start;
 		text-transform: var(--case-body);
 		color: var(--tint-00);
@@ -78,123 +75,113 @@
 	/* Font-size variants. */
 	.size-xxsmall {
 		font-size: var(--size-xxsmall);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-xsmall {
 		font-size: var(--size-xsmall);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-small {
 		font-size: var(--size-small);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-normal {
 		font-size: var(--size-normal);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-large {
 		font-size: var(--size-large);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-xlarge {
 		font-size: var(--size-xlarge);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-xxlarge {
 		font-size: var(--size-xxlarge);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-xxxlarge {
 		font-size: var(--size-xxxlarge);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-1x {
 		font-size: calc(var(--size-normal) * 1);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-2x {
 		font-size: calc(var(--size-normal) * 2);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-3x {
 		font-size: calc(var(--size-normal) * 3);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-4x {
 		font-size: calc(var(--size-normal) * 4);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-5x {
 		font-size: calc(var(--size-normal) * 5);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-6x {
 		font-size: calc(var(--size-normal) * 6);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-7x {
 		font-size: calc(var(--size-normal) * 7);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-8x {
 		font-size: calc(var(--size-normal) * 8);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-9x {
 		font-size: calc(var(--size-normal) * 9);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.size-10x {
 		font-size: calc(var(--size-normal) * 10);
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
-	/* Line-height variants. Each one sets `--leading` too, so text inside with its own size follows it. */
+	/* Line-height variants. They come after the size variants, so they win when an element has both. */
 	.leading-auto {
-		--leading: var(--leading-auto);
-
-		line-height: var(--leading);
+		line-height: var(--leading-auto);
 	}
 
 	.leading-single {
-		--leading: var(--leading-single);
-
-		line-height: var(--leading);
+		line-height: var(--leading-single);
 	}
 
 	.leading-tight {
-		--leading: var(--leading-tight);
-
-		line-height: var(--leading);
+		line-height: var(--leading-tight);
 	}
 
 	.leading-normal {
-		--leading: var(--leading-normal);
-
-		line-height: var(--leading);
+		line-height: var(--leading-normal);
 	}
 
 	.leading-loose {
-		--leading: var(--leading-loose);
-
-		line-height: var(--leading);
+		line-height: var(--leading-loose);
 	}
 
 	/* Font-family variants. */

@@ -12,7 +12,7 @@
 		/* Text */
 		font-weight: var(--caption-weight, var(--weight-normal));
 		font-size: var(--caption-size, var(--size-small));
-		line-height: var(--caption-leading, var(--leading));
+		line-height: var(--caption-leading, var(--leading-auto));
 		text-align: var(--caption-align, left);
 	}
 }

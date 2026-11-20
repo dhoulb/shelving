@@ -44,6 +44,6 @@ import { Panel, Block, Title } from "shelving/ui";
 | `--title-font`         | Font family   | `var(--font-title)`             |
 | `--title-weight`       | Font weight   | `var(--weight-strong)` (700)    |
 | `--title-size`         | Font size     | `var(--size-xxxlarge)`          |
-| `--title-leading`      | Line height   | `var(--leading)`                |
+| `--title-leading`      | Line height   | `var(--leading-auto)`           |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading`.
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading-auto`.
