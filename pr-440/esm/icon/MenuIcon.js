@@ -1,1 +1,1 @@
-import{rs}from"../chunk-b54rarvp.js";export{rs as MenuIcon};
+import{os}from"../chunk-wyq0g02j.js";export{os as MenuIcon};
