@@ -178,6 +178,7 @@ The components below are listed in the index following this page; this is the sh
 - [SelectInput](ui/SelectInput.md): Dropdown input bound to a string value, rendered as a <select> of the provided options.
 - [AppLayout](ui/AppLayout.md): Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
 - [FixedLayout](ui/FixedLayout.md): Layout with no chrome: the whole screen is one content slot.
+- [ResetLayout](ui/ResetLayout.md): Layout that only removes the margin and padding around the page, so content can go edge to edge.
 - [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a content slot.
 - [Menu](ui/Menu.md): A <menu> list of <MenuItem> children.
 - [MenuItem](ui/MenuItem.md): A <li> containing an <a> link, plus optional submenu content shown when this item is "proud".
@@ -446,6 +447,7 @@ The components below are listed in the index following this page; this is the sh
 - [TextInputProps](ui/TextInputProps.md): Props for TextInput, a single-line text input bound to a string value.
 - [AppLayoutProps](ui/AppLayoutProps.md): Props for <AppLayout>: the nav bar content and the content slot children.
 - [FixedLayoutProps](ui/FixedLayoutProps.md): Props for <FixedLayout>: the content slot children.
+- [ResetLayoutProps](ui/ResetLayoutProps.md): Props for <ResetLayout>: the content slot children.
 - [SidebarLayoutProps](ui/SidebarLayoutProps.md): Props for <SidebarLayout> — the sidebar column content, main children, and a right placement flag.
 - [MenuProps](ui/MenuProps.md): Props for <Menu> — optional <MenuItem> children.
 - [MenuItemProps](ui/MenuItemProps.md): Props for <MenuItem> — <Clickable> props plus children whose first node is the label and the rest the submenu.
