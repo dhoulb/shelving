@@ -1,0 +1,8 @@
+@import url("../style/layers.css");
+
+@layer components {
+	/* A `<fieldset>` always contains its children's margins. `display: contents` removes its box, so child margins merge with the margins outside the form, the same as in any other block. */
+	.fieldset {
+		display: contents;
+	}
+}

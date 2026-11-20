@@ -9,13 +9,16 @@ import type { Arguments } from "../../util/function.js";
 import { SubmitButton } from "../button/SubmitButton.js";
 import { requestDialogClose } from "../dialog/Dialog.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
-import { getClass } from "../util/css.js";
+import { getClass, getModuleClass } from "../util/css.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
+import FORM_CSS from "./Form.module.css";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
 import { FormMessage } from "./FormMessage.js";
 import { FormStore } from "./FormStore.js";
+
+const FIELDSET_CLASS = getModuleClass(FORM_CSS, "fieldset");
 
 /**
  * Callback invoked when a `Form` is submitted with its validated data.
@@ -98,7 +101,7 @@ export function Form({
 			className={getClass(getBlockClass(props), className)}
 			noValidate={true}
 		>
-			<fieldset className={getBlockClass({ trim: true })} disabled={busy}>
+			<fieldset className={FIELDSET_CLASS} disabled={busy}>
 				<FormContext value={store}>{children}</FormContext>
 			</fieldset>
 		</form>
