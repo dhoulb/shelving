@@ -378,6 +378,10 @@
 		white-space: nowrap;
 	}
 
+	.balance {
+		text-wrap: balance;
+	}
+
 	.truncate {
 		overflow: hidden;
 		white-space: nowrap;
