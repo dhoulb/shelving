@@ -11,7 +11,6 @@ A `<Transition>` preset that fades its children in and out by animating opacity.
 
 - Uses the `fade` transition class — there is no direction-aware variant, so forward and back animate identically.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
-- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - Under `prefers-reduced-motion: reduce` the fade keeps animating — an opacity-only crossfade moves nothing spatially, so it is reduced-motion-safe — but the transition group's positional morph is disabled so content never slides between layouts.
 
 ## Usage
