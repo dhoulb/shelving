@@ -38,6 +38,7 @@
 @layer components {
 	.card {
 		/* Box */
+		display: flow-root; /* Contain the margins of the children, also with `padding="none"`. */
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-space, var(--space-paragraph));

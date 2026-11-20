@@ -55,26 +55,28 @@ function Counter() {
       </Block>
     </Panel>
 
-    <Block width="narrow" space="xxlarge" indent="normal">
-      <Heading>Projects</Heading>
-      <Grid>
-        <Card>
-          <Subheading>Trail log</Subheading>
-          <Paragraph>Record runs and rides offline, then sync.</Paragraph>
-          <Tag status="success">Live</Tag>
-        </Card>
-        <Card>
-          <Subheading>Recipe box</Subheading>
-          <Paragraph>Shared shopping lists for the whole house.</Paragraph>
-          <Tag status="warning">Beta</Tag>
-        </Card>
-        <Card>
-          <Subheading>Tide tables</Subheading>
-          <Paragraph>Local tide times, with alerts for low water.</Paragraph>
-          <Tag>Draft</Tag>
-        </Card>
-      </Grid>
-    </Block>
+    <Panel plain padding="xxlarge">
+      <Block width="narrow" trim>
+        <Heading>Projects</Heading>
+        <Grid>
+          <Card>
+            <Subheading>Trail log</Subheading>
+            <Paragraph>Record runs and rides offline, then sync.</Paragraph>
+            <Tag status="success">Live</Tag>
+          </Card>
+          <Card>
+            <Subheading>Recipe box</Subheading>
+            <Paragraph>Shared shopping lists for the whole house.</Paragraph>
+            <Tag status="warning">Beta</Tag>
+          </Card>
+          <Card>
+            <Subheading>Tide tables</Subheading>
+            <Paragraph>Local tide times, with alerts for low water.</Paragraph>
+            <Tag>Draft</Tag>
+          </Card>
+        </Grid>
+      </Block>
+    </Panel>
 
     <Panel color="primary" padding="xxlarge">
       <Block width="narrow" trim>
@@ -96,21 +98,25 @@ function Counter() {
       </Block>
     </Panel>
 
-    <Section width="narrow" space="xxlarge" indent="normal">
-      <Heading>Join the beta</Heading>
-      <Card padding="xlarge" indent="xlarge">
-        <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
-      </Card>
-    </Section>
+    <Panel plain padding="xxlarge">
+      <Section width="narrow" trim>
+        <Heading>Join the beta</Heading>
+        <Card padding="xlarge" indent="xlarge">
+          <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
+        </Card>
+      </Section>
+    </Panel>
 
     <Divider />
 
-    <Section width="narrow" space="xxlarge" indent="normal">
-      <Heading>FAQ</Heading>
-      <Details title="What can I change?">
-        <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
-      </Details>
-    </Section>
+    <Panel plain padding="xxlarge">
+      <Section width="narrow" trim>
+        <Heading>FAQ</Heading>
+        <Details title="What can I change?">
+          <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
+        </Details>
+      </Section>
+    </Panel>
   </ResetLayout>
 
 </App>
