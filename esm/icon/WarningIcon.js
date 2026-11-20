@@ -1,1 +1,1 @@
-import{Fa}from"../chunk-5qkepdb0.js";export{Fa as WarningIcon};
+import{Gi}from"../chunk-c2wf9p1g.js";export{Gi as WarningIcon};
