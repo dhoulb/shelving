@@ -15,6 +15,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - Content that enters or leaves on its own (only a new image or only an old image) slides with its own copy of the keyframes. This works around an iOS Safari bug: Safari also starts the slide on the missing image, and then does not start the same animation again when that content really slides. Without the copies, content that slid in did not slide out later, it just disappeared.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
+- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - During the slide, the snapshots paint above fixed elements such as a bottom bar. To keep a fixed element on top, give it its own `view-transition-name` and raise its group:
 
   ```css

@@ -37118,6 +37118,7 @@ A `<Transition>` preset that collapses its children in and out by animating thei
 
 - Uses the `collapse` transition class — there is no direction-aware variant, so forward and back animate identically.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
+- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - Under `prefers-reduced-motion: reduce` the collapse animation is disabled entirely — the size morph is positional movement, so the content swap happens as an instant cut (the DOM update still applies).
 
 ## Usage
@@ -37205,6 +37206,7 @@ A `<Transition>` preset that fades its children in and out by animating opacity.
 
 - Uses the `fade` transition class — there is no direction-aware variant, so forward and back animate identically.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`).
+- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - Under `prefers-reduced-motion: reduce` the fade keeps animating — an opacity-only crossfade moves nothing spatially, so it is reduced-motion-safe — but the transition group's positional morph is disabled so content never slides between layouts.
 
 ## Usage
@@ -37324,7 +37326,7 @@ A direction-aware `<Transition>` preset that slides its children horizontally �
 - The old and new content slide a full width apart, so they sit edge to edge and never overlap.
 - Content that enters or leaves on its own (only a new image or only an old image) slides with its own copy of the keyframes. This works around an iOS Safari bug: Safari also starts the slide on the missing image, and then does not start the same animation again when that content really slides. Without the copies, content that slid in did not slide out later, it just disappeared.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
-- When pieces of content take turns in the same box and slide in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the slide ends.
+- When pieces of content take turns in the same box and slide in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - During the slide, the snapshots paint above fixed elements such as a bottom bar. To keep a fixed element on top, give it its own `view-transition-name` and raise its group:
 
   ```css
@@ -37466,6 +37468,7 @@ The base View Transition wrapper. It wraps its children in React 19's `<ViewTran
 
 - Set `default` for the base transition; `forward` and `back` default to it and let you pick a direction-aware variant. The class names must correspond to `::view-transition-old(.className)` / `::view-transition-new(.className)` rules in your CSS.
 - Pass `overlay` to raise the transition group above surrounding content during the animation (`z-index: 100`, from `Transition.module.css`).
+- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - Direction is driven by the active view-transition type. `<Navigation>` sets it for each page change (`"forward"` for a link or `NavigationSequence.forward()`, `"back"` for the browser back button). For any other change, call `setTransitionType("forward")` (or `"back"`) inside a `startTransition()` callback; the variants read that type to choose the correct slide.
 - React runs a view transition only for a transition update (`startTransition()`, `useDeferredValue()` or a Suspense reveal). A sync update, for example a `useStore()` change, swaps the content with no animation.
 - The preset variants honour `prefers-reduced-motion: reduce` — positional movement (slides, collapse) is removed while opacity-only fades are kept (see each preset's page). Custom transition classes should ship their own `@media (prefers-reduced-motion: reduce)` override; `animation: none` on the `::view-transition-*` pseudo-elements makes the swap an instant cut while the DOM update still happens.
@@ -37978,6 +37981,7 @@ A direction-aware `<Transition>` preset that slides its children vertically — 
 - The old and new content slide a full height apart, so they sit edge to edge and never overlap.
 - Content that enters or leaves on its own (only a new image or only an old image) slides with its own copy of the keyframes. This works around an iOS Safari bug: Safari also starts the slide on the missing image, and then does not start the same animation again when that content really slides. Without the copies, content that slid in did not slide out later, it just disappeared.
 - The slide is clipped to the element's own box (`overflow: clip` on the group), so it does not paint over the content around it.
+- When pieces of content take turns in the same box and animate in and out (for example tabs, each with its own enter and exit), give that box `contain: paint`. Without it, iOS Safari does not repaint the place where the old content was when the new content is shorter. The part of the old content below the new content then stays on screen until the transition ends. This component is not a box of its own, so set it on the element around it.
 - During the slide, the snapshots paint above fixed elements such as a bottom bar. To keep a fixed element on top, give it its own `view-transition-name` and raise its group:
 
   ```css
