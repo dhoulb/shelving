@@ -40,6 +40,8 @@ export interface NoticesProps extends FlexVariants, ClassProps {
  * - This is how e.g. `<Button>` and `<FormNotify>` components send notices into the global list.
  * - Shows the list in the bottom-right corner, or in the place that `position` sets.
  * - Each notice slides in and out in its own view transition, from the side of its corner, or from the edge for a centred list. The other notices move to their new places in the same transition.
+ * - The list is a manual popover in the browser's top layer, so it shows above an open `<Dialog>` (a modal `<dialog>` is in the top layer too, where `z-index` has no effect). The list moves back to the top of the top layer when a new notice arrives, and when a dialog or other popover opens.
+ * - In a view transition, the list and each notice have a layer above every other layer, including a dialog's.
  *
  * @kind component
  * @see https://shelving.cc/ui/Notices
@@ -52,7 +54,11 @@ export function Notices({ position = "bottom-right", className, ...props }: Noti
 	});
 	const [vertical, horizontal] = position.split("-");
 	return (
-		<aside className={getClass(NOTICES_CLASS, getModuleClass(NOTICES_CSS, vertical, horizontal), getFlexClass(props), className)}>
+		<aside
+			ref={_showNotices}
+			popover="manual"
+			className={getClass(NOTICES_CLASS, getModuleClass(NOTICES_CSS, vertical, horizontal), getFlexClass(props), className)}
+		>
 			{notices.map(notice => (
 				<NoticeItem key={notice.key} notice={notice} position={position} />
 			))}
@@ -87,6 +93,31 @@ function NoticeItem({ notice, position }: { notice: NoticeStore<Status>; positio
 			</Notice>
 		</ViewTransition>
 	);
+}
+
+/**
+ * Show the list as a popover in the top layer when React attaches it, and keep it at the top of the top layer.
+ * - A ref callback, not a layout effect: React holds the layout effects of a view transition, and the list must show at once.
+ * - The top layer stacks elements in the order they open, and `z-index` has no effect there. So a dialog or popover that opens later covers the list. To fix this, show the list again when a dialog or other popover opens (the `toggle` event, caught on `document` because it does not bubble), and when the notices change.
+ * - A browser without popovers ignores the `popover` attribute, so the list shows in the page with its `z-index`.
+ */
+function _showNotices(list: HTMLElement | null): (() => void) | undefined {
+	if (!list || !("showPopover" in list)) return;
+	const raise = () => {
+		if (!list.isConnected) return;
+		if (list.matches(":popover-open")) list.hidePopover();
+		list.showPopover();
+	};
+	const onToggle = (e: Event) => {
+		if (e.target !== list && (e as ToggleEvent).newState === "open") raise();
+	};
+	raise();
+	document.addEventListener("toggle", onToggle, true);
+	const stop = NOTICES.subscribe(raise);
+	return () => {
+		document.removeEventListener("toggle", onToggle, true);
+		stop();
+	};
 }
 
 /** Which way the finger moves to swipe a notice away, for the side it slides out to. */
