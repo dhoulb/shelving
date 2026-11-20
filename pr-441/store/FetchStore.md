@@ -7,6 +7,8 @@
 Store that fetches its values from a remote source on demand.
 - Reading `value` or `loading` optimistically triggers a fetch so the value is available next time.
 - Fetches are de-duplicated, can be aged out with `maxAge`, and can be forced stale with `invalidate()`.
+- A failed fetch keeps the current value if there is one. With no value, the error is saved as `reason`, and a read of
+  `value` a second or more later fetches again (so a retry button works).
 - Provide a `callback` to fetch values, or subclass and override `this._fetch()` for custom behaviour.
 
 A `Store` that fetches its value from a callback. `FetchStore<T>` calls its callback to produce a value, tracks staleness, and re-fetches on demand. Reading `.value` or `.loading` triggers the initial fetch automatically, and concurrent fetches are de-duplicated — only one runs at a time.
@@ -33,6 +35,12 @@ await store.refresh(); // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.
+
+## Failed fetches
+
+- A failed fetch keeps the current value, if the store has one. The page keeps showing the old value, and the next `refresh()` tries again.
+- With no value, the error is saved as `reason`, and reading `value` throws it to the nearest error boundary.
+- A read of `value` a second or more after the failure fetches again, and the store shows as loading. So a `<RetryButton>` in a `<Catcher>` works. A read sooner than that throws the error again, so React's own quick re-render of a failed component does not fetch in a loop.
 
 
 ## Signatures

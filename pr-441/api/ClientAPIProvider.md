@@ -8,6 +8,7 @@ A client-side API provider that sends requests over the network using `fetch()`.
 - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
 - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
 - Parses JSON responses and throws `ResponseError` for non-2xx responses.
+- Throws `NetworkError` when a request cannot reach the server.
 - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
 - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
 

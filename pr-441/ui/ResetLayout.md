@@ -4,14 +4,14 @@
 - Import: `import { ResetLayout } from "shelving/ui";`
 
 Layout that only removes the margin and padding around the page, so content can go edge to edge.
-- It sets margin and padding to zero on `<html>`, `<body>`, and each element between `<body>` and the layout (for example `<div id="root">`).
+- It sets margin and padding to zero on `<html>` and `<body>`, like the other layouts.
 - It does not lock, scroll, or centre. The page scrolls as normal.
 
 A layout that removes the margin and padding around the page, so content such as `<Panel>` goes edge to edge. It does nothing else.
 
 **Things to know:**
 
-- It sets margin and padding to zero on `<html>`, `<body>`, and each element between `<body>` and the layout, for example a mount element such as `<div id="root">`.
+- It sets margin and padding to zero on `<html>` and `<body>`, like the other layouts. It does not change a mount element such as `<div id="root">`.
 - It does not lock the document, scroll, or centre. The page scrolls as normal.
 - Use it for a simple page made of full-width bands. For an app with chrome, use `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`. They reset the margins too.
 

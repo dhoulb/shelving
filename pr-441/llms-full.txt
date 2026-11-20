@@ -2850,6 +2850,7 @@ A client-side API provider that sends requests over the network using `fetch()`.
 - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
 - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
 - Parses JSON responses and throws `ResponseError` for non-2xx responses.
+- Throws `NetworkError` when a request cannot reach the server.
 - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
 - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
 
@@ -18642,6 +18643,8 @@ Callback that fetches the next value for a `FetchStore`.
 Store that fetches its values from a remote source on demand.
 - Reading `value` or `loading` optimistically triggers a fetch so the value is available next time.
 - Fetches are de-duplicated, can be aged out with `maxAge`, and can be forced stale with `invalidate()`.
+- A failed fetch keeps the current value if there is one. With no value, the error is saved as `reason`, and a read of
+  `value` a second or more later fetches again (so a retry button works).
 - Provide a `callback` to fetch values, or subclass and override `this._fetch()` for custom behaviour.
 
 A `Store` that fetches its value from a callback. `FetchStore<T>` calls its callback to produce a value, tracks staleness, and re-fetches on demand. Reading `.value` or `.loading` triggers the initial fetch automatically, and concurrent fetches are de-duplicated — only one runs at a time.
@@ -18668,6 +18671,12 @@ await store.refresh(); // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.
+
+## Failed fetches
+
+- A failed fetch keeps the current value, if the store has one. The page keeps showing the old value, and the next `refresh()` tries again.
+- With no value, the error is saved as `reason`, and reading `value` throws it to the nearest error boundary.
+- A read of `value` a second or more after the failure fetches again, and the store shows as loading. So a `<RetryButton>` in a `<Catcher>` works. A read sooner than that throws the error again, so React's own quick re-render of a failed component does not fetch in a loop.
 
 
 ## Signatures
@@ -18712,7 +18721,8 @@ new FetchStore<T, TT>(value: T | typeof NONE, callback?: FetchCallback<TT>)
 Fetch the result for this store now.
 - Triggered automatically when someone reads `value` or `loading`.
 - Refreshes are de-duplicated. Concurrent calls while a fetch is in-flight return the same promise.
-- Never throws — errors are stored as `reason`.
+- A new fetch clears any old `reason`, so the store shows as loading while it waits.
+- A failed fetch keeps the current value if there is one, and the next refresh tries again. With no value, the error is saved as `reason`.
 
 ## Signatures
 
@@ -21044,15 +21054,21 @@ An app is built from layers, each with one job. Write them in plain sight in `Ap
 3. **Layout picker**: your own component that picks the layout (and its props) from the session, the path, or any other state.
 4. **Layout**: `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`. It draws the chrome (tab bar, sidebar) and gives a content slot. It knows nothing about the cache.
 5. **Content**: transition, then `<RouteCache>`, then `<Scroll vertical cover>`, then `<PageLoader>`, then `<Router>`. Put it in a small component of your own, and reuse it in each layout.
-6. **Page**: `<Page>` with its title, then the page content. A page renders no layout.
+6. **Page**: `<Page>` with its title, then the page content. A page renders no layout, unless the app puts a layout in each page (below).
 
 Nesting rules:
 
-- The layout sits **above** the router. A page, an error page or a loading state never renders a layout.
+- The layout sits **above** the router, or **in each page** (below).
 - The transition goes **around** `<RouteCache>`, not inside it.
 - `<Scroll vertical cover>` goes **inside** `<RouteCache>`, so each page keeps its own scroll.
-- Chrome that keeps state or animates (a tab bar, a sidebar) stays in the layout, **outside** the cache.
-- All pages in one stack must share one layout, because they share one `<RouteCache>`. To change the chrome for some pages (hide the tab bar), change a layout prop from the picker, for example `nav={false}`. Swap to another layout only between sections you do not move back and forth in, such as log-in and the main app.
+- To swap layouts between sections you do not move back and forth in, such as log-in and the main app, pick the layout above the router.
+
+**A layout in each page.** When some pages in a stack need other chrome (a full-screen chat with no tab bar), let each page render its own layout, inside `<RouteCache>`:
+
+- Make one small component for each layout, with the layout, `<Scroll vertical cover>` and `<PageLoader>` inside it, and wrap each route's page in one of them.
+- Then `<Content>` is only the transition, `<RouteCache>` and `<Router>`.
+- During a page slide, a tab bar that both pages have stays still, and a tab bar that only one page has slides with its page. See `<AppLayout>`.
+- Each page has its own copy of the chrome, so keep chrome state (an unread count) in a store, not in the chrome.
 
 ```tsx
 import { useStore } from "shelving/react";
@@ -31157,8 +31173,9 @@ Props for `<AppLayout>`: the `nav` bar content and the content slot `children`.
 
 Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
 - It is a frame only: the content slot does not scroll. Fill it with `<Scroll vertical cover>`, inside `<RouteCache>`, so each page scrolls in its own box.
-- The bar sits below the content slot, not over it, and it stays still while a page slides.
-- Set `nav={false}` to hide the bar, for example for a full-screen page. Change the prop in place (from the URL), so the layout and its page cache stay mounted.
+- The bar sits below the content slot, not over it.
+- During a page slide, the bar stays still when both pages have it, and slides with its page when only one page has it.
+- Render it once above the router, or let each page render its own layout inside `<RouteCache>`, so pages with no bar can use another layout.
 
 A full-viewport layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app. It is a frame only: it draws the bar and gives the content slot, and the app fills the slot.
 
@@ -31171,10 +31188,14 @@ A full-viewport layout with a content slot above a bar of the app's main section
 - The content slot stays clear of the rounded screen corners, and the bar stays clear of the home bar (safe-area insets).
 - The content slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so the page's `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it. A page can pull a full-bleed header up behind the notch: see "Use the top inset" on `<Scroll>`.
 - Each item in the bar takes an equal share of its width, up to `--app-layout-nav-item-width` each.
-- The bar is outside the page cache, so it has one copy and keeps its state.
-- The bar has no view-transition name of its own. Pages slide sideways in the content slot above it, so the bar stays still. A named bar would draw above a dialog or notice that covers it during every view transition.
-- Leave out `nav`, or set it to `false`, to show no bar. The content slot then fills the screen. To hide the bar for some pages, change the prop from the URL, so the layout and its page cache stay mounted: `nav={path.startsWith("/squad/") ? false : <StackBar />}`.
-- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
+- During a page slide (a `"forward"` or `"back"` transition), the bar has its own view-transition name, so it leaves the sliding page:
+  - When both pages have a bar, the old bar fades into the new one in place, so the bar stays still.
+  - When only one page has a bar (for example, a full-screen page with another layout), the bar slides with its page, so the page comes in or leaves as one piece.
+- At other times the bar has no view-transition name, so it never draws above a dialog or notice that covers it.
+- Leave out `nav`, or set it to `false`, to show no bar. The content slot then fills the screen.
+- Put the layout in one of two places. See "Composing an app" on `<App>`:
+  - **Above the router**, once. The bar has one copy and keeps its state. Every page has the bar.
+  - **In each page**, inside `<RouteCache>`. Each page picks its own layout, for example `<FixedLayout>` for a full-screen chat with no bar. Keep the bar's state in a store, because each page has its own copy of the bar.
 
 ## Usage
 
@@ -31285,7 +31306,7 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 - The slot stays clear of the home bar and the rounded screen corners (safe-area insets).
 - The slot goes up to the top of the screen. It sets `--scroll-inset-top` to the notch, so `<Scroll vertical cover>` starts its content below the notch, and the content scrolls up under it.
 - For pages that you move back and forth between, put a `<RouteCache>` around the scroll box, as in `<AppLayout>`.
-- Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
+- Pick it above the router, or in each page inside `<RouteCache>`, for example for a full-screen page in a stack where the other pages have a tab bar. See "Composing an app" on `<App>`.
 
 ## Usage
 
@@ -31388,14 +31409,14 @@ Props for `<ResetLayout>`: the content slot `children`.
 - Import: `import { ResetLayout } from "shelving/ui";`
 
 Layout that only removes the margin and padding around the page, so content can go edge to edge.
-- It sets margin and padding to zero on `<html>`, `<body>`, and each element between `<body>` and the layout (for example `<div id="root">`).
+- It sets margin and padding to zero on `<html>` and `<body>`, like the other layouts.
 - It does not lock, scroll, or centre. The page scrolls as normal.
 
 A layout that removes the margin and padding around the page, so content such as `<Panel>` goes edge to edge. It does nothing else.
 
 **Things to know:**
 
-- It sets margin and padding to zero on `<html>`, `<body>`, and each element between `<body>` and the layout, for example a mount element such as `<div id="root">`.
+- It sets margin and padding to zero on `<html>` and `<body>`, like the other layouts. It does not change a mount element such as `<div id="root">`.
 - It does not lock the document, scroll, or centre. The page scrolls as normal.
 - Use it for a simple page made of full-width bands. For an app with chrome, use `<AppLayout>`, `<SidebarLayout>` or `<FixedLayout>`. They reset the margins too.
 

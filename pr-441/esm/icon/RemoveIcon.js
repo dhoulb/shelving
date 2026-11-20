@@ -1,1 +1,1 @@
-import{Pt}from"../chunk-jzvyvanz.js";import"../chunk-23d4wjea.js";export{Pt as RemoveIcon};
+import{St}from"../chunk-pgy2wkdk.js";import"../chunk-ebfs1dsq.js";export{St as RemoveIcon};
