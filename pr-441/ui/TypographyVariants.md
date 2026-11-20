@@ -4,7 +4,7 @@
 - Import: `import { TypographyVariants } from "shelving/ui";`
 - Extends: `ColorVariants`
 
-Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
+Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, balance, and truncate, applied via `getTypographyClass()`
 
 - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
 
@@ -13,6 +13,7 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 ```ts
 {
 	size?: SizeVariant | undefined;
+	leading?: LeadingVariant | undefined;
 	tint?: TintVariant | undefined;
 	font?: FontVariant | undefined;
 	case?: CaseVariant | undefined;
@@ -22,6 +23,7 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 	right?: boolean | undefined;
 	wrap?: boolean | undefined;
 	nowrap?: boolean | undefined;
+	balance?: boolean | undefined;
 	truncate?: boolean | undefined;
 }
 ```
@@ -31,6 +33,7 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 | Property | Type | Description |
 | --- | --- | --- |
 | `size` | `SizeVariant \| undefined` | Font size of the element. Optional. |
+| `leading` | `LeadingVariant \| undefined` | Line height of the element. Text inside inherits it, unless it sets its own font size. Optional. |
 | `tint` | `TintVariant \| undefined` | Set CSS text `color:` to one of the shades of the current tint ladder. Optional. |
 | `font` | `FontVariant \| undefined` | Font family of the element. Optional. |
 | `case` | `CaseVariant \| undefined` | Text case of the element. Optional. |
@@ -40,4 +43,5 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 | `right` | `boolean \| undefined` | Align text to the end of the line (LTR: right). Optional. |
 | `wrap` | `boolean \| undefined` | Enable wrapping. Optional. |
 | `nowrap` | `boolean \| undefined` | Disable wrapping. Optional. |
+| `balance` | `boolean \| undefined` | Balance the length of the lines, so the last line is not much shorter than the others. Optional. |
 | `truncate` | `boolean \| undefined` | Cut overflowing text to one line with an ellipsis (on a block or a flex item). Optional. |

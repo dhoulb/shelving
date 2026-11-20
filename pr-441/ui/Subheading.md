@@ -51,9 +51,9 @@ import { Title, Heading, Subheading } from "shelving/ui";
 | `--subheading-font`         | Font family   | `var(--font-title)`             |
 | `--subheading-weight`       | Font weight   | `var(--weight-strong)` (700)    |
 | `--subheading-size`         | Font size     | `var(--size-large)`             |
-| `--subheading-leading`      | Line height   | `var(--leading)`                |
+| `--subheading-leading`      | Line height   | `var(--leading-auto)`           |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading`.
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading-auto`.
 
 
 ## Signatures
