@@ -96,7 +96,7 @@ export function Form({
 			className={getClass(getBlockClass(props), className)}
 			noValidate={true}
 		>
-			<fieldset className={getBlockClass({})} disabled={busy}>
+			<fieldset className={getBlockClass({ trim: true })} disabled={busy}>
 				<FormContext value={store}>{children}</FormContext>
 			</fieldset>
 		</form>
