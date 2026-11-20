@@ -4,16 +4,17 @@
 - Import: `import { Form } from "shelving/ui";`
 
 Schema-driven form that creates a `FormStore`, provides it via `FormContext`, and validates/submits on submit.
-- Renders its fields and footer by default, or custom `children` that read the form via hooks.
+- Renders its fields, a full-width submit button and the form's message by default, or custom `children` that read the form via hooks.
 - Closes a parent `<dialog>` automatically on successful submit.
 
 The entry point for shelving forms. `Form` creates a `FormStore` from a `schema` prop, wraps everything in an HTML `<form>`, disables the whole fieldset while busy, and calls `onSubmit` on a valid submit. Build validated, schema-driven forms from a handful of composable pieces, or drop in a single `<Form>` for a fully automatic experience.
 
 **Things to know:**
 
-- If you provide no `children`, `Form` renders `<FormFields>` (one auto-input per schema property) followed by `<FormFooter>` (submit button + error message), so a usable form is one prop away.
+- If you provide no `children`, `Form` renders `<FormFields>` (one auto-input per schema property), then a full-width solid `<SubmitButton>` with `space="none"`, then `<FormMessage>`. A usable form is one prop away. The button has no margin of its own, so the gap above it is the last field's margin, the same as the gap between fields. Set `submit={false}` for no default button.
 - Pass `data` to pre-populate an edit form. Pass `messages` (a string or dictionary) to seed initial field errors — useful when a server returns validation failures.
 - The whole `<fieldset>` is disabled while a submit is in flight, so inputs and buttons lock automatically.
+- The `<fieldset>` uses `display: contents`, so it has no box of its own. Child margins merge with the margins outside the form, the same as in any other block. A form does not trim its children.
 - A successful submit inside a `<dialog>` closes the dialog automatically, through `requestDialogClose()`, so a `<Dialog>` can animate out.
 - Notices are surfaced from the `onSubmit` return/throw — see [Notices and error surfacing](#notices-and-error-surfacing) below.
 
@@ -124,7 +125,7 @@ Form(props: FormProps<T>): ReactElement
 | `props` | `FormProps<T>` |  |
 | `.schema` | `DataSchema<T>` | Schema for the form. |
 | `.data` | `PartialData<T> \| undefined` | Initial data for the form. Optional. |
-| `.submit` | `ReactNode \| undefined` | Content of the submit button. Optional. |
+| `.submit` | `ReactNode \| false \| undefined` | Content of the default submit button, or `false` for no default submit button. Only used when there are no `children`. Optional. |
 | `.onSubmit` | `FormCallback<T> \| undefined` | Optional function called when the form is submitted. Takes the current (validated) value of the form, processes it (possibly asynchronously) and returns any new values to set in the form. Optional. |
 | `.messages` | `ImmutableDictionary<string> \| string \| undefined` | Initial set of messages for the form as either a dictionary or a string with `fieldName:` style messages. Optional. |
 
