@@ -52,6 +52,9 @@
 		/* Stack the content slot above the bar. */
 		display: flex;
 		flex-direction: column;
+
+		/* Clip the frame. Also, React only names a revealed box for a view transition when its size, position or clip changes, so without a clip a page kept in `<RouteCache>` with its own layout never slides in. */
+		overflow: hidden;
 	}
 
 	/* The content slot: a positioned box that `<Scroll vertical cover>` fills. */
