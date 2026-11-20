@@ -16,18 +16,20 @@ A full-width vertical region that paints the current surface colour. Use panels 
 ### Page banded into panels
 
 ```tsx live
-import { Panel, Block, Title, Paragraph } from "shelving/ui";
+import { Panel, Block, ResetLayout, Title, Paragraph } from "shelving/ui";
 
-<Panel as="header" color="primary">
-  <Block width="narrow">
-    <Title>Welcome</Title>
-  </Block>
-</Panel>
-<Panel padding="large">
-  <Block width="narrow">
-    <Paragraph>Each panel is a full-width band; the inner block constrains the content.</Paragraph>
-  </Block>
-</Panel>
+<ResetLayout>
+	<Panel as="header" color="primary">
+		<Block width="narrow">
+			<Title>Welcome</Title>
+		</Block>
+	</Panel>
+	<Panel padding="large">
+		<Block width="narrow">
+			<Paragraph>Each panel is a full-width band; the inner block constrains the content.</Paragraph>
+		</Block>
+	</Panel>
+</ResetLayout>;
 ```
 
 ## Styling

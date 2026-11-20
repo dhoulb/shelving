@@ -61,7 +61,7 @@ export async function buildFrame(sourceDir: AbsolutePath, packageJson: AbsoluteP
 <title>Playground frame</title>
 <script type="importmap">${importmap}</script>
 ${stylesheets.map(href => `<link rel="stylesheet" href="${_escape(href)}">`).join("\n")}
-<style>body { margin: 0; } #root { display: flow-root; padding: var(--space-normal, 16px); }</style>
+<style>@layer defaults { body { margin: 0; } #root { display: flow-root; padding: var(--space-normal, 16px); } }</style>
 <style id="css"></style>
 <script type="module" src="./${_escape(basename(script.path))}"></script>
 </head>

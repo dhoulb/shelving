@@ -25,7 +25,7 @@ const DEFAULT_CODE = `import { useState } from "react";
 import { DATA, EMAIL, BOOLEAN, StringSchema } from "shelving/schema";
 import {
   App, Block, Button, Card, Definitions, Details, Divider, Form, Grid, Heading,
-  Panel, Paragraph, Row, Section, Subheading, Table, Tag, Title,
+  Panel, Paragraph, ResetLayout, Row, Section, Subheading, Table, Tag, Title,
 } from "shelving/ui";
 
 const SIGNUP = DATA({
@@ -46,70 +46,72 @@ function Counter() {
 
 <App title="Shelving Playground" url="https://shelving.cc">
 
-  <Panel color="primary" padding="xxlarge">
-    <Block width="narrow">
-      <Title>Shelving playground</Title>
-      <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
-      <Counter />
+  <ResetLayout>
+    <Panel color="primary" padding="xxlarge">
+      <Block width="narrow">
+        <Title>Shelving playground</Title>
+        <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
+        <Counter />
+      </Block>
+    </Panel>
+
+    <Block width="narrow" space="xxlarge" indent="normal">
+      <Heading>Projects</Heading>
+      <Grid>
+        <Card>
+          <Subheading>Trail log</Subheading>
+          <Paragraph>Record runs and rides offline, then sync.</Paragraph>
+          <Tag status="success">Live</Tag>
+        </Card>
+        <Card>
+          <Subheading>Recipe box</Subheading>
+          <Paragraph>Shared shopping lists for the whole house.</Paragraph>
+          <Tag status="warning">Beta</Tag>
+        </Card>
+        <Card>
+          <Subheading>Tide tables</Subheading>
+          <Paragraph>Local tide times, with alerts for low water.</Paragraph>
+          <Tag>Draft</Tag>
+        </Card>
+      </Grid>
     </Block>
-  </Panel>
 
-  <Block width="narrow" space="xxlarge" indent="normal">
-    <Heading>Projects</Heading>
-    <Grid>
-      <Card>
-        <Subheading>Trail log</Subheading>
-        <Paragraph>Record runs and rides offline, then sync.</Paragraph>
-        <Tag status="success">Live</Tag>
+    <Panel color="primary" padding="xxlarge">
+      <Block width="narrow">
+        <Heading>Team</Heading>
+        <Table>
+          <thead>
+            <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
+            <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
+            <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
+          </tbody>
+        </Table>
+        <Definitions>
+          <dt>Created</dt><dd>3 March 2026</dd>
+          <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
+        </Definitions>
+      </Block>
+    </Panel>
+
+    <Section width="narrow" space="xxlarge" indent="normal">
+      <Heading>Join the beta</Heading>
+      <Card padding="xlarge" indent="xlarge">
+        <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
       </Card>
-      <Card>
-        <Subheading>Recipe box</Subheading>
-        <Paragraph>Shared shopping lists for the whole house.</Paragraph>
-        <Tag status="warning">Beta</Tag>
-      </Card>
-      <Card>
-        <Subheading>Tide tables</Subheading>
-        <Paragraph>Local tide times, with alerts for low water.</Paragraph>
-        <Tag>Draft</Tag>
-      </Card>
-    </Grid>
-  </Block>
+    </Section>
 
-  <Panel color="primary" padding="xxlarge">
-    <Block width="narrow">
-      <Heading>Team</Heading>
-      <Table>
-        <thead>
-          <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
-          <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
-          <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
-        </tbody>
-      </Table>
-      <Definitions>
-        <dt>Created</dt><dd>3 March 2026</dd>
-        <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
-      </Definitions>
-    </Block>
-  </Panel>
+    <Divider />
 
-  <Section width="narrow" space="xxlarge" indent="normal">
-    <Heading>Join the beta</Heading>
-    <Card padding="xlarge" indent="xlarge">
-      <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
-    </Card>
-  </Section>
-
-  <Divider />
-
-  <Section width="narrow" space="xxlarge" indent="normal">
-    <Heading>FAQ</Heading>
-    <Details title="What can I change?">
-      <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
-    </Details>
-  </Section>
+    <Section width="narrow" space="xxlarge" indent="normal">
+      <Heading>FAQ</Heading>
+      <Details title="What can I change?">
+        <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
+      </Details>
+    </Section>
+  </ResetLayout>
 
 </App>
 `;
