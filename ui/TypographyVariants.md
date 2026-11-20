@@ -4,7 +4,7 @@
 - Import: `import { TypographyVariants } from "shelving/ui";`
 - Extends: `ColorVariants`
 
-Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
+Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, balance, and truncate, applied via `getTypographyClass()`
 
 - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
 
@@ -23,6 +23,7 @@ Typographic variant props — colour, font-family, weight, case, size, line heig
 	right?: boolean | undefined;
 	wrap?: boolean | undefined;
 	nowrap?: boolean | undefined;
+	balance?: boolean | undefined;
 	truncate?: boolean | undefined;
 }
 ```
@@ -42,4 +43,5 @@ Typographic variant props — colour, font-family, weight, case, size, line heig
 | `right` | `boolean \| undefined` | Align text to the end of the line (LTR: right). Optional. |
 | `wrap` | `boolean \| undefined` | Enable wrapping. Optional. |
 | `nowrap` | `boolean \| undefined` | Disable wrapping. Optional. |
+| `balance` | `boolean \| undefined` | Balance the length of the lines, so the last line is not much shorter than the others. Optional. |
 | `truncate` | `boolean \| undefined` | Cut overflowing text to one line with an ellipsis (on a block or a flex item). Optional. |

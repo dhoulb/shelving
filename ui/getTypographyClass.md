@@ -5,11 +5,13 @@
 
 Get the typography class for a component from its typographic variant props.
 
-Maps the colour, size, line height, weight, font, case, tint, alignment, wrap, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
+Maps the colour, size, line height, weight, font, case, tint, alignment, wrap, balance, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
 
 The typography variant props set an element's text styling from a single helper — `<Heading font="title" size="large">`, `<Paragraph weight="strong" center>`, `<Small case="upper">`. They're **overrides** for one-off changes; for an app-wide change, retune the variables below in a theme file.
 
-`getTypographyClass({ color, size, leading, weight, font, case, tint, left, center, right, wrap, nowrap, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `leading="tight"` → `leading-tight`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
+`getTypographyClass({ color, size, leading, weight, font, case, tint, left, center, right, wrap, nowrap, balance, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `leading="tight"` → `leading-tight`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
+
+The `balance` flag sets `text-wrap: balance`, so the lines of a short block (a heading or a one-sentence paragraph) are about the same length: `<Paragraph balance>`.
 
 The `truncate` flag cuts overflowing text to one line and ends it with an ellipsis. It works on a block element or a flex item, not on inline text. When the text is inside a wrapper that is a flex item, give that wrapper `grow` (see `getWidthClass()`), so it can shrink below the width of the text.
 
@@ -109,6 +111,7 @@ getTypographyClass({ tint, weight, font, case: caseValue, size, leading, ...prop
 | `.right` | `boolean \| undefined` | Align text to the end of the line (LTR: right). Optional. |
 | `.wrap` | `boolean \| undefined` | Enable wrapping. Optional. |
 | `.nowrap` | `boolean \| undefined` | Disable wrapping. Optional. |
+| `.balance` | `boolean \| undefined` | Balance the length of the lines, so the last line is not much shorter than the others. Optional. |
 | `.truncate` | `boolean \| undefined` | Cut overflowing text to one line with an ellipsis (on a block or a flex item). Optional. |
 
 ## Returns

@@ -489,7 +489,7 @@ The components below are listed in the index following this page; this is the sh
 - [StatusVariants](ui/StatusVariants.md): Variant props for the semantic status of an element, e.g. status="success".
 - [StrokeVariants](ui/StrokeVariants.md): Variant props for the border thickness of a component, e.g. stroke="thick".
 - [TrimVariants](ui/TrimVariants.md): Variant props to trim the outer margins of a component's first and last children, e.g. trim.
-- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, and truncate, applied via getTypographyClass()
+- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, balance, and truncate, applied via getTypographyClass()
 - [WidthVariants](ui/WidthVariants.md): Variant props that set (or unconstrain) a component's width, e.g. width="narrow" or width="12x".
 - [CellProps](ui/CellProps.md): Props for Cell — padding, indent, width, and typography variants plus children.
 - [TableProps](ui/TableProps.md): Props for Table — colour, space, typography, and width variants plus children.
