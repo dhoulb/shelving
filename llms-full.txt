@@ -2850,6 +2850,7 @@ A client-side API provider that sends requests over the network using `fetch()`.
 - Can be used on a server environment to make outgoing API calls, or in a browser environment to call a server API.
 - Renders endpoint paths and query params into the URL and sends body payloads as JSON.
 - Parses JSON responses and throws `ResponseError` for non-2xx responses.
+- Throws `NetworkError` when a request cannot reach the server.
 - Extendable with custom request-building and response-parsing logic by overriding `createRequest()` and `parseResponse()`.
 - Wrap in `ValidationAPIProvider` to add automatic validation of request payloads and response results against endpoint schemas.
 
@@ -18642,6 +18643,8 @@ Callback that fetches the next value for a `FetchStore`.
 Store that fetches its values from a remote source on demand.
 - Reading `value` or `loading` optimistically triggers a fetch so the value is available next time.
 - Fetches are de-duplicated, can be aged out with `maxAge`, and can be forced stale with `invalidate()`.
+- A failed fetch keeps the current value if there is one. With no value, the error is saved as `reason`, and a read of
+  `value` a second or more later fetches again (so a retry button works).
 - Provide a `callback` to fetch values, or subclass and override `this._fetch()` for custom behaviour.
 
 A `Store` that fetches its value from a callback. `FetchStore<T>` calls its callback to produce a value, tracks staleness, and re-fetches on demand. Reading `.value` or `.loading` triggers the initial fetch automatically, and concurrent fetches are de-duplicated — only one runs at a time.
@@ -18668,6 +18671,12 @@ await store.refresh(); // re-fetch now
 ```
 
 `refresh(maxAge)` accepts a max age in milliseconds: the exported `ALWAYS_REFRESH` (`0`, the default) always re-fetches, while `AVOID_REFRESH` (`Infinity`) only fetches if the store has no value yet.
+
+## Failed fetches
+
+- A failed fetch keeps the current value, if the store has one. The page keeps showing the old value, and the next `refresh()` tries again.
+- With no value, the error is saved as `reason`, and reading `value` throws it to the nearest error boundary.
+- A read of `value` a second or more after the failure fetches again, and the store shows as loading. So a `<RetryButton>` in a `<Catcher>` works. A read sooner than that throws the error again, so React's own quick re-render of a failed component does not fetch in a loop.
 
 
 ## Signatures
@@ -18712,7 +18721,8 @@ new FetchStore<T, TT>(value: T | typeof NONE, callback?: FetchCallback<TT>)
 Fetch the result for this store now.
 - Triggered automatically when someone reads `value` or `loading`.
 - Refreshes are de-duplicated. Concurrent calls while a fetch is in-flight return the same promise.
-- Never throws — errors are stored as `reason`.
+- A new fetch clears any old `reason`, so the store shows as loading while it waits.
+- A failed fetch keeps the current value if there is one, and the next refresh tries again. With no value, the error is saved as `reason`.
 
 ## Signatures
 
