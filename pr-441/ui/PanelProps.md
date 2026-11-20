@@ -11,6 +11,8 @@ Props for `Panel` — colour, status, and typography variants plus optional `chi
 ```ts
 {
 	as?: BlockElement | undefined;
+	plain?: boolean | undefined;
+	solid?: boolean | undefined;
 }
 ```
 
@@ -19,3 +21,5 @@ Props for `Panel` — colour, status, and typography variants plus optional `chi
 | Property | Type | Description |
 | --- | --- | --- |
 | `as` | `BlockElement \| undefined` | Element this `<Panel>` renders as, e.g. "header" to output a "<header>" Defaults to `"section"`. |
+| `plain` | `boolean \| undefined` | Remove the background, but keep the spacing. `color=` and `status=` still tint the content. Optional. |
+| `solid` | `boolean \| undefined` | Paint a strong fill (`--tint-50`) with light text, for example for a hero or call-to-action band. Optional. |
