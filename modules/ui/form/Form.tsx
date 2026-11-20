@@ -6,6 +6,7 @@ import { isAsync } from "../../util/async.js";
 import type { Data, PartialData } from "../../util/data.js";
 import type { ImmutableDictionary } from "../../util/dictionary.js";
 import type { Arguments } from "../../util/function.js";
+import { SubmitButton } from "../button/SubmitButton.js";
 import { requestDialogClose } from "../dialog/Dialog.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass } from "../util/css.js";
@@ -13,7 +14,7 @@ import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import { FormContext } from "./FormContext.js";
 import { FormFields } from "./FormFields.js";
-import { FormFooter } from "./FormFooter.js";
+import { FormMessage } from "./FormMessage.js";
 import { FormStore } from "./FormStore.js";
 
 /**
@@ -38,8 +39,8 @@ export interface FormProps<T extends Data> extends BlockVariants, OptionalChildP
 	schema: DataSchema<T>;
 	/** Initial data for the form. */
 	data?: PartialData<T> | undefined;
-	/** Content of the submit button. */
-	submit?: ReactNode | undefined;
+	/** Content of the default submit button, or `false` for no default submit button. Only used when there are no `children`. */
+	submit?: ReactNode | false | undefined;
 	/** Optional function called when the form is submitted. Takes the current (validated) value of the form, processes it (possibly asynchronously) and returns any new values to set in the form. */
 	onSubmit?: FormCallback<T> | undefined;
 	/** Initial set of messages for the form as either a dictionary or a string with `fieldName:` style messages. */
@@ -48,7 +49,7 @@ export interface FormProps<T extends Data> extends BlockVariants, OptionalChildP
 
 /**
  * Schema-driven form that creates a `FormStore`, provides it via `FormContext`, and validates/submits on submit.
- * - Renders its fields and footer by default, or custom `children` that read the form via hooks.
+ * - Renders its fields, a full-width submit button and the form's message by default, or custom `children` that read the form via hooks.
  * - Closes a parent `<dialog>` automatically on successful submit.
  *
  * @returns A `<form>` element wrapping the fields in a `FormContext` provider.
@@ -66,7 +67,8 @@ export function Form({
 	children = (
 		<>
 			<FormFields />
-			<FormFooter submit={submit} />
+			{submit !== false && <SubmitButton space="none">{submit}</SubmitButton>}
+			<FormMessage />
 		</>
 	),
 	...props
