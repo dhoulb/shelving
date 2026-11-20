@@ -68,7 +68,6 @@ export const TABLE_RULE = createMarkupRule<{
 			}
 			body.push(<Section key={s}>{rows}</Section>);
 		}
-		// Scrollable region pattern: focusable, labelled <figure> wraps the table so keyboard users can arrow-scroll wide columns.
 		return <table key={key}>{body}</table>;
 	},
 	["block"],

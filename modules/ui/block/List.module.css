@@ -1,7 +1,6 @@
 @import url("../style/layers.css");
 @import url("../style/Space.module.css");
 @import url("../style/Color.module.css");
-@import url("../style/Gap.module.css");
 @import url("../style/Typography.module.css");
 
 @layer components {
@@ -15,10 +14,11 @@
 		/* Text */
 		text-align: left;
 
-		/* Contents */
-		display: flex;
-		flex-direction: column;
-		gap: var(--list-gap, var(--space-xsmall));
+		/* Items stay in normal flow, so the margin of an item merges with the margin of a `<p>` inside it. */
+		> li {
+			display: list-item;
+			margin-block: var(--list-item-space, var(--space-small));
+		}
 
 		li::marker {
 			color: var(--list-marker-color, var(--tint-80));

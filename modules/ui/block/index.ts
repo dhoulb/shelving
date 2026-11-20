@@ -12,6 +12,7 @@ export * from "./Heading.js";
 export * from "./Image.js";
 export * from "./Label.js";
 export * from "./List.js";
+export * from "./ListItem.js";
 export * from "./Panel.js";
 export * from "./Paragraph.js";
 export * from "./Preformatted.js";

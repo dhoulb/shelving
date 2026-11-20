@@ -179,7 +179,7 @@ test("ORDERED loose lists", () => {
 					props: {
 						children: [
 							{ type: "p", props: { children: "ITEM1" } },
-							{ type: "figure", props: { children: { type: "pre", props: { children: { type: "code", props: { children: "CODE" } } } } } },
+							{ type: "pre", props: { children: { type: "code", props: { children: "CODE" } } } },
 						],
 					},
 				},

@@ -11,6 +11,7 @@ import STRONG_CSS from "../inline/Strong.module.css";
 import SUBSCRIPT_CSS from "../inline/Subscript.module.css";
 import SUPERSCRIPT_CSS from "../inline/Superscript.module.css";
 import BLOCK_CSS from "../style/Block.module.css";
+import TRIM_CSS from "../style/Trim.module.css";
 import TABLE_CSS from "../table/Table.module.css";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { OptionalChildProps } from "../util/props.js";
@@ -58,6 +59,7 @@ const PROSE_STYLES = getClass(
 	getModuleClass(SUPERSCRIPT_CSS, "prose"),
 	getModuleClass(TABLE_CSS, "prose"),
 	getModuleClass(DIVIDER_CSS, "prose"),
+	getModuleClass(TRIM_CSS, "prose"),
 );
 
 /**
