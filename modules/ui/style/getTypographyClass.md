@@ -2,7 +2,7 @@
 
 The typography variant props set an element's text styling from a single helper — `<Heading font="title" size="large">`, `<Paragraph weight="strong" center>`, `<Small case="upper">`. They're **overrides** for one-off changes; for an app-wide change, retune the variables below in a theme file.
 
-`getTypographyClass({ color, size, weight, font, case, tint, left, center, right, wrap, nowrap, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
+`getTypographyClass({ color, size, leading, weight, font, case, tint, left, center, right, wrap, nowrap, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `leading="tight"` → `leading-tight`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
 
 The `truncate` flag cuts overflowing text to one line and ends it with an ellipsis. It works on a block element or a flex item, not on inline text. When the text is inside a wrapper that is a flex item, give that wrapper `grow` (see `getWidthClass()`), so it can shrink below the width of the text.
 
@@ -52,10 +52,18 @@ The following `:root` variables are defined by this module and can be overridden
 
 ### Line height
 
-| Variable           | Default                                    | Used for                                                                        |
-| ------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| `--leading`        | `clamp(1.05em, calc(1em + 0.5rem), 1.5em)` | Default line height; paired with every font-size variant and the body baseline. |
-| `--leading-normal` | `1.5`                                      | Plain unitless line height for dense blocks.                                    |
+| Variable           | Default                                                | Used for                                                                             |
+| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| `--leading-auto`   | `round(clamp(1.05em, calc(1em + 0.5rem), 1.5em), 1px)` | Default: about 1.5 for small text, less for big text.                                |
+| `--leading-single` | `round(1em, 1px)`                                      | One line, no gap. For icons and one-line labels.                                     |
+| `--leading-tight`  | `round(1.25em, 1px)`                                   | Small text in a close group, such as a title and a short description in a tile.      |
+| `--leading-normal` | `round(1.5em, 1px)`                                    | A fixed 1.5 at every size.                                                           |
+| `--leading-loose`  | `round(1.75em, 1px)`                                   | Long body copy.                                                                      |
+| `--leading`        | `var(--leading-auto)`                                  | The current line height. Every font-size variant, component, and the body read this. |
+
+Each value is rounded to a whole pixel, so stacked rows do not move by a pixel when the browser rounds them.
+
+The `leading` prop sets the line height of an element and all the text inside it: `<Column leading="tight">` makes a `<Strong size="small">` inside it tight too. The prop sets `--leading` on the element, and each child reads `--leading` with its own font size. To change the default for the whole app, override `--leading-auto` at `:root`.
 
 ### Case
 

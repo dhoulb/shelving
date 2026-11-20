@@ -45,9 +45,15 @@
 		--size-xlarger: 2.5em;
 		--size-xxlarger: 5em;
 
-		/* Line heights */
-		--leading: clamp(1.05em, calc(1em + 0.5rem), 1.5em);
-		--leading-normal: 1.5;
+		/* Line heights, rounded to whole pixels so rows never land on half pixels. */
+		--leading-auto: round(clamp(1.05em, calc(1em + 0.5rem), 1.5em), 1px);
+		--leading-single: round(1em, 1px);
+		--leading-tight: round(1.25em, 1px);
+		--leading-normal: round(1.5em, 1px);
+		--leading-loose: round(1.75em, 1px);
+
+		/* Current line height: what text and components read. The `leading` variants change it for a whole subtree. */
+		--leading: var(--leading-auto);
 
 		/* Semantic cases */
 		--case-title: none;
@@ -157,6 +163,37 @@
 
 	.size-10x {
 		font-size: calc(var(--size-normal) * 10);
+		line-height: var(--leading);
+	}
+
+	/* Line-height variants. Each one sets `--leading` too, so text inside with its own size follows it. */
+	.leading-auto {
+		--leading: var(--leading-auto);
+
+		line-height: var(--leading);
+	}
+
+	.leading-single {
+		--leading: var(--leading-single);
+
+		line-height: var(--leading);
+	}
+
+	.leading-tight {
+		--leading: var(--leading-tight);
+
+		line-height: var(--leading);
+	}
+
+	.leading-normal {
+		--leading: var(--leading-normal);
+
+		line-height: var(--leading);
+	}
+
+	.leading-loose {
+		--leading: var(--leading-loose);
+
 		line-height: var(--leading);
 	}
 
