@@ -8,6 +8,7 @@
 	.blockquote,
 	.prose blockquote {
 		/* Box */
+		display: flow-root; /* Contain the margins of the children, also with `padding="none"`. */
 		margin-block: var(--blockquote-space, var(--space-paragraph));
 		border-inline-start: var(--blockquote-border, var(--blockquote-stroke, var(--stroke-normal)) solid var(--tint-90));
 		padding-block: var(--blockquote-padding, var(--space-small));

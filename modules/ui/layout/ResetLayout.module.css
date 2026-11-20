@@ -1,0 +1,16 @@
+@import url("../style/layers.css");
+
+/*
+ * Reset layout: remove the margin and padding around the page, so content can go edge to edge.
+ *
+ * The layout does one job only. It does not lock, scroll, or centre.
+ */
+
+@layer components {
+	/* Remove the default margin and padding of <html> and <body>. */
+	html:has(.layout),
+	body:has(.layout) {
+		margin: 0;
+		padding: 0;
+	}
+}

@@ -57,34 +57,38 @@ export function DocumentationSearchPage(): ReactNode {
 
 	return (
 		<Page title={TITLE}>
-			<Panel>
-				<Header>
-					<Title center>{TITLE}</Title>
-				</Header>
-				<Section>
-					<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
-					{!!kinds.length && (
-						<Row left wrap>
-							{kinds.map(kind => (
-								<CheckboxInput
-									key={kind}
-									name={kind}
-									width="fit"
-									value={selected.includes(kind)}
-									onValue={() => setSelected(s => toggleArrayItem(s, kind))}
-								>
-									<DocumentationKind kind={kind} />
-								</CheckboxInput>
-							))}
-						</Row>
-					)}
-				</Section>
+			<Panel as="header">
+				<Block width="narrow" trim>
+					<Header>
+						<Title center>{TITLE}</Title>
+					</Header>
+					<Section>
+						<TextInput name="search" title="Search" placeholder="Search…" value={query} onValue={v => setQuery(v ?? "")} />
+						{!!kinds.length && (
+							<Row left wrap>
+								{kinds.map(kind => (
+									<CheckboxInput
+										key={kind}
+										name={kind}
+										width="fit"
+										value={selected.includes(kind)}
+										onValue={() => setSelected(s => toggleArrayItem(s, kind))}
+									>
+										<DocumentationKind kind={kind} />
+									</CheckboxInput>
+								))}
+							</Row>
+						)}
+					</Section>
+				</Block>
 			</Panel>
-			<Block indent="normal" padding="section">
-				<Section>
-					<TreeCards>{cards}</TreeCards>
-				</Section>
-			</Block>
+			<Panel plain>
+				<Block width="narrow" trim>
+					<Section>
+						<TreeCards>{cards}</TreeCards>
+					</Section>
+				</Block>
+			</Panel>
 		</Page>
 	);
 }

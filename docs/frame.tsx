@@ -122,11 +122,11 @@ async function run(): Promise<void> {
 // Post the content height to the parent page, so it can make the frame fit.
 let height = 0;
 new ResizeObserver(() => {
-	const next = Math.ceil(root.getBoundingClientRect().bottom + window.scrollY);
+	const next = Math.ceil(document.body.getBoundingClientRect().bottom + window.scrollY);
 	if (next === height) return;
 	height = next;
 	window.parent.postMessage({ type: PLAYGROUND_HEIGHT_MESSAGE, height }, "*");
-}).observe(root);
+}).observe(document.body);
 
 window.addEventListener("hashchange", () => void run());
 void run();

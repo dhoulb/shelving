@@ -1,4 +1,13 @@
-import { type PointerEvent, type ReactNode, type SyntheticEvent, startTransition, useEffect, useRef, useState } from "react";
+import {
+	type KeyboardEvent,
+	type PointerEvent,
+	type ReactNode,
+	type SyntheticEvent,
+	startTransition,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { AddIcon } from "../../icon/AddIcon.js";
 import { LeftIcon } from "../../icon/LeftIcon.js";
 import { Row } from "../block/Row.js";
@@ -26,7 +35,7 @@ const DEFAULT_CODE = `import { useState } from "react";
 import { DATA, EMAIL, BOOLEAN, StringSchema } from "shelving/schema";
 import {
   App, Block, Button, Card, Definitions, Details, Divider, Form, Grid, Heading,
-  Panel, Paragraph, Row, Section, Subheading, Table, Tag, Title,
+  Panel, Paragraph, ResetLayout, Row, Section, Subheading, Table, Tag, Title,
 } from "shelving/ui";
 
 const SIGNUP = DATA({
@@ -47,70 +56,78 @@ function Counter() {
 
 <App title="Shelving Playground" url="https://shelving.cc">
 
-  <Panel color="primary" padding="xxlarge">
-    <Block width="narrow">
-      <Title>Shelving playground</Title>
-      <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
-      <Counter />
-    </Block>
-  </Panel>
+  <ResetLayout>
 
-  <Block width="narrow" space="xxlarge" indent="normal">
-    <Heading>Projects</Heading>
-    <Grid>
-      <Card>
-        <Subheading>Trail log</Subheading>
-        <Paragraph>Record runs and rides offline, then sync.</Paragraph>
-        <Tag status="success">Live</Tag>
-      </Card>
-      <Card>
-        <Subheading>Recipe box</Subheading>
-        <Paragraph>Shared shopping lists for the whole house.</Paragraph>
-        <Tag status="warning">Beta</Tag>
-      </Card>
-      <Card>
-        <Subheading>Tide tables</Subheading>
-        <Paragraph>Local tide times, with alerts for low water.</Paragraph>
-        <Tag>Draft</Tag>
-      </Card>
-    </Grid>
-  </Block>
+    <Panel as="header" color="primary" padding="xxlarge">
+      <Block width="narrow" trim>
+        <Title>Shelving playground</Title>
+        <Paragraph>Edit the TSX or the CSS on the left. The preview updates as you type.</Paragraph>
+        <Counter />
+      </Block>
+    </Panel>
 
-  <Panel color="primary" padding="xxlarge">
-    <Block width="narrow">
-      <Heading>Team</Heading>
-      <Table>
-        <thead>
-          <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
-          <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
-          <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
-        </tbody>
-      </Table>
-      <Definitions>
-        <dt>Created</dt><dd>3 March 2026</dd>
-        <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
-      </Definitions>
-    </Block>
-  </Panel>
+    <Panel plain padding="xxlarge">
+      <Block width="narrow" trim>
+        <Heading>Projects</Heading>
+        <Grid>
+          <Card>
+            <Subheading>Trail log</Subheading>
+            <Paragraph>Record runs and rides offline, then sync.</Paragraph>
+            <Tag status="success">Live</Tag>
+          </Card>
+          <Card>
+            <Subheading>Recipe box</Subheading>
+            <Paragraph>Shared shopping lists for the whole house.</Paragraph>
+            <Tag status="warning">Beta</Tag>
+          </Card>
+          <Card>
+            <Subheading>Tide tables</Subheading>
+            <Paragraph>Local tide times, with alerts for low water.</Paragraph>
+            <Tag>Draft</Tag>
+          </Card>
+        </Grid>
+      </Block>
+    </Panel>
 
-  <Section width="narrow" space="xxlarge" indent="normal">
-    <Heading>Join the beta</Heading>
-    <Card padding="xlarge" indent="xlarge">
-      <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
-    </Card>
-  </Section>
+    <Panel color="primary" padding="xxlarge">
+      <Block width="narrow" trim>
+        <Heading>Team</Heading>
+        <Table>
+          <thead>
+            <tr><th>Name</th><th>Role</th><th>Plan</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>Owner</td><td>Pro</td></tr>
+            <tr><td>Bob</td><td>Editor</td><td>Free</td></tr>
+            <tr><td>Chloe</td><td>Viewer</td><td>Free</td></tr>
+          </tbody>
+        </Table>
+        <Definitions>
+          <dt>Created</dt><dd>3 March 2026</dd>
+          <dt>Storage</dt><dd>2.4 GB of 10 GB</dd>
+        </Definitions>
+      </Block>
+    </Panel>
 
-  <Divider />
+    <Panel plain padding="xxlarge">
+      <Section width="narrow" trim>
+        <Heading>Join the beta</Heading>
+        <Card padding="xlarge" indent="xlarge">
+          <Form schema={SIGNUP} submit="Sign up" onSubmit={data => \`Thanks, \${data.name}!\`} />
+        </Card>
+      </Section>
 
-  <Section width="narrow" space="xxlarge" indent="normal">
-    <Heading>FAQ</Heading>
-    <Details title="What can I change?">
-      <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
-    </Details>
-  </Section>
+      <Divider space="none" />
+
+      <Section width="narrow" trim>
+        <Heading>FAQ</Heading>
+        <Details title="What can I change?">
+          <Paragraph>Press + above the code to add a component, or a variable to the CSS.</Paragraph>
+        </Details>
+      </Section>
+    </Panel>
+
+  </ResetLayout>
 
 </App>
 `;
@@ -130,6 +147,24 @@ const MAX_SPLIT = 80;
 
 /** Time to wait after the last key press before the preview runs again. */
 const DELAY = 400;
+
+/** Text that the Tab key inserts in the editor. */
+const TAB_TEXT = "  ";
+
+/**
+ * Make the Tab key insert two spaces in an editor `<textarea>`, and not move the focus.
+ * - `insertText` keeps the browser's undo history and fires an `input` event, so React sees the change.
+ * - Shift+Tab still moves the focus back, so the keyboard can still leave the editor.
+ */
+function _onEditorKeyDown(e: KeyboardEvent<HTMLDivElement>): void {
+	if (e.key !== "Tab" || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+	if (!(e.target instanceof HTMLTextAreaElement)) return;
+	e.preventDefault();
+	if (!document.execCommand("insertText", false, TAB_TEXT)) {
+		e.target.setRangeText(TAB_TEXT, e.target.selectionStart, e.target.selectionEnd, "end");
+		e.target.dispatchEvent(new Event("input", { bubbles: true }));
+	}
+}
 
 /** Media query for the mobile layout, where the panes do not show side by side. Keep it the same as the `@media` rules in the CSS. */
 const MOBILE = "(width < 64rem)";
@@ -224,7 +259,8 @@ export function DocumentationPlaygroundPage(): ReactNode {
 	return (
 		<Page title={TITLE}>
 			<div ref={ref} className={getClass(PLAYGROUND_CLASS, active === "preview" && PREVIEWING_CLASS)}>
-				<div className={EDITOR_CLASS} onSelect={onCursor}>
+				{/* biome-ignore lint/a11y/noStaticElementInteractions: The key handler catches Tab from the textarea inside. */}
+				<div className={EDITOR_CLASS} onSelect={onCursor} onKeyDown={_onEditorKeyDown}>
 					<Row between>
 						<Button small href="/" title="Home">
 							<LeftIcon />

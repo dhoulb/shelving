@@ -23,21 +23,25 @@ export function TreePage({ title, name, description, content, children }: TreeEl
 	return (
 		<Page title={title ?? name} description={description}>
 			<Block>
-				<Panel>
-					<Title center>{title ?? name}</Title>
+				<Panel as="header">
+					<Block width="narrow" trim>
+						<Title center>{title ?? name}</Title>
+					</Block>
 				</Panel>
-				<Block indent="normal" padding="section">
-					{content && (
+				<Panel plain>
+					<Block width="narrow" trim>
+						{content && (
+							<Section>
+								<Prose>
+									<TreeMarkup>{content}</TreeMarkup>
+								</Prose>
+							</Section>
+						)}
 						<Section>
-							<Prose>
-								<TreeMarkup>{content}</TreeMarkup>
-							</Prose>
+							<TreeCards>{children}</TreeCards>
 						</Section>
-					)}
-					<Section>
-						<TreeCards>{children}</TreeCards>
-					</Section>
-				</Block>
+					</Block>
+				</Panel>
 			</Block>
 		</Page>
 	);

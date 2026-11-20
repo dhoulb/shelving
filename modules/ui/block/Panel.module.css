@@ -14,6 +14,7 @@
 @layer components {
 	.panel {
 		/* Box */
+		display: flow-root; /* Contain the margins of the children, also with `padding="none"`. */
 		position: relative;
 		padding-block: var(--panel-padding, var(--space-section));
 		padding-inline: var(--panel-indent, var(--space-normal));
@@ -23,6 +24,17 @@
 		/* Style */
 		background: var(--panel-background, var(--tint-90));
 		color: var(--panel-color, var(--tint-00));
+
+		/* Plain: no background, same spacing. */
+		&.plain {
+			background: var(--panel-plain-background, transparent);
+		}
+
+		/* Solid: a strong fill with light text. */
+		&.solid {
+			background: var(--panel-solid-background, var(--tint-50));
+			color: var(--panel-solid-color, var(--tint-100));
+		}
 	}
 }
 
