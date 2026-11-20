@@ -42,6 +42,20 @@
 	}
 }
 
+/* Each notice's own layer is above every other layer in a view transition, including a dialog's, so it does not go under a dialog that fades in. */
+::view-transition-group(.notice-left),
+::view-transition-group(.notice-right),
+::view-transition-group(.notice-top),
+::view-transition-group(.notice-bottom),
+::view-transition-group(.notice-update-top-left),
+::view-transition-group(.notice-update-top-center),
+::view-transition-group(.notice-update-top-right),
+::view-transition-group(.notice-update-bottom-left),
+::view-transition-group(.notice-update-bottom-center),
+::view-transition-group(.notice-update-bottom-right) {
+	z-index: 1000;
+}
+
 /*
  * A new notice slides in from the side of its corner (or from the edge for a centred list), and a closed notice slides out the same way.
  * - `:only-child` stops Safari from also starting the animation on the missing image, which stops it later on the real one (see `FadeTransition.module.css`).
