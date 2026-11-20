@@ -14,7 +14,7 @@ export interface ResetLayoutProps extends OptionalChildProps {}
 
 /**
  * Layout that only removes the margin and padding around the page, so content can go edge to edge.
- * - It sets margin and padding to zero on `<html>`, `<body>`, and each element between `<body>` and the layout (for example `<div id="root">`).
+ * - It sets margin and padding to zero on `<html>` and `<body>`, like the other layouts.
  * - It does not lock, scroll, or centre. The page scrolls as normal.
  *
  * @kind component

@@ -7,11 +7,9 @@
  */
 
 @layer components {
-	/* Remove the default margin and padding of <html> and <body>, and of each element between <body> and the layout (for example a mount element such as `<div id="root">`). */
+	/* Remove the default margin and padding of <html> and <body>. */
 	html:has(.layout),
-	body:has(.layout),
-	body :has(.layout),
-	.layout {
+	body:has(.layout) {
 		margin: 0;
 		padding: 0;
 	}
