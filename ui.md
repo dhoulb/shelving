@@ -489,7 +489,7 @@ The components below are listed in the index following this page; this is the sh
 - [StatusVariants](ui/StatusVariants.md): Variant props for the semantic status of an element, e.g. status="success".
 - [StrokeVariants](ui/StrokeVariants.md): Variant props for the border thickness of a component, e.g. stroke="thick".
 - [TrimVariants](ui/TrimVariants.md): Variant props to trim the outer margins of a component's first and last children, e.g. trim.
-- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via getTypographyClass()
+- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, and truncate, applied via getTypographyClass()
 - [WidthVariants](ui/WidthVariants.md): Variant props that set (or unconstrain) a component's width, e.g. width="narrow" or width="12x".
 - [CellProps](ui/CellProps.md): Props for Cell — padding, indent, width, and typography variants plus children.
 - [TableProps](ui/TableProps.md): Props for Table — colour, space, typography, and width variants plus children.
@@ -546,6 +546,7 @@ The components below are listed in the index following this page; this is the sh
 - [WeightVariant](ui/WeightVariant.md): Allowed values for font weight for components that support TypographyVariants
 - [CaseVariant](ui/CaseVariant.md): Allowed values for text case for components that support TypographyVariants
 - [FontVariant](ui/FontVariant.md): Allowed values for font family for components that support TypographyVariants
+- [LeadingVariant](ui/LeadingVariant.md): Allowed values for line height for components that support TypographyVariants
 - [WidthVariant](ui/WidthVariant.md): Enumerated width selectable via the width variant prop.
 - [SwipeDirection](ui/SwipeDirection.md): Which way the finger moves to complete a swipe.
 - [TransitionClasses](ui/TransitionClasses.md): Map of view-transition types to their CSS class names in { type: className } format.

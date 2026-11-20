@@ -20859,7 +20859,7 @@ The components below are listed in the index following this page; this is the sh
 - [StatusVariants](ui/StatusVariants.md): Variant props for the semantic status of an element, e.g. status="success".
 - [StrokeVariants](ui/StrokeVariants.md): Variant props for the border thickness of a component, e.g. stroke="thick".
 - [TrimVariants](ui/TrimVariants.md): Variant props to trim the outer margins of a component's first and last children, e.g. trim.
-- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via getTypographyClass()
+- [TypographyVariants](ui/TypographyVariants.md): Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, and truncate, applied via getTypographyClass()
 - [WidthVariants](ui/WidthVariants.md): Variant props that set (or unconstrain) a component's width, e.g. width="narrow" or width="12x".
 - [CellProps](ui/CellProps.md): Props for Cell — padding, indent, width, and typography variants plus children.
 - [TableProps](ui/TableProps.md): Props for Table — colour, space, typography, and width variants plus children.
@@ -20916,6 +20916,7 @@ The components below are listed in the index following this page; this is the sh
 - [WeightVariant](ui/WeightVariant.md): Allowed values for font weight for components that support TypographyVariants
 - [CaseVariant](ui/CaseVariant.md): Allowed values for text case for components that support TypographyVariants
 - [FontVariant](ui/FontVariant.md): Allowed values for font family for components that support TypographyVariants
+- [LeadingVariant](ui/LeadingVariant.md): Allowed values for line height for components that support TypographyVariants
 - [WidthVariant](ui/WidthVariant.md): Enumerated width selectable via the width variant prop.
 - [SwipeDirection](ui/SwipeDirection.md): Which way the finger moves to complete a swipe.
 - [TransitionClasses](ui/TransitionClasses.md): Map of view-transition types to their CSS class names in { type: className } format.
@@ -22184,9 +22185,9 @@ import { Heading } from "shelving/ui";
 | `--heading-font`         | Font family   | `var(--font-title)`             |
 | `--heading-weight`       | Font weight   | `var(--weight-strong)` (700)    |
 | `--heading-size`         | Font size     | `var(--size-xxlarge)`           |
-| `--heading-leading`      | Line height   | `var(--leading)`                |
+| `--heading-leading`      | Line height   | `var(--leading-auto)`           |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxlarge`, and `--leading`. (`<Title>` and `<Subheading>` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxlarge`, and `--leading-auto`. (`<Title>` and `<Subheading>` share this component and expose the parallel `--title-*` / `--subheading-*` hooks.)
 
 ```css
 /* Theme: serif headings, a touch larger. */
@@ -23129,9 +23130,9 @@ import { Title, Heading, Subheading } from "shelving/ui";
 | `--subheading-font`         | Font family   | `var(--font-title)`             |
 | `--subheading-weight`       | Font weight   | `var(--weight-strong)` (700)    |
 | `--subheading-size`         | Font size     | `var(--size-large)`             |
-| `--subheading-leading`      | Line height   | `var(--leading)`                |
+| `--subheading-leading`      | Line height   | `var(--leading-auto)`           |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading`.
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-large`, and `--leading-auto`.
 
 
 ## Signatures
@@ -23227,9 +23228,9 @@ import { Panel, Block, Title } from "shelving/ui";
 | `--title-font`         | Font family   | `var(--font-title)`             |
 | `--title-weight`       | Font weight   | `var(--weight-strong)` (700)    |
 | `--title-size`         | Font size     | `var(--size-xxxlarge)`          |
-| `--title-leading`      | Line height   | `var(--leading)`                |
+| `--title-leading`      | Line height   | `var(--leading-auto)`           |
 
-**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading`.
+**Global tokens it reads:** `--space-section`, `--space-paragraph`, `--font-title`, `--weight-strong`, `--size-xxxlarge`, and `--leading-auto`.
 
 
 ## Signatures
@@ -23540,7 +23541,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-font`                    | Font family                                         | `var(--font-body)`                                                                 |
 | `--button-weight`                  | Font weight                                         | `var(--weight-normal)` (400)                                                       |
 | `--button-size`                    | Font size                                           | `var(--size-normal)`                                                               |
-| `--button-leading`                 | Line height                                         | `var(--leading)`                                                                   |
+| `--button-leading`                 | Line height                                         | `var(--leading-auto)`                                                              |
 | `--button-shadow`                  | Box shadow (never on `plain`)                       | `none`                                                                             |
 | `--button-active-background`       | Surface fill while pressed                          | `var(--button-hover-background)`                                                   |
 | `--button-active-border`           | Border while pressed                                | `var(--button-hover-border)`                                                       |
@@ -23564,7 +23565,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline`        | `var(--button-plain-hover-background)`                                             |
 | `--button-plain-active-border`     | Border while pressed when `plain` or `outline`      | `var(--button-plain-hover-border)`                                                 |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
@@ -26437,15 +26438,15 @@ import { Field, TextInput } from "shelving/ui";
 | `--field-space`               | Outer block margin (top + bottom)       | `var(--space-paragraph)` (16px) |
 | `--field-gap`                 | Gap between label, control, and message | `var(--space-xsmall)`           |
 | `--field-title-size`          | Title font size                         | `var(--size-normal)`            |
-| `--field-title-leading`       | Title line height                       | `var(--leading)`                |
+| `--field-title-leading`       | Title line height                       | `var(--leading-auto)`           |
 | `--field-title-weight`        | Title font weight                       | `var(--weight-strong)`          |
 | `--field-title-color`         | Title colour                            | `var(--tint-00)`                |
 | `--field-description-size`    | Description font size                   | `var(--size-normal)`            |
-| `--field-description-leading` | Description line height                 | `var(--leading)`                |
+| `--field-description-leading` | Description line height                 | `var(--leading-auto)`           |
 | `--field-description-weight`  | Description font weight                 | `var(--weight-normal)`          |
 | `--field-description-color`   | Description colour                      | `var(--tint-70)`                |
 
-**Global tokens it reads:** the tint ladder `--tint-00` and `--tint-70`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`, and `--leading`.
+**Global tokens it reads:** the tint ladder `--tint-00` and `--tint-70`, plus `--space-paragraph`, `--space-xsmall`, `--size-normal`, `--weight-strong`, `--weight-normal`, and `--leading-auto`.
 
 
 ## Signatures
@@ -27555,13 +27556,12 @@ import { Code } from "shelving/ui";
 | `--code-font`       | Font family                                      | `var(--font-code)`      |
 | `--code-weight`     | Font weight                                      | `var(--weight-code)`    |
 | `--code-size`       | Font size                                        | `var(--size-smaller)`   |
-| `--code-leading`    | Line height                                      | `var(--leading)`        |
 | `--code-indent`     | Left and right padding (one length; non-`plain`) | `var(--space-xxsmall)`  |
 | `--code-radius`     | Corner radius (non-`plain`)                      | `var(--radius-xxsmall)` |
 | `--code-background` | Background fill (non-`plain`)                    | `var(--tint-90)`        |
 | `--code-color`      | Text colour (non-`plain`)                        | `var(--tint-00)`        |
 
-**Global tokens it reads:** `--font-code`, `--weight-code`, `--size-smaller`, `--leading`, `--space-xxsmall`, `--radius-xxsmall`, and the tint-ladder steps `--tint-00` / `--tint-90` for the box fill and text.
+**Global tokens it reads:** `--font-code`, `--weight-code`, `--size-smaller`, `--space-xxsmall`, `--radius-xxsmall`, and the tint-ladder steps `--tint-00` / `--tint-90` for the box fill and text.
 
 
 ## Signatures
@@ -31572,7 +31572,7 @@ import { Menu, MenuItem } from "shelving/ui";
 | `--menu-gap`                 | Vertical gap between items                                                                         | `0`                    |
 | `--menu-font`                | Font family                                                                                        | `var(--font-body)`     |
 | `--menu-size`                | Font size                                                                                          | `var(--size-normal)`   |
-| `--menu-leading`             | Line height                                                                                        | `var(--leading)`       |
+| `--menu-leading`             | Line height                                                                                        | `var(--leading-auto)`  |
 | `--menu-color`               | Text colour                                                                                        | `var(--tint-00)`       |
 | `--menu-nested-space`        | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
 | `--menu-padding`             | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
@@ -31584,7 +31584,7 @@ import { Menu, MenuItem } from "shelving/ui";
 
 Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading`, and `--stroke-focus`.
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading-auto`, and `--stroke-focus`.
 
 
 ## Signatures
@@ -32699,11 +32699,11 @@ import { Tag } from "shelving/ui";
 | `--tag-font`             | Font family                                     | `var(--font-body)`                             |
 | `--tag-size`             | Font size                                       | `var(--size-small)`                            |
 | `--tag-weight`           | Font weight                                     | `var(--weight-strong)`                         |
-| `--tag-leading`          | Line height                                     | `var(--leading)`                               |
+| `--tag-leading`          | Line height                                     | `var(--leading-auto)`                          |
 | `--tag-case`             | Text transform                                  | `var(--case-label)`                            |
 | `--tag-focus-border`     | Focus outline                                   | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
+**Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading-auto`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
 
 
 ## Signatures
@@ -36676,13 +36676,32 @@ Allowed values for font family for components that support `TypographyVariants`
 
 ---
 
+# LeadingVariant
+
+- Kind: type
+- Import: `import { LeadingVariant } from "shelving/ui";`
+
+Allowed values for line height for components that support `TypographyVariants`
+
+- `auto` is the default: about 1.5 for small text and less for big text.
+- `single` is 1, `tight` is 1.25, `normal` is 1.5, and `loose` is 1.75.
+
+## Signatures
+
+```ts
+"auto" | "single" | "tight" | "normal" | "loose"
+```
+
+
+---
+
 # TypographyVariants
 
 - Kind: interface
 - Import: `import { TypographyVariants } from "shelving/ui";`
 - Extends: `ColorVariants`
 
-Typographic variant props — colour, font-family, weight, case, size, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
+Typographic variant props — colour, font-family, weight, case, size, line height, tint, alignment, wrap, and truncate, applied via `getTypographyClass()`
 
 - Extends `ColorVariants`, so anything that accepts typography also accepts the `color` variant.
 
@@ -36691,6 +36710,7 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 ```ts
 {
 	size?: SizeVariant | undefined;
+	leading?: LeadingVariant | undefined;
 	tint?: TintVariant | undefined;
 	font?: FontVariant | undefined;
 	case?: CaseVariant | undefined;
@@ -36709,6 +36729,7 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 | Property | Type | Description |
 | --- | --- | --- |
 | `size` | `SizeVariant \| undefined` | Font size of the element. Optional. |
+| `leading` | `LeadingVariant \| undefined` | Line height of the element. Text inside inherits it, unless it sets its own font size. Optional. |
 | `tint` | `TintVariant \| undefined` | Set CSS text `color:` to one of the shades of the current tint ladder. Optional. |
 | `font` | `FontVariant \| undefined` | Font family of the element. Optional. |
 | `case` | `CaseVariant \| undefined` | Text case of the element. Optional. |
@@ -36730,11 +36751,11 @@ Typographic variant props — colour, font-family, weight, case, size, tint, ali
 
 Get the typography class for a component from its typographic variant props.
 
-Maps the colour, size, weight, font, case, tint, alignment, wrap, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
+Maps the colour, size, line height, weight, font, case, tint, alignment, wrap, and truncate variant props to their CSS classes — the `color` variant is composed in via `getColorClass()`.
 
 The typography variant props set an element's text styling from a single helper — `<Heading font="title" size="large">`, `<Paragraph weight="strong" center>`, `<Small case="upper">`. They're **overrides** for one-off changes; for an app-wide change, retune the variables below in a theme file.
 
-`getTypographyClass({ color, size, weight, font, case, tint, left, center, right, wrap, nowrap, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
+`getTypographyClass({ color, size, leading, weight, font, case, tint, left, center, right, wrap, nowrap, truncate })` maps each prop to a class (e.g. `size="large"` → `size-large`, `leading="tight"` → `leading-tight`, `font="title"` → `font-title`, `weight="strong"` → `weight-strong`, `case="upper"` → `case-upper`), and combines them with text alignment, tint colour, wrapping, and truncation. `TypographyVariants` extends `ColorVariants`, so it also accepts `color` and composes [`getColorClass()`](/ui/getColorClass) internally — anything that opts into typography gets the `color` variant for free and no longer needs to extend `ColorVariants` or call `getColorClass()` separately. (`getColorClass()` stays exported for the rare element that wants colour without typography, such as `<Icon>`.) It also supersedes the former `getFontClass()`, `getSizeClass()`, and `getWeightClass()` helpers, which were merged into this module.
 
 The `truncate` flag cuts overflowing text to one line and ends it with an ellipsis. It works on a block element or a flex item, not on inline text. When the text is inside a wrapper that is a flex item, give that wrapper `grow` (see `getWidthClass()`), so it can shrink below the width of the text.
 
@@ -36784,10 +36805,23 @@ The following `:root` variables are defined by this module and can be overridden
 
 ### Line height
 
-| Variable           | Default                                    | Used for                                                                        |
-| ------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| `--leading`        | `clamp(1.05em, calc(1em + 0.5rem), 1.5em)` | Default line height; paired with every font-size variant and the body baseline. |
-| `--leading-normal` | `1.5`                                      | Plain unitless line height for dense blocks.                                    |
+| Variable           | Default                                                | Used for                                                                        |
+| ------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `--leading-auto`   | `round(clamp(1.05em, calc(1em + 0.5rem), 1.5em), 1px)` | Default: about 1.5 for small text, less for big text.                           |
+| `--leading-single` | `round(1em, 1px)`                                      | One line, no gap. For icons and one-line labels.                                |
+| `--leading-tight`  | `round(1.25em, 1px)`                                   | Small text in a close group, such as a title and a short description in a tile. |
+| `--leading-normal` | `round(1.5em, 1px)`                                    | A fixed 1.5 at every size.                                                      |
+| `--leading-loose`  | `round(1.75em, 1px)`                                   | Long body copy.                                                                 |
+
+Each value is rounded to a whole pixel, so stacked rows do not move by a pixel when the browser rounds them.
+
+How line height reaches an element:
+
+- The body uses `--leading-auto`. A block that sets its own font size (`<Heading>`, `<Label>`, `<Button>`, …) has a hook, for example `--heading-leading`, that defaults to `--leading-auto`.
+- Inline elements (`<Strong>`, `<Span>`, `<Small>`, …) set no line height. They inherit it.
+- The `size` prop sets `--leading-auto` too. A line height in `em` inherits as a fixed pixel value, so text with a new size needs a new line height.
+- The `leading` prop sets the line height of that element only, and wins over `size` and over component hooks: `<Column size="small" leading="tight">`. Text inside inherits it, unless it sets its own size.
+- To change the default for the whole app, override `--leading-auto` at `:root`.
 
 ### Case
 
@@ -36802,7 +36836,7 @@ The following `:root` variables are defined by this module and can be overridden
 ## Signatures
 
 ```ts
-getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: TypographyVariants): string
+getTypographyClass({ tint, weight, font, case: caseValue, size, leading, ...props }: TypographyVariants): string
 ```
 
 ## Parameters
@@ -36811,6 +36845,7 @@ getTypographyClass({ tint, weight, font, case: caseValue, size, ...props }: Typo
 | --- | --- | --- |
 | `props` | `TypographyVariants` |  |
 | `.size` | `SizeVariant \| undefined` | Font size of the element. Optional. |
+| `.leading` | `LeadingVariant \| undefined` | Line height of the element. Text inside inherits it, unless it sets its own font size. Optional. |
 | `.tint` | `TintVariant \| undefined` | Set CSS text `color:` to one of the shades of the current tint ladder. Optional. |
 | `.font` | `FontVariant \| undefined` | Font family of the element. Optional. |
 | `.case` | `CaseVariant \| undefined` | Text case of the element. Optional. |

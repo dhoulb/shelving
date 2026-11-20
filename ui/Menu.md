@@ -41,7 +41,7 @@ import { Menu, MenuItem } from "shelving/ui";
 | `--menu-gap`                 | Vertical gap between items                                                                         | `0`                    |
 | `--menu-font`                | Font family                                                                                        | `var(--font-body)`     |
 | `--menu-size`                | Font size                                                                                          | `var(--size-normal)`   |
-| `--menu-leading`             | Line height                                                                                        | `var(--leading)`       |
+| `--menu-leading`             | Line height                                                                                        | `var(--leading-auto)`  |
 | `--menu-color`               | Text colour                                                                                        | `var(--tint-00)`       |
 | `--menu-nested-space`        | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
 | `--menu-padding`             | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
@@ -53,7 +53,7 @@ import { Menu, MenuItem } from "shelving/ui";
 
 Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 
-**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading`, and `--stroke-focus`.
+**Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading-auto`, and `--stroke-focus`.
 
 
 ## Signatures
