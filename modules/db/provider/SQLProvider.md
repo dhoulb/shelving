@@ -4,6 +4,8 @@ The abstract SQL base provider. `SQLProvider` implements the `DBProvider` surfac
 
 Each scalar field in a collection schema maps to a **generated column** extracted from the `data` JSON blob, so queries use indexed column comparisons. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnsupportedError`.
 
+Query writes (`setQuery()`, `updateQuery()`, `deleteQuery()`) ignore `$order` when the query has no `$limit`. With a `$limit`, they select the ids of the rows in a subquery (see `SQLProvider.sqlWriteClauses()`), because most databases do not accept `ORDER BY` or `LIMIT` in `UPDATE` and `DELETE`.
+
 ## Usage
 
 `SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in `SQLiteProvider` and `PostgresProvider` extend it with dialect-specific JSON path syntax; concrete drivers live in the `shelving/cloudflare` and `shelving/bun` modules.
