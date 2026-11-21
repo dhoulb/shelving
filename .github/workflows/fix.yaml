@@ -68,27 +68,15 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: ./.github/actions/firebase-tools
+      - uses: ./.github/actions/firestore-emulator
       - name: install
         run: bun install
-      # Same command as `bun run firebase`, but with the cached `firebase` CLI in place of `bunx firebase-tools`.
+      # `bun run firebase` starts the emulator through firebase-tools. Here the emulator already runs (see above).
       - name: firebase
-        run: firebase emulators:exec --only firestore --project shelving-test "bun test ./modules/firebase"
+        run: bun test ./modules/firebase
   postgres:
     name: PostgreSQL
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -98,6 +86,12 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
+      # The runner image has PostgreSQL installed but stopped. Starting it takes about 2 seconds, where a
+      # `postgres` service container took 11 to 15 seconds to pull and start.
+      - name: start postgres
+        run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql -q -c "ALTER USER postgres PASSWORD 'postgres';"
       - name: install
         run: bun install
       - name: postgres
