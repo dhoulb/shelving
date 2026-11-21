@@ -50,6 +50,8 @@ function Counter() {
 
 ## Styling
 
+Override these hooks at `:root`.
+
 | Variable                      | Styles                                                                                                | Default                          |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
 | `--documentation-live-bezel`  | Space above and below the speaker slot, which sets the thickness of the top and the chin (one length) | `2.25rem`                        |

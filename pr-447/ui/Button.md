@@ -119,7 +119,7 @@ A hook whose default reads another hook (for example `--button-active-background
 
 `--button-padding` sets the top and bottom padding, and `--button-indent` the left and right. Each takes one length, not a shorthand.
 
-Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It is calculated in the rule from those hooks, so it stays correct when a theme or a smaller scope changes them. It has no hook of its own: change the parts instead. The `small` variant uses `--button-small-padding` in the same formula. Inputs use the same formula (`--input-height`), so an input and a button sit at the same height by default.
+Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It is calculated in the rule from those hooks, so it stays correct when a theme or a smaller scope changes them. It has no hook of its own: change the parts instead. The `small` variant uses `--button-small-padding` in the same formula. Inputs use the same formula, so an input and a button sit at the same height by default.
 
 The `--button-*` colour hooks without a look in their name paint the default look. `solid` has its own `--button-solid-*` colour hooks.
 

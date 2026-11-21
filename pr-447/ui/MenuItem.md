@@ -72,28 +72,28 @@ import { Menu, MenuItem } from "shelving/ui";
 
 The item link's hooks (defined in `Menu.module.css`):
 
-| Variable                     | Styles                                                         | Default                                                                                 |
-| ---------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `--menu-padding`             | Link top and bottom padding (one length)                       | `var(--space-small)`                                                                    |
-| `--menu-indent`              | Link left and right padding (one length)                       | `var(--space-small)`                                                                    |
-| `--menu-stroke`              | Link transparent border width (one length)                     | `var(--stroke-normal)`                                                                  |
-| `--menu-icon-size`           | Content height used for the minimum height (one length)        | `var(--size-icon)`                                                                      |
-| `--menu-height`              | Link minimum height                                            | `--menu-icon-size` + 2 × `--menu-padding` + 2 × `--menu-stroke`, the same as `<Button>` |
-| `--menu-small-padding`       | Small link top and bottom padding (one length)                 | `var(--space-xsmall)`                                                                   |
-| `--menu-small-indent`        | Small link left and right padding (one length)                 | `var(--space-xsmall)`                                                                   |
-| `--menu-small-height`        | Small link minimum height                                      | `0`                                                                                     |
-| `--menu-radius`              | Link corner radius                                             | `var(--radius-xsmall)`                                                                  |
-| `--menu-focus-border`        | Focus outline                                                  | `var(--stroke-focus) solid var(--color-focus)`                                          |
-| `--menu-hover-background`    | Link fill on hover/focus                                       | `var(--tint-90)`                                                                        |
-| `--menu-hover-color`         | Link text colour on hover/focus                                | `var(--tint-00)`                                                                        |
-| `--menu-selected-background` | Fill when `selected`                                           | `var(--menu-hover-background)`                                                          |
-| `--menu-selected-color`      | Text colour when `selected`                                    | `var(--menu-hover-color)`                                                               |
-| `--menu-proud-background`    | Fill when proud (ancestor of current page)                     | `transparent`                                                                           |
-| `--menu-proud`               | Text colour when proud                                         | `var(--tint-00)`                                                                        |
-| `--menu-proud-weight`        | Font weight when proud                                         | `var(--weight-strong)`                                                                  |
-| `--menu-active-background`   | Fill when active (current page), also while hovered or focused | `var(--tint-100)`                                                                       |
-| `--menu-active-color`        | Text colour when active                                        | `var(--tint-00)`                                                                        |
-| `--menu-active-weight`       | Font weight when active                                        | `var(--weight-strong)`                                                                  |
+Override these hooks at `:root`. The tint hooks (`--menu-hover-background`, `--menu-hover-color`, `--menu-proud`, `--menu-selected-background`, `--menu-selected-color`, `--menu-active-background`, `--menu-active-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                     | Styles                                                         | Default                        |
+| ---------------------------- | -------------------------------------------------------------- | ------------------------------ |
+| `--menu-padding`             | Link top and bottom padding (one length)                       | `var(--space-small)`           |
+| `--menu-indent`              | Link left and right padding (one length)                       | `var(--space-small)`           |
+| `--menu-stroke`              | Link transparent border width (one length)                     | `var(--stroke-normal)`         |
+| `--menu-icon-size`           | Content height used for the minimum height (one length)        | `var(--size-icon)`             |
+| `--menu-small-padding`       | Small link top and bottom padding (one length)                 | `var(--space-xsmall)`          |
+| `--menu-small-indent`        | Small link left and right padding (one length)                 | `var(--space-xsmall)`          |
+| `--menu-radius`              | Link corner radius                                             | `var(--radius-xsmall)`         |
+| `--menu-focus-border`        | Focus outline colour (width is `--stroke-focus`)               | `var(--color-focus)`           |
+| `--menu-hover-background`    | Link fill on hover/focus                                       | `var(--tint-90)`               |
+| `--menu-hover-color`         | Link text colour on hover/focus                                | `var(--tint-00)`               |
+| `--menu-selected-background` | Fill when `selected`                                           | `var(--menu-hover-background)` |
+| `--menu-selected-color`      | Text colour when `selected`                                    | `var(--menu-hover-color)`      |
+| `--menu-proud-background`    | Fill when proud (ancestor of current page)                     | `transparent`                  |
+| `--menu-proud`               | Text colour when proud                                         | `var(--tint-00)`               |
+| `--menu-proud-weight`        | Font weight when proud                                         | `var(--weight-strong)`         |
+| `--menu-active-background`   | Fill when active (current page), also while hovered or focused | `var(--tint-100)`              |
+| `--menu-active-color`        | Text colour when active                                        | `var(--tint-00)`               |
+| `--menu-active-weight`       | Font weight when active                                        | `var(--weight-strong)`         |
 
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on `<Menu>`.
 

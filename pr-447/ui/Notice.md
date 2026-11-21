@@ -38,19 +38,21 @@ import { LOADING_NOTICE } from "shelving/ui";
 
 `Notice` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Its `status` (or a `color=` / `status=` on an ancestor scope) sets the tint that the surface, border, and text all derive from; reach for a per-property hook for a single change.
 
-| Variable              | Styles                                         | Default                                     |
-| --------------------- | ---------------------------------------------- | ------------------------------------------- |
-| `--notice-background` | Surface fill                                   | `var(--tint-90)`                            |
-| `--notice-color`      | Text colour                                    | `var(--tint-50)`                            |
-| `--notice-border`     | Border shorthand                               | `var(--notice-stroke) solid var(--tint-80)` |
-| `--notice-stroke`     | Border thickness                               | `var(--stroke-normal)` (2px)                |
-| `--notice-shadow`     | Drop shadow, for example `var(--shadow-small)` | `none`                                      |
-| `--notice-radius`     | Corner radius                                  | `var(--radius-xsmall)`                      |
-| `--notice-padding`    | Inner top and bottom padding (one length)      | `var(--space-small)` (12px)                 |
-| `--notice-indent`     | Inner left and right padding (one length)      | `var(--space-small)` (12px)                 |
-| `--notice-space`      | Outer block margin (top + bottom)              | `var(--space-paragraph)`                    |
-| `--notice-size`       | Font size                                      | `var(--size-normal)`                        |
-| `--notice-weight`     | Font weight                                    | `var(--weight-strong)`                      |
+Override these hooks at `:root`. The tint hooks (`--notice-border`, `--notice-background`, `--notice-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable              | Styles                                         | Default                      |
+| --------------------- | ---------------------------------------------- | ---------------------------- |
+| `--notice-background` | Surface fill                                   | `var(--tint-90)`             |
+| `--notice-color`      | Text colour                                    | `var(--tint-50)`             |
+| `--notice-border`     | Border colour (width is `--notice-stroke`)     | `var(--tint-80)`             |
+| `--notice-stroke`     | Border thickness                               | `var(--stroke-normal)` (2px) |
+| `--notice-shadow`     | Drop shadow, for example `var(--shadow-small)` | `none`                       |
+| `--notice-radius`     | Corner radius                                  | `var(--radius-xsmall)`       |
+| `--notice-padding`    | Inner top and bottom padding (one length)      | `var(--space-small)` (12px)  |
+| `--notice-indent`     | Inner left and right padding (one length)      | `var(--space-small)` (12px)  |
+| `--notice-space`      | Outer block margin (top + bottom)              | `var(--space-paragraph)`     |
+| `--notice-size`       | Font size                                      | `var(--size-normal)`         |
+| `--notice-weight`     | Font weight                                    | `var(--weight-strong)`       |
 
 **Global tokens it reads** — the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-small`, `--radius-xsmall`, `--stroke-normal`, `--size-normal`, and `--weight-strong`.
 

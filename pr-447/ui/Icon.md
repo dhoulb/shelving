@@ -27,6 +27,8 @@ import { Icon } from "shelving/ui";
 
 ## Styling
 
+Override these hooks at `:root`. The tint hooks (`--icon-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable       | Styles              | Default                                                                         |
 | -------------- | ------------------- | ------------------------------------------------------------------------------- |
 | `--icon-color` | Icon colour         | `var(--tint-50)` (the status tint, e.g. `--color-failure` for `status="error"`) |
