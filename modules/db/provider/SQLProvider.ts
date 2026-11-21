@@ -151,7 +151,7 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		query: Query<Item<II, TT>>,
 		data: TT,
 	): Promise<void> {
-		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlSetters(data)}${this.sqlClauses(query)}`;
+		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlSetters(data)}${this.sqlWriteClauses(collection, query)}`;
 	}
 
 	override async updateQuery<II extends I, TT extends T>(
@@ -159,14 +159,15 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 		query: Query<Item<II, TT>>,
 		updates: Updates<TT>,
 	): Promise<void> {
-		await this.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlUpdates(updates)}${this.sqlClauses(query)}`;
+		await this
+			.exec`UPDATE ${this.sqlIdentifier(collection.name)} SET ${this.sqlUpdates(updates)}${this.sqlWriteClauses(collection, query)}`;
 	}
 
 	override async deleteQuery<II extends I, TT extends T>(
 		collection: Collection<string, II, TT>,
 		query: Query<Item<II, TT>>,
 	): Promise<void> {
-		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)}${this.sqlClauses(query)}`;
+		await this.exec`DELETE FROM ${this.sqlIdentifier(collection.name)}${this.sqlWriteClauses(collection, query)}`;
 	}
 
 	/**
@@ -287,6 +288,23 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 			", ",
 		);
 		return this.sql`(${keys}) VALUES (${values})`;
+	}
+
+	/**
+	 * Define an SQL fragment for the clauses that select the rows an `UPDATE` or `DELETE` writes to.
+	 * - `UPDATE` and `DELETE` do not accept `ORDER BY` or `LIMIT` in most databases (Postgres never, SQLite only with a compile option).
+	 * - A query with no `$limit` writes to every matching row, so this ignores `$order` and returns only the `WHERE` clause.
+	 * - A query with a `$limit` selects the ids of the matching rows in a subquery, e.g. ` WHERE "id" IN (SELECT "id" FROM "users" WHERE ... ORDER BY ... LIMIT 5)`.
+	 *
+	 * @param collection The collection the write applies to.
+	 * @param query The query that selects the rows to write.
+	 * @example this.sqlWriteClauses(users, query); // WHERE ...
+	 * @see https://shelving.cc/db/SQLProvider/sqlWriteClauses
+	 */
+	sqlWriteClauses(collection: Collection<string, Identifier, Data>, query: Query<Item>): SQLFragment {
+		if (getQueryLimit(query) === undefined) return this.sqlWhere(query);
+		const id = this.sqlIdentifier("id");
+		return this.sql` WHERE ${id} IN (SELECT ${id} FROM ${this.sqlIdentifier(collection.name)}${this.sqlClauses(query)})`;
 	}
 
 	/**
