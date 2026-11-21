@@ -147,6 +147,7 @@
 			padding-inline: 0;
 			inline-size: calc(var(--button-icon-size) + 2 * var(--button-padding) + 2 * var(--button-stroke));
 			min-inline-size: 0;
+			flex-shrink: 0; /* In a row, a square button keeps its size. Without padding nothing else stops it from shrinking. */
 
 			&.small {
 				inline-size: calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke));
