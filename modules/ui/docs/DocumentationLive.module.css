@@ -15,6 +15,9 @@
 		--documentation-live-bezel: 2.25rem;
 		--documentation-live-detail: oklch(80% 0 0deg);
 		--documentation-live-height: 26rem;
+		--documentation-live-desktop-width: 64rem;
+		--documentation-live-desktop-height: 36rem;
+		--documentation-live-desktop-radius: 1rem;
 	}
 }
 
@@ -38,6 +41,20 @@
 		/* Code and preview side by side when there is space. */
 		@media (width >= 75rem) {
 			grid-template-columns: minmax(0, 1fr) auto;
+		}
+	}
+
+	/* A desktop example is always stacked: the code, then the browser window at full width. */
+	.desktop {
+		@media (width >= 75rem) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		/* The browser window is wider than the text column when there is space: it grows out to each side, up to `--documentation-live-desktop-width`, inside the nearest container (the page) less a gap on each side. */
+		& > .device {
+			justify-self: stretch;
+			inline-size: auto;
+			margin-inline: min(0px, calc((100% - min(100cqi - 2 * var(--documentation-live-gap), var(--documentation-live-desktop-width))) / 2));
 		}
 	}
 
@@ -86,10 +103,42 @@
 		}
 	}
 
+	/* A simple browser window: a light grey body with a top bar of three dots around a wide screen. */
+	.browser {
+		/* Box */
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		inline-size: 100%;
+		padding-inline: var(--documentation-live-edge);
+		padding-block-end: var(--documentation-live-edge);
+		border-radius: var(--documentation-live-desktop-radius);
+
+		/* Style */
+		background: var(--documentation-live-body);
+
+		/* Three dots in the top bar. */
+		&::before {
+			content: "";
+			margin-block: var(--documentation-live-edge);
+			inline-size: 0.75rem;
+			block-size: 0.75rem;
+			border-radius: 50%;
+			background: var(--documentation-live-detail);
+			box-shadow:
+				1.25rem 0 0 var(--documentation-live-detail),
+				2.5rem 0 0 var(--documentation-live-detail);
+		}
+	}
+
 	/* The screen is square, and scrolls inside when the preview is taller than it. */
 	.screen {
 		&.screen {
 			block-size: var(--documentation-live-height);
+		}
+
+		.browser > &.screen {
+			block-size: var(--documentation-live-desktop-height);
 		}
 	}
 

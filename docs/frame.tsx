@@ -7,6 +7,8 @@
  * 3. Transpile the code to JavaScript, and import it as a module from a `blob:` URL. The page's import map
  *    resolves `shelving/*`, `react`, and `react-dom`, and any other import fails.
  * 4. Render the elements into `#root`, and post the content height to the parent page.
+ *    The elements render inside a `<MetaContext>` with the frame page URL, so components that need a URL (such as
+ *    `<SidebarLayout>`) work, like they do inside `<App>`.
  *
  * This file is bundled with `shelving/*`, `react`, and `react-dom` kept external, so the frame and the code it
  * runs share one copy of each, from the import map.
@@ -14,7 +16,8 @@
 
 import { createElement, Fragment, isValidElement, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { Catcher, ErrorNotice, PLAYGROUND_HEIGHT_MESSAGE, parsePlaygroundHash } from "shelving/ui";
+import { Catcher, ErrorNotice, MetaContext, PLAYGROUND_HEIGHT_MESSAGE, parsePlaygroundHash } from "shelving/ui";
+import { requireURL } from "shelving/util/url";
 
 /** URL of the TypeScript compiler, replaced at build time (see `docs/build.tsx`). */
 declare const TYPESCRIPT_URL: string;
@@ -102,6 +105,9 @@ function _requireElement(id: string): HTMLElement {
 
 // Elements.
 const root = _requireElement("root");
+
+/** Meta for the code: the frame page URL (without the hash), with the folder of the frame page as the root. */
+const META = { url: requireURL(window.location.pathname, window.location.href), root: requireURL("./", window.location.href) };
 const style = _requireElement("css");
 const reactRoot = createRoot(root);
 
@@ -116,7 +122,11 @@ async function run(): Promise<void> {
 		content = <ErrorNotice reason={thrown} />;
 	}
 	// A new key makes a fresh `<Catcher>` for each run, so an error from the last run is cleared.
-	reactRoot.render(<Catcher key={Math.random()}>{content}</Catcher>);
+	reactRoot.render(
+		<MetaContext value={META}>
+			<Catcher key={Math.random()}>{content}</Catcher>
+		</MetaContext>,
+	);
 }
 
 // Post the content height to the parent page, so it can make the frame fit.

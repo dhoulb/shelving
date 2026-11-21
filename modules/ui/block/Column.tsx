@@ -22,7 +22,6 @@ export interface ColumnProps extends BlockVariants, FlexVariants, OptionalChildP
  * Flex container that stacks its children as a column by default.
  *
  * @kind component
- * @example <Column gap="small">{items}</Column>
  * @see https://shelving.cc/ui/Column
  */
 export function Column({ as: Element = "div", children, column = true, className, ...props }: ColumnProps): ReactElement {

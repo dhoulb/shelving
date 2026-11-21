@@ -13,15 +13,19 @@ import { Page } from "../page/Page.js";
 import { TreeBreadcrumbs } from "../tree/TreeBreadcrumbs.js";
 import { TreeCards } from "../tree/TreeCards.js";
 import { TreeMarkup } from "../tree/TreeMarkup.js";
+import { getModuleClass } from "../util/css.js";
 import { DocumentationButtons } from "./DocumentationButtons.js";
 import { DocumentationKind, getDocumentationKindColor } from "./DocumentationKind.js";
 import { DOCUMENTATION_MARKUP_RULES } from "./DocumentationLive.js";
+import DOCUMENTATION_PAGE_CSS from "./DocumentationPage.module.css";
 import { DocumentationParams } from "./DocumentationParams.js";
 import { DocumentationProperties } from "./DocumentationProperties.js";
 import { DocumentationReferences } from "./DocumentationReferences.js";
 import { DocumentationReturns } from "./DocumentationReturns.js";
 import { DocumentationSignatures } from "./DocumentationSignatures.js";
 import { DocumentationThrows } from "./DocumentationThrows.js";
+
+const BODY_CLASS = getModuleClass(DOCUMENTATION_PAGE_CSS, "body");
 
 /** Documentation `kind`s grouped into card sections, in display order — pluralised, sentence-case headings. Data members (properties) are not child elements — they render as the Properties table instead. */
 const KINDS = {
@@ -80,7 +84,7 @@ export function DocumentationPage({
 						<DocumentationButtons {...props} />
 					</Header>
 				</Panel>
-				<Panel plain>
+				<Panel plain className={BODY_CLASS}>
 					<Block width="narrow" trim>
 						{signatures?.length || params?.length || returns?.length || throws?.length || properties?.length || types?.length ? (
 							<Section>
