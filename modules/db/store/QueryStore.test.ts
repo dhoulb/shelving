@@ -57,6 +57,30 @@ describe("QueryStore with a MemoryDBProvider", () => {
 		expect(_ids(store)).toEqual(["c"]);
 		stop();
 	});
+	test("empties when its last item stops matching, while the query has no time", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const table = memory.getTable(BASICS_COLLECTION);
+		const store = new QueryStore(BASICS_COLLECTION, { num: 5 }, memory);
+		const stop = runSequence(store);
+		table.setItem("a", _basic("a", 5));
+		await runMicrotasks();
+		expect(_ids(store)).toEqual(["a"]);
+		table.setItem("a", _basic("a", 1)); // No longer matches.
+		await runMicrotasks();
+		expect(_ids(store)).toEqual([]);
+		stop();
+	});
+	test("empties on a new subscription when its items were deleted while it had no subscribers", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const table = memory.getTable(BASICS_COLLECTION);
+		table.setItems(ITEMS);
+		const store = new QueryStore(BASICS_COLLECTION, { num: 5 }, memory);
+		table.deleteQuery({ num: 5 });
+		const stop = runSequence(store);
+		await runMicrotasks();
+		expect(_ids(store)).toEqual([]);
+		stop();
+	});
 });
 
 describe("QueryStore with another provider", () => {

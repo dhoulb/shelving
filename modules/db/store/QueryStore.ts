@@ -114,7 +114,7 @@ export class QueryStore<I extends Identifier, T extends Data> extends FetchStore
 		this.query = query;
 		this._table = table;
 		this.starter = table
-			? store => runSequence(store.through(_getLoadedSequence(table, query)))
+			? store => runSequence(store.through(_getLoadedSequence(table, query, store.snapshot !== NONE)))
 			: store =>
 					runSequence(
 						store.through(_getSupportedSequence(() => provider.getQuerySequence(collection, query))),
@@ -142,12 +142,21 @@ function _isLoaded<I extends Identifier, T extends Data>(table: MemoryTable<I, T
 	return table.getQueryTime(query) !== undefined || !!table.countQuery(query);
 }
 
-/** Follow a query in the memory, but skip the results from before it has loaded. */
+/**
+ * Follow a query in the memory, but skip the results from before it has loaded.
+ * - After the first result, yield every result, including an empty one. Otherwise the store keeps stale items when they stop matching.
+ *
+ * @param loaded Whether the store already has a value, so every result counts.
+ */
 async function* _getLoadedSequence<I extends Identifier, T extends Data>(
 	table: MemoryTable<I, T>,
 	query: Query<Item<I, T>>,
+	loaded = false,
 ): AsyncIterable<Items<I, T>> {
-	for await (const items of table.getQuerySequence(query)) if (items.length || table.getQueryTime(query) !== undefined) yield items;
+	for await (const items of table.getQuerySequence(query)) {
+		if (!loaded) loaded = !!items.length || table.getQueryTime(query) !== undefined;
+		if (loaded) yield items;
+	}
 }
 
 /** Follow a provider's sequence, but end it at once if the provider does not support subscriptions. */
