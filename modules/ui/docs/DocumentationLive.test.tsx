@@ -12,6 +12,13 @@ describe("DOCUMENTATION_LIVE_RULE", () => {
 			props: { code: "<Button>Hi</Button>", title: "My title" },
 		});
 	});
+	test("renders a live block with a desktop flag as a desktop example", () => {
+		expect(PARSER.parse('```tsx live desktop "Wide"\n<Button>Hi</Button>\n```')).toMatchObject({
+			type: DocumentationLive,
+			props: { code: "<Button>Hi</Button>", title: "Wide", desktop: true },
+		});
+		expect(PARSER.parse("```tsx live\n<Button>Hi</Button>\n```")).toMatchObject({ props: { desktop: false } });
+	});
 	test("leaves other blocks as code", () => {
 		expect(PARSER.parse("```tsx\n<Button>Hi</Button>\n```")).toMatchObject({ type: "pre" });
 		expect(PARSER.parse('```tsx "A live demo"\n<Button>Hi</Button>\n```')).toMatchObject({ type: "figure" });

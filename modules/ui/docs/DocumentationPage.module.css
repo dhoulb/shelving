@@ -1,0 +1,8 @@
+@import url("../style/layers.css");
+
+@layer components {
+	/* The page body is a size container, so a wide example (such as a `desktop` live example) can grow out of the text column to the width of the page. */
+	.body {
+		container-type: inline-size;
+	}
+}

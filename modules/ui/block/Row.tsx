@@ -22,7 +22,6 @@ export interface RowProps extends BlockVariants, FlexVariants, OptionalChildProp
  * Flex container that arranges its children as a row by default.
  *
  * @kind component
- * @example <Row gap="small" center>{items}</Row>
  * @see https://shelving.cc/ui/Row
  */
 export function Row({ as: Element = "div", children, className, ...props }: RowProps): ReactElement {
