@@ -26,8 +26,10 @@
 		background: var(--panel-background, var(--tint-90));
 		color: var(--panel-color, var(--tint-00));
 
-		/* Plain: no background, same spacing. */
+		/* Plain: no background and a transparent border, same spacing (like a plain button). */
 		&.plain {
+			border-top: var(--panel-plain-border, var(--panel-stroke, var(--stroke-normal)) solid transparent);
+			border-bottom: var(--panel-plain-border, var(--panel-stroke, var(--stroke-normal)) solid transparent);
 			background: var(--panel-plain-background, transparent);
 		}
 

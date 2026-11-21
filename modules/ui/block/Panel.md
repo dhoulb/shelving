@@ -9,7 +9,7 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
 - Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - It is `display: flow-root`, so the margins of its children stay inside it, also with `padding="none"`.
-- `plain` removes the background but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
+- `plain` removes the background and makes the border transparent, but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
 - `solid` paints a strong fill (`--tint-50`) with light text, for a hero or call-to-action band.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
 - Panels have 1px top and bottom borders by default. Set `--panel-stroke` to `0` to remove them; the first and last panel drop them so the page doesn't gain stray edge lines.
@@ -70,6 +70,7 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 | `--panel-background`       | Surface fill                                                | `var(--tint-90)`                           |
 | `--panel-color`            | Text colour                                                 | `var(--tint-00)`                           |
 | `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                              |
+| `--panel-plain-border`     | Top/bottom border shorthand of a `plain` panel              | `var(--panel-stroke) solid transparent`    |
 | `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`                           |
 | `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`                          |
 | `--panel-border`           | Top/bottom border shorthand                                 | `var(--panel-stroke) solid var(--tint-80)` |
