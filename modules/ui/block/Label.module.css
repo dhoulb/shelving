@@ -3,17 +3,35 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--label-space: var(--space-paragraph);
+		--label-font: var(--font-label);
+		--label-weight: var(--weight-label);
+		--label-size: var(--size-label);
+		--label-leading: var(--leading-auto);
+		--definitions-label-case: var(--case-label);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--label-color: var(--tint-70);
+	}
+}
+
 @layer components {
 	.label {
 		/* Box */
-		margin-block: var(--label-space, var(--space-paragraph));
+		margin-block: var(--label-space);
 
 		/* Text */
-		font-family: var(--label-font, var(--font-label));
-		font-weight: var(--label-weight, var(--weight-label));
-		font-size: var(--label-size, var(--size-label));
-		line-height: var(--label-leading, var(--leading-auto));
-		text-transform: var(--definitions-label-case, var(--case-label));
-		color: var(--label-color, var(--tint-70));
+		font-family: var(--label-font);
+		font-weight: var(--label-weight);
+		font-size: var(--label-size);
+		line-height: var(--label-leading);
+		text-transform: var(--definitions-label-case);
+		color: var(--label-color);
 	}
 }

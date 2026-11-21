@@ -3,17 +3,28 @@
 @import url("../style/Space.module.css");
 @import url("../style/Color.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--caption-gap: var(--space-xxsmall);
+		--caption-weight: var(--weight-normal);
+		--caption-size: var(--size-small);
+		--caption-leading: var(--leading-auto);
+		--caption-align: left;
+	}
+}
+
 @layer components {
 	.caption,
 	.prose figcaption {
 		/* Box */
-		margin-block: var(--caption-gap, var(--space-xxsmall));
+		margin-block: var(--caption-gap);
 
 		/* Text */
-		font-weight: var(--caption-weight, var(--weight-normal));
-		font-size: var(--caption-size, var(--size-small));
-		line-height: var(--caption-leading, var(--leading-auto));
-		text-align: var(--caption-align, left);
+		font-weight: var(--caption-weight);
+		font-size: var(--caption-size);
+		line-height: var(--caption-leading);
+		text-align: var(--caption-align);
 	}
 }
 

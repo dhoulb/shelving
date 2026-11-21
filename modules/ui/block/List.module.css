@@ -3,13 +3,29 @@
 @import url("../style/Color.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--list-space: var(--space-paragraph);
+		--list-item-space: var(--space-small);
+		--list-indent: 1.125em;
+		--list-ordered-indent: calc(var(--list-indent) * 1.6);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--list-marker-color: var(--tint-80);
+	}
+}
+
 @layer components {
 	.unordered,
 	.ordered,
 	.prose ul,
 	.prose ol {
 		/* Box */
-		margin-block: var(--list-space, var(--space-paragraph));
+		margin-block: var(--list-space);
 
 		/* Text */
 		text-align: left;
@@ -17,21 +33,21 @@
 		/* Items stay in normal flow, so the margin of an item merges with the margin of a `<p>` inside it. */
 		> li {
 			display: list-item;
-			margin-block: var(--list-item-space, var(--space-small));
+			margin-block: var(--list-item-space);
 		}
 
 		li::marker {
-			color: var(--list-marker-color, var(--tint-80));
+			color: var(--list-marker-color);
 		}
 	}
 
 	.unordered,
 	.prose ul {
-		padding-inline-start: var(--list-indent, 1.125em);
+		padding-inline-start: var(--list-indent);
 	}
 
 	.ordered,
 	.prose ol {
-		padding-inline-start: var(--list-indent, 1.8em);
+		padding-inline-start: var(--list-ordered-indent);
 	}
 }

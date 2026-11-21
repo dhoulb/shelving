@@ -7,33 +7,59 @@
 @import url("../style/Width.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--preformatted-space: var(--space-paragraph);
+		--preformatted-stroke: var(--stroke-normal);
+		--preformatted-padding: var(--space-normal);
+		--preformatted-indent: var(--space-normal);
+		--preformatted-radius: var(--radius-normal);
+		--preformatted-shadow: none;
+		--preformatted-transition: all var(--duration-fast);
+		--preformatted-focus-border: var(--color-focus);
+		--preformatted-font: var(--font-code);
+		--preformatted-weight: var(--weight-code);
+		--preformatted-size: var(--size-normal);
+		--preformatted-leading: var(--leading-auto);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--preformatted-border: var(--tint-80);
+		--preformatted-background: var(--tint-90);
+		--preformatted-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	.preformatted,
 	.prose pre {
 		/* Box */
 		position: relative;
 		margin-inline: 0;
-		margin-block: var(--preformatted-space, var(--space-paragraph));
-		border: var(--preformatted-border, var(--preformatted-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--preformatted-padding, var(--space-normal));
-		padding-inline: var(--preformatted-indent, var(--space-normal));
-		border-radius: var(--preformatted-radius, var(--radius-normal));
+		margin-block: var(--preformatted-space);
+		border: var(--preformatted-stroke) solid var(--preformatted-border);
+		padding-block: var(--preformatted-padding);
+		padding-inline: var(--preformatted-indent);
+		border-radius: var(--preformatted-radius);
 		width: 100%;
 		box-sizing: border-box;
 
 		/* Style */
-		background: var(--preformatted-background, var(--tint-90));
-		color: var(--preformatted-color, var(--tint-00));
-		box-shadow: var(--preformatted-shadow, none);
-		transition: var(--preformatted-transition, all var(--duration-fast));
-		outline: var(--preformatted-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--preformatted-stroke, var(--stroke-normal)));
+		background: var(--preformatted-background);
+		color: var(--preformatted-color);
+		box-shadow: var(--preformatted-shadow);
+		transition: var(--preformatted-transition);
+		outline: var(--stroke-focus) solid var(--preformatted-focus-border);
+		outline-offset: calc(0px - var(--preformatted-stroke));
 
 		/* Text */
-		font-family: var(--preformatted-font, var(--font-code));
-		font-weight: var(--preformatted-weight, var(--weight-code));
-		font-size: var(--preformatted-size, var(--size-normal));
-		line-height: var(--preformatted-leading, var(--leading-auto));
+		font-family: var(--preformatted-font);
+		font-weight: var(--preformatted-weight);
+		font-size: var(--preformatted-size);
+		line-height: var(--preformatted-leading);
 		text-transform: none;
 		tab-size: 2;
 		white-space: preserve nowrap;

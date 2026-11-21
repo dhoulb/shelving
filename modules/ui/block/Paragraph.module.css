@@ -1,10 +1,17 @@
 @import url("../style/layers.css");
 @import url("../style/Space.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--paragraph-space: var(--space-paragraph);
+	}
+}
+
 @layer components {
 	.prose p,
 	.paragraph {
 		/* Box */
-		margin-block: var(--paragraph-space, var(--space-paragraph));
+		margin-block: var(--paragraph-space);
 	}
 }

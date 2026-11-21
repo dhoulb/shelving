@@ -43,6 +43,8 @@ import { Header, Nav, Footer } from "shelving/ui";
 
 `Section` exposes hooks for its width and rhythm; it paints no colour of its own, so it inherits the surrounding tint.
 
+Override these hooks at `:root`.
+
 | Variable          | Styles                            | Default                       |
 | ----------------- | --------------------------------- | ----------------------------- |
 | `--section-width` | Content width                     | `var(--width-normal)` (55rem) |
