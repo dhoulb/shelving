@@ -52,7 +52,7 @@
 		border: var(--menu-stroke, var(--stroke-normal)) solid transparent;
 		border-radius: var(--menu-radius, var(--radius-xsmall));
 
-		/* Match `--button-height` and `--input-height`, so an item is as easy to tap as a button. */
+		/* Match the button's minimum height and `--input-height`, so an item is as easy to tap as a button. */
 		min-block-size: var(
 			--menu-height,
 			calc(

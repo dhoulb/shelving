@@ -19,7 +19,7 @@
 		padding-block: var(--input-padding, var(--space-small));
 		padding-inline: var(--input-indent, var(--space-small));
 
-		/* Match `--button-height`, so an input and a button with an icon sit at the same height. */
+		/* Match the button's minimum height, so an input and a button with an icon sit at the same height. */
 		min-block-size: var(
 			--input-height,
 			calc(

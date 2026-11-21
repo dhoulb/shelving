@@ -73,8 +73,8 @@
 		padding-block: var(--button-padding);
 		padding-inline: var(--button-indent);
 
-		/* `--button-height` has no root default: its calc must read the hooks in this scope, so a scoped `--button-padding` still moves it. */
-		min-block-size: var(--button-height, calc(var(--button-icon-size) + 2 * var(--button-padding) + 2 * var(--button-stroke)));
+		/* Calculated here, not at root, so a scoped `--button-padding` still moves it. */
+		min-block-size: calc(var(--button-icon-size) + 2 * var(--button-padding) + 2 * var(--button-stroke));
 		margin-inline: 0;
 		margin-block: var(--button-space);
 
@@ -129,10 +129,7 @@
 			gap: var(--button-small-gap);
 			padding-block: var(--button-small-padding);
 			padding-inline: var(--button-small-indent);
-			min-block-size: var(
-				--button-small-height,
-				calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke))
-			);
+			min-block-size: calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke));
 		}
 
 		/* Icons follow `--button-icon-size`, which also sets the minimum height. */
