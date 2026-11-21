@@ -14,6 +14,8 @@ The abstract SQL base provider. `SQLProvider` implements the `DBProvider` surfac
 
 Each scalar field in a collection schema maps to a **generated column** extracted from the `data` JSON blob, so queries use indexed column comparisons. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnsupportedError`.
 
+Query writes (`setQuery()`, `updateQuery()`, `deleteQuery()`) ignore `$order` when the query has no `$limit`. With a `$limit`, they select the ids of the rows in a subquery (see `SQLProvider.sqlWriteClauses()`), because most databases do not accept `ORDER BY` or `LIMIT` in `UPDATE` and `DELETE`.
+
 ## Usage
 
 `SQLProvider` is abstract — bind it to a driver by implementing `exec()`. The built-in `SQLiteProvider` and `PostgresProvider` extend it with dialect-specific JSON path syntax; concrete drivers live in the `shelving/cloudflare` and `shelving/bun` modules.
@@ -56,6 +58,7 @@ new SQLProvider<I, T>()
 - [SQLProvider.sqlUpdates()](SQLProvider/sqlUpdates.md): Define an SQL fragment for a set of updates, e.g. "a" = 1, "b" = "b" + 5.
 - [SQLProvider.sqlUpdate()](SQLProvider/sqlUpdate.md): Define an SQL fragment for a single update action.
 - [SQLProvider.sqlValues()](SQLProvider/sqlValues.md): Define an SQL fragment for VALUES syntax, e.g. ("a", "b") VALUES (1, 2).
+- [SQLProvider.sqlWriteClauses()](SQLProvider/sqlWriteClauses.md): Define an SQL fragment for the clauses that select the rows an UPDATE or DELETE writes to.
 - [SQLProvider.sqlClauses()](SQLProvider/sqlClauses.md): Define an SQL fragment for the WHERE, ORDER BY and LIMIT clauses of a query, e.g. WHERE x = 1 ORDER BY "name" LIMIT 0, 50.
 - [SQLProvider.sqlWhere()](SQLProvider/sqlWhere.md): Define an SQL fragment for a WHERE clause, e.g. WHERE x = 1 AND y <= 100.
 - [SQLProvider.sqlFilter()](SQLProvider/sqlFilter.md): Define an SQL fragment for a single filter clause on a column, e.g. x = 1 or x IN (1, 2).

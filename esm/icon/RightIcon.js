@@ -1,1 +1,1 @@
-import{Yi}from"../chunk-7sdgqz5m.js";export{Yi as RightIcon};
+import{Wi}from"../chunk-f8nzc1z6.js";export{Wi as RightIcon};

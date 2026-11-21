@@ -10,6 +10,8 @@ The abstract SQL provider for PostgreSQL. `PostgresProvider` extends `SQLProvide
 
 It is abstract — a concrete subclass implements `exec()` against a specific PostgreSQL driver.
 
+Nested keys such as `sub.num` work in filters, orders and updates. The path binds as a `text[]` value and the compared or written value binds as `jsonb`, so nested numbers compare and sort as numbers.
+
 ## Usage
 
 ```ts
