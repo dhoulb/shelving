@@ -10,7 +10,7 @@ A grid container that arranges its children in equal-width columns. Renders a `<
 **Things to know:**
 
 - Set `columns` to `1` to `8`. The default is `2`. Each column has the same width, and long content cannot make one column wider.
-- Set `gap` to change the space between cells. The grid sets the outer margin of each child to `0`, so a child's `space` variant has no effect.
+- Set `gap` to change the space between cells. The grid sets the outer margin of each child to `0`, so a child's `space` variant has no effect. Each child also trims the outer margins of its own content, like the `trim` variant.
 - Pass `as` to render a different element. Use `as="ul"` or `as="ol"` for a list of items, and give each child as an `<li>`. The grid removes the list markers.
 - It composes the standard block variants (`space`, `padding`, `indent`, `width`, `color`, and typography). See `getGridClass()` for the grid variants.
 
