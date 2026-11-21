@@ -1,1 +1,1 @@
-import{fo}from"../chunk-bfr0e7kr.js";import"../chunk-j0zg5m74.js";export{fo as getLazy};
+import{co}from"../chunk-8b1b8ncg.js";import"../chunk-0f14vyx5.js";export{co as getLazy};

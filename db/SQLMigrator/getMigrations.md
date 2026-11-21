@@ -8,5 +8,5 @@ Compute the SQL statements needed to bring the tables into line with the given c
 ## Signatures
 
 ```ts
-getMigrations(...collections: Collections<number>): Promise<readonly string[]>
+getMigrations(...collections: Collections): Promise<readonly string[]>
 ```

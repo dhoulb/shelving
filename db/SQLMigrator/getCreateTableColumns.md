@@ -3,10 +3,10 @@
 - Kind: method
 - Member of: `SQLMigrator`
 
-Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
+Get the full set of columns for a collection's table: the `id` column, then one column for each top-level prop.
 
 ## Signatures
 
 ```ts
-getCreateTableColumns(collection: Collection<string, number, T>): readonly SQLTableColumn[]
+getCreateTableColumns(collection: Collection<string, Identifier, T>): readonly SQLTableColumn[]
 ```

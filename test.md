@@ -46,6 +46,8 @@ await provider.addItem(BASICS_COLLECTION, basic1);
 
 `testDBProvider()` registers the `DBProvider` contract suite: fixed cases that every provider must pass.
 
+`testSQLMigrator()` checks a `SQLMigrator` against its real database. It checks that the fixture tables need no changes, then makes a table and changes it with three versions of a collection (add, drop and change columns), and checks that the provider can still read and write it.
+
 `testDBDifferential()` runs the same seeded random operations against a provider and against a reference `MemoryDBProvider`, and fails at the first difference in a result, an error, or the stored items. A failure names the seed and lists the operations, so you can run it again. Use `check` to compare more state (for example a provider rebuilt from its backing store), and `wrap` to run each operation in a transaction.
 
 ```ts
@@ -78,6 +80,7 @@ expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 
 - [testDBDifferential()](test/testDBDifferential.md): Register a differential test that runs the same random operations against a provider and against a reference MemoryDBProvider, and fails at the first difference.
 - [testDBProvider()](test/testDBProvider.md): Register the universal DBProvider contract test suite against a provider, so every backend proves the same behaviour.
+- [testSQLMigrator()](test/testSQLMigrator.md): Register the SQLMigrator contract test suite against a migrator and its real database.
 - [expectUnorderedItems()](test/expectUnorderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in any order.
 - [expectOrderedItems()](test/expectOrderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in the exact given order.
 

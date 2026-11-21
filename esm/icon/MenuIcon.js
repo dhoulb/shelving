@@ -1,1 +1,1 @@
-import{os}from"../chunk-wyq0g02j.js";export{os as MenuIcon};
+import{ts}from"../chunk-4w3jsgdz.js";export{ts as MenuIcon};
