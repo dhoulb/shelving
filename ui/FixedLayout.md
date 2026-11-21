@@ -20,6 +20,39 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 
 ## Usage
 
+### A log-in screen
+
+The content is in the middle of the screen, and scrolls when it is taller.
+
+```tsx live "A log-in screen"
+import { useState } from "react";
+import { Block, Button, Field, FixedLayout, Paragraph, Scroll, TextInput, Title } from "shelving/ui";
+
+function LoginPage() {
+	const [email, setEmail] = useState("");
+	return (
+		<FixedLayout>
+			<Scroll vertical cover>
+				<Block height="full" middle width="narrow" padding="xlarge" indent="normal">
+					<Title>Log in</Title>
+					<Paragraph>We'll email you a link to log in.</Paragraph>
+					<Field title="Email address">
+						<TextInput name="email" input="email" value={email} onValue={setEmail} />
+					</Field>
+					<Button solid color="primary" full onClick={() => {}}>
+						Send link
+					</Button>
+				</Block>
+			</Scroll>
+		</FixedLayout>
+	);
+}
+
+<LoginPage />;
+```
+
+### With a router
+
 ```tsx
 import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
 

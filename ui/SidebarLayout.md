@@ -27,6 +27,137 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 
 ## Usage
 
+### A sidebar with a menu
+
+The example shows in a wide window, so the sidebar is in a column. Open it in the playground and make the preview narrow to see the drawer.
+
+```tsx live desktop "An app with a sidebar"
+import { useState } from "react";
+import {
+	Button,
+	Card,
+	Field,
+	Grid,
+	Menu,
+	MenuItem,
+	Panel,
+	Paragraph,
+	Row,
+	Scroll,
+	SidebarLayout,
+	Subheading,
+	Table,
+	Tag,
+	TextInput,
+	Title,
+} from "shelving/ui";
+
+const USERS = [
+	{ name: "Alice", plan: "Pro", status: "success", label: "Active" },
+	{ name: "Bob", plan: "Free", status: "warning", label: "Invited" },
+	{ name: "Carol", plan: "Pro", status: "error", label: "Blocked" },
+] as const;
+
+function DashboardPage() {
+	return (
+		<Panel plain>
+			<Title>Dashboard</Title>
+			<Grid columns={3} gap="small">
+				<Card>
+					<Subheading>Users</Subheading>
+					<Paragraph>1,204</Paragraph>
+				</Card>
+				<Card>
+					<Subheading>Revenue</Subheading>
+					<Paragraph>£8,420</Paragraph>
+				</Card>
+				<Card status="warning">
+					<Subheading>Open issues</Subheading>
+					<Paragraph>7</Paragraph>
+				</Card>
+			</Grid>
+		</Panel>
+	);
+}
+
+function UsersPage() {
+	return (
+		<Panel plain>
+			<Row between>
+				<Title>Users</Title>
+				<Button solid color="primary" onClick={() => {}}>
+					Invite
+				</Button>
+			</Row>
+			<Table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Plan</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{USERS.map(({ name, plan, status, label }) => (
+						<tr key={name}>
+							<td>{name}</td>
+							<td>{plan}</td>
+							<td>
+								<Tag status={status}>{label}</Tag>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</Table>
+		</Panel>
+	);
+}
+
+function SettingsPage() {
+	const [name, setName] = useState("Shelving");
+	return (
+		<Panel plain>
+			<Title>Settings</Title>
+			<Field title="Site name">
+				<TextInput name="name" value={name} onValue={setName} />
+			</Field>
+			<Button solid color="primary" onClick={() => {}}>
+				Save
+			</Button>
+		</Panel>
+	);
+}
+
+const PAGES = { Dashboard: <DashboardPage />, Users: <UsersPage />, Settings: <SettingsPage /> };
+
+function App() {
+	const [page, setPage] = useState<keyof typeof PAGES>("Dashboard");
+	const sidebar = (
+		<Panel plain>
+			<Subheading>Admin</Subheading>
+			<Menu>
+				{Object.keys(PAGES).map(key => (
+					<MenuItem key={key} selected={key === page} onClick={() => setPage(key as keyof typeof PAGES)}>
+						{key}
+					</MenuItem>
+				))}
+			</Menu>
+		</Panel>
+	);
+	return (
+		<SidebarLayout sidebar={sidebar}>
+			<Scroll vertical cover>
+				{PAGES[page]}
+			</Scroll>
+		</SidebarLayout>
+	);
+}
+
+<App />;
+```
+
+### With a router
+
 ```tsx
 import { Menu, MenuItem, PageLoader, RouteCache, Router, Scroll, SidebarLayout } from "shelving/ui";
 

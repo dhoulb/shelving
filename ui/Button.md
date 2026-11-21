@@ -35,55 +35,286 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 
 ## Usage
 
+### Colours and looks
+
+Each row is a colour and each column is a look. Square and round buttons hold one icon.
+
+```tsx live desktop "Every colour and look"
+import { AddIcon } from "shelving/icon/AddIcon";
+import { Button, Table } from "shelving/ui";
+
+const COLORS = [
+	undefined,
+	"primary",
+	"secondary",
+	"tertiary",
+	"red",
+	"orange",
+	"yellow",
+	"green",
+	"aqua",
+	"blue",
+	"purple",
+	"pink",
+	"gray",
+] as const;
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Colour</th>
+			<th>Default</th>
+			<th>Solid</th>
+			<th>Outline</th>
+			<th>Plain</th>
+			<th>Square</th>
+			<th>Round</th>
+		</tr>
+	</thead>
+	<tbody>
+		{COLORS.map(color => (
+			<tr key={color ?? "none"}>
+				<td>{color ?? "None"}</td>
+				<td>
+					<Button color={color} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} square title="Add">
+						<AddIcon />
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} round solid title="Add">
+						<AddIcon />
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### Statuses and looks
+
+`status=` sets the colour from the meaning of the action, like `color=`.
+
+```tsx live desktop "Every status and look"
+import { Button, STATUSES, Table } from "shelving/ui";
+
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Status</th>
+			<th>Default</th>
+			<th>Solid</th>
+			<th>Outline</th>
+			<th>Plain</th>
+		</tr>
+	</thead>
+	<tbody>
+		{STATUSES.map(status => (
+			<tr key={status}>
+				<td>{status}</td>
+				<td>
+					<Button status={status} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### States and sizes
+
+Each row is a look and each column is a state or size.
+
+```tsx live desktop "Every look in every state"
+import { Button, Table } from "shelving/ui";
+
+const LOOKS = [{ name: "Default" }, { name: "Solid", solid: true }, { name: "Outline", outline: true }, { name: "Plain", plain: true }];
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Look</th>
+			<th>Normal</th>
+			<th>Small</th>
+			<th>Selected</th>
+			<th>Not selected</th>
+			<th>Disabled</th>
+		</tr>
+	</thead>
+	<tbody>
+		{LOOKS.map(({ name, ...look }) => (
+			<tr key={name}>
+				<td>{name}</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} small>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected={false}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" disabled>
+						Save
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### Icon buttons
+
+Put an icon before or after the label. A button with only an icon is `square` (or `round`), and needs a `title` for screen readers.
+
+```tsx live "Buttons with icons"
+import { AddIcon } from "shelving/icon/AddIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
+import { RightIcon } from "shelving/icon/RightIcon";
+import { Button, Column, Row } from "shelving/ui";
+
+const click = () => {};
+
+<Column gap="small">
+	<Row gap="small" wrap>
+		<Button onClick={click} solid color="primary">
+			<AddIcon /> Add item
+		</Button>
+		<Button onClick={click}>
+			Next <RightIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} square title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} square solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} square outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} square plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} round title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} round outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} round plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} small square title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small>
+			<AddIcon /> Add
+		</Button>
+	</Row>
+</Column>;
+```
+
 ### Actions and links
 
-```tsx
-import { Button } from "shelving/ui";
+`onClick` makes a `<button>`, and `href` makes a link. A button with neither shows as text.
 
-<Button onClick={save} solid color="primary">Save</Button>
-<Button href="/about">About</Button>
-<Button onClick={remove} status="error">Delete</Button>
-<Button onClick={share} outline>Share</Button>
+```tsx live
+import { Button, notifySuccess, Notices } from "shelving/ui";
+
+<Button onClick={() => notifySuccess("Saved")} solid color="primary">Save</Button>
+<Button href="https://shelving.cc/" target="_blank">Open the docs</Button>
+<Button onClick={() => Promise.reject("Could not delete")} status="error">Delete</Button>
+<Notices />
 ```
 
 ### Spacing and size
 
-```tsx
+```tsx live
 import { Button } from "shelving/ui";
 
 // No outer margin: it sits flush with the content around it.
-<Button full space="none" onClick={start}>
+<Button full space="none" onClick={() => {}}>
 	Start
-</Button>;
-```
-
-### Square buttons
-
-```tsx
-import { Button } from "shelving/ui";
-
-// As wide as it is tall: for an icon or one character.
-<Button square plain onClick={close} title="Close">
-	×
-</Button>;
-
-// A circle: square, with fully round corners.
-<Button round solid color="primary" onClick={add} title="Add">
-	+
 </Button>;
 ```
 
 ### A row of buttons
 
-```tsx
-import { Button } from "shelving/ui";
-import { Row } from "shelving/ui";
+```tsx live
+import { Button, Row } from "shelving/ui";
 
 <Row gap="small" right>
-	<Button plain onClick={cancel}>
+	<Button plain onClick={() => {}}>
 		Cancel
 	</Button>
-	<Button solid color="primary" onClick={submit}>
+	<Button solid color="primary" onClick={() => {}}>
 		Continue
 	</Button>
 </Row>;
@@ -91,16 +322,30 @@ import { Row } from "shelving/ui";
 
 ### Tabs
 
-```tsx
+```tsx live
+import { useState } from "react";
 import { Button, Row } from "shelving/ui";
 
-<Row gap="xsmall">
-	{SECTIONS.map(({ key, label }) => (
-		<Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
-			{label}
-		</Button>
-	))}
-</Row>;
+const SECTIONS = [
+	{ key: "posts", label: "Posts" },
+	{ key: "photos", label: "Photos" },
+	{ key: "people", label: "People" },
+];
+
+function Tabs() {
+	const [section, setSection] = useState("posts");
+	return (
+		<Row gap="xsmall">
+			{SECTIONS.map(({ key, label }) => (
+				<Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
+					{label}
+				</Button>
+			))}
+		</Row>
+	);
+}
+
+<Tabs />;
 ```
 
 ### A one-off treatment

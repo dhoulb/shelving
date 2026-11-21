@@ -31,6 +31,89 @@ A full-viewport layout with a content slot above a bar of the app's main section
 
 ## Usage
 
+### A tab bar with buttons
+
+Each page scrolls in its own box above the bar. Tap the buttons in the bar to change the page.
+
+```tsx live "An app with a tab bar"
+import { useState } from "react";
+import { AddIcon } from "shelving/icon/AddIcon";
+import { InfoIcon } from "shelving/icon/InfoIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
+import { AppLayout, Button, Card, Panel, Paragraph, Row, Scroll, Subheading, Tag, Title } from "shelving/ui";
+
+const PROJECTS = ["Kitchen", "Garden", "Garage", "Attic", "Bathroom", "Office"];
+
+function ProjectsPage() {
+	return (
+		<>
+			<Panel color="primary">
+				<Title>Projects</Title>
+				<Paragraph>Six projects, two in progress.</Paragraph>
+			</Panel>
+			<Panel plain>
+				{PROJECTS.map((name, i) => (
+					<Card key={name} href="#" title={`Open ${name}`}>
+						<Row between>
+							<Subheading space="none">{name}</Subheading>
+							{i < 2 ? <Tag status="warning">In progress</Tag> : <Tag status="success">Done</Tag>}
+						</Row>
+					</Card>
+				))}
+			</Panel>
+		</>
+	);
+}
+
+function NewPage() {
+	return (
+		<Panel plain>
+			<Title>New project</Title>
+			<Paragraph>Start a project to track its tasks and costs.</Paragraph>
+			<Button solid color="primary" full onClick={() => {}}>
+				<AddIcon /> Start a project
+			</Button>
+		</Panel>
+	);
+}
+
+function AboutPage() {
+	return (
+		<Panel plain>
+			<Title>About</Title>
+			<Paragraph>The tab bar stays still while each page scrolls in its own box.</Paragraph>
+		</Panel>
+	);
+}
+
+const TABS = [
+	{ key: "projects", label: "Projects", icon: <MenuIcon />, page: <ProjectsPage /> },
+	{ key: "new", label: "New", icon: <AddIcon />, page: <NewPage /> },
+	{ key: "about", label: "About", icon: <InfoIcon />, page: <AboutPage /> },
+];
+
+function App() {
+	const [tab, setTab] = useState("projects");
+	const nav = TABS.map(({ key, label, icon }) => (
+		<Button key={key} plain column small space="none" selected={key === tab} onClick={() => setTab(key)}>
+			{icon}
+			{label}
+		</Button>
+	));
+	return (
+		<AppLayout nav={nav}>
+			<Scroll vertical cover>
+				{TABS.find(({ key }) => key === tab)?.page}
+			</Scroll>
+		</AppLayout>
+	);
+}
+
+<App />;
+```
+
+### With a router
+
 ```tsx
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
 

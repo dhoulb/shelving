@@ -19,6 +19,43 @@ A React error boundary that catches errors thrown anywhere in its subtree and re
 
 ## Usage
 
+### Try it
+
+The button throws an error when you tap it. `<Catcher>` shows the error in place of its children, and `<RetryButton>` renders them again.
+
+```tsx live "Catch an error"
+import { useState } from "react";
+import { Button, Card, Catcher, ErrorNotice, Paragraph, RetryButton } from "shelving/ui";
+
+function Risky() {
+	const [broken, setBroken] = useState(false);
+	if (broken) throw new Error("The feed could not load.");
+	return (
+		<Card>
+			<Paragraph>The feed loaded.</Paragraph>
+			<Button status="error" onClick={() => setBroken(true)}>
+				Break it
+			</Button>
+		</Card>
+	);
+}
+
+function FeedError({ reason }: { reason: unknown }) {
+	return (
+		<>
+			<ErrorNotice reason={reason} />
+			<RetryButton small />
+		</>
+	);
+}
+
+<Catcher as={FeedError}>
+	<Risky />
+</Catcher>;
+```
+
+### With an app
+
 ```tsx
 import { PageCatcher, Catcher, ErrorNotice } from "shelving/ui";
 

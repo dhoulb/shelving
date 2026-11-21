@@ -20,11 +20,22 @@ An animated SVG spinner shaped like a Heroicon — a faint full track plus a rot
 
 ## Usage
 
-```tsx
-import { Icon, LOADING, Loading } from "shelving/ui";
+```tsx live
+import { Icon, Loading, Row } from "shelving/ui";
 
-// Styled through <Icon>, like any other icon.
-<Icon icon={Loading} size="large" />
+// Styled through <Icon>, like any other icon. It follows the colour of its scope.
+<Row gap="normal" middle>
+	<Icon icon={Loading} size="small" />
+	<Icon icon={Loading} />
+	<Icon icon={Loading} size="large" status="success" />
+	<Icon icon={Loading} size="xxlarge" status="error" />
+</Row>;
+```
+
+### In a fallback
+
+```tsx
+import { Icon, LOADING } from "shelving/ui";
 
 // <Icon status="loading"> uses it for you.
 <Icon status="loading" />
