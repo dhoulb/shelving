@@ -84,13 +84,13 @@
 		/* Style */
 
 		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-100 / --tint-00) when the hooks are unset.
-		 * The sidebar has the same fill as the page: its border sets it apart as a distinct column. */
+		 * The sidebar has the same fill as the page: its border and shadow set it apart as a distinct column. */
 		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
 		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
 		box-shadow: var(
 			--sidebar-layout-sidebar-shadow,
-			none
-		); /* The column is full height, so a scale shadow such as `--shadow-normal` shows only its side blur, over the content. */
+			var(--shadow-normal)
+		); /* The column is full height, so only the blur at its side shows, over the content. */
 	}
 
 	.content {

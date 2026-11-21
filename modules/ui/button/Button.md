@@ -144,6 +144,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-transition`              | Transition                                          | `all var(--duration-fast)` (150ms)                                                 |
 | `--button-focus-border`            | Focus outline                                       | `var(--stroke-focus) solid var(--color-focus)`                                     |
 | `--button-disabled-opacity`        | Opacity when disabled                               | `0.5`                                                                              |
+| `--button-solid-border`            | Border in every state when `solid`                  | `var(--button-stroke) solid var(--tint-45)` (one step darker than the fill)        |
 | `--button-solid-background`        | Surface fill when `solid`                           | `var(--tint-50)`                                                                   |
 | `--button-solid-text`              | Label colour when `solid`                           | `var(--tint-100)` (white)                                                          |
 | `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`          | `var(--tint-55)`                                                                   |
