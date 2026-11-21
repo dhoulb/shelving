@@ -1,2 +1,0 @@
-import{Pr,et,tt}from"./chunk-09t6b8th.js";import{s}from"./chunk-nkdw8ajh.js";import{Ut,pt}from"./chunk-xbsa00x6.js";class pr extends pt{payload;constructor(o,e,r,i=0){let t=new Ut(o),y=r&&(async(a)=>{if(i>0)await tt(Pr(i),et(a));let n=t.loading?await tt(t.next,et(a)):t.value;return r(n,a)});super(e,y);this.payload=t,p(this)}async[Symbol.asyncDispose](){await s(this.payload,super[Symbol.asyncDispose]())}}async function p(o){for await(let e of o.payload.next)o.invalidate(),o.refresh()}
-export{pr};
