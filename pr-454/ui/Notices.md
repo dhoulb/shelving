@@ -28,6 +28,29 @@ Renders the global list of active notices and subscribes to incoming `"notice"` 
 
 ## Usage
 
+### Try it
+
+Each button shows a notice. A notice closes itself after a few seconds, or when you tap it.
+
+```tsx live "Notices"
+import { Button, NOTICES, Notices, notifyError, notifySuccess, Row } from "shelving/ui";
+
+async function upload() {
+	const notice = NOTICES.show(undefined, "loading");
+	await new Promise(resolve => setTimeout(resolve, 2000));
+	notice.show("Upload complete.", "success");
+}
+
+<Row gap="small" wrap>
+	<Button onClick={() => notifySuccess("Profile updated.")} status="success">Success</Button>
+	<Button onClick={() => notifyError("Could not connect.")} status="error">Error</Button>
+	<Button onClick={upload}>Upload</Button>
+</Row>
+<Notices />
+```
+
+### Mount it in your app
+
 Mount once near the root of your app:
 
 ```tsx

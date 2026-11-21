@@ -47,6 +47,44 @@ export function NewProductForm() {
 }
 ```
 
+### Try it
+
+```tsx live "A product form"
+import { DATA, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const PRODUCT_SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1, max: 100 }),
+	price: new NumberSchema({ title: "Price", min: 0 }),
+});
+
+// Leave the name empty and submit to see the error.
+<Form schema={PRODUCT_SCHEMA} submit="Create product" onSubmit={() => "Product created"} />
+<Notices />
+```
+
+### Every input
+
+```tsx live "Every input"
+import { ArraySchema, BooleanSchema, ChoiceSchema, DATA, DateSchema, EmailSchema, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1 }),
+	email: new EmailSchema({ title: "Email" }),
+	bio: new StringSchema({ title: "Bio", multiline: true, rows: 3 }),
+	age: new NumberSchema({ title: "Age", min: 0 }),
+	birthday: new DateSchema({ title: "Birthday" }),
+	newsletter: new BooleanSchema({ title: "Send me the newsletter" }),
+	plan: new ChoiceSchema({ title: "Plan", options: { free: "Free", pro: "Pro", team: "Team" } }),
+	country: new ChoiceSchema({ title: "Country", input: "select", options: { gb: "United Kingdom", ie: "Ireland", fr: "France", de: "Germany" } }),
+	tags: new ArraySchema({ title: "Tags", items: new StringSchema({ min: 1 }) }),
+});
+
+<Form schema={SCHEMA} submit="Save" onSubmit={() => "Saved"} />
+<Notices />
+```
+
 ### Edit form with seeded data
 
 ```tsx

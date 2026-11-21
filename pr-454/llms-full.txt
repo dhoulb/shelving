@@ -21739,6 +21739,48 @@ Props for the `<Column>` component.
 
 Flex container that stacks its children as a column by default.
 
+A flex container that stacks its children in a column. Renders a `<div>` by default. Use it to stack items with an even gap. For a row of items, use `<Row>`.
+
+**Things to know:**
+
+- Set `gap` to change the space between items. The default is `--space-small`.
+- `top`, `middle`, `bottom`, `between` and `around` place the items down the column. `left`, `center` and `right` align them across it.
+- The column sets the outer margin of each child to `0`, so a child's `space` variant has no effect. Use `gap`.
+- Pass `as` to render a different element, for example `as="ul"`.
+- See `getFlexClass()` for every flex variant.
+
+## Usage
+
+### Stack items with an even gap
+
+```tsx live
+import { Button, Column, Paragraph, Subheading } from "shelving/ui";
+
+<Column gap="xsmall">
+	<Subheading>Storage</Subheading>
+	<Paragraph>1.2 GB of 5 GB used.</Paragraph>
+	<Button solid color="primary" onClick={() => {}}>
+		Upgrade
+	</Button>
+</Column>;
+```
+
+### Centre the items
+
+```tsx live
+import { Button, Column, Paragraph } from "shelving/ui";
+
+<Column center>
+	<Paragraph>Centred across the column.</Paragraph>
+	<Button onClick={() => {}}>Centred</Button>
+</Column>;
+```
+
+## Styling
+
+`<Column>` has no own hooks. It reads `--space-small` (the default gap) and the `--space-*` token that its `gap` variant sets.
+
+
 ## Signatures
 
 ```ts
@@ -21757,12 +21799,6 @@ Column({ as: Element = "div", children, column = true, className, ...props }: Co
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Column gap="small">{items}</Column>
-```
 
 
 ---
@@ -22063,24 +22099,49 @@ import { Card, Grid, Paragraph } from "shelving/ui";
 
 ### A list of tiles
 
-```tsx
-import { Grid } from "shelving/ui";
+```tsx live
+import { Card, Grid, Subheading, Tag } from "shelving/ui";
 
-<Grid as="ul" columns={3} gap="normal">
-	{badges.map(badge => (
-		<li key={badge.id}>{badge.name}</li>
+const BADGES = [
+	{ name: "First run", color: "red" },
+	{ name: "10 km", color: "orange" },
+	{ name: "Early bird", color: "yellow" },
+	{ name: "Streak", color: "green" },
+	{ name: "Hills", color: "blue" },
+	{ name: "Night owl", color: "purple" },
+] as const;
+
+<Grid as="ul" columns={3} gap="small">
+	{BADGES.map(({ name, color }) => (
+		<li key={name}>
+			<Card color={color} padding="small">
+				<Subheading space="none">{name}</Subheading>
+				<Tag color={color}>Badge</Tag>
+			</Card>
+		</li>
 	))}
 </Grid>;
 ```
 
-### Days of the week
+### A calendar
 
-```tsx
-import { Grid } from "shelving/ui";
+```tsx live
+import { Card, Grid, Small } from "shelving/ui";
+
+const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
 <Grid as="ol" columns={7} gap="xsmall">
-	{days.map(day => (
-		<li key={day.date}>{day.label}</li>
+	{DAYS.map((day, i) => (
+		<li key={`day-${i}`}>
+			<Small>{day}</Small>
+		</li>
+	))}
+	{Array.from({ length: 28 }, (_, i) => (
+		<li key={i}>
+			<Card space="none" padding="xsmall" indent="xsmall" color={i % 7 > 4 ? "gray" : "primary"}>
+				{i + 1}
+			</Card>
+		</li>
 	))}
 </Grid>;
 ```
@@ -22892,11 +22953,22 @@ A wrapper that applies cohesive longform typography to a subtree of mixed HTML c
 
 ### Prose content from a renderer
 
-```tsx
-import { Prose, Markup } from "shelving/ui";
+```tsx live
+import { Markup, Prose } from "shelving/ui";
+
+const BODY = `## Release notes
+
+Buttons now have **wider** side padding, and two new looks:
+
+- \`square\` for an icon.
+- \`round\` for a circle.
+
+> Pull main to get the new buttons.
+
+Read the [docs](https://shelving.cc/ui/Button) for more.`;
 
 <Prose>
-	<Markup>{article.body}</Markup>
+	<Markup>{BODY}</Markup>
 </Prose>;
 ```
 
@@ -22969,6 +23041,72 @@ Props for the `<Row>` component.
 
 Flex container that arranges its children as a row by default.
 
+A flex container that puts its children in a row. Renders a `<div>` by default. Use it for a group of buttons, a title with a tag, or any items side by side. For a stack of items, use `<Column>`. For equal columns, use `<Grid>`.
+
+**Things to know:**
+
+- Set `gap` to change the space between items. The default is `--space-small`.
+- `left`, `center`, `right`, `between` and `around` place the items along the row. `top`, `middle` and `bottom` align them across it.
+- A `center` row that is wider than its box starts at the left edge, so no item is cut off.
+- Set `wrap` to put items that do not fit on the next line.
+- The row sets the outer margin of each child to `0`, so a child's `space` variant has no effect. Use `gap`.
+- Pass `as` to render a different element, for example `as="ul"`.
+- See `getFlexClass()` for every flex variant.
+
+## Usage
+
+### Place the items
+
+```tsx live
+import { Button, Row } from "shelving/ui";
+
+const click = () => {};
+
+<Row left><Button onClick={click}>Left</Button><Button onClick={click}>Left</Button></Row>
+<Row center><Button onClick={click}>Centre</Button><Button onClick={click}>Centre</Button></Row>
+<Row right><Button onClick={click}>Right</Button><Button onClick={click}>Right</Button></Row>
+<Row between><Button onClick={click}>Between</Button><Button onClick={click}>Between</Button></Row>
+```
+
+### A title with a tag and a button
+
+```tsx live
+import { Button, Card, Row, Subheading, Tag } from "shelving/ui";
+
+<Card>
+	<Row between middle>
+		<Row gap="xsmall" middle>
+			<Subheading space="none">Kitchen</Subheading>
+			<Tag status="warning">In progress</Tag>
+		</Row>
+		<Button small onClick={() => {}}>
+			Edit
+		</Button>
+	</Row>
+</Card>;
+```
+
+### Wrap onto the next line
+
+```tsx live
+import { Row, Tag } from "shelving/ui";
+
+const TAGS = ["Running", "Cycling", "Swimming", "Rowing", "Climbing", "Yoga", "Hiking", "Tennis", "Golf"];
+
+<Row gap="xsmall" wrap>
+	{TAGS.map(tag => (
+		<Tag key={tag} color="primary">
+			{tag}
+		</Tag>
+	))}
+</Row>;
+```
+
+## Styling
+
+`<Row>` has no own hooks. It reads `--space-small` (the default gap) and the `--space-*` token that its `gap` variant sets.
+
+
 ## Signatures
 
 ```ts
@@ -22987,12 +23125,6 @@ Row({ as: Element = "div", children, className, ...props }: RowProps): ReactElem
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Row gap="small" center>{items}</Row>
-```
 
 
 ---
@@ -23061,12 +23193,19 @@ import { Section, Heading, Definitions } from "shelving/ui";
 
 ### Landmark elements
 
-```tsx
-import { Header, Nav, Footer } from "shelving/ui";
+```tsx live
+import { Footer, Header, Link, Paragraph, Section, Small, Subheading, Title } from "shelving/ui";
 
-<Header><Title>Welcome</Title></Header>
-<Nav><Link href="/">Home</Link></Nav>
-<Footer><Small>© 2026</Small></Footer>
+<Header indent="normal">
+	<Title>Welcome</Title>
+</Header>
+<Section indent="normal">
+	<Subheading>Get started</Subheading>
+	<Paragraph>Read the <Link href="https://shelving.cc/guides">guides</Link> first.</Paragraph>
+</Section>
+<Footer indent="normal">
+	<Small>© 2026</Small>
+</Footer>
 ```
 
 ## Styling
@@ -23606,55 +23745,286 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 
 ## Usage
 
+### Colours and looks
+
+Each row is a colour and each column is a look. Square and round buttons hold one icon.
+
+```tsx live desktop "Every colour and look"
+import { AddIcon } from "shelving/icon/AddIcon";
+import { Button, Table } from "shelving/ui";
+
+const COLORS = [
+	undefined,
+	"primary",
+	"secondary",
+	"tertiary",
+	"red",
+	"orange",
+	"yellow",
+	"green",
+	"aqua",
+	"blue",
+	"purple",
+	"pink",
+	"gray",
+] as const;
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Colour</th>
+			<th>Default</th>
+			<th>Solid</th>
+			<th>Outline</th>
+			<th>Plain</th>
+			<th>Square</th>
+			<th>Round</th>
+		</tr>
+	</thead>
+	<tbody>
+		{COLORS.map(color => (
+			<tr key={color ?? "none"}>
+				<td>{color ?? "None"}</td>
+				<td>
+					<Button color={color} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} square title="Add">
+						<AddIcon />
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} round solid title="Add">
+						<AddIcon />
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### Statuses and looks
+
+`status=` sets the colour from the meaning of the action, like `color=`.
+
+```tsx live desktop "Every status and look"
+import { Button, STATUSES, Table } from "shelving/ui";
+
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Status</th>
+			<th>Default</th>
+			<th>Solid</th>
+			<th>Outline</th>
+			<th>Plain</th>
+		</tr>
+	</thead>
+	<tbody>
+		{STATUSES.map(status => (
+			<tr key={status}>
+				<td>{status}</td>
+				<td>
+					<Button status={status} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### States and sizes
+
+Each row is a look and each column is a state or size.
+
+```tsx live desktop "Every look in every state"
+import { Button, Table } from "shelving/ui";
+
+const LOOKS = [{ name: "Default" }, { name: "Solid", solid: true }, { name: "Outline", outline: true }, { name: "Plain", plain: true }];
+const click = () => {};
+
+<Table padding="xsmall">
+	<thead>
+		<tr>
+			<th>Look</th>
+			<th>Normal</th>
+			<th>Small</th>
+			<th>Selected</th>
+			<th>Not selected</th>
+			<th>Disabled</th>
+		</tr>
+	</thead>
+	<tbody>
+		{LOOKS.map(({ name, ...look }) => (
+			<tr key={name}>
+				<td>{name}</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} small>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected={false}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" disabled>
+						Save
+					</Button>
+				</td>
+			</tr>
+		))}
+	</tbody>
+</Table>;
+```
+
+### Icon buttons
+
+Put an icon before or after the label. A button with only an icon is `square` (or `round`), and needs a `title` for screen readers.
+
+```tsx live "Buttons with icons"
+import { AddIcon } from "shelving/icon/AddIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
+import { RightIcon } from "shelving/icon/RightIcon";
+import { Button, Column, Row } from "shelving/ui";
+
+const click = () => {};
+
+<Column gap="small">
+	<Row gap="small" wrap>
+		<Button onClick={click} solid color="primary">
+			<AddIcon /> Add item
+		</Button>
+		<Button onClick={click}>
+			Next <RightIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} square title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} square solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} square outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} square plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} round title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} round outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} round plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} small square title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small>
+			<AddIcon /> Add
+		</Button>
+	</Row>
+</Column>;
+```
+
 ### Actions and links
 
-```tsx
-import { Button } from "shelving/ui";
+`onClick` makes a `<button>`, and `href` makes a link. A button with neither shows as text.
 
-<Button onClick={save} solid color="primary">Save</Button>
-<Button href="/about">About</Button>
-<Button onClick={remove} status="error">Delete</Button>
-<Button onClick={share} outline>Share</Button>
+```tsx live
+import { Button, notifySuccess, Notices } from "shelving/ui";
+
+<Button onClick={() => notifySuccess("Saved")} solid color="primary">Save</Button>
+<Button href="https://shelving.cc/" target="_blank">Open the docs</Button>
+<Button onClick={() => Promise.reject("Could not delete")} status="error">Delete</Button>
+<Notices />
 ```
 
 ### Spacing and size
 
-```tsx
+```tsx live
 import { Button } from "shelving/ui";
 
 // No outer margin: it sits flush with the content around it.
-<Button full space="none" onClick={start}>
+<Button full space="none" onClick={() => {}}>
 	Start
-</Button>;
-```
-
-### Square buttons
-
-```tsx
-import { Button } from "shelving/ui";
-
-// As wide as it is tall: for an icon or one character.
-<Button square plain onClick={close} title="Close">
-	×
-</Button>;
-
-// A circle: square, with fully round corners.
-<Button round solid color="primary" onClick={add} title="Add">
-	+
 </Button>;
 ```
 
 ### A row of buttons
 
-```tsx
-import { Button } from "shelving/ui";
-import { Row } from "shelving/ui";
+```tsx live
+import { Button, Row } from "shelving/ui";
 
 <Row gap="small" right>
-	<Button plain onClick={cancel}>
+	<Button plain onClick={() => {}}>
 		Cancel
 	</Button>
-	<Button solid color="primary" onClick={submit}>
+	<Button solid color="primary" onClick={() => {}}>
 		Continue
 	</Button>
 </Row>;
@@ -23662,16 +24032,30 @@ import { Row } from "shelving/ui";
 
 ### Tabs
 
-```tsx
+```tsx live
+import { useState } from "react";
 import { Button, Row } from "shelving/ui";
 
-<Row gap="xsmall">
-	{SECTIONS.map(({ key, label }) => (
-		<Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
-			{label}
-		</Button>
-	))}
-</Row>;
+const SECTIONS = [
+	{ key: "posts", label: "Posts" },
+	{ key: "photos", label: "Photos" },
+	{ key: "people", label: "People" },
+];
+
+function Tabs() {
+	const [section, setSection] = useState("posts");
+	return (
+		<Row gap="xsmall">
+			{SECTIONS.map(({ key, label }) => (
+				<Button key={key} small solid selected={key === section} onClick={() => setSection(key)}>
+					{label}
+				</Button>
+			))}
+		</Row>
+	);
+}
+
+<Tabs />;
 ```
 
 ### A one-off treatment
@@ -24327,6 +24711,43 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 
 ## Usage
 
+### Try it
+
+```tsx live "A dialog"
+import { startTransition, useState } from "react";
+import { Button, Dialog, Modal, Paragraph, Row, Subheading } from "shelving/ui";
+
+function DeleteButton() {
+	const [open, setOpen] = useState(false);
+	const close = () => startTransition(() => setOpen(false));
+	return (
+		<>
+			<Button status="error" onClick={() => startTransition(() => setOpen(true))}>
+				Delete project
+			</Button>
+			{open && (
+				<Dialog onClose={close}>
+					<Modal>
+						<Subheading>Delete this project?</Subheading>
+						<Paragraph>You cannot undo this.</Paragraph>
+						<Row gap="small" right>
+							<Button plain onClick={close}>
+								Cancel
+							</Button>
+							<Button solid status="error" onClick={close}>
+								Delete
+							</Button>
+						</Row>
+					</Modal>
+				</Dialog>
+			)}
+		</>
+	);
+}
+
+<DeleteButton />;
+```
+
 ### Declarative
 
 Mount `<Dialog>` directly when its lifetime matches a React state variable.
@@ -24821,17 +25242,22 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 ### Padding, indent, and radius
 
-```tsx
+```tsx live
+import { Modal, Paragraph } from "shelving/ui";
+
+// A modal shows on the page when it is not in a dialog, so you can see its box.
 <Modal padding="large" indent="large" radius="large">
-	<p>More space on all sides, and rounder corners.</p>
+	<Paragraph>More space on all sides, and rounder corners.</Paragraph>
 </Modal>;
 ```
 
 ### Shadow
 
-```tsx
+```tsx live
+import { Modal, Paragraph } from "shelving/ui";
+
 <Modal shadow="small">
-	<p>Sits closer to the page.</p>
+	<Paragraph>Sits closer to the page.</Paragraph>
 </Modal>;
 ```
 
@@ -24860,6 +25286,58 @@ function MenuButton() {
 ```
 
 A link click inside a `<Dialog>` closes it, so the menu slides out as the page changes. Use `<Modal bottom>` for a bottom sheet on mobile.
+
+### Try each edge
+
+Swipe a pinned panel toward its edge to close it.
+
+```tsx live "A modal on each edge"
+import { Button, Dialogs, DialogsContext, Menu, MenuItem, Modal, Paragraph, requireDialogs, Row, Subheading } from "shelving/ui";
+
+const EDGES = ["top", "right", "bottom", "left"] as const;
+
+function EdgeButtons() {
+	const dialogs = requireDialogs();
+	return (
+		<Row gap="small" wrap>
+			<Button
+				onClick={() =>
+					dialogs.show(
+						<Modal>
+							<Subheading>Centred</Subheading>
+							<Paragraph>Tap outside the panel to close it.</Paragraph>
+						</Modal>,
+					)
+				}
+			>
+				Centre
+			</Button>
+			{EDGES.map(edge => (
+				<Button
+					key={edge}
+					onClick={() =>
+						dialogs.show(
+							<Modal {...{ [edge]: true }}>
+								<Menu>
+									<MenuItem onClick={() => {}}>Home</MenuItem>
+									<MenuItem onClick={() => {}}>Settings</MenuItem>
+								</Menu>
+							</Modal>,
+						)
+					}
+				>
+					{edge}
+				</Button>
+			))}
+		</Row>
+	);
+}
+
+<DialogsContext>
+	<EdgeButtons />
+	<Dialogs />
+</DialogsContext>;
+```
 
 ## Styling
 
@@ -25388,6 +25866,7 @@ Props for `<DocumentationLive>` — the code to show and run, plus an optional t
 {
 	code: string;
 	title?: string | undefined;
+	desktop?: boolean | undefined;
 }
 ```
 
@@ -25397,6 +25876,7 @@ Props for `<DocumentationLive>` — the code to show and run, plus an optional t
 | --- | --- | --- |
 | `code` | `string` | TSX source to show and run. It can import from `shelving/*`, `react`, and `react-dom` only. |
 | `title` | `string \| undefined` | Title of the example, used as the accessible title of the preview frame. Optional. |
+| `desktop` | `boolean \| undefined` | Show the preview in a full-width browser window under the code, not on a phone. Use it for a wide preview, such as a sidebar layout or a big table. Optional. |
 
 
 ---
@@ -25410,6 +25890,7 @@ Show a code example next to a live preview of it on a simple phone, with a link 
 - The preview is a `<DocumentationFrame>`, so it runs in the browser with the raw shelving styles.
 - The phone is light grey, so it suggests a device without competing with the preview. Its screen is square and has a fixed height, and it scrolls when the preview is taller.
 - The code and preview are side by side on a wide screen, and stacked on a narrow one.
+- With `desktop`, the preview is in a full-width browser window under the code, with a taller screen.
 
 Show a code example next to a live preview of it, on a simple phone. The docs site uses it for each fenced code block with a `live` flag.
 
@@ -25420,6 +25901,7 @@ Show a code example next to a live preview of it, on a simple phone. The docs si
 - The preview is a `<DocumentationFrame>`. It runs in the browser, with the raw shelving styles and none of the docs site styles.
 - The code can import from `shelving/*`, `react`, and `react-dom` only. Any other import fails.
 - Each top-level expression in the code shows in the preview, so a snippet needs no `return` or export. A default export that is a component or an element shows too.
+- Add a `desktop` flag to show the preview in a browser window under the code, not on a phone: ` ```tsx live desktop "Sidebar layout" `. Use it for a wide preview, such as `<SidebarLayout>` or a big table. The window grows out of the text column to each side, up to `--documentation-live-desktop-width`, inside the nearest size container. `<DocumentationPage>` makes its body a size container. On a screen narrower than 48rem the window zooms out to half size (40% below 30rem), so the preview still looks like a desktop.
 - The phone is light grey, not the tint colour, so it suggests a device without competing with the preview. Its screen is square, with a fixed height, and scrolls when the preview is taller.
 - "Open in playground" under the phone opens the code in `<DocumentationPlaygroundPage>`, where you can change it.
 
@@ -25432,6 +25914,16 @@ Show a code example next to a live preview of it, on a simple phone. The docs si
 import { Button } from "shelving/ui";
 
 <Button solid>Save</Button>
+```
+````
+
+### A desktop example
+
+````md
+```tsx live desktop "A wide table"
+import { Table } from "shelving/ui";
+
+<Table>…</Table>
 ```
 ````
 
@@ -25455,17 +25947,20 @@ function Counter() {
 
 Override these hooks at `:root`.
 
-| Variable                      | Styles                                                                                                | Default                          |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
-| `--documentation-live-bezel`  | Space above and below the speaker slot, which sets the thickness of the top and the chin (one length) | `2.25rem`                        |
-| `--documentation-live-body`   | Fill of the phone                                                                                     | `oklch(92% 0 0deg)` (light grey) |
-| `--documentation-live-detail` | Colour of the speaker slot and home button                                                            | `oklch(80% 0 0deg)`              |
-| `--documentation-live-edge`   | Width of the phone edge left and right of the screen (one length)                                     | `0.75rem`                        |
-| `--documentation-live-gap`    | Space between the code and the phone (one length)                                                     | `var(--space-normal)` (16px)     |
-| `--documentation-live-height` | Height of the screen (one length)                                                                     | `26rem`                          |
-| `--documentation-live-radius` | Corner radius of the phone                                                                            | `2.5rem`                         |
-| `--documentation-live-space`  | Outer block margin (top + bottom)                                                                     | `var(--space-paragraph)` (16px)  |
-| `--documentation-live-width`  | Width of the phone (one length)                                                                       | `22rem`                          |
+| Variable                              | Styles                                                                                                | Default                          |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `--documentation-live-bezel`          | Space above and below the speaker slot, which sets the thickness of the top and the chin (one length) | `2.25rem`                        |
+| `--documentation-live-body`           | Fill of the phone                                                                                     | `oklch(92% 0 0deg)` (light grey) |
+| `--documentation-live-desktop-height` | Height of the screen in a `desktop` example (one length)                                              | `36rem`                          |
+| `--documentation-live-desktop-radius` | Corner radius of the browser window in a `desktop` example                                            | `1rem`                           |
+| `--documentation-live-desktop-width`  | Maximum width of the browser window in a `desktop` example (one length)                               | `64rem`                          |
+| `--documentation-live-detail`         | Colour of the speaker slot, home button, and browser window dots                                      | `oklch(80% 0 0deg)`              |
+| `--documentation-live-edge`           | Width of the phone or browser window edge around the screen (one length)                              | `0.75rem`                        |
+| `--documentation-live-gap`            | Space between the code and the phone (one length)                                                     | `var(--space-normal)` (16px)     |
+| `--documentation-live-height`         | Height of the screen (one length)                                                                     | `26rem`                          |
+| `--documentation-live-radius`         | Corner radius of the phone                                                                            | `2.5rem`                         |
+| `--documentation-live-space`          | Outer block margin (top + bottom)                                                                     | `var(--space-paragraph)` (16px)  |
+| `--documentation-live-width`          | Width of the phone (one length)                                                                       | `22rem`                          |
 
 Global tokens: `--space-normal`, `--space-xsmall`, `--space-paragraph`, `--font-label`, `--size-small`. The code block is a raw `<pre>` with `--preformatted-space` set to `0`, so it takes the other `.prose pre` styles of `<Preformatted>`. The code and phone are side by side when the screen is 75rem or wider.
 
@@ -25473,7 +25968,7 @@ Global tokens: `--space-normal`, `--space-xsmall`, `--space-paragraph`, `--font-
 ## Signatures
 
 ```ts
-DocumentationLive({ code, title }: DocumentationLiveProps): ReactElement
+DocumentationLive({ code, title, desktop = false }: DocumentationLiveProps): ReactElement
 ```
 
 ## Parameters
@@ -25483,6 +25978,7 @@ DocumentationLive({ code, title }: DocumentationLiveProps): ReactElement
 | `props` | `DocumentationLiveProps` |  |
 | `.code` | `string` | TSX source to show and run. It can import from `shelving/*`, `react`, and `react-dom` only. |
 | `.title` | `string \| undefined` | Title of the example, used as the accessible title of the preview frame. Optional. |
+| `.desktop` | `boolean \| undefined` | Show the preview in a full-width browser window under the code, not on a phone. Use it for a wide preview, such as a sidebar layout or a big table. Optional. |
 
 ## Returns
 
@@ -25500,9 +25996,8 @@ DocumentationLive({ code, title }: DocumentationLiveProps): ReactElement
 
 Markup rule that renders a fenced code block with a `live` flag as a `<DocumentationLive>` example, e.g. ` ```tsx live "Card with a link" `.
 - The `live` flag must come before any quoted title (see `parseFencedInfo()` for the info string format).
+- Add a `desktop` flag to show the preview in a full-width browser window, e.g. ` ```tsx live desktop "Sidebar layout" `.
 - Has the same priority as `FENCED_RULE`, so a `live` block inside a longer fence stays code. List it before `FENCED_RULE`, so it takes the `live` blocks and leaves every other block to `FENCED_RULE`.
-
-@see https://shelving.cc/ui/DOCUMENTATION_LIVE_RULE
 
 ## Signatures
 
@@ -26627,6 +27122,38 @@ import { Field, TextInput } from "shelving/ui";
 </Field>;
 ```
 
+### Try it
+
+```tsx live "Fields"
+import { useState } from "react";
+import { Field, TextInput } from "shelving/ui";
+
+function NameFields() {
+	const [first, setFirst] = useState("");
+	const [last, setLast] = useState("");
+	const [email, setEmail] = useState("alice@");
+	return (
+		<>
+			<Field title="First name" half>
+				<TextInput name="first" value={first} onValue={setFirst} />
+			</Field>
+			<Field title="Last name" half>
+				<TextInput name="last" value={last} onValue={setLast} />
+			</Field>
+			<Field
+				title="Email address"
+				description="We never share it."
+				message={email.includes(".") ? undefined : "Enter a valid email address"}
+			>
+				<TextInput name="email" value={email} onValue={setEmail} />
+			</Field>
+		</>
+	);
+}
+
+<NameFields />;
+```
+
 ### Two-up layout
 
 ```tsx
@@ -26795,6 +27322,44 @@ export function NewProductForm() {
 		/>
 	);
 }
+```
+
+### Try it
+
+```tsx live "A product form"
+import { DATA, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const PRODUCT_SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1, max: 100 }),
+	price: new NumberSchema({ title: "Price", min: 0 }),
+});
+
+// Leave the name empty and submit to see the error.
+<Form schema={PRODUCT_SCHEMA} submit="Create product" onSubmit={() => "Product created"} />
+<Notices />
+```
+
+### Every input
+
+```tsx live "Every input"
+import { ArraySchema, BooleanSchema, ChoiceSchema, DATA, DateSchema, EmailSchema, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1 }),
+	email: new EmailSchema({ title: "Email" }),
+	bio: new StringSchema({ title: "Bio", multiline: true, rows: 3 }),
+	age: new NumberSchema({ title: "Age", min: 0 }),
+	birthday: new DateSchema({ title: "Birthday" }),
+	newsletter: new BooleanSchema({ title: "Send me the newsletter" }),
+	plan: new ChoiceSchema({ title: "Plan", options: { free: "Free", pro: "Pro", team: "Team" } }),
+	country: new ChoiceSchema({ title: "Country", input: "select", options: { gb: "United Kingdom", ie: "Ireland", fr: "France", de: "Germany" } }),
+	tags: new ArraySchema({ title: "Tags", items: new StringSchema({ min: 1 }) }),
+});
+
+<Form schema={SCHEMA} submit="Save" onSubmit={() => "Saved"} />
+<Notices />
 ```
 
 ### Edit form with seeded data
@@ -27727,31 +28292,37 @@ Props for `Code` — colour and typography variants, optional `children`, plus a
 Inline code span — renders a `<code>` element.
 - Pass `plain` to drop the default background and padding.
 
-An inline code span — renders a `<code>` element with monospace type and a subtle tinted background. `Code.tsx` exports four siblings that share the same monospace styling but carry different HTML semantics:
-
-| Component  | HTML element | Use for                         |
-| ---------- | ------------ | ------------------------------- |
-| `Code`     | `<code>`     | Inline code fragments           |
-| `Keyboard` | `<kbd>`      | Keyboard input, e.g. `Ctrl+S`   |
-| `Sample`   | `<samp>`     | Program output                  |
-| `Variable` | `<var>`      | Variable names in documentation |
+An inline code span — renders a `<code>` element with monospace type and a subtle tinted background.
 
 **Things to know:**
 
-- Pick the sibling whose semantics match — they all look the same but mean different things to assistive tech and search.
 - Pass `plain` to drop the default background and inline padding (useful when the code already sits inside a tinted container).
 - Painted from the [tint ladder](/ui/TINT_CLASS): the background defaults to `--tint-90` and the text to `--tint-00`, so it re-tints with its surrounding scope (override per-instance with `--code-background` / `--code-color`).
 - Inside `<Prose>` raw `<code>` / `<kbd>` / `<samp>` / `<var>` pick up the same styling, and code inside a `<pre>` drops the inline box automatically.
 
 ## Usage
 
-### Inline code and keyboard input
+### Inline code in a paragraph
 
-```tsx
-import { Code, Keyboard, Sample } from "shelving/ui";
+```tsx live
+import { Code, Paragraph } from "shelving/ui";
 
-<p>Run <Code>npm install</Code>, then press <Keyboard>Enter</Keyboard>.</p>
-<p>It prints <Sample>Done.</Sample></p>
+<Paragraph>
+	Run <Code>bun install</Code>, then <Code>bun run test</Code>.
+</Paragraph>;
+```
+
+### Code in a coloured scope
+
+```tsx live
+import { Card, Code, Paragraph } from "shelving/ui";
+
+// The background and text follow the tint of the card.
+<Card color="purple">
+	<Paragraph>
+		Set <Code>color="purple"</Code> on the card.
+	</Paragraph>
+</Card>;
 ```
 
 ### Plain (no background)
@@ -30613,6 +31184,30 @@ The shared value-input prop contract (`ValueInputProps<O>`):
 
 ## Usage
 
+### Every input
+
+`<Form>` renders a `SchemaInput` for each property of its schema, so one form shows each type of input.
+
+```tsx live "Every input"
+import { ArraySchema, BooleanSchema, ChoiceSchema, DATA, DateSchema, EmailSchema, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1 }),
+	email: new EmailSchema({ title: "Email" }),
+	bio: new StringSchema({ title: "Bio", multiline: true, rows: 3 }),
+	age: new NumberSchema({ title: "Age", min: 0 }),
+	birthday: new DateSchema({ title: "Birthday" }),
+	newsletter: new BooleanSchema({ title: "Send me the newsletter" }),
+	plan: new ChoiceSchema({ title: "Plan", options: { free: "Free", pro: "Pro", team: "Team" } }),
+	country: new ChoiceSchema({ title: "Country", input: "select", options: { gb: "United Kingdom", ie: "Ireland", fr: "France", de: "Germany" } }),
+	tags: new ArraySchema({ title: "Tags", items: new StringSchema({ min: 1 }) }),
+});
+
+<Form schema={SCHEMA} submit="Save" onSubmit={() => "Saved"} />
+<Notices />
+```
+
 ### Dispatch on a single schema
 
 ```tsx live
@@ -31428,6 +32023,89 @@ A full-viewport layout with a content slot above a bar of the app's main section
 
 ## Usage
 
+### A tab bar with buttons
+
+Each page scrolls in its own box above the bar. Tap the buttons in the bar to change the page.
+
+```tsx live "An app with a tab bar"
+import { useState } from "react";
+import { AddIcon } from "shelving/icon/AddIcon";
+import { InfoIcon } from "shelving/icon/InfoIcon";
+import { MenuIcon } from "shelving/icon/MenuIcon";
+import { AppLayout, Button, Card, Panel, Paragraph, Row, Scroll, Subheading, Tag, Title } from "shelving/ui";
+
+const PROJECTS = ["Kitchen", "Garden", "Garage", "Attic", "Bathroom", "Office"];
+
+function ProjectsPage() {
+	return (
+		<>
+			<Panel color="primary">
+				<Title>Projects</Title>
+				<Paragraph>Six projects, two in progress.</Paragraph>
+			</Panel>
+			<Panel plain>
+				{PROJECTS.map((name, i) => (
+					<Card key={name} href="#" title={`Open ${name}`}>
+						<Row between>
+							<Subheading space="none">{name}</Subheading>
+							{i < 2 ? <Tag status="warning">In progress</Tag> : <Tag status="success">Done</Tag>}
+						</Row>
+					</Card>
+				))}
+			</Panel>
+		</>
+	);
+}
+
+function NewPage() {
+	return (
+		<Panel plain>
+			<Title>New project</Title>
+			<Paragraph>Start a project to track its tasks and costs.</Paragraph>
+			<Button solid color="primary" full onClick={() => {}}>
+				<AddIcon /> Start a project
+			</Button>
+		</Panel>
+	);
+}
+
+function AboutPage() {
+	return (
+		<Panel plain>
+			<Title>About</Title>
+			<Paragraph>The tab bar stays still while each page scrolls in its own box.</Paragraph>
+		</Panel>
+	);
+}
+
+const TABS = [
+	{ key: "projects", label: "Projects", icon: <MenuIcon />, page: <ProjectsPage /> },
+	{ key: "new", label: "New", icon: <AddIcon />, page: <NewPage /> },
+	{ key: "about", label: "About", icon: <InfoIcon />, page: <AboutPage /> },
+];
+
+function App() {
+	const [tab, setTab] = useState("projects");
+	const nav = TABS.map(({ key, label, icon }) => (
+		<Button key={key} plain column small space="none" selected={key === tab} onClick={() => setTab(key)}>
+			{icon}
+			{label}
+		</Button>
+	));
+	return (
+		<AppLayout nav={nav}>
+			<Scroll vertical cover>
+				{TABS.find(({ key }) => key === tab)?.page}
+			</Scroll>
+		</AppLayout>
+	);
+}
+
+<App />;
+```
+
+### With a router
+
 ```tsx
 import { AppLayout, HorizontalTransition, PageLoader, RouteCache, Router, Scroll, StackButton } from "shelving/ui";
 
@@ -31541,6 +32219,39 @@ A full-viewport layout with no chrome: the whole screen is one content slot. It 
 - Pick it above the router, or in each page inside `<RouteCache>`, for example for a full-screen page in a stack where the other pages have a tab bar. See "Composing an app" on `<App>`.
 
 ## Usage
+
+### A log-in screen
+
+The content is in the middle of the screen, and scrolls when it is taller.
+
+```tsx live "A log-in screen"
+import { useState } from "react";
+import { Block, Button, Field, FixedLayout, Paragraph, Scroll, TextInput, Title } from "shelving/ui";
+
+function LoginPage() {
+	const [email, setEmail] = useState("");
+	return (
+		<FixedLayout>
+			<Scroll vertical cover>
+				<Block height="full" middle width="narrow" padding="xlarge" indent="normal">
+					<Title>Log in</Title>
+					<Paragraph>We'll email you a link to log in.</Paragraph>
+					<Field title="Email address">
+						<TextInput name="email" input="email" value={email} onValue={setEmail} />
+					</Field>
+					<Button solid color="primary" full onClick={() => {}}>
+						Send link
+					</Button>
+				</Block>
+			</Scroll>
+		</FixedLayout>
+	);
+}
+
+<LoginPage />;
+```
+
+### With a router
 
 ```tsx
 import { Block, FixedLayout, Router, Scroll } from "shelving/ui";
@@ -31754,6 +32465,137 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
 ## Usage
+
+### A sidebar with a menu
+
+The example shows in a wide window, so the sidebar is in a column. Open it in the playground and make the preview narrow to see the drawer.
+
+```tsx live desktop "An app with a sidebar"
+import { useState } from "react";
+import {
+	Button,
+	Card,
+	Field,
+	Grid,
+	Menu,
+	MenuItem,
+	Panel,
+	Paragraph,
+	Row,
+	Scroll,
+	SidebarLayout,
+	Subheading,
+	Table,
+	Tag,
+	TextInput,
+	Title,
+} from "shelving/ui";
+
+const USERS = [
+	{ name: "Alice", plan: "Pro", status: "success", label: "Active" },
+	{ name: "Bob", plan: "Free", status: "warning", label: "Invited" },
+	{ name: "Carol", plan: "Pro", status: "error", label: "Blocked" },
+] as const;
+
+function DashboardPage() {
+	return (
+		<Panel plain>
+			<Title>Dashboard</Title>
+			<Grid columns={3} gap="small">
+				<Card>
+					<Subheading>Users</Subheading>
+					<Paragraph>1,204</Paragraph>
+				</Card>
+				<Card>
+					<Subheading>Revenue</Subheading>
+					<Paragraph>£8,420</Paragraph>
+				</Card>
+				<Card status="warning">
+					<Subheading>Open issues</Subheading>
+					<Paragraph>7</Paragraph>
+				</Card>
+			</Grid>
+		</Panel>
+	);
+}
+
+function UsersPage() {
+	return (
+		<Panel plain>
+			<Row between>
+				<Title>Users</Title>
+				<Button solid color="primary" onClick={() => {}}>
+					Invite
+				</Button>
+			</Row>
+			<Table>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Plan</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{USERS.map(({ name, plan, status, label }) => (
+						<tr key={name}>
+							<td>{name}</td>
+							<td>{plan}</td>
+							<td>
+								<Tag status={status}>{label}</Tag>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</Table>
+		</Panel>
+	);
+}
+
+function SettingsPage() {
+	const [name, setName] = useState("Shelving");
+	return (
+		<Panel plain>
+			<Title>Settings</Title>
+			<Field title="Site name">
+				<TextInput name="name" value={name} onValue={setName} />
+			</Field>
+			<Button solid color="primary" onClick={() => {}}>
+				Save
+			</Button>
+		</Panel>
+	);
+}
+
+const PAGES = { Dashboard: <DashboardPage />, Users: <UsersPage />, Settings: <SettingsPage /> };
+
+function App() {
+	const [page, setPage] = useState<keyof typeof PAGES>("Dashboard");
+	const sidebar = (
+		<Panel plain>
+			<Subheading>Admin</Subheading>
+			<Menu>
+				{Object.keys(PAGES).map(key => (
+					<MenuItem key={key} selected={key === page} onClick={() => setPage(key as keyof typeof PAGES)}>
+						{key}
+					</MenuItem>
+				))}
+			</Menu>
+		</Panel>
+	);
+	return (
+		<SidebarLayout sidebar={sidebar}>
+			<Scroll vertical cover>
+				{PAGES[page]}
+			</Scroll>
+		</SidebarLayout>
+	);
+}
+
+<App />;
+```
+
+### With a router
 
 ```tsx
 import { Menu, MenuItem, PageLoader, RouteCache, Router, Scroll, SidebarLayout } from "shelving/ui";
@@ -32155,6 +32997,43 @@ A React error boundary that catches errors thrown anywhere in its subtree and re
 
 ## Usage
 
+### Try it
+
+The button throws an error when you tap it. `<Catcher>` shows the error in place of its children, and `<RetryButton>` renders them again.
+
+```tsx live "Catch an error"
+import { useState } from "react";
+import { Button, Card, Catcher, ErrorNotice, Paragraph, RetryButton } from "shelving/ui";
+
+function Risky() {
+	const [broken, setBroken] = useState(false);
+	if (broken) throw new Error("The feed could not load.");
+	return (
+		<Card>
+			<Paragraph>The feed loaded.</Paragraph>
+			<Button status="error" onClick={() => setBroken(true)}>
+				Break it
+			</Button>
+		</Card>
+	);
+}
+
+function FeedError({ reason }: { reason: unknown }) {
+	return (
+		<>
+			<ErrorNotice reason={reason} />
+			<RetryButton small />
+		</>
+	);
+}
+
+<Catcher as={FeedError}>
+	<Risky />
+</Catcher>;
+```
+
+### With an app
+
 ```tsx
 import { PageCatcher, Catcher, ErrorNotice } from "shelving/ui";
 
@@ -32526,11 +33405,22 @@ An animated SVG spinner shaped like a Heroicon — a faint full track plus a rot
 
 ## Usage
 
-```tsx
-import { Icon, LOADING, Loading } from "shelving/ui";
+```tsx live
+import { Icon, Loading, Row } from "shelving/ui";
 
-// Styled through <Icon>, like any other icon.
-<Icon icon={Loading} size="large" />
+// Styled through <Icon>, like any other icon. It follows the colour of its scope.
+<Row gap="normal" middle>
+	<Icon icon={Loading} size="small" />
+	<Icon icon={Loading} />
+	<Icon icon={Loading} size="large" status="success" />
+	<Icon icon={Loading} size="xxlarge" status="error" />
+</Row>;
+```
+
+### In a fallback
+
+```tsx
+import { Icon, LOADING } from "shelving/ui";
 
 // <Icon status="loading"> uses it for you.
 <Icon status="loading" />
@@ -32737,11 +33627,22 @@ Parses a markup string and renders the resulting React nodes inline. Defaults to
 
 ## Usage
 
-```tsx
-import { Prose, Markup } from "shelving/ui";
+```tsx live
+import { Markup, Prose } from "shelving/ui";
+
+const BODY = `## Release notes
+
+Buttons now have **wider** side padding, and two new looks:
+
+- \`square\` for an icon.
+- \`round\` for a circle.
+
+> Pull main to get the new buttons.
+
+Read the [docs](https://shelving.cc/ui/Button) for more.`;
 
 <Prose>
-	<Markup>{article.body}</Markup>
+	<Markup>{BODY}</Markup>
 </Prose>;
 ```
 
@@ -33114,6 +34015,22 @@ import { EMPTY_LOADING, Loader } from "shelving/ui";
 </Loader>;
 ```
 
+### Empty list with an action
+
+```tsx live
+import { Button, EMPTY_LOADING, Empty, Paragraph } from "shelving/ui";
+
+<Empty>
+	<Paragraph>No projects yet.</Paragraph>
+	<Button solid color="primary" onClick={() => {}}>
+		Start a project
+	</Button>
+</Empty>;
+
+// The loading state shows in the same place.
+EMPTY_LOADING;
+```
+
 ## Styling
 
 `<Empty>` has no own hooks. It is a `<Block>` with `center`, `tint="50"` and `space="xlarge"`, so it reads the `--tint-50` ladder step and `--space-xlarge`.
@@ -33244,16 +34161,41 @@ A block-level status callout with an icon and message, used to highlight feedbac
 
 ## Usage
 
+### Every status
+
 ```tsx live
 import { Notice } from "shelving/ui";
 
+<Notice status="info">Your trial ends in 3 days.</Notice>
 <Notice status="success">Your changes have been saved.</Notice>
+<Notice status="warning">Your card expires next month.</Notice>
+<Notice status="danger">This deletes the project for everyone.</Notice>
 <Notice status="error">Something went wrong.</Notice>
 <Notice status="loading" />
 ```
 
-```tsx
-import { LOADING_NOTICE } from "shelving/ui";
+### A custom icon, or no icon
+
+```tsx live
+import { AddIcon } from "shelving/icon/AddIcon";
+import { Notice } from "shelving/ui";
+
+<Notice status="info" icon={<AddIcon />}>Three new projects.</Notice>
+<Notice status="info" icon={false}>No icon.</Notice>
+```
+
+### A loading fallback
+
+```tsx live
+import { Suspense, use } from "react";
+import { LOADING_NOTICE, Notice } from "shelving/ui";
+
+// Loads for three seconds, then shows the notice.
+const MESSAGE = new Promise<string>(resolve => setTimeout(() => resolve("Loaded."), 3000));
+
+function SlowPanel() {
+	return <Notice status="success">{use(MESSAGE)}</Notice>;
+}
 
 <Suspense fallback={LOADING_NOTICE}>
 	<SlowPanel />
@@ -33386,6 +34328,29 @@ Renders the global list of active notices and subscribes to incoming `"notice"` 
 - With reduced motion, notices fade in and out in place, and the others move at once. A browser without view transitions shows the changes at once.
 
 ## Usage
+
+### Try it
+
+Each button shows a notice. A notice closes itself after a few seconds, or when you tap it.
+
+```tsx live "Notices"
+import { Button, NOTICES, Notices, notifyError, notifySuccess, Row } from "shelving/ui";
+
+async function upload() {
+	const notice = NOTICES.show(undefined, "loading");
+	await new Promise(resolve => setTimeout(resolve, 2000));
+	notice.show("Upload complete.", "success");
+}
+
+<Row gap="small" wrap>
+	<Button onClick={() => notifySuccess("Profile updated.")} status="success">Success</Button>
+	<Button onClick={() => notifyError("Could not connect.")} status="error">Error</Button>
+	<Button onClick={upload}>Upload</Button>
+</Row>
+<Notices />
+```
+
+### Mount it in your app
 
 Mount once near the root of your app:
 
@@ -35341,6 +36306,36 @@ The `color` variant prop moves the [tint ladder](/ui/TINT_CLASS) anchor to a nam
 
 `getColorClass({ color })` returns `getClass(TINT_CLASS, "<colour>")` — it moves `--tint-50` to the chosen colour and recomposes the ladder, so the whole subtree retints. See `TINT_CLASS` for how the ladder works.
 
+## Usage
+
+Each row is one `color=` value. The card, tag, button and progress bar in the row all take the same colour.
+
+```tsx live desktop "Every colour"
+import { Button, Card, Progress, Row, Subheading, Tag } from "shelving/ui";
+
+const COLORS = ["primary", "secondary", "tertiary", "red", "orange", "yellow", "green", "aqua", "blue", "purple", "pink", "gray"] as const;
+
+<>
+	{COLORS.map(color => (
+		<Card key={color} color={color} padding="small">
+			<Row between middle gap="small">
+				<Subheading space="none">{color}</Subheading>
+				<Row gap="small" middle>
+					<Tag color={color}>Tag</Tag>
+					<Progress color={color} value={60} />
+					<Button color={color} small onClick={() => {}}>
+						Button
+					</Button>
+					<Button color={color} small solid onClick={() => {}}>
+						Button
+					</Button>
+				</Row>
+			</Row>
+		</Card>
+	))}
+</>;
+```
+
 ## Theme variables
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app. Override a palette colour to re-aim every variant and status that maps to it.
@@ -36236,11 +37231,33 @@ A box that scrolls its content on one or both axes. Use it for a wide table on a
 
 ### A wide table
 
-```tsx
+```tsx live
 import { Scroll, Table } from "shelving/ui";
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Swipe the table left and right.
 <Scroll horizontal>
-	<Table>…</Table>
+	<Table>
+		<thead>
+			<tr>
+				<th>Team</th>
+				{MONTHS.map(month => (
+					<th key={month}>{month}</th>
+				))}
+			</tr>
+		</thead>
+		<tbody>
+			{["Red", "Blue", "Green"].map((team, t) => (
+				<tr key={team}>
+					<td>{team}</td>
+					{MONTHS.map((month, m) => (
+						<td key={month}>{(t + 1) * (m + 3)}</td>
+					))}
+				</tr>
+			))}
+		</tbody>
+	</Table>
 </Scroll>;
 ```
 
@@ -36248,18 +37265,25 @@ import { Scroll, Table } from "shelving/ui";
 
 A `<Row center>` is centred while it fits. When it is wider than the box, it starts at the left edge and scrolls, so no item is cut off. Use this for a bar of tabs.
 
-```tsx
+```tsx live
 import { Button, Row, Scroll } from "shelving/ui";
 
+const FEW = ["Posts", "Photos", "People"];
+const MANY = ["Posts", "Photos", "People", "Places", "Events", "Groups", "Pages", "Videos"];
+
+// Centred while it fits.
 <Scroll horizontal>
 	<Row center gap="xsmall">
-		{tabs.map(tab => (
-			<Button key={tab.key} small>
-				{tab.label}
-			</Button>
-		))}
+		{FEW.map((label, i) => <Button key={label} small selected={i === 0} onClick={() => {}}>{label}</Button>)}
 	</Row>
-</Scroll>;
+</Scroll>
+
+// Starts at the left edge and scrolls when it is wider.
+<Scroll horizontal>
+	<Row center gap="xsmall">
+		{MANY.map((label, i) => <Button key={label} small selected={i === 0} onClick={() => {}}>{label}</Button>)}
+	</Row>
+</Scroll>
 ```
 
 ### A scroll box for each page
@@ -36297,10 +37321,21 @@ Use this only on the first thing in the page. Other pages keep the empty space a
 
 ### A chat
 
-```tsx
-<Scroll vertical cover reverse>
-	<div>{messages}</div>
-</Scroll>;
+```tsx live
+import { Card, Paragraph, Scroll } from "shelving/ui";
+
+// The box starts at the newest message, at the bottom.
+<div style={{ position: "relative", height: "20rem" }}>
+	<Scroll vertical cover reverse>
+		<div>
+			{Array.from({ length: 20 }, (_, i) => (
+				<Card key={i} padding="small" color={i % 2 ? "primary" : undefined}>
+					<Paragraph>Message {i + 1}</Paragraph>
+				</Card>
+			))}
+		</div>
+	</Scroll>
+</div>;
 ```
 
 ## Styling
@@ -36826,6 +37861,52 @@ Components paint from the ladder by convention:
 | `--tint-contrast` | Text on `--tint-50` backgrounds when the anchor can be light or dark                                       |
 
 Pairings follow contrast: long text reads at `00`-on-`90` or `00`-on-`100`; short labels read at `100`-on-`50`, or at `contrast`-on-`50` when the anchor can be light.
+
+## See the ladder
+
+Each row is the ladder for one colour, from `--tint-00` (black) to `--tint-100` (white). The middle step is the colour itself.
+
+```tsx live desktop "The tint ladder"
+import { Block, Row, Small } from "shelving/ui";
+
+const COLORS = [undefined, "primary", "red", "orange", "yellow", "green", "aqua", "blue", "purple", "pink"] as const;
+const STEPS = [
+	"00",
+	"05",
+	"10",
+	"15",
+	"20",
+	"25",
+	"30",
+	"35",
+	"40",
+	"45",
+	"50",
+	"55",
+	"60",
+	"65",
+	"70",
+	"75",
+	"80",
+	"85",
+	"90",
+	"95",
+	"100",
+];
+
+<>
+	{COLORS.map(color => (
+		<Block key={color ?? "gray"} color={color} space="xsmall">
+			<Row gap="none">
+				{STEPS.map(step => (
+					<div key={step} style={{ flex: 1, height: "2.5rem", background: `var(--tint-${step})` }} />
+				))}
+			</Row>
+			<Small>{color ?? "gray (default)"}</Small>
+		</Block>
+	))}
+</>;
+```
 
 ## Theming
 

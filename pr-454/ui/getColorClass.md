@@ -13,6 +13,36 @@ The `color` variant prop moves the [tint ladder](/ui/TINT_CLASS) anchor to a nam
 
 `getColorClass({ color })` returns `getClass(TINT_CLASS, "<colour>")` — it moves `--tint-50` to the chosen colour and recomposes the ladder, so the whole subtree retints. See `TINT_CLASS` for how the ladder works.
 
+## Usage
+
+Each row is one `color=` value. The card, tag, button and progress bar in the row all take the same colour.
+
+```tsx live desktop "Every colour"
+import { Button, Card, Progress, Row, Subheading, Tag } from "shelving/ui";
+
+const COLORS = ["primary", "secondary", "tertiary", "red", "orange", "yellow", "green", "aqua", "blue", "purple", "pink", "gray"] as const;
+
+<>
+	{COLORS.map(color => (
+		<Card key={color} color={color} padding="small">
+			<Row between middle gap="small">
+				<Subheading space="none">{color}</Subheading>
+				<Row gap="small" middle>
+					<Tag color={color}>Tag</Tag>
+					<Progress color={color} value={60} />
+					<Button color={color} small onClick={() => {}}>
+						Button
+					</Button>
+					<Button color={color} small solid onClick={() => {}}>
+						Button
+					</Button>
+				</Row>
+			</Row>
+		</Card>
+	))}
+</>;
+```
+
 ## Theme variables
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app. Override a palette colour to re-aim every variant and status that maps to it.

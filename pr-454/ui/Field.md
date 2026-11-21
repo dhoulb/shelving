@@ -25,6 +25,38 @@ import { Field, TextInput } from "shelving/ui";
 </Field>;
 ```
 
+### Try it
+
+```tsx live "Fields"
+import { useState } from "react";
+import { Field, TextInput } from "shelving/ui";
+
+function NameFields() {
+	const [first, setFirst] = useState("");
+	const [last, setLast] = useState("");
+	const [email, setEmail] = useState("alice@");
+	return (
+		<>
+			<Field title="First name" half>
+				<TextInput name="first" value={first} onValue={setFirst} />
+			</Field>
+			<Field title="Last name" half>
+				<TextInput name="last" value={last} onValue={setLast} />
+			</Field>
+			<Field
+				title="Email address"
+				description="We never share it."
+				message={email.includes(".") ? undefined : "Enter a valid email address"}
+			>
+				<TextInput name="email" value={email} onValue={setEmail} />
+			</Field>
+		</>
+	);
+}
+
+<NameFields />;
+```
+
 ### Two-up layout
 
 ```tsx

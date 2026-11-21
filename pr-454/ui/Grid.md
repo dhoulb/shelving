@@ -39,24 +39,49 @@ import { Card, Grid, Paragraph } from "shelving/ui";
 
 ### A list of tiles
 
-```tsx
-import { Grid } from "shelving/ui";
+```tsx live
+import { Card, Grid, Subheading, Tag } from "shelving/ui";
 
-<Grid as="ul" columns={3} gap="normal">
-	{badges.map(badge => (
-		<li key={badge.id}>{badge.name}</li>
+const BADGES = [
+	{ name: "First run", color: "red" },
+	{ name: "10 km", color: "orange" },
+	{ name: "Early bird", color: "yellow" },
+	{ name: "Streak", color: "green" },
+	{ name: "Hills", color: "blue" },
+	{ name: "Night owl", color: "purple" },
+] as const;
+
+<Grid as="ul" columns={3} gap="small">
+	{BADGES.map(({ name, color }) => (
+		<li key={name}>
+			<Card color={color} padding="small">
+				<Subheading space="none">{name}</Subheading>
+				<Tag color={color}>Badge</Tag>
+			</Card>
+		</li>
 	))}
 </Grid>;
 ```
 
-### Days of the week
+### A calendar
 
-```tsx
-import { Grid } from "shelving/ui";
+```tsx live
+import { Card, Grid, Small } from "shelving/ui";
+
+const DAYS = ["M", "T", "W", "T", "F", "S", "S"];
 
 <Grid as="ol" columns={7} gap="xsmall">
-	{days.map(day => (
-		<li key={day.date}>{day.label}</li>
+	{DAYS.map((day, i) => (
+		<li key={`day-${i}`}>
+			<Small>{day}</Small>
+		</li>
+	))}
+	{Array.from({ length: 28 }, (_, i) => (
+		<li key={i}>
+			<Card space="none" padding="xsmall" indent="xsmall" color={i % 7 > 4 ? "gray" : "primary"}>
+				{i + 1}
+			</Card>
+		</li>
 	))}
 </Grid>;
 ```

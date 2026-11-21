@@ -18,16 +18,41 @@ A block-level status callout with an icon and message, used to highlight feedbac
 
 ## Usage
 
+### Every status
+
 ```tsx live
 import { Notice } from "shelving/ui";
 
+<Notice status="info">Your trial ends in 3 days.</Notice>
 <Notice status="success">Your changes have been saved.</Notice>
+<Notice status="warning">Your card expires next month.</Notice>
+<Notice status="danger">This deletes the project for everyone.</Notice>
 <Notice status="error">Something went wrong.</Notice>
 <Notice status="loading" />
 ```
 
-```tsx
-import { LOADING_NOTICE } from "shelving/ui";
+### A custom icon, or no icon
+
+```tsx live
+import { AddIcon } from "shelving/icon/AddIcon";
+import { Notice } from "shelving/ui";
+
+<Notice status="info" icon={<AddIcon />}>Three new projects.</Notice>
+<Notice status="info" icon={false}>No icon.</Notice>
+```
+
+### A loading fallback
+
+```tsx live
+import { Suspense, use } from "react";
+import { LOADING_NOTICE, Notice } from "shelving/ui";
+
+// Loads for three seconds, then shows the notice.
+const MESSAGE = new Promise<string>(resolve => setTimeout(() => resolve("Loaded."), 3000));
+
+function SlowPanel() {
+	return <Notice status="success">{use(MESSAGE)}</Notice>;
+}
 
 <Suspense fallback={LOADING_NOTICE}>
 	<SlowPanel />

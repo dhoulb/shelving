@@ -48,6 +48,52 @@ Components paint from the ladder by convention:
 
 Pairings follow contrast: long text reads at `00`-on-`90` or `00`-on-`100`; short labels read at `100`-on-`50`, or at `contrast`-on-`50` when the anchor can be light.
 
+## See the ladder
+
+Each row is the ladder for one colour, from `--tint-00` (black) to `--tint-100` (white). The middle step is the colour itself.
+
+```tsx live desktop "The tint ladder"
+import { Block, Row, Small } from "shelving/ui";
+
+const COLORS = [undefined, "primary", "red", "orange", "yellow", "green", "aqua", "blue", "purple", "pink"] as const;
+const STEPS = [
+	"00",
+	"05",
+	"10",
+	"15",
+	"20",
+	"25",
+	"30",
+	"35",
+	"40",
+	"45",
+	"50",
+	"55",
+	"60",
+	"65",
+	"70",
+	"75",
+	"80",
+	"85",
+	"90",
+	"95",
+	"100",
+];
+
+<>
+	{COLORS.map(color => (
+		<Block key={color ?? "gray"} color={color} space="xsmall">
+			<Row gap="none">
+				{STEPS.map(step => (
+					<div key={step} style={{ flex: 1, height: "2.5rem", background: `var(--tint-${step})` }} />
+				))}
+			</Row>
+			<Small>{color ?? "gray (default)"}</Small>
+		</Block>
+	))}
+</>;
+```
+
 ## Theming
 
 A theme is a CSS file of custom-property overrides at `:root`, imported after the base styles. Work from broadest to narrowest:
