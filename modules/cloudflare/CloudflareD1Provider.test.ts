@@ -1,5 +1,6 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { CloudflareD1Provider, type D1Database, type D1PreparedStatement, type D1Value } from "shelving/cloudflare";
+import { testDBDifferential, testDBProvider } from "../test/index.js";
 
 type D1Call = {
 	readonly query: string;
@@ -35,4 +36,22 @@ function _getMockD1(): { readonly calls: D1Call[]; readonly db: D1Database } {
 		},
 	};
 	return { calls, db };
+}
+
+// Run the universal DBProvider contract suite and the differential test against a real D1 database.
+// Miniflare runs `workerd`, the runtime Cloudflare runs in production, with its D1 engine on a local SQLite file.
+// Run via: bun run cloudflare — it sets MINIFLARE, because the differential takes about 10 seconds.
+if (process.env.MINIFLARE) {
+	const { Miniflare } = await import("miniflare");
+	const miniflare = new Miniflare({ modules: true, script: "export default { fetch: () => new Response(null) }", d1Databases: ["DB"] });
+	afterAll(() => miniflare.dispose());
+	const db = (await miniflare.getD1Database("DB")) as unknown as D1Database; // `as` needed: Miniflare returns its own D1 type.
+	await db.exec?.(
+		`CREATE TABLE "basics" ("id" TEXT PRIMARY KEY, "str" TEXT, "num" REAL, "group" TEXT, "tags" TEXT, "odd" BOOLEAN, "even" BOOLEAN, "sub" TEXT)`,
+	);
+	await db.exec?.(`CREATE TABLE "people" ("id" TEXT PRIMARY KEY, "name" TEXT, "birthday" TEXT)`);
+	const provider = new CloudflareD1Provider<string>(db);
+
+	testDBProvider("CloudflareD1Provider", () => provider, { realtime: false });
+	testDBDifferential("CloudflareD1Provider", () => provider);
 }

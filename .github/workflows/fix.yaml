@@ -1,5 +1,5 @@
 # Run `bun run fix` on any push or pull request — if changes were made and the tests pass, commit the changes back.
-# Also runs both backend service suites as parallel jobs, so every PR proves the Firebase and PostgreSQL providers.
+# Also runs the three backend service suites as parallel jobs, so every PR proves the Firebase, PostgreSQL and Cloudflare D1 providers.
 # On `main`, a successful run starts the `Release` workflow (see `release.yaml`), so these checks run once per push, not twice.
 name: Fix
 on:
@@ -96,3 +96,20 @@ jobs:
         run: bun install
       - name: postgres
         run: bun run postgres
+  cloudflare:
+    name: Cloudflare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+      # Pin the Bun version to the `engines.bun` range in `package.json`, so CI, the
+      # release build and local development all agree on one floor.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: install
+        run: bun install
+      # Miniflare (a dev dependency) runs the real D1 engine in `workerd`, so this job needs no other setup.
+      - name: cloudflare
+        run: bun run cloudflare

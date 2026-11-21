@@ -4,6 +4,12 @@ The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends
 
 It is abstract — a concrete subclass implements `exec()` against a specific SQLite driver.
 
+## Things to know
+
+- SQLite has no boolean or JSON column types. `SQLiteProvider.getItem()` and `SQLiteProvider.getQuery()` use the collection's schema to turn `0` / `1` back into booleans, and JSON text back into arrays and objects (for `ArraySchema`, `DataSchema` and `DictionarySchema` props).
+- Nested keys use bound JSON paths like `'$."sub"."num"'`. A nested `set` binds its value as JSON, so a boolean stays a JSON boolean inside the column.
+- `with` updates keep the order of the array and add new items at the end. `omit` updates keep the order of the items that stay.
+
 ## Usage
 
 ```ts

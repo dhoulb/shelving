@@ -46,6 +46,10 @@ D1 is Cloudflare's edge SQLite database. It supports collection queries with fil
 
 `CloudflareD1Provider` extends the shared `SQLiteProvider`, so it inherits standard SQL-based CRUD and query behaviour. There is no realtime support — `DBProvider.getItemSequence()` and `DBProvider.getQuerySequence()` throw `UnsupportedError`.
 
+SQLite has no boolean or JSON column types, so D1 returns `1` for `true` and JSON text for an array or object. The provider uses the collection's schema to turn these back into booleans, arrays and objects when it reads.
+
+`bun run cloudflare` tests the provider against a real D1 database. It uses [Miniflare](https://developers.cloudflare.com/workers/testing/miniflare/), which runs `workerd`, the same runtime that Cloudflare uses in production.
+
 Tables must exist before the provider can read or write. Use `SQLiteMigrator` from `shelving/db` to create and migrate tables from your collection definitions.
 
 ```wrangler.toml
