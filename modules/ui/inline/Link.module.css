@@ -3,16 +3,29 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--link-weight: var(--weight-strong);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--link-color: var(--color-link);
+	}
+}
+
 @layer components {
 	.link,
 	.prose a {
 		/* Style */
-		color: var(--link-color, var(--color-link));
+		color: var(--link-color);
 		text-decoration: none;
 		cursor: inherit;
 
 		/* Text */
-		font-weight: var(--link-weight, var(--weight-strong));
+		font-weight: var(--link-weight);
 
 		&:any-link {
 			cursor: pointer;

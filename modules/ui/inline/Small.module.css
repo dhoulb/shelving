@@ -1,11 +1,21 @@
 @import url("../style/layers.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--small-color: var(--tint-70);
+	}
+}
+
 @layer components {
 	.small,
 	.prose small {
 		font-weight: inherit;
 		font-size: inherit;
-		color: var(--small-color, var(--tint-70));
+		color: var(--small-color);
 	}
 }

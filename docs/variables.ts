@@ -4,8 +4,9 @@
  * It reads every `.module.css` file under `modules/ui/`:
  * - A `style/` token module (`Color.module.css`, …) gives one "tokens" group with each variable it declares, and
  *   the value it declares. A comment after the declaration is the description.
- * - A component module (`Card.module.css`) gives one group with each `--card-*` variable it reads, and the fallback
- *   value in its `var()`. The description comes from the Styling table in the sibling `.md` page (`Card.md`).
+ * - A component module (`Card.module.css`) gives one group with each `--card-*` variable it declares in its root
+ *   blocks, and the value it declares. A module that is not yet moved to root declarations gives the fallback value in
+ *   its `var()` instead. The description comes from the Styling table in the sibling `.md` page (`Card.md`).
  */
 
 import { basename, dirname, join } from "node:path";
@@ -70,9 +71,13 @@ export async function buildVariables(uiDir: AbsolutePath): Promise<PlaygroundVar
 			}
 			if (variables.size) tokens.push({ name, tokens: true, variables: Array.from(variables.values()) });
 		} else {
-			// Component module: each variable it owns, with its first fallback as its default.
+			// Component module: each variable it owns, with its root declaration (or else its first fallback) as its default.
 			const prefix = _getPrefix(name);
 			const descriptions = await _readDescriptions(join(uiDir, dirname(file), `${name}.md`));
+			for (const [, varName = "", value = ""] of css.matchAll(/^\s*(--[\w-]+)\s*:\s*([^;]+);/gm)) {
+				if (varName.startsWith(prefix) && !variables.has(varName))
+					variables.set(varName, { name: varName, value: value.trim(), description: descriptions.get(varName) });
+			}
 			for (const [varName, value] of _readFallbacks(css)) {
 				if (varName.startsWith(prefix) && !variables.has(varName))
 					variables.set(varName, { name: varName, value, description: descriptions.get(varName) });

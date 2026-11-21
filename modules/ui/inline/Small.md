@@ -23,6 +23,8 @@ import { Paragraph, Small } from "shelving/ui";
 
 `Small` mutes its text colour to a lighter tint step and inherits size and weight from its surroundings.
 
+Override these hooks at `:root`. The tint hooks (`--small-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable        | Styles      | Default          |
 | --------------- | ----------- | ---------------- |
 | `--small-color` | Text colour | `var(--tint-70)` |
