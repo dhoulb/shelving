@@ -32,7 +32,21 @@ Each row is a colour and each column is a look. Square and round buttons hold on
 import { AddIcon } from "shelving/icon/AddIcon";
 import { Button, Table } from "shelving/ui";
 
-const COLORS = [undefined, "primary", "secondary", "tertiary", "red", "orange", "yellow", "green", "aqua", "blue", "purple", "pink", "gray"] as const;
+const COLORS = [
+	undefined,
+	"primary",
+	"secondary",
+	"tertiary",
+	"red",
+	"orange",
+	"yellow",
+	"green",
+	"aqua",
+	"blue",
+	"purple",
+	"pink",
+	"gray",
+] as const;
 const click = () => {};
 
 <Table padding="xsmall">
@@ -51,12 +65,36 @@ const click = () => {};
 		{COLORS.map(color => (
 			<tr key={color ?? "none"}>
 				<td>{color ?? "None"}</td>
-				<td><Button color={color} space="none" onClick={click}>Save</Button></td>
-				<td><Button color={color} space="none" onClick={click} solid>Save</Button></td>
-				<td><Button color={color} space="none" onClick={click} outline>Save</Button></td>
-				<td><Button color={color} space="none" onClick={click} plain>Save</Button></td>
-				<td><Button color={color} space="none" onClick={click} square title="Add"><AddIcon /></Button></td>
-				<td><Button color={color} space="none" onClick={click} round solid title="Add"><AddIcon /></Button></td>
+				<td>
+					<Button color={color} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} square title="Add">
+						<AddIcon />
+					</Button>
+				</td>
+				<td>
+					<Button color={color} space="none" onClick={click} round solid title="Add">
+						<AddIcon />
+					</Button>
+				</td>
 			</tr>
 		))}
 	</tbody>
@@ -86,10 +124,26 @@ const click = () => {};
 		{STATUSES.map(status => (
 			<tr key={status}>
 				<td>{status}</td>
-				<td><Button status={status} space="none" onClick={click}>Save</Button></td>
-				<td><Button status={status} space="none" onClick={click} solid>Save</Button></td>
-				<td><Button status={status} space="none" onClick={click} outline>Save</Button></td>
-				<td><Button status={status} space="none" onClick={click} plain>Save</Button></td>
+				<td>
+					<Button status={status} space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} solid>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} outline>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button status={status} space="none" onClick={click} plain>
+						Save
+					</Button>
+				</td>
 			</tr>
 		))}
 	</tbody>
@@ -103,12 +157,7 @@ Each row is a look and each column is a state or size.
 ```tsx live desktop "Every look in every state"
 import { Button, Table } from "shelving/ui";
 
-const LOOKS = [
-	{ name: "Default" },
-	{ name: "Solid", solid: true },
-	{ name: "Outline", outline: true },
-	{ name: "Plain", plain: true },
-];
+const LOOKS = [{ name: "Default" }, { name: "Solid", solid: true }, { name: "Outline", outline: true }, { name: "Plain", plain: true }];
 const click = () => {};
 
 <Table padding="xsmall">
@@ -126,11 +175,31 @@ const click = () => {};
 		{LOOKS.map(({ name, ...look }) => (
 			<tr key={name}>
 				<td>{name}</td>
-				<td><Button {...look} color="primary" space="none" onClick={click}>Save</Button></td>
-				<td><Button {...look} color="primary" space="none" onClick={click} small>Save</Button></td>
-				<td><Button {...look} color="primary" space="none" onClick={click} selected>Save</Button></td>
-				<td><Button {...look} color="primary" space="none" onClick={click} selected={false}>Save</Button></td>
-				<td><Button {...look} color="primary" space="none" disabled>Save</Button></td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} small>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" onClick={click} selected={false}>
+						Save
+					</Button>
+				</td>
+				<td>
+					<Button {...look} color="primary" space="none" disabled>
+						Save
+					</Button>
+				</td>
 			</tr>
 		))}
 	</tbody>
@@ -146,31 +215,59 @@ import { AddIcon } from "shelving/icon/AddIcon";
 import { CloseIcon } from "shelving/icon/CloseIcon";
 import { MenuIcon } from "shelving/icon/MenuIcon";
 import { RightIcon } from "shelving/icon/RightIcon";
-import { Button, Row } from "shelving/ui";
+import { Button, Column, Row } from "shelving/ui";
 
 const click = () => {};
 
-<Row gap="small" wrap>
-	<Button onClick={click} solid color="primary"><AddIcon /> Add item</Button>
-	<Button onClick={click}>Next <RightIcon /></Button>
-</Row>
-<Row gap="small" wrap>
-	<Button onClick={click} square title="Menu"><MenuIcon /></Button>
-	<Button onClick={click} square solid color="primary" title="Add"><AddIcon /></Button>
-	<Button onClick={click} square outline title="Next"><RightIcon /></Button>
-	<Button onClick={click} square plain title="Close"><CloseIcon /></Button>
-</Row>
-<Row gap="small" wrap>
-	<Button onClick={click} round title="Menu"><MenuIcon /></Button>
-	<Button onClick={click} round solid color="primary" title="Add"><AddIcon /></Button>
-	<Button onClick={click} round outline title="Next"><RightIcon /></Button>
-	<Button onClick={click} round plain title="Close"><CloseIcon /></Button>
-</Row>
-<Row gap="small" wrap>
-	<Button onClick={click} small square title="Add"><AddIcon /></Button>
-	<Button onClick={click} small round solid color="primary" title="Add"><AddIcon /></Button>
-	<Button onClick={click} small><AddIcon /> Add</Button>
-</Row>
+<Column gap="small">
+	<Row gap="small" wrap>
+		<Button onClick={click} solid color="primary">
+			<AddIcon /> Add item
+		</Button>
+		<Button onClick={click}>
+			Next <RightIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} square title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} square solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} square outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} square plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} round title="Menu">
+			<MenuIcon />
+		</Button>
+		<Button onClick={click} round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} round outline title="Next">
+			<RightIcon />
+		</Button>
+		<Button onClick={click} round plain title="Close">
+			<CloseIcon />
+		</Button>
+	</Row>
+	<Row gap="small" wrap>
+		<Button onClick={click} small square title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small round solid color="primary" title="Add">
+			<AddIcon />
+		</Button>
+		<Button onClick={click} small>
+			<AddIcon /> Add
+		</Button>
+	</Row>
+</Column>;
 ```
 
 ### Actions and links
@@ -194,22 +291,6 @@ import { Button } from "shelving/ui";
 // No outer margin: it sits flush with the content around it.
 <Button full space="none" onClick={() => {}}>
 	Start
-</Button>;
-```
-
-### Square buttons
-
-```tsx
-import { Button } from "shelving/ui";
-
-// As wide as it is tall: for an icon or one character.
-<Button square plain onClick={close} title="Close">
-	×
-</Button>;
-
-// A circle: square, with fully round corners.
-<Button round solid color="primary" onClick={add} title="Add">
-	+
 </Button>;
 ```
 

@@ -15,11 +15,33 @@ A box that scrolls its content on one or both axes. Use it for a wide table on a
 
 ### A wide table
 
-```tsx
+```tsx live
 import { Scroll, Table } from "shelving/ui";
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Swipe the table left and right.
 <Scroll horizontal>
-	<Table>…</Table>
+	<Table>
+		<thead>
+			<tr>
+				<th>Team</th>
+				{MONTHS.map(month => (
+					<th key={month}>{month}</th>
+				))}
+			</tr>
+		</thead>
+		<tbody>
+			{["Red", "Blue", "Green"].map((team, t) => (
+				<tr key={team}>
+					<td>{team}</td>
+					{MONTHS.map((month, m) => (
+						<td key={month}>{(t + 1) * (m + 3)}</td>
+					))}
+				</tr>
+			))}
+		</tbody>
+	</Table>
 </Scroll>;
 ```
 
@@ -27,18 +49,25 @@ import { Scroll, Table } from "shelving/ui";
 
 A `<Row center>` is centred while it fits. When it is wider than the box, it starts at the left edge and scrolls, so no item is cut off. Use this for a bar of tabs.
 
-```tsx
+```tsx live
 import { Button, Row, Scroll } from "shelving/ui";
 
+const FEW = ["Posts", "Photos", "People"];
+const MANY = ["Posts", "Photos", "People", "Places", "Events", "Groups", "Pages", "Videos"];
+
+// Centred while it fits.
 <Scroll horizontal>
 	<Row center gap="xsmall">
-		{tabs.map(tab => (
-			<Button key={tab.key} small>
-				{tab.label}
-			</Button>
-		))}
+		{FEW.map((label, i) => <Button key={label} small selected={i === 0} onClick={() => {}}>{label}</Button>)}
 	</Row>
-</Scroll>;
+</Scroll>
+
+// Starts at the left edge and scrolls when it is wider.
+<Scroll horizontal>
+	<Row center gap="xsmall">
+		{MANY.map((label, i) => <Button key={label} small selected={i === 0} onClick={() => {}}>{label}</Button>)}
+	</Row>
+</Scroll>
 ```
 
 ### A scroll box for each page
@@ -76,10 +105,21 @@ Use this only on the first thing in the page. Other pages keep the empty space a
 
 ### A chat
 
-```tsx
-<Scroll vertical cover reverse>
-	<div>{messages}</div>
-</Scroll>;
+```tsx live
+import { Card, Paragraph, Scroll } from "shelving/ui";
+
+// The box starts at the newest message, at the bottom.
+<div style={{ position: "relative", height: "20rem" }}>
+	<Scroll vertical cover reverse>
+		<div>
+			{Array.from({ length: 20 }, (_, i) => (
+				<Card key={i} padding="small" color={i % 2 ? "primary" : undefined}>
+					<Paragraph>Message {i + 1}</Paragraph>
+				</Card>
+			))}
+		</div>
+	</Scroll>
+</div>;
 ```
 
 ## Styling

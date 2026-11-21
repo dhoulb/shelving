@@ -69,17 +69,22 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 ### Padding, indent, and radius
 
-```tsx
+```tsx live
+import { Modal, Paragraph } from "shelving/ui";
+
+// A modal shows on the page when it is not in a dialog, so you can see its box.
 <Modal padding="large" indent="large" radius="large">
-	<p>More space on all sides, and rounder corners.</p>
+	<Paragraph>More space on all sides, and rounder corners.</Paragraph>
 </Modal>;
 ```
 
 ### Shadow
 
-```tsx
+```tsx live
+import { Modal, Paragraph } from "shelving/ui";
+
 <Modal shadow="small">
-	<p>Sits closer to the page.</p>
+	<Paragraph>Sits closer to the page.</Paragraph>
 </Modal>;
 ```
 
@@ -108,6 +113,58 @@ function MenuButton() {
 ```
 
 A link click inside a `<Dialog>` closes it, so the menu slides out as the page changes. Use `<Modal bottom>` for a bottom sheet on mobile.
+
+### Try each edge
+
+Swipe a pinned panel toward its edge to close it.
+
+```tsx live "A modal on each edge"
+import { Button, Dialogs, DialogsContext, Menu, MenuItem, Modal, Paragraph, requireDialogs, Row, Subheading } from "shelving/ui";
+
+const EDGES = ["top", "right", "bottom", "left"] as const;
+
+function EdgeButtons() {
+	const dialogs = requireDialogs();
+	return (
+		<Row gap="small" wrap>
+			<Button
+				onClick={() =>
+					dialogs.show(
+						<Modal>
+							<Subheading>Centred</Subheading>
+							<Paragraph>Tap outside the panel to close it.</Paragraph>
+						</Modal>,
+					)
+				}
+			>
+				Centre
+			</Button>
+			{EDGES.map(edge => (
+				<Button
+					key={edge}
+					onClick={() =>
+						dialogs.show(
+							<Modal {...{ [edge]: true }}>
+								<Menu>
+									<MenuItem onClick={() => {}}>Home</MenuItem>
+									<MenuItem onClick={() => {}}>Settings</MenuItem>
+								</Menu>
+							</Modal>,
+						)
+					}
+				>
+					{edge}
+				</Button>
+			))}
+		</Row>
+	);
+}
+
+<DialogsContext>
+	<EdgeButtons />
+	<Dialogs />
+</DialogsContext>;
+```
 
 ## Styling
 

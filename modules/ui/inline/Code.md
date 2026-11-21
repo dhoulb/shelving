@@ -1,30 +1,36 @@
 # Code
 
-An inline code span — renders a `<code>` element with monospace type and a subtle tinted background. `Code.tsx` exports four siblings that share the same monospace styling but carry different HTML semantics:
-
-| Component  | HTML element | Use for                         |
-| ---------- | ------------ | ------------------------------- |
-| `Code`     | `<code>`     | Inline code fragments           |
-| `Keyboard` | `<kbd>`      | Keyboard input, e.g. `Ctrl+S`   |
-| `Sample`   | `<samp>`     | Program output                  |
-| `Variable` | `<var>`      | Variable names in documentation |
+An inline code span — renders a `<code>` element with monospace type and a subtle tinted background.
 
 **Things to know:**
 
-- Pick the sibling whose semantics match — they all look the same but mean different things to assistive tech and search.
 - Pass `plain` to drop the default background and inline padding (useful when the code already sits inside a tinted container).
 - Painted from the [tint ladder](/ui/TINT_CLASS): the background defaults to `--tint-90` and the text to `--tint-00`, so it re-tints with its surrounding scope (override per-instance with `--code-background` / `--code-color`).
 - Inside `<Prose>` raw `<code>` / `<kbd>` / `<samp>` / `<var>` pick up the same styling, and code inside a `<pre>` drops the inline box automatically.
 
 ## Usage
 
-### Inline code and keyboard input
+### Inline code in a paragraph
 
-```tsx
-import { Code, Keyboard, Sample } from "shelving/ui";
+```tsx live
+import { Code, Paragraph } from "shelving/ui";
 
-<p>Run <Code>npm install</Code>, then press <Keyboard>Enter</Keyboard>.</p>
-<p>It prints <Sample>Done.</Sample></p>
+<Paragraph>
+	Run <Code>bun install</Code>, then <Code>bun run test</Code>.
+</Paragraph>;
+```
+
+### Code in a coloured scope
+
+```tsx live
+import { Card, Code, Paragraph } from "shelving/ui";
+
+// The background and text follow the tint of the card.
+<Card color="purple">
+	<Paragraph>
+		Set <Code>color="purple"</Code> on the card.
+	</Paragraph>
+</Card>;
 ```
 
 ### Plain (no background)

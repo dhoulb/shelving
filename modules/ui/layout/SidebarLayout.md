@@ -23,7 +23,24 @@ The example shows in a wide window, so the sidebar is in a column. Open it in th
 
 ```tsx live desktop "An app with a sidebar"
 import { useState } from "react";
-import { Button, Card, Field, Grid, Menu, MenuItem, Panel, Paragraph, Row, Scroll, SidebarLayout, Subheading, Table, Tag, TextInput, Title } from "shelving/ui";
+import {
+	Button,
+	Card,
+	Field,
+	Grid,
+	Menu,
+	MenuItem,
+	Panel,
+	Paragraph,
+	Row,
+	Scroll,
+	SidebarLayout,
+	Subheading,
+	Table,
+	Tag,
+	TextInput,
+	Title,
+} from "shelving/ui";
 
 const USERS = [
 	{ name: "Alice", plan: "Pro", status: "success", label: "Active" },
@@ -36,9 +53,18 @@ function DashboardPage() {
 		<Panel plain>
 			<Title>Dashboard</Title>
 			<Grid columns={3} gap="small">
-				<Card><Subheading>Users</Subheading><Paragraph>1,204</Paragraph></Card>
-				<Card><Subheading>Revenue</Subheading><Paragraph>£8,420</Paragraph></Card>
-				<Card status="warning"><Subheading>Open issues</Subheading><Paragraph>7</Paragraph></Card>
+				<Card>
+					<Subheading>Users</Subheading>
+					<Paragraph>1,204</Paragraph>
+				</Card>
+				<Card>
+					<Subheading>Revenue</Subheading>
+					<Paragraph>£8,420</Paragraph>
+				</Card>
+				<Card status="warning">
+					<Subheading>Open issues</Subheading>
+					<Paragraph>7</Paragraph>
+				</Card>
 			</Grid>
 		</Panel>
 	);
@@ -49,13 +75,27 @@ function UsersPage() {
 		<Panel plain>
 			<Row between>
 				<Title>Users</Title>
-				<Button solid color="primary" onClick={() => {}}>Invite</Button>
+				<Button solid color="primary" onClick={() => {}}>
+					Invite
+				</Button>
 			</Row>
 			<Table>
-				<thead><tr><th>Name</th><th>Plan</th><th>Status</th></tr></thead>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Plan</th>
+						<th>Status</th>
+					</tr>
+				</thead>
 				<tbody>
 					{USERS.map(({ name, plan, status, label }) => (
-						<tr key={name}><td>{name}</td><td>{plan}</td><td><Tag status={status}>{label}</Tag></td></tr>
+						<tr key={name}>
+							<td>{name}</td>
+							<td>{plan}</td>
+							<td>
+								<Tag status={status}>{label}</Tag>
+							</td>
+						</tr>
 					))}
 				</tbody>
 			</Table>
@@ -71,7 +111,9 @@ function SettingsPage() {
 			<Field title="Site name">
 				<TextInput name="name" value={name} onValue={setName} />
 			</Field>
-			<Button solid color="primary" onClick={() => {}}>Save</Button>
+			<Button solid color="primary" onClick={() => {}}>
+				Save
+			</Button>
 		</Panel>
 	);
 }
@@ -94,7 +136,9 @@ function App() {
 	);
 	return (
 		<SidebarLayout sidebar={sidebar}>
-			<Scroll vertical cover>{PAGES[page]}</Scroll>
+			<Scroll vertical cover>
+				{PAGES[page]}
+			</Scroll>
 		</SidebarLayout>
 	);
 }
