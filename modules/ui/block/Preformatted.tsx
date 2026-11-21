@@ -21,7 +21,6 @@ export interface PreformattedProps extends SpaceVariants, BlockVariants, Optiona
  * - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
  *
  * @kind component
- * @example <Preformatted>{"line one\nline two"}</Preformatted>
  * @see https://shelving.cc/ui/Preformatted
  */
 export function Preformatted({ children, className, ...variants }: PreformattedProps): ReactElement {

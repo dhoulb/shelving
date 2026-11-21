@@ -19,7 +19,6 @@ export interface LabelProps extends HeadingProps {}
  * - Default text properties for all of these can be controlled with global variables: `--size-label`, `--font-label`, `--case-label`.
  *
  * @kind component
- * @example <Label>Email address</Label>
  * @see https://shelving.cc/ui/Label
  */
 export function Label({ level = "3", children, className, ...props }: LabelProps): ReactElement {

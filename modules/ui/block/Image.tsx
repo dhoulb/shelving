@@ -25,7 +25,6 @@ export interface ImageProps extends SpaceVariants, WidthVariants, ClassProps {
  * - The load state is the `data-loaded` attribute (none, `fade`, then `done`), set on the element directly, so a load never re-renders.
  *
  * @kind component
- * @example <Image src="/logo.png" alt="Logo" width="narrow" />
  * @see https://shelving.cc/ui/Image
  */
 export function Image({ src, alt, className, ...props }: ImageProps): ReactElement {
