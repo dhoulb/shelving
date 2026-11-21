@@ -9,6 +9,7 @@ import type { AnyCaller } from "./function.js";
 import type { Identifier, Item, Items } from "./item.js";
 import { limitItems } from "./iterate.js";
 import { getProps } from "./object.js";
+import { serialise } from "./serialise.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 import type { Segments } from "./string.js";
 
@@ -135,7 +136,8 @@ export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | un
 
 /**
  * Get a cache key for a query, so two queries with the same filters, order, and limit get the same key.
- * - Sorts the top-level keys, so `{ a, b }` and `{ b, a }` give the same key.
+ * - Uses `serialise()`, so `{ a, b }` and `{ b, a }` give the same key.
+ * - Ignores props with an `undefined` value, like `getQueryFilters()`.
  * - Keeps the order of values, so `$order` arrays and `in` lists keep their meaning.
  * - Treat the key as an opaque string. Only compare it for equality. Do not parse it or read data from it, because its format can change.
  *
@@ -144,13 +146,9 @@ export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | un
  * @see https://shelving.cc/util/query/getQueryKey
  */
 export function getQueryKey<T extends Data>(query: Query<T> | undefined): string {
-	if (!query) return "{}";
-	const sorted: { [key: string]: unknown } = {};
-	for (const [key, value] of [...getProps<Data>(query)].sort(_compareKeys)) sorted[key] = value;
-	return JSON.stringify(sorted);
-}
-function _compareKeys([left]: readonly [string, unknown], [right]: readonly [string, unknown]): number {
-	return left < right ? -1 : left > right ? 1 : 0;
+	const defined: { [key: string]: unknown } = {};
+	if (query) for (const [key, value] of getProps<Data>(query)) if (value !== undefined) defined[key] = value;
+	return serialise(defined);
 }
 
 /**

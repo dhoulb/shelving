@@ -4,10 +4,12 @@ A single `serialise()` function that converts any JavaScript value to a stable, 
 
 **Things to know:**
 
-- Object properties are always sorted by key before output, so two objects with the same properties in different insertion order produce identical strings.
-- Values that JSON cannot represent (`undefined`, symbols, functions) are encoded as `{"$type":"..."}` objects rather than being dropped or converted to `null`.
-- Objects with a custom `toString()` are encoded as `{"$type":"ClassName","value":"..."}` — useful for `Date`, `Map`, and similar.
-- This is not `JSON.stringify()`. Do not use it for data serialisation or network payloads.
+- Object properties are sorted by key at every depth, so two objects with the same properties in a different order give the same string.
+- Values that JSON cannot hold (`undefined`, symbols, functions, `NaN`, `Infinity`, bigints) are encoded as `{"$type":"..."}` objects, not dropped or turned into `null`.
+- Objects with their own `toString()` (like `Date`) are encoded as `{"$type":"ClassName","value":"..."}`.
+- It is built on `JSON.stringify()`, so strings are escaped correctly and it is fast.
+- Treat the output as an opaque string. Compare it for equality, but do not parse it or read data from it. Its format can change. Do not use it for data transport or network payloads.
+- `getQueryKey()` uses it to make query cache keys.
 
 ## Usage
 

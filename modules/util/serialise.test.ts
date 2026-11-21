@@ -37,6 +37,21 @@ describe("serialise()", () => {
 		// Object keys are sorted.
 		expect(serialise({ c: 3, b: 2, a: 1 })).toBe(`{"a":1,"b":2,"c":3}`);
 
+		// Nested object keys are sorted.
+		expect(serialise({ b: { d: 4, c: 3 }, a: [{ f: 6, e: 5 }] })).toBe(`{"a":[{"e":5,"f":6}],"b":{"c":3,"d":4}}`);
+
+		// Backslashes and newlines are escaped, so different strings never collide.
+		expect(serialise("a\\")).toBe(`"a\\\\"`);
+		expect(serialise("a\n")).toBe(`"a\\n"`);
+		expect(serialise(["a\\", "b"])).not.toBe(serialise(['a\\",\\"b']));
+
+		// Values JSON cannot hold are tagged.
+		expect(serialise(Number.NaN)).toBe(`{"$type":"number","value":"NaN"}`);
+		expect(serialise(Number.POSITIVE_INFINITY)).toBe(`{"$type":"number","value":"Infinity"}`);
+		expect(serialise(10n)).toBe(`{"$type":"bigint","value":"10"}`);
+		expect(serialise([undefined])).toBe(`[{"$type":"undefined"}]`);
+		expect(serialise({ a: undefined })).toBe(`{"a":{"$type":"undefined"}}`);
+
 		// Objects with custom toString() use it.
 		expect(serialise(new Date("2004"))).toBe(`{"$type":"Date","value":"${new Date("2004").toString()}"}`);
 	});

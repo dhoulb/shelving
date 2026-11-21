@@ -1,52 +1,39 @@
-import { ValueError } from "../error/ValueError.js";
 import { isArray } from "./array.js";
 import { getPrototype, isObject } from "./object.js";
 
-const R_QUOTE = /"/g;
-
 /**
- * Serialise any value to a stable, consistent string (a `JSON.stringify()` that never loses information).
- * - Not optimised for performance. Optimised for consistency!
- * - Allows returned values to be used for fingerprinting values of any type.
- * - Non-JSON-friendly values (like `null`, explicit `undefined`, symbols, functions) are converted to `{ $type: "symbol" }` style constructions.
- * - Objects with custom `toString()` properties assume that string is useful and return a value like `{ $type: "Date", value: "Wed Feb 24 2021 20:59:57 GMT+0000 (Greenwich Mean Time)" }`
- * - Object properties are sorted (by key) before output so they're always consistent.
+ * Serialise any value to a stable string, for use as a cache key or fingerprint.
+ * - Uses `JSON.stringify()`, so strings and keys are escaped correctly and it is fast.
+ * - Sorts object properties by key at every depth, so the same properties in a different order give the same string.
+ * - Encodes values that JSON cannot hold (`undefined`, symbols, functions, `NaN`, `Infinity`, bigints) as `{ "$type": "…" }` objects, so they do not vanish or turn into `null`.
+ * - Encodes an object with its own `toString()` (like `Date`) as `{ "$type": "Date", "value": "…" }`.
+ * - Treat the output as an opaque string. Only compare it for equality. Do not parse it or read data from it, because its format can change.
  *
  * @param value The value to serialise (any type is accepted).
- * @returns A consistent string representation of `value`, suitable for fingerprinting or equality comparison.
- * @throws {ValueError} If `value` cannot be serialised.
+ * @returns An opaque string that is the same for equal values.
  * @see https://shelving.cc/util/serialise/serialise
  */
 export function serialise(value: unknown): string {
-	if (value === true) return "true";
-	if (value === false) return "false";
-	if (value === undefined) return '{"$type":"undefined"}';
-	if (value === null) return "null";
-	if (typeof value === "number") return value.toString();
-	if (typeof value === "string") return _escapeString(value);
-	if (typeof value === "symbol")
-		return value.description ? `{"$type":"symbol","description":${_escapeString(value.description)}}` : '{"$type":"symbol"}';
-	if (typeof value === "function") return value.name ? `{"$type":"function","name":${_escapeString(value.name)}}` : '{"$type":"function"}';
-	if (isArray(value)) return `[${value.map(serialise).join(",")}]`;
-	if (isObject(value)) {
-		const prototype = getPrototype(value);
+	return JSON.stringify(value, _replace);
+}
+
+/** `JSON.stringify()` replacer that tags non-JSON values and sorts object keys. */
+function _replace(this: unknown, key: string, value: unknown): unknown {
+	const original = (this as { readonly [key: string]: unknown })[key]; // Read the value before `toJSON()` runs.
+	if (original === undefined) return { $type: "undefined" };
+	if (typeof original === "number") return Number.isFinite(original) ? original : { $type: "number", value: original.toString() };
+	if (typeof original === "bigint") return { $type: "bigint", value: original.toString() };
+	if (typeof original === "symbol")
+		return original.description ? { $type: "symbol", description: original.description } : { $type: "symbol" };
+	if (typeof original === "function") return original.name ? { $type: "function", name: original.name } : { $type: "function" };
+	if (isArray(original)) return original;
+	if (isObject(original)) {
+		const prototype = getPrototype(original);
 		const type = prototype !== Object.prototype && prototype !== null ? prototype?.constructor?.name : undefined;
-
-		// Use custom `toString()` function if it's defined.
-		if (type && value.toString !== Object.prototype.toString)
-			return `{"$type":${_escapeString(type)},"value":${_escapeString(value.toString())}}`;
-
-		// Otherwise crawl the object and sort the props ascendingly.
-		const props = Object.entries(value).map(_serialiseEntry).sort();
-		return `{${type ? `"$type":${_escapeString(type)}${props.length ? "," : ""}` : ""}${props.join(",")}}`;
+		if (type && original.toString !== Object.prototype.toString) return { $type: type, value: original.toString() };
+		const sorted: { [key: string]: unknown } = type ? { $type: type } : {};
+		for (const k of Object.keys(original).sort()) sorted[k] = (original as { readonly [key: string]: unknown })[k];
+		return sorted;
 	}
-	throw new ValueError("Cannot serialize value", { received: value, caller: serialise });
-}
-
-function _serialiseEntry([key, value]: [string, unknown]) {
-	return `${_escapeString(key)}:${serialise(value)}`;
-}
-
-function _escapeString(str: string): string {
-	return `"${str.replace(R_QUOTE, `\\"`)}"`;
+	return value;
 }
