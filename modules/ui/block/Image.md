@@ -1,6 +1,6 @@
 # Image
 
-An image block. Renders an `<img>` with rounded corners and a block margin.
+An image block. Renders an `<img>` with square corners and a block margin. Use it for artwork such as a logo, an icon or a transparent PNG. For a photo, use `<Photo>`.
 
 **Things to know:**
 
@@ -48,10 +48,9 @@ Override these hooks at `:root`.
 
 | Variable                | Styles                                    | Default                          |
 | ----------------------- | ----------------------------------------- | -------------------------------- |
-| `--image-radius`        | Corner radius                             | `var(--radius-normal)` (16px)    |
 | `--image-space`         | Outer block margin (top and bottom)       | `var(--space-paragraph)` (16px)  |
 | `--image-border`        | Border colour (width is `--image-stroke`) | `transparent`                    |
 | `--image-stroke`        | Border width (one length)                 | `0px`                            |
 | `--image-fade-duration` | Length of the fade-in                     | `var(--duration-normal)` (300ms) |
 
-**Global tokens it reads:** `--radius-normal`, `--space-paragraph`, `--duration-normal`.
+**Global tokens it reads:** `--space-paragraph`, `--duration-normal`.

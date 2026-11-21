@@ -1,0 +1,39 @@
+@import url("../style/layers.css");
+@import url("../style/Radius.module.css");
+@import url("../style/Space.module.css");
+
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--photo-stroke: 0px;
+		--photo-border: transparent;
+		--photo-radius: var(--radius-normal);
+		--photo-space: var(--space-paragraph);
+		--photo-background: black;
+	}
+}
+
+@layer components {
+	/* The frame: it holds the radius, border and background, and clips the image. The background shows while the image loads. */
+	.photo {
+		/* Box */
+		display: block;
+		border: var(--photo-stroke) solid var(--photo-border);
+		border-radius: var(--photo-radius);
+		margin-block: var(--photo-space);
+
+		/* Contents */
+		overflow: hidden;
+
+		/* Style */
+		background: var(--photo-background);
+	}
+
+	/* The image fills the frame. */
+	.photo > .image {
+		display: block;
+		margin: 0;
+		inline-size: 100%;
+		block-size: 100%;
+	}
+}

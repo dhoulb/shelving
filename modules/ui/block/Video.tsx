@@ -17,7 +17,7 @@ export interface VideoProps extends SpaceVariants, WidthVariants, OptionalChildP
 
 /**
  * Video container element.
- * - Has a black background and a 16:9 aspect ratio.
+ * - Has a black background (`--video-background`) and a 16:9 aspect ratio.
  * - Shows its contents (i.e. a `<video>` element or a `<TwilioRoom>`).
  *
  * @kind component
