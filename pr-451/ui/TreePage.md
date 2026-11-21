@@ -5,7 +5,7 @@
 
 Page renderer for a generic `tree-element` (a directory or file).
 
-- Shows the title, any absorbed prose content, and the element's children as a stack of cards.
+- Shows the title, any absorbed prose content, and the element's children as a stack of cards under a "Contents" heading.
 - Child cards cover both nested directories/files and the code symbols of a source file.
 
 ## Signatures
