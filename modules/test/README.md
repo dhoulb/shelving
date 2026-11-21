@@ -39,6 +39,20 @@ const provider = new MemoryDBProvider();
 await provider.addItem(BASICS_COLLECTION, basic1);
 ```
 
+## Contract and differential tests
+
+`testDBProvider()` registers the `DBProvider` contract suite: fixed cases that every provider must pass.
+
+`testDBDifferential()` runs the same seeded random operations against a provider and against a reference `MemoryDBProvider`, and fails at the first difference in a result, an error, or the stored items. A failure names the seed and lists the operations, so you can run it again. Use `check` to compare more state (for example a provider rebuilt from its backing store), and `wrap` to run each operation in a transaction.
+
+```ts
+import { MemoryDBProvider, ValidationDBProvider } from "shelving/db";
+import { testDBDifferential } from "shelving/test";
+
+testDBDifferential("ValidationDBProvider", () => new ValidationDBProvider(new MemoryDBProvider<string>()));
+testDBDifferential("MemoryDBProvider.transact()", () => new MemoryDBProvider<string>(), { wrap: (db, callback) => db.transact(callback) });
+```
+
 ## Assertion helpers
 
 | Helper                   | Use                                                               |

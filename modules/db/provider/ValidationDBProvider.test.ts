@@ -1,13 +1,22 @@
 import { describe, expect, test } from "bun:test";
 import { MemoryDBProvider, MockDBProvider, ValidationDBProvider } from "shelving/db";
 import { ValueError } from "shelving/error";
-import { BASICS_COLLECTION, basic1, basic2, basic999, TransactionTestDBProvider, testDBProvider } from "../../test/index.js";
+import {
+	BASICS_COLLECTION,
+	basic1,
+	basic2,
+	basic999,
+	TransactionTestDBProvider,
+	testDBDifferential,
+	testDBProvider,
+} from "../../test/index.js";
 
 // Every query and update in the contract suite must pass the full validators.
 testDBProvider("ValidationDBProvider", () => new ValidationDBProvider(new MemoryDBProvider<string>()), {
 	transactions: true,
 	nestedTransactions: true,
 });
+testDBDifferential("ValidationDBProvider", () => new ValidationDBProvider(new MemoryDBProvider<string>()));
 
 describe("ValidationDBProvider", () => {
 	test("rejects invalid items returned by the source provider", async () => {

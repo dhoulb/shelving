@@ -3,7 +3,7 @@ import { SQL } from "bun";
 import { BunPostgresProvider } from "shelving/bun";
 import { UnsupportedError } from "shelving/error";
 import type { Data } from "shelving/util/data";
-import { BASICS_COLLECTION, basic1, basic2, basic999, testDBProvider } from "../test/index.js";
+import { BASICS_COLLECTION, basic1, basic2, basic999, testDBDifferential, testDBProvider } from "../test/index.js";
 
 type _MockQuery = { readonly text: string; readonly values: readonly unknown[]; readonly tx: boolean };
 type _MockIdentifier = { readonly identifier: string };
@@ -137,6 +137,33 @@ describe("BunPostgresProvider (mock)", () => {
 		expect(mock.begins.length).toBe(1);
 	});
 
+	test("query writes with a $limit select their rows in a subquery", async () => {
+		const mock = _createMockSQL();
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
+		await provider.deleteQuery(BASICS_COLLECTION, { group: "a", $order: "num", $limit: 2 });
+		await provider.updateQuery(BASICS_COLLECTION, { group: "a", $order: "num" }, { str: "X" });
+		// `UPDATE` and `DELETE` do not accept `ORDER BY` or `LIMIT` in Postgres.
+		expect(mock.queries.map(q => q.text)).toEqual([
+			`DELETE FROM "basics" WHERE "id" IN (SELECT "id" FROM "basics" WHERE "group" = $1 ORDER BY "num" ASC LIMIT $2)`,
+			`UPDATE "basics" SET "str" = $1 WHERE "group" = $2`,
+		]);
+	});
+
+	test("nested keys bind their path as text[] and their values as jsonb", async () => {
+		const mock = _createMockSQL();
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
+		await provider.getQuery(BASICS_COLLECTION, { "sub.num>": 2, $order: "sub.num" });
+		await provider.updateItem(BASICS_COLLECTION, "basic1", { "=sub.str": "X" });
+		expect(mock.queries[0]).toMatchObject({
+			text: `SELECT * FROM "basics" WHERE "sub" #> $1::text[] > $2::text::jsonb ORDER BY "sub" #> $3::text[] ASC`,
+			values: ['{"num"}', "2", '{"num"}'],
+		});
+		expect(mock.queries[1]).toMatchObject({
+			text: `UPDATE "basics" SET "sub" = jsonb_set("sub", $1::text[], $2::text::jsonb) WHERE "id" = $3`,
+			values: ['{"str"}', '"X"', "basic1"],
+		});
+	});
+
 	test("transact() rejects nested transactions", async () => {
 		const mock = _createMockSQL();
 		const provider = new BunPostgresProvider<string, Data>(mock.sql);
@@ -155,6 +182,7 @@ if (POSTGRES_URL) {
 	const createProvider = () => provider;
 
 	testDBProvider("BunPostgresProvider", createProvider, { realtime: false, transactions: true });
+	testDBDifferential("BunPostgresProvider", createProvider, { unorderedArrays: true });
 
 	test("BunPostgresProvider: concurrent transactions retry and preserve every increment", async () => {
 		await createProvider();
