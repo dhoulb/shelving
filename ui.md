@@ -92,6 +92,7 @@ The components below are listed in the index following this page; this is the sh
 - [ListItem](ui/ListItem.md): One item in a <List> — rendered as <li>.
 - [Panel](ui/Panel.md): Full-width vertical region that paints the current surface colour. Use to break a page into stacked sections. Has zero block-space (Panels butt against each other); set its vertical breathing room with the padding variant (<Panel padding="large">, <Panel padding="xxlarge"> etc.).
 - [Paragraph](ui/Paragraph.md): Paragraph block of body text — rendered as <p>.
+- [Photo](ui/Photo.md): Photo block — an <Image> in a frame with rounded corners and a black background.
 - [Preformatted](ui/Preformatted.md): Preformatted block of text — rendered as <pre>.
 - [Prose](ui/Prose.md): A section of longform text containing lots of <p> or <ul> style elements.
 - [Row](ui/Row.md): Flex container that arranges its children as a row by default.
@@ -355,6 +356,7 @@ The components below are listed in the index following this page; this is the sh
 - [ListItemProps](ui/ListItemProps.md): Props for ListItem — space, padding, trim, and typography variants.
 - [PanelProps](ui/PanelProps.md): Props for Panel — colour, status, and typography variants plus optional children.
 - [ParagraphProps](ui/ParagraphProps.md): Props for Paragraph — colour, space, and typography variants.
+- [PhotoProps](ui/PhotoProps.md): Props for Photo — an src, optional alt text, plus space and width variants.
 - [PreformattedProps](ui/PreformattedProps.md): Props for Preformatted — space, colour, typography, width, and padding variants plus a wrap toggle.
 - [ProseProps](ui/ProseProps.md): Props for Prose — just the longform children to style.
 - [RowProps](ui/RowProps.md): Props for the <Row> component.

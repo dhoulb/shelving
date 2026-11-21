@@ -20662,6 +20662,7 @@ The components below are listed in the index following this page; this is the sh
 - [ListItem](ui/ListItem.md): One item in a <List> — rendered as <li>.
 - [Panel](ui/Panel.md): Full-width vertical region that paints the current surface colour. Use to break a page into stacked sections. Has zero block-space (Panels butt against each other); set its vertical breathing room with the padding variant (<Panel padding="large">, <Panel padding="xxlarge"> etc.).
 - [Paragraph](ui/Paragraph.md): Paragraph block of body text — rendered as <p>.
+- [Photo](ui/Photo.md): Photo block — an <Image> in a frame with rounded corners and a black background.
 - [Preformatted](ui/Preformatted.md): Preformatted block of text — rendered as <pre>.
 - [Prose](ui/Prose.md): A section of longform text containing lots of <p> or <ul> style elements.
 - [Row](ui/Row.md): Flex container that arranges its children as a row by default.
@@ -20925,6 +20926,7 @@ The components below are listed in the index following this page; this is the sh
 - [ListItemProps](ui/ListItemProps.md): Props for ListItem — space, padding, trim, and typography variants.
 - [PanelProps](ui/PanelProps.md): Props for Panel — colour, status, and typography variants plus optional children.
 - [ParagraphProps](ui/ParagraphProps.md): Props for Paragraph — colour, space, and typography variants.
+- [PhotoProps](ui/PhotoProps.md): Props for Photo — an src, optional alt text, plus space and width variants.
 - [PreformattedProps](ui/PreformattedProps.md): Props for Preformatted — space, colour, typography, width, and padding variants plus a wrap toggle.
 - [ProseProps](ui/ProseProps.md): Props for Prose — just the longform children to style.
 - [RowProps](ui/RowProps.md): Props for the <Row> component.
@@ -22667,7 +22669,7 @@ Props for `Image` — an `src`, optional `alt` text, plus space and width varian
 ```ts
 {
 	src: string;
-	alt?: string;
+	alt?: string | undefined;
 }
 ```
 
@@ -22676,7 +22678,7 @@ Props for `Image` — an `src`, optional `alt` text, plus space and width varian
 | Property | Type | Description |
 | --- | --- | --- |
 | `src` | `string` |  |
-| `alt` | `string` | Optional. |
+| `alt` | `string \| undefined` | Optional. |
 
 
 ---
@@ -22691,7 +22693,7 @@ Image block — renders an `<img>` with space and width variants applied.
 - It never holds a transition (such as a page change): React waits only for an eager `<img>` with no `onLoad`.
 - The load state is the `data-loaded` attribute (none, `fade`, then `done`), set on the element directly, so a load never re-renders.
 
-An image block. Renders an `<img>` with rounded corners and a block margin.
+An image block. Renders an `<img>` with square corners and a block margin. Use it for artwork such as a logo, an icon or a transparent PNG. For a photo, use `<Photo>`.
 
 **Things to know:**
 
@@ -22739,13 +22741,12 @@ Override these hooks at `:root`.
 
 | Variable                | Styles                                    | Default                          |
 | ----------------------- | ----------------------------------------- | -------------------------------- |
-| `--image-radius`        | Corner radius                             | `var(--radius-normal)` (16px)    |
 | `--image-space`         | Outer block margin (top and bottom)       | `var(--space-paragraph)` (16px)  |
 | `--image-border`        | Border colour (width is `--image-stroke`) | `transparent`                    |
 | `--image-stroke`        | Border width (one length)                 | `0px`                            |
 | `--image-fade-duration` | Length of the fade-in                     | `var(--duration-normal)` (300ms) |
 
-**Global tokens it reads:** `--radius-normal`, `--space-paragraph`, `--duration-normal`.
+**Global tokens it reads:** `--space-paragraph`, `--duration-normal`.
 
 
 ## Signatures
@@ -22760,7 +22761,7 @@ Image({ src, alt, className, ...props }: ImageProps): ReactElement
 | --- | --- | --- |
 | `props` | `ImageProps` |  |
 | `.src` | `string` |  |
-| `.alt` | `string` | Optional. |
+| `.alt` | `string \| undefined` | Optional. |
 
 ## Returns
 
@@ -23296,6 +23297,107 @@ Paragraph({ children, className, ...props }: ParagraphProps): ReactElement
 | Param | Type | Description |
 | --- | --- | --- |
 | `props` | `ParagraphProps` |  |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
+
+
+---
+
+# PhotoProps
+
+- Kind: interface
+- Import: `import { PhotoProps } from "shelving/ui";`
+- Extends: `SpaceVariants`
+
+Props for `Photo` — an `src`, optional `alt` text, plus space and width variants.
+
+## Signatures
+
+```ts
+{
+	src: string;
+	alt?: string | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `src` | `string` |  |
+| `alt` | `string \| undefined` | Optional. |
+
+
+---
+
+# Photo
+
+- Kind: component
+- Import: `import { Photo } from "shelving/ui";`
+
+Photo block — an `<Image>` in a frame with rounded corners and a black background.
+- The background shows while the image loads, then the image fades in over it.
+- `className`, space and width go on the frame.
+
+A photo block. Renders an `<Image>` in a frame with rounded corners and a black background. Use it for a photo or a screenshot. For artwork with square corners or a transparent background (a logo, an icon), use `<Image>`.
+
+**Things to know:**
+
+- Always set `alt` to describe the photo for screen readers.
+- The black background shows while the photo loads. Then the photo fades in over it, the same as `<Image>`.
+- The frame clips the photo, so the radius and the border also work while it loads.
+- `className`, space and width go on the frame. The photo fills the frame, so give the frame a size (for example an `aspect-ratio`) to crop the photo.
+- Composes the `space` and `width` variants.
+
+## Usage
+
+### Photo
+
+```tsx live
+import { Photo } from "shelving/ui";
+
+// A small SVG, so the example needs no network. Use any image URL.
+const SRC = `data:image/svg+xml,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 5"><linearGradient id="g"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a855f7"/></linearGradient><rect width="8" height="5" fill="url(#g)"/></svg>',
+)}`;
+
+<Photo src={SRC} alt="A blue to purple gradient" />;
+```
+
+## Styling
+
+Override these hooks at `:root`.
+
+| Variable             | Styles                                    | Default                         |
+| -------------------- | ----------------------------------------- | ------------------------------- |
+| `--photo-radius`     | Corner radius of the frame                | `var(--radius-normal)` (16px)   |
+| `--photo-space`      | Outer block margin (top and bottom)       | `var(--space-paragraph)` (16px) |
+| `--photo-border`     | Border colour (width is `--photo-stroke`) | `transparent`                   |
+| `--photo-stroke`     | Border width (one length)                 | `0px`                           |
+| `--photo-background` | Background behind the photo               | `black`                         |
+
+The photo inside also reads the `<Image>` hooks, such as `--image-fade-duration`.
+
+**Global tokens it reads:** `--radius-normal`, `--space-paragraph`.
+
+
+## Signatures
+
+```ts
+Photo({ src, alt, className, ...props }: PhotoProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `PhotoProps` |  |
+| `.src` | `string` |  |
+| `.alt` | `string \| undefined` | Optional. |
 
 ## Returns
 
@@ -24098,7 +24200,7 @@ Props for `Video` — space and width variants plus optional `children`.
 - Import: `import { Video } from "shelving/ui";`
 
 Video container element.
-- Has a black background and a 16:9 aspect ratio.
+- Has a black background (`--video-background`) and a 16:9 aspect ratio.
 - Shows its contents (i.e. a `<video>` element or a `<TwilioRoom>`).
 
 ## Signatures

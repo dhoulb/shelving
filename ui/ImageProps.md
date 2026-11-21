@@ -11,7 +11,7 @@ Props for `Image` — an `src`, optional `alt` text, plus space and width varian
 ```ts
 {
 	src: string;
-	alt?: string;
+	alt?: string | undefined;
 }
 ```
 
@@ -20,4 +20,4 @@ Props for `Image` — an `src`, optional `alt` text, plus space and width varian
 | Property | Type | Description |
 | --- | --- | --- |
 | `src` | `string` |  |
-| `alt` | `string` | Optional. |
+| `alt` | `string \| undefined` | Optional. |
