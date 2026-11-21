@@ -224,7 +224,7 @@ The components below are listed in the index following this page; this is the sh
 - [TreeMenu](ui/TreeMenu.md): Sidebar navigation menu built from the children of a root tree element.
 - [TreePage](ui/TreePage.md): Page renderer for a generic tree-element (a directory or file).
 - [TreeRouter](ui/TreeRouter.md): Resolve a URL path to a tree element and render it as a full page.
-- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections separated by dividers.
+- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
 
 ## Functions
 
