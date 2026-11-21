@@ -111,7 +111,7 @@ import { getButtonClass } from "shelving/ui";
 
 `Button` paints from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
 
-`Button.module.css` declares every hook below in `@layer defaults`, so the rules read them with no fallback. Override a hook at `:root`. Override a **tint hook** at `:root, .tint`: these hooks read the ladder, so the module declares them again in every tint scope, and an override at `:root` alone does not reach a button inside a tint scope. The tint hooks are `--button-background`, `--button-text`, `--button-hover-background`, `--button-active-background`, the `--button-solid-*` colour hooks, `--button-plain-text`, `--button-plain-hover-background`, `--button-plain-active-background`, `--button-outline-border`, `--button-selected-background` and `--button-selected-text`. Use `:root, .tint` also for any override whose value reads the ladder.
+`Button.module.css` declares every hook below in `@layer defaults`, so the rules read them with no fallback. Override a hook at `:root`. Override a **tint hook** at `:root, .tint`: these hooks read the ladder, so the module declares them again in every tint scope, and an override at `:root` alone does not reach a button inside a tint scope. The tint hooks are `--button-background`, `--button-text`, `--button-hover-background`, `--button-active-background`, the `--button-solid-*` colour hooks (including `--button-solid-border`), `--button-plain-text`, `--button-plain-hover-background`, `--button-plain-active-background`, `--button-outline-border`, `--button-selected-background` and `--button-selected-text`. Use `:root, .tint` also for any override whose value reads the ladder.
 
 Each `--button-*-border` hook takes a colour, not a shorthand. `--button-stroke` sets the width of every border, so the style is always `solid`. For a dashed border or another one-off, use an app class (see the example above).
 
@@ -127,52 +127,53 @@ The `--button-*` colour hooks without a look in their name paint the default loo
 
 `plain`, `outline` and `selected={false}` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
 
-Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
+Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping short at the padding box.
 
-| Variable                           | Styles                                                   | Default                                       |
-| ---------------------------------- | -------------------------------------------------------- | --------------------------------------------- |
-| `--button-background`              | Surface fill                                             | `var(--tint-90)`                              |
-| `--button-hover-background`        | Surface fill on hover / focus                            | `var(--tint-85)`                              |
-| `--button-hover-border`            | Border colour on hover / focus                           | `transparent`                                 |
-| `--button-hover-transform`         | Transform on hover / focus                               | `none`                                        |
-| `--button-text`                    | Label colour                                             | `var(--tint-50)`                              |
-| `--button-border`                  | Border colour                                            | `transparent`                                 |
-| `--button-stroke`                  | Border / outline thickness                               | `var(--stroke-normal)` (2px)                  |
-| `--button-radius`                  | Corner radius                                            | `var(--radius-xsmall)` (8px)                  |
-| `--button-padding`                 | Top and bottom padding (one length)                      | `var(--space-small)` (12px)                   |
-| `--button-indent`                  | Left and right padding (one length)                      | `var(--space-small)` (12px)                   |
-| `--button-small-padding`           | Top and bottom padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                  |
-| `--button-small-indent`            | Left and right padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                  |
-| `--button-icon-size`               | Icon size, and the base of the minimum height            | `var(--size-icon)` (24px)                     |
-| `--button-gap`                     | Gap between icon and label                               | `var(--space-small)` (12px)                   |
-| `--button-small-gap`               | Gap between icon and label when `small`                  | `var(--space-xxsmall)` (4px)                  |
-| `--button-space`                   | Outer block margin                                       | `var(--space-small)` (12px)                   |
-| `--button-font`                    | Font family                                              | `var(--font-body)`                            |
-| `--button-weight`                  | Font weight                                              | `var(--weight-normal)` (400)                  |
-| `--button-size`                    | Font size                                                | `var(--size-normal)`                          |
-| `--button-leading`                 | Line height                                              | `var(--leading-auto)`                         |
-| `--button-shadow`                  | Box shadow (never on `plain`)                            | `none`                                        |
-| `--button-active-background`       | Surface fill while pressed                               | `var(--button-hover-background)`              |
-| `--button-active-border`           | Border colour while pressed                              | `var(--button-hover-border)`                  |
-| `--button-active-shadow`           | Box shadow while pressed                                 | `var(--button-shadow)`                        |
-| `--button-active-transform`        | Transform while pressed                                  | `var(--button-hover-transform)`               |
-| `--button-transition`              | Transition                                               | `all var(--duration-fast)` (150ms)            |
-| `--button-focus-border`            | Focus outline colour (width is `--stroke-focus`)         | `var(--color-focus)`                          |
-| `--button-disabled-opacity`        | Opacity when disabled                                    | `0.5`                                         |
-| `--button-solid-background`        | Surface fill when `solid`                                | `var(--tint-50)`                              |
-| `--button-solid-text`              | Label colour when `solid`                                | `var(--tint-100)` (white)                     |
-| `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`               | `var(--tint-55)`                              |
-| `--button-solid-active-background` | Surface fill while pressed when `solid`                  | `var(--button-solid-hover-background)`        |
-| `--button-plain-text`              | Label colour when `plain` or `outline`                   | `var(--tint-50)`                              |
-| `--button-plain-border`            | Resting border colour when `plain`                       | `transparent`                                 |
-| `--button-outline-border`          | Resting border colour when `outline`                     | `var(--tint-80)`                              |
-| `--button-unselected-background`   | Resting fill when `selected={false}`                     | `transparent`                                 |
-| `--button-selected-background`     | Fill when `plain` or `outline` and selected              | `var(--button-background)` (`var(--tint-90)`) |
-| `--button-selected-text`           | Label colour when `plain` or `outline` and selected      | `var(--button-text)` (`var(--tint-50)`)       |
-| `--button-plain-hover-background`  | Fill on hover / focus when `plain` or `outline`          | `var(--button-hover-background)`              |
-| `--button-plain-hover-border`      | Border colour on hover / focus when `plain` or `outline` | `var(--button-hover-border)`                  |
-| `--button-plain-active-background` | Fill while pressed when `plain` or `outline`             | `var(--button-plain-hover-background)`        |
-| `--button-plain-active-border`     | Border colour while pressed when `plain` or `outline`    | `var(--button-plain-hover-border)`            |
+| Variable                           | Styles                                                   | Default                                          |
+| ---------------------------------- | -------------------------------------------------------- | ------------------------------------------------ |
+| `--button-background`              | Surface fill                                             | `var(--tint-90)`                                 |
+| `--button-hover-background`        | Surface fill on hover / focus                            | `var(--tint-85)`                                 |
+| `--button-hover-border`            | Border colour on hover / focus                           | `transparent`                                    |
+| `--button-hover-transform`         | Transform on hover / focus                               | `none`                                           |
+| `--button-text`                    | Label colour                                             | `var(--tint-50)`                                 |
+| `--button-border`                  | Border colour                                            | `transparent`                                    |
+| `--button-stroke`                  | Border / outline thickness                               | `var(--stroke-normal)` (1px)                     |
+| `--button-radius`                  | Corner radius                                            | `var(--radius-xsmall)` (8px)                     |
+| `--button-padding`                 | Top and bottom padding (one length)                      | `var(--space-small)` (12px)                      |
+| `--button-indent`                  | Left and right padding (one length)                      | `var(--space-small)` (12px)                      |
+| `--button-small-padding`           | Top and bottom padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                     |
+| `--button-small-indent`            | Left and right padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                     |
+| `--button-icon-size`               | Icon size, and the base of the minimum height            | `var(--size-icon)` (24px)                        |
+| `--button-gap`                     | Gap between icon and label                               | `var(--space-small)` (12px)                      |
+| `--button-small-gap`               | Gap between icon and label when `small`                  | `var(--space-xxsmall)` (4px)                     |
+| `--button-space`                   | Outer block margin                                       | `var(--space-small)` (12px)                      |
+| `--button-font`                    | Font family                                              | `var(--font-body)`                               |
+| `--button-weight`                  | Font weight                                              | `var(--weight-normal)` (400)                     |
+| `--button-size`                    | Font size                                                | `var(--size-normal)`                             |
+| `--button-leading`                 | Line height                                              | `var(--leading-auto)`                            |
+| `--button-shadow`                  | Box shadow (never on `plain`)                            | `none`                                           |
+| `--button-active-background`       | Surface fill while pressed                               | `var(--button-hover-background)`                 |
+| `--button-active-border`           | Border colour while pressed                              | `var(--button-hover-border)`                     |
+| `--button-active-shadow`           | Box shadow while pressed                                 | `var(--button-shadow)`                           |
+| `--button-active-transform`        | Transform while pressed                                  | `var(--button-hover-transform)`                  |
+| `--button-transition`              | Transition                                               | `all var(--duration-fast)` (150ms)               |
+| `--button-focus-border`            | Focus outline colour (width is `--stroke-focus`)         | `var(--color-focus)`                             |
+| `--button-disabled-opacity`        | Opacity when disabled                                    | `0.5`                                            |
+| `--button-solid-border`            | Border colour in every state when `solid`                | `var(--tint-45)` (one step darker than the fill) |
+| `--button-solid-background`        | Surface fill when `solid`                                | `var(--tint-50)`                                 |
+| `--button-solid-text`              | Label colour when `solid`                                | `var(--tint-100)` (white)                        |
+| `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`               | `var(--tint-55)`                                 |
+| `--button-solid-active-background` | Surface fill while pressed when `solid`                  | `var(--button-solid-hover-background)`           |
+| `--button-plain-text`              | Label colour when `plain` or `outline`                   | `var(--tint-50)`                                 |
+| `--button-plain-border`            | Resting border colour when `plain`                       | `transparent`                                    |
+| `--button-outline-border`          | Resting border colour when `outline`                     | `var(--tint-80)`                                 |
+| `--button-unselected-background`   | Resting fill when `selected={false}`                     | `transparent`                                    |
+| `--button-selected-background`     | Fill when `plain` or `outline` and selected              | `var(--button-background)` (`var(--tint-90)`)    |
+| `--button-selected-text`           | Label colour when `plain` or `outline` and selected      | `var(--button-text)` (`var(--tint-50)`)          |
+| `--button-plain-hover-background`  | Fill on hover / focus when `plain` or `outline`          | `var(--button-hover-background)`                 |
+| `--button-plain-hover-border`      | Border colour on hover / focus when `plain` or `outline` | `var(--button-hover-border)`                     |
+| `--button-plain-active-background` | Fill while pressed when `plain` or `outline`             | `var(--button-plain-hover-background)`           |
+| `--button-plain-active-border`     | Border colour while pressed when `plain` or `outline`    | `var(--button-plain-hover-border)`               |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
 
