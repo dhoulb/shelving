@@ -2,6 +2,7 @@ import { AVOID_REFRESH } from "../../store/FetchStore.js";
 import { awaitDispose } from "../../util/dispose.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
+import { isRequestHeadMethod } from "../../util/http.js";
 import { APICache } from "../cache/APICache.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "./APIProvider.js";
@@ -9,7 +10,8 @@ import { ThroughAPIProvider } from "./ThroughAPIProvider.js";
 
 /**
  * API provider wrapper that serves requests through an `APICache` so repeated calls reuse cached results.
- * - On `call(...)`, triggers `cache.refresh(maxAge)` for the endpoint+payload before awaiting `cache.call(...)`.
+ * - Caches only `GET` and `HEAD` endpoints. Other methods (`POST`, `PUT`, `PATCH`, `DELETE`) change data, so `call()` sends them straight to the source, every time.
+ * - On `call(...)` for a `GET` or `HEAD` endpoint, returns the cached result, or fetches it when it is missing or older than `maxAge`.
  * - `invalidate`, `invalidateAll`, `refresh`, and `refreshAll` pass through to the underlying cache and use `this.maxAge` as the default refresh timing.
  *
  * @see https://shelving.cc/api/CachedAPIProvider
@@ -29,14 +31,15 @@ export class CachedAPIProvider<P, R> extends ThroughAPIProvider<P, R> implements
 		this._cache = new APICache(source);
 	}
 
-	/** Serves the call through the cache, reusing a cached result where possible; request options are ignored as the cache key is derived from `endpoint` and `payload`. */
+	/** Serves a `GET` or `HEAD` call through the cache, and ignores its request options. Sends other methods straight to the source, with their options. */
 	override call<PP extends P, RR extends R>(
 		endpoint: Endpoint<PP, RR>,
 		payload: PP,
-		_options?: RequestOptions,
+		options?: RequestOptions,
 		caller: AnyCaller = this.call,
 	): Promise<RR> {
-		return this._cache.call(endpoint, payload, this.maxAge, caller);
+		if (!isRequestHeadMethod(endpoint.method)) return this.source.call(endpoint, payload, options, caller);
+		return this._cache.call(endpoint, payload, this.maxAge);
 	}
 
 	/**
