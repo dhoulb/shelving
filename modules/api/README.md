@@ -59,7 +59,7 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 
 ### Caching
 
-`APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by the rendered URL. For `GET`/`HEAD` requests, query params are part of the key so `?role=admin` and `?role=editor` are stored separately. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
+`APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by `serialise(payload)`, so `{ role: "admin" }` and `{ role: "editor" }` are stored separately, and key order does not matter. `CachedAPIProvider` caches only `GET` and `HEAD` endpoints. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
 
 The cache is primarily useful as the backbone of the [React integration](#react-integration). Use it directly only when you need a reactive layer outside React.
 

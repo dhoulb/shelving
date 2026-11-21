@@ -2,6 +2,11 @@
 
 A wrapping provider that serves calls through an `APICache`. Repeated calls for the same endpoint and payload skip the network and return the cached value, and it exposes `invalidate` / `refresh` helpers for cache control.
 
+**Things to know:**
+
+- It caches only `GET` and `HEAD` endpoints. Other methods (`POST`, `PUT`, `PATCH`, `DELETE`) change data, so `call()` sends them to the source every time.
+- Equal payloads share one cached result, whatever their key order (see `serialise()`).
+
 The constructor takes the `source` provider and an optional default `maxAge` (defaults to `AVOID_REFRESH` — only refetch when a value is missing or invalidated).
 
 ## Usage
@@ -16,6 +21,9 @@ await provider.call(getUser, { id: "u_1" }); // returns cached
 
 provider.invalidate(getUser, { id: "u_1" }); // mark stale
 provider.refresh(getUser, { id: "u_1" }); // re-fetch eagerly
+
+await provider.call(createUser, { name: "Dave" }); // POST: always sent
+await provider.call(createUser, { name: "Dave" }); // POST: sent again
 ```
 
 `invalidateAll(endpoint)` and `refreshAll(endpoint)` act on every cached payload for an endpoint at once.

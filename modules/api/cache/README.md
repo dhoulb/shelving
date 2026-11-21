@@ -1,6 +1,6 @@
 # Cache
 
-Reactive caching layer for API calls. `APICache` manages one `EndpointCache` per endpoint; each `EndpointCache` manages one `EndpointStore` per unique rendered URL. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
+Reactive caching layer for API calls. `APICache` manages one `EndpointCache` per endpoint; each `EndpointCache` manages one `EndpointStore` per unique payload. This three-level structure lets you cache, invalidate, and refresh at any granularity — all endpoints, a single endpoint, or a specific payload.
 
 ## Concepts
 
@@ -9,14 +9,14 @@ Reactive caching layer for API calls. `APICache` manages one `EndpointCache` per
 ```
 APICache
   └── EndpointCache   (one per Endpoint)
-        └── EndpointStore  (one per unique rendered URL / payload)
+        └── EndpointStore  (one per unique payload)
 ```
 
-`EndpointStore` does the actual fetching and holds the reactive value. `EndpointCache` keys stores by rendered URL so `GET /users/1` and `GET /users/2` are independent. `APICache` groups endpoint caches so you can address all payloads for a given endpoint at once.
+`EndpointStore` does the actual fetching and holds the reactive value. `EndpointCache` keys stores by payload so `GET /users/1` and `GET /users/2` are independent. `APICache` groups endpoint caches so you can address all payloads for a given endpoint at once.
 
 ### Cache keys
 
-`EndpointCache.get(payload)` renders the full URL (including `?query` params for `GET`/`HEAD`) and uses that as the map key. Two payloads that produce the same URL share a store.
+`EndpointCache.get(payload)` uses `serialise(payload)` as the map key. Two equal payloads share a store, whatever their key order. The cache is for endpoints that read data (`GET` and `HEAD`): `CachedAPIProvider` does not cache other methods.
 
 ### `call()` vs `refresh()`
 

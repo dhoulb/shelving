@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { EndpointCache, GET, MockAPIProvider } from "shelving/api";
+import { CachedAPIProvider, EndpointCache, GET, MockAPIProvider, POST } from "shelving/api";
 import { DATA, STRING } from "shelving/schema";
 import { runMicrotasks } from "shelving/util/async";
 
@@ -13,6 +13,21 @@ describe("EndpointCache", () => {
 		const second = cache.get({ id: "123", extra: "x" });
 
 		expect(first).toBe(second);
+	});
+
+	test("reuses the same store for payloads in a different key order", () => {
+		const provider = new MockAPIProvider(async () => Response.json("ok"));
+		const endpoint = GET("/users", DATA({ a: STRING, b: STRING }), STRING);
+		const cache = new EndpointCache(endpoint, provider);
+		expect(cache.get({ a: "1", b: "2" })).toBe(cache.get({ b: "2", a: "1" }));
+		expect(cache.get({ a: "1", b: "2" })).not.toBe(cache.get({ a: "1", b: "3" }));
+	});
+
+	test("uses a different store for each body payload on the same path", () => {
+		const provider = new MockAPIProvider(async () => Response.json("ok"));
+		const endpoint = POST("/search", DATA({ q: STRING }), STRING);
+		const cache = new EndpointCache(endpoint, provider);
+		expect(cache.get({ q: "a" })).not.toBe(cache.get({ q: "b" }));
 	});
 
 	test("refresh() re-fetches only the targeted payload", async () => {
@@ -67,5 +82,25 @@ describe("EndpointCache", () => {
 		await runMicrotasks();
 		expect(first.value).toBe("ok"); // same value returned by provider
 		expect(second.value).toBe("ok");
+	});
+});
+
+describe("CachedAPIProvider", () => {
+	test("caches GET calls", async () => {
+		let calls = 0;
+		const provider = new CachedAPIProvider(new MockAPIProvider(async () => Response.json(`${++calls}`)));
+		const endpoint = GET("/users", DATA({ a: STRING, b: STRING }), STRING);
+		expect(await provider.call(endpoint, { a: "1", b: "2" })).toBe("1");
+		expect(await provider.call(endpoint, { b: "2", a: "1" })).toBe("1");
+		expect(calls).toBe(1);
+	});
+
+	test("sends POST calls to the source every time", async () => {
+		let calls = 0;
+		const provider = new CachedAPIProvider(new MockAPIProvider(async () => Response.json(`${++calls}`)));
+		const endpoint = POST("/users", DATA({ name: STRING }), STRING);
+		expect(await provider.call(endpoint, { name: "Dave" })).toBe("1");
+		expect(await provider.call(endpoint, { name: "Dave" })).toBe("2");
+		expect(calls).toBe(2);
 	});
 });

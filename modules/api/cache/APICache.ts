@@ -1,6 +1,5 @@
 import { AVOID_REFRESH } from "../../store/FetchStore.js";
 import { awaitDispose } from "../../util/dispose.js";
-import type { AnyCaller } from "../../util/function.js";
 import { setMapItem } from "../../util/map.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "../provider/APIProvider.js";
@@ -58,19 +57,13 @@ export class APICache<P, R> implements AsyncDisposable {
 	 * @param endpoint The endpoint to fetch a result for.
 	 * @param payload The payload to send to the endpoint.
 	 * @param maxAge The maximum age in milliseconds (defaults to only refreshing if the value is still in a loading state).
-	 * @param caller The function to attribute thrown errors to (defaults to this method).
 	 * @returns The cached or freshly fetched result.
 	 * @throws Whatever `APIProvider.call` throws if the fetch fails.
 	 * @example await cache.call(getUser, { id: "abc" })
 	 * @see https://shelving.cc/api/APICache/call
 	 */
-	async call<PP extends P, RR extends R>(
-		endpoint: Endpoint<PP, RR>,
-		payload: PP,
-		maxAge: number = AVOID_REFRESH,
-		caller: AnyCaller = this.call,
-	): Promise<RR> {
-		return this.get(endpoint).call(payload, maxAge, caller);
+	async call<PP extends P, RR extends R>(endpoint: Endpoint<PP, RR>, payload: PP, maxAge: number = AVOID_REFRESH): Promise<RR> {
+		return this.get(endpoint).call(payload, maxAge);
 	}
 
 	/**
