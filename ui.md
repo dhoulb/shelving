@@ -83,6 +83,7 @@ The components below are listed in the index following this page; this is the sh
 - [Column](ui/Column.md): Flex container that stacks its children as a column by default.
 - [Definitions](ui/Definitions.md): Description list — a sequence of term/value pairs rendered as a <dl>.
 - [Details](ui/Details.md): A collapsible panel with a title that is always visible, built on native <details> and <summary>.
+- [Divider](ui/Divider.md): Horizontal rule separating blocks of content — rendered as <hr>.
 - [Grid](ui/Grid.md): Grid container that arranges its children in equal-width columns.
 - [Heading](ui/Heading.md): Section heading — renders an <h2>.
 - [Image](ui/Image.md): Image block — renders an <img> with space and width variants applied.
@@ -155,17 +156,24 @@ The components below are listed in the index following this page; this is the sh
 - [Until](ui/Until.md): Remaining time — shows an unsigned string like 6d or 3w for a future date wrapped in a <time> element carrying the machine-readable date.
 - [ArrayCheckboxInputs](ui/ArrayCheckboxInputs.md): Output a list of <CheckboxInput> elements for each item in an array, to pick any number of them.
 - [ArrayInput](ui/ArrayInput.md): Repeating input that edits an array of items, adding a SchemaInput row per item.
+- [ArrayRadioInputs](ui/ArrayRadioInputs.md): Output a list of <RadioInput> elements for each item in an array.
 - [ButtonInput](ui/ButtonInput.md): Return either a <button> or an <a href=""> styled as an input, based on whether an onClick or href prop is provided.
+- [CheckboxInput](ui/CheckboxInput.md): Checkbox input bound to a boolean value, rendered as a labelled <input type="checkbox">.
 - [ChoiceRadioInputs](ui/ChoiceRadioInputs.md): Output a list of <RadioInput> elements for each item in a set of ChoiceOptions in { key: title } format.
 - [DataInput](ui/DataInput.md): Composite input that edits a data object by rendering a SchemaInput for each property schema.
+- [DateInput](ui/DateInput.md): Date, time, or datetime input that accepts a PossibleDate and emits an ISO string value.
 - [DictionaryInput](ui/DictionaryInput.md): Repeating input that edits a dictionary, with an editable key and schema-validated value per entry.
+- [FileInput](ui/FileInput.md): File picker input that emits the selected File through onValue.
 - [ImageInput](ui/ImageInput.md): Square image picker that shows the picked image in the square.
 - [InputWrapper](ui/InputWrapper.md): Wraps an input with support for absolutely-positioned data-slot icon elements on either side.
+- [NumberInput](ui/NumberInput.md): Numeric input bound to a number value, parsing typed text and reformatting it on blur.
 - [OutputInput](ui/OutputInput.md): Show static read-only content styled as an input, falling back to placeholder when empty.
+- [Popover](ui/Popover.md): Trigger element that reveals a floating popover panel beside it when active or focused.
 - [PopoverButton](ui/PopoverButton.md): Popover variant of <Button> — a button that reveals floating popover content beside it when clicked.
 - [PopoverButtonInput](ui/PopoverButtonInput.md): Popover variant of <ButtonInput> — an input-styled button that reveals floating popover content beside it when clicked.
 - [QueryCheckboxesInput](ui/QueryCheckboxesInput.md): Combo box that queries a list of items and lets the user pick any number of them, with checkboxes.
 - [QueryRadiosInput](ui/QueryRadiosInput.md): Combo box that queries a list of items and lets the user pick one, with radios.
+- [RadioInput](ui/RadioInput.md): Single <input type="radio"> wrapped in a <label> styled as an <Input>.
 - [SchemaInput](ui/SchemaInput.md): Show the appropriate input control for a schema, dispatching on the schema's concrete type.
 - [DateSchemaInput](ui/DateSchemaInput.md): Show a DateInput for a DateSchema.
 - [NumberSchemaInput](ui/NumberSchemaInput.md): Show a NumberInput for a NumberSchema, formatting values with the schema's format().
@@ -177,6 +185,8 @@ The components below are listed in the index following this page; this is the sh
 - [DataSchemaInput](ui/DataSchemaInput.md): Show a DataInput for a nested DataSchema.
 - [SchemaField](ui/SchemaField.md): Show the appropriate input for a schema, wrapped in a <Field> with its label and message.
 - [SelectInput](ui/SelectInput.md): Dropdown input bound to a string value, rendered as a <select> of the provided options.
+- [TextareaInput](ui/TextareaInput.md): Multiline text input bound to a string value, rendered as a <textarea> that grows to fit its content.
+- [TextInput](ui/TextInput.md): Single-line text input bound to a string value, rendered as an <input>. Use TextareaInput for multiline text.
 - [AppLayout](ui/AppLayout.md): Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
 - [FixedLayout](ui/FixedLayout.md): Layout with no chrome: the whole screen is one content slot.
 - [ResetLayout](ui/ResetLayout.md): Layout that only removes the margin and padding around the page, so content can go edge to edge.
@@ -230,7 +240,6 @@ The components below are listed in the index following this page; this is the sh
 ## Functions
 
 - [Address()](ui/Address.md): Show any kind of contact data, rendered as an <address>.
-- [Divider()](ui/Divider.md): Horizontal rule separating blocks of content — rendered as <hr>.
 - [getButtonClass()](ui/getButtonClass.md): Get the full combined className string for a button from its styling variants.
 - [LinkClickable()](ui/LinkClickable.md): Render an <a href=""> element, resolving its href against the current page URL and marking it active when it matches.
 - [ButtonClickable()](ui/ButtonClickable.md): Render a <button> element that runs its onClick handler through a BusyStore and shows a loading spinner while busy.
@@ -251,18 +260,9 @@ The components below are listed in the index following this page; this is the sh
 - [requireForm()](ui/requireForm.md): Hook that returns the current form's FormStore from context.
 - [useField()](ui/useField.md): Hook that returns the input props for a single named field of a form.
 - [FormNotify()](ui/FormNotify.md): Publish the current form's "main" (unnamed) message as a global success notice whenever it changes.
-- [ArrayRadioInputs()](ui/ArrayRadioInputs.md): Output a list of <RadioInput> elements for each item in an array.
-- [CheckboxInput()](ui/CheckboxInput.md): Checkbox input bound to a boolean value, rendered as a labelled <input type="checkbox">.
-- [DateInput()](ui/DateInput.md): Date, time, or datetime input that accepts a PossibleDate and emits an ISO string value.
-- [FileInput()](ui/FileInput.md): File picker input that emits the selected File through onValue.
 - [getInputClass()](ui/getInputClass.md): Build the shared base className for a form input from its styling variants — the base input class plus any InputVariants.
-- [NumberInput()](ui/NumberInput.md): Numeric input bound to a number value, parsing typed text and reformatting it on blur.
-- [Popover()](ui/Popover.md): Trigger element that reveals a floating popover panel beside it when active or focused.
 - [QueryInputBase()](ui/QueryInputBase.md): Text input that queries a list of items, then shows the list in a popover or inline.
-- [RadioInput()](ui/RadioInput.md): Single <input type="radio"> wrapped in a <label> styled as an <Input>.
 - [isSchemaRequired()](ui/isSchemaRequired.md): Whether a schema is required, i.e. not wrapped in an OptionalSchema or NullableSchema.
-- [TextareaInput()](ui/TextareaInput.md): Multiline text input bound to a string value, rendered as a <textarea> that grows to fit its content.
-- [TextInput()](ui/TextInput.md): Single-line text input bound to a string value, rendered as an <input>. Use TextareaInput for multiline text.
 - [createMapper()](ui/createMapper.md): Create a [Mapping, Mapper] pair of components backed by their own private React context.
 - [requireMeta()](ui/requireMeta.md): Read the current Meta context, optionally merging in additional meta data.
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.

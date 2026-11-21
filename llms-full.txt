@@ -20612,6 +20612,7 @@ The components below are listed in the index following this page; this is the sh
 - [Column](ui/Column.md): Flex container that stacks its children as a column by default.
 - [Definitions](ui/Definitions.md): Description list — a sequence of term/value pairs rendered as a <dl>.
 - [Details](ui/Details.md): A collapsible panel with a title that is always visible, built on native <details> and <summary>.
+- [Divider](ui/Divider.md): Horizontal rule separating blocks of content — rendered as <hr>.
 - [Grid](ui/Grid.md): Grid container that arranges its children in equal-width columns.
 - [Heading](ui/Heading.md): Section heading — renders an <h2>.
 - [Image](ui/Image.md): Image block — renders an <img> with space and width variants applied.
@@ -20684,17 +20685,24 @@ The components below are listed in the index following this page; this is the sh
 - [Until](ui/Until.md): Remaining time — shows an unsigned string like 6d or 3w for a future date wrapped in a <time> element carrying the machine-readable date.
 - [ArrayCheckboxInputs](ui/ArrayCheckboxInputs.md): Output a list of <CheckboxInput> elements for each item in an array, to pick any number of them.
 - [ArrayInput](ui/ArrayInput.md): Repeating input that edits an array of items, adding a SchemaInput row per item.
+- [ArrayRadioInputs](ui/ArrayRadioInputs.md): Output a list of <RadioInput> elements for each item in an array.
 - [ButtonInput](ui/ButtonInput.md): Return either a <button> or an <a href=""> styled as an input, based on whether an onClick or href prop is provided.
+- [CheckboxInput](ui/CheckboxInput.md): Checkbox input bound to a boolean value, rendered as a labelled <input type="checkbox">.
 - [ChoiceRadioInputs](ui/ChoiceRadioInputs.md): Output a list of <RadioInput> elements for each item in a set of ChoiceOptions in { key: title } format.
 - [DataInput](ui/DataInput.md): Composite input that edits a data object by rendering a SchemaInput for each property schema.
+- [DateInput](ui/DateInput.md): Date, time, or datetime input that accepts a PossibleDate and emits an ISO string value.
 - [DictionaryInput](ui/DictionaryInput.md): Repeating input that edits a dictionary, with an editable key and schema-validated value per entry.
+- [FileInput](ui/FileInput.md): File picker input that emits the selected File through onValue.
 - [ImageInput](ui/ImageInput.md): Square image picker that shows the picked image in the square.
 - [InputWrapper](ui/InputWrapper.md): Wraps an input with support for absolutely-positioned data-slot icon elements on either side.
+- [NumberInput](ui/NumberInput.md): Numeric input bound to a number value, parsing typed text and reformatting it on blur.
 - [OutputInput](ui/OutputInput.md): Show static read-only content styled as an input, falling back to placeholder when empty.
+- [Popover](ui/Popover.md): Trigger element that reveals a floating popover panel beside it when active or focused.
 - [PopoverButton](ui/PopoverButton.md): Popover variant of <Button> — a button that reveals floating popover content beside it when clicked.
 - [PopoverButtonInput](ui/PopoverButtonInput.md): Popover variant of <ButtonInput> — an input-styled button that reveals floating popover content beside it when clicked.
 - [QueryCheckboxesInput](ui/QueryCheckboxesInput.md): Combo box that queries a list of items and lets the user pick any number of them, with checkboxes.
 - [QueryRadiosInput](ui/QueryRadiosInput.md): Combo box that queries a list of items and lets the user pick one, with radios.
+- [RadioInput](ui/RadioInput.md): Single <input type="radio"> wrapped in a <label> styled as an <Input>.
 - [SchemaInput](ui/SchemaInput.md): Show the appropriate input control for a schema, dispatching on the schema's concrete type.
 - [DateSchemaInput](ui/DateSchemaInput.md): Show a DateInput for a DateSchema.
 - [NumberSchemaInput](ui/NumberSchemaInput.md): Show a NumberInput for a NumberSchema, formatting values with the schema's format().
@@ -20706,6 +20714,8 @@ The components below are listed in the index following this page; this is the sh
 - [DataSchemaInput](ui/DataSchemaInput.md): Show a DataInput for a nested DataSchema.
 - [SchemaField](ui/SchemaField.md): Show the appropriate input for a schema, wrapped in a <Field> with its label and message.
 - [SelectInput](ui/SelectInput.md): Dropdown input bound to a string value, rendered as a <select> of the provided options.
+- [TextareaInput](ui/TextareaInput.md): Multiline text input bound to a string value, rendered as a <textarea> that grows to fit its content.
+- [TextInput](ui/TextInput.md): Single-line text input bound to a string value, rendered as an <input>. Use TextareaInput for multiline text.
 - [AppLayout](ui/AppLayout.md): Layout with a content slot above a bar of the app's main sections, like the tab bar of a phone app.
 - [FixedLayout](ui/FixedLayout.md): Layout with no chrome: the whole screen is one content slot.
 - [ResetLayout](ui/ResetLayout.md): Layout that only removes the margin and padding around the page, so content can go edge to edge.
@@ -20759,7 +20769,6 @@ The components below are listed in the index following this page; this is the sh
 ## Functions
 
 - [Address()](ui/Address.md): Show any kind of contact data, rendered as an <address>.
-- [Divider()](ui/Divider.md): Horizontal rule separating blocks of content — rendered as <hr>.
 - [getButtonClass()](ui/getButtonClass.md): Get the full combined className string for a button from its styling variants.
 - [LinkClickable()](ui/LinkClickable.md): Render an <a href=""> element, resolving its href against the current page URL and marking it active when it matches.
 - [ButtonClickable()](ui/ButtonClickable.md): Render a <button> element that runs its onClick handler through a BusyStore and shows a loading spinner while busy.
@@ -20780,18 +20789,9 @@ The components below are listed in the index following this page; this is the sh
 - [requireForm()](ui/requireForm.md): Hook that returns the current form's FormStore from context.
 - [useField()](ui/useField.md): Hook that returns the input props for a single named field of a form.
 - [FormNotify()](ui/FormNotify.md): Publish the current form's "main" (unnamed) message as a global success notice whenever it changes.
-- [ArrayRadioInputs()](ui/ArrayRadioInputs.md): Output a list of <RadioInput> elements for each item in an array.
-- [CheckboxInput()](ui/CheckboxInput.md): Checkbox input bound to a boolean value, rendered as a labelled <input type="checkbox">.
-- [DateInput()](ui/DateInput.md): Date, time, or datetime input that accepts a PossibleDate and emits an ISO string value.
-- [FileInput()](ui/FileInput.md): File picker input that emits the selected File through onValue.
 - [getInputClass()](ui/getInputClass.md): Build the shared base className for a form input from its styling variants — the base input class plus any InputVariants.
-- [NumberInput()](ui/NumberInput.md): Numeric input bound to a number value, parsing typed text and reformatting it on blur.
-- [Popover()](ui/Popover.md): Trigger element that reveals a floating popover panel beside it when active or focused.
 - [QueryInputBase()](ui/QueryInputBase.md): Text input that queries a list of items, then shows the list in a popover or inline.
-- [RadioInput()](ui/RadioInput.md): Single <input type="radio"> wrapped in a <label> styled as an <Input>.
 - [isSchemaRequired()](ui/isSchemaRequired.md): Whether a schema is required, i.e. not wrapped in an OptionalSchema or NullableSchema.
-- [TextareaInput()](ui/TextareaInput.md): Multiline text input bound to a string value, rendered as a <textarea> that grows to fit its content.
-- [TextInput()](ui/TextInput.md): Single-line text input bound to a string value, rendered as an <input>. Use TextareaInput for multiline text.
 - [createMapper()](ui/createMapper.md): Create a [Mapping, Mapper] pair of components backed by their own private React context.
 - [requireMeta()](ui/requireMeta.md): Read the current Meta context, optionally merging in additional meta data.
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.
@@ -21635,6 +21635,72 @@ Props for `Blockquote` — colour, space, and typography variants plus optional 
 
 Quoted block of text — rendered as `<blockquote>`.
 
+A block of quoted text. Renders a `<blockquote>` with a line on its left edge.
+
+**Things to know:**
+
+- Put block content inside it, such as `<Paragraph>`. It trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
+- It is `display: flow-root`, so the margins of its children stay inside it.
+- The line is painted from the tint ladder. Set `color=` on it (or an ancestor) to recolour the line.
+- Inside `<Prose>` a raw `<blockquote>` gets the same styles, so Markdown quotes match.
+- Composes the standard block variants: `color`, `space`, `padding`, `indent`, `width`, plus typography.
+
+## Usage
+
+### Quote
+
+```tsx live
+import { Blockquote, Paragraph } from "shelving/ui";
+
+<Blockquote>
+	<Paragraph>Simplicity, brevity, clarity, humanity.</Paragraph>
+</Blockquote>;
+```
+
+### Quote with a source
+
+```tsx live
+import { Blockquote, Paragraph, Small } from "shelving/ui";
+
+<Blockquote>
+	<Paragraph>Clutter is the disease of American writing.</Paragraph>
+	<Paragraph>
+		<Small>William Zinsser</Small>
+	</Paragraph>
+</Blockquote>;
+```
+
+### Colour
+
+```tsx live
+import { Blockquote, Paragraph } from "shelving/ui";
+
+<Blockquote color="purple" font="serif" size="large">
+	<Paragraph>A purple line, with larger serif text.</Paragraph>
+</Blockquote>;
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hook (`--blockquote-border`) is declared again in every tint scope, so override it at `:root, .tint`.
+
+| Variable               | Styles                                    | Default                         |
+| ---------------------- | ----------------------------------------- | ------------------------------- |
+| `--blockquote-border`  | Colour of the left line                   | `var(--tint-90)`                |
+| `--blockquote-stroke`  | Width of the left line (one length)       | `var(--stroke-normal)` (1px)    |
+| `--blockquote-space`   | Outer block margin (top and bottom)       | `var(--space-paragraph)` (16px) |
+| `--blockquote-padding` | Inner top and bottom padding (one length) | `var(--space-small)` (12px)     |
+| `--blockquote-indent`  | Inner left padding (one length)           | `var(--space-normal)` (16px)    |
+| `--blockquote-color`   | Text colour                               | `inherit`                       |
+| `--blockquote-font`    | Font family                               | `inherit`                       |
+| `--blockquote-weight`  | Font weight                               | `var(--weight-normal)` (400)    |
+| `--blockquote-size`    | Font size                                 | `inherit`                       |
+| `--blockquote-leading` | Line height                               | `inherit`                       |
+| `--blockquote-align`   | Text alignment                            | `left`                          |
+
+**Global tokens it reads:** `--tint-90`, `--stroke-normal`, `--space-paragraph`, `--space-small`, `--space-normal`, `--weight-normal`.
+
+
 ## Signatures
 
 ```ts
@@ -21652,12 +21718,6 @@ Blockquote({ children, className, ...props }: BlockquoteProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Blockquote>To be or not to be.</Blockquote>
-```
 
 
 ---
@@ -21989,6 +22049,71 @@ Description list — a sequence of term/value pairs rendered as a `<dl>`.
 - Children are raw `<dt>` / `<dd>` elements — `<dt>` is the term label, `<dd>` the value, stacked term-above-value.
 - The spacing between pairs is overridable via the `--definitions-gap` hook.
 
+A list of terms and their values. Renders a `<dl>`. Use it for facts about one thing, such as the details of an order.
+
+**Things to know:**
+
+- Put raw `<dt>` and `<dd>` elements inside it. `<dt>` is the term and `<dd>` is its value.
+- Each term shows above its value. The term has the label style (small, bold, uppercase), the same as `<Label>`.
+- `--definitions-gap` sets the space above each term, so it sets the space between pairs.
+- Inside `<Prose>` a raw `<dl>` gets the same styles.
+- Composes the `space`, `gap` and typography variants.
+
+## Usage
+
+### Details
+
+```tsx live
+import { Definitions } from "shelving/ui";
+
+<Definitions>
+	<dt>Name</dt>
+	<dd>Acme Ltd</dd>
+	<dt>Email</dt>
+	<dd>hello@acme.example</dd>
+	<dt>Plan</dt>
+	<dd>Pro, billed yearly</dd>
+</Definitions>;
+```
+
+### In a card
+
+```tsx live
+import { Card, Definitions, Subheading } from "shelving/ui";
+
+<Card>
+	<Subheading>Order 1042</Subheading>
+	<Definitions>
+		<dt>Status</dt>
+		<dd>Shipped</dd>
+		<dt>Total</dt>
+		<dd>£48.00</dd>
+	</Definitions>
+</Card>;
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hooks (`--definitions-color`, `--definitions-label-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                     | Styles                              | Default                         |
+| ---------------------------- | ----------------------------------- | ------------------------------- |
+| `--definitions-space`        | Outer block margin (top and bottom) | `var(--space-paragraph)` (16px) |
+| `--definitions-gap`          | Space above each term               | `var(--space-small)` (12px)     |
+| `--definitions-color`        | Value text colour                   | `var(--tint-00)`                |
+| `--definitions-font`         | Value font family                   | `var(--font-body)`              |
+| `--definitions-weight`       | Value font weight                   | `var(--weight-normal)` (400)    |
+| `--definitions-size`         | Value font size                     | `var(--size-normal)` (16px)     |
+| `--definitions-align`        | Text alignment                      | `left`                          |
+| `--definitions-label-color`  | Term text colour                    | `var(--tint-70)`                |
+| `--definitions-label-font`   | Term font family                    | `var(--font-label)`             |
+| `--definitions-label-weight` | Term font weight                    | `var(--weight-label)` (700)     |
+| `--definitions-label-size`   | Term font size                      | `var(--size-label)` (12.8px)    |
+| `--definitions-label-case`   | Term text case                      | `var(--case-label)` (uppercase) |
+
+**Global tokens it reads:** the tint ladder `--tint-00` / `--tint-70`, plus `--space-paragraph`, `--space-small`, `--font-body`, `--weight-normal`, `--size-normal`, and the label tokens `--font-label`, `--weight-label`, `--size-label`, `--case-label`.
+
+
 ## Signatures
 
 ```ts
@@ -22006,12 +22131,6 @@ Definitions({ children, className, ...props }: DefinitionsProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Definitions><dt>Name</dt><dd>Acme</dd></Definitions>
-```
 
 
 ---
@@ -22165,17 +22284,58 @@ Props for `Divider` — space and colour variants.
 
 ---
 
-# Divider()
+# Divider
 
-- Kind: function
+- Kind: component
 - Import: `import { Divider } from "shelving/ui";`
 
 Horizontal rule separating blocks of content — rendered as `<hr>`.
 
+A horizontal line between blocks of content. Renders an `<hr>`.
+
+**Things to know:**
+
+- The line is painted from the tint ladder. Set `color=` on it (or an ancestor) to recolour it.
+- Set `space=` to change the space above and below the line.
+- Inside `<Prose>` a raw `<hr>` gets the same styles, so a Markdown `---` matches.
+
+## Usage
+
+```tsx live
+import { Divider, Paragraph } from "shelving/ui";
+
+<Paragraph>First part.</Paragraph>
+<Divider />
+<Paragraph>Second part.</Paragraph>
+```
+
+### Colour and space
+
+```tsx live
+import { Divider, Paragraph } from "shelving/ui";
+
+<Paragraph>First part.</Paragraph>
+<Divider color="blue" space="large" />
+<Paragraph>Second part.</Paragraph>
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hook (`--divider-border`) is declared again in every tint scope, so override it at `:root, .tint`.
+
+| Variable           | Styles                              | Default                         |
+| ------------------ | ----------------------------------- | ------------------------------- |
+| `--divider-border` | Line colour                         | `var(--tint-90)`                |
+| `--divider-stroke` | Line width (one length)             | `var(--stroke-normal)` (1px)    |
+| `--divider-space`  | Outer block margin (top and bottom) | `var(--space-paragraph)` (16px) |
+
+**Global tokens it reads:** `--tint-90`, `--stroke-normal`, `--space-paragraph`.
+
+
 ## Signatures
 
 ```ts
-Divider({ className, ...props }: DividerProps): void
+Divider({ className, ...props }: DividerProps): ReactElement
 ```
 
 ## Parameters
@@ -22184,11 +22344,11 @@ Divider({ className, ...props }: DividerProps): void
 | --- | --- | --- |
 | `props` | `DividerProps` |  |
 
-## Examples
+## Returns
 
-```ts
-<Divider />
-```
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
 
 
 ---
@@ -22490,6 +22650,63 @@ Image block — renders an `<img>` with space and width variants applied.
 - It never holds a transition (such as a page change): React waits only for an eager `<img>` with no `onLoad`.
 - The load state is the `data-loaded` attribute (none, `fade`, then `done`), set on the element directly, so a load never re-renders.
 
+An image block. Renders an `<img>` with rounded corners and a block margin.
+
+**Things to know:**
+
+- Always set `alt` to describe the image for screen readers. Set `alt=""` for an image that is only decoration.
+- It loads lazily, and fades in once when it loads. An image that is already loaded when it mounts (for example, from the cache) shows at once with no fade.
+- It never holds a page transition. React waits only for an eager `<img>` with no `onLoad`.
+- The load state is on the `data-loaded` attribute: none, then `fade`, then `done`. It is set on the element directly, so a load never renders the component again.
+- With scripts off, the image shows at once.
+- With reduced motion, the image shows with no fade.
+- `object-fit: cover` keeps the image in proportion when you give it a fixed size.
+- Composes the `space` and `width` variants.
+- Inside `<Prose>` a raw `<img>` gets the same box styles.
+
+## Usage
+
+### Image
+
+```tsx live
+import { Image } from "shelving/ui";
+
+// A small SVG, so the example needs no network. Use any image URL.
+const SRC = `data:image/svg+xml,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 5"><linearGradient id="g"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#a855f7"/></linearGradient><rect width="8" height="5" fill="url(#g)"/></svg>',
+)}`;
+
+<Image src={SRC} alt="A blue to purple gradient" />;
+```
+
+### Width
+
+```tsx live
+import { Image } from "shelving/ui";
+
+const SRC = `data:image/svg+xml,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><rect width="1" height="1" fill="#f97316"/></svg>',
+)}`;
+
+// The `width` variant sets the width of the image.
+<Image src={SRC} alt="An orange square" width="12x" />;
+```
+
+## Styling
+
+Override these hooks at `:root`.
+
+| Variable                | Styles                                    | Default                          |
+| ----------------------- | ----------------------------------------- | -------------------------------- |
+| `--image-radius`        | Corner radius                             | `var(--radius-normal)` (16px)    |
+| `--image-space`         | Outer block margin (top and bottom)       | `var(--space-paragraph)` (16px)  |
+| `--image-border`        | Border colour (width is `--image-stroke`) | `transparent`                    |
+| `--image-stroke`        | Border width (one length)                 | `0px`                            |
+| `--image-fade-duration` | Length of the fade-in                     | `var(--duration-normal)` (300ms) |
+
+**Global tokens it reads:** `--radius-normal`, `--space-paragraph`, `--duration-normal`.
+
+
 ## Signatures
 
 ```ts
@@ -22509,12 +22726,6 @@ Image({ src, alt, className, ...props }: ImageProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Image src="/logo.png" alt="Logo" width="narrow" />
-```
 
 
 ---
@@ -22545,6 +22756,52 @@ Label heading, a `<h3>` with a labelly appearance (UPPERCASE but with a smaller 
 - This is the default style used by things like a `<th>` from a `<table>`.
 - Default text properties for all of these can be controlled with global variables: `--size-label`, `--font-label`, `--case-label`.
 
+A small heading with the label style: small, bold and uppercase. Renders an `<h3>` by default.
+
+**Things to know:**
+
+- Use it to name a group of content, such as a group of links in a sidebar.
+- Set `level` to render a different heading element (`"1"` to `"6"`). The style stays the same.
+- The label style is shared. A table header `<th>` and the terms in `<Definitions>` use the same global tokens: `--font-label`, `--weight-label`, `--size-label` and `--case-label`. Change those to restyle all labels at once.
+- To label a form input, use `<Field>`. It renders a real `<label>`.
+- Takes the same props as `<Heading>`.
+
+## Usage
+
+### Label
+
+```tsx live
+import { Label, Paragraph } from "shelving/ui";
+
+<Label>Billing</Label>
+<Paragraph>Your next invoice is on 1 December.</Paragraph>
+```
+
+### Other heading level
+
+```tsx live
+import { Label } from "shelving/ui";
+
+<Label level="2">Account</Label>;
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hook (`--label-color`) is declared again in every tint scope, so override it at `:root, .tint`.
+
+| Variable          | Styles                              | Default                         |
+| ----------------- | ----------------------------------- | ------------------------------- |
+| `--label-color`   | Text colour                         | `var(--tint-70)`                |
+| `--label-space`   | Outer block margin (top and bottom) | `var(--space-paragraph)` (16px) |
+| `--label-font`    | Font family                         | `var(--font-label)`             |
+| `--label-weight`  | Font weight                         | `var(--weight-label)` (700)     |
+| `--label-size`    | Font size                           | `var(--size-label)` (12.8px)    |
+| `--label-leading` | Line height                         | `var(--leading-auto)`           |
+| `--label-case`    | Text case                           | `var(--case-label)` (uppercase) |
+
+**Global tokens it reads:** `--tint-70`, `--space-paragraph`, `--font-label`, `--weight-label`, `--size-label`, `--leading-auto`, `--case-label`.
+
+
 ## Signatures
 
 ```ts
@@ -22562,12 +22819,6 @@ Label({ level = "3", children, className, ...props }: LabelProps): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Label>Email address</Label>
-```
 
 
 ---
@@ -23048,6 +23299,72 @@ Preformatted block of text — rendered as `<pre>`.
 - Lines are not wrapped by default — overflowing content scrolls horizontally within the block.
 - Pass `wrap` to wrap long lines instead; newlines and indentation are preserved either way.
 
+A block of preformatted text, such as code or terminal output. Renders a `<pre>` in a box with a monospace font.
+
+**Things to know:**
+
+- Newlines, spaces and tabs show as written. Tabs are two spaces wide.
+- Long lines do not wrap. The block scrolls left and right. Set `wrap` to wrap long lines.
+- The block is always full width.
+- The box is painted from the tint ladder. Set `color=` on it, or `color=` or `status=` on an ancestor such as a `<Card>`, to recolour it.
+- Inside `<Prose>` a raw `<pre>` gets the same styles, so Markdown code blocks match.
+- For a short piece of code inside a sentence, use `<Code>`.
+
+## Usage
+
+### Code
+
+```tsx live
+import { Preformatted } from "shelving/ui";
+
+<Preformatted>{`function add(a, b) {
+	return a + b;
+}`}</Preformatted>;
+```
+
+### Wrap long lines
+
+```tsx live
+import { Preformatted } from "shelving/ui";
+
+<Preformatted wrap>
+	{"This line is long, so it wraps onto the next line and the block does not scroll left and right at all."}
+</Preformatted>;
+```
+
+### Colour
+
+```tsx live
+import { Preformatted } from "shelving/ui";
+
+<Preformatted color="red">{"Error: Connection refused\n    at connect (db.ts:12)"}</Preformatted>;
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hooks (`--preformatted-border`, `--preformatted-background`, `--preformatted-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                      | Styles                                           | Default                            |
+| ----------------------------- | ------------------------------------------------ | ---------------------------------- |
+| `--preformatted-background`   | Background                                       | `var(--tint-90)`                   |
+| `--preformatted-color`        | Text colour                                      | `var(--tint-00)`                   |
+| `--preformatted-border`       | Border colour (width is `--preformatted-stroke`) | `var(--tint-80)`                   |
+| `--preformatted-stroke`       | Border width (one length)                        | `var(--stroke-normal)` (1px)       |
+| `--preformatted-radius`       | Corner radius                                    | `var(--radius-normal)` (16px)      |
+| `--preformatted-space`        | Outer block margin (top and bottom)              | `var(--space-paragraph)` (16px)    |
+| `--preformatted-padding`      | Inner top and bottom padding (one length)        | `var(--space-normal)` (16px)       |
+| `--preformatted-indent`       | Inner left and right padding (one length)        | `var(--space-normal)` (16px)       |
+| `--preformatted-shadow`       | Drop shadow                                      | `none`                             |
+| `--preformatted-transition`   | Transition                                       | `all var(--duration-fast)` (150ms) |
+| `--preformatted-focus-border` | Focus outline colour (width is `--stroke-focus`) | `var(--color-focus)`               |
+| `--preformatted-font`         | Font family                                      | `var(--font-code)` (monospace)     |
+| `--preformatted-weight`       | Font weight                                      | `var(--weight-code)` (500)         |
+| `--preformatted-size`         | Font size                                        | `var(--size-normal)` (16px)        |
+| `--preformatted-leading`      | Line height                                      | `var(--leading-auto)`              |
+
+**Global tokens it reads:** the tint ladder `--tint-00` / `--tint-80` / `--tint-90`, plus `--stroke-normal`, `--stroke-focus`, `--radius-normal`, `--space-paragraph`, `--space-normal`, `--duration-fast`, `--color-focus`, `--font-code`, `--weight-code`, `--size-normal`, `--leading-auto`.
+
+
 ## Signatures
 
 ```ts
@@ -23066,12 +23383,6 @@ Preformatted({ children, className, ...variants }: PreformattedProps): ReactElem
 | Type | Description |
 | --- | --- |
 | `ReactElement` |  |
-
-## Examples
-
-```ts
-<Preformatted>{"line one\nline two"}</Preformatted>
-```
 
 
 ---
@@ -29556,6 +29867,42 @@ Output a list of `<CheckboxInput>` elements for each item in an array, to pick a
 - Checked items that are not in `items` stay in the value.
 - The items can be any type, and can be formatted for output through an optional `formatter()` function.
 
+A column of checkboxes, one for each item in an array. The user picks any number of items.
+
+**Things to know:**
+
+- The items can be any type. `onValue()` gets the array of checked items, in the order they were checked. Items are compared with `===`.
+- Checked items that are not in `items` stay in the value.
+- `formatter` turns an item into the label (default `formatValue()`). It can return any `ReactNode`.
+- With `required`, the user must check at least one item.
+- To pick one item only, use `<ArrayRadioInputs>`.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ArrayCheckboxInputs, Paragraph } from "shelving/ui";
+
+const TOPPINGS = ["Cheese", "Tomato", "Olives", "Basil"];
+
+function Toppings() {
+	const [picked, setPicked] = useState<readonly string[]>(["Cheese"]);
+	return (
+		<>
+			<ArrayCheckboxInputs name="toppings" items={TOPPINGS} value={picked} onValue={v => setPicked(v ?? [])} />
+			<Paragraph>Toppings: {picked.join(", ") || "none"}</Paragraph>
+		</>
+	);
+}
+
+<Toppings />;
+```
+
+## Styling
+
+`ArrayCheckboxInputs` has no own hooks. It is a `<Column>` of `<CheckboxInput>` elements, so it uses their styles. See `getInputClass()` for the `--input-*` hooks.
+
+
 ## Signatures
 
 ```ts
@@ -29583,12 +29930,6 @@ ArrayCheckboxInputs({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | Element rendering one checkbox per item. |
-
-## Examples
-
-```ts
-<ArrayCheckboxInputs name="sizes" items={["s", "m", "l"]} value={sizes} onValue={setSizes} />
-```
 
 
 ---
@@ -29635,6 +29976,43 @@ Repeating input that edits an array of items, adding a `SchemaInput` row per ite
 - Each item is validated and rendered using the supplied `items` schema.
 - Enforces `min`/`max` length and offers add, remove, and clear controls.
 
+A list of inputs that edits an array. The user can add and remove items.
+
+**Things to know:**
+
+- `items` is the `Schema` for each item. Each row shows the `<SchemaInput>` for that schema, with a remove button.
+- "Add" adds a new item with the schema's default value. "Clear" removes all items.
+- `min` and `max` set the minimum and maximum number of items. The remove button is disabled at `min`, and "Add" is disabled at `max`.
+- `one` and `many` name the items in the button labels (default "item" and "items").
+- With no items, it shows a `<ButtonInput>` with the `placeholder`. A tap adds the first item.
+- `message` can hold a message for each item, keyed by its index (see `splitMessage()`).
+- In a `<Form>`, an `ArraySchema` makes this input for you.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ArrayInput, Paragraph } from "shelving/ui";
+import { STRING } from "shelving/schema";
+
+function Tags() {
+	const [tags, setTags] = useState<readonly string[]>(["red", "green"]);
+	return (
+		<>
+			<ArrayInput name="tags" items={STRING} one="tag" placeholder="Add a tag" max={4} value={tags} onValue={v => setTags(v ?? [])} />
+			<Paragraph>Tags: {tags.join(", ") || "none"}</Paragraph>
+		</>
+	);
+}
+
+<Tags />;
+```
+
+## Styling
+
+`ArrayInput` has no own hooks. It is a `<Column>` of `<Row>` elements with inputs and `<Button>` elements, so it uses their styles.
+
+
 ## Signatures
 
 ```ts
@@ -29657,12 +30035,6 @@ ArrayInput(props: ArrayInputProps<T>): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | Element rendering one input row per array item plus add/clear controls. |
-
-## Examples
-
-```ts
-<ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
-```
 
 
 ---
@@ -29694,14 +30066,54 @@ Props for `ArrayRadioInputs`, which renders a radio for each item in an array of
 
 ---
 
-# ArrayRadioInputs()
+# ArrayRadioInputs
 
-- Kind: function
+- Kind: component
 - Import: `import { ArrayRadioInputs } from "shelving/ui";`
 
 Output a list of `<RadioInput>` elements for each item in an array.
 - The items can be any type, and can be formatted for output through an optional `formatter()` function.
 - A `placeholder` option is shown at the bottom if `required=false`.
+
+A column of radios, one for each item in an array. The user picks one item.
+
+**Things to know:**
+
+- The items can be any type, such as numbers or objects. `onValue()` gets the picked item. Items are compared with `===`.
+- `formatter` turns an item into the label (default `formatValue()`). It can return any `ReactNode`.
+- When the input is not `required`, an extra radio at the end picks no item. Its label is `placeholder` (default "Choose").
+- For options with string keys, `<ChoiceRadioInputs>` is simpler. To pick more than one item, use `<ArrayCheckboxInputs>`.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ArrayRadioInputs, Paragraph } from "shelving/ui";
+
+function Seats() {
+	const [seats, setSeats] = useState<number>();
+	return (
+		<>
+			<ArrayRadioInputs
+				name="seats"
+				items={[1, 2, 4, 8]}
+				formatter={n => `${n} seats`}
+				placeholder="Any"
+				value={seats}
+				onValue={setSeats}
+			/>
+			<Paragraph>Seats: {seats ?? "any"}</Paragraph>
+		</>
+	);
+}
+
+<Seats />;
+```
+
+## Styling
+
+`ArrayRadioInputs` has no own hooks. It is a `<Column>` of `<RadioInput>` elements, so it uses their styles. See `getInputClass()` for the `--input-*` hooks.
+
 
 ## Signatures
 
@@ -29731,12 +30143,6 @@ ArrayRadioInputs({
 | --- | --- |
 | `ReactElement` | Element rendering one radio per item plus an optional empty placeholder radio. |
 
-## Examples
-
-```ts
-<ArrayRadioInputs name="size" items={["s", "m", "l"]} value={size} onValue={setSize} />
-```
-
 
 ---
 
@@ -29765,6 +30171,41 @@ Props for `ButtonInput`, a clickable element styled to match form inputs.
 Return either a `<button>` or an `<a href="">` styled as an input, based on whether an `onClick` or `href` prop is provided.
 - Falls back to rendering the `placeholder` when no `children`/`title` content is supplied.
 
+A button that looks like an input. Renders a `<button>`, or an `<a>` when `href` is set.
+
+**Things to know:**
+
+- Use it for a control that opens something else, such as a picker or a dialog, but sits in a form like an input.
+- The children are the content. With no children it shows `title`, then `placeholder` in grey.
+- Set `onClick` for a button or `href` for a link, the same as `<Button>`.
+- The text is centred and does not wrap. Long text is cut off.
+- `<PopoverButtonInput>` is a `ButtonInput` that opens a popover. `<ArrayInput>` and `<DictionaryInput>` use one when they are empty.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ButtonInput } from "shelving/ui";
+
+const COLOURS = ["Red", "Green", "Blue"];
+
+function Colour() {
+	const [i, setI] = useState<number>();
+	return (
+		<ButtonInput name="colour" placeholder="Choose a colour…" onClick={() => setI(((i ?? -1) + 1) % COLOURS.length)}>
+			{i === undefined ? undefined : COLOURS[i]}
+		</ButtonInput>
+	);
+}
+
+<Colour />;
+```
+
+## Styling
+
+`ButtonInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
+
 ## Signatures
 
 ```ts
@@ -29782,12 +30223,6 @@ ButtonInput({ title, placeholder, children = title, className, ...props }: Butto
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `Clickable` element styled with the button-input class. |
-
-## Examples
-
-```ts
-<ButtonInput name="choose" onClick={open}>Choose…</ButtonInput>
-```
 
 
 ---
@@ -29809,13 +30244,61 @@ Props for `CheckboxInput`, a boolean-valued checkbox input.
 
 ---
 
-# CheckboxInput()
+# CheckboxInput
 
-- Kind: function
+- Kind: component
 - Import: `import { CheckboxInput } from "shelving/ui";`
 
 Checkbox input bound to a `boolean` value, rendered as a labelled `<input type="checkbox">`.
 - The label content comes from `children`, falling back to `placeholder`/`title`.
+
+A checkbox with a label, bound to a `boolean` value. Renders a `<label>` that looks like an input, with an `<input type="checkbox">` inside.
+
+**Things to know:**
+
+- The children are the label. With no children, the label is `placeholder`, then `title`, then "Yes".
+- The whole box is the tap target, not only the checkbox.
+- The border goes green when the checkbox is checked.
+- The checkbox is not controlled. `value` sets whether it is checked first. To change it from outside, give it a new `key`.
+- `onValue()` gets `true` or `false`.
+- Composes the flex variants, so `width="fit"` makes the box only as wide as its label.
+- In a `<Form>`, a `BooleanSchema` makes this input for you. To pick more than one item from a list, use `<ArrayCheckboxInputs>`.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { CheckboxInput, Paragraph } from "shelving/ui";
+
+function Terms() {
+	const [agree, setAgree] = useState(false);
+	return (
+		<>
+			<CheckboxInput name="agree" value={agree} onValue={v => setAgree(!!v)}>
+				I agree to the terms
+			</CheckboxInput>
+			<Paragraph>{agree ? "Thank you." : "Please agree to continue."}</Paragraph>
+		</>
+	);
+}
+
+<Terms />;
+```
+
+### States
+
+```tsx live
+import { CheckboxInput } from "shelving/ui";
+
+<CheckboxInput name="news" value onValue={() => {}}>Send me news</CheckboxInput>
+<CheckboxInput name="fit" width="fit" onValue={() => {}}>Only as wide as its label</CheckboxInput>
+<CheckboxInput name="off" disabled onValue={() => {}}>Not available</CheckboxInput>
+```
+
+## Styling
+
+`CheckboxInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks. The checkbox uses the browser's own control, coloured with `accent-color: var(--color-success)`, and is `--input-icon-size` square.
+
 
 ## Signatures
 
@@ -29846,12 +30329,6 @@ CheckboxInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<label>` wrapping the checkbox and its label content. |
-
-## Examples
-
-```ts
-<CheckboxInput name="agree" value={agree} onValue={setAgree}>I agree</CheckboxInput>
-```
 
 
 ---
@@ -29894,6 +30371,50 @@ Output a list of `<RadioInput>` elements for each item in a set of `ChoiceOption
 - This is the same type a `ChoiceSchema` uses for its `.options` field.
 - A `placeholder` option is shown at the bottom if `required=false`.
 
+A group of radios, one for each option in a `ChoiceOptions` object. The user picks one option.
+
+**Things to know:**
+
+- `options` is in `{ key: title }` format, the same as `ChoiceSchema.options`. `onValue()` gets the key of the picked option.
+- When the input is not `required`, an extra radio at the end picks no option. Its label is `placeholder` (default "Choose").
+- Two options show side by side in a row. More than two show in a column. Set `column` to choose, or `wrap` to let a row wrap.
+- In a `<Form>`, a `ChoiceSchema` with 8 options or fewer makes this input for you. For more options, use `<SelectInput>`.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ChoiceRadioInputs, Paragraph } from "shelving/ui";
+
+const SIZES = { s: "Small", m: "Medium", l: "Large" };
+
+function Size() {
+	const [size, setSize] = useState<string | undefined>("m");
+	return (
+		<>
+			<ChoiceRadioInputs name="size" options={SIZES} value={size} onValue={setSize} required />
+			<Paragraph>Size: {size ?? "none"}</Paragraph>
+		</>
+	);
+}
+
+<Size />;
+```
+
+### Two options, not required
+
+```tsx live
+import { ChoiceRadioInputs } from "shelving/ui";
+
+// Two options show in a row. The last radio picks no option.
+<ChoiceRadioInputs name="answer" options={{ yes: "Yes", no: "No" }} placeholder="Not sure" onValue={() => {}} />;
+```
+
+## Styling
+
+`ChoiceRadioInputs` has no own hooks. It is a `<Row>` of `<RadioInput>` elements, so it uses their styles. See `getInputClass()` for the `--input-*` hooks.
+
+
 ## Signatures
 
 ```ts
@@ -29914,12 +30435,6 @@ ChoiceRadioInputs(props: ChoiceRadioInputsProps<T>): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | Element rendering one radio per option plus an optional empty placeholder radio. |
-
-## Examples
-
-```ts
-<ChoiceRadioInputs name="role" options={{ admin: "Admin", user: "User" }} value={role} onValue={setRole} />
-```
 
 
 ---
@@ -29957,6 +30472,45 @@ Props for `DataInput`, a composite input that edits an object of schema-validate
 Composite input that edits a data object by rendering a `SchemaInput` for each property schema.
 - Each sub-field is keyed by its property name and validated using the matching schema in `props`.
 
+A group of inputs that edits an object, one input for each property. Use it for a nested object inside a form, such as an address.
+
+**Things to know:**
+
+- `props` holds a `Schema` for each property. Each property shows the `<SchemaInput>` for its schema.
+- `onValue()` gets the whole object, with the changed property set.
+- Two properties or fewer show side by side in a row. More show in a column.
+- `message` can hold a message for each property, keyed by its name (see `splitMessage()`).
+- In a `<Form>`, a nested `DataSchema` makes this input for you.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { DataInput, Paragraph } from "shelving/ui";
+import { STRING } from "shelving/schema";
+
+const NAME = { first: STRING, last: STRING };
+
+function FullName() {
+	const [name, setName] = useState({ first: "Ada", last: "Lovelace" });
+	return (
+		<>
+			<DataInput name="name" props={NAME} value={name} onValue={v => v && setName(v)} />
+			<Paragraph>
+				Hello, {name.first} {name.last}.
+			</Paragraph>
+		</>
+	);
+}
+
+<FullName />;
+```
+
+## Styling
+
+`DataInput` has no own hooks. It is a `<Row>` of inputs, so it uses their styles.
+
+
 ## Signatures
 
 ```ts
@@ -29975,12 +30529,6 @@ DataInput(props: DataInputProps<T>): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | Element rendering one input per property, laid out in a row or column. |
-
-## Examples
-
-```ts
-<DataInput name="address" props={addressSchemas} value={address} onValue={setAddress} />
-```
 
 
 ---
@@ -30016,13 +30564,48 @@ Props for `DateInput`, a date/time `<input>` that emits an ISO string value.
 
 ---
 
-# DateInput()
+# DateInput
 
-- Kind: function
+- Kind: component
 - Import: `import { DateInput } from "shelving/ui";`
 
 Date, time, or datetime input that accepts a `PossibleDate` and emits an ISO string value.
 - The `input` prop selects the underlying `<input type="date|time|datetime-local">` and matching string format.
+
+A date, time, or date and time input. Renders the browser's own `<input type="date">`, `"time"` or `"datetime-local"`.
+
+**Things to know:**
+
+- `input` sets the type: `"date"` (the default), `"time"` or `"datetime-local"`.
+- `value`, `min` and `max` accept any `PossibleDate`: a `Date`, a timestamp, or a date string.
+- `onValue()` gets a string in the format of the type: `YYYY-MM-DD` for a date, `HH:MM` or `HH:MM:SS` for a time, and `YYYY-MM-DDTHH:MM` for a date and time (with no time zone).
+- `step` sets the step in seconds for a time.
+- The browser draws the picker, so it looks different in each browser.
+- In a `<Form>`, a `DateSchema` makes this input for you.
+
+## Usage
+
+```tsx live
+import { DateInput } from "shelving/ui";
+
+<DateInput name="start" title="Start date" value={new Date()} onValue={() => {}} />
+<DateInput name="time" input="time" title="Time" value="09:30" onValue={() => {}} />
+<DateInput name="when" input="datetime-local" title="Date and time" onValue={() => {}} />
+```
+
+### Minimum and maximum
+
+```tsx live
+import { DateInput } from "shelving/ui";
+
+// Only dates in 2027 can be picked.
+<DateInput name="trip" title="Trip date" min="2027-01-01" max="2027-12-31" onValue={() => {}} />;
+```
+
+## Styling
+
+`DateInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
 
 ## Signatures
 
@@ -30060,12 +30643,6 @@ DateInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A native date/time `<input>` element. |
-
-## Examples
-
-```ts
-<DateInput name="dob" input="date" value={dob} onValue={setDob} />
-```
 
 
 ---
@@ -30112,6 +30689,42 @@ Repeating input that edits a dictionary, with an editable key and schema-validat
 - Each value is validated and rendered using the supplied `items` schema.
 - Enforces `min`/`max` entry count and offers add, remove, and clear controls.
 
+A list of key and value inputs that edits a dictionary (an object with any keys). The user can add, rename and remove entries.
+
+**Things to know:**
+
+- Each row has a `<TextInput>` for the key, the `<SchemaInput>` for the value, and a remove button.
+- `items` is the `Schema` for each value. "Add" adds an entry with the schema's default value, keyed by `one`. Rename it to add another.
+- `min` and `max` set the minimum and maximum number of entries. "Clear" removes all entries.
+- `one` and `many` name the entries in the button labels (default "item" and "items").
+- With no entries, it shows a `<ButtonInput>` with the `placeholder`.
+- In a `<Form>`, a `DictionarySchema` makes this input for you.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { DictionaryInput, Paragraph } from "shelving/ui";
+import { STRING } from "shelving/schema";
+
+function Meta() {
+	const [meta, setMeta] = useState<{ readonly [key: string]: string }>({ author: "Alice" });
+	return (
+		<>
+			<DictionaryInput name="meta" items={STRING} one="field" placeholder="Add a field" value={meta} onValue={v => setMeta(v ?? {})} />
+			<Paragraph>{JSON.stringify(meta)}</Paragraph>
+		</>
+	);
+}
+
+<Meta />;
+```
+
+## Styling
+
+`DictionaryInput` has no own hooks. It is a `<Row>` of inputs and `<Button>` elements, so it uses their styles.
+
+
 ## Signatures
 
 ```ts
@@ -30134,12 +30747,6 @@ DictionaryInput(props: DictionaryInputProps<T>): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | Element rendering one key/value row per entry plus add/clear controls. |
-
-## Examples
-
-```ts
-<DictionaryInput name="meta" items={STRING} value={meta} onValue={setMeta} />
-```
 
 
 ---
@@ -30171,14 +30778,57 @@ Props for `FileInput`, an `<input type="file">` that emits the selected `File`.
 
 ---
 
-# FileInput()
+# FileInput
 
-- Kind: function
+- Kind: component
 - Import: `import { FileInput } from "shelving/ui";`
 
 File picker input that emits the selected `File` through `onValue`.
 - The optional `types` dictionary restricts the picker's accepted file types.
 - The optional `capture` opens the front (`"user"`) or back (`"environment"`) camera straight away.
+
+A file picker. Renders the browser's own `<input type="file">`.
+
+**Things to know:**
+
+- `onValue()` gets the picked `File`. The user can pick one file only.
+- `types` sets the file types the picker accepts, in `{ extension: mime }` format, for example `IMAGE_TYPES`. With no `types`, it accepts any file.
+- `capture` opens the front (`"user"`) or back (`"environment"`) camera straight away. On phones this skips the photo library.
+- The input cannot show a file it did not pick, so `value` has no effect.
+- The browser draws the button, so it looks different in each browser. For an image, `<ImageInput>` shows a preview.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { FileInput, Paragraph } from "shelving/ui";
+
+function Upload() {
+	const [file, setFile] = useState<string | File>();
+	return (
+		<>
+			<FileInput name="file" title="Document" onValue={setFile} />
+			<Paragraph>{file instanceof File ? `${file.name} (${file.size} bytes)` : "No file picked."}</Paragraph>
+		</>
+	);
+}
+
+<Upload />;
+```
+
+### Images only
+
+```tsx live
+import { FileInput } from "shelving/ui";
+import { IMAGE_TYPES } from "shelving/util/file";
+
+<FileInput name="photo" title="Photo" types={IMAGE_TYPES} onValue={() => {}} />;
+```
+
+## Styling
+
+`FileInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
 
 ## Signatures
 
@@ -30212,12 +30862,6 @@ FileInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A native `<input type="file">` element. |
-
-## Examples
-
-```ts
-<FileInput name="avatar" types={{ png: "image/png" }} onValue={setFile} />
-```
 
 
 ---
@@ -30373,6 +31017,60 @@ Styling variants shared by every form input — the block variants: `space`, `pa
 
 Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
 
+Get the base class names for a form input. Every input in `shelving/ui` uses it, so they all share one look: the same border, padding, height and focus ring.
+
+**Things to know:**
+
+- It adds the shared `.input` class plus the classes for any `InputVariants` (`space`, `padding`, `indent`, `width` and typography).
+- Use it to make your own control look like an input. Add your own classes after it with `getClass()`.
+- An input and a `<Button>` with an icon have the same height.
+- An input shows a green border when it has a valid value, and a red border when its value is not valid or `message` is set.
+- The styles below belong to the `.input` class, so they apply to every input: `<TextInput>`, `<TextareaInput>`, `<NumberInput>`, `<DateInput>`, `<FileInput>`, `<SelectInput>`, `<CheckboxInput>`, `<RadioInput>`, `<ButtonInput>`, `<OutputInput>` and `<InputWrapper>`.
+
+## Usage
+
+```tsx
+import { getClass, getInputClass } from "shelving/ui";
+
+function ColorInput({ value, onValue, ...variants }: ColorInputProps) {
+	return (
+		<input
+			type="color"
+			defaultValue={value}
+			onChange={e => onValue(e.currentTarget.value)}
+			className={getClass(getInputClass(variants), "color-input")}
+		/>
+	);
+}
+```
+
+## Styling
+
+Every input reads these hooks. Override these hooks at `:root`. The tint hooks (`--input-border`, `--input-background`, `--input-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                   | Styles                                                                 | Default                            |
+| -------------------------- | ---------------------------------------------------------------------- | ---------------------------------- |
+| `--input-background`       | Background                                                             | `var(--tint-100)`                  |
+| `--input-color`            | Text colour                                                            | `var(--tint-00)`                   |
+| `--input-border`           | Border colour (width is `--input-stroke`)                              | `var(--tint-80)`                   |
+| `--input-stroke`           | Border width (one length)                                              | `var(--stroke-normal)` (1px)       |
+| `--input-radius`           | Corner radius                                                          | `var(--radius-xsmall)` (8px)       |
+| `--input-space`            | Outer block margin (top and bottom)                                    | `var(--space-small)` (12px)        |
+| `--input-padding`          | Inner top and bottom padding (one length)                              | `var(--space-small)` (12px)        |
+| `--input-indent`           | Inner left and right padding (one length)                              | `var(--space-small)` (12px)        |
+| `--input-icon-size`        | Size of an icon in the input, which also sets the minimum height       | `var(--size-icon)` (24px)          |
+| `--input-transition`       | Transition                                                             | `all var(--duration-fast)` (150ms) |
+| `--input-focus-border`     | Focus outline colour (width is `--stroke-focus`)                       | `var(--color-focus)`               |
+| `--input-font`             | Font family                                                            | `var(--font-body)`                 |
+| `--input-weight`           | Font weight                                                            | `var(--weight-normal)` (400)       |
+| `--input-size`             | Font size                                                              | `var(--size-normal)` (16px)        |
+| `--input-leading`          | Line height                                                            | `var(--leading-auto)`              |
+| `--input-rows`             | Minimum rows of a `<TextareaInput>` (its `rows` prop sets this inline) | `2`                                |
+| `--input-disabled-opacity` | Opacity of a disabled input                                            | `0.5`                              |
+
+**Global tokens it reads:** the tint ladder `--tint-00` / `--tint-70` (placeholder text) / `--tint-80` / `--tint-100`, plus `--stroke-normal`, `--stroke-focus`, `--radius-xsmall`, `--space-small`, `--size-icon`, `--duration-fast`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and the status colours `--color-focus`, `--color-success`, `--color-failure` and `--color-green`.
+
+
 ## Signatures
 
 ```ts
@@ -30390,12 +31088,6 @@ getInputClass(props: InputVariants): string
 | Type | Description |
 | --- | --- |
 | `string` | The merged base input `className` string. |
-
-## Examples
-
-```ts
-getClass(getInputClass(props), getModuleClass(INPUT_CSS, "text")) // a text input that also honours width variants
-```
 
 
 ---
@@ -30516,6 +31208,37 @@ Props for `InputWrapper` — the wrapped `children` plus an optional `className`
 Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
 - This is so you can put an icon before or after an input.
 
+A box that holds an input and an icon on one or both sides. The icon sits inside the input's border, and the input text moves clear of it.
+
+**Things to know:**
+
+- Put the input inside, with an icon before it, after it, or both.
+- Mark each icon with a `data-slot` attribute. The first child with `data-slot` goes on the left, and the last goes on the right.
+- An icon is `--input-icon-size` square, centred from top to bottom. It does not take taps, so a tap reaches the input.
+- The wrapper draws the border and focus ring. The input inside has no border, padding or margin of its own.
+
+## Usage
+
+```tsx live
+import { InputWrapper, TextInput } from "shelving/ui";
+import { InfoIcon } from "shelving/icon/InfoIcon";
+import { CloseIcon } from "shelving/icon/CloseIcon";
+
+<InputWrapper>
+	<InfoIcon data-slot="icon" />
+	<TextInput name="search" title="Search" onValue={() => {}} />
+</InputWrapper>
+<InputWrapper>
+	<TextInput name="code" title="Code" onValue={() => {}} />
+	<CloseIcon data-slot="icon" />
+</InputWrapper>
+```
+
+## Styling
+
+`InputWrapper` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks. `--input-icon-size` sets the icon size, and `--input-indent` sets the space each side of an icon.
+
+
 ## Signatures
 
 ```ts
@@ -30566,13 +31289,55 @@ Props for `NumberInput`, a text-based numeric input bound to a `number` value.
 
 ---
 
-# NumberInput()
+# NumberInput
 
-- Kind: function
+- Kind: component
 - Import: `import { NumberInput } from "shelving/ui";`
 
 Numeric input bound to a `number` value, parsing typed text and reformatting it on blur.
 - Uses `type="text"` with `inputMode="decimal"` so a custom `formatter` can control display.
+
+A number input. Renders an `<input>` bound to a `number` value.
+
+**Things to know:**
+
+- It is a text input with `inputMode="decimal"`, so phones show a number keyboard and the browser shows no up and down arrows.
+- `onValue()` gets the typed text as a number, or `undefined` when the text is not a number.
+- When the input loses focus, it formats the number with `formatter` (default `formatNumber()`, for example `1,234.5`). Text that is not a number is cleared.
+- The input is not controlled. `value` sets the number it shows first.
+- In a `<Form>`, a `NumberSchema` makes this input for you, and formats with the schema.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { NumberInput, Paragraph } from "shelving/ui";
+
+function Quantity() {
+	const [count, setCount] = useState<number | undefined>(1200);
+	return (
+		<>
+			<NumberInput name="count" title="Quantity" value={count} onValue={setCount} />
+			<Paragraph>Double: {count === undefined ? "none" : count * 2}</Paragraph>
+		</>
+	);
+}
+
+<Quantity />;
+```
+
+### Custom format
+
+```tsx live
+import { NumberInput } from "shelving/ui";
+
+<NumberInput name="price" title="Price" value={9.5} formatter={n => `£${n.toFixed(2)}`} onValue={() => {}} />;
+```
+
+## Styling
+
+`NumberInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
 
 ## Signatures
 
@@ -30609,12 +31374,6 @@ NumberInput({
 | --- | --- |
 | `ReactElement` | A numeric `<input>` element. |
 
-## Examples
-
-```ts
-<NumberInput name="age" value={age} onValue={setAge} />
-```
-
 
 ---
 
@@ -30642,6 +31401,32 @@ Props for `OutputInput`, a read-only `<output>` styled to match form inputs.
 
 Show static read-only content styled as an input, falling back to `placeholder` when empty.
 
+Read-only content that looks like an input. Renders an `<output>`.
+
+**Things to know:**
+
+- Use it to show a value in a form that the user cannot change, such as a total or an account ID.
+- The children are the content. With no children it shows `title`, then `placeholder` in grey.
+- The content can be any `ReactNode`, not only text.
+
+## Usage
+
+```tsx live
+import { Field, OutputInput } from "shelving/ui";
+
+<Field title="Account ID">
+	<OutputInput name="id">ac_1042</OutputInput>
+</Field>
+<Field title="Discount">
+	<OutputInput name="discount" placeholder="None" />
+</Field>
+```
+
+## Styling
+
+`OutputInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
+
 ## Signatures
 
 ```ts
@@ -30659,12 +31444,6 @@ OutputInput({ title, placeholder, children = title, className, ...props }: Outpu
 | Type | Description |
 | --- | --- |
 | `ReactElement` | An `<output>` element styled like an input. |
-
-## Examples
-
-```ts
-<OutputInput title="Status">Active</OutputInput>
-```
 
 
 ---
@@ -30728,17 +31507,66 @@ Props for `Popover`, a trigger element that reveals floating content.
 
 ---
 
-# Popover()
+# Popover
 
-- Kind: function
+- Kind: component
 - Import: `import { Popover } from "shelving/ui";`
 
 Trigger element that reveals a floating popover panel beside it when active or focused.
 - The first `children` node is the trigger; the rest become the popover contents.
-- Closes on blur away or `Escape`, calling `onClose`.
+- While open, calls `onClose` when focus leaves the popover or on `Escape`. Focus is never held, so Tab can always move past it.
 - `className` lands on the floating panel rather than the wrapper, since the panel is the surface worth styling.
 
 @todo DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
+
+A trigger with a panel that floats below it. Use it for a short menu or list that opens from a button or an input.
+
+**Things to know:**
+
+- The first child is the trigger, such as a `<Button>` or an input. The other children go in the panel.
+- By default the panel is open when any panel child is truthy. Set `open` to control it yourself.
+- While the panel is open, `onClose()` is called when focus leaves the popover (a tap outside, or Tab past the last control) or the user presses Escape. The popover never holds focus.
+- The panel is as wide as the popover, and below the trigger. It scrolls when its content is taller than `--popover-height`.
+- `className` goes on the panel, not on the wrapper.
+- `<PopoverButton>` and `<PopoverButtonInput>` add the open and close state for you.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { Button, Paragraph, Popover } from "shelving/ui";
+
+function Help() {
+	const [open, setOpen] = useState(false);
+	return (
+		<Popover open={open} onClose={() => setOpen(false)}>
+			<Button onClick={() => setOpen(!open)}>Help</Button>
+			<Paragraph>Press Escape to close this panel.</Paragraph>
+		</Popover>
+	);
+}
+
+<Help />;
+```
+
+## Styling
+
+Override these hooks at `:root`. The tint hooks (`--popover-border`, `--popover-background`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable               | Styles                                            | Default                      |
+| ---------------------- | ------------------------------------------------- | ---------------------------- |
+| `--popover-background` | Panel background                                  | `var(--tint-100)`            |
+| `--popover-border`     | Panel border colour (width is `--popover-stroke`) | `var(--tint-80)`             |
+| `--popover-stroke`     | Panel border width (one length)                   | `var(--stroke-normal)` (1px) |
+| `--popover-radius`     | Panel corner radius                               | `var(--radius-xsmall)` (8px) |
+| `--popover-padding`    | Panel top and bottom padding (one length)         | `var(--space-small)` (12px)  |
+| `--popover-indent`     | Panel left and right padding (one length)         | `var(--space-small)` (12px)  |
+| `--popover-shadow`     | Panel drop shadow                                 | `var(--shadow-small)`        |
+| `--popover-offset-y`   | Space between the trigger and the panel           | `var(--space-xsmall)` (8px)  |
+| `--popover-height`     | Maximum panel height, then it scrolls             | `30vh`                       |
+
+**Global tokens it reads:** `--tint-80`, `--tint-100`, `--stroke-normal`, `--radius-xsmall`, `--space-small`, `--space-xsmall`, `--shadow-small`.
+
 
 ## Signatures
 
@@ -30765,12 +31593,6 @@ Popover({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A wrapper element containing the trigger and (when open) the popover panel. |
-
-## Examples
-
-```ts
-<Popover>{trigger}{panelContent}</Popover>
-```
 
 
 ---
@@ -30811,6 +31633,31 @@ Popover variant of `<Button>` — a button that reveals floating popover content
 
 DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
 
+A `<Button>` that opens a `<Popover>` panel below it. A tap on the button opens or closes the panel.
+
+**Things to know:**
+
+- The first child is the button content. The other children go in the panel.
+- It takes all the `<Button>` style props, such as `solid` or `color`. `className` goes on the button.
+- A tap outside the popover, Tab past it, or the Escape key closes the panel.
+- For a trigger that looks like an input, use `<PopoverButtonInput>`.
+
+## Usage
+
+```tsx live
+import { Paragraph, PopoverButton } from "shelving/ui";
+
+<PopoverButton solid>
+	Details
+	<Paragraph>Order 1042 ships on Monday.</Paragraph>
+</PopoverButton>;
+```
+
+## Styling
+
+`PopoverButton` has no own hooks. The button uses the `<Button>` styles and the panel uses the `<Popover>` styles.
+
+
 ## Signatures
 
 ```ts
@@ -30833,12 +31680,6 @@ PopoverButton({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `Button` that toggles its attached `Popover` open and closed. |
-
-## Examples
-
-```ts
-<PopoverButton>{label}{panel}</PopoverButton>
-```
 
 
 ---
@@ -30879,6 +31720,39 @@ Popover variant of `<ButtonInput>` — an input-styled button that reveals float
 
 DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
 
+A `<ButtonInput>` that opens a `<Popover>` panel below it. Use it for a custom picker in a form.
+
+**Things to know:**
+
+- The first child is the button content. The other children go in the panel.
+- It takes the shared input props, such as `name`, `placeholder` and `disabled`. `className` goes on the button.
+- A tap outside the popover, Tab past it, or the Escape key closes the panel.
+- The panel does not close when the user picks something in it. Close it yourself, or use `<QueryRadiosInput>` for a list that closes on a pick.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { ArrayRadioInputs, PopoverButtonInput } from "shelving/ui";
+
+function Fruit() {
+	const [fruit, setFruit] = useState<string>();
+	return (
+		<PopoverButtonInput name="fruit" placeholder="Choose a fruit…">
+			{fruit}
+			<ArrayRadioInputs name="fruit-list" items={["Apple", "Pear", "Plum"]} value={fruit} onValue={setFruit} required />
+		</PopoverButtonInput>
+	);
+}
+
+<Fruit />;
+```
+
+## Styling
+
+`PopoverButtonInput` has no own hooks. The button uses the shared input styles (see `getInputClass()`) and the panel uses the `<Popover>` styles.
+
+
 ## Signatures
 
 ```ts
@@ -30901,12 +31775,6 @@ PopoverButtonInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `ButtonInput` that toggles its attached `Popover` open and closed. |
-
-## Examples
-
-```ts
-<PopoverButtonInput name="filter">{label}{panel}</PopoverButtonInput>
-```
 
 
 ---
@@ -31191,13 +32059,52 @@ Props for `RadioInput`, a single labelled radio button styled as an input.
 
 ---
 
-# RadioInput()
+# RadioInput
 
-- Kind: function
+- Kind: component
 - Import: `import { RadioInput } from "shelving/ui";`
 
 Single `<input type="radio">` wrapped in a `<label>` styled as an `<Input>`.
 - Calls `onValue(true)` when selected; label content comes from `children`, falling back to `placeholder`/`title`.
+
+One radio button with a label. Renders a `<label>` that looks like an input, with an `<input type="radio">` inside.
+
+**Things to know:**
+
+- Radios with the same `name` make a group, so only one can be picked.
+- `value` is `true` when this radio is picked first. When the user picks it, `onValue()` gets `true`. It is never called with `false`.
+- The children are the label. With no children, the label is `placeholder`, then `title`, then "Choose".
+- The border goes green when the radio is picked.
+- Usually you want a whole group: use `<ChoiceRadioInputs>` for a set of options, or `<ArrayRadioInputs>` for an array of items.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { Paragraph, RadioInput } from "shelving/ui";
+
+function Plan() {
+	const [plan, setPlan] = useState("free");
+	return (
+		<>
+			<RadioInput name="plan" value={plan === "free"} onValue={() => setPlan("free")}>
+				Free
+			</RadioInput>
+			<RadioInput name="plan" value={plan === "pro"} onValue={() => setPlan("pro")}>
+				Pro
+			</RadioInput>
+			<Paragraph>Plan: {plan}</Paragraph>
+		</>
+	);
+}
+
+<Plan />;
+```
+
+## Styling
+
+`RadioInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks. The radio uses the browser's own control, coloured with `accent-color: var(--color-success)`, and is `--input-icon-size` square.
+
 
 ## Signatures
 
@@ -31228,12 +32135,6 @@ RadioInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<label>` wrapping the radio button and its label content. |
-
-## Examples
-
-```ts
-<RadioInput name="plan" value={isPro} onValue={selectPro}>Pro</RadioInput>
-```
 
 
 ---
@@ -31910,6 +32811,55 @@ Dropdown input bound to a string value, rendered as a `<select>` of the provided
 - Shows a placeholder empty option unless the field is required and already has a value.
 - With `groups`, shows each group as an `<optgroup>`, after the options that are in no group. A group key that is not in `options` is skipped.
 
+A drop-down list, bound to a `string` value. Renders a `<select>` with an `<option>` for each of the `options`.
+
+**Things to know:**
+
+- `options` is a `ChoiceOptions` object in `{ key: title }` format. `onValue()` gets the key, or `undefined` for the empty option.
+- It shows an empty option first (the `placeholder`, default "Choose..."). The empty option goes away when the input is `required` and has a value.
+- The text is grey while the empty option is picked, and the border goes green when a value is picked.
+- `groups` shows the options under headings, as `<optgroup>` elements. Options that are in no group show first.
+- The select is not controlled. `value` sets the option it shows first.
+- In a `<Form>`, a `ChoiceSchema` with more than 8 options (or `input: "select"`) makes this input for you. For a few options, `<ChoiceRadioInputs>` shows them all at once.
+
+## Usage
+
+```tsx live
+import { useState } from "react";
+import { Paragraph, SelectInput } from "shelving/ui";
+
+const ROLES = { admin: "Admin", editor: "Editor", viewer: "Viewer" };
+
+function Role() {
+	const [role, setRole] = useState<string>();
+	return (
+		<>
+			<SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
+			<Paragraph>Role: {role ?? "none"}</Paragraph>
+		</>
+	);
+}
+
+<Role />;
+```
+
+### Groups
+
+```tsx live
+import { SelectInput } from "shelving/ui";
+
+const FOODS = { apple: "Apple", pear: "Pear", carrot: "Carrot", leek: "Leek", bread: "Bread" };
+const GROUPS = { Fruit: ["apple", "pear"], Vegetables: ["carrot", "leek"] };
+
+// "Bread" is in no group, so it shows first.
+<SelectInput name="food" placeholder="Pick a food" options={FOODS} groups={GROUPS} onValue={() => {}} />;
+```
+
+## Styling
+
+`SelectInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks. The down arrow is a background image, `--input-icon-size` square, `--input-indent` from the right edge.
+
+
 ## Signatures
 
 ```ts
@@ -31929,12 +32879,6 @@ SelectInput(props: SelectProps<T>): ReactElement
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<select>` element. |
-
-## Examples
-
-```ts
-<SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
-```
 
 
 ---
@@ -31970,13 +32914,44 @@ Props for `TextareaInput`, a multiline text input bound to a `string` value.
 
 ---
 
-# TextareaInput()
+# TextareaInput
 
-- Kind: function
+- Kind: component
 - Import: `import { TextareaInput } from "shelving/ui";`
 
 Multiline text input bound to a `string` value, rendered as a `<textarea>` that grows to fit its content.
 - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
+
+A text input for more than one line. Renders a `<textarea>` bound to a `string` value. It grows to fit its text.
+
+**Things to know:**
+
+- The input is not controlled. `value` sets the text it shows first. After that, it keeps its own text and calls `onValue()` with each change.
+- `rows` sets the minimum height in lines (default 2). The textarea grows as the text gets longer. It is never shorter than a single-line input.
+- Browsers that do not support `field-sizing` (such as Firefox) grow it with a script.
+- `min` and `max` set the minimum and maximum length. `formatter` works the same as on `<TextInput>`.
+- In a `<Form>`, a `StringSchema` with `multiline: true` makes this input for you.
+
+## Usage
+
+```tsx live
+import { TextareaInput } from "shelving/ui";
+
+<TextareaInput name="bio" title="Tell us about yourself" rows={3} onValue={() => {}} />;
+```
+
+### Start with text
+
+```tsx live
+import { TextareaInput } from "shelving/ui";
+
+<TextareaInput name="notes" value={"First line.\nSecond line.\nType more to make it grow."} onValue={() => {}} />;
+```
+
+## Styling
+
+`TextareaInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks. Its minimum height reads `--input-rows`, which the `rows` prop sets.
+
 
 ## Signatures
 
@@ -32014,12 +32989,6 @@ TextareaInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A `<textarea>` element. |
-
-## Examples
-
-```ts
-<TextareaInput name="bio" rows={4} value={bio} onValue={setBio} />
-```
 
 
 ---
@@ -32071,13 +33040,72 @@ Props for `TextInput`, a single-line text input bound to a `string` value.
 
 ---
 
-# TextInput()
+# TextInput
 
-- Kind: function
+- Kind: component
 - Import: `import { TextInput } from "shelving/ui";`
 
 Single-line text input bound to a `string` value, rendered as an `<input>`. Use `TextareaInput` for multiline text.
 - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
+
+A single-line text input. Renders an `<input>` bound to a `string` value.
+
+**Things to know:**
+
+- The input is not controlled. `value` sets the text it shows first. After that, the input keeps its own text and calls `onValue()` with each change.
+- To reset the text, give the input a new `key`.
+- `input` sets the input type: `"text"` (the default), `"email"`, `"url"`, `"tel"`, `"password"` or `"search"`. Phones show the matching keyboard.
+- `min` and `max` set the minimum and maximum length. `required` is only applied when `min` is more than 0.
+- `formatter` changes the text shown when the input first shows and when it loses focus. `onValue()` always gets the raw text.
+- `placeholder` defaults to `title`.
+- `message` marks the input as invalid (a red border) and shows the message as a tooltip. Use `<Field>` to show the message below the input.
+- For more than one line, use `<TextareaInput>`. In a `<Form>`, a `StringSchema` makes this input for you (see `<SchemaInput>`).
+
+## Usage
+
+### Text
+
+```tsx live
+import { useState } from "react";
+import { Paragraph, TextInput } from "shelving/ui";
+
+function Name() {
+	const [name, setName] = useState("Alice");
+	return (
+		<>
+			<TextInput name="name" title="Your name" value={name} onValue={v => setName(v ?? "")} />
+			<Paragraph>Hello, {name || "stranger"}.</Paragraph>
+		</>
+	);
+}
+
+<Name />;
+```
+
+### Types and states
+
+```tsx live
+import { TextInput } from "shelving/ui";
+
+<TextInput name="email" input="email" title="Email address" onValue={() => {}} />
+<TextInput name="password" input="password" title="Password" min={8} required onValue={() => {}} />
+<TextInput name="code" title="Code" message="This code has expired" onValue={() => {}} />
+<TextInput name="locked" title="Locked" disabled onValue={() => {}} />
+```
+
+### Format on blur
+
+```tsx live
+import { TextInput } from "shelving/ui";
+
+// The text shows in uppercase when the input loses focus.
+<TextInput name="postcode" title="Postcode" formatter={s => s.toUpperCase()} onValue={() => {}} />;
+```
+
+## Styling
+
+`TextInput` uses the shared input styles. See `getInputClass()` for the `--input-*` hooks.
+
 
 ## Signatures
 
@@ -32115,12 +33143,6 @@ TextInput({
 | Type | Description |
 | --- | --- |
 | `ReactElement` | A text `<input>` element. |
-
-## Examples
-
-```ts
-<TextInput name="name" value={name} onValue={setName} />
-```
 
 
 ---
