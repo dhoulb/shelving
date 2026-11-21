@@ -3,7 +3,7 @@
 - Kind: component
 - Import: `import { TreeSidebar } from "shelving/ui";`
 
-Sidebar built from the surrounding tree, in three sections separated by dividers.
+Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
 
 - **Middle:** a `<TextInput>` search-as-you-type filter.
 - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
@@ -11,7 +11,7 @@ Sidebar built from the surrounding tree, in three sections separated by dividers
 
 Reads the flattened tree from the surrounding `<TreeProvider>` (`useTreeMap().get("/")`), so child and result hrefs use each element's stamped canonical `path`. To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
 
-The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu — three sections separated by dividers. `<TreeApp>` mounts one of these automatically.
+The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu. `<TreeApp>` mounts one of these automatically.
 
 **Things to know:**
 
