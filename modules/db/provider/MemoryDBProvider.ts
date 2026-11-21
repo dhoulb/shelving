@@ -8,7 +8,7 @@ import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItem
 import { getItem } from "../../util/item.js";
 import { countItems } from "../../util/iterate.js";
 import type { Query } from "../../util/query.js";
-import { queryItems, queryWritableItems } from "../../util/query.js";
+import { getQueryKey, queryItems, queryWritableItems } from "../../util/query.js";
 import { getRandom, getRandomKey } from "../../util/random.js";
 import type { Updates } from "../../util/update.js";
 import { updateData } from "../../util/update.js";
@@ -203,7 +203,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/** Time each item was last set or deleted. */
 	protected readonly _times = new Map<I, number>();
 
-	/** Time each query (by `JSON.stringify(query)`) was last marked as loaded. */
+	/** Time each query (by `getQueryKey(query)`) was last marked as loaded. */
 	protected readonly _queryTimes = new Map<string, number>();
 
 	/** Deferred sequence that resolves on every change to this table — `false` for a change, or `true` once when the table is disposed and its sequences should end. */
@@ -424,7 +424,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 * @see https://shelving.cc/db/MemoryTable/getQuerySequence
 	 */
 	async *getQuerySequence(query?: Query<Item<I, T>>): AsyncIterable<Items<I, T>> {
-		const key = _getQueryKey(query);
+		const key = getQueryKey(query);
 		let lastItems = this.getQuery(query);
 		let lastLoaded = this._queryTimes.has(key);
 		yield lastItems;
@@ -444,7 +444,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	/**
 	 * Get the time a query was last marked as loaded in this table, or `undefined` if it never was.
 	 * - Use it to tell a query with no items (a time and no items) from a query that has not loaded yet (no time).
-	 * - Queries match by `JSON.stringify(query)`, so the same filters in a different key order are a different query.
+	 * - Queries match by `getQueryKey()`, so key order does not matter, but `{ a: 1 }` does not cover `{ a: 1, b: 2 }`.
 	 *
 	 * @param query The query, including its `$order` and `$limit`.
 	 * @returns The time in milliseconds, or `undefined` if the query was never marked as loaded.
@@ -452,7 +452,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 * @see https://shelving.cc/db/MemoryTable/getQueryTime
 	 */
 	getQueryTime(query?: Query<Item<I, T>>): number | undefined {
-		return this._queryTimes.get(_getQueryKey(query));
+		return this._queryTimes.get(getQueryKey(query));
 	}
 
 	/**
@@ -466,7 +466,7 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	 * @see https://shelving.cc/db/MemoryTable/setQueryTime
 	 */
 	setQueryTime(query?: Query<Item<I, T>>, time: number = Date.now()): void {
-		const key = _getQueryKey(query);
+		const key = getQueryKey(query);
 		const loaded = this._queryTimes.has(key);
 		this._queryTimes.set(key, time);
 		if (!loaded) this._next.resolve(false);
@@ -530,9 +530,4 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 			() => this._next.resolve(true), // Wake every open sequence with doneness, so it ends.
 		);
 	}
-}
-
-/** Get the key that `MemoryTable` stores a query's time under. */
-function _getQueryKey(query: Query | undefined): string {
-	return JSON.stringify(query ?? {});
 }

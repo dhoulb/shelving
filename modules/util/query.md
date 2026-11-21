@@ -57,6 +57,17 @@ getQueryOrders(query);
 getQueryLimit(query); // 20
 ```
 
+### Cache keys
+
+`getQueryKey()` gives the same key for queries that differ only in key order. Use the key to find a cached result. Treat it as an opaque string: compare it, but do not parse it.
+
+```ts
+import { getQueryKey } from "shelving/util";
+
+getQueryKey({ status: "active", $limit: 20 }) === getQueryKey({ $limit: 20, status: "active" }); // true
+getQueryKey({ $order: ["a", "b"] }) === getQueryKey({ $order: ["b", "a"] }); // false: value order has meaning
+```
+
 ### Step-by-step filtering, sorting, and limiting
 
 ```ts
