@@ -2,6 +2,7 @@
 @import url("../style/Color.module.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Shadow.module.css");
 
@@ -70,9 +71,10 @@
 
 	.sidebar {
 		/* Box */
-		position: relative; /* Positioned like the content slot, so neither area paints over the other. */
+		position: relative;
+		z-index: 1; /* Paint above the content slot, so the sidebar's shadow shows over the pages, even a page with its own background. */
 		display: flow-root;
-		border-right: var(--sidebar-layout-border, none);
+		border-right: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-90));
 
 		/* Scrolling */
 		overflow-y: auto;
@@ -81,10 +83,14 @@
 
 		/* Style */
 
-		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-90 / --tint-00) when the hooks are unset.
-		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
-		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
+		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-100 / --tint-00) when the hooks are unset.
+		 * The sidebar has the same fill as the page: its border and shadow set it apart as a distinct column. */
+		background: var(--sidebar-layout-sidebar-background, var(--tint-100));
 		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
+		box-shadow: var(
+			--sidebar-layout-sidebar-shadow,
+			var(--shadow-normal)
+		); /* The column is full height, so only the blur at its side shows, over the content. */
 	}
 
 	.content {
@@ -113,7 +119,7 @@
 	.main.right .sidebar {
 		grid-column: 2;
 		border-right: none;
-		border-left: var(--sidebar-layout-border, none);
+		border-left: var(--sidebar-layout-border, var(--stroke-normal) solid var(--tint-90));
 	}
 
 	.main.right .content {
@@ -149,6 +155,7 @@
 			max-width: 85vw;
 
 			/* Style */
+			box-shadow: none; /* The closed drawer sits off the screen, so its shadow must not show at the edge. The open drawer has its own shadow (below). */
 			transform: translateX(-100%);
 			transition: transform var(--duration-normal) ease-in-out;
 		}

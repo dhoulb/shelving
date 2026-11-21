@@ -2,9 +2,11 @@
 
 @layer variants {
 	/* Trim the outer margins of the children at the start and end, so a box with padding is not spaced twice.
+	 * A raw `<blockquote>` in `<Prose>` trims too, to match `<Blockquote>` (which sets `trim` by default).
 	 * Browsers with `margin-trim` trim the margins themselves, including margins that pass through a child from deeper down. */
 	@supports (margin-trim: block) {
-		.trim {
+		.trim,
+		.prose blockquote {
 			margin-trim: block;
 		}
 	}
@@ -13,18 +15,20 @@
 	 * last child, and of their first and last children, three levels deep. React hides old content with
 	 * `display: none` while a `<Suspense>` fallback shows after it, so a hidden child is skipped. */
 	@supports not (margin-trim: block) {
-		.trim > :nth-child(1 of :not([style*="display: none"])),
-		.trim > :nth-child(1 of :not([style*="display: none"])) > :nth-child(1 of :not([style*="display: none"])),
-		.trim
+		:is(.trim, .prose blockquote) > :nth-child(1 of :not([style*="display: none"])),
+		:is(.trim, .prose blockquote) > :nth-child(1 of :not([style*="display: none"])) > :nth-child(1 of :not([style*="display: none"])),
+		:is(.trim, .prose blockquote)
 			> :nth-child(1 of :not([style*="display: none"]))
 			> :nth-child(1 of :not([style*="display: none"]))
 			> :nth-child(1 of :not([style*="display: none"])) {
 			margin-block-start: 0;
 		}
 
-		.trim > :nth-last-child(1 of :not([style*="display: none"])),
-		.trim > :nth-last-child(1 of :not([style*="display: none"])) > :nth-last-child(1 of :not([style*="display: none"])),
-		.trim
+		:is(.trim, .prose blockquote) > :nth-last-child(1 of :not([style*="display: none"])),
+		:is(.trim, .prose blockquote)
+			> :nth-last-child(1 of :not([style*="display: none"]))
+			> :nth-last-child(1 of :not([style*="display: none"])),
+		:is(.trim, .prose blockquote)
 			> :nth-last-child(1 of :not([style*="display: none"]))
 			> :nth-last-child(1 of :not([style*="display: none"]))
 			> :nth-last-child(1 of :not([style*="display: none"])) {

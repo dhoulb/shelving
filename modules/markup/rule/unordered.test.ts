@@ -184,10 +184,8 @@ test("UNORDERED loose lists", () => {
 						children: [
 							{ type: "p", props: { children: "ITEM1" } },
 							{
-								type: "figure",
-								props: {
-									children: { type: "pre", props: { children: { type: "code", props: { children: "mkdir -p a\n  nested" } } } },
-								},
+								type: "pre",
+								props: { children: { type: "code", props: { children: "mkdir -p a\n  nested" } } },
 							},
 						],
 					},

@@ -47,6 +47,7 @@
 		--button-text: var(--tint-50);
 		--button-hover-background: var(--tint-85);
 		--button-active-background: var(--button-hover-background);
+		--button-solid-border: var(--tint-45);
 		--button-solid-background: var(--tint-50);
 		--button-solid-text: var(--tint-100);
 		--button-solid-hover-background: var(--tint-55);
@@ -143,17 +144,21 @@
 		}
 
 		&.solid {
+			/* A subtle border one step darker than the fill, in every state, so the edge stays crisp. */
+			border-color: var(--button-solid-border);
 			background: var(--button-solid-background);
 			color: var(--button-solid-text);
 
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
+				border-color: var(--button-solid-border);
 				background: var(--button-solid-hover-background);
 			}
 
 			&:enabled:active,
 			&:any-link:active {
+				border-color: var(--button-solid-border);
 				background: var(--button-solid-active-background);
 			}
 		}

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { TreeElementProps } from "../../util/tree.js";
 import { Block } from "../block/Block.js";
+import { Heading } from "../block/Heading.js";
 import { Panel } from "../block/Panel.js";
 import { Prose } from "../block/Prose.js";
 import { Section } from "../block/Section.js";
@@ -12,7 +13,7 @@ import { TreeMarkup } from "./TreeMarkup.js";
 /**
  * Page renderer for a generic `tree-element` (a directory or file).
  *
- * - Shows the title, any absorbed prose content, and the element's children as a stack of cards.
+ * - Shows the title, any absorbed prose content, and the element's children as a stack of cards under a "Contents" heading.
  * - Child cards cover both nested directories/files and the code symbols of a source file.
  *
  * @kind component
@@ -37,9 +38,12 @@ export function TreePage({ title, name, description, content, children }: TreeEl
 								</Prose>
 							</Section>
 						)}
-						<Section>
-							<TreeCards>{children}</TreeCards>
-						</Section>
+						{children && (
+							<Section>
+								<Heading>Contents</Heading>
+								<TreeCards>{children}</TreeCards>
+							</Section>
+						)}
 					</Block>
 				</Panel>
 			</Block>

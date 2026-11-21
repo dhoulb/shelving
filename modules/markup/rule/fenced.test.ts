@@ -38,8 +38,8 @@ describe("createFencedRegExp()", () => {
 describe("FENCED_RULE", () => {
 	test("language does not show as a caption", () => {
 		expect(PARSER.parse("```tsx\nCODE\n```")).toMatchObject({
-			type: "figure",
-			props: { children: { type: "pre", props: { children: { type: "code", props: { children: "CODE" } } } } },
+			type: "pre",
+			props: { children: { type: "code", props: { children: "CODE" } } },
 		});
 	});
 	test("title shows as a caption", () => {
