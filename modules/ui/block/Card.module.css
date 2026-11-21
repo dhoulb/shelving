@@ -42,7 +42,7 @@
 		position: relative;
 		margin-inline: 0;
 		margin-block: var(--card-space, var(--space-paragraph));
-		border: var(--card-border, var(--card-stroke, 0) solid var(--tint-80));
+		border: var(--card-border, var(--card-stroke, var(--stroke-normal)) solid var(--tint-80));
 		padding-block: var(--card-padding, var(--space-normal));
 		padding-inline: var(--card-indent, var(--space-normal));
 		border-radius: var(--card-radius, var(--radius-normal));
@@ -56,7 +56,7 @@
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
 			background: var(--card-hover-background, var(--tint-95));
-			border: var(--card-hover-border, var(--card-stroke, 0) solid var(--tint-90));
+			border: var(--card-hover-border, var(--card-stroke, var(--stroke-normal)) solid var(--tint-90));
 		}
 	}
 
@@ -76,7 +76,7 @@
 
 		/* Focus ring — drawn on the overlay. The offset pushes it out over the card border, so it sits fully inside the card edge. */
 		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(var(--card-stroke, 0px) - var(--stroke-focus));
+		outline-offset: calc(var(--card-stroke, var(--stroke-normal)) - var(--stroke-focus));
 
 		/* Typography — hide the link's text visually but keep it in the accessibility tree. */
 		color: transparent;
