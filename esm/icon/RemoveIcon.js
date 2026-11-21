@@ -1,1 +1,1 @@
-import{wt}from"../chunk-hr4xqewc.js";import"../chunk-ysbacpap.js";export{wt as RemoveIcon};
+import{Pt}from"../chunk-fg9vyp4v.js";import"../chunk-ysbacpap.js";export{Pt as RemoveIcon};

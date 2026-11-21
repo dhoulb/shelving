@@ -43,6 +43,8 @@ import { Title, Heading, Subheading } from "shelving/ui";
 
 `Subheading` exposes hooks for its rhythm and type. It inherits text colour by default; set `--subheading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                    | Styles        | Default                         |
 | --------------------------- | ------------- | ------------------------------- |
 | `--subheading-color`        | Text colour   | `inherit`                       |

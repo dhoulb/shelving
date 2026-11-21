@@ -42,6 +42,8 @@ import { Panel, Block, Title } from "shelving/ui";
 
 `Title` exposes hooks for its rhythm and type. It inherits text colour by default; set `--title-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable               | Styles        | Default                         |
 | ---------------------- | ------------- | ------------------------------- |
 | `--title-color`        | Text colour   | `inherit`                       |

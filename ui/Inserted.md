@@ -29,6 +29,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 `Inserted` colours its text directly from `--color-green` (not the tint ladder), so insertions stay a consistent green regardless of the surrounding tint. Override `--inserted-color` to recolour.
 
+Override these hooks at `:root`.
+
 | Variable                | Styles          | Default                          |
 | ----------------------- | --------------- | -------------------------------- |
 | `--inserted-color`      | Text colour     | `var(--color-green)`             |

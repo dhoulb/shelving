@@ -227,7 +227,7 @@ Don't replace with an inline `() => {}` or omit the catch — the named symbol d
 
 - Never use inline `style` props — all styling lives in a colocated `.module.css`.
 - Enumerated props for mutually-exclusive scales (`color="red"`, `size="large"`); boolean props for on/off options (`small`, `plain`). Both map to class names via shared `getXxxClass(props)` helpers.
-- CSS custom properties provide theming with fallback chains: `var(--button-background, var(--tint-90))`. Every custom property a component's CSS file owns starts with the file's kebab-case name (`Card.module.css` owns `--card-*`), so the originating file is obvious from any `var()` reference.
+- CSS custom properties provide theming. A CSS module declares each one at root (`--button-background: var(--tint-90)`), and its rules read it with no fallback (`var(--button-background)`). Every custom property a component's CSS file owns starts with the file's kebab-case name (`Card.module.css` owns `--card-*`), so the originating file is obvious from any `var()` reference.
 - Use CSS nesting for variants (`&.small`), pseudo-classes (`&:hover`), and child selectors; use `:where()` to keep specificity low for default child styles.
 - CSS modules import as default: `import styles from "./Foo.module.css"` — the one exception to named-exports-only.
 

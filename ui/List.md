@@ -48,12 +48,15 @@ import { List, ListItem } from "shelving/ui";
 
 `List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; apply `color=` (on the list or an ancestor scope) to recolour the markers, or reach for a per-property hook for a single change.
 
-| Variable              | Styles                               | Default                               |
-| --------------------- | ------------------------------------ | ------------------------------------- |
-| `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
-| `--list-item-space`   | Block margin of each `li`            | `var(--space-small)` (12px)           |
-| `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
-| `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
+Override these hooks at `:root`. The tint hooks (`--list-marker-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                | Styles                                                    | Default                                  |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------- |
+| `--list-space`          | Outer block margin (top + bottom)                         | `var(--space-paragraph)` (16px)          |
+| `--list-item-space`     | Block margin of each `li`                                 | `var(--space-small)` (12px)              |
+| `--list-indent`         | Inline start padding (marker gutter) of an unordered list | `1.125em`                                |
+| `--list-ordered-indent` | Inline start padding of an ordered list                   | `calc(var(--list-indent) * 1.6)` (1.8em) |
+| `--list-marker-color`   | Bullet / number colour                                    | `var(--tint-80)`                         |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-small`, and the tint-ladder step `--tint-80`.
 

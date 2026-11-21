@@ -56,6 +56,8 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 
 ## Styling
 
+Override these hooks at `:root`. The tint hooks (`--sidebar-layout-background`, `--sidebar-layout-color`, `--sidebar-layout-border`, `--sidebar-layout-sidebar-background`, `--sidebar-layout-sidebar-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                              | Styles                                                                      | Default                                         |
 | ------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
 | `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                       |
@@ -63,7 +65,8 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 | `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                        |
 | `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-100)` (white, the same as the page) |
 | `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                        |
-| `--sidebar-layout-border`             | Divider between sidebar and content                                         | `var(--stroke-normal) solid var(--tint-90)`     |
+| `--sidebar-layout-border`             | Border colour between the sidebar and the content                           | `var(--tint-90)`                                |
+| `--sidebar-layout-stroke`             | Border width between the sidebar and the content                            | `var(--stroke-normal)` (1px)                    |
 | `--sidebar-layout-sidebar-shadow`     | Shadow of the sidebar column on a wide screen                               | `var(--shadow-normal)`                          |
 | `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                           |
 
