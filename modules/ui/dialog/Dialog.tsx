@@ -29,8 +29,11 @@ import modalStyles from "./Modal.module.css";
  * @see https://shelving.cc/ui/DialogProps
  */
 export interface DialogProps extends OptionalChildProps {
-	/** Called when the user asks to close the dialog. It must unmount the `<Dialog>`. Unmount it inside `startTransition()` to animate it out (`<Dialogs>` does this for you). */
-	onClose?: Callback;
+	/**
+	 * Called when the user asks to close the dialog. It must unmount the `<Dialog>`. Unmount it inside `startTransition()` to animate it out (`<Dialogs>` does this for you).
+	 * - `instant` is `true` for a tap on a link: the page change runs its own view transition, so unmount the dialog at once, outside a transition.
+	 */
+	onClose?: Callback<[instant?: boolean]>;
 }
 
 /**
@@ -39,6 +42,7 @@ export interface DialogProps extends OptionalChildProps {
  * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, or the Escape key.
  * - It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>`.
  * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
+ * - A tap on a link calls `onClose(true)`: the dialog goes at once, so the page change gets the view transition. A separate close transition would take the page's transition types and hold the page change until it ends.
  * - It knows nothing about transitions. It fades in and out only when the update that mounts or unmounts it is a transition, e.g. from `<Dialogs>` or your own `startTransition()`. A `<Modal>` pinned to an edge then slides in its own layer.
  * - A change inside an open dialog (new content, a Suspense reveal) runs no view transition. The page ignores taps while one runs.
  * - With `onClose`, it is declarative: a close request calls `onClose()`, and the dialog stays open until it unmounts, so a view transition can capture it as it leaves.
@@ -86,14 +90,14 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 						<dialog
 							ref={_showModal}
 							className={getModuleClass(styles, "dialog")}
-							onClick={_closeOnClick}
+							onClick={e => _closeOnClick(e, onClose)}
 							onCancel={e => {
 								// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
 								if (!onClose || !e.cancelable) return;
 								e.preventDefault();
 								onClose();
 							}}
-							onClose={onClose}
+							onClose={onClose && (() => onClose())}
 							{...props}
 						>
 							<div className={getModuleClass(styles, "content")}>{children}</div>
@@ -121,13 +125,15 @@ const CLOSE_SELECTOR = "a:any-link, nav button:enabled";
 const KEEP_SELECTOR = `button, input, select, textarea, label, .${getModuleClass(modalStyles, "modal")}`;
 
 /** When the user taps anywhere on a `<dialog>` element, close it, unless the tap is on a control or inside a `<Modal>`. */
-function _closeOnClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>): void {
+function _closeOnClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>, onClose: DialogProps["onClose"]): void {
 	if (!(target instanceof Element)) return;
 
 	// Ignore taps in a nested dialog. React events bubble through the React tree, so they can reach an outer dialog.
 	if (target.closest("dialog") !== currentTarget) return;
 
-	if (target.closest(CLOSE_SELECTOR) || !target.closest(KEEP_SELECTOR)) requestDialogClose(currentTarget);
+	// A link changes the page, so close at once and leave the view transition to the page change.
+	if (onClose && target.closest("a:any-link")) onClose(true);
+	else if (target.closest(CLOSE_SELECTOR) || !target.closest(KEEP_SELECTOR)) requestDialogClose(currentTarget);
 }
 
 /**

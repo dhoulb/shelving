@@ -7,6 +7,7 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 - Closes on a tap anywhere on it, or the Escape key.
 - It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>` anywhere inside it. That button is an X icon fixed to the top-right corner.
 - A tap on a control (`<button>`, `<input>`, `<select>`, `<textarea>`, `<label>`) does not close it. A tap anywhere inside a `<Modal>` panel does not close it either, so a form in a `<Modal>` is safe. A tap on a link or a `<nav>` button always closes it.
+- A tap on a link calls `onClose(true)`. The page change runs its own view transition, so unmount the dialog at once, outside `startTransition()`. `<Dialogs>` does this for you. A close transition at the same time takes the page's transition types and holds the page change until it ends, so the page pops in with no slide.
 - Children render inside a `<Suspense>` boundary, so lazy content can stream in.
 - Children sit in one wrapper in normal block layout, so several children stack as they would on the page. The wrapper is `--dialog-width` wide (never wider than the screen) and centred on the screen. A centred `<Modal>` fills it. Content taller than the screen starts at the top, and the dialog scrolls.
 - While a dialog is open, the page behind it does not scroll. A scroll inside the dialog never passes on to the page.
