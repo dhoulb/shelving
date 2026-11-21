@@ -21652,20 +21652,23 @@ import { Card, Subheading } from "shelving/ui";
 
 `Card` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the card or an ancestor scope) to recolour everything at once — surface, text, and hover shade re-derive together; reach for a per-property hook for a single surgical change.
 
-| Variable                  | Styles                                                                                  | Default                                        |
-| ------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `--card-background`       | Surface fill                                                                            | `var(--tint-90)`                               |
-| `--card-hover-background` | Surface fill when a navigable card is hovered                                           | `var(--tint-95)`                               |
-| `--card-color`            | Text colour                                                                             | `var(--tint-00)`                               |
-| `--card-border`           | Border shorthand                                                                        | `var(--card-stroke) solid var(--tint-80)`      |
-| `--card-stroke`           | Border thickness — set `0` to hide the border                                           | `var(--stroke-normal)` (1px)                   |
-| `--card-radius`           | Corner radius                                                                           | `var(--radius-normal)` (16px)                  |
-| `--card-padding`          | Inner top and bottom padding (one length)                                               | `var(--space-normal)` (16px)                   |
-| `--card-indent`           | Inner left and right padding (one length)                                               | `var(--space-normal)` (16px)                   |
-| `--card-space`            | Outer block margin (top + bottom)                                                       | `var(--space-paragraph)` (16px)                |
-| `--card-shadow`           | Drop shadow                                                                             | `none`                                         |
-| `--card-transition`       | Transition                                                                              | `all var(--duration-fast)` (150ms)             |
-| `--card-focus-border`     | Focus outline, drawn on the navigable overlay so it shows above children like `<Panel>` | `var(--stroke-focus) solid var(--color-focus)` |
+Override these hooks at `:root`. The tint hooks (`--card-border`, `--card-background`, `--card-color`, `--card-hover-background`, `--card-hover-border`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                  | Styles                                                                                                                     | Default                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `--card-background`       | Surface fill                                                                                                               | `var(--tint-90)`                   |
+| `--card-hover-background` | Surface fill when a navigable card is hovered                                                                              | `var(--tint-95)`                   |
+| `--card-color`            | Text colour                                                                                                                | `var(--tint-00)`                   |
+| `--card-border`           | Border colour (width is `--card-stroke`)                                                                                   | `var(--tint-80)`                   |
+| `--card-hover-border`     | Border colour when the overlay is hovered                                                                                  | `var(--tint-90)`                   |
+| `--card-stroke`           | Border thickness — set `0` to hide the border                                                                              | `var(--stroke-normal)` (1px)       |
+| `--card-radius`           | Corner radius                                                                                                              | `var(--radius-normal)` (16px)      |
+| `--card-padding`          | Inner top and bottom padding (one length)                                                                                  | `var(--space-normal)` (16px)       |
+| `--card-indent`           | Inner left and right padding (one length)                                                                                  | `var(--space-normal)` (16px)       |
+| `--card-space`            | Outer block margin (top + bottom)                                                                                          | `var(--space-paragraph)` (16px)    |
+| `--card-shadow`           | Drop shadow                                                                                                                | `none`                             |
+| `--card-transition`       | Transition                                                                                                                 | `all var(--duration-fast)` (150ms) |
+| `--card-focus-border`     | Focus outline colour, drawn on the navigable overlay so it shows above children like `<Panel>` (width is `--stroke-focus`) | `var(--color-focus)`               |
 
 **Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 
@@ -21908,15 +21911,18 @@ import { Details, Paragraph } from "shelving/ui";
 
 `Details` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` to an ancestor scope to recolour the chevron and divider together.
 
-| Variable                 | Styles                                                          | Default                                     |
-| ------------------------ | --------------------------------------------------------------- | ------------------------------------------- |
-| `--details-space`        | Outer block margin, and the padding above a divider             | `var(--space-paragraph)` (16px)             |
-| `--details-border`       | Divider between panels next to each other                       | `var(--stroke-normal) solid var(--tint-90)` |
-| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)`                            |
-| `--details-radius`       | Corner radius of the title's focus ring                         | `var(--radius-xsmall)` (8px)                |
-| `--details-icon-color`   | Chevron colour                                                  | `var(--tint-50)`                            |
-| `--details-transition`   | Open/close animation and chevron turn                           | `all var(--duration-fast)` (150ms)          |
-| `--details-gap`          | Space between the title and the content                         | `var(--space-paragraph)` (16px)             |
+Override these hooks at `:root`. The tint hooks (`--details-border`, `--details-marker-color`, `--details-icon-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                 | Styles                                                          | Default                            |
+| ------------------------ | --------------------------------------------------------------- | ---------------------------------- |
+| `--details-space`        | Outer block margin, and the padding above a divider             | `var(--space-paragraph)` (16px)    |
+| `--details-border`       | Divider colour between panels next to each other                | `var(--tint-90)`                   |
+| `--details-stroke`       | Divider width                                                   | `var(--stroke-normal)` (1px)       |
+| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)`                   |
+| `--details-radius`       | Corner radius of the title's focus ring                         | `var(--radius-xsmall)` (8px)       |
+| `--details-icon-color`   | Chevron colour                                                  | `var(--tint-50)`                   |
+| `--details-transition`   | Open/close animation and chevron turn                           | `all var(--duration-fast)` (150ms) |
+| `--details-gap`          | Space between the title and the content                         | `var(--space-paragraph)` (16px)    |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-normal`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--duration-fast` and `--size-icon` (chevron size, from `getFlexClass`).
 
@@ -22181,6 +22187,8 @@ import { Heading } from "shelving/ui";
 
 `Heading` exposes hooks for its rhythm and type. It inherits text colour by default (so it picks up the surrounding tint); set `--heading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                 | Styles        | Default                         |
 | ------------------------ | ------------- | ------------------------------- |
 | `--heading-color`        | Text colour   | `inherit`                       |
@@ -22420,12 +22428,15 @@ import { List, ListItem } from "shelving/ui";
 
 `List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; apply `color=` (on the list or an ancestor scope) to recolour the markers, or reach for a per-property hook for a single change.
 
-| Variable              | Styles                               | Default                               |
-| --------------------- | ------------------------------------ | ------------------------------------- |
-| `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
-| `--list-item-space`   | Block margin of each `li`            | `var(--space-small)` (12px)           |
-| `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
-| `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
+Override these hooks at `:root`. The tint hooks (`--list-marker-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                | Styles                                                    | Default                                  |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------- |
+| `--list-space`          | Outer block margin (top + bottom)                         | `var(--space-paragraph)` (16px)          |
+| `--list-item-space`     | Block margin of each `li`                                 | `var(--space-small)` (12px)              |
+| `--list-indent`         | Inline start padding (marker gutter) of an unordered list | `1.125em`                                |
+| `--list-ordered-indent` | Inline start padding of an ordered list                   | `calc(var(--list-indent) * 1.6)` (1.8em) |
+| `--list-marker-color`   | Bullet / number colour                                    | `var(--tint-80)`                         |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-small`, and the tint-ladder step `--tint-80`.
 
@@ -22653,18 +22664,20 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 
 `Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
-| Variable                   | Styles                                                      | Default                                    |
-| -------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
-| `--panel-background`       | Surface fill                                                | `var(--tint-90)`                           |
-| `--panel-color`            | Text colour                                                 | `var(--tint-00)`                           |
-| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                              |
-| `--panel-plain-border`     | Top/bottom border shorthand of a `plain` panel              | `var(--panel-stroke) solid transparent`    |
-| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`                           |
-| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`                          |
-| `--panel-border`           | Top/bottom border shorthand                                 | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)               |
-| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem)              |
-| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)               |
+Override these hooks at `:root`. The tint hooks (`--panel-border`, `--panel-background`, `--panel-color`, `--panel-solid-background`, `--panel-solid-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                   | Styles                                                      | Default                       |
+| -------------------------- | ----------------------------------------------------------- | ----------------------------- |
+| `--panel-background`       | Surface fill                                                | `var(--tint-90)`              |
+| `--panel-color`            | Text colour                                                 | `var(--tint-00)`              |
+| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                 |
+| `--panel-plain-border`     | Top/bottom border colour of a `plain` panel                 | `transparent`                 |
+| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`              |
+| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`             |
+| `--panel-border`           | Top/bottom border colour (width is `--panel-stroke`)        | `var(--tint-80)`              |
+| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)  |
+| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem) |
+| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)  |
 
 **Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, `--space-normal`, and `--stroke-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
 
@@ -22749,6 +22762,8 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 ## Styling
 
 `Paragraph` exposes a single hook for its own block margin; it paints no colour of its own, so it inherits the surrounding text colour. Apply `color=` / `status=` to set the tint scope for any ladder-reading inline content inside it.
+
+Override these hooks at `:root`.
 
 | Variable            | Styles                            | Default                         |
 | ------------------- | --------------------------------- | ------------------------------- |
@@ -23058,6 +23073,8 @@ import { Header, Nav, Footer } from "shelving/ui";
 
 `Section` exposes hooks for its width and rhythm; it paints no colour of its own, so it inherits the surrounding tint.
 
+Override these hooks at `:root`.
+
 | Variable          | Styles                            | Default                       |
 | ----------------- | --------------------------------- | ----------------------------- |
 | `--section-width` | Content width                     | `var(--width-normal)` (55rem) |
@@ -23271,6 +23288,8 @@ import { Title, Heading, Subheading } from "shelving/ui";
 
 `Subheading` exposes hooks for its rhythm and type. It inherits text colour by default; set `--subheading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                    | Styles        | Default                         |
 | --------------------------- | ------------- | ------------------------------- |
 | `--subheading-color`        | Text colour   | `inherit`                       |
@@ -23368,6 +23387,8 @@ import { Panel, Block, Title } from "shelving/ui";
 ## Styling
 
 `Title` exposes hooks for its rhythm and type. It inherits text colour by default; set `--title-color` only to override that.
+
+Override these hooks at `:root`.
 
 | Variable               | Styles        | Default                         |
 | ---------------------- | ------------- | ------------------------------- |

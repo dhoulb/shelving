@@ -38,6 +38,8 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 
 `Paragraph` exposes a single hook for its own block margin; it paints no colour of its own, so it inherits the surrounding text colour. Apply `color=` / `status=` to set the tint scope for any ladder-reading inline content inside it.
 
+Override these hooks at `:root`.
+
 | Variable            | Styles                            | Default                         |
 | ------------------- | --------------------------------- | ------------------------------- |
 | `--paragraph-space` | Outer block margin (top + bottom) | `var(--space-paragraph)` (16px) |
