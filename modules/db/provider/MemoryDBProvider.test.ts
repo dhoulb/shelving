@@ -182,6 +182,8 @@ describe("MemoryTable times", () => {
 		table.setQueryTime({ str: "aaa" }, 123);
 		expect(table.getQueryTime({ str: "aaa" })).toBe(123);
 		expect(table.getQueryTime({ str: "aaa", $limit: 1 })).toBe(undefined); // Queries match exactly.
+		table.setQueryTime({ str: "bbb", num: 1 }, 789);
+		expect(table.getQueryTime({ num: 1, str: "bbb" })).toBe(789); // Key order does not matter.
 		table.setQueryTime(undefined, 456);
 		expect(table.getQueryTime()).toBe(456);
 		expect(table.getQueryTime({})).toBe(456);

@@ -4,6 +4,7 @@ import { awaitDispose } from "../../util/dispose.js";
 import type { Identifier, Item } from "../../util/item.js";
 import { setMapItem } from "../../util/map.js";
 import type { Query } from "../../util/query.js";
+import { getQueryKey } from "../../util/query.js";
 import type { Collection } from "../collection/Collection.js";
 import type { DBProvider } from "../provider/DBProvider.js";
 import { ItemStore } from "../store/ItemStore.js";
@@ -59,7 +60,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 * @see https://shelving.cc/db/CollectionCache/getQuery
 	 */
 	getQuery(query: Query<Item<I, T>>): QueryStore<I, T> {
-		const key = this._queryKey(query);
+		const key = getQueryKey(query);
 		return this._queries.get(key) || setMapItem(this._queries, key, new QueryStore(this.collection, query, this.provider));
 	}
 
@@ -98,7 +99,7 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 * @see https://shelving.cc/db/CollectionCache/refreshQuery
 	 */
 	async refreshQuery(query: Query<Item<I, T>>, maxAge?: number): Promise<void> {
-		await this._queries.get(this._queryKey(query))?.refresh(maxAge);
+		await this._queries.get(getQueryKey(query))?.refresh(maxAge);
 	}
 
 	/**
@@ -123,10 +124,6 @@ export class CollectionCache<I extends Identifier, T extends Data> implements As
 	 */
 	async refreshAll(maxAge?: number): Promise<void> {
 		await awaitValues(this.refreshItems(maxAge), this.refreshQueries(maxAge));
-	}
-
-	private _queryKey(query: Query<Item<I, T>>): string {
-		return JSON.stringify(query);
 	}
 
 	// Implement `AsyncDisposable`

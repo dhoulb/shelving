@@ -134,6 +134,26 @@ export function getQueryLimit<T extends Data>({ $limit }: Query<T>): number | un
 }
 
 /**
+ * Get a cache key for a query, so two queries with the same filters, order, and limit get the same key.
+ * - Sorts the top-level keys, so `{ a, b }` and `{ b, a }` give the same key.
+ * - Keeps the order of values, so `$order` arrays and `in` lists keep their meaning.
+ * - Treat the key as an opaque string. Only compare it for equality. Do not parse it or read data from it, because its format can change.
+ *
+ * @param query The query to get the key for, or `undefined` for a query with no filters.
+ * @returns An opaque string that is the same for equal queries.
+ * @see https://shelving.cc/util/query/getQueryKey
+ */
+export function getQueryKey<T extends Data>(query: Query<T> | undefined): string {
+	if (!query) return "{}";
+	const sorted: { [key: string]: unknown } = {};
+	for (const [key, value] of [...getProps<Data>(query)].sort(_compareKeys)) sorted[key] = value;
+	return JSON.stringify(sorted);
+}
+function _compareKeys([left]: readonly [string, unknown], [right]: readonly [string, unknown]): number {
+	return left < right ? -1 : left > right ? 1 : 0;
+}
+
+/**
  * Query a set of data items using a query.
  * - Filters, then sorts, then limits the items according to the query.
  *

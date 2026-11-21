@@ -35,6 +35,12 @@ describe("DBCache", () => {
 		expect(viaShortcut).toBe(viaTwoHop);
 	});
 
+	test("getQuery() reuses the store for the same query in a different key order", () => {
+		const cache = new DBCache(new MockDBProvider()).get(BASICS_COLLECTION);
+		expect(cache.getQuery({ str: "a", num: 1 })).toBe(cache.getQuery({ num: 1, str: "a" }));
+		expect(cache.getQuery({ str: "a" })).not.toBe(cache.getQuery({ str: "b" }));
+	});
+
 	test("getQuery() shortcut returns the same store as get(collection).getQuery(query)", () => {
 		const provider = new MockDBProvider();
 		const cache = new DBCache(provider);

@@ -7,6 +7,7 @@ import {
 	getQueryBefore,
 	getQueryFilters,
 	getQueryItemsAfter,
+	getQueryKey,
 	getQueryOrders,
 	matchQueryItem,
 	queryItems,
@@ -271,5 +272,26 @@ describe("getQueryItemsAfter()", () => {
 	});
 	test("throws when a full page has no order", () => {
 		expect(() => getQueryItemsAfter<string, { when: number }>({ query: { $limit: 1 }, items: [a] })).toThrow();
+	});
+});
+
+describe("getQueryKey()", () => {
+	test("same key for the same query in a different key order", () => {
+		expect(getQueryKey({ b: 2, a: 1, $limit: 5 })).toBe(getQueryKey({ $limit: 5, a: 1, b: 2 }));
+	});
+	test("different key for different values", () => {
+		expect(getQueryKey({ a: 1 })).not.toBe(getQueryKey({ a: 2 }));
+		expect(getQueryKey({ a: 1 })).not.toBe(getQueryKey({ a: 1, $limit: 1 }));
+		expect(getQueryKey({ a: "1" })).not.toBe(getQueryKey({ a: 1 }));
+	});
+	test("keeps the order of values", () => {
+		expect(getQueryKey({ $order: ["a", "b"] })).not.toBe(getQueryKey({ $order: ["b", "a"] }));
+		expect(getQueryKey({ a: [1, 2] })).not.toBe(getQueryKey({ a: [2, 1] }));
+	});
+	test("same key for an empty query and no query", () => {
+		expect(getQueryKey(undefined)).toBe(getQueryKey({}));
+	});
+	test("ignores undefined values", () => {
+		expect(getQueryKey({ a: 1, b: undefined })).toBe(getQueryKey({ a: 1 }));
 	});
 });
