@@ -15,6 +15,7 @@ export * from "./List.js";
 export * from "./ListItem.js";
 export * from "./Panel.js";
 export * from "./Paragraph.js";
+export * from "./Photo.js";
 export * from "./Preformatted.js";
 export * from "./Prose.js";
 export * from "./Row.js";

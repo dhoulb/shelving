@@ -63,6 +63,9 @@
 
 @layer components {
 	.button {
+		/* Icons inside (such as the busy spinner) follow the button text, so they show on a solid fill. */
+		--icon-color: currentcolor;
+
 		/* Box */
 		display: block;
 		box-sizing: border-box;

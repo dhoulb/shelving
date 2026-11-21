@@ -16,6 +16,8 @@
 		--video-padding: var(--space-normal);
 		--video-indent: var(--space-normal);
 		--video-gap: var(--space-normal);
+		--video-background: black;
+		--video-text: white;
 	}
 }
 
@@ -39,8 +41,8 @@
 		position: relative;
 
 		/* Style */
-		background: white;
-		color: black;
+		background: var(--video-background);
+		color: var(--video-text);
 
 		/* Contents */
 		overflow: hidden;

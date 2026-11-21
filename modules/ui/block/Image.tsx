@@ -15,7 +15,7 @@ const IMAGE_CLASS = getModuleClass(IMAGE_CSS, "image");
  */
 export interface ImageProps extends SpaceVariants, WidthVariants, ClassProps {
 	src: string;
-	alt?: string;
+	alt?: string | undefined;
 }
 
 /**
