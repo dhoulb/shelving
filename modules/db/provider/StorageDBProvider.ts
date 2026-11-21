@@ -169,6 +169,12 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 		super.deleteItem(id);
 	}
 
+	// Override to also remove an invalidated item from storage, so it does not come back from storage on the next load.
+	override invalidateItem(id: I): void {
+		if (this._data.has(id)) this._storage.removeItem(this._key(id));
+		super.invalidateItem(id);
+	}
+
 	// Implement `AsyncDisposable`
 	override async [Symbol.asyncDispose](): Promise<void> {
 		await awaitDispose(

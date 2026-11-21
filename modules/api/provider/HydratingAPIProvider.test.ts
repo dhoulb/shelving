@@ -13,9 +13,12 @@ const GET_USER = GET("/user/{id}", DATA({ id: STRING }), NULLABLE(USERS.item));
 const LIST_USERS = GET("/user", DATA({}), USERS.items);
 const LIST_USERS_ARRAY = GET("/array", DATA({}), ARRAY(USERS.item));
 const MY_SQUADS = GET("/squad/me", DATA({}), DATA({ squads: SQUADS.queryItems, users: USERS.items }));
+const FIND_USERS = GET("/find/user", DATA({ name: STRING }), USERS.queryItems);
+const FIND_FIRST_USER = GET("/first/user", DATA({ name: STRING }), USERS.queryItems);
 
 function _setup() {
 	const db = new MemoryDBProvider<string>();
+	const server = new MemoryDBProvider<string>();
 	const api = new HydratingAPIProvider(
 		new MockEndpointAPIProvider(
 			[
@@ -23,12 +26,17 @@ function _setup() {
 				LIST_USERS.handler(() => [dave, ada]),
 				LIST_USERS_ARRAY.handler(() => [dave, ada]),
 				MY_SQUADS.handler(() => ({ squads: { query: { title: "Reds" }, items: [reds] }, users: [dave] })),
+				FIND_USERS.handler(({ name }) => ({ query: { name }, items: server.getTable(USERS).getQuery({ name }) })),
+				FIND_FIRST_USER.handler(({ name }) => {
+					const query = { name, $order: "id", $limit: 1 } as const;
+					return { query, items: server.getTable(USERS).getQuery(query) };
+				}),
 			],
 			undefined,
 		),
 		db,
 	);
-	return { db, api, users: db.getTable(USERS), squads: db.getTable(SQUADS) };
+	return { db, api, server, users: db.getTable(USERS), squads: db.getTable(SQUADS) };
 }
 
 describe("HydratingAPIProvider", () => {
@@ -60,5 +68,39 @@ describe("HydratingAPIProvider", () => {
 		expect(squads.getItem("reds")).toEqual(reds);
 		expect(squads.getQueryTime({ title: "Reds" })).toBeNumber();
 		expect(users.getItem("dave")).toEqual(dave);
+	});
+	test("query items invalidate items in memory that match the query but are not in the result", async () => {
+		const { api, server, users } = _setup();
+		await server.setItem(USERS, "dave", { name: "Dave" });
+		users.setItem("dave", dave);
+		users.setItem("old", { id: "old", name: "Dave" }); // Matches in memory, but the server has changed or deleted it.
+		users.setItem("ada", ada); // Does not match, so it stays.
+		await api.call(FIND_USERS, { name: "Dave" });
+		expect(users.getItem("dave")).toEqual(dave);
+		expect(users.getItem("old")).toBe(undefined);
+		expect(users.getItemTime("old")).toBe(undefined); // Not known to be missing, so it loads again.
+		expect(users.getItem("ada")).toEqual(ada);
+	});
+	test("query items with a $limit invalidate nothing", async () => {
+		const { api, server, users } = _setup();
+		await server.setItem(USERS, "dave", { name: "Dave" });
+		users.setItem("old", { id: "old", name: "Dave" });
+		await api.call(FIND_FIRST_USER, { name: "Dave" });
+		expect(users.getItem("old")).toEqual({ id: "old", name: "Dave" });
+	});
+	test("after random server writes, an unlimited query in memory matches the server after each call", async () => {
+		const { api, server, db } = _setup();
+		const names = ["Dave", "Ada"];
+		const ids = ["a", "b", "c", "d"];
+		let seed = 1;
+		const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646; // Seeded, so a failure can run again.
+		for (let i = 0; i < 200; i++) {
+			const id = ids[Math.floor(random() * ids.length)] ?? "a";
+			if (random() < 0.3) await server.deleteItem(USERS, id);
+			else await server.setItem(USERS, id, { name: names[Math.floor(random() * names.length)] ?? "Dave" });
+			const name = names[Math.floor(random() * names.length)] ?? "Dave";
+			await api.call(FIND_USERS, { name });
+			expect(await db.getQuery(USERS, { name, $order: "id" })).toEqual(await server.getQuery(USERS, { name, $order: "id" }));
+		}
 	});
 });

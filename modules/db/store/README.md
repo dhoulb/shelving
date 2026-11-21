@@ -13,7 +13,7 @@ Both extend `FetchStore` from the `shelving/store` module, which manages the loa
 - `ItemStore.item` — returns the item or throws `RequiredError` if absent. Safe to use once the store is loaded and you know the item exists.
 - `.item = data` — write helper that sets `.value` to `getItem()` directly (bypasses the provider; useful for optimistic updates).
 
-When the provider is (or wraps) a `MemoryDBProvider`, the store seeds its initial value from the memory and follows its changes. This makes the first render synchronous when the memory has the item. A missing item only counts as loaded when the memory has a time for it (`MemoryTable.getItemTime()`). Until then the store is loading, and a fetch waits until the memory loads the item (e.g. from `HydratingAPIProvider`).
+When the provider is (or wraps) a `MemoryDBProvider`, the store seeds its initial value from the memory and follows its changes. This makes the first render synchronous when the memory has the item. A missing item only counts as loaded when the memory has a time for it (`MemoryTable.getItemTime()`). Until then the store is loading, and a fetch waits until the memory loads the item (e.g. from `HydratingAPIProvider`). When the memory invalidates the item (`MemoryTable.invalidateItem()`), the store goes back to loading.
 
 For any other provider, the store fetches with `DBProvider.getItem()`, and follows `DBProvider.getItemSequence()` while it has subscribers. A provider that throws `UnsupportedError` for subscriptions is only fetched.
 

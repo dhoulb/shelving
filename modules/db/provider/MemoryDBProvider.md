@@ -24,7 +24,7 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
 
 Each `MemoryTable` records when an item was last set or deleted (`MemoryTable.getItemTime()`), and when a query was marked as loaded (`MemoryTable.getQueryTime()`, set with `MemoryTable.setQueryTime()`). Stores use the times to tell "not loaded yet" from "empty":
 
-- An item with no item and no time is loading. Deleting an item that does not exist still sets its time, so the table knows it is missing.
+- An item with no item and no time is loading. Deleting an item that does not exist still sets its time, so the table knows it is missing. `MemoryTable.invalidateItem()` removes the item and its time, so the item is loading again.
 - A query with no items and no time is loading. A query matches by `JSON.stringify(query)`, including `$order` and `$limit`.
 
 ```ts

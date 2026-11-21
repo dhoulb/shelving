@@ -9,7 +9,7 @@ import { isData } from "../../util/data.js";
 import type { AnyCaller } from "../../util/function.js";
 import type { RequestOptions } from "../../util/http.js";
 import type { Identifier, Item, Items } from "../../util/item.js";
-import type { QueryItems } from "../../util/query.js";
+import { getQueryLimit, type QueryItems } from "../../util/query.js";
 import { getSource } from "../../util/source.js";
 import type { Endpoint } from "../endpoint/Endpoint.js";
 import type { APIProvider } from "./APIProvider.js";
@@ -21,7 +21,7 @@ import { ValidationAPIProvider } from "./ValidationAPIProvider.js";
  * - Only results that use a collection's own schemas hydrate: `Collection.item`, `Collection.items` and `Collection.queryItems`, or a `DataSchema` whose props use them (one level deep). Every other result passes through with no change.
  * - `Collection.item` sets the item. A `null` or `undefined` result (e.g. `NULLABLE(USERS.item)`) deletes the item with the `id` from the payload (the payload itself, or its `id` prop).
  * - `Collection.items` sets each item. It never deletes items.
- * - `Collection.queryItems` sets each item, then marks the query as loaded (see `MemoryTable.setQueryTime()`).
+ * - `Collection.queryItems` sets each item, then marks the query as loaded (see `MemoryTable.setQueryTime()`). For a query with no `$limit`, it also invalidates each item in memory that matches the query but is not in the result (see `MemoryTable.invalidateItem()`).
  * - Writes happen synchronously before `call()` resolves, so no store sees half of a result.
  * - Extends `ValidationAPIProvider`, so it only ever writes validated items.
  *
@@ -65,6 +65,12 @@ function _hydrate(db: MemoryDBProvider, schema: Schema, value: unknown, payload?
 			const { query, items } = value as QueryItems;
 			const table = db.getTable(queryItems.source);
 			table.setItems(items);
+			// The result is the whole answer to a query with no `$limit`, so an item in memory that matches but is not in the result is out of date. Invalidate it, so it loads again.
+			// A query with a `$limit` is only a window of the answer, so an item may be missing because it moved out of the window. Leave those items.
+			if (getQueryLimit(query) === undefined) {
+				const ids = new Set(items.map(({ id }) => id));
+				for (const { id } of table.getQuery(query)) if (!ids.has(id)) table.invalidateItem(id);
+			}
 			table.setQueryTime(query);
 		}
 		return true;

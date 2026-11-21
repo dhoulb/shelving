@@ -1,6 +1,7 @@
 import { RequiredError } from "../../error/RequiredError.js";
 import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { FetchStore } from "../../store/FetchStore.js";
+import type { StoreInput } from "../../store/Store.js";
 import { awaitAbort, awaitRace } from "../../util/async.js";
 import { getGetter } from "../../util/class.js";
 import { NONE } from "../../util/constants.js";
@@ -79,7 +80,7 @@ export class ItemStore<I extends Identifier, T extends Data> extends FetchStore<
 		this.id = id;
 		this._table = table;
 		this.starter = table
-			? store => runSequence(store.through(_getLoadedSequence(table, id)))
+			? store => runSequence(_writeSequence(store, _getLoadedSequence(table, id, true)))
 			: store =>
 					runSequence(
 						store.through(_getSupportedSequence(() => provider.getItemSequence(collection, id))),
@@ -102,12 +103,31 @@ function _isLoaded<I extends Identifier, T extends Data>(table: MemoryTable<I, T
 	return !!table.getItem(id) || table.getItemTime(id) !== undefined;
 }
 
-/** Follow an item in the memory, but skip the values from before it has loaded. */
+/**
+ * Follow an item in the memory, but skip the values from before it has loaded.
+ *
+ * @param invalidate Yield `NONE` when the item is not loaded, e.g. after `MemoryTable.invalidateItem()`, so the store goes back to loading.
+ */
 async function* _getLoadedSequence<I extends Identifier, T extends Data>(
 	table: MemoryTable<I, T>,
 	id: I,
-): AsyncIterable<OptionalItem<I, T>> {
-	for await (const item of table.getItemSequence(id)) if (_isLoaded(table, id)) yield item;
+	invalidate = false,
+): AsyncIterable<StoreInput<OptionalItem<I, T>>> {
+	for await (const item of table.getItemSequence(id)) {
+		if (_isLoaded(table, id)) yield item;
+		else if (invalidate) yield NONE;
+	}
+}
+
+/** Write each value of a sequence to a store, including `NONE`, which puts the store back to loading. */
+async function* _writeSequence<T>(
+	store: { write(input: StoreInput<T>): void },
+	sequence: AsyncIterable<StoreInput<T>>,
+): AsyncIterable<StoreInput<T>> {
+	for await (const value of sequence) {
+		store.write(value);
+		yield value;
+	}
 }
 
 /** Follow a provider's sequence, but end it at once if the provider does not support subscriptions. */

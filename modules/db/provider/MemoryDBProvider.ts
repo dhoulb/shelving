@@ -374,6 +374,22 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 	}
 
 	/**
+	 * Invalidate an item, so the table no longer knows anything about it.
+	 * - Removes the item and its time (see `getItemTime()`), so the item counts as not loaded, not as missing.
+	 * - Use it when the item may be out of date, but you do not know it was deleted, e.g. a fresh query result no longer contains it. Stores that read the item go back to loading, so the app loads it again.
+	 * - Only resolves `next` when the table had the item or a time for it.
+	 *
+	 * @param id Identifier of the item to invalidate.
+	 * @example table.invalidateItem(123);
+	 * @see https://shelving.cc/db/MemoryTable/invalidateItem
+	 */
+	invalidateItem(id: I): void {
+		const removed = this._data.delete(id);
+		const forgotten = this._times.delete(id);
+		if (removed || forgotten) this._next.resolve(false);
+	}
+
+	/**
 	 * Count the items in this table matching an optional query.
 	 *
 	 * @param query Query to filter the counted items (counts all items when omitted).

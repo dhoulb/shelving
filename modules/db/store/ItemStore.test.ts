@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { ItemStore, MemoryDBProvider } from "shelving/db";
 import { runMicrotasks } from "shelving/util/async";
+import { runSequence } from "shelving/util/sequence";
 import { BASICS_COLLECTION, basic1 } from "../../test/index.js";
 
 describe("ItemStore with a MemoryDBProvider", () => {
@@ -38,5 +39,32 @@ describe("ItemStore with a MemoryDBProvider", () => {
 		memory.getTable(BASICS_COLLECTION).deleteItem("basic1");
 		await refresh;
 		expect(store.value).toBe(undefined);
+	});
+	test("goes back to loading when the memory invalidates the item, then follows it again", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const table = memory.getTable(BASICS_COLLECTION);
+		table.setItem("basic1", basic1);
+		const store = new ItemStore(BASICS_COLLECTION, "basic1", memory);
+		const stop = runSequence(store);
+		await runMicrotasks();
+		expect(store.value).toEqual(basic1);
+		table.invalidateItem("basic1");
+		await runMicrotasks();
+		expect(store.loading).toBe(true);
+		table.setItem("basic1", { ...basic1, str: "NEW" });
+		await runMicrotasks();
+		expect(store.value).toEqual({ ...basic1, str: "NEW" });
+		stop();
+	});
+	test("goes back to loading on a new subscription when the item was invalidated while it had no subscribers", async () => {
+		const memory = new MemoryDBProvider<string>();
+		const table = memory.getTable(BASICS_COLLECTION);
+		table.setItem("basic1", basic1);
+		const store = new ItemStore(BASICS_COLLECTION, "basic1", memory);
+		table.invalidateItem("basic1");
+		const stop = runSequence(store);
+		await runMicrotasks();
+		expect(store.loading).toBe(true);
+		stop();
 	});
 });
