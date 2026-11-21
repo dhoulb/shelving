@@ -15,7 +15,7 @@ A `<Button>` that opens a `<Popover>` panel below it. A tap on the button opens 
 
 - The first child is the button content. The other children go in the panel.
 - It takes all the `<Button>` style props, such as `solid` or `color`. `className` goes on the button.
-- A tap outside the popover, or the Escape key, closes the panel.
+- A tap outside the popover, Tab past it, or the Escape key closes the panel.
 - For a trigger that looks like an input, use `<PopoverButtonInput>`.
 
 ## Usage

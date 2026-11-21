@@ -15,7 +15,7 @@ A `<ButtonInput>` that opens a `<Popover>` panel below it. Use it for a custom p
 
 - The first child is the button content. The other children go in the panel.
 - It takes the shared input props, such as `name`, `placeholder` and `disabled`. `className` goes on the button.
-- A tap outside the popover, or the Escape key, closes the panel.
+- A tap outside the popover, Tab past it, or the Escape key closes the panel.
 - The panel does not close when the user picks something in it. Close it yourself, or use `<QueryRadiosInput>` for a list that closes on a pick.
 
 ## Usage
