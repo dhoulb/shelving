@@ -64,19 +64,21 @@ import { Button, Cell, Table } from "shelving/ui";
 
 `--table-padding` sets the top and bottom padding of each cell, and `--table-indent` the left and right. Each takes one length. The table's `padding` and `indent` variants set these hooks. The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
 
-| Variable                | Styles                                                 | Default                                     |
-| ----------------------- | ------------------------------------------------------ | ------------------------------------------- |
-| `--table-space`         | Outer block margin (top + bottom)                      | `var(--space-paragraph)` (16px)             |
-| `--table-padding`       | Cell top and bottom padding (one length)               | `var(--space-xsmall)` (8px)                 |
-| `--table-indent`        | Cell left and right padding (one length)               | `var(--space-xsmall)` (8px)                 |
-| `--table-border`        | Cell border shorthand                                  | `var(--table-stroke)`                       |
-| `--table-stroke`        | Cell border thickness/colour                           | `var(--stroke-normal) solid var(--tint-90)` |
-| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)`                      |
-| `--table-label-font`    | Label font for `<thead>` / `<tfoot>` `<th>`            | `var(--font-label)`                         |
-| `--table-label-weight`  | Label weight                                           | `var(--weight-label)`                       |
-| `--table-label-size`    | Label size                                             | `var(--size-label)`                         |
-| `--table-label-case`    | Label letter case                                      | `var(--case-label)`                         |
-| `--table-label-color`   | Label colour                                           | `var(--tint-70)`                            |
+Override these hooks at `:root`. The tint hooks (`--table-border`, `--table-label-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                | Styles                                                 | Default                         |
+| ----------------------- | ------------------------------------------------------ | ------------------------------- |
+| `--table-space`         | Outer block margin (top + bottom)                      | `var(--space-paragraph)` (16px) |
+| `--table-padding`       | Cell top and bottom padding (one length)               | `var(--space-xsmall)` (8px)     |
+| `--table-indent`        | Cell left and right padding (one length)               | `var(--space-xsmall)` (8px)     |
+| `--table-border`        | Cell border colour (width is `--table-stroke`)         | `var(--tint-90)`                |
+| `--table-stroke`        | Cell border width                                      | `var(--stroke-normal)` (1px)    |
+| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)`          |
+| `--table-label-font`    | Label font for `<thead>` / `<tfoot>` `<th>`            | `var(--font-label)`             |
+| `--table-label-weight`  | Label weight                                           | `var(--weight-label)`           |
+| `--table-label-size`    | Label size                                             | `var(--size-label)`             |
+| `--table-label-case`    | Label letter case                                      | `var(--case-label)`             |
+| `--table-label-color`   | Label colour                                           | `var(--tint-70)`                |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-90`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
 

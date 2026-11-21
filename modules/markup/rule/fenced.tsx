@@ -71,6 +71,7 @@ export function createFencedRegExp(info: string = LINE_CONTENT_REGEXP): NamedReg
  * - Closing fence must be exactly the same as the opening fence, and can be made of three or more backticks, or three or more `~~~` tildes.
  * - If there's no closing fence the code block will run to the end of the current string.
  * - The info string after the opening fence is parsed with `parseFencedInfo()`: only its title shows, as a caption.
+ * - A code block with a title renders as a `<figure>` with a `<figcaption>`. A code block with no title renders as a plain `<pre>`.
  * - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
  *
  * @example new MarkupParser({ rules: [FENCED_RULE] }).parse("```\ncode block\n```")
@@ -80,7 +81,7 @@ export const FENCED_RULE = createMarkupRule(
 	createFencedRegExp(),
 	(key, { info = "", code }) => {
 		const { title } = parseFencedInfo(info);
-		// Scrollable region pattern: focusable, labelled <figure> wraps the code block so keyboard users can arrow-scroll wide lines.
+		// A `<figure>` joins a title to its code block. A code block with no title is a plain `<pre>`, so it takes paragraph space.
 		return title ? (
 			<figure key={key}>
 				<figcaption>{title}</figcaption>
@@ -89,11 +90,9 @@ export const FENCED_RULE = createMarkupRule(
 				</pre>
 			</figure>
 		) : (
-			<figure key={key}>
-				<pre>
-					<code>{code.trim()}</code>
-				</pre>
-			</figure>
+			<pre key={key}>
+				<code>{code.trim()}</code>
+			</pre>
 		);
 	},
 	["block", "list"],

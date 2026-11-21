@@ -35,28 +35,52 @@
 	}
 }
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--card-space: var(--space-paragraph);
+		--card-stroke: var(--stroke-normal);
+		--card-padding: var(--space-normal);
+		--card-indent: var(--space-normal);
+		--card-radius: var(--radius-normal);
+		--card-shadow: none;
+		--card-transition: all var(--duration-fast);
+		--card-focus-border: var(--color-focus);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--card-border: var(--tint-80);
+		--card-background: var(--tint-90);
+		--card-color: var(--tint-00);
+		--card-hover-background: var(--tint-95);
+		--card-hover-border: var(--tint-90);
+	}
+}
+
 @layer components {
 	.card {
 		/* Box */
 		display: flow-root; /* Contain the margins of the children, also with `padding="none"`. */
 		position: relative;
 		margin-inline: 0;
-		margin-block: var(--card-space, var(--space-paragraph));
-		border: var(--card-border, var(--card-stroke, 0) solid var(--tint-80));
-		padding-block: var(--card-padding, var(--space-normal));
-		padding-inline: var(--card-indent, var(--space-normal));
-		border-radius: var(--card-radius, var(--radius-normal));
+		margin-block: var(--card-space);
+		border: var(--card-stroke) solid var(--card-border);
+		padding-block: var(--card-padding);
+		padding-inline: var(--card-indent);
+		border-radius: var(--card-radius);
 
 		/* Style */
-		background: var(--card-background, var(--tint-90));
-		color: var(--card-color, var(--tint-00));
-		box-shadow: var(--card-shadow, none);
-		transition: var(--card-transition, all var(--duration-fast));
+		background: var(--card-background);
+		color: var(--card-color);
+		box-shadow: var(--card-shadow);
+		transition: var(--card-transition);
 
 		/* Hover/focus affordance driven by the overlay link/button. */
 		&:has(.overlay:hover) {
-			background: var(--card-hover-background, var(--tint-95));
-			border: var(--card-hover-border, var(--card-stroke, 0) solid var(--tint-90));
+			background: var(--card-hover-background);
+			border-color: var(--card-hover-border);
 		}
 	}
 
@@ -75,8 +99,8 @@
 		cursor: pointer;
 
 		/* Focus ring — drawn on the overlay. The offset pushes it out over the card border, so it sits fully inside the card edge. */
-		outline: var(--card-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(var(--card-stroke, 0px) - var(--stroke-focus));
+		outline: var(--stroke-focus) solid var(--card-focus-border);
+		outline-offset: calc(var(--card-stroke) - var(--stroke-focus));
 
 		/* Typography — hide the link's text visually but keep it in the accessibility tree. */
 		color: transparent;

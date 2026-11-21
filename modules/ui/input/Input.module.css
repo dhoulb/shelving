@@ -7,44 +7,63 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--input-space: var(--space-small);
+		--input-radius: var(--radius-xsmall);
+		--input-stroke: var(--stroke-normal);
+		--input-padding: var(--space-small);
+		--input-indent: var(--space-small);
+		--input-icon-size: var(--size-icon);
+		--input-transition: all var(--duration-fast);
+		--input-focus-border: var(--color-focus);
+		--input-font: var(--font-body);
+		--input-weight: var(--weight-normal);
+		--input-size: var(--size-normal);
+		--input-leading: var(--leading-auto);
+		--input-rows: 2;
+		--input-disabled-opacity: 0.5;
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--input-border: var(--tint-80);
+		--input-background: var(--tint-100);
+		--input-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	.input {
 		/* Box */
 		box-sizing: border-box;
 		width: 100%;
 		margin-inline: 0;
-		margin-block: var(--input-space, var(--space-small));
-		border-radius: var(--input-radius, var(--radius-xsmall));
-		border: var(--input-border, var(--input-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--input-padding, var(--space-small));
-		padding-inline: var(--input-indent, var(--space-small));
+		margin-block: var(--input-space);
+		border-radius: var(--input-radius);
+		border: var(--input-stroke) solid var(--input-border);
+		padding-block: var(--input-padding);
+		padding-inline: var(--input-indent);
 
-		/* Match `--button-height`, so an input and a button with an icon sit at the same height. */
-		min-block-size: var(
-			--input-height,
-			calc(
-				var(--input-icon-size, var(--size-icon)) +
-				2 *
-				var(--input-padding, var(--space-small)) +
-				2 *
-				var(--input-stroke, var(--stroke-normal))
-			)
-		);
+		/* Match the button's minimum height, so an input and a button with an icon sit at the same height. */
+		min-block-size: calc(var(--input-icon-size) + 2 * var(--input-padding) + 2 * var(--input-stroke));
 
 		/* Style */
-		background: var(--input-background, var(--tint-100));
-		color: var(--input-color, var(--tint-00));
-		transition: var(--input-transition, all var(--duration-fast));
+		background: var(--input-background);
+		color: var(--input-color);
+		transition: var(--input-transition);
 		cursor: default;
-		outline: var(--input-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline: var(--stroke-focus) solid var(--input-focus-border);
 		outline-offset: calc(0px - var(--stroke-normal));
 		box-shadow: none;
 
 		/* Text */
-		font-family: var(--input-font, var(--font-body));
-		font-weight: var(--input-weight, var(--weight-normal));
-		font-size: var(--input-size, var(--size-normal));
-		line-height: var(--input-leading, var(--leading-auto));
+		font-family: var(--input-font);
+		font-weight: var(--input-weight);
+		font-size: var(--input-size);
+		line-height: var(--input-leading);
 
 		/* Content */
 		justify-content: start;
@@ -56,9 +75,9 @@
 			cursor: pointer;
 			appearance: none;
 			background-repeat: no-repeat;
-			background-size: var(--input-icon-size, var(--size-icon));
+			background-size: var(--input-icon-size);
 			padding-right: 2.5em;
-			background-position: right var(--input-indent, var(--space-small)) center;
+			background-position: right var(--input-indent) center;
 			background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iY3VycmVudENvbG9yIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS40NyA0LjcyYS43NS43NSAwIDAgMSAxLjA2IDBsMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDEuMDZMMTIgNi4zMSA4Ljc4IDkuNTNhLjc1Ljc1IDAgMCAxLTEuMDYtMS4wNmwzLjc1LTMuNzVabS0zLjc1IDkuNzVhLjc1Ljc1IDAgMCAxIDEuMDYgMEwxMiAxNy42OWwzLjIyLTMuMjJhLjc1Ljc1IDAgMSAxIDEuMDYgMS4wNmwtMy43NSAzLjc1YS43NS43NSAwIDAgMS0xLjA2IDBsLTMuNzUtMy43NWEuNzUuNzUgMCAwIDEgMC0xLjA2WiIgY2xpcC1ydWxlPSJldmVub2RkIiAvPjwvc3ZnPgo=");
 
 			/* Placeholder colour if contains checked empty option. */
@@ -103,13 +122,7 @@
 				field-sizing: content;
 
 				/* `field-sizing` ignores `rows`, so set the minimum height from `--input-rows` (set inline from the `rows` prop). Never shorter than a single-line input, so a one-row textarea matches a button with an icon. */
-				min-block-size: calc(
-					max(var(--input-icon-size, var(--size-icon)), var(--input-rows, 2) * 1lh) +
-					2 *
-					var(--input-padding, var(--space-small)) +
-					2 *
-					var(--input-stroke, var(--stroke-normal))
-				);
+				min-block-size: calc(max(var(--input-icon-size), var(--input-rows) * 1lh) + 2 * var(--input-padding) + 2 * var(--input-stroke));
 			}
 		}
 
@@ -145,7 +158,7 @@
 		&.disabled,
 		&:disabled,
 		&:has(.disabled, :disabled) {
-			opacity: var(--input-disabled-opacity, 0.5);
+			opacity: var(--input-disabled-opacity);
 			cursor: default;
 		}
 
@@ -170,30 +183,30 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				inline-size: var(--input-icon-size, var(--size-icon));
-				block-size: var(--input-icon-size, var(--size-icon));
+				inline-size: var(--input-icon-size);
+				block-size: var(--input-icon-size);
 				pointer-events: none;
 			}
 
 			/* First [data-slot] child sits one indent from the left, where the text of a plain input starts. Physical, not
 			   logical: `inset-inline-start` makes bundlers emit a `:lang()` selector for every right-to-left language. */
 			& > [data-slot]:first-child {
-				left: var(--input-indent, var(--space-small));
+				left: var(--input-indent);
 			}
 
 			/* Last [data-slot] child sits one indent from the right. */
 			& > [data-slot]:last-child {
-				right: var(--input-indent, var(--space-small));
+				right: var(--input-indent);
 			}
 
 			/* Push the inner .input text past the left slot, with one indent gap. */
 			&:has(> [data-slot]:first-child) > .input {
-				padding-left: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
+				padding-left: calc(var(--input-icon-size) + var(--input-indent));
 			}
 
 			/* Push the inner .input text clear of the right slot, with one indent gap. */
 			&:has(> [data-slot]:last-child) > .input {
-				padding-right: calc(var(--input-icon-size, var(--size-icon)) + var(--input-indent, var(--space-small)));
+				padding-right: calc(var(--input-icon-size) + var(--input-indent));
 			}
 		}
 	}
@@ -205,8 +218,8 @@
 	.checkbox,
 	.radio {
 		display: block;
-		width: calc(var(--input-icon-size, var(--size-icon)) - 4px);
-		height: calc(var(--input-icon-size, var(--size-icon)) - 4px);
+		width: calc(var(--input-icon-size) - 4px);
+		height: calc(var(--input-icon-size) - 4px);
 		margin: 2px;
 		flex: 0 0 auto;
 		accent-color: var(--color-success);

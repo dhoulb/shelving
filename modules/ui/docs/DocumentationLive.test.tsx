@@ -13,13 +13,13 @@ describe("DOCUMENTATION_LIVE_RULE", () => {
 		});
 	});
 	test("leaves other blocks as code", () => {
-		expect(PARSER.parse("```tsx\n<Button>Hi</Button>\n```")).toMatchObject({ type: "figure" });
+		expect(PARSER.parse("```tsx\n<Button>Hi</Button>\n```")).toMatchObject({ type: "pre" });
 		expect(PARSER.parse('```tsx "A live demo"\n<Button>Hi</Button>\n```')).toMatchObject({ type: "figure" });
 	});
 	test("leaves a live block inside a longer fence as code", () => {
 		expect(PARSER.parse("````md\n```tsx live\n<Button>Hi</Button>\n```\n````")).toMatchObject({
-			type: "figure",
-			props: { children: { type: "pre", props: { children: { props: { children: "```tsx live\n<Button>Hi</Button>\n```" } } } } },
+			type: "pre",
+			props: { children: { props: { children: "```tsx live\n<Button>Hi</Button>\n```" } } },
 		});
 	});
 });

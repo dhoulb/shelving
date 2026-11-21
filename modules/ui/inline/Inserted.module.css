@@ -3,14 +3,23 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--inserted-color: var(--color-green);
+		--inserted-decoration: underline var(--stroke-normal);
+		--inserted-weight: var(--weight-strong);
+	}
+}
+
 @layer components {
 	.inserted,
 	.prose ins {
 		/* Style */
-		color: var(--inserted-color, var(--color-green));
-		text-decoration: var(--inserted-decoration, underline var(--stroke-normal));
+		color: var(--inserted-color);
+		text-decoration: var(--inserted-decoration);
 
 		/* Text */
-		font-weight: var(--inserted-weight, var(--weight-strong));
+		font-weight: var(--inserted-weight);
 	}
 }

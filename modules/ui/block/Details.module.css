@@ -6,17 +6,36 @@
 @import url("../style/Duration.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--details-space: var(--space-paragraph);
+		--details-stroke: var(--stroke-normal);
+		--details-radius: var(--radius-xsmall);
+		--details-transition: all var(--duration-fast);
+		--details-gap: var(--space-paragraph);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--details-border: var(--tint-90);
+		--details-marker-color: var(--tint-80);
+		--details-icon-color: var(--tint-50);
+	}
+}
+
 @layer components {
 	.prose details,
 	.details {
 		/* Box */
-		margin-block: var(--details-space, var(--space-paragraph));
+		margin-block: var(--details-space);
 		border: 0;
 
 		/* Nested */
 		& + & {
-			border-block-start: var(--details-border, var(--stroke-normal) solid var(--tint-90));
-			padding-top: var(--details-space, var(--space-paragraph));
+			border-block-start: var(--details-stroke) solid var(--details-border);
+			padding-top: var(--details-space);
 		}
 
 		/* Title */
@@ -35,14 +54,14 @@
 
 			/* Pseudo-elements */
 			&::marker {
-				color: var(--details-marker-color, var(--tint-80));
+				color: var(--details-marker-color);
 			}
 
 			&::before {
 				position: absolute;
 				content: "";
 				inset: calc(0px - var(--space-normal));
-				border-radius: var(--details-radius, var(--radius-xsmall));
+				border-radius: var(--details-radius);
 				outline: var(--stroke-focus) solid var(--color-focus);
 				outline-offset: calc(0px - var(--stroke-normal));
 			}
@@ -56,9 +75,9 @@
 
 		/* Title chevron (the summary's flex class sets its size). Points down while closed. Only the direct child, so icons in the title keep their own colour. */
 		.summary > [data-slot="icon"] {
-			color: var(--details-icon-color, var(--tint-50));
+			color: var(--details-icon-color);
 			transform: rotate(180deg);
-			transition: var(--details-transition, all var(--duration-fast));
+			transition: var(--details-transition);
 		}
 
 		/* Content */
@@ -73,14 +92,14 @@
 			opacity: 0;
 			interpolate-size: allow-keywords;
 			transition:
-				var(--details-transition, all var(--duration-fast)),
+				var(--details-transition),
 				content-visibility var(--duration-fast) ease allow-discrete;
 
 			/* Add margin between the summary and content that gets swallowed by the animation */
 			&::before {
 				content: "";
 				height: 0;
-				margin-block-end: var(--details-gap, var(--space-paragraph));
+				margin-block-end: var(--details-gap);
 				display: block;
 			}
 		}

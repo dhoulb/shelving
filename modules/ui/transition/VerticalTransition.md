@@ -49,6 +49,8 @@ import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
 
 ## Styling
 
+Override these hooks at `:root`.
+
 | Variable                         | Styles                                                                                     | Default                  |
 | -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------ |
 | `--vertical-transition-size`     | Slide distance for the enter/leave keyframes. A percentage is of the element's own height. | `100%`                   |

@@ -39,6 +39,8 @@ import { Code } from "shelving/ui";
 
 `Code` paints from the [tint ladder](/ui/TINT_CLASS): the box `background` / `color` default to ladder steps so they re-tint with the surrounding scope, and every property has a per-instance override hook.
 
+Override these hooks at `:root`. The tint hooks (`--code-background`, `--code-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable            | Styles                                           | Default                 |
 | ------------------- | ------------------------------------------------ | ----------------------- |
 | `--code-font`       | Font family                                      | `var(--font-code)`      |

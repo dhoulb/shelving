@@ -6,21 +6,34 @@
 @import url("../style/Space.module.css");
 @import url("../style/Stroke.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--video-space: var(--space-paragraph);
+		--video-stroke: 0px;
+		--video-border: transparent;
+		--video-radius: var(--radius-normal);
+		--video-padding: var(--space-normal);
+		--video-indent: var(--space-normal);
+		--video-gap: var(--space-normal);
+	}
+}
+
 @layer components {
 	.prose video,
 	.video {
 		/* Box */
 		aspect-ratio: 16 / 9;
-		margin-block: var(--video-space, var(--space-paragraph));
-		border: var(--video-border, none);
-		border-radius: var(--video-radius, var(--radius-normal));
-		padding-block: var(--video-padding, var(--space-normal));
-		padding-inline: var(--video-indent, var(--space-normal));
+		margin-block: var(--video-space);
+		border: var(--video-stroke) solid var(--video-border);
+		border-radius: var(--video-radius);
+		padding-block: var(--video-padding);
+		padding-inline: var(--video-indent);
 
 		/* Contents */
 		display: flex;
 		flex-direction: column;
-		gap: var(--video-gap, var(--space-normal));
+		gap: var(--video-gap);
 		justify-content: center;
 		align-items: center;
 		position: relative;

@@ -6,6 +6,31 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--tag-padding: 0;
+		--tag-indent: var(--space-xxsmall);
+		--tag-stroke: 0px;
+		--tag-border: transparent;
+		--tag-radius: var(--radius-xxsmall);
+		--tag-focus-border: var(--color-focus);
+		--tag-font: var(--font-body);
+		--tag-size: var(--size-small);
+		--tag-weight: var(--weight-strong);
+		--tag-leading: var(--leading-auto);
+		--tag-case: var(--case-label);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--tag-background: var(--tint-50);
+		--tag-color: var(--tint-100);
+		--tag-hover-background: var(--tint-55);
+	}
+}
+
 @layer components {
 	.tag {
 		/* Box */
@@ -15,10 +40,10 @@
 		inline-size: fit-content;
 		min-inline-size: fit-content;
 		max-inline-size: 100%;
-		padding-block: var(--tag-padding, 0);
-		padding-inline: var(--tag-indent, var(--space-xxsmall));
-		border: var(--tag-border, 0);
-		border-radius: var(--tag-radius, var(--radius-xxsmall));
+		padding-block: var(--tag-padding);
+		padding-inline: var(--tag-indent);
+		border: var(--tag-stroke) solid var(--tag-border);
+		border-radius: var(--tag-radius);
 
 		/* Content */
 		overflow: hidden;
@@ -26,23 +51,23 @@
 		white-space: nowrap;
 
 		/* Style. */
-		background: var(--tag-background, var(--tint-50));
-		color: var(--tag-color, var(--tint-100));
-		outline: var(--tag-focus-border, var(--stroke-focus) solid var(--color-focus));
+		background: var(--tag-background);
+		color: var(--tag-color);
+		outline: var(--stroke-focus) solid var(--tag-focus-border);
 		outline-offset: calc(0px - var(--stroke-normal));
 
 		/* Text */
-		font-family: var(--tag-font, var(--font-body));
-		font-size: var(--tag-size, var(--size-small));
-		font-weight: var(--tag-weight, var(--weight-strong));
-		line-height: var(--tag-leading, var(--leading-auto));
-		text-transform: var(--tag-case, var(--case-label));
+		font-family: var(--tag-font);
+		font-size: var(--tag-size);
+		font-weight: var(--tag-weight);
+		line-height: var(--tag-leading);
+		text-transform: var(--tag-case);
 		text-decoration: none;
 
 		/* Pseudo-classes */
 		&:enabled:hover,
 		&:any-link:hover {
-			background: var(--tag-hover-background, var(--tint-55));
+			background: var(--tag-hover-background);
 		}
 
 		&:not(:focus-visible) {

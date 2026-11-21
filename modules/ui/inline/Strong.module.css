@@ -1,10 +1,17 @@
 @import url("../style/layers.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--strong-weight: var(--weight-strong);
+	}
+}
+
 @layer components {
 	.strong,
 	.prose :is(strong, b) {
 		/* Style */
-		font-weight: var(--strong-weight, var(--weight-strong));
+		font-weight: var(--strong-weight);
 	}
 }

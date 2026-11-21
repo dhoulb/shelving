@@ -29,6 +29,10 @@ export interface ButtonVariants extends BlockVariants, FlexVariants, StatusVaria
 	selected?: boolean | undefined;
 	/** Make the button appear smaller. */
 	small?: boolean | undefined;
+	/** Make the button square: as wide as it is tall, with no inline padding. Use it for an icon or a single character. */
+	square?: boolean | undefined;
+	/** Make the button round: like `square`, but with fully round corners, so it is a circle. */
+	round?: boolean | undefined;
 	/** Fill the available width instead of sizing to content (buttons are content-width by default). */
 	full?: boolean | undefined;
 }

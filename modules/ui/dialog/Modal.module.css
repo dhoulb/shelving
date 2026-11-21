@@ -6,6 +6,29 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--modal-stroke: 0;
+		--modal-radius: var(--radius-normal);
+		--modal-padding: var(--space-normal);
+		--modal-indent: var(--space-normal);
+		--modal-shadow: var(--shadow-large);
+		--modal-width: var(--width-narrow);
+		--modal-max-height: 100%;
+		--modal-transition-duration: var(--duration-fast);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--modal-border: var(--tint-80);
+		--modal-background: var(--tint-100);
+		--modal-color: var(--tint-00);
+		--modal-handle-color: var(--tint-80);
+	}
+}
+
 @layer components {
 	.modal {
 		/* Box: `border-box` keeps the padding inside `max-width`, and `min-width: 0` lets the panel shrink below its content in the flex `<Dialog>`, so it never goes wider than the screen. */
@@ -13,15 +36,15 @@
 		margin: auto;
 		min-width: 0;
 		max-width: 100%;
-		border: var(--modal-border, var(--modal-stroke, 0) solid var(--tint-80));
-		border-radius: var(--modal-radius, var(--radius-normal));
-		background: var(--modal-background, var(--tint-100));
-		padding-block: var(--modal-padding, var(--space-normal));
-		padding-inline: var(--modal-indent, var(--space-normal));
+		border: var(--modal-stroke) solid var(--modal-border);
+		border-radius: var(--modal-radius);
+		background: var(--modal-background);
+		padding-block: var(--modal-padding);
+		padding-inline: var(--modal-indent);
 
 		/* Style */
-		color: var(--modal-color, var(--tint-00));
-		box-shadow: var(--modal-shadow, var(--shadow-large));
+		color: var(--modal-color);
+		box-shadow: var(--modal-shadow);
 
 		/* Pinned to an edge: fixed to the viewport, flush with the edge, and scrolls when its content is too tall. */
 		&.top,
@@ -43,15 +66,15 @@
 			inset-inline: 0;
 			margin-inline: auto;
 			width: auto;
-			max-width: var(--modal-width, var(--width-narrow));
-			max-height: var(--modal-max-height, 100%);
+			max-width: var(--modal-width);
+			max-height: var(--modal-max-height);
 		}
 
 		/* Side panels are not inside the `<Dialog>` wrapper's width, so they set their own. */
 		&.left,
 		&.right {
 			inset-block: 0;
-			width: var(--modal-width, var(--width-narrow));
+			width: var(--modal-width);
 		}
 
 		/*
@@ -95,7 +118,7 @@
 		content: "";
 		position: absolute;
 		border-radius: 999px;
-		background: var(--modal-handle-color, var(--tint-80));
+		background: var(--modal-handle-color);
 	}
 
 	.modal.swipe.top::before,
@@ -108,19 +131,19 @@
 
 	/* The side with the handle gets extra padding, so the handle does not sit right on the content. */
 	.modal.swipe.bottom {
-		padding-top: calc(var(--modal-padding, var(--space-normal)) + var(--space-small));
+		padding-top: calc(var(--modal-padding) + var(--space-small));
 	}
 
 	.modal.swipe.top {
-		padding-bottom: calc(var(--modal-padding, var(--space-normal)) + var(--space-small));
+		padding-bottom: calc(var(--modal-padding) + var(--space-small));
 	}
 
 	.modal.swipe.right {
-		padding-left: calc(var(--modal-indent, var(--space-normal)) + var(--space-small));
+		padding-left: calc(var(--modal-indent) + var(--space-small));
 	}
 
 	.modal.swipe.left {
-		padding-right: calc(var(--modal-indent, var(--space-normal)) + var(--space-small));
+		padding-right: calc(var(--modal-indent) + var(--space-small));
 	}
 
 	.modal.swipe.bottom::before {
@@ -209,14 +232,14 @@
 ::view-transition-new(.modal-right):only-child,
 ::view-transition-new(.modal-bottom):only-child,
 ::view-transition-new(.modal-left):only-child {
-	animation: var(--modal-transition-duration, var(--duration-fast)) ease-out both;
+	animation: var(--modal-transition-duration) ease-out both;
 }
 
 ::view-transition-old(.modal-top):only-child,
 ::view-transition-old(.modal-right):only-child,
 ::view-transition-old(.modal-bottom):only-child,
 ::view-transition-old(.modal-left):only-child {
-	animation: var(--modal-transition-duration, var(--duration-fast)) ease-in reverse both;
+	animation: var(--modal-transition-duration) ease-in reverse both;
 }
 
 ::view-transition-new(.modal-top):only-child,

@@ -36,14 +36,16 @@ import { ImageInput } from "shelving/ui";
 
 `ImageInput` paints from the [tint ladder](/ui/TINT_CLASS). The "Choose…" and X buttons are `<Button>` styles, so `--button-*` hooks also move them.
 
-| Variable                           | Styles                                                               | Default                                          |
-| ---------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
-| `--image-input-space`              | Space above and below the square                                     | `var(--space-small)` (12px)                      |
-| `--image-input-radius`             | Corner radius of the square                                          | `var(--radius-small)` (12px)                     |
-| `--image-input-background`         | Square background when empty                                         | `var(--tint-90)`                                 |
-| `--image-input-preview-background` | Background behind the picked image, seen through a transparent image | `#000`                                           |
-| `--image-input-focus-border`       | Outline when the input has focus                                     | `var(--stroke-focus) solid var(--color-focus)`   |
-| `--image-input-invalid-border`     | Outline when `message` is set                                        | `var(--stroke-focus) solid var(--color-failure)` |
-| `--image-input-clear-inset`        | Distance of the X button from the top and end edges                  | `var(--space-small)` (12px)                      |
+Override these hooks at `:root`. The tint hooks (`--image-input-background`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                           | Styles                                                               | Default                      |
+| ---------------------------------- | -------------------------------------------------------------------- | ---------------------------- |
+| `--image-input-space`              | Space above and below the square                                     | `var(--space-small)` (12px)  |
+| `--image-input-radius`             | Corner radius of the square                                          | `var(--radius-small)` (12px) |
+| `--image-input-background`         | Square background when empty                                         | `var(--tint-90)`             |
+| `--image-input-preview-background` | Background behind the picked image, seen through a transparent image | `#000`                       |
+| `--image-input-focus-border`       | Focus outline colour (width is `--stroke-focus`)                     | `var(--color-focus)`         |
+| `--image-input-invalid-border`     | Invalid outline colour (width is `--stroke-focus`)                   | `var(--color-failure)`       |
+| `--image-input-clear-inset`        | Distance of the X button from the top and end edges                  | `var(--space-small)` (12px)  |
 
 Global tokens it reads: `--tint-90`, `--space-small`, `--radius-small`, `--stroke-focus`, `--color-focus`, `--color-failure`.

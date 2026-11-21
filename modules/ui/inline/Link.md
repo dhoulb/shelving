@@ -47,6 +47,8 @@ import { Link, Row, Span } from "shelving/ui";
 
 `Link` colours itself from the global `--color-link` token by default. Inside a tinted scope (`color=` / `status=` on an ancestor) `--color-link` resolves to `inherit`, so links adopt the surrounding tinted text colour. Override `--link-color` to set it directly. A `plain` link ignores both hooks and inherits the colour and weight of its parent.
 
+Override these hooks at `:root`. The tint hooks (`--link-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable        | Styles      | Default                |
 | --------------- | ----------- | ---------------------- |
 | `--link-color`  | Text colour | `var(--color-link)`    |

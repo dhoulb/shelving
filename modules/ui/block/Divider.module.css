@@ -3,11 +3,25 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--divider-stroke: var(--stroke-normal);
+		--divider-space: var(--space-paragraph);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--divider-border: var(--tint-90);
+	}
+}
+
 @layer components {
 	.divider,
 	.prose hr {
 		/* Box */
-		border-block-start: var(--divider-border, var(--divider-stroke, var(--stroke-normal)) solid var(--tint-90));
-		margin-block: var(--divider-space, var(--space-paragraph));
+		border-block-start: var(--divider-stroke) solid var(--divider-border);
+		margin-block: var(--divider-space);
 	}
 }

@@ -5,6 +5,26 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--popover-offset-y: var(--space-xsmall);
+		--popover-height: 30vh;
+		--popover-radius: var(--radius-xsmall);
+		--popover-stroke: var(--stroke-normal);
+		--popover-padding: var(--space-small);
+		--popover-indent: var(--space-small);
+		--popover-shadow: var(--shadow-small);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--popover-border: var(--tint-80);
+		--popover-background: var(--tint-100);
+	}
+}
+
 @layer components {
 	.panel {
 		/* Box */
@@ -12,21 +32,21 @@
 		position: absolute;
 		left: 0;
 		right: 0;
-		top: calc(100% + var(--popover-offset-y, var(--space-xsmall)));
+		top: calc(100% + var(--popover-offset-y));
 		z-index: 1000;
-		max-height: var(--popover-height, 30vh);
-		border-radius: var(--popover-radius, var(--radius-xsmall));
-		border: var(--popover-border, var(--popover-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--popover-padding, var(--space-small));
-		padding-inline: var(--popover-indent, var(--space-small));
+		max-height: var(--popover-height);
+		border-radius: var(--popover-radius);
+		border: var(--popover-stroke) solid var(--popover-border);
+		padding-block: var(--popover-padding);
+		padding-inline: var(--popover-indent);
 
 		/* Scrolling */
 		overflow: hidden auto;
 		overscroll-behavior: auto contain;
 
 		/* Style */
-		background: var(--popover-background, var(--tint-100));
-		box-shadow: var(--popover-shadow, var(--shadow-small));
+		background: var(--popover-background);
+		box-shadow: var(--popover-shadow);
 	}
 }
 

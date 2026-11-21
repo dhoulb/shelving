@@ -57,6 +57,8 @@ import { Progress } from "shelving/ui";
 
 `Progress` paints a track (the element / `::-webkit-progress-bar`) and a fill (`::-webkit-progress-value` / `::-moz-progress-bar`) from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the bar or a tinted ancestor scope) to recolour the fill and track together — reach for a per-property hook only for a single surgical change. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
+Override these hooks at `:root`. The tint hooks (`--progress-background`, `--progress-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                | Styles                           | Default          |
 | ----------------------- | -------------------------------- | ---------------- |
 | `--progress-height`     | Bar thickness                    | `0.375rem` (6px) |

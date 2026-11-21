@@ -2,6 +2,7 @@
 @import url("../style/Color.module.css");
 @import url("../style/Duration.module.css");
 @import url("../style/Space.module.css");
+@import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 @import url("../style/Shadow.module.css");
 
@@ -19,6 +20,26 @@
 * The `.right` variant keeps the DOM order static (sidebar → content) and mirrors the visual order in
 * CSS by swapping the grid columns, so the markup never reshuffles.
 */
+
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--sidebar-layout-stroke: var(--stroke-normal);
+		--sidebar-layout-width: 17.5rem;
+		--sidebar-layout-sidebar-shadow: var(--shadow-normal);
+		--sidebar-layout-shadow: var(--shadow-large);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--sidebar-layout-background: var(--tint-100);
+		--sidebar-layout-color: var(--tint-00);
+		--sidebar-layout-border: var(--tint-90);
+		--sidebar-layout-sidebar-background: var(--tint-100);
+		--sidebar-layout-sidebar-color: var(--tint-00);
+	}
+}
 
 @layer components {
 	/*
@@ -53,8 +74,8 @@
 
 		/* Page background + text colour; fall back to the themed page defaults (--tint-100 / --tint-00) when the hooks are unset.
 		 * `color` inherits, so this one rule sets the text colour for the whole layout (including `.content`). */
-		background: var(--sidebar-layout-background, var(--tint-100));
-		color: var(--sidebar-layout-color, var(--tint-00));
+		background: var(--sidebar-layout-background);
+		color: var(--sidebar-layout-color);
 	}
 
 	.main {
@@ -62,7 +83,7 @@
 		position: absolute;
 		inset: 0;
 		display: grid;
-		grid-template-columns: var(--sidebar-layout-width, 17.5rem) 1fr;
+		grid-template-columns: var(--sidebar-layout-width) 1fr;
 		gap: 0;
 		padding: 0;
 		overflow: hidden;
@@ -70,9 +91,10 @@
 
 	.sidebar {
 		/* Box */
-		position: relative; /* Positioned like the content slot, so neither area paints over the other. */
+		position: relative;
+		z-index: 1; /* Paint above the content slot, so the sidebar's shadow shows over the pages, even a page with its own background. */
 		display: flow-root;
-		border-right: var(--sidebar-layout-border, none);
+		border-right: var(--sidebar-layout-stroke) solid var(--sidebar-layout-border);
 
 		/* Scrolling */
 		overflow-y: auto;
@@ -81,10 +103,11 @@
 
 		/* Style */
 
-		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-90 / --tint-00) when the hooks are unset.
-		 * The sidebar defaults one shade darker than the page (--tint-90 vs --tint-100) so it reads as a distinct column. */
-		background: var(--sidebar-layout-sidebar-background, var(--tint-90));
-		color: var(--sidebar-layout-sidebar-color, var(--tint-00));
+		/* Sidebar fill + text colour; fall back to the themed defaults (--tint-100 / --tint-00) when the hooks are unset.
+		 * The sidebar has the same fill as the page: its border and shadow set it apart as a distinct column. */
+		background: var(--sidebar-layout-sidebar-background);
+		color: var(--sidebar-layout-sidebar-color);
+		box-shadow: var(--sidebar-layout-sidebar-shadow); /* The column is full height, so only the blur at its side shows, over the content. */
 	}
 
 	.content {
@@ -98,7 +121,7 @@
 		/* Style */
 
 		/* Shares the page background hook; text colour is inherited from the `body` rule above (no `color` here on purpose). */
-		background: var(--sidebar-layout-background, var(--tint-100));
+		background: var(--sidebar-layout-background);
 	}
 
 	/*
@@ -107,13 +130,13 @@
 	 * divider border moves to the sidebar's inner (left) edge.
 	 */
 	.main.right {
-		grid-template-columns: 1fr var(--sidebar-layout-width, 17.5rem);
+		grid-template-columns: 1fr var(--sidebar-layout-width);
 	}
 
 	.main.right .sidebar {
 		grid-column: 2;
 		border-right: none;
-		border-left: var(--sidebar-layout-border, none);
+		border-left: var(--sidebar-layout-stroke) solid var(--sidebar-layout-border);
 	}
 
 	.main.right .content {
@@ -145,17 +168,18 @@
 			z-index: 100;
 			inset-block: 0;
 			left: 0;
-			width: var(--sidebar-layout-width, 17.5rem);
+			width: var(--sidebar-layout-width);
 			max-width: 85vw;
 
 			/* Style */
+			box-shadow: none; /* The closed drawer sits off the screen, so its shadow must not show at the edge. The open drawer has its own shadow (below). */
 			transform: translateX(-100%);
 			transition: transform var(--duration-normal) ease-in-out;
 		}
 
 		.sidebar.open {
 			transform: translateX(0);
-			box-shadow: var(--sidebar-layout-shadow, var(--shadow-large));
+			box-shadow: var(--sidebar-layout-shadow);
 		}
 
 		/* Right variant: dock the drawer to the right edge and slide it in from the right instead. */

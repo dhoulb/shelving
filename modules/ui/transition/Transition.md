@@ -73,6 +73,8 @@ function Steps() {
 
 Transitions are driven by CSS `::view-transition-*` pseudo-element rules keyed on the transition class names, not by per-component `--variable` hooks. `<Transition>` itself only ships the `overlay` rule:
 
+Override these hooks at `:root`.
+
 | Variable | Styles                                          | Default |
 | -------- | ----------------------------------------------- | ------- |
 | _(none)_ | `<Transition>` exposes no own custom properties | —       |
