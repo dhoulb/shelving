@@ -31,6 +31,8 @@ import { DocumentationFrame } from "shelving/ui";
 
 The frame has no border, radius, or margin. It fills the width of its parent, so the parent sets the look around it (see `<DocumentationLive>`). The space around the preview comes from padding inside the frame page.
 
+Override these hooks at `:root`.
+
 | Variable                           | Styles                                | Default |
 | ---------------------------------- | ------------------------------------- | ------- |
 | `--documentation-frame-background` | Fill behind the frame before it loads | `white` |

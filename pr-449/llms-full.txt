@@ -34,8 +34,6 @@ The docs are also published as Markdown for LLMs and coding agents:
 
 See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 
-## Modules
-
 
 ## Pages
 
@@ -1357,7 +1355,7 @@ Don't replace with an inline `() => {}` or omit the catch — the named symbol d
 
 - Never use inline `style` props — all styling lives in a colocated `.module.css`.
 - Enumerated props for mutually-exclusive scales (`color="red"`, `size="large"`); boolean props for on/off options (`small`, `plain`). Both map to class names via shared `getXxxClass(props)` helpers.
-- CSS custom properties provide theming with fallback chains: `var(--button-background, var(--tint-90))`. Every custom property a component's CSS file owns starts with the file's kebab-case name (`Card.module.css` owns `--card-*`), so the originating file is obvious from any `var()` reference.
+- CSS custom properties provide theming. A CSS module declares each one at root (`--button-background: var(--tint-90)`), and its rules read it with no fallback (`var(--button-background)`). Every custom property a component's CSS file owns starts with the file's kebab-case name (`Card.module.css` owns `--card-*`), so the originating file is obvious from any `var()` reference.
 - Use CSS nesting for variants (`&.small`), pseudo-classes (`&:hover`), and child selectors; use `:where()` to keep specificity low for default child styles.
 - CSS modules import as default: `import styles from "./Foo.module.css"` — the one exception to named-exports-only.
 
@@ -10851,6 +10849,7 @@ Fenced code blocks
 - Closing fence must be exactly the same as the opening fence, and can be made of three or more backticks, or three or more `~~~` tildes.
 - If there's no closing fence the code block will run to the end of the current string.
 - The info string after the opening fence is parsed with `parseFencedInfo()`: only its title shows, as a caption.
+- A code block with a title renders as a `<figure>` with a `<figcaption>`. A code block with no title renders as a plain `<pre>`.
 - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
 
 ## Examples
@@ -20458,6 +20457,7 @@ The components below are listed in the index following this page; this is the sh
 - [Image](ui/Image.md): Image block — renders an <img> with space and width variants applied.
 - [Label](ui/Label.md): Label heading, a <h3> with a labelly appearance (UPPERCASE but with a smaller text size).
 - [List](ui/List.md): List block — wraps each child in an <li> and renders an <ul> or <ol>.
+- [ListItem](ui/ListItem.md): One item in a <List> — rendered as <li>.
 - [Panel](ui/Panel.md): Full-width vertical region that paints the current surface colour. Use to break a page into stacked sections. Has zero block-space (Panels butt against each other); set its vertical breathing room with the padding variant (<Panel padding="large">, <Panel padding="xxlarge"> etc.).
 - [Paragraph](ui/Paragraph.md): Paragraph block of body text — rendered as <p>.
 - [Preformatted](ui/Preformatted.md): Preformatted block of text — rendered as <pre>.
@@ -20594,7 +20594,7 @@ The components below are listed in the index following this page; this is the sh
 - [TreeMenu](ui/TreeMenu.md): Sidebar navigation menu built from the children of a root tree element.
 - [TreePage](ui/TreePage.md): Page renderer for a generic tree-element (a directory or file).
 - [TreeRouter](ui/TreeRouter.md): Resolve a URL path to a tree element and render it as a full page.
-- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections separated by dividers.
+- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
 
 ## Functions
 
@@ -20720,7 +20720,8 @@ The components below are listed in the index following this page; this is the sh
 - [HeadingProps](ui/HeadingProps.md): Props shared by <Title>, Heading, and <Subheading> — colour, space, and typography variants plus a heading-level override.
 - [ImageProps](ui/ImageProps.md): Props for Image — an src, optional alt text, plus space and width variants.
 - [LabelProps](ui/LabelProps.md): Props for Label — identical to HeadingProps.
-- [ListProps](ui/ListProps.md): Props for List — colour, gap, space, and typography variants plus its list items and an ordered toggle.
+- [ListProps](ui/ListProps.md): Props for List — space and typography variants plus its list items and an ordered toggle.
+- [ListItemProps](ui/ListItemProps.md): Props for ListItem — space, padding, trim, and typography variants.
 - [PanelProps](ui/PanelProps.md): Props for Panel — colour, status, and typography variants plus optional children.
 - [ParagraphProps](ui/ParagraphProps.md): Props for Paragraph — colour, space, and typography variants.
 - [PreformattedProps](ui/PreformattedProps.md): Props for Preformatted — space, colour, typography, width, and padding variants plus a wrap toggle.
@@ -21651,22 +21652,25 @@ import { Card, Subheading } from "shelving/ui";
 
 `Card` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the card or an ancestor scope) to recolour everything at once — surface, text, and hover shade re-derive together; reach for a per-property hook for a single surgical change.
 
-| Variable                  | Styles                                                                                  | Default                                        |
-| ------------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `--card-background`       | Surface fill                                                                            | `var(--tint-90)`                               |
-| `--card-hover-background` | Surface fill when a navigable card is hovered                                           | `var(--tint-95)`                               |
-| `--card-color`            | Text colour                                                                             | `var(--tint-00)`                               |
-| `--card-border`           | Border shorthand                                                                        | `var(--card-stroke) solid var(--tint-80)`      |
-| `--card-stroke`           | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border              | `0`                                            |
-| `--card-radius`           | Corner radius                                                                           | `var(--radius-normal)` (16px)                  |
-| `--card-padding`          | Inner top and bottom padding (one length)                                               | `var(--space-normal)` (16px)                   |
-| `--card-indent`           | Inner left and right padding (one length)                                               | `var(--space-normal)` (16px)                   |
-| `--card-space`            | Outer block margin (top + bottom)                                                       | `var(--space-paragraph)` (16px)                |
-| `--card-shadow`           | Drop shadow                                                                             | `none`                                         |
-| `--card-transition`       | Transition                                                                              | `all var(--duration-fast)` (150ms)             |
-| `--card-focus-border`     | Focus outline, drawn on the navigable overlay so it shows above children like `<Panel>` | `var(--stroke-focus) solid var(--color-focus)` |
+Override these hooks at `:root`. The tint hooks (`--card-border`, `--card-background`, `--card-color`, `--card-hover-background`, `--card-hover-border`) are declared again in every tint scope, so override them at `:root, .tint`.
 
-**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
+| Variable                  | Styles                                                                                                                     | Default                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `--card-background`       | Surface fill                                                                                                               | `var(--tint-90)`                   |
+| `--card-hover-background` | Surface fill when a navigable card is hovered                                                                              | `var(--tint-95)`                   |
+| `--card-color`            | Text colour                                                                                                                | `var(--tint-00)`                   |
+| `--card-border`           | Border colour (width is `--card-stroke`)                                                                                   | `var(--tint-80)`                   |
+| `--card-hover-border`     | Border colour when the overlay is hovered                                                                                  | `var(--tint-90)`                   |
+| `--card-stroke`           | Border thickness — set `0` to hide the border                                                                              | `var(--stroke-normal)` (1px)       |
+| `--card-radius`           | Corner radius                                                                                                              | `var(--radius-normal)` (16px)      |
+| `--card-padding`          | Inner top and bottom padding (one length)                                                                                  | `var(--space-normal)` (16px)       |
+| `--card-indent`           | Inner left and right padding (one length)                                                                                  | `var(--space-normal)` (16px)       |
+| `--card-space`            | Outer block margin (top + bottom)                                                                                          | `var(--space-paragraph)` (16px)    |
+| `--card-shadow`           | Drop shadow                                                                                                                | `none`                             |
+| `--card-transition`       | Transition                                                                                                                 | `all var(--duration-fast)` (150ms) |
+| `--card-focus-border`     | Focus outline colour, drawn on the navigable overlay so it shows above children like `<Panel>` (width is `--stroke-focus`) | `var(--color-focus)`               |
+
+**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 
 ```css
 /* Theme: raised cards with tighter corners. */
@@ -21907,15 +21911,18 @@ import { Details, Paragraph } from "shelving/ui";
 
 `Details` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` to an ancestor scope to recolour the chevron and divider together.
 
-| Variable                 | Styles                                                          | Default                                     |
-| ------------------------ | --------------------------------------------------------------- | ------------------------------------------- |
-| `--details-space`        | Outer block margin, and the padding above a divider             | `var(--space-paragraph)` (16px)             |
-| `--details-border`       | Divider between panels next to each other                       | `var(--stroke-normal) solid var(--tint-90)` |
-| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)`                            |
-| `--details-radius`       | Corner radius of the title's focus ring                         | `var(--radius-xsmall)` (8px)                |
-| `--details-icon-color`   | Chevron colour                                                  | `var(--tint-50)`                            |
-| `--details-transition`   | Open/close animation and chevron turn                           | `all var(--duration-fast)` (150ms)          |
-| `--details-gap`          | Space between the title and the content                         | `var(--space-paragraph)` (16px)             |
+Override these hooks at `:root`. The tint hooks (`--details-border`, `--details-marker-color`, `--details-icon-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                 | Styles                                                          | Default                            |
+| ------------------------ | --------------------------------------------------------------- | ---------------------------------- |
+| `--details-space`        | Outer block margin, and the padding above a divider             | `var(--space-paragraph)` (16px)    |
+| `--details-border`       | Divider colour between panels next to each other                | `var(--tint-90)`                   |
+| `--details-stroke`       | Divider width                                                   | `var(--stroke-normal)` (1px)       |
+| `--details-marker-color` | Colour of the browser's marker on a raw `<details>` in `.prose` | `var(--tint-80)`                   |
+| `--details-radius`       | Corner radius of the title's focus ring                         | `var(--radius-xsmall)` (8px)       |
+| `--details-icon-color`   | Chevron colour                                                  | `var(--tint-50)`                   |
+| `--details-transition`   | Open/close animation and chevron turn                           | `all var(--duration-fast)` (150ms) |
+| `--details-gap`          | Space between the title and the content                         | `var(--space-paragraph)` (16px)    |
 
 **Global tokens it reads:** the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-normal`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--duration-fast` and `--size-icon` (chevron size, from `getFlexClass`).
 
@@ -22180,6 +22187,8 @@ import { Heading } from "shelving/ui";
 
 `Heading` exposes hooks for its rhythm and type. It inherits text colour by default (so it picks up the surrounding tint); set `--heading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                 | Styles        | Default                         |
 | ------------------------ | ------------- | ------------------------------- |
 | `--heading-color`        | Text colour   | `inherit`                       |
@@ -22346,9 +22355,9 @@ Label({ level = "3", children, className, ...props }: LabelProps): ReactElement
 
 - Kind: interface
 - Import: `import { ListProps } from "shelving/ui";`
-- Extends: `GapVariants`
+- Extends: `BlockVariants`
 
-Props for `List` — colour, gap, space, and typography variants plus its list items and an `ordered` toggle.
+Props for `List` — space and typography variants plus its list items and an `ordered` toggle.
 
 ## Signatures
 
@@ -22376,14 +22385,15 @@ Props for `List` — colour, gap, space, and typography variants plus its list i
 
 List block — wraps each child in an `<li>` and renders an `<ul>` or `<ol>`.
 - Pass `ordered` to render an ordered `<ol>` instead of the default unordered `<ul>`.
+- A `<ListItem>` child is not wrapped again.
 
 A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ordered` is set) and wraps each child in its own `<li>`, so you pass the items as children rather than writing the `<li>` markup yourself.
 
 **Things to know:**
 
 - Pass `ordered` to render an `<ol>` with numbered markers; the default is an unordered `<ul>`.
-- Each child becomes one list item — give it plain content, not an `<li>`.
-- Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
+- Each child becomes one list item — give it plain content, not an `<li>`. A `<ListItem>` child is not wrapped again, so use it to set the space or typography of one item.
+- Items stay in normal flow. Each item has a 12px block margin (`--list-item-space`), and margins merge. A `<p>` inside an item (as in a loose Markdown list) brings its own 16px margin, so those items are 16px apart.
 - Like the other block components it carries its own outer block margin, also as the first or last child. Set `space="none"` to remove it.
 - Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
@@ -22398,26 +22408,37 @@ import { List } from "shelving/ui";
 <List ordered>{["First", "Second", "Third"]}</List>
 ```
 
-### Tighter spacing
+### Space on one item
 
-```tsx
-import { List } from "shelving/ui";
+```tsx live
+import { List, ListItem } from "shelving/ui";
 
-<List gap="small">{items.map(item => item.label)}</List>;
+<List>
+	{[
+		"Apples",
+		"Oranges",
+		<ListItem key="pears" space="large">
+			Pears
+		</ListItem>,
+	]}
+</List>;
 ```
 
 ## Styling
 
 `List` paints from the [tint ladder](/ui/TINT_CLASS) for its markers only; apply `color=` (on the list or an ancestor scope) to recolour the markers, or reach for a per-property hook for a single change.
 
-| Variable              | Styles                               | Default                               |
-| --------------------- | ------------------------------------ | ------------------------------------- |
-| `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
-| `--list-gap`          | Space between items                  | `var(--space-xsmall)`                 |
-| `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
-| `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
+Override these hooks at `:root`. The tint hooks (`--list-marker-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
-**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, and the tint-ladder step `--tint-80`. The `gap` variant comes from the shared `shelving/ui` styling system.
+| Variable                | Styles                                                    | Default                                  |
+| ----------------------- | --------------------------------------------------------- | ---------------------------------------- |
+| `--list-space`          | Outer block margin (top + bottom)                         | `var(--space-paragraph)` (16px)          |
+| `--list-item-space`     | Block margin of each `li`                                 | `var(--space-small)` (12px)              |
+| `--list-indent`         | Inline start padding (marker gutter) of an unordered list | `1.125em`                                |
+| `--list-ordered-indent` | Inline start padding of an ordered list                   | `calc(var(--list-indent) * 1.6)` (1.8em) |
+| `--list-marker-color`   | Bullet / number colour                                    | `var(--tint-80)`                         |
+
+**Global tokens it reads:** `--space-paragraph`, `--space-small`, and the tint-ladder step `--tint-80`.
 
 
 ## Signatures
@@ -22433,6 +22454,100 @@ List({ children, ordered = false, className, ...props }: ListProps): ReactElemen
 | `props` | `ListProps` |  |
 | `.children` | `ImmutableArray<ReactNode>` | Read only. |
 | `.ordered` | `boolean \| undefined` | Read only. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
+
+
+---
+
+# ListItemProps
+
+- Kind: interface
+- Import: `import { ListItemProps } from "shelving/ui";`
+- Extends: `BlockVariants`
+
+Props for `ListItem` — space, padding, trim, and typography variants.
+
+## Signatures
+
+```ts
+{}
+```
+
+
+---
+
+# ListItem
+
+- Kind: component
+- Import: `import { ListItem } from "shelving/ui";`
+
+One item in a `<List>` — rendered as `<li>`.
+
+One item in a list — renders an `<li>`. Use it inside `<List>`, or inside a raw `<ul>` / `<ol>`, when one item needs its own space, padding, trim, or typography.
+
+**Things to know:**
+
+- A plain `li` in a list already gets the list item space. `<ListItem>` adds the block variants on top (`space`, `padding`, `trim`, `size`, …).
+- `<List>` does not wrap a `<ListItem>` child in a second `<li>`.
+- Margins merge in normal flow. A `<p>` inside the item brings its own margin. Set `trim` to remove the outer margins of the first and last child.
+
+## Usage
+
+### Item with more space
+
+```tsx live
+import { List, ListItem } from "shelving/ui";
+
+<List>
+	{[
+		"Apples",
+		<ListItem key="oranges" space="large">
+			Oranges
+		</ListItem>,
+		"Pears",
+	]}
+</List>;
+```
+
+### Item with paragraphs
+
+```tsx live
+import { List, ListItem, Paragraph } from "shelving/ui";
+
+<List>
+	{[
+		<ListItem key="a" trim>
+			<Paragraph>First paragraph.</Paragraph>
+			<Paragraph>Second paragraph.</Paragraph>
+		</ListItem>,
+		"Pears",
+	]}
+</List>;
+```
+
+## Styling
+
+`ListItem` has no hooks of its own. Its block margin comes from the parent list: `--list-item-space` on `<List>` (default `var(--space-small)`, 12px). The marker colour is `--list-marker-color` on `<List>`.
+
+**Global tokens it reads:** `--space-small` (through the list).
+
+
+## Signatures
+
+```ts
+ListItem({ children, className, ...props }: ListItemProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `ListItemProps` |  |
 
 ## Returns
 
@@ -22493,10 +22608,10 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
 - Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - It is `display: flow-root`, so the margins of its children stay inside it, also with `padding="none"`.
-- `plain` removes the background but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
+- `plain` removes the background and makes the border transparent, but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
 - `solid` paints a strong fill (`--tint-50`) with light text, for a hero or call-to-action band.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
-- Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
+- Panels have 1px top and bottom borders by default. Set `--panel-stroke` to `0` to remove them; the first and last panel drop them so the page doesn't gain stray edge lines.
 
 ## Usage
 
@@ -22549,19 +22664,22 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 
 `Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
-| Variable                   | Styles                                                                     | Default                                    |
-| -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------ |
-| `--panel-background`       | Surface fill                                                               | `var(--tint-90)`                           |
-| `--panel-color`            | Text colour                                                                | `var(--tint-00)`                           |
-| `--panel-plain-background` | Surface fill of a `plain` panel                                            | `transparent`                              |
-| `--panel-solid-background` | Surface fill of a `solid` panel                                            | `var(--tint-50)`                           |
-| `--panel-solid-color`      | Text colour of a `solid` panel                                             | `var(--tint-100)`                          |
-| `--panel-border`           | Top/bottom border shorthand                                                | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke`           | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0`                                        |
-| `--panel-padding`          | Block padding (top + bottom)                                               | `var(--space-section)` (2rem)              |
-| `--panel-indent`           | Inline padding (left + right) keeping content off the edges                | `var(--space-normal)` (16px)               |
+Override these hooks at `:root`. The tint hooks (`--panel-border`, `--panel-background`, `--panel-color`, `--panel-solid-background`, `--panel-solid-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
+| Variable                   | Styles                                                      | Default                       |
+| -------------------------- | ----------------------------------------------------------- | ----------------------------- |
+| `--panel-background`       | Surface fill                                                | `var(--tint-90)`              |
+| `--panel-color`            | Text colour                                                 | `var(--tint-00)`              |
+| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                 |
+| `--panel-plain-border`     | Top/bottom border colour of a `plain` panel                 | `transparent`                 |
+| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`              |
+| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`             |
+| `--panel-border`           | Top/bottom border colour (width is `--panel-stroke`)        | `var(--tint-80)`              |
+| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)  |
+| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem) |
+| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)  |
+
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, `--space-normal`, and `--stroke-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
 
 
 ## Signatures
@@ -22644,6 +22762,8 @@ import { Paragraph, Strong, Link } from "shelving/ui";
 ## Styling
 
 `Paragraph` exposes a single hook for its own block margin; it paints no colour of its own, so it inherits the surrounding text colour. Apply `color=` / `status=` to set the tint scope for any ladder-reading inline content inside it.
+
+Override these hooks at `:root`.
 
 | Variable            | Styles                            | Default                         |
 | ------------------- | --------------------------------- | ------------------------------- |
@@ -22953,6 +23073,8 @@ import { Header, Nav, Footer } from "shelving/ui";
 
 `Section` exposes hooks for its width and rhythm; it paints no colour of its own, so it inherits the surrounding tint.
 
+Override these hooks at `:root`.
+
 | Variable          | Styles                            | Default                       |
 | ----------------- | --------------------------------- | ----------------------------- |
 | `--section-width` | Content width                     | `var(--width-normal)` (55rem) |
@@ -23166,6 +23288,8 @@ import { Title, Heading, Subheading } from "shelving/ui";
 
 `Subheading` exposes hooks for its rhythm and type. It inherits text colour by default; set `--subheading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                    | Styles        | Default                         |
 | --------------------------- | ------------- | ------------------------------- |
 | `--subheading-color`        | Text colour   | `inherit`                       |
@@ -23263,6 +23387,8 @@ import { Panel, Block, Title } from "shelving/ui";
 ## Styling
 
 `Title` exposes hooks for its rhythm and type. It inherits text colour by default; set `--title-color` only to override that.
+
+Override these hooks at `:root`.
 
 | Variable               | Styles        | Default                         |
 | ---------------------- | ------------- | ------------------------------- |
@@ -23368,6 +23494,8 @@ Styling variants for a `Button`: the block variants (space, padding, indent, wid
 	outline?: boolean | undefined;
 	selected?: boolean | undefined;
 	small?: boolean | undefined;
+	square?: boolean | undefined;
+	round?: boolean | undefined;
 	full?: boolean | undefined;
 }
 ```
@@ -23381,6 +23509,8 @@ Styling variants for a `Button`: the block variants (space, padding, indent, wid
 | `outline` | `boolean \| undefined` | Outline styling: like `plain`, but with a border until hover or focus. Optional. |
 | `selected` | `boolean \| undefined` | Whether the button is the selected one in a group, such as a set of tabs. - `true` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. A `plain` or `outline` button keeps the default fill while selected, so a toggle shows that it is on. - `false` also drops the fill until hover or focus, so the selected button stands out. - `undefined` (the default) means the button is not part of a group. Optional. |
 | `small` | `boolean \| undefined` | Make the button appear smaller. Optional. |
+| `square` | `boolean \| undefined` | Make the button square: as wide as it is tall, with no inline padding. Use it for an icon or a single character. Optional. |
+| `round` | `boolean \| undefined` | Make the button round: like `square`, but with fully round corners, so it is a circle. Optional. |
 | `full` | `boolean \| undefined` | Fill the available width instead of sizing to content (buttons are content-width by default). Optional. |
 
 
@@ -23409,6 +23539,8 @@ getButtonClass(variants: ButtonVariants): string
 | `.outline` | `boolean \| undefined` | Outline styling: like `plain`, but with a border until hover or focus. Optional. |
 | `.selected` | `boolean \| undefined` | Whether the button is the selected one in a group, such as a set of tabs. - `true` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. A `plain` or `outline` button keeps the default fill while selected, so a toggle shows that it is on. - `false` also drops the fill until hover or focus, so the selected button stands out. - `undefined` (the default) means the button is not part of a group. Optional. |
 | `.small` | `boolean \| undefined` | Make the button appear smaller. Optional. |
+| `.square` | `boolean \| undefined` | Make the button square: as wide as it is tall, with no inline padding. Use it for an icon or a single character. Optional. |
+| `.round` | `boolean \| undefined` | Make the button round: like `square`, but with fully round corners, so it is a circle. Optional. |
 | `.full` | `boolean \| undefined` | Fill the available width instead of sizing to content (buttons are content-width by default). Optional. |
 
 ## Returns
@@ -23465,7 +23597,10 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 - `selected` makes a group of buttons, such as tabs. `selected={true}` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. `selected={false}` also drops the fill until hover or focus, like `plain`, so the selected button stands out. Leave it `undefined` for a button that is not in a group.
 - Selected wins over `plain` and `outline`: a selected `plain` or `outline` button keeps the default fill (also on hover and focus). So a `plain` button with `selected` works as a toggle that shows when it is on.
 - `small` tightens the padding.
-- It takes the block variants, like any block: `space` sets its outer margin (`space="none"` removes it), `padding` and `indent` set its inner padding, and `width` sizes it. A `padding` variant sets the padding but not the minimum height, which `--button-padding` and `--button-height` set.
+- A button with an icon has less side padding: halfway between `--button-padding` and `--button-indent`. An icon has empty space inside its own box, so a full indent makes the button look too wide. CSS cannot see if the icon is before or after the text, so both sides change.
+- `square` makes the button as wide as it is tall, with no left and right padding, so an icon or one character sits in the centre. It works with `small`.
+- `round` is like `square`, but with fully round corners, so the button is a circle.
+- It takes the block variants, like any block: `space` sets its outer margin (`space="none"` removes it), `padding` and `indent` set its inner padding, and `width` sizes it. A `padding` variant sets the padding but not the minimum height, which `--button-padding` sets.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 - `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
 
@@ -23490,6 +23625,22 @@ import { Button } from "shelving/ui";
 // No outer margin: it sits flush with the content around it.
 <Button full space="none" onClick={start}>
 	Start
+</Button>;
+```
+
+### Square buttons
+
+```tsx
+import { Button } from "shelving/ui";
+
+// As wide as it is tall: for an icon or one character.
+<Button square plain onClick={close} title="Close">
+	×
+</Button>;
+
+// A circle: square, with fully round corners.
+<Button round solid color="primary" onClick={add} title="Add">
+	+
 </Button>;
 ```
 
@@ -23548,11 +23699,17 @@ import { getButtonClass } from "shelving/ui";
 
 ## Styling
 
-`Button` paints from the [tint ladder](/ui/TINT_CLASS). Override these hooks at `:root` or any ancestor scope; apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
+`Button` paints from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the button or an ancestor scope) to recolour the whole button, or use a per-property hook for one change.
+
+`Button.module.css` declares every hook below in `@layer defaults`, so the rules read them with no fallback. Override a hook at `:root`. Override a **tint hook** at `:root, .tint`: these hooks read the ladder, so the module declares them again in every tint scope, and an override at `:root` alone does not reach a button inside a tint scope. The tint hooks are `--button-background`, `--button-text`, `--button-hover-background`, `--button-active-background`, the `--button-solid-*` colour hooks (including `--button-solid-border`), `--button-plain-text`, `--button-plain-hover-background`, `--button-plain-active-background`, `--button-outline-border`, `--button-selected-background` and `--button-selected-text`. Use `:root, .tint` also for any override whose value reads the ladder.
+
+Each `--button-*-border` hook takes a colour, not a shorthand. `--button-stroke` sets the width of every border, so the style is always `solid`. For a dashed border or another one-off, use an app class (see the example above).
+
+A hook whose default reads another hook (for example `--button-active-background` reads `--button-hover-background`) resolves where it is declared. So when you change the first hook in a smaller scope, also set the hooks that read it there.
 
 `--button-padding` sets the top and bottom padding, and `--button-indent` the left and right. Each takes one length, not a shorthand.
 
-Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It reads those hooks, so it stays correct when a theme changes them. Set `--button-height` to replace it. The `small` variant has its own minimum, `--button-small-height`. Inputs use the same formula (`--input-height`), so an input and a button sit at the same height by default.
+Every button is at least as tall as a button with an icon, so buttons line up whether they have an icon or not, and at every text size. The minimum height is `--button-icon-size` plus two `--button-padding` plus two `--button-stroke`. It is calculated in the rule from those hooks, so it stays correct when a theme or a smaller scope changes them. It has no hook of its own: change the parts instead. The `small` variant uses `--button-small-padding` in the same formula. Inputs use the same formula, so an input and a button sit at the same height by default.
 
 The `--button-*` colour hooks without a look in their name paint the default look. `solid` has its own `--button-solid-*` colour hooks.
 
@@ -23560,75 +23717,76 @@ The `--button-*` colour hooks without a look in their name paint the default loo
 
 `plain`, `outline` and `selected={false}` share the `--button-plain-*` hooks: `--button-plain-text` recolours the label, `--button-plain-hover-background` / `--button-plain-hover-border` paint the hover and focus state, and the `--button-plain-active-*` pair paints the pressed state. The hover fill falls back to `--button-hover-background`, so plain and outline buttons always hover like a default button. `--button-plain-border` sets the resting border of `plain` (transparent by default), and `--button-outline-border` sets the resting border of `outline`.
 
-Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping 2px short at the padding box.
+Backgrounds paint to the button's true edge: `background-origin` is set to `border-box`, so a gradient or image background in any state reaches through the transparent border instead of stopping short at the padding box.
 
-| Variable                           | Styles                                              | Default                                                                            |
-| ---------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `--button-background`              | Surface fill                                        | `var(--tint-90)`                                                                   |
-| `--button-hover-background`        | Surface fill on hover / focus                       | `var(--tint-85)`                                                                   |
-| `--button-hover-border`            | Border on hover / focus                             | `var(--button-stroke) solid transparent`                                           |
-| `--button-hover-transform`         | Transform on hover / focus                          | `none`                                                                             |
-| `--button-text`                    | Label colour                                        | `var(--tint-50)`                                                                   |
-| `--button-border`                  | Border shorthand                                    | `var(--button-stroke) solid transparent`                                           |
-| `--button-stroke`                  | Border / outline thickness                          | `var(--stroke-normal)` (2px)                                                       |
-| `--button-radius`                  | Corner radius                                       | `var(--radius-xsmall)` (8px)                                                       |
-| `--button-padding`                 | Top and bottom padding (one length)                 | `var(--space-small)` (12px)                                                        |
-| `--button-indent`                  | Left and right padding (one length)                 | `var(--space-small)` (12px)                                                        |
-| `--button-small-padding`           | Top and bottom padding when `small` (one length)    | `var(--space-xxsmall)` (4px)                                                       |
-| `--button-small-indent`            | Left and right padding when `small` (one length)    | `var(--space-xxsmall)` (4px)                                                       |
-| `--button-icon-size`               | Icon size, and the base of the minimum height       | `var(--size-icon)` (24px)                                                          |
-| `--button-height`                  | Minimum height                                      | `--button-icon-size` + 2 × `--button-padding` + 2 × `--button-stroke` (52px)       |
-| `--button-small-height`            | Minimum height when `small`                         | `--button-icon-size` + 2 × `--button-small-padding` + 2 × `--button-stroke` (36px) |
-| `--button-gap`                     | Gap between icon and label                          | `var(--space-small)` (12px)                                                        |
-| `--button-small-gap`               | Gap between icon and label when `small`             | `var(--space-xxsmall)` (4px)                                                       |
-| `--button-space`                   | Outer block margin                                  | `var(--space-small)` (12px)                                                        |
-| `--button-font`                    | Font family                                         | `var(--font-body)`                                                                 |
-| `--button-weight`                  | Font weight                                         | `var(--weight-normal)` (400)                                                       |
-| `--button-size`                    | Font size                                           | `var(--size-normal)`                                                               |
-| `--button-leading`                 | Line height                                         | `var(--leading-auto)`                                                              |
-| `--button-shadow`                  | Box shadow (never on `plain`)                       | `none`                                                                             |
-| `--button-active-background`       | Surface fill while pressed                          | `var(--button-hover-background)`                                                   |
-| `--button-active-border`           | Border while pressed                                | `var(--button-hover-border)`                                                       |
-| `--button-active-shadow`           | Box shadow while pressed                            | `var(--button-shadow)`                                                             |
-| `--button-active-transform`        | Transform while pressed                             | `var(--button-hover-transform)`                                                    |
-| `--button-transition`              | Transition                                          | `all var(--duration-fast)` (150ms)                                                 |
-| `--button-focus-border`            | Focus outline                                       | `var(--stroke-focus) solid var(--color-focus)`                                     |
-| `--button-disabled-opacity`        | Opacity when disabled                               | `0.5`                                                                              |
-| `--button-solid-background`        | Surface fill when `solid`                           | `var(--tint-50)`                                                                   |
-| `--button-solid-text`              | Label colour when `solid`                           | `var(--tint-100)` (white)                                                          |
-| `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`          | `var(--tint-55)`                                                                   |
-| `--button-solid-active-background` | Surface fill while pressed when `solid`             | `var(--button-solid-hover-background)`                                             |
-| `--button-plain-text`              | Label colour when `plain` or `outline`              | `var(--tint-50)`                                                                   |
-| `--button-plain-border`            | Resting border when `plain`                         | `var(--button-stroke) solid transparent`                                           |
-| `--button-outline-border`          | Resting border when `outline`                       | `var(--button-stroke) solid var(--tint-80)`                                        |
-| `--button-unselected-background`   | Resting fill when `selected={false}`                | `transparent`                                                                      |
-| `--button-selected-background`     | Fill when `plain` or `outline` and selected         | `var(--button-background)` (`var(--tint-90)`)                                      |
-| `--button-selected-text`           | Label colour when `plain` or `outline` and selected | `var(--button-text)` (`var(--tint-50)`)                                            |
-| `--button-plain-hover-background`  | Fill on hover / focus when `plain` or `outline`     | `var(--button-hover-background)`                                                   |
-| `--button-plain-hover-border`      | Border on hover / focus when `plain` or `outline`   | `var(--button-hover-border)` (transparent)                                         |
-| `--button-plain-active-background` | Fill while pressed when `plain` or `outline`        | `var(--button-plain-hover-background)`                                             |
-| `--button-plain-active-border`     | Border while pressed when `plain` or `outline`      | `var(--button-plain-hover-border)`                                                 |
+| Variable                           | Styles                                                   | Default                                          |
+| ---------------------------------- | -------------------------------------------------------- | ------------------------------------------------ |
+| `--button-background`              | Surface fill                                             | `var(--tint-90)`                                 |
+| `--button-hover-background`        | Surface fill on hover / focus                            | `var(--tint-85)`                                 |
+| `--button-hover-border`            | Border colour on hover / focus                           | `transparent`                                    |
+| `--button-hover-transform`         | Transform on hover / focus                               | `none`                                           |
+| `--button-text`                    | Label colour                                             | `var(--tint-50)`                                 |
+| `--button-border`                  | Border colour                                            | `transparent`                                    |
+| `--button-stroke`                  | Border / outline thickness                               | `var(--stroke-normal)` (1px)                     |
+| `--button-radius`                  | Corner radius                                            | `var(--radius-xsmall)` (8px)                     |
+| `--button-padding`                 | Top and bottom padding (one length)                      | `var(--space-small)` (12px)                      |
+| `--button-indent`                  | Left and right padding (one length)                      | `calc(var(--space-normal) * 1.25)` (20px)        |
+| `--button-small-padding`           | Top and bottom padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                     |
+| `--button-small-indent`            | Left and right padding when `small` (one length)         | `var(--space-small)` (12px)                      |
+| `--button-icon-size`               | Icon size, and the base of the minimum height            | `var(--size-icon)` (24px)                        |
+| `--button-gap`                     | Gap between icon and label                               | `var(--space-small)` (12px)                      |
+| `--button-small-gap`               | Gap between icon and label when `small`                  | `var(--space-xxsmall)` (4px)                     |
+| `--button-space`                   | Outer block margin                                       | `var(--space-small)` (12px)                      |
+| `--button-font`                    | Font family                                              | `var(--font-body)`                               |
+| `--button-weight`                  | Font weight                                              | `var(--weight-normal)` (400)                     |
+| `--button-size`                    | Font size                                                | `var(--size-normal)`                             |
+| `--button-leading`                 | Line height                                              | `var(--leading-auto)`                            |
+| `--button-shadow`                  | Box shadow (never on `plain`)                            | `none`                                           |
+| `--button-active-background`       | Surface fill while pressed                               | `var(--button-hover-background)`                 |
+| `--button-active-border`           | Border colour while pressed                              | `var(--button-hover-border)`                     |
+| `--button-active-shadow`           | Box shadow while pressed                                 | `var(--button-shadow)`                           |
+| `--button-active-transform`        | Transform while pressed                                  | `var(--button-hover-transform)`                  |
+| `--button-transition`              | Transition                                               | `all var(--duration-fast)` (150ms)               |
+| `--button-focus-border`            | Focus outline colour (width is `--stroke-focus`)         | `var(--color-focus)`                             |
+| `--button-disabled-opacity`        | Opacity when disabled                                    | `0.5`                                            |
+| `--button-solid-border`            | Border colour in every state when `solid`                | `var(--tint-45)` (one step darker than the fill) |
+| `--button-solid-background`        | Surface fill when `solid`                                | `var(--tint-50)`                                 |
+| `--button-solid-text`              | Label colour when `solid`                                | `var(--tint-100)` (white)                        |
+| `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`               | `var(--tint-55)`                                 |
+| `--button-solid-active-background` | Surface fill while pressed when `solid`                  | `var(--button-solid-hover-background)`           |
+| `--button-plain-text`              | Label colour when `plain` or `outline`                   | `var(--tint-50)`                                 |
+| `--button-plain-border`            | Resting border colour when `plain`                       | `transparent`                                    |
+| `--button-outline-border`          | Resting border colour when `outline`                     | `var(--tint-80)`                                 |
+| `--button-unselected-background`   | Resting fill when `selected={false}`                     | `transparent`                                    |
+| `--button-selected-background`     | Fill when `plain` or `outline` and selected              | `var(--button-background)` (`var(--tint-90)`)    |
+| `--button-selected-text`           | Label colour when `plain` or `outline` and selected      | `var(--button-text)` (`var(--tint-50)`)          |
+| `--button-plain-hover-background`  | Fill on hover / focus when `plain` or `outline`          | `var(--button-hover-background)`                 |
+| `--button-plain-hover-border`      | Border colour on hover / focus when `plain` or `outline` | `var(--button-hover-border)`                     |
+| `--button-plain-active-background` | Fill while pressed when `plain` or `outline`             | `var(--button-plain-hover-background)`           |
+| `--button-plain-active-border`     | Border colour while pressed when `plain` or `outline`    | `var(--button-plain-hover-border)`               |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-normal`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
 :root {
 	--button-radius: 999px;
-	--button-indent: var(--space-normal);
+	--button-indent: var(--space-xlarge);
 }
 ```
 
 ```css
-/* Theme: outline buttons use the label colour for their edge. */
-:root {
-	--button-outline-border: var(--stroke-normal) solid var(--tint-50);
+/* Theme: outline buttons use the label colour for their edge. A tint hook, so override it at `:root, .tint`. */
+:root,
+.tint {
+	--button-outline-border: var(--tint-50);
 }
 ```
 
 ```css
-/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. */
-:root {
+/* Theme: buttons are raised and press down flat — `plain` and `outline` press down too but never casts a shadow. The shadows read the ladder, so override them at `:root, .tint`. */
+:root,
+.tint {
 	--button-shadow: 0 0.25rem 0 var(--tint-30);
 	--button-active-transform: translateY(0.2rem);
 	--button-active-shadow: 0 0.05rem 0 var(--tint-30);
@@ -24230,6 +24388,8 @@ function DeleteButton({ onConfirm }: { onConfirm: () => void }) {
 
 `Dialog` paints the full-screen overlay and resets the browser's default `<dialog>` border, size limits, and `::backdrop`. Transparent borders as wide as the screen's safe areas keep the content and any `<DialogCloseButton>` clear of the notch, rounded corners and home bar. The inner panel comes from its children, usually `<Modal>`. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
+Override these hooks at `:root`. The tint hooks (`--dialog-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                | Styles                                                         | Default                       |
 | ----------------------- | -------------------------------------------------------------- | ----------------------------- |
 | `--dialog-padding`      | Top and bottom padding around the centred content (one length) | `var(--space-normal)` (16px)  |
@@ -24705,20 +24865,22 @@ A link click inside a `<Dialog>` closes it, so the menu slides out as the page c
 
 `Modal` paints a shadowed surface with no border. Set `--modal-stroke` (for example `var(--stroke-normal)`) to show the themed border, or `--modal-border` to replace it. A pinned panel then has no visible border on the side that touches the screen edge. That side has a transparent border as wide as the screen's safe area (notch, rounded corners, home bar), so the content stays clear of it and the background fills it. On a pinned panel, only the corners that do not touch a screen edge are round. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
-| Variable                      | Styles                                                                                                                                            | Default                                 |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `--modal-width`               | Width of a `left` or `right` panel, and maximum width of a `top` or `bottom` panel (a centred panel takes `--dialog-width`)                       | `var(--width-narrow)`                   |
-| `--modal-stroke`              | Border width                                                                                                                                      | `0` (no border)                         |
-| `--modal-border`              | Border shorthand                                                                                                                                  | `var(--modal-stroke)` solid `--tint-80` |
-| `--modal-radius`              | Corner radius (the `radius` variant wins over it)                                                                                                 | `var(--radius-normal)` (16px)           |
-| `--modal-background`          | Surface fill                                                                                                                                      | `var(--tint-100)`                       |
-| `--modal-padding`             | Inner top and bottom padding (one length; the `padding` variant overrides it)                                                                     | `var(--space-normal)` (16px)            |
-| `--modal-indent`              | Inner left and right padding (one length; the `indent` variant overrides it)                                                                      | `var(--space-normal)` (16px)            |
-| `--modal-color`               | Text colour                                                                                                                                       | `var(--tint-00)`                        |
-| `--modal-max-height`          | Maximum height of a `top` or `bottom` panel (it scrolls past this)                                                                                | `100%`                                  |
-| `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms)          |
-| `--modal-shadow`              | Drop shadow (the `shadow` variant wins over it)                                                                                                   | `var(--shadow-large)`                   |
-| `--modal-handle-color`        | Colour of the grab handle on a swipeable pinned panel                                                                                             | `var(--tint-80)`                        |
+Override these hooks at `:root`. The tint hooks (`--modal-border`, `--modal-background`, `--modal-color`, `--modal-handle-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                      | Styles                                                                                                                                            | Default                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `--modal-width`               | Width of a `left` or `right` panel, and maximum width of a `top` or `bottom` panel (a centred panel takes `--dialog-width`)                       | `var(--width-narrow)`          |
+| `--modal-stroke`              | Border width                                                                                                                                      | `0` (no border)                |
+| `--modal-border`              | Border colour (width is `--modal-stroke`)                                                                                                         | `var(--tint-80)`               |
+| `--modal-radius`              | Corner radius (the `radius` variant wins over it)                                                                                                 | `var(--radius-normal)` (16px)  |
+| `--modal-background`          | Surface fill                                                                                                                                      | `var(--tint-100)`              |
+| `--modal-padding`             | Inner top and bottom padding (one length; the `padding` variant overrides it)                                                                     | `var(--space-normal)` (16px)   |
+| `--modal-indent`              | Inner left and right padding (one length; the `indent` variant overrides it)                                                                      | `var(--space-normal)` (16px)   |
+| `--modal-color`               | Text colour                                                                                                                                       | `var(--tint-00)`               |
+| `--modal-max-height`          | Maximum height of a `top` or `bottom` panel (it scrolls past this)                                                                                | `100%`                         |
+| `--modal-transition-duration` | Length of the slide for a pinned panel. Keep it the same as `--fade-transition-duration`, so the panel and the `<Dialog>` overlay finish together | `var(--duration-fast)` (150ms) |
+| `--modal-shadow`              | Drop shadow (the `shadow` variant wins over it)                                                                                                   | `var(--shadow-large)`          |
+| `--modal-handle-color`        | Colour of the grab handle on a swipeable pinned panel                                                                                             | `var(--tint-80)`               |
 
 **Global tokens it reads** — move these to retheme broadly: the tint ladder `--tint-00` / `--tint-80` / `--tint-100`, plus `--width-narrow`, `--space-xsmall`, `--space-normal`, `--radius-normal`, `--shadow-large`, and `--duration-fast`.
 
@@ -25087,6 +25249,8 @@ import { DocumentationFrame } from "shelving/ui";
 
 The frame has no border, radius, or margin. It fills the width of its parent, so the parent sets the look around it (see `<DocumentationLive>`). The space around the preview comes from padding inside the frame page.
 
+Override these hooks at `:root`.
+
 | Variable                           | Styles                                | Default |
 | ---------------------------------- | ------------------------------------- | ------- |
 | `--documentation-frame-background` | Fill behind the frame before it loads | `white` |
@@ -25288,6 +25452,8 @@ function Counter() {
 ````
 
 ## Styling
+
+Override these hooks at `:root`.
 
 | Variable                      | Styles                                                                                                | Default                          |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------- |
@@ -26478,6 +26644,8 @@ import { Field, TextInput } from "shelving/ui";
 
 `Field` paints its label, description, and message text. Override these hooks at `:root` or any ancestor scope.
 
+Override these hooks at `:root`. The tint hooks (`--field-title-color`, `--field-description-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                      | Styles                                  | Default                         |
 | ----------------------------- | --------------------------------------- | ------------------------------- |
 | `--field-space`               | Outer block margin (top + bottom)       | `var(--space-paragraph)` (16px) |
@@ -27469,6 +27637,8 @@ import { Progress } from "shelving/ui";
 
 `Progress` paints a track (the element / `::-webkit-progress-bar`) and a fill (`::-webkit-progress-value` / `::-moz-progress-bar`) from the [tint ladder](/ui/TINT_CLASS). Apply `color=` / `status=` (on the bar or a tinted ancestor scope) to recolour the fill and track together — reach for a per-property hook only for a single surgical change. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
+Override these hooks at `:root`. The tint hooks (`--progress-background`, `--progress-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                | Styles                           | Default          |
 | ----------------------- | -------------------------------- | ---------------- |
 | `--progress-height`     | Bar thickness                    | `0.375rem` (6px) |
@@ -27596,6 +27766,8 @@ import { Code } from "shelving/ui";
 
 `Code` paints from the [tint ladder](/ui/TINT_CLASS): the box `background` / `color` default to ladder steps so they re-tint with the surrounding scope, and every property has a per-instance override hook.
 
+Override these hooks at `:root`. The tint hooks (`--code-background`, `--code-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable            | Styles                                           | Default                 |
 | ------------------- | ------------------------------------------------ | ----------------------- |
 | `--code-font`       | Font family                                      | `var(--font-code)`      |
@@ -27678,6 +27850,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 ## Styling
 
 `Deleted` colours its text directly from `--color-red` (not the tint ladder), so deletions stay a consistent red regardless of the surrounding tint. Override `--deleted-color` to recolour.
+
+Override these hooks at `:root`.
 
 | Variable               | Styles          | Default                             |
 | ---------------------- | --------------- | ----------------------------------- |
@@ -27763,6 +27937,8 @@ import { Paragraph, Emphasis } from "shelving/ui";
 
 `Emphasis` only sets its font style and inherits everything else from its surroundings.
 
+Override these hooks at `:root`.
+
 | Variable           | Styles     | Default  |
 | ------------------ | ---------- | -------- |
 | `--emphasis-style` | Font style | `italic` |
@@ -27842,6 +28018,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 ## Styling
 
 `Inserted` colours its text directly from `--color-green` (not the tint ladder), so insertions stay a consistent green regardless of the surrounding tint. Override `--inserted-color` to recolour.
+
+Override these hooks at `:root`.
 
 | Variable                | Styles          | Default                          |
 | ----------------------- | --------------- | -------------------------------- |
@@ -27958,6 +28136,8 @@ import { Link, Row, Span } from "shelving/ui";
 
 `Link` colours itself from the global `--color-link` token by default. Inside a tinted scope (`color=` / `status=` on an ancestor) `--color-link` resolves to `inherit`, so links adopt the surrounding tinted text colour. Override `--link-color` to set it directly. A `plain` link ignores both hooks and inherits the colour and weight of its parent.
 
+Override these hooks at `:root`. The tint hooks (`--link-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable        | Styles      | Default                |
 | --------------- | ----------- | ---------------------- |
 | `--link-color`  | Text colour | `var(--color-link)`    |
@@ -28036,14 +28216,16 @@ import { Mark } from "shelving/ui";
 
 `Mark` highlights with a translucent wash of `--color-yellow` — `color-mix(…, transparent)`, so the text underneath stays legible — with the text painted from `--tint-00`. Override `--mark-tint` to change the highlight hue, `--mark-background` to replace the fill outright, or `--mark-color` for the text.
 
-| Variable            | Styles                                                         | Default                                                                   |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `--mark-tint`       | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)`                                                     |
-| `--mark-background` | Background fill                                                | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
-| `--mark-color`      | Text colour                                                    | `var(--tint-00)`                                                          |
-| `--mark-indent`     | Left and right padding (one length)                            | `var(--space-xxsmall)`                                                    |
-| `--mark-radius`     | Corner radius                                                  | `var(--radius-xxsmall)`                                                   |
-| `--mark-weight`     | Font weight                                                    | `var(--weight-strong)`                                                    |
+Override these hooks at `:root`. The tint hooks (`--mark-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable            | Styles                                                         | Default                                              |
+| ------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| `--mark-tint`       | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)`                                |
+| `--mark-background` | Background fill                                                | `color-mix(in oklch, var(--mark-tint), transparent)` |
+| `--mark-color`      | Text colour                                                    | `var(--tint-00)`                                     |
+| `--mark-indent`     | Left and right padding (one length)                            | `var(--space-xxsmall)`                               |
+| `--mark-radius`     | Corner radius                                                  | `var(--radius-xxsmall)`                              |
+| `--mark-weight`     | Font weight                                                    | `var(--weight-strong)`                               |
 
 **Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder step `--tint-00`.
 
@@ -28115,6 +28297,8 @@ import { Paragraph, Small } from "shelving/ui";
 ## Styling
 
 `Small` mutes its text colour to a lighter tint step and inherits size and weight from its surroundings.
+
+Override these hooks at `:root`. The tint hooks (`--small-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
 | Variable        | Styles      | Default          |
 | --------------- | ----------- | ---------------- |
@@ -28284,6 +28468,8 @@ import { Paragraph, Strong } from "shelving/ui";
 ## Styling
 
 `Strong` only sets its font weight and inherits colour and size from its surroundings.
+
+Override these hooks at `:root`.
 
 | Variable          | Styles      | Default                |
 | ----------------- | ----------- | ---------------------- |
@@ -29379,15 +29565,17 @@ import { ImageInput } from "shelving/ui";
 
 `ImageInput` paints from the [tint ladder](/ui/TINT_CLASS). The "Choose…" and X buttons are `<Button>` styles, so `--button-*` hooks also move them.
 
-| Variable                           | Styles                                                               | Default                                          |
-| ---------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ |
-| `--image-input-space`              | Space above and below the square                                     | `var(--space-small)` (12px)                      |
-| `--image-input-radius`             | Corner radius of the square                                          | `var(--radius-small)` (12px)                     |
-| `--image-input-background`         | Square background when empty                                         | `var(--tint-90)`                                 |
-| `--image-input-preview-background` | Background behind the picked image, seen through a transparent image | `#000`                                           |
-| `--image-input-focus-border`       | Outline when the input has focus                                     | `var(--stroke-focus) solid var(--color-focus)`   |
-| `--image-input-invalid-border`     | Outline when `message` is set                                        | `var(--stroke-focus) solid var(--color-failure)` |
-| `--image-input-clear-inset`        | Distance of the X button from the top and end edges                  | `var(--space-small)` (12px)                      |
+Override these hooks at `:root`. The tint hooks (`--image-input-background`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                           | Styles                                                               | Default                      |
+| ---------------------------------- | -------------------------------------------------------------------- | ---------------------------- |
+| `--image-input-space`              | Space above and below the square                                     | `var(--space-small)` (12px)  |
+| `--image-input-radius`             | Corner radius of the square                                          | `var(--radius-small)` (12px) |
+| `--image-input-background`         | Square background when empty                                         | `var(--tint-90)`             |
+| `--image-input-preview-background` | Background behind the picked image, seen through a transparent image | `#000`                       |
+| `--image-input-focus-border`       | Focus outline colour (width is `--stroke-focus`)                     | `var(--color-focus)`         |
+| `--image-input-invalid-border`     | Invalid outline colour (width is `--stroke-focus`)                   | `var(--color-failure)`       |
+| `--image-input-clear-inset`        | Distance of the X button from the top and end edges                  | `var(--space-small)` (12px)  |
 
 Global tokens it reads: `--tint-90`, `--space-small`, `--radius-small`, `--stroke-focus`, `--color-focus`, `--color-failure`.
 
@@ -31274,16 +31462,19 @@ function StackBar() {
 
 ## Styling
 
-| Variable                           | Styles                                                                                                                                                                                                                                                                                              | Default                                     |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| `--app-layout-background`          | Page background while the layout is mounted                                                                                                                                                                                                                                                         | `var(--tint-100)` (white)                   |
-| `--app-layout-color`               | Text colour for the layout                                                                                                                                                                                                                                                                          | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-background`      | Bar fill (also fills the home-bar area below it)                                                                                                                                                                                                                                                    | `var(--tint-100)` (white)                   |
-| `--app-layout-nav-color`           | Bar text and icon colour                                                                                                                                                                                                                                                                            | `var(--tint-00)` (black)                    |
-| `--app-layout-nav-border`          | Line above the bar                                                                                                                                                                                                                                                                                  | `var(--stroke-normal) solid var(--tint-90)` |
-| `--app-layout-nav-shadow`          | Shadow of the bar, for example a soft shadow above it                                                                                                                                                                                                                                               | `none`                                      |
-| `--app-layout-nav-transition-name` | View-transition name of the bar. Set it only for your own transition types (for example under `:root:active-view-transition-type(tab)`), so the bar stays above parts of a page that slide in their own layers. The named bar always paints above those layers, even one that only the new page has | `none`                                      |
-| `--app-layout-nav-item-width`      | Largest width of one bar item                                                                                                                                                                                                                                                                       | `6rem`                                      |
+Override these hooks at `:root`. The tint hooks (`--app-layout-background`, `--app-layout-color`, `--app-layout-nav-border`, `--app-layout-nav-background`, `--app-layout-nav-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                           | Styles                                                                                                                                                                                                                                                                                              | Default                                        |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `--app-layout-background`          | Page background while the layout is mounted                                                                                                                                                                                                                                                         | `var(--tint-100)` (white)                      |
+| `--app-layout-color`               | Text colour for the layout                                                                                                                                                                                                                                                                          | `var(--tint-00)` (black)                       |
+| `--app-layout-nav-background`      | Bar fill (also fills the home-bar area below it)                                                                                                                                                                                                                                                    | `var(--tint-100)` (white)                      |
+| `--app-layout-nav-color`           | Bar text and icon colour                                                                                                                                                                                                                                                                            | `var(--tint-00)` (black)                       |
+| `--app-layout-nav-border`          | Top border colour of the nav bar                                                                                                                                                                                                                                                                    | `var(--tint-90)`                               |
+| `--app-layout-nav-stroke`          | Top border width of the nav bar                                                                                                                                                                                                                                                                     | `var(--stroke-normal)` (1px)                   |
+| `--app-layout-nav-shadow`          | Shadow of the bar, cast up over the pages. Set `none` to remove it                                                                                                                                                                                                                                  | `0 -0.25rem 1rem -0.25rem var(--shadow-color)` |
+| `--app-layout-nav-transition-name` | View-transition name of the bar. Set it only for your own transition types (for example under `:root:active-view-transition-type(tab)`), so the bar stays above parts of a page that slide in their own layers. The named bar always paints above those layers, even one that only the new page has | `none`                                         |
+| `--app-layout-nav-item-width`      | Largest width of one bar item                                                                                                                                                                                                                                                                       | `6rem`                                         |
 
 The bar keeps its items clear of the home bar and the rounded screen corners with safe-area insets.
 
@@ -31397,6 +31588,8 @@ function AppError({ reason }: ErrorProps) {
 ```
 
 ## Styling
+
+Override these hooks at `:root`. The tint hooks (`--fixed-layout-background`, `--fixed-layout-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
 | Variable                    | Styles                                      | Default                   |
 | --------------------------- | ------------------------------------------- | ------------------------- |
@@ -31556,6 +31749,7 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - It is a frame only. The content slot does not scroll: fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box. Content put in the slot without a scroll box does not scroll.
 - The sidebar stays outside the page cache, so it keeps its own scroll position and state as pages change.
+- The sidebar paints above the content slot, so its shadow (`--sidebar-layout-sidebar-shadow`) shows over the pages, even a page with its own background. The column is full height, so only the blur at the side of its shadow shows, over the content. A 1px tinted border (`--sidebar-layout-border`) divides the sidebar from the content by default.
 - On a narrow screen the menu button floats at the top right of the content slot, above the page.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
@@ -31590,19 +31784,23 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 
 ## Styling
 
-| Variable                              | Styles                                                                      | Default                                           |
-| ------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
-| `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                         |
-| `--sidebar-layout-background`         | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white)                         |
-| `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                          |
-| `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-90)` (one shade darker than the page) |
-| `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                          |
-| `--sidebar-layout-border`             | Divider between sidebar and content, e.g. `1px solid var(--tint-90)`        | `none`                                            |
-| `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                             |
+Override these hooks at `:root`. The tint hooks (`--sidebar-layout-background`, `--sidebar-layout-color`, `--sidebar-layout-border`, `--sidebar-layout-sidebar-background`, `--sidebar-layout-sidebar-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                              | Styles                                                                      | Default                                         |
+| ------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
+| `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                       |
+| `--sidebar-layout-background`         | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white)                       |
+| `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                        |
+| `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-100)` (white, the same as the page) |
+| `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                        |
+| `--sidebar-layout-border`             | Border colour between the sidebar and the content                           | `var(--tint-90)`                                |
+| `--sidebar-layout-stroke`             | Border width between the sidebar and the content                            | `var(--stroke-normal)` (1px)                    |
+| `--sidebar-layout-sidebar-shadow`     | Shadow of the sidebar column on a wide screen                               | `var(--shadow-normal)`                          |
+| `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                           |
 
 The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
 
-**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--shadow-large`, and `--color-backdrop`.
+**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--stroke-normal`, `--shadow-normal`, `--shadow-large`, and `--color-backdrop`.
 
 
 ## Signatures
@@ -31691,22 +31889,24 @@ import { Menu, MenuItem } from "shelving/ui";
 
 ## Styling
 
-| Variable                     | Styles                                                                                             | Default                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
-| `--menu-gap`                 | Vertical gap between items                                                                         | `0`                    |
-| `--menu-font`                | Font family                                                                                        | `var(--font-body)`     |
-| `--menu-size`                | Font size                                                                                          | `var(--size-normal)`   |
-| `--menu-leading`             | Line height                                                                                        | `var(--leading-auto)`  |
-| `--menu-color`               | Text colour                                                                                        | `var(--tint-00)`       |
-| `--menu-nested-space`        | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
-| `--menu-padding`             | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
-| `--menu-indent`              | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)`   |
-| `--menu-small-indent`        | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)`  |
-| `--menu-nested-border`       | Nested submenu left-border width                                                                   | `var(--stroke-focus)`  |
-| `--menu-nested-color-border` | Nested submenu left-border colour                                                                  | `var(--tint-50)`       |
-| `--menu-nested-indent`       | Nested submenu left padding                                                                        | `var(--space-xsmall)`  |
+Override these hooks at `:root`. The tint hooks (`--menu-color`, `--menu-nested-border`, `--menu-hover-background`, `--menu-hover-color`, `--menu-proud`, `--menu-selected-background`, `--menu-selected-color`, `--menu-active-background`, `--menu-active-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
-Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
+| Variable               | Styles                                                                                             | Default                |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
+| `--menu-gap`           | Vertical gap between items                                                                         | `0`                    |
+| `--menu-font`          | Font family                                                                                        | `var(--font-body)`     |
+| `--menu-size`          | Font size                                                                                          | `var(--size-normal)`   |
+| `--menu-leading`       | Line height                                                                                        | `var(--leading-auto)`  |
+| `--menu-color`         | Text colour                                                                                        | `var(--tint-00)`       |
+| `--menu-nested-space`  | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
+| `--menu-padding`       | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
+| `--menu-indent`        | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)`   |
+| `--menu-small-indent`  | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)`  |
+| `--menu-nested-stroke` | Nested submenu left-border width                                                                   | `var(--stroke-focus)`  |
+| `--menu-nested-border` | Nested submenu left-border colour                                                                  | `var(--tint-50)`       |
+| `--menu-nested-indent` | Nested submenu left padding                                                                        | `var(--space-xsmall)`  |
+
+Item-size and item-state hooks (`--menu-stroke`, `--menu-icon-size`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 
 **Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading-auto`, and `--stroke-focus`.
 
@@ -31834,28 +32034,28 @@ import { Menu, MenuItem } from "shelving/ui";
 
 The item link's hooks (defined in `Menu.module.css`):
 
-| Variable                     | Styles                                                         | Default                                                                                        |
-| ---------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `--menu-padding`             | Link top and bottom padding (one length)                       | `var(--space-small)`                                                                           |
-| `--menu-indent`              | Link left and right padding (one length)                       | `var(--space-small)`                                                                           |
-| `--menu-stroke`              | Link transparent border width (one length)                     | `var(--stroke-normal)`                                                                         |
-| `--menu-icon-size`           | Content height used for the minimum height (one length)        | `var(--size-icon)`                                                                             |
-| `--menu-height`              | Link minimum height                                            | `--menu-icon-size` + 2 × `--menu-padding` + 2 × `--menu-stroke`, the same as `--button-height` |
-| `--menu-small-padding`       | Small link top and bottom padding (one length)                 | `var(--space-xsmall)`                                                                          |
-| `--menu-small-indent`        | Small link left and right padding (one length)                 | `var(--space-xsmall)`                                                                          |
-| `--menu-small-height`        | Small link minimum height                                      | `0`                                                                                            |
-| `--menu-radius`              | Link corner radius                                             | `var(--radius-xsmall)`                                                                         |
-| `--menu-focus-border`        | Focus outline                                                  | `var(--stroke-focus) solid var(--color-focus)`                                                 |
-| `--menu-hover-background`    | Link fill on hover/focus                                       | `var(--tint-90)`                                                                               |
-| `--menu-hover-color`         | Link text colour on hover/focus                                | `var(--tint-00)`                                                                               |
-| `--menu-selected-background` | Fill when `selected`                                           | `var(--menu-hover-background)`                                                                 |
-| `--menu-selected-color`      | Text colour when `selected`                                    | `var(--menu-hover-color)`                                                                      |
-| `--menu-proud-background`    | Fill when proud (ancestor of current page)                     | `transparent`                                                                                  |
-| `--menu-proud`               | Text colour when proud                                         | `var(--tint-00)`                                                                               |
-| `--menu-proud-weight`        | Font weight when proud                                         | `var(--weight-strong)`                                                                         |
-| `--menu-active-background`   | Fill when active (current page), also while hovered or focused | `var(--tint-100)`                                                                              |
-| `--menu-active-color`        | Text colour when active                                        | `var(--tint-00)`                                                                               |
-| `--menu-active-weight`       | Font weight when active                                        | `var(--weight-strong)`                                                                         |
+Override these hooks at `:root`. The tint hooks (`--menu-hover-background`, `--menu-hover-color`, `--menu-proud`, `--menu-selected-background`, `--menu-selected-color`, `--menu-active-background`, `--menu-active-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                     | Styles                                                         | Default                        |
+| ---------------------------- | -------------------------------------------------------------- | ------------------------------ |
+| `--menu-padding`             | Link top and bottom padding (one length)                       | `var(--space-small)`           |
+| `--menu-indent`              | Link left and right padding (one length)                       | `var(--space-small)`           |
+| `--menu-stroke`              | Link transparent border width (one length)                     | `var(--stroke-normal)`         |
+| `--menu-icon-size`           | Content height used for the minimum height (one length)        | `var(--size-icon)`             |
+| `--menu-small-padding`       | Small link top and bottom padding (one length)                 | `var(--space-xsmall)`          |
+| `--menu-small-indent`        | Small link left and right padding (one length)                 | `var(--space-xsmall)`          |
+| `--menu-radius`              | Link corner radius                                             | `var(--radius-xsmall)`         |
+| `--menu-focus-border`        | Focus outline colour (width is `--stroke-focus`)               | `var(--color-focus)`           |
+| `--menu-hover-background`    | Link fill on hover/focus                                       | `var(--tint-90)`               |
+| `--menu-hover-color`         | Link text colour on hover/focus                                | `var(--tint-00)`               |
+| `--menu-selected-background` | Fill when `selected`                                           | `var(--menu-hover-background)` |
+| `--menu-selected-color`      | Text colour when `selected`                                    | `var(--menu-hover-color)`      |
+| `--menu-proud-background`    | Fill when proud (ancestor of current page)                     | `transparent`                  |
+| `--menu-proud`               | Text colour when proud                                         | `var(--tint-00)`               |
+| `--menu-proud-weight`        | Font weight when proud                                         | `var(--weight-strong)`         |
+| `--menu-active-background`   | Fill when active (current page), also while hovered or focused | `var(--tint-100)`              |
+| `--menu-active-color`        | Text colour when active                                        | `var(--tint-00)`               |
+| `--menu-active-weight`       | Font weight when active                                        | `var(--weight-strong)`         |
 
 List-level hooks (`--menu-gap`, `--menu-color`, the nested-submenu hooks, etc.) are documented on `<Menu>`.
 
@@ -32168,6 +32368,8 @@ import { Icon } from "shelving/ui";
 
 ## Styling
 
+Override these hooks at `:root`. The tint hooks (`--icon-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable       | Styles              | Default                                                                         |
 | -------------- | ------------------- | ------------------------------------------------------------------------------- |
 | `--icon-color` | Icon colour         | `var(--tint-50)` (the status tint, e.g. `--color-failure` for `status="error"`) |
@@ -32344,6 +32546,8 @@ import { Icon, LOADING, Loading } from "shelving/ui";
 ## Styling
 
 Size, centring, and overall colour come from wrapping it in `<Icon>` — its `--icon-color` / `--icon-size` hooks and `color` / `status` / `size` / `tint` variants drive the spinner (see the `Icon` Styling section). On top of that, the two arcs expose their own hooks:
+
+Override these hooks at `:root`. The tint hooks (`--loading-track`, `--loading-indicator`) are declared again in every tint scope, so override them at `:root, .tint`.
 
 | Variable                 | Styles                                  | Default          |
 | ------------------------ | --------------------------------------- | ---------------- |
@@ -32811,21 +33015,24 @@ import { Tag } from "shelving/ui";
 
 `Tag` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Apply `color=` / `status=` (on the tag or an ancestor scope) to recolour the whole tag at once.
 
-| Variable                 | Styles                                          | Default                                        |
-| ------------------------ | ----------------------------------------------- | ---------------------------------------------- |
-| `--tag-background`       | Surface fill                                    | `var(--tint-50)`                               |
-| `--tag-hover-background` | Surface fill when an interactive tag is hovered | `var(--tint-55)`                               |
-| `--tag-color`            | Text colour                                     | `var(--tint-100)`                              |
-| `--tag-padding`          | Inner top and bottom padding (one length)       | `0`                                            |
-| `--tag-indent`           | Inner left and right padding (one length)       | `var(--space-xxsmall)` (4px)                   |
-| `--tag-border`           | Border shorthand                                | `0`                                            |
-| `--tag-radius`           | Corner radius                                   | `var(--radius-xxsmall)`                        |
-| `--tag-font`             | Font family                                     | `var(--font-body)`                             |
-| `--tag-size`             | Font size                                       | `var(--size-small)`                            |
-| `--tag-weight`           | Font weight                                     | `var(--weight-strong)`                         |
-| `--tag-leading`          | Line height                                     | `var(--leading-auto)`                          |
-| `--tag-case`             | Text transform                                  | `var(--case-label)`                            |
-| `--tag-focus-border`     | Focus outline                                   | `var(--stroke-focus) solid var(--color-focus)` |
+Override these hooks at `:root`. The tint hooks (`--tag-background`, `--tag-color`, `--tag-hover-background`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                 | Styles                                           | Default                      |
+| ------------------------ | ------------------------------------------------ | ---------------------------- |
+| `--tag-background`       | Surface fill                                     | `var(--tint-50)`             |
+| `--tag-hover-background` | Surface fill when an interactive tag is hovered  | `var(--tint-55)`             |
+| `--tag-color`            | Text colour                                      | `var(--tint-100)`            |
+| `--tag-padding`          | Inner top and bottom padding (one length)        | `0`                          |
+| `--tag-indent`           | Inner left and right padding (one length)        | `var(--space-xxsmall)` (4px) |
+| `--tag-border`           | Border colour (width is `--tag-stroke`)          | `transparent`                |
+| `--tag-stroke`           | Border width                                     | `0px`                        |
+| `--tag-radius`           | Corner radius                                    | `var(--radius-xxsmall)`      |
+| `--tag-font`             | Font family                                      | `var(--font-body)`           |
+| `--tag-size`             | Font size                                        | `var(--size-small)`          |
+| `--tag-weight`           | Font weight                                      | `var(--weight-strong)`       |
+| `--tag-leading`          | Line height                                      | `var(--leading-auto)`        |
+| `--tag-case`             | Text transform                                   | `var(--case-label)`          |
+| `--tag-focus-border`     | Focus outline colour (width is `--stroke-focus`) | `var(--color-focus)`         |
 
 **Global tokens it reads** — the tint ladder `--tint-50` / `--tint-55` / `--tint-100`, plus `--space-xxsmall`, `--radius-xxsmall`, `--font-body`, `--size-small`, `--weight-strong`, `--leading-auto`, `--case-label`, `--stroke-normal`, `--stroke-focus`, and `--color-focus`.
 
@@ -33057,19 +33264,21 @@ import { LOADING_NOTICE } from "shelving/ui";
 
 `Notice` paints from the [tint ladder](/ui/TINT_CLASS); override these hooks at `:root` (or any ancestor scope) to retheme. Its `status` (or a `color=` / `status=` on an ancestor scope) sets the tint that the surface, border, and text all derive from; reach for a per-property hook for a single change.
 
-| Variable              | Styles                                         | Default                                     |
-| --------------------- | ---------------------------------------------- | ------------------------------------------- |
-| `--notice-background` | Surface fill                                   | `var(--tint-90)`                            |
-| `--notice-color`      | Text colour                                    | `var(--tint-50)`                            |
-| `--notice-border`     | Border shorthand                               | `var(--notice-stroke) solid var(--tint-80)` |
-| `--notice-stroke`     | Border thickness                               | `var(--stroke-normal)` (2px)                |
-| `--notice-shadow`     | Drop shadow, for example `var(--shadow-small)` | `none`                                      |
-| `--notice-radius`     | Corner radius                                  | `var(--radius-xsmall)`                      |
-| `--notice-padding`    | Inner top and bottom padding (one length)      | `var(--space-small)` (12px)                 |
-| `--notice-indent`     | Inner left and right padding (one length)      | `var(--space-small)` (12px)                 |
-| `--notice-space`      | Outer block margin (top + bottom)              | `var(--space-paragraph)`                    |
-| `--notice-size`       | Font size                                      | `var(--size-normal)`                        |
-| `--notice-weight`     | Font weight                                    | `var(--weight-strong)`                      |
+Override these hooks at `:root`. The tint hooks (`--notice-border`, `--notice-background`, `--notice-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable              | Styles                                         | Default                      |
+| --------------------- | ---------------------------------------------- | ---------------------------- |
+| `--notice-background` | Surface fill                                   | `var(--tint-90)`             |
+| `--notice-color`      | Text colour                                    | `var(--tint-50)`             |
+| `--notice-border`     | Border colour (width is `--notice-stroke`)     | `var(--tint-80)`             |
+| `--notice-stroke`     | Border thickness                               | `var(--stroke-normal)` (2px) |
+| `--notice-shadow`     | Drop shadow, for example `var(--shadow-small)` | `none`                       |
+| `--notice-radius`     | Corner radius                                  | `var(--radius-xsmall)`       |
+| `--notice-padding`    | Inner top and bottom padding (one length)      | `var(--space-small)` (12px)  |
+| `--notice-indent`     | Inner left and right padding (one length)      | `var(--space-small)` (12px)  |
+| `--notice-space`      | Outer block margin (top + bottom)              | `var(--space-paragraph)`     |
+| `--notice-size`       | Font size                                      | `var(--size-normal)`         |
+| `--notice-weight`     | Font weight                                    | `var(--weight-strong)`       |
 
 **Global tokens it reads** — the tint ladder `--tint-50` / `--tint-80` / `--tint-90`, plus `--space-paragraph`, `--space-small`, `--radius-xsmall`, `--stroke-normal`, `--size-normal`, and `--weight-strong`.
 
@@ -33235,6 +33444,8 @@ notice.close(); // Or close it immediately.
 ## Styling
 
 `Notices` positions the list in the place that `position` sets. Each notice is only as wide as its content and is aligned to the side of that corner, or to the centre. The list is never wider than `--notices-width`, and keeps `--notices-offset` clear at both sides on a narrow screen. The offset also adds the safe area of the device (`env(safe-area-inset-*)`). Clicks pass through the gaps between notices to the page. Each item is a `<Notice>`, which has its own hooks. Override these hooks at `:root` (or any ancestor scope) to retheme.
+
+Override these hooks at `:root`.
 
 | Variable                        | Styles                                                                              | Default                        |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------ |
@@ -36491,12 +36702,12 @@ This module's main job is to **define and document the border-thickness design t
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.
 
-| Variable          | Default                     | Used for                                       |
-| ----------------- | --------------------------- | ---------------------------------------------- |
-| `--stroke`        | `2px`                       | Base border thickness — the root of the scale. |
-| `--stroke-normal` | `calc(var(--stroke) * 1)`   | Default borders.                               |
-| `--stroke-thick`  | `calc(var(--stroke) * 1.5)` | Heavier borders.                               |
-| `--stroke-focus`  | `var(--stroke-thick)`       | Focus-outline thickness.                       |
+| Variable          | Default                   | Used for                                       |
+| ----------------- | ------------------------- | ---------------------------------------------- |
+| `--stroke`        | `1px`                     | Base border thickness — the root of the scale. |
+| `--stroke-normal` | `calc(var(--stroke) * 1)` | Default borders.                               |
+| `--stroke-thick`  | `calc(var(--stroke) * 2)` | Heavier borders.                               |
+| `--stroke-focus`  | `var(--stroke-thick)`     | Focus-outline thickness.                       |
 
 
 ## Signatures
@@ -36629,15 +36840,17 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 ```css
 /* Wrong: `--tint-95` resolves once, at `:root`. */
 :root {
-	--table-border: 2px solid var(--tint-95);
+	--table-border: var(--tint-95);
 }
 
 /* Right: the value resolves again in every scope that rebuilds the ladder. */
 :root,
 .tint {
-	--table-border: 2px solid var(--tint-95);
+	--table-border: var(--tint-95);
 }
 ```
+
+A component uses the same split for its own defaults. It declares its plain hooks at `:root` and its tint hooks (the hooks whose default reads the ladder) at `:root, .tint`, both in `@layer defaults`. Write the selector as `:root, :global(.tint)` in a `.module.css`, so the class name is not hashed. An app override of a tint hook must also go on `:root, .tint`: an override at `:root` alone loses to the component's own `.tint` declaration inside every tint scope. `<Button>` is the first component to use this pattern.
 
 `TINT_CLASS` adds a plain global `tint` class (as well as its hashed module class) for this purpose, so `tint` is a reserved class name. Do not use `* { … }` for this: it declares the variable on every element, which adds style-recalc cost on large pages.
 
@@ -37287,19 +37500,21 @@ import { Button, Cell, Table } from "shelving/ui";
 
 `--table-padding` sets the top and bottom padding of each cell, and `--table-indent` the left and right. Each takes one length. The table's `padding` and `indent` variants set these hooks. The outermost columns still drop their outer inline padding, and `<thead>` / `<tfoot>` their outer block padding, so the table stays flush with its container.
 
-| Variable                | Styles                                                 | Default                                     |
-| ----------------------- | ------------------------------------------------------ | ------------------------------------------- |
-| `--table-space`         | Outer block margin (top + bottom)                      | `var(--space-paragraph)` (16px)             |
-| `--table-padding`       | Cell top and bottom padding (one length)               | `var(--space-xsmall)` (8px)                 |
-| `--table-indent`        | Cell left and right padding (one length)               | `var(--space-xsmall)` (8px)                 |
-| `--table-border`        | Cell border shorthand                                  | `var(--table-stroke)`                       |
-| `--table-stroke`        | Cell border thickness/colour                           | `var(--stroke-normal) solid var(--tint-90)` |
-| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)`                      |
-| `--table-label-font`    | Label font for `<thead>` / `<tfoot>` `<th>`            | `var(--font-label)`                         |
-| `--table-label-weight`  | Label weight                                           | `var(--weight-label)`                       |
-| `--table-label-size`    | Label size                                             | `var(--size-label)`                         |
-| `--table-label-case`    | Label letter case                                      | `var(--case-label)`                         |
-| `--table-label-color`   | Label colour                                           | `var(--tint-70)`                            |
+Override these hooks at `:root`. The tint hooks (`--table-border`, `--table-label-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                | Styles                                                 | Default                         |
+| ----------------------- | ------------------------------------------------------ | ------------------------------- |
+| `--table-space`         | Outer block margin (top + bottom)                      | `var(--space-paragraph)` (16px) |
+| `--table-padding`       | Cell top and bottom padding (one length)               | `var(--space-xsmall)` (8px)     |
+| `--table-indent`        | Cell left and right padding (one length)               | `var(--space-xsmall)` (8px)     |
+| `--table-border`        | Cell border colour (width is `--table-stroke`)         | `var(--tint-90)`                |
+| `--table-stroke`        | Cell border width                                      | `var(--stroke-normal)` (1px)    |
+| `--table-header-weight` | Weight of `<thead>` / `<tfoot>` / `<tbody> <th>` cells | `var(--weight-strong)`          |
+| `--table-label-font`    | Label font for `<thead>` / `<tfoot>` `<th>`            | `var(--font-label)`             |
+| `--table-label-weight`  | Label weight                                           | `var(--weight-label)`           |
+| `--table-label-size`    | Label size                                             | `var(--size-label)`             |
+| `--table-label-case`    | Label letter case                                      | `var(--case-label)`             |
+| `--table-label-color`   | Label colour                                           | `var(--tint-70)`                |
 
 **Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, `--stroke-normal`, the tint-ladder steps `--tint-70` / `--tint-90`, and the label tokens `--font-label` / `--weight-label` / `--size-label` / `--case-label` / `--weight-strong`.
 
@@ -37509,6 +37724,8 @@ import { FADE_TRANSITION_CLASS } from "shelving/ui";
 
 ## Styling
 
+Override these hooks at `:root`.
+
 | Variable                     | Styles                                                                                                                            | Default                |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
 | `--fade-transition-duration` | Duration of the fade in, the fade out, and the crossfade when content changes in place (also the group's size and position morph) | `var(--duration-fast)` |
@@ -37638,6 +37855,8 @@ import { SLIDE_RIGHT_TRANSITION_CLASS } from "shelving/ui";
 ```
 
 ## Styling
+
+Override these hooks at `:root`.
 
 | Variable                           | Styles                                                                                    | Default                  |
 | ---------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ |
@@ -37804,6 +38023,8 @@ function Steps() {
 ## Styling
 
 Transitions are driven by CSS `::view-transition-*` pseudo-element rules keyed on the transition class names, not by per-component `--variable` hooks. `<Transition>` itself only ships the `overlay` rule:
+
+Override these hooks at `:root`.
 
 | Variable | Styles                                          | Default |
 | -------- | ----------------------------------------------- | ------- |
@@ -38289,6 +38510,8 @@ import { SLIDE_DOWN_TRANSITION_CLASS } from "shelving/ui";
 ```
 
 ## Styling
+
+Override these hooks at `:root`.
 
 | Variable                         | Styles                                                                                     | Default                  |
 | -------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------ |
@@ -39118,7 +39341,7 @@ TreeMenu({ tree }: TreeMenuProps): ReactNode
 
 Page renderer for a generic `tree-element` (a directory or file).
 
-- Shows the title, any absorbed prose content, and the element's children as a stack of cards.
+- Shows the title, any absorbed prose content, and the element's children as a stack of cards under a "Contents" heading.
 - Child cards cover both nested directories/files and the code symbols of a source file.
 
 ## Signatures
@@ -39248,7 +39471,7 @@ Props for the `TreeSidebar` component.
 - Kind: component
 - Import: `import { TreeSidebar } from "shelving/ui";`
 
-Sidebar built from the surrounding tree, in three sections separated by dividers.
+Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
 
 - **Middle:** a `<TextInput>` search-as-you-type filter.
 - **Bottom:** the root's children as a `<TreeMenuMapper>` — swapped for a flat ranked list of results (capped at 20) while the search holds a query.
@@ -39256,7 +39479,7 @@ Sidebar built from the surrounding tree, in three sections separated by dividers
 
 Reads the flattened tree from the surrounding `<TreeProvider>` (`useTreeMap().get("/")`), so child and result hrefs use each element's stamped canonical `path`. To customise child renderers wrap in `<TreeMenuMapping mapping={…}>` (same context as `<TreeMenu>`).
 
-The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu — three sections separated by dividers. `<TreeApp>` mounts one of these automatically.
+The default sidebar for a tree-based site: a "home" link, a search-as-you-type filter, and the root's children as a navigation menu. `<TreeApp>` mounts one of these automatically.
 
 **Things to know:**
 

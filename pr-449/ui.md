@@ -88,6 +88,7 @@ The components below are listed in the index following this page; this is the sh
 - [Image](ui/Image.md): Image block — renders an <img> with space and width variants applied.
 - [Label](ui/Label.md): Label heading, a <h3> with a labelly appearance (UPPERCASE but with a smaller text size).
 - [List](ui/List.md): List block — wraps each child in an <li> and renders an <ul> or <ol>.
+- [ListItem](ui/ListItem.md): One item in a <List> — rendered as <li>.
 - [Panel](ui/Panel.md): Full-width vertical region that paints the current surface colour. Use to break a page into stacked sections. Has zero block-space (Panels butt against each other); set its vertical breathing room with the padding variant (<Panel padding="large">, <Panel padding="xxlarge"> etc.).
 - [Paragraph](ui/Paragraph.md): Paragraph block of body text — rendered as <p>.
 - [Preformatted](ui/Preformatted.md): Preformatted block of text — rendered as <pre>.
@@ -224,7 +225,7 @@ The components below are listed in the index following this page; this is the sh
 - [TreeMenu](ui/TreeMenu.md): Sidebar navigation menu built from the children of a root tree element.
 - [TreePage](ui/TreePage.md): Page renderer for a generic tree-element (a directory or file).
 - [TreeRouter](ui/TreeRouter.md): Resolve a URL path to a tree element and render it as a full page.
-- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections separated by dividers.
+- [TreeSidebar](ui/TreeSidebar.md): Sidebar built from the surrounding tree, in three sections: a home link, a search filter, and a menu of pages.
 
 ## Functions
 
@@ -350,7 +351,8 @@ The components below are listed in the index following this page; this is the sh
 - [HeadingProps](ui/HeadingProps.md): Props shared by <Title>, Heading, and <Subheading> — colour, space, and typography variants plus a heading-level override.
 - [ImageProps](ui/ImageProps.md): Props for Image — an src, optional alt text, plus space and width variants.
 - [LabelProps](ui/LabelProps.md): Props for Label — identical to HeadingProps.
-- [ListProps](ui/ListProps.md): Props for List — colour, gap, space, and typography variants plus its list items and an ordered toggle.
+- [ListProps](ui/ListProps.md): Props for List — space and typography variants plus its list items and an ordered toggle.
+- [ListItemProps](ui/ListItemProps.md): Props for ListItem — space, padding, trim, and typography variants.
 - [PanelProps](ui/PanelProps.md): Props for Panel — colour, status, and typography variants plus optional children.
 - [ParagraphProps](ui/ParagraphProps.md): Props for Paragraph — colour, space, and typography variants.
 - [PreformattedProps](ui/PreformattedProps.md): Props for Preformatted — space, colour, typography, width, and padding variants plus a wrap toggle.

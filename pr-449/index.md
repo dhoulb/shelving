@@ -34,8 +34,6 @@ The docs are also published as Markdown for LLMs and coding agents:
 
 See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 
-## Modules
-
 
 ## Pages
 

@@ -29,6 +29,8 @@ import { Paragraph, Emphasis } from "shelving/ui";
 
 `Emphasis` only sets its font style and inherits everything else from its surroundings.
 
+Override these hooks at `:root`.
+
 | Variable           | Styles     | Default  |
 | ------------------ | ---------- | -------- |
 | `--emphasis-style` | Font style | `italic` |

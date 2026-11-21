@@ -21,6 +21,7 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - It is a frame only. The content slot does not scroll: fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box. Content put in the slot without a scroll box does not scroll.
 - The sidebar stays outside the page cache, so it keeps its own scroll position and state as pages change.
+- The sidebar paints above the content slot, so its shadow (`--sidebar-layout-sidebar-shadow`) shows over the pages, even a page with its own background. The column is full height, so only the blur at the side of its shadow shows, over the content. A 1px tinted border (`--sidebar-layout-border`) divides the sidebar from the content by default.
 - On a narrow screen the menu button floats at the top right of the content slot, above the page.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
@@ -55,19 +56,23 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 
 ## Styling
 
-| Variable                              | Styles                                                                      | Default                                           |
-| ------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
-| `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                         |
-| `--sidebar-layout-background`         | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white)                         |
-| `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                          |
-| `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-90)` (one shade darker than the page) |
-| `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                          |
-| `--sidebar-layout-border`             | Divider between sidebar and content, e.g. `1px solid var(--tint-90)`        | `none`                                            |
-| `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                             |
+Override these hooks at `:root`. The tint hooks (`--sidebar-layout-background`, `--sidebar-layout-color`, `--sidebar-layout-border`, `--sidebar-layout-sidebar-background`, `--sidebar-layout-sidebar-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                              | Styles                                                                      | Default                                         |
+| ------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------- |
+| `--sidebar-layout-width`              | Width of the side column (and drawer)                                       | `17.5rem`                                       |
+| `--sidebar-layout-background`         | Page background while the layout is mounted (also fills the content column) | `var(--tint-100)` (white)                       |
+| `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                        |
+| `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-100)` (white, the same as the page) |
+| `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                        |
+| `--sidebar-layout-border`             | Border colour between the sidebar and the content                           | `var(--tint-90)`                                |
+| `--sidebar-layout-stroke`             | Border width between the sidebar and the content                            | `var(--stroke-normal)` (1px)                    |
+| `--sidebar-layout-sidebar-shadow`     | Shadow of the sidebar column on a wide screen                               | `var(--shadow-normal)`                          |
+| `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                           |
 
 The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
 
-**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--shadow-large`, and `--color-backdrop`.
+**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--stroke-normal`, `--shadow-normal`, `--shadow-large`, and `--color-backdrop`.
 
 
 ## Signatures

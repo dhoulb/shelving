@@ -42,6 +42,8 @@ import { FADE_TRANSITION_CLASS } from "shelving/ui";
 
 ## Styling
 
+Override these hooks at `:root`.
+
 | Variable                     | Styles                                                                                                                            | Default                |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
 | `--fade-transition-duration` | Duration of the fade in, the fade out, and the crossfade when content changes in place (also the group's size and position morph) | `var(--duration-fast)` |

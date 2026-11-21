@@ -48,6 +48,8 @@ import { Heading } from "shelving/ui";
 
 `Heading` exposes hooks for its rhythm and type. It inherits text colour by default (so it picks up the surrounding tint); set `--heading-color` only to override that.
 
+Override these hooks at `:root`.
+
 | Variable                 | Styles        | Default                         |
 | ------------------------ | ------------- | ------------------------------- |
 | `--heading-color`        | Text colour   | `inherit`                       |
