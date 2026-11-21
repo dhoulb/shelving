@@ -33,7 +33,6 @@ export interface ArrayInputProps<T> extends ValueInputProps<ImmutableArray<T>> {
  *
  * @returns Element rendering one input row per array item plus add/clear controls.
  * @kind component
- * @example <ArrayInput name="tags" items={STRING} value={tags} onValue={setTags} />
  * @see https://shelving.cc/ui/ArrayInput
  */
 export function ArrayInput<T>(props: ArrayInputProps<T>): ReactElement;

@@ -25,7 +25,6 @@ export interface ArrayCheckboxInputsProps<T> extends ValueInputProps<ImmutableAr
  *
  * @kind component
  * @returns Element rendering one checkbox per item.
- * @example <ArrayCheckboxInputs name="sizes" items={["s", "m", "l"]} value={sizes} onValue={setSizes} />
  * @see https://shelving.cc/ui/ArrayCheckboxInputs
  */
 export function ArrayCheckboxInputs<T>({

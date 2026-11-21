@@ -26,7 +26,6 @@ const OPTION_CLASS = getModuleClass(INPUT_CSS, "value");
  *
  * @returns A `<select>` element.
  * @kind component
- * @example <SelectInput name="role" options={ROLES} value={role} onValue={setRole} />
  * @see https://shelving.cc/ui/SelectInput
  */
 export function SelectInput<T extends string>(props: SelectProps<T>): ReactElement;

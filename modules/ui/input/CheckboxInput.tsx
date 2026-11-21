@@ -19,7 +19,7 @@ export interface CheckboxProps extends ValueInputProps<boolean>, OptionalChildPr
  * - The label content comes from `children`, falling back to `placeholder`/`title`.
  *
  * @returns A `<label>` wrapping the checkbox and its label content.
- * @example <CheckboxInput name="agree" value={agree} onValue={setAgree}>I agree</CheckboxInput>
+ * @kind component
  * @see https://shelving.cc/ui/CheckboxInput
  */
 export function CheckboxInput({

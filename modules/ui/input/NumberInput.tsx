@@ -24,7 +24,7 @@ export interface NumberInputProps extends ValueInputProps<number>, InputVariants
  * - Uses `type="text"` with `inputMode="decimal"` so a custom `formatter` can control display.
  *
  * @returns A numeric `<input>` element.
- * @example <NumberInput name="age" value={age} onValue={setAge} />
+ * @kind component
  * @see https://shelving.cc/ui/NumberInput
  */
 export function NumberInput({

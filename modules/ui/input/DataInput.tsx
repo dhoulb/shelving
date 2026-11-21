@@ -23,7 +23,6 @@ export interface DataInputProps<T extends Data> extends ValueInputProps<T> {
  *
  * @returns Element rendering one input per property, laid out in a row or column.
  * @kind component
- * @example <DataInput name="address" props={addressSchemas} value={address} onValue={setAddress} />
  * @see https://shelving.cc/ui/DataInput
  */
 export function DataInput<T extends Data>(props: DataInputProps<T>): ReactElement;

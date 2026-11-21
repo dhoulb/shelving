@@ -27,7 +27,7 @@ export interface TextareaInputProps extends ValueInputProps<string>, InputVarian
  * - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
  *
  * @returns A `<textarea>` element.
- * @example <TextareaInput name="bio" rows={4} value={bio} onValue={setBio} />
+ * @kind component
  * @see https://shelving.cc/ui/TextareaInput
  */
 export function TextareaInput({

@@ -29,7 +29,7 @@ export interface DateInputProps extends ValueInputProps<string, PossibleDate>, I
  * - The `input` prop selects the underlying `<input type="date|time|datetime-local">` and matching string format.
  *
  * @returns A native date/time `<input>` element.
- * @example <DateInput name="dob" input="date" value={dob} onValue={setDob} />
+ * @kind component
  * @see https://shelving.cc/ui/DateInput
  */
 export function DateInput({
