@@ -6,10 +6,11 @@ import { DataSchema } from "../../schema/DataSchema.js";
 import { DateSchema } from "../../schema/DateSchema.js";
 import { DictionarySchema } from "../../schema/DictionarySchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
-import type { Schema, Schemas } from "../../schema/Schema.js";
+import type { Schema } from "../../schema/Schema.js";
 import { StringSchema } from "../../schema/StringSchema.js";
 import { ThroughSchema } from "../../schema/ThroughSchema.js";
 import type { Data } from "../../util/data.js";
+import type { Identifier } from "../../util/item.js";
 import type { Collection, Collections } from "../collection/Collection.js";
 import type { SQLProvider } from "../provider/SQLProvider.js";
 import { DBMigrator } from "./DBMigrator.js";
@@ -34,25 +35,18 @@ export type SQLTable = {
 };
 
 /**
- * Generated SQL column mapped from a collection schema path, holding its column name, key, and JSON path.
- * @see https://shelving.cc/db/SQLColumn
- */
-export type SQLColumn = {
-	readonly column: string;
-	readonly key: string;
-	readonly path: string;
-};
-
-/**
  * Shared SQL migration logic that diffs collection schemas against live tables to produce migration statements.
  *
+ * - A table has an `id` column, then one column for each top-level prop, the same layout that `SQLProvider` reads and writes.
+ * - Scalar props get a typed column. Arrays, dictionaries and nested data get a JSON column.
+ * - Prop columns allow `NULL`, so a column added to an existing table needs no default.
  * - Subclasses implement backend-specific schema inspection and column definitions (e.g. SQLite, PostgreSQL).
  *
  * @see https://shelving.cc/db/SQLMigrator
  */
-export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends DBMigrator<T> {
+export abstract class SQLMigrator<T extends SQLProvider<never, never> = SQLProvider> extends DBMigrator<T> {
 	/** Run each statement from `getMigrations()` against the provider in order. */
-	async migrate(...collections: Collections<number>): Promise<void> {
+	async migrate(...collections: Collections): Promise<void> {
 		for (const migration of await this.getMigrations(...collections)) await this.provider.exec(_getTemplateStrings(migration));
 	}
 
@@ -64,7 +58,7 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	 * @example const sql = await migrator.getMigrations(users)
 	 * @see https://shelving.cc/db/SQLMigrator/getMigrations
 	 */
-	async getMigrations(...collections: Collections<number>): Promise<readonly string[]> {
+	async getMigrations(...collections: Collections): Promise<readonly string[]> {
 		const tables = await this.getTables();
 		const existing = new Set(tables);
 		const migrations: string[] = [];
@@ -77,14 +71,14 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	}
 
 	/**
-	 * Build the `CREATE TABLE` statement for a collection, including its ID, data, and generated columns.
+	 * Build the `CREATE TABLE` statement for a collection, with its `id` column and one column for each top-level prop.
 	 *
 	 * @param collection The collection to create a table for.
 	 * @returns The `CREATE TABLE` SQL statement.
 	 * @example migrator.getCreateTableQuery(users) // CREATE TABLE "users" (...)
 	 * @see https://shelving.cc/db/SQLMigrator/getCreateTableQuery
 	 */
-	getCreateTableQuery<T extends Data>(collection: Collection<string, number, T>): string {
+	getCreateTableQuery<T extends Data>(collection: Collection<string, Identifier, T>): string {
 		const suffix = this.getCreateTableSuffix(collection);
 		return `CREATE TABLE ${this.quoteIdentifier(collection.name)} (\n${this.getCreateTableColumns(collection)
 			.map(column => `  ${this.getTableColumnDefinition(column)}`)
@@ -92,27 +86,18 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 	}
 
 	/**
-	 * Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
+	 * Get the full set of columns for a collection's table: the `id` column, then one column for each top-level prop.
 	 *
 	 * @param collection The collection to get columns for.
 	 * @returns The ordered list of table columns.
 	 * @example migrator.getCreateTableColumns(users)
 	 * @see https://shelving.cc/db/SQLMigrator/getCreateTableColumns
 	 */
-	getCreateTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
-		return [this.getIDColumn(collection), this.getDataColumn(), ...this.getGeneratedTableColumns(collection)];
-	}
-
-	/**
-	 * Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.
-	 *
-	 * @param collection The collection to get generated columns for.
-	 * @returns The list of generated table columns.
-	 * @example migrator.getGeneratedTableColumns(users)
-	 * @see https://shelving.cc/db/SQLMigrator/getGeneratedTableColumns
-	 */
-	getGeneratedTableColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLTableColumn[] {
-		return this.getGeneratedColumns(collection).map(column => this.getGeneratedColumn(column, collection));
+	getCreateTableColumns<T extends Data>(collection: Collection<string, Identifier, T>): readonly SQLTableColumn[] {
+		return [
+			this.getIDColumn(collection),
+			...Object.entries<Schema<unknown>>(collection.props).map(([name, schema]) => this.getPropColumn(name, schema)),
+		];
 	}
 
 	protected getColumnMigrations(tableName: string, from: SQLTableColumn | undefined, to: SQLTableColumn | undefined): readonly string[] {
@@ -143,7 +128,10 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 		return `ALTER TABLE ${this.quoteIdentifier(tableName)} DROP COLUMN ${this.quoteIdentifier(columnName)};`;
 	}
 
-	protected getTableMigrations<T extends Data>(collection: Collection<string, number, T>, table: SQLTable | undefined): readonly string[] {
+	protected getTableMigrations<T extends Data>(
+		collection: Collection<string, Identifier, T>,
+		table: SQLTable | undefined,
+	): readonly string[] {
 		if (!table) return [this.getCreateTableQuery(collection)];
 		const desired = this.getCreateTableColumns(collection);
 		const wanted = new Map(desired.map(column => [column.name, column]));
@@ -155,22 +143,20 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 		return migrations;
 	}
 
-	protected getIDColumn<T extends Data>(collection: Collection<string, number, T>): SQLTableColumn {
+	protected getIDColumn<T extends Data>(collection: Collection<string, Identifier, T>): SQLTableColumn {
 		return { name: "id", statement: this.getIDColumnDefinition(collection) };
 	}
 
-	protected getDataColumn(): SQLTableColumn {
-		return { name: "data", statement: this.getDataColumnDefinition() };
+	protected getPropColumn(name: string, schema: Schema<unknown>): SQLTableColumn {
+		const statement = this.getPropColumnDefinition(name, schema);
+		if (!statement) throw new UnsupportedError(`Cannot make SQL column for "${name}"`, { received: schema });
+		return { name, statement };
 	}
 
-	protected getGeneratedColumn<T extends Data>(
-		{ column, key, path }: SQLColumn,
-		collection: Collection<string, number, T>,
-	): SQLTableColumn {
-		const schema = _getColumnSchema(collection, key);
-		const definition = this.definition(schema);
-		if (!definition) throw new UnsupportedError(`Cannot generate SQL column for "${key}"`, { received: schema });
-		return { name: column, statement: this.getGeneratedColumnDefinition(column, path, definition) };
+	/** Whether a schema is stored as JSON: arrays, dictionaries and nested data. */
+	protected isJSONSchema(schema: Schema<unknown>): boolean {
+		const unwrapped = _unwrapSchema(schema);
+		return unwrapped instanceof DataSchema || unwrapped instanceof ArraySchema || unwrapped instanceof DictionarySchema;
 	}
 
 	protected isSameColumn(from: SQLTableColumn, to: SQLTableColumn): boolean {
@@ -185,27 +171,12 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 		return `'${value.replaceAll(`'`, `''`)}'`;
 	}
 
-	protected getGeneratedColumns<T extends Data>(collection: Collection<string, number, T>): readonly SQLColumn[] {
-		return _getColumns(collection.props, this.getColumnName.bind(this), this.getJSONPath.bind(this));
-	}
-
-	protected getColumnName(key: string): string {
-		return key.replaceAll(".", "__");
-	}
-
-	protected getJSONPath(key: string): string {
-		return `$${key
-			.split(".")
-			.map(part => `.${JSON.stringify(part)}`)
-			.join("")}`;
-	}
-
 	protected abstract getTables(): Promise<readonly string[]>;
 	protected abstract getTable(name: string): Promise<SQLTable | undefined>;
-	protected abstract getCreateTableSuffix<T extends Data>(collection: Collection<string, number, T>): string;
-	protected abstract getDataColumnDefinition(): string;
-	protected abstract getGeneratedColumnDefinition(columnName: string, path: string, definition: string): string;
-	protected abstract getIDColumnDefinition<T extends Data>(collection: Collection<string, number, T>): string;
+	protected abstract getCreateTableSuffix<T extends Data>(collection: Collection<string, Identifier, T>): string;
+	/** Get the column definition for a prop, e.g. `TEXT`, or `undefined` if the backend can not store the schema. */
+	protected abstract getPropColumnDefinition(name: string, schema: Schema<unknown>): string | undefined;
+	protected abstract getIDColumnDefinition<T extends Data>(collection: Collection<string, Identifier, T>): string;
 
 	protected definition<TValue>(schema: Schema<TValue>): string | undefined {
 		const unwrapped = _unwrapSchema(schema);
@@ -223,54 +194,6 @@ export abstract class SQLMigrator<T extends SQLProvider = SQLProvider> extends D
 			default:
 				return undefined;
 		}
-	}
-}
-
-function _getColumnSchema<T extends Data>(collection: Collection<string, number, T>, key: string): Schema<unknown> {
-	let schema: Schema<unknown> = collection;
-	for (const part of key.split(".")) {
-		const current = _unwrapSchema(schema);
-		if (!(current instanceof DataSchema)) throw new UnsupportedError(`Cannot resolve schema path "${key}"`);
-		const next = current.props[part];
-		if (!next) throw new UnsupportedError(`Cannot resolve schema path "${key}"`);
-		schema = next;
-	}
-	return schema;
-}
-
-function _getColumns<T extends Data>(
-	props: Schemas<T>,
-	getColumnName: (key: string) => string,
-	getJSONPath: (key: string) => string,
-	prefix = "",
-): readonly SQLColumn[] {
-	const columns: SQLColumn[] = [];
-	for (const [key, schema] of Object.entries(props)) {
-		const nextKey = prefix ? `${prefix}.${key}` : key;
-		const unwrapped = _unwrapSchema(schema);
-		if (unwrapped instanceof DataSchema) columns.push(..._getColumns(unwrapped.props, getColumnName, getJSONPath, nextKey));
-		else if (_isColumnSchema(unwrapped)) columns.push({ column: getColumnName(nextKey), key: nextKey, path: getJSONPath(nextKey) });
-	}
-	return columns;
-}
-
-function _isColumnSchema<T>(schema: Schema<T>): boolean {
-	const unwrapped = _unwrapSchema(schema);
-	if (unwrapped instanceof DataSchema || unwrapped instanceof ArraySchema || unwrapped instanceof DictionarySchema) return false;
-	if (
-		unwrapped instanceof BooleanSchema ||
-		unwrapped instanceof ChoiceSchema ||
-		unwrapped instanceof DateSchema ||
-		unwrapped instanceof NumberSchema
-	)
-		return true;
-	switch (typeof unwrapped.value) {
-		case "boolean":
-		case "number":
-		case "string":
-			return true;
-		default:
-			return false;
 	}
 }
 

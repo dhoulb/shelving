@@ -2,6 +2,7 @@ import { UnsupportedError } from "../../error/UnsupportedError.js";
 import { ChoiceSchema } from "../../schema/ChoiceSchema.js";
 import { DateSchema } from "../../schema/DateSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
+import type { Schema } from "../../schema/Schema.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier } from "../../util/item.js";
 import type { Collection } from "../collection/Collection.js";
@@ -11,9 +12,11 @@ import { SQLMigrator, type SQLTable, type SQLTableColumn } from "./SQLMigrator.j
 /**
  * SQLite (and Cloudflare D1) migrator that uses `sqlite_master` as the schema source of truth.
  *
+ * - Tables use `STRICT` mode. Booleans are `INTEGER`, and JSON props are `TEXT` with a `json_valid()` check.
+ *
  * @see https://shelving.cc/db/SQLiteMigrator
  */
-export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
+export class SQLiteMigrator<T extends SQLProvider<never, never> = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {
 		const rows = await this.provider.exec<{ name: string }>`
 			SELECT ${this.provider.sqlIdentifier("name")} AS ${this.provider.sqlIdentifier("name")}
@@ -42,13 +45,9 @@ export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigr
 		return " STRICT";
 	}
 
-	protected override getDataColumnDefinition(): string {
-		const data = this.quoteIdentifier("data");
-		return `TEXT NOT NULL CHECK (json_valid(${data}))`;
-	}
-
-	protected override getGeneratedColumnDefinition(_columnName: string, path: string, definition: string): string {
-		return `${definition} GENERATED ALWAYS AS (json_extract(${this.quoteIdentifier("data")}, ${this.quoteString(path)})) STORED`;
+	protected override getPropColumnDefinition(name: string, schema: Schema<unknown>): string | undefined {
+		if (this.isJSONSchema(schema)) return `TEXT CHECK (json_valid(${this.quoteIdentifier(name)}))`;
+		return this.definition(schema);
 	}
 
 	protected override getIDColumnDefinition<TData extends Data>(collection: Collection<string, Identifier, TData>): string {
@@ -68,7 +67,7 @@ export class SQLiteMigrator<T extends SQLProvider = SQLProvider> extends SQLMigr
 	}
 
 	protected override getAlterColumnQueries(tableName: string, from: SQLTableColumn, to: SQLTableColumn): readonly string[] {
-		if (from.name === "id" || from.name === "data") {
+		if (from.name === "id") {
 			throw new UnsupportedError(`Cannot alter SQLite column "${from.name}" in existing table "${tableName}"`);
 		}
 		return super.getAlterColumnQueries(tableName, from, to);

@@ -1,14 +1,9 @@
 import { expect, test } from "bun:test";
 import { PostgresMigrator, SQLProvider } from "shelving/db";
-import { DATA, INTEGER, type Schema, STRING } from "shelving/schema";
+import { ARRAY, BOOLEAN, DATA, DATE, INTEGER, NUMBER, type Schema, STRING } from "shelving/schema";
 
 class TestSQLProvider extends SQLProvider {
-	override async exec<T extends Record<string, unknown> = Record<string, unknown>>(
-		strings: TemplateStringsArray,
-		...values: readonly unknown[]
-	): Promise<readonly T[]> {
-		void strings;
-		void values;
+	override async exec<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<readonly T[]> {
 		return [];
 	}
 }
@@ -17,27 +12,15 @@ class TestPostgresMigrator extends PostgresMigrator<TestSQLProvider> {
 	exposeDefinition(schema: Schema<unknown>): string | undefined {
 		return this.definition(schema);
 	}
-
-	exposeGeneratedColumnDefinition(columnName: string, path: string, definition: string): string {
-		return this.getGeneratedColumnDefinition(columnName, path, definition);
-	}
 }
 
-test("PostgresMigrator: maps schemas to postgres types", () => {
-	const provider = new TestSQLProvider();
-	const migrator = new TestPostgresMigrator(provider);
+test("PostgresMigrator: maps schemas to types that Bun reads back as the same values", () => {
+	const migrator = new TestPostgresMigrator(new TestSQLProvider());
 	expect(migrator.exposeDefinition(STRING)).toBe("text");
-	expect(migrator.exposeDefinition(INTEGER)).toBe("bigint");
+	expect(migrator.exposeDefinition(DATE)).toBe("text");
+	expect(migrator.exposeDefinition(NUMBER)).toBe("double precision");
+	expect(migrator.exposeDefinition(INTEGER)).toBe("double precision"); // Outside the `integer` range.
+	expect(migrator.exposeDefinition(BOOLEAN)).toBe("boolean");
+	expect(migrator.exposeDefinition(ARRAY(STRING))).toBe("jsonb");
 	expect(migrator.exposeDefinition(DATA({ name: STRING }))).toBe("jsonb");
-});
-
-test("PostgresMigrator: builds generated column expressions from json data", () => {
-	const provider = new TestSQLProvider();
-	const migrator = new TestPostgresMigrator(provider);
-	expect(migrator.exposeGeneratedColumnDefinition("sub__rank", '$."sub"."rank"', "bigint")).toBe(
-		`bigint GENERATED ALWAYS AS (("data" #>> '{sub,rank}')::bigint) STORED`,
-	);
-	expect(migrator.exposeGeneratedColumnDefinition("sub__label", '$."sub"."label"', "text")).toBe(
-		`text GENERATED ALWAYS AS ("data" #>> '{sub,label}') STORED`,
-	);
 });

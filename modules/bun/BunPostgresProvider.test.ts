@@ -1,9 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 import { BunPostgresProvider } from "shelving/bun";
+import { PostgresMigrator } from "shelving/db";
 import { UnsupportedError } from "shelving/error";
 import type { Data } from "shelving/util/data";
-import { BASICS_COLLECTION, basic1, basic2, basic999, testDBDifferential, testDBProvider } from "../test/index.js";
+import { BASICS_COLLECTION, basic1, basic2, basic999, testDBDifferential, testDBProvider, testSQLMigrator } from "../test/index.js";
 
 type _MockQuery = { readonly text: string; readonly values: readonly unknown[]; readonly tx: boolean };
 type _MockIdentifier = { readonly identifier: string };
@@ -183,6 +184,7 @@ if (POSTGRES_URL) {
 
 	testDBProvider("BunPostgresProvider", createProvider, { realtime: false, transactions: true });
 	testDBDifferential("BunPostgresProvider", createProvider, { unorderedArrays: true });
+	testSQLMigrator("PostgresMigrator on BunPostgresProvider", () => new PostgresMigrator(provider));
 
 	test("BunPostgresProvider: concurrent transactions retry and preserve every increment", async () => {
 		await createProvider();

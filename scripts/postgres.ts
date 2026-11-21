@@ -1,10 +1,14 @@
 import { SQL } from "bun";
+import { BunPostgresProvider } from "../modules/bun/BunPostgresProvider.js";
+import { PostgresMigrator } from "../modules/db/migrate/PostgresMigrator.js";
+import { BASICS_COLLECTION } from "../modules/test/basics.js";
+import { PEOPLE_COLLECTION } from "../modules/test/people.js";
 import { getDelay } from "../modules/util/async.js";
 import { BLACKHOLE } from "../modules/util/function.js";
 
 // Runs the PostgreSQL provider test suite against a real server:
 // 1. Waits for the PostgreSQL server at `POSTGRES_URL` (an admin/server connection, not the test database).
-// 2. Drops and recreates a fresh test database, and creates the fixture tables the contract suite expects.
+// 2. Drops and recreates a fresh test database, and makes the fixture tables with `PostgresMigrator`.
 // 3. Runs `bun test ./modules/bun` with `POSTGRES_URL` pointing at the test database.
 // 4. Drops the test database and exits with the test run's exit code.
 
@@ -43,27 +47,13 @@ console.debug(`Creating database "${DATABASE}"`);
 await admin`DROP DATABASE IF EXISTS ${admin(DATABASE)} WITH (FORCE)`;
 await admin`CREATE DATABASE ${admin(DATABASE)}`;
 
-// The fixture collections use string ids, so the tables carry a generated id default for `addItem()`.
+// Make the fixture tables with `PostgresMigrator`, so the provider tests also prove the migrator's table layout.
 const url = new URL(ADMIN_URL);
 url.pathname = `/${DATABASE}`;
 const databaseUrl = url.toString();
 const db = new SQL(databaseUrl);
 console.debug(`Creating fixture tables`);
-await db`CREATE TABLE "basics" (
-	"id" text PRIMARY KEY DEFAULT gen_random_uuid()::text,
-	"str" text,
-	"num" double precision,
-	"group" text,
-	"tags" jsonb,
-	"odd" boolean,
-	"even" boolean,
-	"sub" jsonb
-)`;
-await db`CREATE TABLE "people" (
-	"id" text PRIMARY KEY DEFAULT gen_random_uuid()::text,
-	"name" jsonb,
-	"birthday" text
-)`;
+await new PostgresMigrator(new BunPostgresProvider(db)).migrate(BASICS_COLLECTION, PEOPLE_COLLECTION);
 await db.close();
 
 // Run the provider tests against the test database.
