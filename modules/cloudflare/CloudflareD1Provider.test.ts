@@ -42,7 +42,7 @@ function _getMockD1(): { readonly calls: D1Call[]; readonly db: D1Database } {
 // Run the DBProvider contract suite, the differential test and the SQLMigrator contract suite against a real D1 database.
 // The SQLiteMigrator makes the fixture tables, so the provider tests also prove the migrator's table layout.
 // Miniflare runs `workerd`, the runtime Cloudflare runs in production, with its D1 engine on a local SQLite file.
-// Run via: bun run cloudflare — it sets MINIFLARE, because the differential takes about 10 seconds.
+// Run via: bun run cloudflare — it sets MINIFLARE, because these tests take a few seconds.
 if (process.env.MINIFLARE) {
 	const { Miniflare } = await import("miniflare");
 	const miniflare = new Miniflare({ modules: true, script: "export default { fetch: () => new Response(null) }", d1Databases: ["DB"] });
@@ -53,6 +53,6 @@ if (process.env.MINIFLARE) {
 	await migrator.migrate(BASICS_COLLECTION, PEOPLE_COLLECTION);
 
 	testDBProvider("CloudflareD1Provider", () => provider, { realtime: false });
-	testDBDifferential("CloudflareD1Provider", () => provider);
+	testDBDifferential("CloudflareD1Provider", () => provider, { runs: 10 }); // Each D1 query in Miniflare takes about 4.5ms, so run fewer sequences than the default 25.
 	testSQLMigrator("SQLiteMigrator on CloudflareD1Provider", () => migrator);
 }
