@@ -52,6 +52,7 @@ const table = provider.getTable(users);
 - [MemoryTable.setItemSequence()](MemoryTable/setItemSequence.md): Mirror an async sequence of item values into this table, passing each value through.
 - [MemoryTable.updateItem()](MemoryTable/updateItem.md): Apply partial updates to an existing item by its id.
 - [MemoryTable.deleteItem()](MemoryTable/deleteItem.md): Delete an item by its id.
+- [MemoryTable.invalidateItem()](MemoryTable/invalidateItem.md): Invalidate an item, so the table no longer knows anything about it.
 - [MemoryTable.countQuery()](MemoryTable/countQuery.md): Count the items in this table matching an optional query.
 - [MemoryTable.getQuery()](MemoryTable/getQuery.md): Get the items in this table matching an optional query.
 - [MemoryTable.getQuerySequence()](MemoryTable/getQuerySequence.md): Subscribe to the live result of a query.

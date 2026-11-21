@@ -2953,7 +2953,7 @@ API provider that validates every result, then writes the collection items in it
 - Only results that use a collection's own schemas hydrate: `Collection.item`, `Collection.items` and `Collection.queryItems`, or a `DataSchema` whose props use them (one level deep). Every other result passes through with no change.
 - `Collection.item` sets the item. A `null` or `undefined` result (e.g. `NULLABLE(USERS.item)`) deletes the item with the `id` from the payload (the payload itself, or its `id` prop).
 - `Collection.items` sets each item. It never deletes items.
-- `Collection.queryItems` sets each item, then marks the query as loaded (see `MemoryTable.setQueryTime()`).
+- `Collection.queryItems` sets each item, then marks the query as loaded (see `MemoryTable.setQueryTime()`). For a query with no `$limit`, it also invalidates each item in memory that matches the query but is not in the result (see `MemoryTable.invalidateItem()`).
 - Writes happen synchronously before `call()` resolves, so no store sees half of a result.
 - Extends `ValidationAPIProvider`, so it only ever writes validated items.
 
@@ -2966,6 +2966,7 @@ A wrapping provider that validates every result, then writes the collection item
 - A `null` or `undefined` result for `NULLABLE(USERS.item)` deletes the item with the `id` from the payload. The table then knows the item is missing, so an `ItemStore` shows it as missing and not as loading.
 - `Collection.items` only adds and replaces items. It never deletes them, so an item the server dropped stays until something deletes it.
 - `Collection.queryItems` also marks its query as loaded (see `MemoryTable.setQueryTime()`), so a `QueryStore` for exactly that query shows its items, or shows that it has none, without loading. The query matches by `JSON.stringify()`, so build it in one shared function for the server and the client.
+- For a query with no `$limit`, the result is the whole answer, so `Collection.queryItems` also invalidates each item in memory that matches the query but is not in the result (see `MemoryTable.invalidateItem()`). The item may still exist (it can have changed so it no longer matches), so it is not deleted. An `ItemStore` that reads it goes back to loading, so the app loads it again. A query with a `$limit` invalidates nothing, because an item can be missing only because it moved out of the window.
 - **Do not trust the `query` in a `Collection.queryItems` result.** It is only checked to be an object.
 - Writes happen synchronously before `call()` resolves, so no store sees half of a result.
 - It extends `ValidationAPIProvider`, so it only writes validated items.
@@ -5940,7 +5941,7 @@ for await (const next of provider.getItemSequence(POSTS, id)) {
 
 Each `MemoryTable` records when an item was last set or deleted (`MemoryTable.getItemTime()`), and when a query was marked as loaded (`MemoryTable.getQueryTime()`, set with `MemoryTable.setQueryTime()`). Stores use the times to tell "not loaded yet" from "empty":
 
-- An item with no item and no time is loading. Deleting an item that does not exist still sets its time, so the table knows it is missing.
+- An item with no item and no time is loading. Deleting an item that does not exist still sets its time, so the table knows it is missing. `MemoryTable.invalidateItem()` removes the item and its time, so the item is loading again.
 - A query with no items and no time is loading. A query matches by `JSON.stringify(query)`, including `$order` and `$limit`.
 
 ```ts
@@ -6112,6 +6113,7 @@ const table = provider.getTable(users);
 - [MemoryTable.setItemSequence()](db/MemoryTable/setItemSequence.md): Mirror an async sequence of item values into this table, passing each value through.
 - [MemoryTable.updateItem()](db/MemoryTable/updateItem.md): Apply partial updates to an existing item by its id.
 - [MemoryTable.deleteItem()](db/MemoryTable/deleteItem.md): Delete an item by its id.
+- [MemoryTable.invalidateItem()](db/MemoryTable/invalidateItem.md): Invalidate an item, so the table no longer knows anything about it.
 - [MemoryTable.countQuery()](db/MemoryTable/countQuery.md): Count the items in this table matching an optional query.
 - [MemoryTable.getQuery()](db/MemoryTable/getQuery.md): Get the items in this table matching an optional query.
 - [MemoryTable.getQuerySequence()](db/MemoryTable/getQuerySequence.md): Subscribe to the live result of a query.
@@ -6276,6 +6278,25 @@ Delete an item by its id.
 
 ```ts
 deleteItem(id: I): void
+```
+
+
+---
+
+# MemoryTable.invalidateItem()
+
+- Kind: method
+- Member of: `MemoryTable`
+
+Invalidate an item, so the table no longer knows anything about it.
+- Removes the item and its time (see `getItemTime()`), so the item counts as not loaded, not as missing.
+- Use it when the item may be out of date, but you do not know it was deleted, e.g. a fresh query result no longer contains it. Stores that read the item go back to loading, so the app loads it again.
+- Only resolves `next` when the table had the item or a time for it.
+
+## Signatures
+
+```ts
+invalidateItem(id: I): void
 ```
 
 
