@@ -1,2 +1,0 @@
-import{Sr,tt,rt}from"./chunk-v9607cj0.js";import{s}from"./chunk-1ay76619.js";import{qt,dt}from"./chunk-vjgp0p2e.js";class dr extends dt{payload;constructor(o,e,r,i=0){let t=new qt(o),y=r&&(async(a)=>{if(i>0)await rt(Sr(i),tt(a));let n=t.loading?await rt(t.next,tt(a)):t.value;return r(n,a)});super(e,y);this.payload=t,p(this)}async[Symbol.asyncDispose](){await s(this.payload,super[Symbol.asyncDispose]())}}async function p(o){for await(let e of o.payload.next)o.invalidate(),o.refresh()}
-export{dr};

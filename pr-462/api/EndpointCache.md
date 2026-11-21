@@ -4,7 +4,8 @@
 - Import: `import { EndpointCache } from "shelving/api";`
 - Implements: `AsyncDisposable`
 
-Cache of `EndpointStore` objects for a single endpoint, keyed by the rendered request URL of each payload.
+Cache of `EndpointStore` objects for a single endpoint, keyed by `serialise(payload)`.
+- Use it for endpoints that read data (`GET` and `HEAD`). `CachedAPIProvider` sends other methods straight to its source.
 - Use `get(payload)` to retrieve or create the `EndpointStore` for a given payload.
 - Disposing the cache disposes every nested `EndpointStore` and clears the map.
 
