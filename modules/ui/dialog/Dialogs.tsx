@@ -11,10 +11,14 @@ import { Dialog } from "./Dialog.js";
  *
  * - `show()` opens a new dialog. A dialog is removed from the list as soon as it closes.
  * - `<Dialogs>` renders the list inside a transition, so dialogs animate in and out with view transitions.
+ * - A dialog closed by a link tap goes at once, with no transition (`getTransition()`), so the page change gets the view transition.
  *
  * @see https://shelving.cc/ui/DialogsStore
  */
 export class DialogsStore extends ArrayStore<ReactElement> {
+	/** The list after a dialog closed at once (`instant`), so it renders with no transition. */
+	private _instant: readonly ReactElement[] | undefined = undefined;
+
 	/**
 	 * Open a new dialog wrapping the given content.
 	 *
@@ -26,13 +30,26 @@ export class DialogsStore extends ArrayStore<ReactElement> {
 			<Dialog
 				// Add a `key=""` so dialogs can be rendered directly and added/removed in any order.
 				key={getRandomKey()}
-				// When the `<dialog>` closes, remove it from the list. The view transition animates it out.
-				onClose={() => this.delete(dialog)}
+				// When the `<dialog>` closes, remove it from the list. The view transition animates it out, unless it closes at once.
+				onClose={instant => {
+					this.delete(dialog);
+					if (instant) this._instant = this.value;
+				}}
 			>
 				{children}
 			</Dialog>
 		);
 		this.add(dialog);
+	}
+
+	/**
+	 * Get the transition type to render a list of dialogs with: `"dialog"`, or none for the list after a dialog closed at once.
+	 *
+	 * @param dialogs The list to render.
+	 * @see https://shelving.cc/ui/DialogsStore/getTransition
+	 */
+	getTransition(dialogs: readonly ReactElement[]): string | undefined {
+		return dialogs === this._instant ? undefined : "dialog";
 	}
 
 	/**
@@ -99,5 +116,5 @@ export function DialogsContext({ children }: DialogsContextProps): ReactElement 
  */
 export function Dialogs(): ReactNode {
 	const dialogs = requireDialogs();
-	return useSequenceTransition(dialogs, { current: () => dialogs.value, transition: "dialog" });
+	return useSequenceTransition(dialogs, { current: () => dialogs.value, transition: value => dialogs.getTransition(value) });
 }
