@@ -4,9 +4,9 @@
 	:root {
 		/* Strokes — border thicknesses. Components hard-code to these and expose per-component
 		 * `--x-border` / `--x-stroke` hooks to override. */
-		--stroke: 2px;
+		--stroke: 1px;
 		--stroke-normal: calc(var(--stroke) * 1);
-		--stroke-thick: calc(var(--stroke) * 1.5);
+		--stroke-thick: calc(var(--stroke) * 2);
 
 		/* Semantic strokes */
 		--stroke-focus: var(--stroke-thick);
