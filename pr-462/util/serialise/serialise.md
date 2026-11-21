@@ -3,21 +3,23 @@
 - Kind: function
 - Import: `import { serialise } from "shelving/util/serialise";`
 
-Serialise any value to a stable, consistent string (a `JSON.stringify()` that never loses information).
-- Not optimised for performance. Optimised for consistency!
-- Allows returned values to be used for fingerprinting values of any type.
-- Non-JSON-friendly values (like `null`, explicit `undefined`, symbols, functions) are converted to `{ $type: "symbol" }` style constructions.
-- Objects with custom `toString()` properties assume that string is useful and return a value like `{ $type: "Date", value: "Wed Feb 24 2021 20:59:57 GMT+0000 (Greenwich Mean Time)" }`
-- Object properties are sorted (by key) before output so they're always consistent.
+Serialise any value to a stable string, for use as a cache key or fingerprint.
+- Uses `JSON.stringify()`, so strings and keys are escaped correctly and it is fast.
+- Sorts object properties by key at every depth, so the same properties in a different order give the same string.
+- Encodes values that JSON cannot hold (`undefined`, symbols, functions, `NaN`, `Infinity`, bigints) as `{ "$type": "…" }` objects, so they do not vanish or turn into `null`.
+- Encodes an object with its own `toString()` (like `Date`) as `{ "$type": "Date", "value": "…" }`.
+- Treat the output as an opaque string. Only compare it for equality. Do not parse it or read data from it, because its format can change.
 
 A single `serialise()` function that converts any JavaScript value to a stable, deterministic string. Designed for fingerprinting and cache-key generation, not for data transport.
 
 **Things to know:**
 
-- Object properties are always sorted by key before output, so two objects with the same properties in different insertion order produce identical strings.
-- Values that JSON cannot represent (`undefined`, symbols, functions) are encoded as `{"$type":"..."}` objects rather than being dropped or converted to `null`.
-- Objects with a custom `toString()` are encoded as `{"$type":"ClassName","value":"..."}` — useful for `Date`, `Map`, and similar.
-- This is not `JSON.stringify()`. Do not use it for data serialisation or network payloads.
+- Object properties are sorted by key at every depth, so two objects with the same properties in a different order give the same string.
+- Values that JSON cannot hold (`undefined`, symbols, functions, `NaN`, `Infinity`, bigints) are encoded as `{"$type":"..."}` objects, not dropped or turned into `null`.
+- Objects with their own `toString()` (like `Date`) are encoded as `{"$type":"ClassName","value":"..."}`.
+- It is built on `JSON.stringify()`, so strings are escaped correctly and it is fast.
+- Treat the output as an opaque string. Compare it for equality, but do not parse it or read data from it. Its format can change. Do not use it for data transport or network payloads.
+- `getQueryKey()` uses it to make query cache keys.
 
 ## Usage
 
@@ -72,10 +74,4 @@ serialise(value: unknown): string
 
 | Type | Description |
 | --- | --- |
-| `string` | A consistent string representation of `value`, suitable for fingerprinting or equality comparison. |
-
-## Throws
-
-| Type | Description |
-| --- | --- |
-| `ValueError` | If `value` cannot be serialised. |
+| `string` | An opaque string that is the same for equal values. |

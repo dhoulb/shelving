@@ -1,1 +1,1 @@
-import{es}from"../chunk-ntmntnf4.js";export{es as ShrinkIcon};
+import{ts}from"../chunk-gaackrdp.js";export{ts as ShrinkIcon};

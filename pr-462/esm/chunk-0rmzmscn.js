@@ -1,0 +1,2 @@
+import{vt}from"./chunk-q44d9q6v.js";import{Qr,J}from"./chunk-as3zhrn2.js";import{Jo}from"./chunk-bn4x1tss.js";import{r}from"./chunk-90kryzxh.js";function Ve(t,e,i=e){if(!t)return;if(vt(t))return t;if(typeof t!=="string")return;if(Jo(t)&&!t.startsWith("//"))return J(`.${t}`,i);return Qr(t,e??i)}function kr(t,e,i,m=kr){let n=Ve(t,e,i);if(!n)throw new r("Invalid link",{received:t,caller:m});return n}
+export{Ve,kr};
