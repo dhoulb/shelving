@@ -27,7 +27,7 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 - Selected wins over `plain` and `outline`: a selected `plain` or `outline` button keeps the default fill (also on hover and focus). So a `plain` button with `selected` works as a toggle that shows when it is on.
 - `small` tightens the padding.
 - A button with an icon has less side padding: halfway between `--button-padding` and `--button-indent`. An icon has empty space inside its own box, so a full indent makes the button look too wide. CSS cannot see if the icon is before or after the text, so both sides change.
-- `square` makes the button as wide as it is tall, with no left and right padding, so an icon or one character sits in the centre. It works with `small`.
+- `square` makes the button as wide as it is tall, with no left and right padding, so an icon or one character sits in the centre. It does not shrink in a `<Row>`. It works with `small`.
 - `round` is like `square`, but with fully round corners, so the button is a circle.
 - It takes the block variants, like any block: `space` sets its outer margin (`space="none"` removes it), `padding` and `indent` set its inner padding, and `width` sizes it. A `padding` variant sets the padding but not the minimum height, which `--button-padding` sets.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
