@@ -1,9 +1,16 @@
 @import url("../style/layers.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--emphasis-style: italic;
+	}
+}
+
 @layer components {
 	.emphasis,
 	.prose :is(em, i) {
 		/* Style */
-		font-style: var(--emphasis-style, italic);
+		font-style: var(--emphasis-style);
 	}
 }

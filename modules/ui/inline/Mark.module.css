@@ -4,20 +4,37 @@
 @import url("../style/Typography.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--mark-indent: var(--space-xxsmall);
+		--mark-radius: var(--radius-xxsmall);
+		--mark-tint: var(--color-yellow);
+		--mark-background: color-mix(in oklch, var(--mark-tint), transparent);
+		--mark-weight: var(--weight-strong);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--mark-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	.mark,
 	.prose mark {
 		/* Box */
 		display: inline-block;
-		padding-inline: var(--mark-indent, var(--space-xxsmall));
-		border-radius: var(--mark-radius, var(--radius-xxsmall));
+		padding-inline: var(--mark-indent);
+		border-radius: var(--mark-radius);
 		vertical-align: baseline;
 
 		/* Style */
-		background-color: var(--mark-background, color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent));
-		color: var(--mark-color, var(--tint-00));
+		background-color: var(--mark-background);
+		color: var(--mark-color);
 
 		/* Text */
-		font-weight: var(--mark-weight, var(--weight-strong));
+		font-weight: var(--mark-weight);
 	}
 }

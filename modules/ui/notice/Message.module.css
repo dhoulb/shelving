@@ -3,16 +3,31 @@
 @import url("../style/Typography.module.css");
 @import url("../style/Space.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--message-space: var(--space-paragraph);
+		--message-align: center;
+		--message-weight: var(--weight-strong);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--message-color: var(--tint-50);
+	}
+}
+
 @layer components {
 	.message {
 		/* Box */
-		margin-block: var(--message-space, var(--space-paragraph));
+		margin-block: var(--message-space);
 
 		/* Text */
-		text-align: var(--message-align, center);
-		font-weight: var(--message-weight, var(--weight-strong));
+		text-align: var(--message-align);
+		font-weight: var(--message-weight);
 
 		/* Style */
-		color: var(--message-color, var(--tint-50));
+		color: var(--message-color);
 	}
 }

@@ -3,6 +3,22 @@
 @import url("../style/Duration.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--progress-height: 0.375rem;
+		--progress-radius: 999px;
+		--progress-duration: 1.5s;
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--progress-background: var(--tint-90);
+		--progress-color: var(--tint-50);
+	}
+}
+
 @layer components {
 	/* Continuous progress bar — a native `<progress>` styled as a single track that fills horizontally. */
 	.progress,
@@ -13,30 +29,30 @@
 		margin: 0;
 		border: none;
 		inline-size: 100%;
-		block-size: var(--progress-height, 0.375rem);
-		border-radius: var(--progress-radius, 999px);
+		block-size: var(--progress-height);
+		border-radius: var(--progress-radius);
 		overflow: hidden;
 
 		/* Track colour — Firefox uses the element itself as the track; WebKit/Blink repaints it on the pseudo-element below. */
-		background: var(--progress-background, var(--tint-90));
+		background: var(--progress-background);
 	}
 
 	/* Track (WebKit/Blink) — Firefox has no track pseudo-element. */
 	.progress::-webkit-progress-bar,
 	.prose progress::-webkit-progress-bar {
-		background: var(--progress-background, var(--tint-90));
+		background: var(--progress-background);
 	}
 
 	/* Fill — WebKit/Blink and Firefox expose the fill under different pseudo-elements, so both repeat the same paint. Painted from the tint ladder, so `color=` / `status=` recolour it. */
 	.progress::-webkit-progress-value,
 	.prose progress::-webkit-progress-value {
-		background: var(--progress-color, var(--tint-50));
+		background: var(--progress-color);
 		transition: inline-size var(--duration-fast);
 	}
 
 	.progress::-moz-progress-bar,
 	.prose progress::-moz-progress-bar {
-		background: var(--progress-color, var(--tint-50));
+		background: var(--progress-color);
 	}
 
 	/* Conveyor the block fully off the left edge, across, and fully off the right — then it loops back round unseen. `-70%`/`170%` fully clear a `40%`-wide block, and `linear` timing keeps a constant speed with no ease-out stall at the ends. */
@@ -54,14 +70,14 @@
 	.progress:indeterminate,
 	.prose progress:indeterminate {
 		/* Track underneath, plus a solid block of fill colour that slides across the element itself — hard edges, no blended fade. */
-		background-color: var(--progress-background, var(--tint-90));
-		background-image: linear-gradient(90deg, var(--progress-color, var(--tint-50)), var(--progress-color, var(--tint-50)));
+		background-color: var(--progress-background);
+		background-image: linear-gradient(90deg, var(--progress-color), var(--progress-color));
 		background-repeat: no-repeat;
 		background-size: 40% 100%;
 
 		/* Longhands, not the `animation` shorthand: Bun rewrites `animation-name` to the hashed keyframes name but leaves a shorthand that holds a `var()` untouched. See dhoulb/shelving#259. */
 		animation-name: progress-flow;
-		animation-duration: var(--progress-duration, 1.5s);
+		animation-duration: var(--progress-duration);
 		animation-timing-function: linear;
 		animation-iteration-count: infinite;
 	}

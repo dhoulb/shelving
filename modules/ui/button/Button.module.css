@@ -7,6 +7,60 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every `--button-*` hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--button-radius: var(--radius-xsmall);
+		--button-stroke: var(--stroke-normal);
+		--button-border: transparent;
+		--button-padding: var(--space-small);
+		--button-indent: var(--space-small);
+		--button-space: var(--space-small);
+		--button-gap: var(--space-small);
+		--button-icon-size: var(--size-icon);
+		--button-shadow: none;
+		--button-transition: all var(--duration-fast);
+		--button-focus-border: var(--color-focus);
+		--button-font: var(--font-body);
+		--button-weight: var(--weight-normal);
+		--button-size: var(--size-normal);
+		--button-leading: var(--leading-auto);
+		--button-disabled-opacity: 0.5;
+		--button-hover-border: transparent;
+		--button-hover-transform: none;
+		--button-active-border: var(--button-hover-border);
+		--button-active-transform: var(--button-hover-transform);
+		--button-active-shadow: var(--button-shadow);
+		--button-small-gap: var(--space-xxsmall);
+		--button-small-padding: var(--space-xxsmall);
+		--button-small-indent: var(--space-xxsmall);
+		--button-plain-hover-border: var(--button-hover-border);
+		--button-plain-active-border: var(--button-plain-hover-border);
+		--button-plain-border: transparent;
+		--button-unselected-background: transparent;
+	}
+
+	/* Hooks that read the tint ladder. A `var()` in a custom property resolves where it is declared, so these resolve again in every tint scope. Override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--button-background: var(--tint-90);
+		--button-text: var(--tint-50);
+		--button-hover-background: var(--tint-85);
+		--button-active-background: var(--button-hover-background);
+		--button-solid-border: var(--tint-45);
+		--button-solid-background: var(--tint-50);
+		--button-solid-text: var(--tint-100);
+		--button-solid-hover-background: var(--tint-55);
+		--button-solid-active-background: var(--button-solid-hover-background);
+		--button-plain-text: var(--tint-50);
+		--button-plain-hover-background: var(--button-hover-background);
+		--button-plain-active-background: var(--button-plain-hover-background);
+		--button-outline-border: var(--tint-80);
+		--button-selected-background: var(--button-background);
+		--button-selected-text: var(--button-text);
+	}
+}
+
 @layer components {
 	.button {
 		/* Box */
@@ -15,89 +69,73 @@
 		inline-size: fit-content;
 		min-inline-size: fit-content;
 		max-inline-size: 100%;
-		border-radius: var(--button-radius, var(--radius-xsmall));
-		border: var(--button-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
-		padding-block: var(--button-padding, var(--space-small));
-		padding-inline: var(--button-indent, var(--space-small));
-		min-block-size: var(
-			--button-height,
-			calc(
-				var(--button-icon-size, var(--size-icon)) +
-				2 *
-				var(--button-padding, var(--space-small)) +
-				2 *
-				var(--button-stroke, var(--stroke-normal))
-			)
-		);
+		border-radius: var(--button-radius);
+		border: var(--button-stroke) solid var(--button-border);
+		padding-block: var(--button-padding);
+		padding-inline: var(--button-indent);
+
+		/* Calculated here, not at root, so a scoped `--button-padding` still moves it. */
+		min-block-size: calc(var(--button-icon-size) + 2 * var(--button-padding) + 2 * var(--button-stroke));
 		margin-inline: 0;
-		margin-block: var(--button-space, var(--space-small));
+		margin-block: var(--button-space);
 
 		/* Content */
 		overflow: hidden;
 		overflow-wrap: break-word;
-		gap: var(--button-gap, var(--space-small));
+		gap: var(--button-gap);
 		justify-content: center;
 		align-items: center;
 
 		/* Style. */
-		background: var(--button-background, var(--tint-90));
-		color: var(--button-text, var(--tint-50));
-		box-shadow: var(--button-shadow, none);
-		transition: var(--button-transition, all var(--duration-fast));
+		background: var(--button-background);
+		color: var(--button-text);
+		box-shadow: var(--button-shadow);
+		transition: var(--button-transition);
 		cursor: pointer;
-		outline: var(--button-focus-border, var(--stroke-focus) solid var(--color-focus));
-		outline-offset: calc(0px - var(--button-stroke, var(--stroke-normal)));
+		outline: var(--stroke-focus) solid var(--button-focus-border);
+		outline-offset: calc(0px - var(--button-stroke));
 
 		/* Text */
-		font-family: var(--button-font, var(--font-body));
-		font-weight: var(--button-weight, var(--weight-normal));
-		font-size: var(--button-size, var(--size-normal));
-		line-height: var(--button-leading, var(--leading-auto));
+		font-family: var(--button-font);
+		font-weight: var(--button-weight);
+		font-size: var(--button-size);
+		line-height: var(--button-leading);
 		text-decoration: none;
 
 		/* Pseudo-classes */
 		&:disabled,
 		&:where(a:not(:any-link)) {
-			opacity: var(--button-disabled-opacity, 0.5);
+			opacity: var(--button-disabled-opacity);
 			cursor: default;
 		}
 
 		&:enabled:hover,
 		&:any-link:hover,
 		&:focus:not(:focus-visible) {
-			border: var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
-			background: var(--button-hover-background, var(--tint-85));
-			transform: var(--button-hover-transform, none);
+			border-color: var(--button-hover-border);
+			background: var(--button-hover-background);
+			transform: var(--button-hover-transform);
 		}
 
 		&:enabled:active,
 		&:any-link:active {
-			border: var(--button-active-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
-			background: var(--button-active-background, var(--button-hover-background, var(--tint-85)));
-			transform: var(--button-active-transform, var(--button-hover-transform, none));
-			box-shadow: var(--button-active-shadow, var(--button-shadow, none));
+			border-color: var(--button-active-border);
+			background: var(--button-active-background);
+			transform: var(--button-active-transform);
+			box-shadow: var(--button-active-shadow);
 		}
 
 		/* Variants */
 		&.small {
-			gap: var(--button-small-gap, var(--space-xxsmall));
-			padding-block: var(--button-small-padding, var(--space-xxsmall));
-			padding-inline: var(--button-small-indent, var(--space-xxsmall));
-			min-block-size: var(
-				--button-small-height,
-				calc(
-					var(--button-icon-size, var(--size-icon)) +
-					2 *
-					var(--button-small-padding, var(--space-xxsmall)) +
-					2 *
-					var(--button-stroke, var(--stroke-normal))
-				)
-			);
+			gap: var(--button-small-gap);
+			padding-block: var(--button-small-padding);
+			padding-inline: var(--button-small-indent);
+			min-block-size: calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke));
 		}
 
 		/* Icons follow `--button-icon-size`, which also sets the minimum height. */
 		> [data-slot="icon"] {
-			font-size: var(--button-icon-size, var(--size-icon));
+			font-size: var(--button-icon-size);
 		}
 
 		&.full {
@@ -107,46 +145,40 @@
 
 		&.solid {
 			/* A subtle border one step darker than the fill, in every state, so the edge stays crisp. */
-			border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
-			background: var(--button-solid-background, var(--tint-50));
-			color: var(--button-solid-text, var(--tint-100));
+			border-color: var(--button-solid-border);
+			background: var(--button-solid-background);
+			color: var(--button-solid-text);
 
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
-				border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
-				background: var(--button-solid-hover-background, var(--tint-55));
+				border-color: var(--button-solid-border);
+				background: var(--button-solid-hover-background);
 			}
 
 			&:enabled:active,
 			&:any-link:active {
-				border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
-				background: var(--button-solid-active-background, var(--button-solid-hover-background, var(--tint-55)));
+				border-color: var(--button-solid-border);
+				background: var(--button-solid-active-background);
 			}
 		}
 
 		/* Plain, outline and unselected share one look: no fill until hover, then the default button's hover fill. */
 		&:is(.plain, .outline, .unselected) {
-			color: var(--button-plain-text, var(--tint-50));
+			color: var(--button-plain-text);
 
 			/* Includes plain `:focus` so a keyboard-focused button paints its fill and stays legible. */
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus {
-				border: var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent));
-				background: var(--button-plain-hover-background, var(--button-hover-background, var(--tint-85)));
+				border-color: var(--button-plain-hover-border);
+				background: var(--button-plain-hover-background);
 			}
 
 			&:enabled:active,
 			&:any-link:active {
-				border: var(
-					--button-plain-active-border,
-					var(--button-plain-hover-border, var(--button-hover-border, var(--button-stroke, var(--stroke-normal)) solid transparent))
-				);
-				background: var(
-					--button-plain-active-background,
-					var(--button-plain-hover-background, var(--button-active-background, var(--button-hover-background, var(--tint-85))))
-				);
+				border-color: var(--button-plain-active-border);
+				background: var(--button-plain-active-background);
 			}
 		}
 
@@ -158,8 +190,8 @@
 			&:focus,
 			&:enabled:active,
 			&:any-link:active {
-				background: var(--button-selected-background, var(--button-background, var(--tint-90)));
-				color: var(--button-selected-text, var(--button-text, var(--tint-50)));
+				background: var(--button-selected-background);
+				color: var(--button-selected-text);
 			}
 		}
 	}
@@ -180,17 +212,17 @@
 			box-shadow: none;
 
 			&:not(.selected, :enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
-				border: var(--button-plain-border, var(--button-stroke, var(--stroke-normal)) solid transparent);
+				border-color: var(--button-plain-border);
 				background: transparent;
 			}
 		}
 
 		&.unselected:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
-			background: var(--button-unselected-background, transparent);
+			background: var(--button-unselected-background);
 		}
 
 		&.outline:not(:enabled:hover, :any-link:hover, :enabled:active, :any-link:active, :focus) {
-			border: var(--button-outline-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-80));
+			border-color: var(--button-outline-border);
 		}
 	}
 }

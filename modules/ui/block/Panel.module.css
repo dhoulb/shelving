@@ -12,31 +12,52 @@
  * with the shared `indent` variant. For narrower content inside a wide panel, compose a
  * `<Block narrow>` (or `<Block wide>`) inside it.
  */
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--panel-padding: var(--space-section);
+		--panel-indent: var(--space-normal);
+		--panel-stroke: var(--stroke-normal);
+		--panel-plain-border: transparent;
+		--panel-plain-background: transparent;
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--panel-border: var(--tint-80);
+		--panel-background: var(--tint-90);
+		--panel-color: var(--tint-00);
+		--panel-solid-background: var(--tint-50);
+		--panel-solid-color: var(--tint-100);
+	}
+}
+
 @layer components {
 	.panel {
 		/* Box */
 		display: flow-root; /* Contain the margins of the children, also with `padding="none"`. */
 		position: relative;
-		padding-block: var(--panel-padding, var(--space-section));
-		padding-inline: var(--panel-indent, var(--space-normal));
-		border-top: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
-		border-bottom: var(--panel-border, var(--panel-stroke, var(--stroke-normal)) solid var(--tint-80));
+		padding-block: var(--panel-padding);
+		padding-inline: var(--panel-indent);
+		border-top: var(--panel-stroke) solid var(--panel-border);
+		border-bottom: var(--panel-stroke) solid var(--panel-border);
 
 		/* Style */
-		background: var(--panel-background, var(--tint-90));
-		color: var(--panel-color, var(--tint-00));
+		background: var(--panel-background);
+		color: var(--panel-color);
 
 		/* Plain: no background and a transparent border, same spacing (like a plain button). */
 		&.plain {
-			border-top: var(--panel-plain-border, var(--panel-stroke, var(--stroke-normal)) solid transparent);
-			border-bottom: var(--panel-plain-border, var(--panel-stroke, var(--stroke-normal)) solid transparent);
-			background: var(--panel-plain-background, transparent);
+			border-top-color: var(--panel-plain-border);
+			border-bottom-color: var(--panel-plain-border);
+			background: var(--panel-plain-background);
 		}
 
 		/* Solid: a strong fill with light text. */
 		&.solid {
-			background: var(--panel-solid-background, var(--tint-50));
-			color: var(--panel-solid-color, var(--tint-100));
+			background: var(--panel-solid-background);
+			color: var(--panel-solid-color);
 		}
 	}
 }

@@ -4,13 +4,31 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--code-font: var(--font-code);
+		--code-weight: var(--weight-code);
+		--code-size: var(--size-smaller);
+		--code-indent: var(--space-xxsmall);
+		--code-radius: var(--radius-xxsmall);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--code-background: var(--tint-90);
+		--code-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	.code,
 	.prose :is(code, kbd, samp, var) {
 		/* Text */
-		font-family: var(--code-font, var(--font-code));
-		font-weight: var(--code-weight, var(--weight-code));
-		font-size: var(--code-size, var(--size-smaller));
+		font-family: var(--code-font);
+		font-weight: var(--code-weight);
+		font-size: var(--code-size);
 		text-transform: none;
 	}
 
@@ -18,12 +36,12 @@
 	.prose :is(code, kbd, samp, var):not(pre *) {
 		/* Box */
 		display: inline-block;
-		padding-inline: var(--code-indent, var(--space-xxsmall));
-		border-radius: var(--code-radius, var(--radius-xxsmall));
+		padding-inline: var(--code-indent);
+		border-radius: var(--code-radius);
 		vertical-align: baseline;
 
 		/* Style */
-		background: var(--code-background, var(--tint-90));
-		color: var(--code-color, var(--tint-00));
+		background: var(--code-background);
+		color: var(--code-color);
 	}
 }

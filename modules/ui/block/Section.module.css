@@ -5,6 +5,14 @@
 @import url("../style/Space.module.css");
 @import url("../style/Width.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--section-width: var(--width-normal);
+		--section-space: var(--space-section);
+	}
+}
+
 @layer components {
 	.prose :where(section, article, aside, nav, header, footer, figure),
 	.section {
@@ -12,8 +20,8 @@
 		position: relative;
 		display: block;
 		max-inline-size: 100%;
-		inline-size: var(--section-width, var(--width-normal));
+		inline-size: var(--section-width);
 		margin-inline: auto;
-		margin-block: var(--section-space, var(--space-section));
+		margin-block: var(--section-space);
 	}
 }

@@ -2,13 +2,24 @@
 @import url("../style/Space.module.css");
 @import url("../style/Duration.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--image-stroke: 0px;
+		--image-border: transparent;
+		--image-radius: var(--radius-normal);
+		--image-space: var(--space-paragraph);
+		--image-fade-duration: var(--duration-normal);
+	}
+}
+
 @layer components {
 	.image,
 	.prose img {
 		/* Box */
-		border: var(--image-border, none);
-		border-radius: var(--image-radius, var(--radius-normal));
-		margin-block: var(--image-space, var(--space-paragraph));
+		border: var(--image-stroke) solid var(--image-border);
+		border-radius: var(--image-radius);
+		margin-block: var(--image-space);
 
 		/* Contents */
 		object-position: center center;
@@ -25,7 +36,7 @@
 	/* The fade is an animation only while `data-loaded="fade"`, so no opacity animation stays on the image after it. WebKit keeps a layer after an opacity animation, and that layer flickers during a view transition. */
 	.image[data-loaded="fade"] {
 		animation-name: image-fade;
-		animation-duration: var(--image-fade-duration, var(--duration-normal));
+		animation-duration: var(--image-fade-duration);
 		animation-timing-function: ease-out;
 	}
 }

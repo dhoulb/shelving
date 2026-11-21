@@ -28,21 +28,23 @@ import { Menu, MenuItem } from "shelving/ui";
 
 ## Styling
 
-| Variable                     | Styles                                                                                             | Default                |
-| ---------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
-| `--menu-gap`                 | Vertical gap between items                                                                         | `0`                    |
-| `--menu-font`                | Font family                                                                                        | `var(--font-body)`     |
-| `--menu-size`                | Font size                                                                                          | `var(--size-normal)`   |
-| `--menu-leading`             | Line height                                                                                        | `var(--leading-auto)`  |
-| `--menu-color`               | Text colour                                                                                        | `var(--tint-00)`       |
-| `--menu-nested-space`        | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
-| `--menu-padding`             | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
-| `--menu-indent`              | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)`   |
-| `--menu-small-indent`        | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)`  |
-| `--menu-nested-border`       | Nested submenu left-border width                                                                   | `var(--stroke-focus)`  |
-| `--menu-nested-color-border` | Nested submenu left-border colour                                                                  | `var(--tint-50)`       |
-| `--menu-nested-indent`       | Nested submenu left padding                                                                        | `var(--space-xsmall)`  |
+Override these hooks at `:root`. The tint hooks (`--menu-color`, `--menu-nested-border`, `--menu-hover-background`, `--menu-hover-color`, `--menu-proud`, `--menu-selected-background`, `--menu-selected-color`, `--menu-active-background`, `--menu-active-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
-Item-size and item-state hooks (`--menu-stroke`, `--menu-height`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
+| Variable               | Styles                                                                                             | Default                |
+| ---------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
+| `--menu-gap`           | Vertical gap between items                                                                         | `0`                    |
+| `--menu-font`          | Font family                                                                                        | `var(--font-body)`     |
+| `--menu-size`          | Font size                                                                                          | `var(--size-normal)`   |
+| `--menu-leading`       | Line height                                                                                        | `var(--leading-auto)`  |
+| `--menu-color`         | Text colour                                                                                        | `var(--tint-00)`       |
+| `--menu-nested-space`  | Block margin around a nested submenu                                                               | `var(--space-xxsmall)` |
+| `--menu-padding`       | Item link top and bottom padding (one length)                                                      | `var(--space-small)`   |
+| `--menu-indent`        | Item link left and right padding (one length; with `--menu-stroke`, also insets the nested border) | `var(--space-small)`   |
+| `--menu-small-indent`  | Small item link left and right padding (one length; also insets the nested border of a small item) | `var(--space-xsmall)`  |
+| `--menu-nested-stroke` | Nested submenu left-border width                                                                   | `var(--stroke-focus)`  |
+| `--menu-nested-border` | Nested submenu left-border colour                                                                  | `var(--tint-50)`       |
+| `--menu-nested-indent` | Nested submenu left padding                                                                        | `var(--space-xsmall)`  |
+
+Item-size and item-state hooks (`--menu-stroke`, `--menu-icon-size`, `--menu-small-*`, `--menu-hover-*`, `--menu-proud-*`, `--menu-active-*`, `--menu-radius`, `--menu-focus-border`) are documented on `<MenuItem>`.
 
 **Global tokens it reads** — the tint ladder `--tint-00` / `--tint-50`, plus `--space-xxsmall` / `--space-xsmall` / `--space-small`, `--stroke-normal`, `--font-body`, `--size-normal`, `--leading-auto`, and `--stroke-focus`.

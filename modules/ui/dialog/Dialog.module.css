@@ -4,6 +4,23 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Width.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--dialog-padding: var(--space-normal);
+		--dialog-indent: var(--space-normal);
+		--dialog-background: var(--color-backdrop);
+		--dialog-width: var(--width-narrow);
+		--dialog-close-offset: var(--space-small);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--dialog-color: var(--tint-100);
+	}
+}
+
 @layer components {
 	.dialog {
 		/* Box */
@@ -20,8 +37,8 @@
 
 		/* A scroll that reaches the top or bottom of the dialog stops there, and does not pass on to the page. */
 		overscroll-behavior: contain;
-		padding-block: var(--dialog-padding, var(--space-normal));
-		padding-inline: var(--dialog-indent, var(--space-normal));
+		padding-block: var(--dialog-padding);
+		padding-inline: var(--dialog-indent);
 
 		/* Transparent borders keep the content out of the screen's safe areas (notch, rounded corners, home bar). The overlay paints under them, so the padding stays even. */
 		border-top: env(safe-area-inset-top, 0) solid transparent;
@@ -30,8 +47,8 @@
 		border-left: env(safe-area-inset-left, 0) solid transparent;
 
 		/* Style */
-		color: var(--dialog-color, var(--tint-100));
-		background: var(--dialog-background, var(--color-backdrop));
+		color: var(--dialog-color);
+		background: var(--dialog-background);
 
 		/* Flex only to centre `.content`, its one in-flow child. */
 		&[open] {
@@ -59,14 +76,14 @@
 	 */
 	.content {
 		margin: auto;
-		width: var(--dialog-width, var(--width-narrow));
+		width: var(--dialog-width);
 		min-width: 0;
 		max-width: 100%;
 	}
 
 	.close {
 		position: fixed;
-		top: calc(var(--dialog-close-offset, var(--space-small)) + env(safe-area-inset-top, 0px));
-		right: calc(var(--dialog-close-offset, var(--space-small)) + env(safe-area-inset-right, 0px));
+		top: calc(var(--dialog-close-offset) + env(safe-area-inset-top, 0px));
+		right: calc(var(--dialog-close-offset) + env(safe-area-inset-right, 0px));
 	}
 }

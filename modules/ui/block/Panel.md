@@ -65,17 +65,19 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 
 `Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
-| Variable                   | Styles                                                      | Default                                    |
-| -------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
-| `--panel-background`       | Surface fill                                                | `var(--tint-90)`                           |
-| `--panel-color`            | Text colour                                                 | `var(--tint-00)`                           |
-| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                              |
-| `--panel-plain-border`     | Top/bottom border shorthand of a `plain` panel              | `var(--panel-stroke) solid transparent`    |
-| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`                           |
-| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`                          |
-| `--panel-border`           | Top/bottom border shorthand                                 | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)               |
-| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem)              |
-| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)               |
+Override these hooks at `:root`. The tint hooks (`--panel-border`, `--panel-background`, `--panel-color`, `--panel-solid-background`, `--panel-solid-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable                   | Styles                                                      | Default                       |
+| -------------------------- | ----------------------------------------------------------- | ----------------------------- |
+| `--panel-background`       | Surface fill                                                | `var(--tint-90)`              |
+| `--panel-color`            | Text colour                                                 | `var(--tint-00)`              |
+| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                 |
+| `--panel-plain-border`     | Top/bottom border colour of a `plain` panel                 | `transparent`                 |
+| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`              |
+| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`             |
+| `--panel-border`           | Top/bottom border colour (width is `--panel-stroke`)        | `var(--tint-80)`              |
+| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)  |
+| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem) |
+| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)  |
 
 **Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, `--space-normal`, and `--stroke-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.

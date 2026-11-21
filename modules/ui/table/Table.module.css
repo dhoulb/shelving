@@ -4,12 +4,34 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--table-stroke: var(--stroke-normal);
+		--table-space: var(--space-paragraph);
+		--table-padding: var(--space-xsmall);
+		--table-indent: var(--space-xsmall);
+		--table-header-weight: var(--weight-strong);
+		--table-label-font: var(--font-label);
+		--table-label-weight: var(--weight-label);
+		--table-label-size: var(--size-label);
+		--table-label-case: var(--case-label);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--table-border: var(--tint-90);
+		--table-label-color: var(--tint-70);
+	}
+}
+
 @layer components {
 	.table,
 	.prose table {
 		/* Box */
 		display: table;
-		margin-block: var(--table-space, var(--space-paragraph));
+		margin-block: var(--table-space);
 
 		/* Style */
 		border-collapse: collapse;
@@ -20,9 +42,9 @@
 		/* Children */
 		th,
 		td {
-			padding-block: var(--table-padding, var(--space-xsmall));
-			padding-inline: var(--table-indent, var(--space-xsmall));
-			border-block: var(--table-border, var(--table-stroke, var(--stroke-normal) solid var(--tint-90)));
+			padding-block: var(--table-padding);
+			padding-inline: var(--table-indent);
+			border-block: var(--table-stroke) solid var(--table-border);
 		}
 
 		th:first-child,
@@ -38,7 +60,7 @@
 		thead,
 		tbody th,
 		tfoot {
-			font-weight: var(--table-header-weight, var(--weight-strong));
+			font-weight: var(--table-header-weight);
 		}
 
 		thead th,
@@ -55,11 +77,11 @@
 
 		thead th,
 		tfoot th {
-			font-family: var(--table-label-font, var(--font-label));
-			font-weight: var(--table-label-weight, var(--weight-label));
-			font-size: var(--table-label-size, var(--size-label));
-			text-transform: var(--table-label-case, var(--case-label));
-			color: var(--table-label-color, var(--tint-70));
+			font-family: var(--table-label-font);
+			font-weight: var(--table-label-weight);
+			font-size: var(--table-label-size);
+			text-transform: var(--table-label-case);
+			color: var(--table-label-color);
 		}
 	}
 }

@@ -8,6 +8,17 @@
  * safe areas. It does not scroll or centre: the app fills the slot with `<Scroll vertical cover>`.
  */
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--fixed-layout-background: var(--tint-100);
+		--fixed-layout-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	/*
 	 * Lock the document so the content slot is the only place that scrolls.
@@ -37,8 +48,8 @@
 		inset: 0;
 
 		/* Style */
-		background: var(--fixed-layout-background, var(--tint-100));
-		color: var(--fixed-layout-color, var(--tint-00));
+		background: var(--fixed-layout-background);
+		color: var(--fixed-layout-color);
 	}
 
 	/* The content slot: a positioned box that fills the screen, and that `<Scroll vertical cover>` fills. Transparent borders keep it inside the safe areas (an absolute child fills the box inside the borders).

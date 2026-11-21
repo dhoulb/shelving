@@ -4,23 +4,45 @@
 @import url("../style/Tint.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--notice-space: var(--space-paragraph);
+		--notice-radius: var(--radius-xsmall);
+		--notice-stroke: var(--stroke-normal);
+		--notice-padding: var(--space-small);
+		--notice-indent: var(--space-small);
+		--notice-shadow: none;
+		--notice-size: var(--size-normal);
+		--notice-weight: var(--weight-strong);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--notice-border: var(--tint-80);
+		--notice-background: var(--tint-90);
+		--notice-color: var(--tint-50);
+	}
+}
+
 @layer components {
 	.notice {
 		/* Box */
-		margin-block: var(--notice-space, var(--space-paragraph));
-		border-radius: var(--notice-radius, var(--radius-xsmall));
-		border: var(--notice-border, var(--notice-stroke, var(--stroke-normal)) solid var(--tint-80));
-		padding-block: var(--notice-padding, var(--space-small));
-		padding-inline: var(--notice-indent, var(--space-small));
+		margin-block: var(--notice-space);
+		border-radius: var(--notice-radius);
+		border: var(--notice-stroke) solid var(--notice-border);
+		padding-block: var(--notice-padding);
+		padding-inline: var(--notice-indent);
 
 		/* Style */
-		background: var(--notice-background, var(--tint-90));
-		box-shadow: var(--notice-shadow, none);
-		color: var(--notice-color, var(--tint-50));
+		background: var(--notice-background);
+		box-shadow: var(--notice-shadow);
+		color: var(--notice-color);
 
 		/* Text */
-		font-size: var(--notice-size, var(--size-normal));
-		font-weight: var(--notice-weight, var(--weight-strong));
+		font-size: var(--notice-size);
+		font-weight: var(--notice-weight);
 		text-align: start;
 	}
 }

@@ -3,14 +3,23 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--deleted-color: var(--color-red);
+		--deleted-decoration: line-through var(--stroke-normal);
+		--deleted-weight: var(--weight-strong);
+	}
+}
+
 @layer components {
 	.deleted,
 	.prose del {
 		/* Style */
-		color: var(--deleted-color, var(--color-red));
-		text-decoration: var(--deleted-decoration, line-through var(--stroke-normal));
+		color: var(--deleted-color);
+		text-decoration: var(--deleted-decoration);
 
 		/* Text */
-		font-weight: var(--deleted-weight, var(--weight-strong));
+		font-weight: var(--deleted-weight);
 	}
 }

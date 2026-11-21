@@ -3,6 +3,19 @@
 @import url("../style/Tint.module.css");
 
 @layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--icon-size: var(--size-icon);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--icon-color: var(--tint-50);
+	}
+}
+
+@layer defaults {
 	.icon {
 		/* Box */
 		display: block;
@@ -13,12 +26,12 @@
 		padding: 0;
 
 		/* Style */
-		color: var(--icon-color, var(--tint-50));
+		color: var(--icon-color);
 
 		/* Contents */
 		flex: none;
 
 		/* Text */
-		font-size: var(--icon-size, var(--size-icon));
+		font-size: var(--icon-size);
 	}
 }

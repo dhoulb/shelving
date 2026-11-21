@@ -7,6 +7,8 @@ export default {
 		"no-unknown-animations": true,
 		"no-unknown-custom-media": true,
 		"no-descending-specificity": null,
+		// CSS modules: `:global(.tint)` keeps a class name unhashed.
+		"selector-pseudo-class-no-unknown": [true, { ignorePseudoClasses: ["global"] }],
 	},
 	ignoreFiles: ["**/node_modules/**", "**/.dist/**"],
 };

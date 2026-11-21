@@ -1,18 +1,33 @@
 @import url("../style/layers.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--loading-stroke-width: 2.5;
+		--loading-length: 28 100;
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--loading-track: var(--tint-70);
+		--loading-indicator: var(--tint-80);
+	}
+}
+
 @layer components {
 	.track {
 		fill: none;
-		stroke: var(--loading-track, var(--tint-70));
-		stroke-width: var(--loading-stroke-width, 2.5);
+		stroke: var(--loading-track);
+		stroke-width: var(--loading-stroke-width);
 	}
 
 	.indicator {
 		fill: none;
-		stroke: var(--loading-indicator, var(--tint-80));
-		stroke-width: var(--loading-stroke-width, 2.5);
+		stroke: var(--loading-indicator);
+		stroke-width: var(--loading-stroke-width);
 		stroke-linecap: round;
-		stroke-dasharray: var(--loading-length, 28 100);
+		stroke-dasharray: var(--loading-length);
 	}
 }

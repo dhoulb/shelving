@@ -3,18 +3,31 @@
 @import url("../style/Color.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--subheading-space-before: var(--space-section);
+		--subheading-space: var(--space-paragraph);
+		--subheading-font: var(--font-title);
+		--subheading-weight: var(--weight-strong);
+		--subheading-size: var(--size-large);
+		--subheading-leading: var(--leading-auto);
+		--subheading-color: inherit;
+	}
+}
+
 @layer components {
 	.subheading,
 	.prose :is(h3, h4, h5, h6) {
 		/* Box */
-		margin-block: var(--subheading-space-before, var(--space-section)) var(--subheading-space, var(--space-paragraph));
+		margin-block: var(--subheading-space-before) var(--subheading-space);
 
 		/* Text */
-		font-family: var(--subheading-font, var(--font-title));
-		font-weight: var(--subheading-weight, var(--weight-strong));
-		font-size: var(--subheading-size, var(--size-large));
-		line-height: var(--subheading-leading, var(--leading-auto));
-		color: var(--subheading-color, inherit);
+		font-family: var(--subheading-font);
+		font-weight: var(--subheading-weight);
+		font-size: var(--subheading-size);
+		line-height: var(--subheading-leading);
+		color: var(--subheading-color);
 		text-wrap: balance;
 	}
 }

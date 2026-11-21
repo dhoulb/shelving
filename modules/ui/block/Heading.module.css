@@ -3,18 +3,31 @@
 @import url("../style/Color.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--heading-space-before: var(--space-section);
+		--heading-space: var(--space-paragraph);
+		--heading-font: var(--font-title);
+		--heading-weight: var(--weight-strong);
+		--heading-size: var(--size-xxlarge);
+		--heading-leading: var(--leading-auto);
+		--heading-color: inherit;
+	}
+}
+
 @layer components {
 	.heading,
 	.prose h2 {
 		/* Box */
-		margin-block: var(--heading-space-before, var(--space-section)) var(--heading-space, var(--space-paragraph));
+		margin-block: var(--heading-space-before) var(--heading-space);
 
 		/* Text */
-		font-family: var(--heading-font, var(--font-title));
-		font-weight: var(--heading-weight, var(--weight-strong));
-		font-size: var(--heading-size, var(--size-xxlarge));
-		line-height: var(--heading-leading, var(--leading-auto));
-		color: var(--heading-color, inherit);
+		font-family: var(--heading-font);
+		font-weight: var(--heading-weight);
+		font-size: var(--heading-size);
+		line-height: var(--heading-leading);
+		color: var(--heading-color);
 		text-wrap: balance;
 	}
 }

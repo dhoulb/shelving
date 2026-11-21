@@ -3,11 +3,18 @@
 @import url("../style/Space.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--address-space: var(--space-paragraph);
+	}
+}
+
 @layer components {
 	.address,
 	.prose address {
 		/* Box */
-		margin-block: var(--address-space, var(--space-paragraph));
+		margin-block: var(--address-space);
 
 		/* Text */
 		white-space: preserve wrap;

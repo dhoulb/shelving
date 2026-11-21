@@ -10,6 +10,27 @@
  * Keep the 64rem breakpoint the same as `MOBILE` in `DocumentationPlaygroundPage.tsx`.
  */
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--documentation-playground-stroke: var(--stroke);
+		--documentation-playground-split: 40%;
+		--documentation-playground-background: white;
+		--documentation-playground-padding: var(--space-normal);
+		--documentation-playground-indent: var(--space-normal);
+		--documentation-playground-mobile-padding: var(--space-small);
+		--documentation-playground-handle: 0.75rem;
+		--documentation-playground-handle-color: var(--color-focus);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--documentation-playground-editor-background: var(--tint-95);
+		--documentation-playground-border: var(--tint-80);
+	}
+}
+
 @layer components {
 	html:has(.playground),
 	html:has(.playground) body {
@@ -22,11 +43,11 @@
 		/* Box */
 		position: relative;
 		display: grid;
-		grid-template-columns: var(--documentation-playground-split, 40%) minmax(0, 1fr);
+		grid-template-columns: var(--documentation-playground-split) minmax(0, 1fr);
 		block-size: 100dvh;
 
 		/* Style */
-		background: var(--documentation-playground-background, white);
+		background: var(--documentation-playground-background);
 
 		/* Show one pane at a time on a narrow screen: the editor fills the page, or only its bar of buttons shows above the preview. */
 		@media (width < 64rem) {
@@ -41,13 +62,13 @@
 		flex-direction: column;
 		gap: var(--space-small);
 		min-inline-size: 0;
-		padding-block: var(--documentation-playground-padding, var(--space-normal));
-		padding-inline: var(--documentation-playground-indent, var(--space-normal));
+		padding-block: var(--documentation-playground-padding);
+		padding-inline: var(--documentation-playground-indent);
 		overflow: auto;
 
 		/* Style */
-		background: var(--documentation-playground-editor-background, var(--tint-95));
-		border-inline-end: var(--documentation-playground-border, var(--stroke) solid var(--tint-80));
+		background: var(--documentation-playground-editor-background);
+		border-inline-end: var(--documentation-playground-stroke) solid var(--documentation-playground-border);
 
 		/* The editor fields fill the panel, with no outer margins of their own. */
 		& > * {
@@ -61,7 +82,7 @@
 
 		@media (width < 64rem) {
 			flex: 1 1 0;
-			padding-block: var(--documentation-playground-mobile-padding, var(--space-small));
+			padding-block: var(--documentation-playground-mobile-padding);
 			border-inline-end: 0;
 
 			/* While the preview shows, only the bar of buttons shows. */
@@ -92,8 +113,8 @@
 		/* Box */
 		position: absolute;
 		inset-block: 0;
-		inset-inline-start: var(--documentation-playground-split, 40%);
-		inline-size: var(--documentation-playground-handle, 0.75rem);
+		inset-inline-start: var(--documentation-playground-split);
+		inline-size: var(--documentation-playground-handle);
 		translate: -50% 0;
 		z-index: 1;
 		margin: 0;
@@ -111,7 +132,7 @@
 			inset-inline-start: 50%;
 			inline-size: var(--stroke-thick);
 			translate: -50% 0;
-			background: var(--documentation-playground-handle-color, var(--color-focus));
+			background: var(--documentation-playground-handle-color);
 			opacity: 0;
 			transition: opacity 0.15s;
 		}

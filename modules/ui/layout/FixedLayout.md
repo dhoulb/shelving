@@ -60,6 +60,8 @@ function AppError({ reason }: ErrorProps) {
 
 ## Styling
 
+Override these hooks at `:root`. The tint hooks (`--fixed-layout-background`, `--fixed-layout-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                    | Styles                                      | Default                   |
 | --------------------------- | ------------------------------------------- | ------------------------- |
 | `--fixed-layout-background` | Page background while the layout is mounted | `var(--tint-100)` (white) |
