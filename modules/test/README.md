@@ -43,6 +43,8 @@ await provider.addItem(BASICS_COLLECTION, basic1);
 
 `testDBProvider()` registers the `DBProvider` contract suite: fixed cases that every provider must pass.
 
+`testSQLMigrator()` checks a `SQLMigrator` against its real database. It checks that the fixture tables need no changes, then makes a table and changes it with three versions of a collection (add, drop and change columns), and checks that the provider can still read and write it.
+
 `testDBDifferential()` runs the same seeded random operations against a provider and against a reference `MemoryDBProvider`, and fails at the first difference in a result, an error, or the stored items. A failure names the seed and lists the operations, so you can run it again. Use `check` to compare more state (for example a provider rebuilt from its backing store), and `wrap` to run each operation in a transaction.
 
 ```ts

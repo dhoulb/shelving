@@ -3,13 +3,10 @@ import { BooleanSchema } from "../../schema/BooleanSchema.js";
 import { ChoiceSchema } from "../../schema/ChoiceSchema.js";
 import { DataSchema } from "../../schema/DataSchema.js";
 import { DateSchema } from "../../schema/DateSchema.js";
-import { DateTimeSchema } from "../../schema/DateTimeSchema.js";
 import { DictionarySchema } from "../../schema/DictionarySchema.js";
-import { NullableSchema } from "../../schema/NullableSchema.js";
 import { NumberSchema } from "../../schema/NumberSchema.js";
 import type { Schema } from "../../schema/Schema.js";
 import { StringSchema } from "../../schema/StringSchema.js";
-import { TimeSchema } from "../../schema/TimeSchema.js";
 import type { Data } from "../../util/data.js";
 import type { Identifier } from "../../util/item.js";
 import { getSource } from "../../util/source.js";
@@ -19,7 +16,7 @@ import { SQLMigrator, type SQLTable, type SQLTableColumn } from "./SQLMigrator.j
 
 const INT4_MAX = 2147483647;
 const INT4_MIN = -2147483648;
-const COMPATIBLE_NUMBER_TYPES = ["integer", "bigint", "numeric", "int", "int4", "int8"];
+const COMPATIBLE_NUMBER_TYPES = ["integer", "bigint", "numeric", "int", "int4", "int8", "double precision", "real"];
 const COMPATIBLE_STRING_TYPES = ["character varying", "varchar", "text", "char", "character"];
 
 type PostgreSQLColumnRow = {
@@ -35,9 +32,12 @@ type PostgreSQLColumnRow = {
 /**
  * PostgreSQL migrator that inspects the live schema via `pg_catalog` tables to diff and migrate columns.
  *
+ * - Types match what Bun's PostgreSQL client reads back: `text`, `integer`, `double precision`, `boolean`, and `jsonb` for JSON props.
+ * - Dates are `text`, because the client reads a `date` column as a `Date` object, not the string that `DateSchema` makes.
+ *
  * @see https://shelving.cc/db/PostgresMigrator
  */
-export class PostgresMigrator<T extends SQLProvider = SQLProvider> extends SQLMigrator<T> {
+export class PostgresMigrator<T extends SQLProvider<never, never> = SQLProvider> extends SQLMigrator<T> {
 	protected override async getTables(): Promise<readonly string[]> {
 		const rows = await this.provider.exec<{ name: string }>`
 			SELECT c.relname AS ${this.provider.sqlIdentifier("name")}
@@ -86,19 +86,16 @@ export class PostgresMigrator<T extends SQLProvider = SQLProvider> extends SQLMi
 		return "";
 	}
 
-	protected override getDataColumnDefinition(): string {
-		return `jsonb NOT NULL DEFAULT ${this.quoteString("{}")}::jsonb`;
+	protected override getPropColumnDefinition(_name: string, schema: Schema<unknown>): string | undefined {
+		const definition = this.definition(schema);
+		return definition && `${definition} NULL DEFAULT NULL`;
 	}
 
-	protected override getGeneratedColumnDefinition(_columnName: string, path: string, definition: string): string {
-		const expression = this.getGeneratedExpression(path, definition);
-		return `${definition} GENERATED ALWAYS AS (${expression}) STORED`;
-	}
-
+	/** Integer ids use an identity column. Other ids are `text` with a random UUID default, so `addItem()` works. */
 	protected override getIDColumnDefinition<TData extends Data>(collection: Collection<string, Identifier, TData>): string {
 		const id = collection.id;
 		if (id instanceof NumberSchema && id.step === 1) return "integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY";
-		return "text PRIMARY KEY";
+		return "text PRIMARY KEY DEFAULT (gen_random_uuid())::text";
 	}
 
 	protected override getAlterColumnQueries(tableName: string, from: SQLTableColumn, to: SQLTableColumn): readonly string[] {
@@ -124,41 +121,19 @@ export class PostgresMigrator<T extends SQLProvider = SQLProvider> extends SQLMi
 		return migrations.length ? migrations : super.getAlterColumnQueries(tableName, from, to);
 	}
 
+	/** Map a schema to a column type that Bun's PostgreSQL client reads back as the same JavaScript value. */
 	protected override definition<TValue>(schema: Schema<TValue>): string | undefined {
-		const value = schema.value;
-		void getSource(NullableSchema, schema);
-		const str = getSource(StringSchema, schema);
-		if (str) return "text";
+		if (getSource(StringSchema, schema) || getSource(ChoiceSchema, schema) || getSource(DateSchema, schema)) return "text";
 		const num = getSource(NumberSchema, schema);
-		if (num) {
-			const type =
-				Number.isInteger(num.step) && Number.isInteger(num.min) && Number.isInteger(num.max)
-					? num.min >= INT4_MIN && num.max <= INT4_MAX
-						? "integer"
-						: "bigint"
-					: "numeric";
-			return type;
-		}
-		const bool = getSource(BooleanSchema, schema);
-		if (bool) return "boolean";
-		const choice = getSource(ChoiceSchema, schema);
-		if (choice) return "text";
-		const arr = getSource(ArraySchema, schema);
-		if (arr) return "jsonb";
-		const data = getSource(DataSchema, schema);
-		if (data) return "jsonb";
-		const dict = getSource(DictionarySchema, schema);
-		if (dict) return "jsonb";
-		const date = getSource(DateSchema, schema);
-		if (date) {
-			const type = getSource(DateTimeSchema, schema) ? "timestamp with time zone" : getSource(TimeSchema, schema) ? "time" : "date";
-			return type;
-		}
+		if (num) return Number.isInteger(num.step) && num.min >= INT4_MIN && num.max <= INT4_MAX ? "integer" : "double precision";
+		if (getSource(BooleanSchema, schema)) return "boolean";
+		if (getSource(ArraySchema, schema) || getSource(DataSchema, schema) || getSource(DictionarySchema, schema)) return "jsonb";
+		const value = schema.value;
 		switch (typeof value) {
 			case "string":
 				return "text";
 			case "number":
-				return Number.isInteger(value) ? "integer" : "numeric";
+				return Number.isInteger(value) ? "integer" : "double precision";
 			case "boolean":
 				return "boolean";
 			default:
@@ -168,31 +143,9 @@ export class PostgresMigrator<T extends SQLProvider = SQLProvider> extends SQLMi
 
 	protected getCurrentColumnStatement({ generated, identity, name: _name, nullable, primary, type, value }: PostgreSQLColumnRow): string {
 		if (identity && primary) return `${type} GENERATED ALWAYS AS IDENTITY PRIMARY KEY`;
+		if (primary) return `${type} PRIMARY KEY${value ? ` DEFAULT ${value}` : ""}`;
 		if (generated) return `${type} GENERATED ALWAYS AS (${value ?? "NULL"}) STORED`;
 		return `${type}${nullable ? " NULL" : " NOT NULL"} DEFAULT ${value ?? "NULL"}`;
-	}
-
-	protected getGeneratedExpression(path: string, definition: string): string {
-		const cast = this.getGeneratedCast(definition);
-		const parts = path
-			.replace(/^\$\./, "")
-			.replace(/^\$/, "")
-			.split(".")
-			.map(part => part.replaceAll(/^"|"$/g, ""));
-		const key = parts.map(part => part.replaceAll(`'`, `''`)).join(",");
-		const source = `${this.quoteIdentifier("data")} #>> ${this.quoteString(`{${key}}`)}`;
-		return cast ? `(${source})::${cast}` : source;
-	}
-
-	protected getGeneratedCast(definition: string): string | undefined {
-		if (definition.startsWith("integer")) return "integer";
-		if (definition.startsWith("bigint")) return "bigint";
-		if (definition.startsWith("numeric")) return "numeric";
-		if (definition.startsWith("boolean")) return "boolean";
-		if (definition.startsWith("timestamp")) return "timestamp with time zone";
-		if (definition.startsWith("time")) return "time";
-		if (definition.startsWith("date")) return "date";
-		return undefined;
 	}
 
 	protected parseColumn({ name, statement }: SQLTableColumn):

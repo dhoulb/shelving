@@ -1,6 +1,6 @@
 # SQLiteProvider
 
-The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends `SQLProvider` with SQLite-specific behaviour: tables are created in `STRICT` mode, the `data` column is `TEXT NOT NULL CHECK (json_valid(data))`, and generated columns use `json_extract`.
+The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends `SQLProvider` with SQLite-specific behaviour: JSON1 functions for nested keys, array filters and array updates, and decoding of booleans and JSON columns on read.
 
 It is abstract — a concrete subclass implements `exec()` against a specific SQLite driver.
 

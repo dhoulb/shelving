@@ -1,117 +1,46 @@
 import { Database, type SQLQueryBindings } from "bun:sqlite";
 import { expect, test } from "bun:test";
-import { COLLECTION, type SQLFragment, SQLiteMigrator, SQLProvider } from "shelving/db";
-import { ARRAY, DATA, INTEGER, STRING } from "shelving/schema";
+import { type SQLFragment, SQLiteMigrator, SQLiteProvider } from "shelving/db";
 import type { Data } from "shelving/util/data";
-import { BASIC_SCHEMA } from "../../test/index.js";
+import { BASICS_COLLECTION, PEOPLE_COLLECTION, testDBDifferential, testDBProvider, testSQLMigrator } from "../../test/index.js";
 
-const BASICS_COLLECTION = COLLECTION("basics", INTEGER, BASIC_SCHEMA);
+/** SQLite provider on an in-memory `bun:sqlite` database. Arrays and objects bind as JSON text, the same as D1. */
+class TestSQLiteProvider extends SQLiteProvider<string> {
+	readonly sqlite = new Database(":memory:", { strict: true });
 
-const SCORES_COLLECTION = COLLECTION(
-	"scores",
-	INTEGER,
-	DATA({
-		name: STRING,
-		group: STRING,
-		tags: ARRAY(STRING),
-		sub: DATA({ rank: INTEGER, label: STRING }),
-	}),
-);
-
-class TestSQLProvider extends SQLProvider {
-	readonly sqlite = new Database(":memory:");
-
-	close(): void {
-		this.sqlite.close();
-	}
-
-	override async exec<T extends Data = Data>(strings: TemplateStringsArray, ...values: readonly unknown[]): Promise<readonly T[]>;
-	override async exec(strings: TemplateStringsArray, ...values: readonly unknown[]): Promise<readonly unknown[]> {
+	override async exec<T extends Data = Data>(strings: TemplateStringsArray, ...values: readonly unknown[]): Promise<readonly T[]> {
 		const { query, values: bindings } = _getSQLQuery(strings, values);
-		const statement = this.sqlite.query(query);
-		if (_isReadQuery(query)) return statement.all(...bindings);
-		statement.run(...bindings);
-		return [];
+		return this.sqlite.query(query).all(...bindings) as T[];
 	}
 }
 
-test("SQLiteMigrator: generates create table SQL without secondary indexes", () => {
-	const provider = new TestSQLProvider();
-	try {
-		const migrator = new SQLiteMigrator(provider);
-		const query = migrator.getCreateTableQuery(BASICS_COLLECTION);
-		expect(query).toContain(`CREATE TABLE "basics"`);
-		expect(query).toContain(`"id" INTEGER PRIMARY KEY`);
-		expect(query).toContain(`"data" TEXT NOT NULL CHECK (json_valid("data"))`);
-		expect(query).toContain(`"sub__str" TEXT GENERATED ALWAYS AS`);
-		expect(query).toContain(`"sub__num" REAL GENERATED ALWAYS AS`);
-		expect(query).toContain("STRICT");
-		expect(query).not.toContain("INDEX");
-	} finally {
-		provider.close();
-	}
+const provider = new TestSQLiteProvider();
+const migrator = new SQLiteMigrator(provider);
+await migrator.migrate(BASICS_COLLECTION, PEOPLE_COLLECTION);
+
+// The migrator makes the fixture tables, so these suites also prove the migrator's table layout.
+testDBProvider("SQLiteProvider (bun:sqlite)", () => provider, { realtime: false });
+testDBDifferential("SQLiteProvider (bun:sqlite)", () => provider, { runs: 10 });
+testSQLMigrator("SQLiteMigrator (bun:sqlite)", () => migrator);
+
+test("SQLiteMigrator: makes a strict table with one column for each prop", () => {
+	expect(migrator.getCreateTableQuery(BASICS_COLLECTION)).toBe(
+		[
+			`CREATE TABLE "basics" (`,
+			`  "id" TEXT PRIMARY KEY,`,
+			`  "str" TEXT,`,
+			`  "num" REAL,`,
+			`  "group" TEXT,`,
+			`  "tags" TEXT CHECK (json_valid("tags")),`,
+			`  "odd" INTEGER,`,
+			`  "even" INTEGER,`,
+			`  "sub" TEXT CHECK (json_valid("sub"))`,
+			`) STRICT;`,
+		].join("\n"),
+	);
 });
 
-test("SQLiteMigrator: migrate creates strict tables with generated scalar columns only", async () => {
-	const provider = new TestSQLProvider();
-	try {
-		await new SQLiteMigrator(provider).migrate(BASICS_COLLECTION, SCORES_COLLECTION);
-
-		const basicsColumns = provider.sqlite.query(`PRAGMA table_xinfo("basics")`).all() as { name: string }[];
-		expect(basicsColumns.map(({ name }) => name)).toEqual([
-			"id",
-			"data",
-			"str",
-			"num",
-			"group",
-			"odd",
-			"even",
-			"sub__str",
-			"sub__num",
-			"sub__odd",
-			"sub__even",
-		]);
-
-		const scoresColumns = provider.sqlite.query(`PRAGMA table_xinfo("scores")`).all() as { name: string; type: string }[];
-		expect(scoresColumns[0]).toMatchObject({ name: "id", type: "INTEGER" });
-		expect(scoresColumns.map(({ name }) => name)).toContain("sub__rank");
-		expect(scoresColumns.map(({ name }) => name)).toContain("sub__label");
-		expect(scoresColumns.map(({ name }) => name)).not.toContain("tags");
-
-		const basicsSQL = provider.sqlite.query(`SELECT sql FROM sqlite_master WHERE name = ?1`).get("basics") as { sql: string };
-		expect(basicsSQL.sql).toContain("CREATE TABLE");
-		expect(basicsSQL.sql).not.toContain("CREATE INDEX");
-	} finally {
-		provider.close();
-	}
-});
-
-test("SQLiteMigrator: migrate diffs existing tables before adding missing generated columns", async () => {
-	const provider = new TestSQLProvider();
-	try {
-		provider.sqlite.exec(`CREATE TABLE "basics" ("id" INTEGER PRIMARY KEY, "data" TEXT NOT NULL CHECK (json_valid("data"))) STRICT;`);
-		await new SQLiteMigrator(provider).migrate(BASICS_COLLECTION);
-
-		const columns = provider.sqlite.query(`PRAGMA table_xinfo("basics")`).all() as { name: string }[];
-		expect(columns.map(({ name }) => name)).toEqual([
-			"id",
-			"data",
-			"str",
-			"num",
-			"group",
-			"odd",
-			"even",
-			"sub__str",
-			"sub__num",
-			"sub__odd",
-			"sub__even",
-		]);
-	} finally {
-		provider.close();
-	}
-});
-
-function _getSQLQuery(strings: readonly string[], values: readonly unknown[]): { query: string; values: readonly SQLQueryBindings[] } {
+function _getSQLQuery(strings: readonly string[], values: readonly unknown[]): { query: string; values: SQLQueryBindings[] } {
 	let query = strings[0] ?? "";
 	const bindings: SQLQueryBindings[] = [];
 	for (const [index, value] of values.entries()) {
@@ -121,7 +50,7 @@ function _getSQLQuery(strings: readonly string[], values: readonly unknown[]): {
 			bindings.push(...part.values);
 		} else {
 			query += "?";
-			bindings.push(value as SQLQueryBindings);
+			bindings.push(value !== null && typeof value === "object" ? JSON.stringify(value) : (value as SQLQueryBindings));
 		}
 		query += strings[index + 1] ?? "";
 	}
@@ -130,8 +59,4 @@ function _getSQLQuery(strings: readonly string[], values: readonly unknown[]): {
 
 function _isFragment(value: unknown): value is SQLFragment {
 	return typeof value === "object" && !!value && "strings" in value && "values" in value;
-}
-
-function _isReadQuery(query: string): boolean {
-	return /^\s*(?:select|pragma|with)\b/i.test(query);
 }
