@@ -15,6 +15,9 @@ A clickable styled as a button. Renders an `<a href="">` when given `href`, or a
 - `selected` makes a group of buttons, such as tabs. `selected={true}` sets `aria-pressed` (or `aria-current` on a link) and keeps the button's normal look. `selected={false}` also drops the fill until hover or focus, like `plain`, so the selected button stands out. Leave it `undefined` for a button that is not in a group.
 - Selected wins over `plain` and `outline`: a selected `plain` or `outline` button keeps the default fill (also on hover and focus). So a `plain` button with `selected` works as a toggle that shows when it is on.
 - `small` tightens the padding.
+- A button with an icon has less side padding: halfway between `--button-padding` and `--button-indent`. An icon has empty space inside its own box, so a full indent makes the button look too wide. CSS cannot see if the icon is before or after the text, so both sides change.
+- `square` makes the button as wide as it is tall, with no left and right padding, so an icon or one character sits in the centre. It works with `small`.
+- `round` is like `square`, but with fully round corners, so the button is a circle.
 - It takes the block variants, like any block: `space` sets its outer margin (`space="none"` removes it), `padding` and `indent` set its inner padding, and `width` sizes it. A `padding` variant sets the padding but not the minimum height, which `--button-padding` sets.
 - `getButtonClass(variants)` returns the same `className` the component composes — use it to style a non-`<button>` element as a button when `Button` itself doesn't fit.
 - `className` attaches an app class to one button, merged after the computed classes so an app stylesheet wins — see `ClassProps`.
@@ -40,6 +43,22 @@ import { Button } from "shelving/ui";
 // No outer margin: it sits flush with the content around it.
 <Button full space="none" onClick={start}>
 	Start
+</Button>;
+```
+
+### Square buttons
+
+```tsx
+import { Button } from "shelving/ui";
+
+// As wide as it is tall: for an icon or one character.
+<Button square plain onClick={close} title="Close">
+	×
+</Button>;
+
+// A circle: square, with fully round corners.
+<Button round solid color="primary" onClick={add} title="Add">
+	+
 </Button>;
 ```
 
@@ -129,9 +148,9 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-stroke`                  | Border / outline thickness                               | `var(--stroke-normal)` (1px)                     |
 | `--button-radius`                  | Corner radius                                            | `var(--radius-xsmall)` (8px)                     |
 | `--button-padding`                 | Top and bottom padding (one length)                      | `var(--space-small)` (12px)                      |
-| `--button-indent`                  | Left and right padding (one length)                      | `var(--space-small)` (12px)                      |
+| `--button-indent`                  | Left and right padding (one length)                      | `calc(var(--space-normal) * 1.25)` (20px)        |
 | `--button-small-padding`           | Top and bottom padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                     |
-| `--button-small-indent`            | Left and right padding when `small` (one length)         | `var(--space-xxsmall)` (4px)                     |
+| `--button-small-indent`            | Left and right padding when `small` (one length)         | `var(--space-small)` (12px)                      |
 | `--button-icon-size`               | Icon size, and the base of the minimum height            | `var(--size-icon)` (24px)                        |
 | `--button-gap`                     | Gap between icon and label                               | `var(--space-small)` (12px)                      |
 | `--button-small-gap`               | Gap between icon and label when `small`                  | `var(--space-xxsmall)` (4px)                     |
@@ -164,13 +183,13 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-plain-active-background` | Fill while pressed when `plain` or `outline`             | `var(--button-plain-hover-background)`           |
 | `--button-plain-active-border`     | Border colour while pressed when `plain` or `outline`    | `var(--button-plain-hover-border)`               |
 
-**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
+**Global tokens it reads:** the tint ladder `--tint-50` / `--tint-55` / `--tint-80` / `--tint-85` / `--tint-90` / `--tint-100`, plus `--size-icon`, `--space-normal`, `--space-small`, `--space-xxsmall`, `--radius-xsmall`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, `--font-body`, `--weight-normal`, `--size-normal`, `--leading-auto`, and `--duration-fast`.
 
 ```css
 /* Theme: pill-shaped buttons, with roomier inline padding. */
 :root {
 	--button-radius: 999px;
-	--button-indent: var(--space-normal);
+	--button-indent: var(--space-xlarge);
 }
 ```
 

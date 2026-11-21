@@ -14,7 +14,7 @@
 		--button-stroke: var(--stroke-normal);
 		--button-border: transparent;
 		--button-padding: var(--space-small);
-		--button-indent: var(--space-small);
+		--button-indent: calc(var(--space-normal) * 1.25);
 		--button-space: var(--space-small);
 		--button-gap: var(--space-small);
 		--button-icon-size: var(--size-icon);
@@ -33,7 +33,7 @@
 		--button-active-shadow: var(--button-shadow);
 		--button-small-gap: var(--space-xxsmall);
 		--button-small-padding: var(--space-xxsmall);
-		--button-small-indent: var(--space-xxsmall);
+		--button-small-indent: var(--space-small);
 		--button-plain-hover-border: var(--button-hover-border);
 		--button-plain-active-border: var(--button-plain-hover-border);
 		--button-plain-border: transparent;
@@ -131,6 +131,31 @@
 			padding-block: var(--button-small-padding);
 			padding-inline: var(--button-small-indent);
 			min-block-size: calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke));
+		}
+
+		/* A button with an icon has less side padding. An icon has empty space inside its own box, so a full indent makes the button look too wide. CSS cannot see if the icon is before or after the text, so both sides change. */
+		&:has(> [data-slot="icon"]):not(.square, .round) {
+			padding-inline: calc((var(--button-padding) + var(--button-indent)) / 2);
+
+			&.small {
+				padding-inline: calc((var(--button-small-padding) + var(--button-small-indent)) / 2);
+			}
+		}
+
+		/* Square and round: as wide as it is tall, with no inline padding, so an icon or one character sits in the centre. */
+		&:is(.square, .round) {
+			padding-inline: 0;
+			inline-size: calc(var(--button-icon-size) + 2 * var(--button-padding) + 2 * var(--button-stroke));
+			min-inline-size: 0;
+
+			&.small {
+				inline-size: calc(var(--button-icon-size) + 2 * var(--button-small-padding) + 2 * var(--button-stroke));
+			}
+		}
+
+		/* Round: a square button with fully round corners, so it is a circle. */
+		&.round {
+			border-radius: calc(infinity * 1px);
 		}
 
 		/* Icons follow `--button-icon-size`, which also sets the minimum height. */
