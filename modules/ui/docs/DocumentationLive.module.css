@@ -139,6 +139,18 @@
 
 		.browser > &.screen {
 			block-size: var(--documentation-live-desktop-height);
+
+			/* On a narrow screen the window zooms out to half size, so the preview is twice as wide as the window, like a desktop. `zoom` halves lengths (so the height doubles to stay the same) but not percentages. */
+			@media (width < 48rem) {
+				zoom: 0.5;
+				block-size: calc(var(--documentation-live-desktop-height) * 2);
+			}
+
+			/* A phone is too narrow for half size to look like a desktop (48rem wide), so zoom out more. */
+			@media (width < 30rem) {
+				zoom: 0.4;
+				block-size: calc(var(--documentation-live-desktop-height) * 2.5);
+			}
 		}
 	}
 
