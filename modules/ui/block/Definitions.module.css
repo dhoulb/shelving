@@ -3,6 +3,7 @@
 @import url("../style/Typography.module.css");
 @import url("../style/Color.module.css");
 @import url("../style/Gap.module.css");
+@import url("../style/Tint.module.css");
 
 @layer defaults {
 	/* Every hook the rules below read. Override any of them at `:root`. */

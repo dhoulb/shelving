@@ -22,7 +22,6 @@ export interface DefinitionsProps extends GapVariants, SpaceVariants, Typography
  * - The spacing between pairs is overridable via the `--definitions-gap` hook.
  *
  * @kind component
- * @example <Definitions><dt>Name</dt><dd>Acme</dd></Definitions>
  * @see https://shelving.cc/ui/Definitions
  */
 export function Definitions({ children, className, ...props }: DefinitionsProps): ReactElement {

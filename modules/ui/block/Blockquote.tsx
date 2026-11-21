@@ -17,7 +17,6 @@ export interface BlockquoteProps extends BlockVariants, OptionalChildProps, Clas
  * Quoted block of text — rendered as `<blockquote>`.
  *
  * @kind component
- * @example <Blockquote>To be or not to be.</Blockquote>
  * @see https://shelving.cc/ui/Blockquote
  */
 export function Blockquote({ children, className, ...props }: BlockquoteProps): ReactElement {

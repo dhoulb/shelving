@@ -11,7 +11,7 @@
 		--label-weight: var(--weight-label);
 		--label-size: var(--size-label);
 		--label-leading: var(--leading-auto);
-		--definitions-label-case: var(--case-label);
+		--label-case: var(--case-label);
 	}
 
 	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
@@ -31,7 +31,7 @@
 		font-weight: var(--label-weight);
 		font-size: var(--label-size);
 		line-height: var(--label-leading);
-		text-transform: var(--definitions-label-case);
+		text-transform: var(--label-case);
 		color: var(--label-color);
 	}
 }

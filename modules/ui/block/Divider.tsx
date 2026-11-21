@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import type { ClassProps } from "../util/props.js";
@@ -15,10 +16,10 @@ export interface DividerProps extends BlockVariants, ClassProps {}
 /**
  * Horizontal rule separating blocks of content — rendered as `<hr>`.
  *
- * @example <Divider />
+ * @kind component
  * @see https://shelving.cc/ui/Divider
  */
-export function Divider({ className, ...props }: DividerProps) {
+export function Divider({ className, ...props }: DividerProps): ReactElement {
 	return (
 		<hr
 			className={getClass(
