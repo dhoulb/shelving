@@ -76,6 +76,8 @@ export async function buildApp(sourceDir: AbsolutePath, packageJson: AbsolutePat
 			outdir: tempdir,
 			target: "bun",
 			naming: { entry: "[name]-[hash].[ext]", asset: "[name]-[hash].[ext]" },
+			// Production React skips the dev-only prop checks and warnings, which roughly halves render time.
+			define: { "process.env.NODE_ENV": JSON.stringify("production") },
 			minify: false,
 			external: ["typescript"],
 		});
