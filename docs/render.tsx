@@ -29,6 +29,8 @@ export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script:
 	const paths: AbsolutePath[] = [...pages, "/search", "/playground"];
 	const markdown = new Set(pages);
 
+	// Rendering is synchronous, so start each file write and keep rendering; wait for every write at the end.
+	const writes: Promise<unknown>[] = [];
 	for (const path of paths) {
 		// Raw meta for this page — embedded in the HTML so the browser can rebuild the identical app while hydrating.
 		// `path` is site-absolute (`/util`); the `.` prefix resolves it *under* `APP_URL`'s subfolder, not its origin.
@@ -54,9 +56,15 @@ export async function renderApp(tree: TreeElement, outdir: AbsolutePath, script:
 			</HTML>,
 		)}`;
 		const filePath = path === "/" ? join(outdir, "index.html") : join(outdir, path.slice(1), "index.html");
-		await mkdir(dirname(filePath), { recursive: true });
-		await Bun.write(filePath, html);
+		writes.push(_writeFile(filePath, html));
 	}
+	await Promise.all(writes);
 
 	return paths.length;
+}
+
+/** Write `content` to `filePath`, making its directory first. */
+async function _writeFile(filePath: string, content: string): Promise<void> {
+	await mkdir(dirname(filePath), { recursive: true });
+	await Bun.write(filePath, content);
 }

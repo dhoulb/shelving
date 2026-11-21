@@ -77,7 +77,7 @@ bun run firebase      # DBProvider contract suite against the Firestore emulator
 bun run postgres      # DBProvider contract suite against a real PostgreSQL
 ```
 
-`bun run postgres` (`scripts/postgres.ts`) connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database with fixture tables, runs the suite, then drops the database. Both service suites run in CI on every PR (`fix.yaml`) and before every release (`release.yaml`), in parallel with `bun run test`.
+`bun run postgres` (`scripts/postgres.ts`) connects to the server at `POSTGRES_URL` (default `postgres://postgres:postgres@127.0.0.1:5432/postgres`), creates a fresh `shelving-test` database with fixture tables, runs the suite, then drops the database. Both service suites run in CI (`fix.yaml`) on every PR and every push to `main`, in parallel with `bun run test`. A passing `fix.yaml` run on `main` starts the release (`release.yaml`), so the checks run once per push. In CI the Firebase job uses a cached `firebase` CLI from `.github/actions/firebase-tools` (change the firebase-tools version there).
 
 **To build the dist:**
 

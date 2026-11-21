@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, use, useMemo } from "react";
+import { createContext, type ReactNode, use } from "react";
 import { flattenTree, type TreeElement } from "../../util/tree.js";
 
 /**
@@ -14,7 +14,7 @@ TreeContext.displayName = "TreeContext";
 /**
  * Provide a tree to descendants as a flattened lookup map (see `flattenTree()`).
  *
- * - Flattens `tree` **once** (memoised) when set — not on every lookup in every element.
+ * - Flattens each `tree` **once** per parent map, cached across renders and render roots — not on every lookup, and not again when a static build renders the same tree for every page.
  * - Merges onto any parent `<TreeProvider>`'s map, so cross-references resolve across an entire nested set of trees; the outer (parent) tree wins on collision.
  *
  * @kind component
@@ -23,8 +23,25 @@ TreeContext.displayName = "TreeContext";
  */
 export function TreeProvider({ tree, children }: { readonly tree: TreeElement; readonly children: ReactNode }): ReactNode {
 	const parent = use(TreeContext);
-	const map = useMemo(() => flattenTree(tree, parent), [tree, parent]);
-	return <TreeContext value={map}>{children}</TreeContext>;
+	return <TreeContext value={_getTreeMap(tree, parent)}>{children}</TreeContext>;
+}
+
+/** Cache of flattened maps, keyed by tree, then by parent map. Weak keys let unused trees be collected. */
+const _TREE_MAPS = new WeakMap<TreeElement, WeakMap<ReadonlyMap<string, TreeElement>, ReadonlyMap<string, TreeElement>>>();
+
+/** Get the flattened map for `tree` merged onto `parent`, from the cache when possible. */
+function _getTreeMap(tree: TreeElement, parent: ReadonlyMap<string, TreeElement>): ReadonlyMap<string, TreeElement> {
+	let byParent = _TREE_MAPS.get(tree);
+	if (!byParent) {
+		byParent = new WeakMap();
+		_TREE_MAPS.set(tree, byParent);
+	}
+	let map = byParent.get(parent);
+	if (!map) {
+		map = flattenTree(tree, parent);
+		byParent.set(parent, map);
+	}
+	return map;
 }
 
 /**
