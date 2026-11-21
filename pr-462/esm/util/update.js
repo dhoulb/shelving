@@ -1,0 +1,1 @@
+import{fr,Qe}from"../chunk-bbvx4fyp.js";import"../chunk-j04qpgne.js";import"../chunk-pxc34xas.js";import"../chunk-ykqraqzg.js";import"../chunk-9vdmjjxa.js";import"../chunk-vxs762pt.js";import"../chunk-6gmvjmvq.js";export{fr as getUpdates,Qe as updateData};
