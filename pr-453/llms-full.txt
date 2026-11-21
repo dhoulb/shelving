@@ -22070,7 +22070,7 @@ A grid container that arranges its children in equal-width columns. Renders a `<
 **Things to know:**
 
 - Set `columns` to `1` to `8`. The default is `2`. Each column has the same width, and long content cannot make one column wider.
-- Set `gap` to change the space between cells. The grid sets the outer margin of each child to `0`, so a child's `space` variant has no effect.
+- Set `gap` to change the space between cells. The grid sets the outer margin of each child to `0`, so a child's `space` variant has no effect. Each child also trims the outer margins of its own content, like the `trim` variant.
 - Pass `as` to render a different element. Use `as="ul"` or `as="ol"` for a list of items, and give each child as an `<li>`. The grid removes the list markers.
 - It composes the standard block variants (`space`, `padding`, `indent`, `width`, `color`, and typography). See `getGridClass()` for the grid variants.
 
@@ -25901,7 +25901,7 @@ Show a code example next to a live preview of it, on a simple phone. The docs si
 - The preview is a `<DocumentationFrame>`. It runs in the browser, with the raw shelving styles and none of the docs site styles.
 - The code can import from `shelving/*`, `react`, and `react-dom` only. Any other import fails.
 - Each top-level expression in the code shows in the preview, so a snippet needs no `return` or export. A default export that is a component or an element shows too.
-- Add a `desktop` flag to show the preview in a browser window under the code, not on a phone: ` ```tsx live desktop "Sidebar layout" `. Use it for a wide preview, such as `<SidebarLayout>` or a big table. The window grows out of the text column to each side, up to `--documentation-live-desktop-width`, inside the nearest size container. `<DocumentationPage>` makes its body a size container.
+- Add a `desktop` flag to show the preview in a browser window under the code, not on a phone: ` ```tsx live desktop "Sidebar layout" `. Use it for a wide preview, such as `<SidebarLayout>` or a big table. The window grows out of the text column to each side, up to `--documentation-live-desktop-width`, inside the nearest size container. `<DocumentationPage>` makes its body a size container. On a screen narrower than 48rem the window zooms out to half size (40% below 30rem), so the preview still looks like a desktop.
 - The phone is light grey, not the tint colour, so it suggests a device without competing with the preview. Its screen is square, with a fixed height, and scrolls when the preview is taller.
 - "Open in playground" under the phone opens the code in `<DocumentationPlaygroundPage>`, where you can change it.
 
@@ -37976,7 +37976,7 @@ The `trim` variant prop trims the start margin of a block's first child and the 
 
 **Things to know:**
 
-- Blocks keep their outer margins as the first or last child. In normal flow a child's margin merges with its parent's margin, so most containers need no trim. `<Row>`, `<Column>` and `<Grid>` set every child's margin to 0, so they need no trim either.
+- Blocks keep their outer margins as the first or last child. In normal flow a child's margin merges with its parent's margin, so most containers need no trim. `<Row>`, `<Column>` and `<Grid>` set every child's margin to 0 and trim each child's content, so the gap is the only space between children. They need no trim either.
 - `<Card>`, `<Panel>`, `<Details>` and `<Blockquote>` trim by default. Set `trim={false}` to keep the margins. `<Modal>`, the `<Popover>` panel and table cells always trim.
 - Where the browser has `margin-trim`, it trims the margins itself, also margins that pass through a child from deeper down. Other browsers use a fallback that trims the first and last children three levels deep.
 - The fallback skips a child hidden with `display: none`. React hides old content that way while a `<Suspense>` fallback shows after it, so a loading spinner gets the same margin as the content it replaces.

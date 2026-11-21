@@ -18,7 +18,7 @@ Show a code example next to a live preview of it, on a simple phone. The docs si
 - The preview is a `<DocumentationFrame>`. It runs in the browser, with the raw shelving styles and none of the docs site styles.
 - The code can import from `shelving/*`, `react`, and `react-dom` only. Any other import fails.
 - Each top-level expression in the code shows in the preview, so a snippet needs no `return` or export. A default export that is a component or an element shows too.
-- Add a `desktop` flag to show the preview in a browser window under the code, not on a phone: ` ```tsx live desktop "Sidebar layout" `. Use it for a wide preview, such as `<SidebarLayout>` or a big table. The window grows out of the text column to each side, up to `--documentation-live-desktop-width`, inside the nearest size container. `<DocumentationPage>` makes its body a size container.
+- Add a `desktop` flag to show the preview in a browser window under the code, not on a phone: ` ```tsx live desktop "Sidebar layout" `. Use it for a wide preview, such as `<SidebarLayout>` or a big table. The window grows out of the text column to each side, up to `--documentation-live-desktop-width`, inside the nearest size container. `<DocumentationPage>` makes its body a size container. On a screen narrower than 48rem the window zooms out to half size (40% below 30rem), so the preview still looks like a desktop.
 - The phone is light grey, not the tint colour, so it suggests a device without competing with the preview. Its screen is square, with a fixed height, and scrolls when the preview is taller.
 - "Open in playground" under the phone opens the code in `<DocumentationPlaygroundPage>`, where you can change it.
 
