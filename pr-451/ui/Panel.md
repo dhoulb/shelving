@@ -22,7 +22,7 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - `plain` removes the background but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
 - `solid` paints a strong fill (`--tint-50`) with light text, for a hero or call-to-action band.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
-- Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
+- Panels have 1px top and bottom borders by default. Set `--panel-stroke` to `0` to remove them; the first and last panel drop them so the page doesn't gain stray edge lines.
 
 ## Usage
 
@@ -75,19 +75,19 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 
 `Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
-| Variable                   | Styles                                                                     | Default                                    |
-| -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------ |
-| `--panel-background`       | Surface fill                                                               | `var(--tint-90)`                           |
-| `--panel-color`            | Text colour                                                                | `var(--tint-00)`                           |
-| `--panel-plain-background` | Surface fill of a `plain` panel                                            | `transparent`                              |
-| `--panel-solid-background` | Surface fill of a `solid` panel                                            | `var(--tint-50)`                           |
-| `--panel-solid-color`      | Text colour of a `solid` panel                                             | `var(--tint-100)`                          |
-| `--panel-border`           | Top/bottom border shorthand                                                | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke`           | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0`                                        |
-| `--panel-padding`          | Block padding (top + bottom)                                               | `var(--space-section)` (2rem)              |
-| `--panel-indent`           | Inline padding (left + right) keeping content off the edges                | `var(--space-normal)` (16px)               |
+| Variable                   | Styles                                                      | Default                                    |
+| -------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| `--panel-background`       | Surface fill                                                | `var(--tint-90)`                           |
+| `--panel-color`            | Text colour                                                 | `var(--tint-00)`                           |
+| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                              |
+| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`                           |
+| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`                          |
+| `--panel-border`           | Top/bottom border shorthand                                 | `var(--panel-stroke) solid var(--tint-80)` |
+| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)               |
+| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem)              |
+| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)               |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, `--space-normal`, and `--stroke-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
 
 
 ## Signatures
