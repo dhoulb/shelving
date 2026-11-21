@@ -31,12 +31,19 @@ import { Section, Heading, Definitions } from "shelving/ui";
 
 ### Landmark elements
 
-```tsx
-import { Header, Nav, Footer } from "shelving/ui";
+```tsx live
+import { Footer, Header, Link, Paragraph, Section, Small, Subheading, Title } from "shelving/ui";
 
-<Header><Title>Welcome</Title></Header>
-<Nav><Link href="/">Home</Link></Nav>
-<Footer><Small>© 2026</Small></Footer>
+<Header indent="normal">
+	<Title>Welcome</Title>
+</Header>
+<Section indent="normal">
+	<Subheading>Get started</Subheading>
+	<Paragraph>Read the <Link href="https://shelving.cc/guides">guides</Link> first.</Paragraph>
+</Section>
+<Footer indent="normal">
+	<Small>© 2026</Small>
+</Footer>
 ```
 
 ## Styling

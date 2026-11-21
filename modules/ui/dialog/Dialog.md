@@ -26,6 +26,43 @@ A native `<dialog>` element opened in modal mode. It opens via `showModal()` whe
 
 ## Usage
 
+### Try it
+
+```tsx live "A dialog"
+import { startTransition, useState } from "react";
+import { Button, Dialog, Modal, Paragraph, Row, Subheading } from "shelving/ui";
+
+function DeleteButton() {
+	const [open, setOpen] = useState(false);
+	const close = () => startTransition(() => setOpen(false));
+	return (
+		<>
+			<Button status="error" onClick={() => startTransition(() => setOpen(true))}>
+				Delete project
+			</Button>
+			{open && (
+				<Dialog onClose={close}>
+					<Modal>
+						<Subheading>Delete this project?</Subheading>
+						<Paragraph>You cannot undo this.</Paragraph>
+						<Row gap="small" right>
+							<Button plain onClick={close}>
+								Cancel
+							</Button>
+							<Button solid status="error" onClick={close}>
+								Delete
+							</Button>
+						</Row>
+					</Modal>
+				</Dialog>
+			)}
+		</>
+	);
+}
+
+<DeleteButton />;
+```
+
 ### Declarative
 
 Mount `<Dialog>` directly when its lifetime matches a React state variable.

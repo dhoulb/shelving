@@ -38,6 +38,30 @@ The shared value-input prop contract (`ValueInputProps<O>`):
 
 ## Usage
 
+### Every input
+
+`<Form>` renders a `SchemaInput` for each property of its schema, so one form shows each type of input.
+
+```tsx live "Every input"
+import { ArraySchema, BooleanSchema, ChoiceSchema, DATA, DateSchema, EmailSchema, NumberSchema, StringSchema } from "shelving/schema";
+import { Form, Notices } from "shelving/ui";
+
+const SCHEMA = DATA({
+	name: new StringSchema({ title: "Name", min: 1 }),
+	email: new EmailSchema({ title: "Email" }),
+	bio: new StringSchema({ title: "Bio", multiline: true, rows: 3 }),
+	age: new NumberSchema({ title: "Age", min: 0 }),
+	birthday: new DateSchema({ title: "Birthday" }),
+	newsletter: new BooleanSchema({ title: "Send me the newsletter" }),
+	plan: new ChoiceSchema({ title: "Plan", options: { free: "Free", pro: "Pro", team: "Team" } }),
+	country: new ChoiceSchema({ title: "Country", input: "select", options: { gb: "United Kingdom", ie: "Ireland", fr: "France", de: "Germany" } }),
+	tags: new ArraySchema({ title: "Tags", items: new StringSchema({ min: 1 }) }),
+});
+
+<Form schema={SCHEMA} submit="Save" onSubmit={() => "Saved"} />
+<Notices />
+```
+
 ### Dispatch on a single schema
 
 ```tsx live

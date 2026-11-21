@@ -12,11 +12,22 @@ A wrapper that applies cohesive longform typography to a subtree of mixed HTML c
 
 ### Prose content from a renderer
 
-```tsx
-import { Prose, Markup } from "shelving/ui";
+```tsx live
+import { Markup, Prose } from "shelving/ui";
+
+const BODY = `## Release notes
+
+Buttons now have **wider** side padding, and two new looks:
+
+- \`square\` for an icon.
+- \`round\` for a circle.
+
+> Pull main to get the new buttons.
+
+Read the [docs](https://shelving.cc/ui/Button) for more.`;
 
 <Prose>
-	<Markup>{article.body}</Markup>
+	<Markup>{BODY}</Markup>
 </Prose>;
 ```
 
