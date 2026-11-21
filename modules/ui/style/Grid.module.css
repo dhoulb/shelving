@@ -57,4 +57,35 @@
 	.columns-8 {
 		--grid-columns: 8;
 	}
+
+	/* In a gap layout the gap is the only spacing, so each child also trims the outer margins of its own content
+	 * (e.g. the first and last `<p>` in a `<Prose>`). A flex or grid item keeps those margins inside its own box. */
+	@supports (margin-trim: block) {
+		.grid.grid > * {
+			margin-trim: block;
+		}
+	}
+
+	/* Fallback until every browser has `margin-trim`: the same selectors as `.trim` in `Trim.module.css`, one level down. */
+	@supports not (margin-trim: block) {
+		.grid.grid > * > :nth-child(1 of :not([style*="display: none"])),
+		.grid.grid > * > :nth-child(1 of :not([style*="display: none"])) > :nth-child(1 of :not([style*="display: none"])),
+		.grid.grid
+			> *
+			> :nth-child(1 of :not([style*="display: none"]))
+			> :nth-child(1 of :not([style*="display: none"]))
+			> :nth-child(1 of :not([style*="display: none"])) {
+			margin-block-start: 0;
+		}
+
+		.grid.grid > * > :nth-last-child(1 of :not([style*="display: none"])),
+		.grid.grid > * > :nth-last-child(1 of :not([style*="display: none"])) > :nth-last-child(1 of :not([style*="display: none"])),
+		.grid.grid
+			> *
+			> :nth-last-child(1 of :not([style*="display: none"]))
+			> :nth-last-child(1 of :not([style*="display: none"]))
+			> :nth-last-child(1 of :not([style*="display: none"])) {
+			margin-block-end: 0;
+		}
+	}
 }
