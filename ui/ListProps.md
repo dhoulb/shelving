@@ -2,9 +2,9 @@
 
 - Kind: interface
 - Import: `import { ListProps } from "shelving/ui";`
-- Extends: `GapVariants`
+- Extends: `BlockVariants`
 
-Props for `List` — colour, gap, space, and typography variants plus its list items and an `ordered` toggle.
+Props for `List` — space and typography variants plus its list items and an `ordered` toggle.
 
 ## Signatures
 

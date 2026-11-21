@@ -34,8 +34,6 @@ The docs are also published as Markdown for LLMs and coding agents:
 
 See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 
-## Modules
-
 
 ## Pages
 
@@ -10851,6 +10849,7 @@ Fenced code blocks
 - Closing fence must be exactly the same as the opening fence, and can be made of three or more backticks, or three or more `~~~` tildes.
 - If there's no closing fence the code block will run to the end of the current string.
 - The info string after the opening fence is parsed with `parseFencedInfo()`: only its title shows, as a caption.
+- A code block with a title renders as a `<figure>` with a `<figcaption>`. A code block with no title renders as a plain `<pre>`.
 - Markdown-style four-space indent syntax is not supported (only fenced code since it's less confusing and more common).
 
 ## Examples
@@ -20458,6 +20457,7 @@ The components below are listed in the index following this page; this is the sh
 - [Image](ui/Image.md): Image block — renders an <img> with space and width variants applied.
 - [Label](ui/Label.md): Label heading, a <h3> with a labelly appearance (UPPERCASE but with a smaller text size).
 - [List](ui/List.md): List block — wraps each child in an <li> and renders an <ul> or <ol>.
+- [ListItem](ui/ListItem.md): One item in a <List> — rendered as <li>.
 - [Panel](ui/Panel.md): Full-width vertical region that paints the current surface colour. Use to break a page into stacked sections. Has zero block-space (Panels butt against each other); set its vertical breathing room with the padding variant (<Panel padding="large">, <Panel padding="xxlarge"> etc.).
 - [Paragraph](ui/Paragraph.md): Paragraph block of body text — rendered as <p>.
 - [Preformatted](ui/Preformatted.md): Preformatted block of text — rendered as <pre>.
@@ -20720,7 +20720,8 @@ The components below are listed in the index following this page; this is the sh
 - [HeadingProps](ui/HeadingProps.md): Props shared by <Title>, Heading, and <Subheading> — colour, space, and typography variants plus a heading-level override.
 - [ImageProps](ui/ImageProps.md): Props for Image — an src, optional alt text, plus space and width variants.
 - [LabelProps](ui/LabelProps.md): Props for Label — identical to HeadingProps.
-- [ListProps](ui/ListProps.md): Props for List — colour, gap, space, and typography variants plus its list items and an ordered toggle.
+- [ListProps](ui/ListProps.md): Props for List — space and typography variants plus its list items and an ordered toggle.
+- [ListItemProps](ui/ListItemProps.md): Props for ListItem — space, padding, trim, and typography variants.
 - [PanelProps](ui/PanelProps.md): Props for Panel — colour, status, and typography variants plus optional children.
 - [ParagraphProps](ui/ParagraphProps.md): Props for Paragraph — colour, space, and typography variants.
 - [PreformattedProps](ui/PreformattedProps.md): Props for Preformatted — space, colour, typography, width, and padding variants plus a wrap toggle.
@@ -21657,7 +21658,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-hover-background` | Surface fill when a navigable card is hovered                                           | `var(--tint-95)`                               |
 | `--card-color`            | Text colour                                                                             | `var(--tint-00)`                               |
 | `--card-border`           | Border shorthand                                                                        | `var(--card-stroke) solid var(--tint-80)`      |
-| `--card-stroke`           | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border              | `0`                                            |
+| `--card-stroke`           | Border thickness — set `0` to hide the border                                           | `var(--stroke-normal)` (1px)                   |
 | `--card-radius`           | Corner radius                                                                           | `var(--radius-normal)` (16px)                  |
 | `--card-padding`          | Inner top and bottom padding (one length)                                               | `var(--space-normal)` (16px)                   |
 | `--card-indent`           | Inner left and right padding (one length)                                               | `var(--space-normal)` (16px)                   |
@@ -21666,7 +21667,7 @@ import { Card, Subheading } from "shelving/ui";
 | `--card-transition`       | Transition                                                                              | `all var(--duration-fast)` (150ms)             |
 | `--card-focus-border`     | Focus outline, drawn on the navigable overlay so it shows above children like `<Panel>` | `var(--stroke-focus) solid var(--color-focus)` |
 
-**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
+**Global tokens it reads** — move these to retheme broadly rather than overriding ladder steps directly: the tint ladder `--tint-00` / `--tint-80` / `--tint-90` / `--tint-95`, plus `--space-normal`, `--space-paragraph`, `--radius-normal`, `--stroke-normal`, `--stroke-focus`, `--color-focus`, and `--duration-fast`.
 
 ```css
 /* Theme: raised cards with tighter corners. */
@@ -22346,9 +22347,9 @@ Label({ level = "3", children, className, ...props }: LabelProps): ReactElement
 
 - Kind: interface
 - Import: `import { ListProps } from "shelving/ui";`
-- Extends: `GapVariants`
+- Extends: `BlockVariants`
 
-Props for `List` — colour, gap, space, and typography variants plus its list items and an `ordered` toggle.
+Props for `List` — space and typography variants plus its list items and an `ordered` toggle.
 
 ## Signatures
 
@@ -22376,14 +22377,15 @@ Props for `List` — colour, gap, space, and typography variants plus its list i
 
 List block — wraps each child in an `<li>` and renders an `<ul>` or `<ol>`.
 - Pass `ordered` to render an ordered `<ol>` instead of the default unordered `<ul>`.
+- A `<ListItem>` child is not wrapped again.
 
 A bulleted or numbered list. Renders a `<ul>` by default (or an `<ol>` when `ordered` is set) and wraps each child in its own `<li>`, so you pass the items as children rather than writing the `<li>` markup yourself.
 
 **Things to know:**
 
 - Pass `ordered` to render an `<ol>` with numbered markers; the default is an unordered `<ul>`.
-- Each child becomes one list item — give it plain content, not an `<li>`.
-- Items are laid out as a flex column; tune the spacing between them with the `gap` variant (`<List gap="small">`).
+- Each child becomes one list item — give it plain content, not an `<li>`. A `<ListItem>` child is not wrapped again, so use it to set the space or typography of one item.
+- Items stay in normal flow. Each item has a 12px block margin (`--list-item-space`), and margins merge. A `<p>` inside an item (as in a loose Markdown list) brings its own 16px margin, so those items are 16px apart.
 - Like the other block components it carries its own outer block margin, also as the first or last child. Set `space="none"` to remove it.
 - Inside `<Prose>` a raw `<ul>` / `<ol>` picks up the same styling, so Markdown-rendered lists match component ones.
 
@@ -22398,12 +22400,20 @@ import { List } from "shelving/ui";
 <List ordered>{["First", "Second", "Third"]}</List>
 ```
 
-### Tighter spacing
+### Space on one item
 
-```tsx
-import { List } from "shelving/ui";
+```tsx live
+import { List, ListItem } from "shelving/ui";
 
-<List gap="small">{items.map(item => item.label)}</List>;
+<List>
+	{[
+		"Apples",
+		"Oranges",
+		<ListItem key="pears" space="large">
+			Pears
+		</ListItem>,
+	]}
+</List>;
 ```
 
 ## Styling
@@ -22413,11 +22423,11 @@ import { List } from "shelving/ui";
 | Variable              | Styles                               | Default                               |
 | --------------------- | ------------------------------------ | ------------------------------------- |
 | `--list-space`        | Outer block margin (top + bottom)    | `var(--space-paragraph)` (16px)       |
-| `--list-gap`          | Space between items                  | `var(--space-xsmall)`                 |
+| `--list-item-space`   | Block margin of each `li`            | `var(--space-small)` (12px)           |
 | `--list-indent`       | Inline start padding (marker gutter) | `1.125em` unordered / `1.8em` ordered |
 | `--list-marker-color` | Bullet / number colour               | `var(--tint-80)`                      |
 
-**Global tokens it reads:** `--space-paragraph`, `--space-xsmall`, and the tint-ladder step `--tint-80`. The `gap` variant comes from the shared `shelving/ui` styling system.
+**Global tokens it reads:** `--space-paragraph`, `--space-small`, and the tint-ladder step `--tint-80`.
 
 
 ## Signatures
@@ -22433,6 +22443,100 @@ List({ children, ordered = false, className, ...props }: ListProps): ReactElemen
 | `props` | `ListProps` |  |
 | `.children` | `ImmutableArray<ReactNode>` | Read only. |
 | `.ordered` | `boolean \| undefined` | Read only. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
+
+
+---
+
+# ListItemProps
+
+- Kind: interface
+- Import: `import { ListItemProps } from "shelving/ui";`
+- Extends: `BlockVariants`
+
+Props for `ListItem` — space, padding, trim, and typography variants.
+
+## Signatures
+
+```ts
+{}
+```
+
+
+---
+
+# ListItem
+
+- Kind: component
+- Import: `import { ListItem } from "shelving/ui";`
+
+One item in a `<List>` — rendered as `<li>`.
+
+One item in a list — renders an `<li>`. Use it inside `<List>`, or inside a raw `<ul>` / `<ol>`, when one item needs its own space, padding, trim, or typography.
+
+**Things to know:**
+
+- A plain `li` in a list already gets the list item space. `<ListItem>` adds the block variants on top (`space`, `padding`, `trim`, `size`, …).
+- `<List>` does not wrap a `<ListItem>` child in a second `<li>`.
+- Margins merge in normal flow. A `<p>` inside the item brings its own margin. Set `trim` to remove the outer margins of the first and last child.
+
+## Usage
+
+### Item with more space
+
+```tsx live
+import { List, ListItem } from "shelving/ui";
+
+<List>
+	{[
+		"Apples",
+		<ListItem key="oranges" space="large">
+			Oranges
+		</ListItem>,
+		"Pears",
+	]}
+</List>;
+```
+
+### Item with paragraphs
+
+```tsx live
+import { List, ListItem, Paragraph } from "shelving/ui";
+
+<List>
+	{[
+		<ListItem key="a" trim>
+			<Paragraph>First paragraph.</Paragraph>
+			<Paragraph>Second paragraph.</Paragraph>
+		</ListItem>,
+		"Pears",
+	]}
+</List>;
+```
+
+## Styling
+
+`ListItem` has no hooks of its own. Its block margin comes from the parent list: `--list-item-space` on `<List>` (default `var(--space-small)`, 12px). The marker colour is `--list-marker-color` on `<List>`.
+
+**Global tokens it reads:** `--space-small` (through the list).
+
+
+## Signatures
+
+```ts
+ListItem({ children, className, ...props }: ListItemProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `ListItemProps` |  |
 
 ## Returns
 
@@ -22493,10 +22597,10 @@ A full-width vertical region that paints the current surface colour. Use panels 
 - Inline padding ("indent") keeps content off the edges by default. Override it per-property with `--panel-indent`, or change it with the shared `indent` variant (`<Panel indent="large">`, `<Panel indent="none">`).
 - Trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - It is `display: flow-root`, so the margins of its children stay inside it, also with `padding="none"`.
-- `plain` removes the background but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
+- `plain` removes the background and makes the border transparent, but keeps the spacing, so plain and painted panels line up. `color=` still tints the content of a plain panel.
 - `solid` paints a strong fill (`--tint-50`) with light text, for a hero or call-to-action band.
 - `color=` / `status=` move the tint anchor for the whole panel scope, so the surface and text re-derive together and cascade into nested content.
-- Panels have no border by default. Set `--panel-stroke` (or `--panel-border`) to add top and bottom borders; the first and last panel drop them so the page doesn't gain stray edge lines.
+- Panels have 1px top and bottom borders by default. Set `--panel-stroke` to `0` to remove them; the first and last panel drop them so the page doesn't gain stray edge lines.
 
 ## Usage
 
@@ -22549,19 +22653,20 @@ import { Block, Button, Panel, Paragraph, ResetLayout, Title } from "shelving/ui
 
 `Panel` paints from the [tint ladder](/ui/TINT_CLASS); apply `color=` / `status=` (on the panel or an ancestor scope) to recolour the whole scope at once — surface and text re-derive together — or reach for a per-property hook for a single change.
 
-| Variable                   | Styles                                                                     | Default                                    |
-| -------------------------- | -------------------------------------------------------------------------- | ------------------------------------------ |
-| `--panel-background`       | Surface fill                                                               | `var(--tint-90)`                           |
-| `--panel-color`            | Text colour                                                                | `var(--tint-00)`                           |
-| `--panel-plain-background` | Surface fill of a `plain` panel                                            | `transparent`                              |
-| `--panel-solid-background` | Surface fill of a `solid` panel                                            | `var(--tint-50)`                           |
-| `--panel-solid-color`      | Text colour of a `solid` panel                                             | `var(--tint-100)`                          |
-| `--panel-border`           | Top/bottom border shorthand                                                | `var(--panel-stroke) solid var(--tint-80)` |
-| `--panel-stroke`           | Border thickness — set it (e.g. `var(--stroke-normal)`) to show the border | `0`                                        |
-| `--panel-padding`          | Block padding (top + bottom)                                               | `var(--space-section)` (2rem)              |
-| `--panel-indent`           | Inline padding (left + right) keeping content off the edges                | `var(--space-normal)` (16px)               |
+| Variable                   | Styles                                                      | Default                                    |
+| -------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| `--panel-background`       | Surface fill                                                | `var(--tint-90)`                           |
+| `--panel-color`            | Text colour                                                 | `var(--tint-00)`                           |
+| `--panel-plain-background` | Surface fill of a `plain` panel                             | `transparent`                              |
+| `--panel-plain-border`     | Top/bottom border shorthand of a `plain` panel              | `var(--panel-stroke) solid transparent`    |
+| `--panel-solid-background` | Surface fill of a `solid` panel                             | `var(--tint-50)`                           |
+| `--panel-solid-color`      | Text colour of a `solid` panel                              | `var(--tint-100)`                          |
+| `--panel-border`           | Top/bottom border shorthand                                 | `var(--panel-stroke) solid var(--tint-80)` |
+| `--panel-stroke`           | Border thickness — set `0` to hide the border               | `var(--stroke-normal)` (1px)               |
+| `--panel-padding`          | Block padding (top + bottom)                                | `var(--space-section)` (2rem)              |
+| `--panel-indent`           | Inline padding (left + right) keeping content off the edges | `var(--space-normal)` (16px)               |
 
-**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, and `--space-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
+**Global tokens it reads:** the tint-ladder steps `--tint-00` / `--tint-50` / `--tint-80` / `--tint-90` / `--tint-100`, plus `--space-section`, `--space-normal`, and `--stroke-normal`. The shared `padding` variant overrides `--panel-padding`; the shared `indent` variant overrides `--panel-indent`.
 
 
 ## Signatures
@@ -23594,6 +23699,7 @@ Backgrounds paint to the button's true edge: `background-origin` is set to `bord
 | `--button-transition`              | Transition                                          | `all var(--duration-fast)` (150ms)                                                 |
 | `--button-focus-border`            | Focus outline                                       | `var(--stroke-focus) solid var(--color-focus)`                                     |
 | `--button-disabled-opacity`        | Opacity when disabled                               | `0.5`                                                                              |
+| `--button-solid-border`            | Border in every state when `solid`                  | `var(--button-stroke) solid var(--tint-45)` (one step darker than the fill)        |
 | `--button-solid-background`        | Surface fill when `solid`                           | `var(--tint-50)`                                                                   |
 | `--button-solid-text`              | Label colour when `solid`                           | `var(--tint-100)` (white)                                                          |
 | `--button-solid-hover-background`  | Surface fill on hover / focus when `solid`          | `var(--tint-55)`                                                                   |
@@ -31556,7 +31662,7 @@ A full-viewport layout with a fixed-width side column next to a content slot. Th
 - Inside a `<Navigation>` context the drawer closes itself whenever the route changes (e.g. tapping a sidebar link).
 - It is a frame only. The content slot does not scroll: fill it with `<Scroll vertical cover>` inside `<RouteCache>`, so each page scrolls in its own box. Content put in the slot without a scroll box does not scroll.
 - The sidebar stays outside the page cache, so it keeps its own scroll position and state as pages change.
-- The sidebar paints above the content slot, so its shadow (`--sidebar-layout-sidebar-shadow`) shows over the pages, even a page with its own background. The column is full height, so only the blur at its side shows, over the content. Set the hook to `none` to remove it.
+- The sidebar paints above the content slot, so its shadow (`--sidebar-layout-sidebar-shadow`) shows over the pages, even a page with its own background. The column is full height, so only the blur at the side of its shadow shows, over the content. A 1px tinted border (`--sidebar-layout-border`) divides the sidebar from the content by default.
 - On a narrow screen the menu button floats at the top right of the content slot, above the page.
 - Pages, error pages and loading states never render it themselves. Pick it above the router. See "Composing an app" on `<App>`.
 
@@ -31598,13 +31704,13 @@ To slide pages, put a transition around the `<RouteCache>`, inside the layout. T
 | `--sidebar-layout-color`              | Text colour for the layout (set on `body`, inherited by the content column) | `var(--tint-00)` (black)                        |
 | `--sidebar-layout-sidebar-background` | Sidebar column fill                                                         | `var(--tint-100)` (white, the same as the page) |
 | `--sidebar-layout-sidebar-color`      | Sidebar column text colour                                                  | `var(--tint-00)` (black)                        |
-| `--sidebar-layout-border`             | Divider between sidebar and content, e.g. `1px solid var(--tint-90)`        | `none`                                          |
+| `--sidebar-layout-border`             | Divider between sidebar and content                                         | `var(--stroke-normal) solid var(--tint-90)`     |
 | `--sidebar-layout-sidebar-shadow`     | Shadow of the sidebar column on a wide screen                               | `var(--shadow-normal)`                          |
 | `--sidebar-layout-shadow`             | Drop shadow of the open drawer on a narrow screen                           | `var(--shadow-large)`                           |
 
 The sidebar scrolls on its own. The content slot does not scroll: its `<Scroll vertical cover>` box does.
 
-**Global tokens it reads** — `--tint-00` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--shadow-normal`, `--shadow-large`, and `--color-backdrop`.
+**Global tokens it reads** — `--tint-00` / `--tint-90` / `--tint-100`, plus `--space-normal`, `--duration-normal`, `--stroke-normal`, `--shadow-normal`, `--shadow-large`, and `--color-backdrop`.
 
 
 ## Signatures
@@ -36493,12 +36599,12 @@ This module's main job is to **define and document the border-thickness design t
 
 The following `:root` variables are defined by this module and can be overridden in a theme file to adjust default styling across the whole app.
 
-| Variable          | Default                     | Used for                                       |
-| ----------------- | --------------------------- | ---------------------------------------------- |
-| `--stroke`        | `2px`                       | Base border thickness — the root of the scale. |
-| `--stroke-normal` | `calc(var(--stroke) * 1)`   | Default borders.                               |
-| `--stroke-thick`  | `calc(var(--stroke) * 1.5)` | Heavier borders.                               |
-| `--stroke-focus`  | `var(--stroke-thick)`       | Focus-outline thickness.                       |
+| Variable          | Default                   | Used for                                       |
+| ----------------- | ------------------------- | ---------------------------------------------- |
+| `--stroke`        | `1px`                     | Base border thickness — the root of the scale. |
+| `--stroke-normal` | `calc(var(--stroke) * 1)` | Default borders.                               |
+| `--stroke-thick`  | `calc(var(--stroke) * 2)` | Heavier borders.                               |
+| `--stroke-focus`  | `var(--stroke-thick)`     | Focus-outline thickness.                       |
 
 
 ## Signatures
@@ -39120,7 +39226,7 @@ TreeMenu({ tree }: TreeMenuProps): ReactNode
 
 Page renderer for a generic `tree-element` (a directory or file).
 
-- Shows the title, any absorbed prose content, and the element's children as a stack of cards.
+- Shows the title, any absorbed prose content, and the element's children as a stack of cards under a "Contents" heading.
 - Child cards cover both nested directories/files and the code symbols of a source file.
 
 ## Signatures
