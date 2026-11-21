@@ -181,7 +181,6 @@ See the `shelving/react` module for full usage.
 - [CollectionsDatabase](db/CollectionsDatabase.md): Convert a Collections array type to a database-style object mapping in { name: data } format.
 - [SQLTableColumn](db/SQLTableColumn.md): Column definition in a live SQL table, pairing a column name with its raw definition statement.
 - [SQLTable](db/SQLTable.md): Existing SQL table schema keyed by column name, as read back from the database.
-- [SQLColumn](db/SQLColumn.md): Generated SQL column mapped from a collection schema path, holding its column name, key, and JSON path.
 - [MockDBCall](db/MockDBCall.md): Structured log entry recording one operation performed through a MockDBProvider.
 - [DBOperation](db/DBOperation.md): Structured log entry recording a single database operation performed through a RecordingDBProvider.
 - [DBOperations](db/DBOperations.md): Readonly array of DBOperation entries, e.g. the log recorded by a RecordingDBProvider.

@@ -1,1 +1,1 @@
-import{Gi}from"../chunk-c2wf9p1g.js";export{Gi as WarningIcon};
+import{Qi}from"../chunk-5ktzx45y.js";export{Qi as WarningIcon};

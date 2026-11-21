@@ -4360,7 +4360,6 @@ See the `shelving/react` module for full usage.
 - [CollectionsDatabase](db/CollectionsDatabase.md): Convert a Collections array type to a database-style object mapping in { name: data } format.
 - [SQLTableColumn](db/SQLTableColumn.md): Column definition in a live SQL table, pairing a column name with its raw definition statement.
 - [SQLTable](db/SQLTable.md): Existing SQL table schema keyed by column name, as read back from the database.
-- [SQLColumn](db/SQLColumn.md): Generated SQL column mapped from a collection schema path, holding its column name, key, and JSON path.
 - [MockDBCall](db/MockDBCall.md): Structured log entry recording one operation performed through a MockDBProvider.
 - [DBOperation](db/DBOperation.md): Structured log entry recording a single database operation performed through a RecordingDBProvider.
 - [DBOperations](db/DBOperations.md): Readonly array of DBOperation entries, e.g. the log recorded by a RecordingDBProvider.
@@ -5268,6 +5267,9 @@ migrate(...collections: Collections): Promise<void>
 
 PostgreSQL migrator that inspects the live schema via `pg_catalog` tables to diff and migrate columns.
 
+- Types match what Bun's PostgreSQL client reads back: `text`, `integer`, `double precision`, `boolean`, and `jsonb` for JSON props.
+- Dates are `text`, because the client reads a `date` column as a `Date` object, not the string that `DateSchema` makes.
+
 ## Signatures
 
 ```ts
@@ -5290,6 +5292,8 @@ new PostgresMigrator<T>()
 - Extends: `SQLMigrator<T>`
 
 SQLite (and Cloudflare D1) migrator that uses `sqlite_master` as the schema source of truth.
+
+- Tables use `STRICT` mode. Booleans are `INTEGER`, and JSON props are `TEXT` with a `json_valid()` check.
 
 ## Signatures
 
@@ -5366,34 +5370,6 @@ Existing SQL table schema keyed by column name, as read back from the database.
 
 ---
 
-# SQLColumn
-
-- Kind: type
-- Import: `import { SQLColumn } from "shelving/db";`
-
-Generated SQL column mapped from a collection schema path, holding its column name, key, and JSON path.
-
-## Signatures
-
-```ts
-{
-	readonly column: string;
-	readonly key: string;
-	readonly path: string;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `column` | `string` | Read only. |
-| `key` | `string` | Read only. |
-| `path` | `string` | Read only. |
-
-
----
-
 # SQLMigrator
 
 - Kind: class
@@ -5402,6 +5378,9 @@ Generated SQL column mapped from a collection schema path, holding its column na
 
 Shared SQL migration logic that diffs collection schemas against live tables to produce migration statements.
 
+- A table has an `id` column, then one column for each top-level prop, the same layout that `SQLProvider` reads and writes.
+- Scalar props get a typed column. Arrays, dictionaries and nested data get a JSON column.
+- Prop columns allow `NULL`, so a column added to an existing table needs no default.
 - Subclasses implement backend-specific schema inspection and column definitions (e.g. SQLite, PostgreSQL).
 
 ## Signatures
@@ -5420,9 +5399,8 @@ new SQLMigrator<T>()
 
 - [SQLMigrator.migrate()](db/SQLMigrator/migrate.md): Run each statement from getMigrations() against the provider in order.
 - [SQLMigrator.getMigrations()](db/SQLMigrator/getMigrations.md): Compute the SQL statements needed to bring the tables into line with the given collection schemas, without executing them.
-- [SQLMigrator.getCreateTableQuery()](db/SQLMigrator/getCreateTableQuery.md): Build the CREATE TABLE statement for a collection, including its ID, data, and generated columns.
-- [SQLMigrator.getCreateTableColumns()](db/SQLMigrator/getCreateTableColumns.md): Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
-- [SQLMigrator.getGeneratedTableColumns()](db/SQLMigrator/getGeneratedTableColumns.md): Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.
+- [SQLMigrator.getCreateTableQuery()](db/SQLMigrator/getCreateTableQuery.md): Build the CREATE TABLE statement for a collection, with its id column and one column for each top-level prop.
+- [SQLMigrator.getCreateTableColumns()](db/SQLMigrator/getCreateTableColumns.md): Get the full set of columns for a collection's table: the id column, then one column for each top-level prop.
 
 
 ---
@@ -5437,7 +5415,7 @@ Run each statement from `getMigrations()` against the provider in order.
 ## Signatures
 
 ```ts
-migrate(...collections: Collections<number>): Promise<void>
+migrate(...collections: Collections): Promise<void>
 ```
 
 
@@ -5453,7 +5431,7 @@ Compute the SQL statements needed to bring the tables into line with the given c
 ## Signatures
 
 ```ts
-getMigrations(...collections: Collections<number>): Promise<readonly string[]>
+getMigrations(...collections: Collections): Promise<readonly string[]>
 ```
 
 
@@ -5464,12 +5442,12 @@ getMigrations(...collections: Collections<number>): Promise<readonly string[]>
 - Kind: method
 - Member of: `SQLMigrator`
 
-Build the `CREATE TABLE` statement for a collection, including its ID, data, and generated columns.
+Build the `CREATE TABLE` statement for a collection, with its `id` column and one column for each top-level prop.
 
 ## Signatures
 
 ```ts
-getCreateTableQuery(collection: Collection<string, number, T>): string
+getCreateTableQuery(collection: Collection<string, Identifier, T>): string
 ```
 
 
@@ -5480,28 +5458,12 @@ getCreateTableQuery(collection: Collection<string, number, T>): string
 - Kind: method
 - Member of: `SQLMigrator`
 
-Get the full set of columns for a collection's table: the ID column, data column, and generated columns.
+Get the full set of columns for a collection's table: the `id` column, then one column for each top-level prop.
 
 ## Signatures
 
 ```ts
-getCreateTableColumns(collection: Collection<string, number, T>): readonly SQLTableColumn[]
-```
-
-
----
-
-# SQLMigrator.getGeneratedTableColumns()
-
-- Kind: method
-- Member of: `SQLMigrator`
-
-Get the generated (computed) columns for a collection's table, derived from its schema's scalar properties.
-
-## Signatures
-
-```ts
-getGeneratedTableColumns(collection: Collection<string, number, T>): readonly SQLTableColumn[]
+getCreateTableColumns(collection: Collection<string, Identifier, T>): readonly SQLTableColumn[]
 ```
 
 
@@ -6586,7 +6548,7 @@ const provider = new MockDBProvider();
 
 Abstract PostgreSQL provider with JSONB function support for nested keys, array containment, and array mutations.
 
-The abstract SQL provider for PostgreSQL. `PostgresProvider` extends `SQLProvider` with PostgreSQL-specific behaviour: the `data` column is `jsonb NOT NULL`, generated columns use the `#>>` operator with a cast, and compatible numeric/string column type changes are applied in place with `ALTER COLUMN TYPE`.
+The abstract SQL provider for PostgreSQL. `PostgresProvider` extends `SQLProvider` with PostgreSQL-specific behaviour: `jsonb` operators for nested keys, array filters and array updates. Use `PostgresMigrator` to make the tables.
 
 It is abstract — a concrete subclass implements `exec()` against a specific PostgreSQL driver.
 
@@ -6867,7 +6829,7 @@ Abstract SQLite provider with JSON1 function support for nested keys, array cont
 
 Note: `with` and `omit` updates do not guarantee equality for de-duplication when working with nested objects or arrays.
 
-The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends `SQLProvider` with SQLite-specific behaviour: tables are created in `STRICT` mode, the `data` column is `TEXT NOT NULL CHECK (json_valid(data))`, and generated columns use `json_extract`.
+The abstract SQL provider for SQLite and Cloudflare D1. `SQLiteProvider` extends `SQLProvider` with SQLite-specific behaviour: JSON1 functions for nested keys, array filters and array updates, and decoding of booleans and JSON columns on read.
 
 It is abstract — a concrete subclass implements `exec()` against a specific SQLite driver.
 
@@ -6966,7 +6928,7 @@ Abstract database provider that implements CRUD and query operations by generati
 
 The abstract SQL base provider. `SQLProvider` implements the `DBProvider` surface in terms of SQL, leaving one method for concrete subclasses to provide: `exec<X>(strings, ...values)`, which runs a parameterised query and returns rows as plain objects.
 
-Each scalar field in a collection schema maps to a **generated column** extracted from the `data` JSON blob, so queries use indexed column comparisons. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnsupportedError`.
+A table has an `id` column, then one column for each top-level prop. Arrays, dictionaries and nested data are JSON columns. `SQLiteMigrator` and `PostgresMigrator` make tables in this layout. `SQLProvider` supports integer (`number` with `step: 1`) and string identifiers. Realtime sequences are not supported — `getItemSequence` / `getQuerySequence` throw `UnsupportedError`.
 
 Query writes (`setQuery()`, `updateQuery()`, `deleteQuery()`) ignore `$order` when the query has no `$limit`. With a `$limit`, they select the ids of the rows in a subquery (see `SQLProvider.sqlWriteClauses()`), because most databases do not accept `ORDER BY` or `LIMIT` in `UPDATE` and `DELETE`.
 
@@ -19798,6 +19760,8 @@ await provider.addItem(BASICS_COLLECTION, basic1);
 
 `testDBProvider()` registers the `DBProvider` contract suite: fixed cases that every provider must pass.
 
+`testSQLMigrator()` checks a `SQLMigrator` against its real database. It checks that the fixture tables need no changes, then makes a table and changes it with three versions of a collection (add, drop and change columns), and checks that the provider can still read and write it.
+
 `testDBDifferential()` runs the same seeded random operations against a provider and against a reference `MemoryDBProvider`, and fails at the first difference in a result, an error, or the stored items. A failure names the seed and lists the operations, so you can run it again. Use `check` to compare more state (for example a provider rebuilt from its backing store), and `wrap` to run each operation in a transaction.
 
 ```ts
@@ -19830,6 +19794,7 @@ expectOrderedItems(results, ["basic1", "basic2", "basic3"]);
 
 - [testDBDifferential()](test/testDBDifferential.md): Register a differential test that runs the same random operations against a provider and against a reference MemoryDBProvider, and fails at the first difference.
 - [testDBProvider()](test/testDBProvider.md): Register the universal DBProvider contract test suite against a provider, so every backend proves the same behaviour.
+- [testSQLMigrator()](test/testSQLMigrator.md): Register the SQLMigrator contract test suite against a migrator and its real database.
 - [expectUnorderedItems()](test/expectUnorderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in any order.
 - [expectOrderedItems()](test/expectOrderedItems.md): Assert that a set of Item objects has exactly the expected .id values, in the exact given order.
 
@@ -20450,6 +20415,38 @@ testDBProvider(name: string, createProvider: () => DBProvider<string, Data> | Pr
 
 ```ts
 testDBProvider("MemoryDBProvider", () => new MemoryDBProvider<string>());
+```
+
+
+---
+
+# testSQLMigrator()
+
+- Kind: function
+- Import: `import { testSQLMigrator } from "shelving/test";`
+
+Register the `SQLMigrator` contract test suite against a migrator and its real database.
+
+- Call it after the migrator made the `BASICS_COLLECTION` and `PEOPLE_COLLECTION` tables, so the first test can check that they need no changes.
+- The other tests drop and make a `migrated` table, then change it with three versions of a collection, and check that the provider can still read and write it.
+
+## Signatures
+
+```ts
+testSQLMigrator(name: string, createMigrator: () => SQLMigrator<SQLProvider<string>> | PromiseLike<SQLMigrator<SQLProvider<string>>>): void
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Name for the migrator, used in the `describe` block. |
+| `createMigrator` | `() => SQLMigrator<SQLProvider<string>> \| PromiseLike<SQLMigrator<SQLProvider<string>>>` | Create (or return) the migrator to test. |
+
+## Examples
+
+```ts
+testSQLMigrator("SQLiteMigrator", () => new SQLiteMigrator(provider));
 ```
 
 
