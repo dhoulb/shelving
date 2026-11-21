@@ -25,26 +25,33 @@
  */
 ::view-transition-new(.fade):only-child {
 	animation-name: fade-in;
-	animation-duration: var(--fade-transition-duration, var(--duration-fast));
+	animation-duration: var(--fade-transition-duration);
 	animation-timing-function: ease-in-out;
 	animation-fill-mode: both;
 }
 
 ::view-transition-old(.fade):only-child {
 	animation-name: fade-out;
-	animation-duration: var(--fade-transition-duration, var(--duration-fast));
+	animation-duration: var(--fade-transition-duration);
 	animation-timing-function: ease-in-out;
 	animation-fill-mode: both;
 }
 
 /* Update: the old and new images use the browser's own crossfade. Its images take their duration from the group. */
 ::view-transition-group(.fade) {
-	animation-duration: var(--fade-transition-duration, var(--duration-fast));
+	animation-duration: var(--fade-transition-duration);
 }
 
 /* Reduced motion: keep the opacity-only crossfade — a fade moves nothing spatially, so it is reduced-motion-safe — but disable the group's default positional morph so content never slides between layouts. Only the name is removed, so the images keep the group's duration. */
 @media (prefers-reduced-motion: reduce) {
 	::view-transition-group(.fade) {
 		animation-name: none;
+	}
+}
+
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--fade-transition-duration: var(--duration-fast);
 	}
 }

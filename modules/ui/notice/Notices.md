@@ -75,6 +75,8 @@ notice.close(); // Or close it immediately.
 
 `Notices` positions the list in the place that `position` sets. Each notice is only as wide as its content and is aligned to the side of that corner, or to the centre. The list is never wider than `--notices-width`, and keeps `--notices-offset` clear at both sides on a narrow screen. The offset also adds the safe area of the device (`env(safe-area-inset-*)`). Clicks pass through the gaps between notices to the page. Each item is a `<Notice>`, which has its own hooks. Override these hooks at `:root` (or any ancestor scope) to retheme.
 
+Override these hooks at `:root`.
+
 | Variable                        | Styles                                                                              | Default                        |
 | ------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------ |
 | `--notices-offset`              | Distance of the list from the top or bottom edge, and from the left and right edges | `var(--space-normal)` (16px)   |

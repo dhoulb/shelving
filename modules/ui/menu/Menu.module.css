@@ -5,6 +5,44 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Typography.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--menu-gap: 0;
+		--menu-font: var(--font-body);
+		--menu-size: var(--size-normal);
+		--menu-leading: var(--leading-auto);
+		--menu-nested-space: var(--space-xxsmall);
+		--menu-stroke: var(--stroke-normal);
+		--menu-indent: var(--space-small);
+		--menu-nested-stroke: var(--stroke-focus);
+		--menu-nested-indent: var(--space-xsmall);
+		--menu-small-indent: var(--space-xsmall);
+		--menu-padding: var(--space-small);
+		--menu-radius: var(--radius-xsmall);
+		--menu-icon-size: var(--size-icon);
+		--menu-focus-border: var(--color-focus);
+		--menu-small-padding: var(--space-xsmall);
+		--menu-proud-background: transparent;
+		--menu-proud-weight: var(--weight-strong);
+		--menu-active-weight: var(--weight-strong);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--menu-color: var(--tint-00);
+		--menu-nested-border: var(--tint-50);
+		--menu-hover-background: var(--tint-90);
+		--menu-hover-color: var(--tint-00);
+		--menu-proud: var(--tint-00);
+		--menu-selected-background: var(--menu-hover-background);
+		--menu-selected-color: var(--menu-hover-color);
+		--menu-active-background: var(--tint-100);
+		--menu-active-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	.menu {
 		/* Box (list reset + layout) */
@@ -13,28 +51,28 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: var(--menu-gap, 0);
+		gap: var(--menu-gap);
 
 		/* Text */
-		font-family: var(--menu-font, var(--font-body));
-		font-size: var(--menu-size, var(--size-normal));
-		line-height: var(--menu-leading, var(--leading-auto));
-		color: var(--menu-color, var(--tint-00));
+		font-family: var(--menu-font);
+		font-size: var(--menu-size);
+		line-height: var(--menu-leading);
+		color: var(--menu-color);
 
 		/* Nested submenu — Blockquote-style left border to signal hierarchy. */
 		.menu {
-			margin-block: var(--menu-nested-space, var(--space-xxsmall));
+			margin-block: var(--menu-nested-space);
 
 			/* Inset the border by the link's border and inline padding so it lines up with the parent item's label. */
-			margin-inline-start: calc(var(--menu-stroke, var(--stroke-normal)) + var(--menu-indent, var(--space-small)));
-			border-inline-start: var(--menu-nested-border, var(--stroke-focus)) solid var(--menu-nested-color-border, var(--tint-50));
-			padding-inline-start: var(--menu-nested-indent, var(--space-xsmall));
+			margin-inline-start: calc(var(--menu-stroke) + var(--menu-indent));
+			border-inline-start: var(--menu-nested-stroke) solid var(--menu-nested-border);
+			padding-inline-start: var(--menu-nested-indent);
 		}
 
 		/* A small parent item has no border and a smaller indent. */
 		&.small .menu,
 		.link.small ~ .menu {
-			margin-inline-start: var(--menu-small-indent, var(--space-xsmall));
+			margin-inline-start: var(--menu-small-indent);
 		}
 	}
 
@@ -47,22 +85,13 @@
 		display: block;
 		box-sizing: border-box;
 		inline-size: 100%;
-		padding-block: var(--menu-padding, var(--space-small));
-		padding-inline: var(--menu-indent, var(--space-small));
-		border: var(--menu-stroke, var(--stroke-normal)) solid transparent;
-		border-radius: var(--menu-radius, var(--radius-xsmall));
+		padding-block: var(--menu-padding);
+		padding-inline: var(--menu-indent);
+		border: var(--menu-stroke) solid transparent;
+		border-radius: var(--menu-radius);
 
-		/* Match the button's minimum height and `--input-height`, so an item is as easy to tap as a button. */
-		min-block-size: var(
-			--menu-height,
-			calc(
-				var(--menu-icon-size, var(--size-icon)) +
-				2 *
-				var(--menu-padding, var(--space-small)) +
-				2 *
-				var(--menu-stroke, var(--stroke-normal))
-			)
-		);
+		/* Match the minimum height of a button and an input, so an item is as easy to tap as a button. */
+		min-block-size: calc(var(--menu-icon-size) + 2 * var(--menu-padding) + 2 * var(--menu-stroke));
 
 		/* Style — `background`, `font`, `text-align` and `cursor` reset the native button look. */
 		background: none;
@@ -72,14 +101,14 @@
 		text-decoration: none;
 		cursor: pointer;
 		transition: all 120ms ease-in-out;
-		outline: var(--menu-focus-border, var(--stroke-focus) solid var(--color-focus));
+		outline: var(--stroke-focus) solid var(--menu-focus-border);
 		outline-offset: calc(0px - var(--stroke-focus)); /* Fully inset, so a neighbouring item's background can't paint over it. */
 
 		/* Pseudo-classes — skip the active item, so it keeps its own background while hovered or focused. */
 		&:not(.active):hover,
 		&:not(.active):focus:not(:focus-visible) {
-			background: var(--menu-hover-background, var(--tint-90));
-			color: var(--menu-hover-color, var(--tint-00));
+			background: var(--menu-hover-background);
+			color: var(--menu-hover-color);
 		}
 
 		&:not(:focus-visible) {
@@ -89,27 +118,27 @@
 		/* Variants — `small` applies to one item, or to every item inside a small `<Menu>`. */
 		&.small,
 		:where(.menu.small) & {
-			padding-block: var(--menu-small-padding, var(--space-xsmall));
-			padding-inline: var(--menu-small-indent, var(--space-xsmall));
+			padding-block: var(--menu-small-padding);
+			padding-inline: var(--menu-small-indent);
 			border: none;
-			min-block-size: var(--menu-small-height, 0);
+			min-block-size: 0;
 		}
 
 		&.proud {
-			background: var(--menu-proud-background, transparent);
-			color: var(--menu-proud, var(--tint-00));
-			font-weight: var(--menu-proud-weight, var(--weight-strong));
+			background: var(--menu-proud-background);
+			color: var(--menu-proud);
+			font-weight: var(--menu-proud-weight);
 		}
 
 		&.selected {
-			background: var(--menu-selected-background, var(--menu-hover-background, var(--tint-90)));
-			color: var(--menu-selected-color, var(--menu-hover-color, var(--tint-00)));
+			background: var(--menu-selected-background);
+			color: var(--menu-selected-color);
 		}
 
 		&.active {
-			background: var(--menu-active-background, var(--tint-100));
-			color: var(--menu-active-color, var(--tint-00));
-			font-weight: var(--menu-active-weight, var(--weight-strong));
+			background: var(--menu-active-background);
+			color: var(--menu-active-color);
+			font-weight: var(--menu-active-weight);
 		}
 	}
 }

@@ -1,17 +1,25 @@
 @import url("../style/layers.css");
 @import url("../style/Color.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--documentation-frame-height: 4rem;
+		--documentation-frame-background: white;
+	}
+}
+
 @layer components {
 	.frame {
 		/* Box */
 		display: block;
 		box-sizing: border-box;
 		width: 100%;
-		min-block-size: var(--documentation-frame-height, 4rem);
+		min-block-size: var(--documentation-frame-height);
 		margin: 0;
 		border: 0;
 
 		/* Style */
-		background: var(--documentation-frame-background, white);
+		background: var(--documentation-frame-background);
 	}
 }

@@ -53,13 +53,13 @@ A theme is a CSS file of custom-property overrides at `:root`, imported after th
 ```css
 /* Wrong: `--tint-95` resolves once, at `:root`. */
 :root {
-	--table-border: 2px solid var(--tint-95);
+	--table-border: var(--tint-95);
 }
 
 /* Right: the value resolves again in every scope that rebuilds the ladder. */
 :root,
 .tint {
-	--table-border: 2px solid var(--tint-95);
+	--table-border: var(--tint-95);
 }
 ```
 

@@ -12,6 +12,29 @@
  * the slot, not over it, so the slot never needs to know the bar's height.
  */
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		/* Shared with `HorizontalTransition.module.css` (same values), so the nav bar slides like a horizontal transition without importing it. */
+		--horizontal-transition-size: 100%;
+		--horizontal-transition-duration: var(--duration-normal);
+		--app-layout-nav-stroke: var(--stroke-normal);
+		--app-layout-nav-shadow: 0 -0.25rem 1rem -0.25rem var(--shadow-color);
+		--app-layout-nav-transition-name: none;
+		--app-layout-nav-item-width: 6rem;
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--app-layout-background: var(--tint-100);
+		--app-layout-color: var(--tint-00);
+		--app-layout-nav-border: var(--tint-90);
+		--app-layout-nav-background: var(--tint-100);
+		--app-layout-nav-color: var(--tint-00);
+	}
+}
+
 @layer components {
 	/*
 	 * Lock the document so the content slot is the only place that scrolls.
@@ -41,8 +64,8 @@
 		inset: 0;
 
 		/* Style */
-		background: var(--app-layout-background, var(--tint-100));
-		color: var(--app-layout-color, var(--tint-00));
+		background: var(--app-layout-background);
+		color: var(--app-layout-color);
 	}
 
 	.layout {
@@ -79,25 +102,25 @@
 		position: relative; /* Positioned like the content slot, and after it, so the bar and its shadow paint above the pages (for example a page with its own background during a swipe). */
 		display: flex;
 		justify-content: center;
-		border-block-start: var(--app-layout-nav-border, var(--stroke-normal) solid var(--tint-90));
+		border-block-start: var(--app-layout-nav-stroke) solid var(--app-layout-nav-border);
 		border-block-end: env(safe-area-inset-bottom, 0) solid transparent;
 		padding-inline: env(safe-area-inset-left, 0) env(safe-area-inset-right, 0);
 
 		/* Style */
-		background: var(--app-layout-nav-background, var(--tint-100));
-		color: var(--app-layout-nav-color, var(--tint-00));
-		box-shadow: var(--app-layout-nav-shadow, 0 -0.25rem 1rem -0.25rem var(--shadow-color)); /* A soft shadow cast up over the pages. */
+		background: var(--app-layout-nav-background);
+		color: var(--app-layout-nav-color);
+		box-shadow: var(--app-layout-nav-shadow); /* A soft shadow cast up over the pages. */
 
 		/* No view-transition name of its own by default: a named bar draws above everything else during a view transition, and jumps over a dialog or notice that covers it.
 		 * It gets a name during a page slide only (below). An app can also name it for its own transitions, for example parts of a page that slide in their own layers and would pass over it:
 		 * `:root:active-view-transition-type(tab) { --app-layout-nav-transition-name: app-nav; }` */
-		view-transition-name: var(--app-layout-nav-transition-name, none);
+		view-transition-name: var(--app-layout-nav-transition-name);
 		view-transition-class: nav;
 
 		/* Each item takes an equal share of the bar. */
 		> * {
 			flex: 1;
-			max-width: var(--app-layout-nav-item-width, 6rem);
+			max-width: var(--app-layout-nav-item-width);
 		}
 	}
 
@@ -129,34 +152,34 @@
 @keyframes app-layout-nav-in-from-right {
 	from {
 		opacity: 0;
-		transform: translateX(var(--horizontal-transition-size, 100%));
+		transform: translateX(var(--horizontal-transition-size));
 	}
 }
 
 @keyframes app-layout-nav-in-from-left {
 	from {
 		opacity: 0;
-		transform: translateX(calc(0px - var(--horizontal-transition-size, 100%)));
+		transform: translateX(calc(0px - var(--horizontal-transition-size)));
 	}
 }
 
 @keyframes app-layout-nav-out-to-left {
 	to {
 		opacity: 0;
-		transform: translateX(calc(0px - var(--horizontal-transition-size, 100%)));
+		transform: translateX(calc(0px - var(--horizontal-transition-size)));
 	}
 }
 
 @keyframes app-layout-nav-out-to-right {
 	to {
 		opacity: 0;
-		transform: translateX(var(--horizontal-transition-size, 100%));
+		transform: translateX(var(--horizontal-transition-size));
 	}
 }
 
 ::view-transition-new(.nav):only-child,
 ::view-transition-old(.nav):only-child {
-	animation-duration: var(--horizontal-transition-duration, var(--duration-normal));
+	animation-duration: var(--horizontal-transition-duration);
 	animation-timing-function: ease-in-out;
 	animation-fill-mode: both;
 }

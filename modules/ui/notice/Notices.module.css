@@ -3,11 +3,21 @@
 @import url("../style/Space.module.css");
 @import url("../style/Width.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--notices-offset: var(--space-normal);
+		--notices-width: var(--width-narrow);
+		--notices-gap: var(--space-small);
+		--notices-shadow: var(--shadow-normal);
+	}
+}
+
 @layer components {
 	.notices {
 		position: fixed;
-		inset: auto calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-right, 0px)) auto
-			calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-left, 0px));
+		inset: auto calc(var(--notices-offset) - var(--space-normal) + env(safe-area-inset-right, 0px)) auto
+			calc(var(--notices-offset) - var(--space-normal) + env(safe-area-inset-left, 0px));
 		z-index: 1000;
 		display: flex;
 
@@ -20,12 +30,12 @@
 		background: transparent;
 		color: inherit;
 		box-sizing: border-box;
-		max-width: calc(var(--notices-width, var(--width-narrow)) + 2 * var(--space-normal));
+		max-width: calc(var(--notices-width) + 2 * var(--space-normal));
 
 		/* Room for the shadows inside the list's own box. The list has its own view transition layer, and Safari clips a named element to its box, so a shadow outside it is cut off. The offsets above take this room back off. */
 		padding: var(--space-normal);
 		flex-direction: column;
-		gap: var(--notices-gap, var(--space-small));
+		gap: var(--notices-gap);
 
 		/* The list is as wide as `--notices-width`, so let clicks pass through the gaps to the page. */
 		pointer-events: none;
@@ -41,17 +51,17 @@
 			pointer-events: auto;
 
 			/* Floating notices sit above the page, so give each one a shadow. */
-			--notice-shadow: var(--notices-shadow, var(--shadow-normal));
+			--notice-shadow: var(--notices-shadow);
 		}
 	}
 
 	/* Places. The list keeps `--notices-offset` clear of the edges, plus the safe area of the device. */
 	.top {
-		top: calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-top, 0px));
+		top: calc(var(--notices-offset) - var(--space-normal) + env(safe-area-inset-top, 0px));
 	}
 
 	.bottom {
-		bottom: calc(var(--notices-offset, var(--space-normal)) - var(--space-normal) + env(safe-area-inset-bottom, 0px));
+		bottom: calc(var(--notices-offset) - var(--space-normal) + env(safe-area-inset-bottom, 0px));
 	}
 
 	.left {

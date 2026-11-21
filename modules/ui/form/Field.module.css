@@ -3,10 +3,31 @@
 @import url("../style/Space.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--field-space: var(--space-paragraph);
+		--field-gap: var(--space-xsmall);
+		--field-title-size: var(--size-normal);
+		--field-title-leading: var(--leading-auto);
+		--field-title-weight: var(--weight-strong);
+		--field-description-size: var(--size-normal);
+		--field-description-leading: var(--leading-auto);
+		--field-description-weight: var(--weight-normal);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--field-title-color: var(--tint-00);
+		--field-description-color: var(--tint-70);
+	}
+}
+
 @layer components {
 	.field {
 		/* Box. */
-		margin-block: var(--field-space, var(--space-paragraph));
+		margin-block: var(--field-space);
 
 		/* Contents */
 		display: flex;
@@ -14,21 +35,21 @@
 		justify-content: start;
 		align-items: stretch;
 		text-align: left;
-		gap: var(--field-gap, var(--space-xsmall));
+		gap: var(--field-gap);
 
 		/* Children */
 		.title {
-			font-size: var(--field-title-size, var(--size-normal));
-			line-height: var(--field-title-leading, var(--leading-auto));
-			font-weight: var(--field-title-weight, var(--weight-strong));
-			color: var(--field-title-color, var(--tint-00));
+			font-size: var(--field-title-size);
+			line-height: var(--field-title-leading);
+			font-weight: var(--field-title-weight);
+			color: var(--field-title-color);
 		}
 
 		.description {
-			font-size: var(--field-description-size, var(--size-normal));
-			line-height: var(--field-description-leading, var(--leading-auto));
-			font-weight: var(--field-description-weight, var(--weight-normal));
-			color: var(--field-description-color, var(--tint-70));
+			font-size: var(--field-description-size);
+			line-height: var(--field-description-leading);
+			font-weight: var(--field-description-weight);
+			color: var(--field-description-color);
 		}
 
 		&& > * {

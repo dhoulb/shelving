@@ -37,6 +37,8 @@ import { Field, TextInput } from "shelving/ui";
 
 `Field` paints its label, description, and message text. Override these hooks at `:root` or any ancestor scope.
 
+Override these hooks at `:root`. The tint hooks (`--field-title-color`, `--field-description-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable                      | Styles                                  | Default                         |
 | ----------------------------- | --------------------------------------- | ------------------------------- |
 | `--field-space`               | Outer block margin (top + bottom)       | `var(--space-paragraph)` (16px) |

@@ -5,6 +5,24 @@
 @import url("../style/Stroke.module.css");
 @import url("../style/Tint.module.css");
 
+@layer defaults {
+	/* Every hook the rules below read. Override any of them at `:root`. */
+	:root {
+		--image-input-space: var(--space-small);
+		--image-input-radius: var(--radius-small);
+		--image-input-focus-border: var(--color-focus);
+		--image-input-invalid-border: var(--color-failure);
+		--image-input-preview-background: #000;
+		--image-input-clear-inset: var(--space-small);
+	}
+
+	/* Hooks that read the tint ladder. They resolve again in every tint scope, so override them at `:root, .tint`. */
+	:root,
+	:global(.tint) {
+		--image-input-background: var(--tint-90);
+	}
+}
+
 @layer components {
 	.image-input {
 		/* Box: a square as wide as its container. */
@@ -12,7 +30,7 @@
 		box-sizing: border-box;
 		inline-size: 100%;
 		aspect-ratio: 1;
-		margin-block: var(--image-input-space, var(--space-small));
+		margin-block: var(--image-input-space);
 	}
 
 	/* The square itself: a tap anywhere opens the file picker. */
@@ -23,17 +41,17 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		border-radius: var(--image-input-radius, var(--radius-small));
-		background: var(--image-input-background, var(--tint-90));
+		border-radius: var(--image-input-radius);
+		background: var(--image-input-background);
 		cursor: pointer;
 
 		/* The native file input is not seen, so show its focus ring on the square. */
 		&:has(:focus-visible) {
-			outline: var(--image-input-focus-border, var(--stroke-focus) solid var(--color-focus));
+			outline: var(--stroke-focus) solid var(--image-input-focus-border);
 		}
 
 		&[aria-invalid="true"] {
-			outline: var(--image-input-invalid-border, var(--stroke-focus) solid var(--color-failure));
+			outline: var(--stroke-focus) solid var(--image-input-invalid-border);
 		}
 
 		&:has(:disabled) {
@@ -51,7 +69,7 @@
 		object-fit: cover;
 
 		/* A transparent image shows on black, not on the empty square's tint. */
-		background: var(--image-input-preview-background, #000);
+		background: var(--image-input-preview-background);
 	}
 
 	/* The native file input: still focusable and opened by its label, but not seen. */
@@ -72,8 +90,8 @@
 	/* The X button that clears the image, in the top corner. */
 	.clear {
 		position: absolute;
-		inset-block-start: var(--image-input-clear-inset, var(--space-small));
-		inset-inline-end: var(--image-input-clear-inset, var(--space-small));
+		inset-block-start: var(--image-input-clear-inset);
+		inset-inline-end: var(--image-input-clear-inset);
 		margin: 0;
 	}
 }
