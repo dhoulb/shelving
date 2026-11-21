@@ -60,6 +60,17 @@ getQueryOrders(query);
 getQueryLimit(query); // 20
 ```
 
+### Cache keys
+
+`getQueryKey()` gives the same key for queries that differ only in key order. Use the key to find a cached result. Treat it as an opaque string: compare it, but do not parse it.
+
+```ts
+import { getQueryKey } from "shelving/util";
+
+getQueryKey({ status: "active", $limit: 20 }) === getQueryKey({ $limit: 20, status: "active" }); // true
+getQueryKey({ $order: ["a", "b"] }) === getQueryKey({ $order: ["b", "a"] }); // false: value order has meaning
+```
+
 ### Step-by-step filtering, sorting, and limiting
 
 ```ts
@@ -116,6 +127,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 - [getQueryFilters()](query/getQueryFilters.md): Get the QueryFilter objects decoded from a query.
 - [getQueryOrders()](query/getQueryOrders.md): Get the QueryOrder objects decoded from a query.
 - [getQueryLimit()](query/getQueryLimit.md): Get the limit for a query.
+- [getQueryKey()](query/getQueryKey.md): Get a cache key for a query, so two queries with the same filters, order, and limit get the same key.
 - [queryItems()](query/queryItems.md): Query a set of data items using a query.
 - [queryWritableItems()](query/queryWritableItems.md): Query a set of data items for writing using a query.
 - [matchQueryItem()](query/matchQueryItem.md): Match a single data item against a set of filters.

@@ -1,1 +1,1 @@
-import{fn}from"../chunk-pda3k19s.js";import"../chunk-1gyd66m9.js";import"../chunk-d5qxcdq0.js";import"../chunk-vmx0eep2.js";export{fn as serialise};
+import{br}from"../chunk-czknkmr3.js";import"../chunk-g17f2w0n.js";import"../chunk-g267p1vq.js";import"../chunk-555p574h.js";export{br as serialise};

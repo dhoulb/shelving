@@ -8,5 +8,5 @@ Invalidate a specific store so the next read refetches.
 ## Signatures
 
 ```ts
-invalidate(payload: P, caller: AnyCaller = this.invalidate): void
+invalidate(payload: P): void
 ```

@@ -11,5 +11,5 @@ Fetch (or return a cached result) for the given endpoint and payload.
 ## Signatures
 
 ```ts
-call(endpoint: Endpoint<PP, RR>, payload: PP, maxAge: number = AVOID_REFRESH, caller: AnyCaller = this.call): Promise<RR>
+call(endpoint: Endpoint<PP, RR>, payload: PP, maxAge: number = AVOID_REFRESH): Promise<RR>
 ```

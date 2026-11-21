@@ -62,7 +62,7 @@ class AuthAPIProvider<P, R> extends ThroughAPIProvider<P, R> {
 
 ### Caching
 
-`APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by the rendered URL. For `GET`/`HEAD` requests, query params are part of the key so `?role=admin` and `?role=editor` are stored separately. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
+`APICache` manages `EndpointCache` objects, one per endpoint. Each `EndpointCache` manages `EndpointStore` objects, one per unique payload — keyed by `serialise(payload)`, so `{ role: "admin" }` and `{ role: "editor" }` are stored separately, and key order does not matter. `CachedAPIProvider` caches only `GET` and `HEAD` endpoints. `EndpointStore` fetches automatically on first read and de-duplicates in-flight requests.
 
 The cache is primarily useful as the backbone of the [React integration](#react-integration). Use it directly only when you need a reactive layer outside React.
 
@@ -138,7 +138,7 @@ See the `shelving/react` module for full usage.
 ## Classes
 
 - [APICache](api/APICache.md): Cache of EndpointCache objects keyed by Endpoint, providing memoised API results across many endpoints.
-- [EndpointCache](api/EndpointCache.md): Cache of EndpointStore objects for a single endpoint, keyed by the rendered request URL of each payload.
+- [EndpointCache](api/EndpointCache.md): Cache of EndpointStore objects for a single endpoint, keyed by serialise(payload).
 - [Endpoint](api/Endpoint.md): A typed API resource definition pairing a method and path with payload and result schemas.
 - [APIProvider](api/APIProvider.md): Abstract base for API providers that send requests to a set of Endpoint definitions rooted at a common base URL.
 - [CachedAPIProvider](api/CachedAPIProvider.md): API provider wrapper that serves requests through an APICache so repeated calls reuse cached results.

@@ -1,1 +1,1 @@
-import{Gi}from"../chunk-egj5sf84.js";export{Gi as InfoIcon};
+import{Yi}from"../chunk-vz0cktkn.js";export{Yi as InfoIcon};
