@@ -22,7 +22,7 @@ export interface ArrayRadioInputsProps<T> extends ValueInputProps<T> {
  * - A `placeholder` option is shown at the bottom if `required=false`.
  *
  * @returns Element rendering one radio per item plus an optional empty placeholder radio.
- * @example <ArrayRadioInputs name="size" items={["s", "m", "l"]} value={size} onValue={setSize} />
+ * @kind component
  * @see https://shelving.cc/ui/ArrayRadioInputs
  */
 export function ArrayRadioInputs<T>({

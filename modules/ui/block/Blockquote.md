@@ -6,9 +6,9 @@ A block of quoted text. Renders a `<blockquote>` with a line on its left edge.
 
 - Put block content inside it, such as `<Paragraph>`. It trims the outer margins of its first and last children, so its padding is not doubled. Set `trim={false}` to keep them.
 - It is `display: flow-root`, so the margins of its children stay inside it.
-- The line is painted from the tint ladder. Set `color=` or `status=` on it (or an ancestor) to recolour the line.
+- The line is painted from the tint ladder. Set `color=` on it (or an ancestor) to recolour the line.
 - Inside `<Prose>` a raw `<blockquote>` gets the same styles, so Markdown quotes match.
-- Composes the standard block variants: `color`, `status`, `space`, `padding`, `indent`, `width`, plus typography.
+- Composes the standard block variants: `color`, `space`, `padding`, `indent`, `width`, plus typography.
 
 ## Usage
 

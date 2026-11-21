@@ -23,7 +23,6 @@ export interface PopoverButtonInputProps extends InputProps {
  * DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  *
  * @returns A `ButtonInput` that toggles its attached `Popover` open and closed.
- * @example <PopoverButtonInput name="filter">{label}{panel}</PopoverButtonInput>
  * @kind component
  * @see https://shelving.cc/ui/PopoverButtonInput
  */

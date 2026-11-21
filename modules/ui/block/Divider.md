@@ -4,7 +4,7 @@ A horizontal line between blocks of content. Renders an `<hr>`.
 
 **Things to know:**
 
-- The line is painted from the tint ladder. Set `color=` or `status=` on it (or an ancestor) to recolour it.
+- The line is painted from the tint ladder. Set `color=` on it (or an ancestor) to recolour it.
 - Set `space=` to change the space above and below the line.
 - Inside `<Prose>` a raw `<hr>` gets the same styles, so a Markdown `---` matches.
 

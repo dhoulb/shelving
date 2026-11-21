@@ -19,7 +19,6 @@ export interface InputVariants extends BlockVariants {}
  * Build the shared base `className` for a form input from its styling variants — the base input class plus any `InputVariants`.
  *
  * @returns The merged base input `className` string.
- * @example getClass(getInputClass(props), getModuleClass(INPUT_CSS, "text")) // a text input that also honours width variants
  * @see https://shelving.cc/ui/getInputClass
  */
 export function getInputClass(props: InputVariants): string {
@@ -67,7 +66,9 @@ export interface InputWrapperProps extends ChildProps, ClassProps {}
 /**
  * Wraps an input with support for absolutely-positioned `data-slot` icon elements on either side.
  * - This is so you can put an icon before or after an input.
+ *
  * @kind component
+ * @see https://shelving.cc/ui/InputWrapper
  */
 export function InputWrapper({ children, className }: InputWrapperProps): ReactElement {
 	return <div className={getClass(getInputClass({}), getModuleClass(INPUT_CSS, "wrapper"), className)}>{children}</div>;

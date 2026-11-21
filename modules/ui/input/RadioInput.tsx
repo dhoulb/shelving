@@ -19,7 +19,7 @@ export interface RadioInputProps extends ValueInputProps<boolean>, OptionalChild
  * - Calls `onValue(true)` when selected; label content comes from `children`, falling back to `placeholder`/`title`.
  *
  * @returns A `<label>` wrapping the radio button and its label content.
- * @example <RadioInput name="plan" value={isPro} onValue={selectPro}>Pro</RadioInput>
+ * @kind component
  * @see https://shelving.cc/ui/RadioInput
  */
 export function RadioInput({

@@ -50,7 +50,7 @@ export interface PopoverProps extends ClassProps {
  * - `className` lands on the floating panel rather than the wrapper, since the panel is the surface worth styling.
  *
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
- * @example <Popover>{trigger}{panelContent}</Popover>
+ * @kind component
  * @see https://shelving.cc/ui/Popover
  *
  * @todo DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.

@@ -29,7 +29,6 @@ export interface ChoiceRadioInputsProps<T extends string> extends ValueInputProp
  *
  * @returns Element rendering one radio per option plus an optional empty placeholder radio.
  * @kind component
- * @example <ChoiceRadioInputs name="role" options={{ admin: "Admin", user: "User" }} value={role} onValue={setRole} />
  * @see https://shelving.cc/ui/ChoiceRadioInputs
  */
 export function ChoiceRadioInputs<T extends string>(props: ChoiceRadioInputsProps<T>): ReactElement;

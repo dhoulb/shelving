@@ -21,7 +21,7 @@ export interface FileInputProps extends ValueInputProps<string | File>, InputVar
  * - The optional `capture` opens the front (`"user"`) or back (`"environment"`) camera straight away.
  *
  * @returns A native `<input type="file">` element.
- * @example <FileInput name="avatar" types={{ png: "image/png" }} onValue={setFile} />
+ * @kind component
  * @see https://shelving.cc/ui/FileInput
  */
 export function FileInput({

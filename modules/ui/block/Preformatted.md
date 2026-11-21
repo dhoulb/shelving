@@ -7,7 +7,7 @@ A block of preformatted text, such as code or terminal output. Renders a `<pre>`
 - Newlines, spaces and tabs show as written. Tabs are two spaces wide.
 - Long lines do not wrap. The block scrolls left and right. Set `wrap` to wrap long lines.
 - The block is always full width.
-- The box is painted from the tint ladder. Set `color=` or `status=` on it (or an ancestor such as a `<Card>`) to recolour it.
+- The box is painted from the tint ladder. Set `color=` on it, or `color=` or `status=` on an ancestor such as a `<Card>`, to recolour it.
 - Inside `<Prose>` a raw `<pre>` gets the same styles, so Markdown code blocks match.
 - For a short piece of code inside a sentence, use `<Code>`.
 
@@ -33,12 +33,12 @@ import { Preformatted } from "shelving/ui";
 </Preformatted>;
 ```
 
-### Status
+### Colour
 
 ```tsx live
 import { Preformatted } from "shelving/ui";
 
-<Preformatted status="error">{"Error: Connection refused\n    at connect (db.ts:12)"}</Preformatted>;
+<Preformatted color="red">{"Error: Connection refused\n    at connect (db.ts:12)"}</Preformatted>;
 ```
 
 ## Styling

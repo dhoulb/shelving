@@ -35,7 +35,6 @@ export interface DictionaryInputProps<T> extends ValueInputProps<ImmutableDictio
  *
  * @returns Element rendering one key/value row per entry plus add/clear controls.
  * @kind component
- * @example <DictionaryInput name="meta" items={STRING} value={meta} onValue={setMeta} />
  * @see https://shelving.cc/ui/DictionaryInput
  */
 export function DictionaryInput<T>(props: DictionaryInputProps<T>): ReactElement;

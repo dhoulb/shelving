@@ -23,7 +23,6 @@ export interface PopoverButtonProps extends ButtonVariants, ClassProps {
  * DH: Would love to use new HTML `popover="auto"` functionality for this but the anchor positioning it needs is not supported everywhere yet.
  *
  * @returns A `Button` that toggles its attached `Popover` open and closed.
- * @example <PopoverButton>{label}{panel}</PopoverButton>
  * @kind component
  * @see https://shelving.cc/ui/PopoverButton
  */

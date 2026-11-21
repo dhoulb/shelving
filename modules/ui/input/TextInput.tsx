@@ -26,7 +26,7 @@ export interface TextInputProps extends ValueInputProps<string>, InputVariants {
  * - Applies an optional `formatter` on initial display and on blur — the raw typed value is published through `onValue`.
  *
  * @returns A text `<input>` element.
- * @example <TextInput name="name" value={name} onValue={setName} />
+ * @kind component
  * @see https://shelving.cc/ui/TextInput
  */
 export function TextInput({
