@@ -106,17 +106,21 @@
 		}
 
 		&.solid {
+			/* A subtle border one step darker than the fill, in every state, so the edge stays crisp. */
+			border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
 			background: var(--button-solid-background, var(--tint-50));
 			color: var(--button-solid-text, var(--tint-100));
 
 			&:enabled:hover,
 			&:any-link:hover,
 			&:focus:not(:focus-visible) {
+				border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
 				background: var(--button-solid-hover-background, var(--tint-55));
 			}
 
 			&:enabled:active,
 			&:any-link:active {
+				border: var(--button-solid-border, var(--button-stroke, var(--stroke-normal)) solid var(--tint-45));
 				background: var(--button-solid-active-background, var(--button-solid-hover-background, var(--tint-55)));
 			}
 		}
