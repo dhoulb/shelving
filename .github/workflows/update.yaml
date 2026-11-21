@@ -16,10 +16,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version-file: package.json
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 21
       - name: install
         run: bun install
       - name: update
