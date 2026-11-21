@@ -29,6 +29,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 
 `Deleted` colours its text directly from `--color-red` (not the tint ladder), so deletions stay a consistent red regardless of the surrounding tint. Override `--deleted-color` to recolour.
 
+Override these hooks at `:root`.
+
 | Variable               | Styles          | Default                             |
 | ---------------------- | --------------- | ----------------------------------- |
 | `--deleted-color`      | Text colour     | `var(--color-red)`                  |

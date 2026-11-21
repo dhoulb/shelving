@@ -29,6 +29,8 @@ import { Paragraph, Strong } from "shelving/ui";
 
 `Strong` only sets its font weight and inherits colour and size from its surroundings.
 
+Override these hooks at `:root`.
+
 | Variable          | Styles      | Default                |
 | ----------------- | ----------- | ---------------------- |
 | `--strong-weight` | Font weight | `var(--weight-strong)` |

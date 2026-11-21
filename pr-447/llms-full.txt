@@ -27708,6 +27708,8 @@ import { Code } from "shelving/ui";
 
 `Code` paints from the [tint ladder](/ui/TINT_CLASS): the box `background` / `color` default to ladder steps so they re-tint with the surrounding scope, and every property has a per-instance override hook.
 
+Override these hooks at `:root`. The tint hooks (`--code-background`, `--code-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable            | Styles                                           | Default                 |
 | ------------------- | ------------------------------------------------ | ----------------------- |
 | `--code-font`       | Font family                                      | `var(--font-code)`      |
@@ -27790,6 +27792,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 ## Styling
 
 `Deleted` colours its text directly from `--color-red` (not the tint ladder), so deletions stay a consistent red regardless of the surrounding tint. Override `--deleted-color` to recolour.
+
+Override these hooks at `:root`.
 
 | Variable               | Styles          | Default                             |
 | ---------------------- | --------------- | ----------------------------------- |
@@ -27875,6 +27879,8 @@ import { Paragraph, Emphasis } from "shelving/ui";
 
 `Emphasis` only sets its font style and inherits everything else from its surroundings.
 
+Override these hooks at `:root`.
+
 | Variable           | Styles     | Default  |
 | ------------------ | ---------- | -------- |
 | `--emphasis-style` | Font style | `italic` |
@@ -27954,6 +27960,8 @@ import { Paragraph, Deleted, Inserted } from "shelving/ui";
 ## Styling
 
 `Inserted` colours its text directly from `--color-green` (not the tint ladder), so insertions stay a consistent green regardless of the surrounding tint. Override `--inserted-color` to recolour.
+
+Override these hooks at `:root`.
 
 | Variable                | Styles          | Default                          |
 | ----------------------- | --------------- | -------------------------------- |
@@ -28070,6 +28078,8 @@ import { Link, Row, Span } from "shelving/ui";
 
 `Link` colours itself from the global `--color-link` token by default. Inside a tinted scope (`color=` / `status=` on an ancestor) `--color-link` resolves to `inherit`, so links adopt the surrounding tinted text colour. Override `--link-color` to set it directly. A `plain` link ignores both hooks and inherits the colour and weight of its parent.
 
+Override these hooks at `:root`. The tint hooks (`--link-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
 | Variable        | Styles      | Default                |
 | --------------- | ----------- | ---------------------- |
 | `--link-color`  | Text colour | `var(--color-link)`    |
@@ -28148,14 +28158,16 @@ import { Mark } from "shelving/ui";
 
 `Mark` highlights with a translucent wash of `--color-yellow` — `color-mix(…, transparent)`, so the text underneath stays legible — with the text painted from `--tint-00`. Override `--mark-tint` to change the highlight hue, `--mark-background` to replace the fill outright, or `--mark-color` for the text.
 
-| Variable            | Styles                                                         | Default                                                                   |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `--mark-tint`       | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)`                                                     |
-| `--mark-background` | Background fill                                                | `color-mix(in oklch, var(--mark-tint, var(--color-yellow)), transparent)` |
-| `--mark-color`      | Text colour                                                    | `var(--tint-00)`                                                          |
-| `--mark-indent`     | Left and right padding (one length)                            | `var(--space-xxsmall)`                                                    |
-| `--mark-radius`     | Corner radius                                                  | `var(--radius-xxsmall)`                                                   |
-| `--mark-weight`     | Font weight                                                    | `var(--weight-strong)`                                                    |
+Override these hooks at `:root`. The tint hooks (`--mark-color`) are declared again in every tint scope, so override them at `:root, .tint`.
+
+| Variable            | Styles                                                         | Default                                              |
+| ------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| `--mark-tint`       | Highlight hue, mixed 50% with `transparent` for the background | `var(--color-yellow)`                                |
+| `--mark-background` | Background fill                                                | `color-mix(in oklch, var(--mark-tint), transparent)` |
+| `--mark-color`      | Text colour                                                    | `var(--tint-00)`                                     |
+| `--mark-indent`     | Left and right padding (one length)                            | `var(--space-xxsmall)`                               |
+| `--mark-radius`     | Corner radius                                                  | `var(--radius-xxsmall)`                              |
+| `--mark-weight`     | Font weight                                                    | `var(--weight-strong)`                               |
 
 **Global tokens it reads:** `--color-yellow`, `--space-xxsmall`, `--radius-xxsmall`, `--weight-strong`, and the tint-ladder step `--tint-00`.
 
@@ -28227,6 +28239,8 @@ import { Paragraph, Small } from "shelving/ui";
 ## Styling
 
 `Small` mutes its text colour to a lighter tint step and inherits size and weight from its surroundings.
+
+Override these hooks at `:root`. The tint hooks (`--small-color`) are declared again in every tint scope, so override them at `:root, .tint`.
 
 | Variable        | Styles      | Default          |
 | --------------- | ----------- | ---------------- |
@@ -28396,6 +28410,8 @@ import { Paragraph, Strong } from "shelving/ui";
 ## Styling
 
 `Strong` only sets its font weight and inherits colour and size from its surroundings.
+
+Override these hooks at `:root`.
 
 | Variable          | Styles      | Default                |
 | ----------------- | ----------- | ---------------------- |
