@@ -155,7 +155,7 @@ General component and CSS-module patterns (function-declaration components, `Rea
 - **Paint from the ladder; don't rebind the anchor.**
   - Paint every property from a ladder step, with a per-property hook in front — `--card-background: var(--tint-90)` in the tint block, and `background: var(--card-background)` in the rule. The component reads whatever tint is ambient in its scope.
   - **Never** set `--tint-50` on a component. The anchor moves only via `color=` / `status=` (which apply `TINT_CLASS` and rebuild the ladder) or at `:root` — so a component never carries a stale ladder, and a raw element in `.prose` behaves identically to its component.
-  - Fixed semantic colours (`<Deleted>`, `<Inserted>`, `<Link>`) read their palette token directly (`color: var(--deleted-color, var(--color-red))`) instead of the ladder.
+  - Fixed semantic colours (`<Deleted>`, `<Inserted>`, `<Link>`) read their palette token directly (`--deleted-color: var(--color-red)` in the `:root` block) instead of the ladder.
   - Do **not** reintroduce a per-component `--x-tint` anchor hook, or the older five-step colour scheme (`--card-color-black` / `-dark` / `-vivid` / `-light` / `-white` and matching `*-color-bg` / `*-color-border` / `*-color-text` hooks). Both were tried and removed; older issue comments describing them are stale.
   - The tint ladder is documented on the `TINT_CLASS` page (`modules/ui/style/TINT_CLASS.md`) — keep that the source of truth.
 
@@ -269,7 +269,7 @@ Each reusable UI component's sibling `.md` (e.g. `modules/ui/block/Card.md`) fol
 
 A Styling section has two parts:
 
-- A **table of the component's own hooks** — three columns: `Variable` | `Styles` | `Default`. List every `--component-*` custom property the `.module.css` reads, what painted property it controls, and its fallback value (resolve token references to a human-readable note, e.g. `var(--radius-normal)` (16px)).
+- A **table of the component's own hooks** — three columns: `Variable` | `Styles` | `Default`. List every `--component-*` custom property the `.module.css` reads, what painted property it controls, and the value it declares at root (resolve token references to a human-readable note, e.g. `var(--radius-normal)` (16px)).
 - A **list of the global tokens** the component reads (tint-ladder steps and `--space-*` / `--radius-*` / `--color-*` / etc.), so a theme writer knows which broad levers also move it.
 
 A component that exposes no own hooks and only inherits says so explicitly in one line rather than omitting the section. **When a component's `.module.css` gains, loses, or renames a `--variable`, update its `.md` Styling table in the same commit** — same rule as keeping a docblock in step with behaviour. `modules/ui/block/Card.md` is the precedent.
