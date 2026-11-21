@@ -198,6 +198,21 @@ describe("MemoryTable times", () => {
 		stop();
 		expect(values).toEqual([undefined, undefined]);
 	});
+	test("invalidateItem() forgets the item and its time, and yields once", async () => {
+		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
+		table.setItem("basic1", basic1);
+		const values: unknown[] = [];
+		const stop = runSequence(table.getItemSequence("basic1"), value => void values.push(value));
+		await runMicrotasks();
+		table.invalidateItem("basic1");
+		await runMicrotasks();
+		table.invalidateItem("basic1"); // Already unknown, so no change.
+		await runMicrotasks();
+		stop();
+		expect(table.getItem("basic1")).toBe(undefined);
+		expect(table.getItemTime("basic1")).toBe(undefined); // Not loaded, so not known to be missing.
+		expect(values).toEqual([basic1, undefined]);
+	});
 	test("getQuerySequence() yields again when an empty query is marked as loaded", async () => {
 		const table = new MemoryDBProvider<string>().getTable(BASICS_COLLECTION);
 		const values: unknown[] = [];

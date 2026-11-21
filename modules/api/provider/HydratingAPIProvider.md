@@ -9,6 +9,7 @@ A wrapping provider that validates every result, then writes the collection item
 - A `null` or `undefined` result for `NULLABLE(USERS.item)` deletes the item with the `id` from the payload. The table then knows the item is missing, so an `ItemStore` shows it as missing and not as loading.
 - `Collection.items` only adds and replaces items. It never deletes them, so an item the server dropped stays until something deletes it.
 - `Collection.queryItems` also marks its query as loaded (see `MemoryTable.setQueryTime()`), so a `QueryStore` for exactly that query shows its items, or shows that it has none, without loading. The query matches by `JSON.stringify()`, so build it in one shared function for the server and the client.
+- For a query with no `$limit`, the result is the whole answer, so `Collection.queryItems` also invalidates each item in memory that matches the query but is not in the result (see `MemoryTable.invalidateItem()`). The item may still exist (it can have changed so it no longer matches), so it is not deleted. An `ItemStore` that reads it goes back to loading, so the app loads it again. A query with a `$limit` invalidates nothing, because an item can be missing only because it moved out of the window.
 - **Do not trust the `query` in a `Collection.queryItems` result.** It is only checked to be an object.
 - Writes happen synchronously before `call()` resolves, so no store sees half of a result.
 - It extends `ValidationAPIProvider`, so it only writes validated items.
