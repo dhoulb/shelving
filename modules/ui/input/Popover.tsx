@@ -8,7 +8,6 @@ import type { Callback } from "../../util/function.js";
 import { getTrimClass } from "../style/Trim.js";
 import { getClass, getModuleClass } from "../util/css.js";
 import { eventPreventDefault } from "../util/event.js";
-import { eventLoopFocus } from "../util/focus.js";
 import type { ClassProps } from "../util/props.js";
 import styles from "./Popover.module.css";
 
@@ -46,7 +45,7 @@ export interface PopoverProps extends ClassProps {
 /**
  * Trigger element that reveals a floating popover panel beside it when active or focused.
  * - The first `children` node is the trigger; the rest become the popover contents.
- * - Closes on blur away or `Escape`, calling `onClose`.
+ * - While open, calls `onClose` when focus leaves the popover or on `Escape`. Focus is never held, so Tab can always move past it.
  * - `className` lands on the floating panel rather than the wrapper, since the panel is the surface worth styling.
  *
  * @returns A wrapper element containing the trigger and (when open) the popover panel.
@@ -65,8 +64,8 @@ export function Popover({
 		<div
 			className={getModuleClass(styles, "wrap")}
 			onBlur={e => {
-				if (e.relatedTarget) eventLoopFocus(e);
-				else onClose?.();
+				// Close only while open, and only when focus leaves the popover (to another element, or to nothing).
+				if (open && !e.currentTarget.contains(e.relatedTarget)) onClose?.();
 			}}
 			onKeyDown={e => e.key === "Escape" && onClose?.()}
 		>

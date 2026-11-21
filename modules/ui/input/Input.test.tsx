@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { ReactElement } from "react";
-import { DateInput, FileInput, ImageInput, NumberInput, SelectInput, TextareaInput, TextInput } from "shelving/ui";
+import { DateInput, FileInput, ImageInput, NumberInput, Popover, SelectInput, TextareaInput, TextInput } from "shelving/ui";
 import { PASSTHROUGH } from "shelving/util/function";
 
 /** The props of the rendered element that the tests read. */
@@ -98,5 +98,29 @@ describe("SelectInput", () => {
 	test("shows a flat list with no groups", () => {
 		const element = SelectInput<string>({ name: "x", required: true, value: "a", options: { a: "A", b: "B" }, onValue: PASSTHROUGH });
 		expect(_getChildren(element)).toEqual(["option:a", "option:b"]);
+	});
+});
+
+describe("Popover", () => {
+	/** Call the popover's `onBlur` as if focus moved from inside it to `next`. */
+	function _blur(open: boolean, next: "inside" | "outside" | "nothing"): number {
+		let closes = 0;
+		const element = Popover({ open, onClose: () => void closes++, children: ["Trigger", "Panel"] });
+		const inside = {};
+		const currentTarget = { contains: (el: unknown) => el === inside };
+		const relatedTarget = next === "inside" ? inside : next === "outside" ? {} : null;
+		(element.props as { onBlur(e: unknown): void }).onBlur({ currentTarget, relatedTarget });
+		return closes;
+	}
+	test("closes when focus leaves it while open", () => {
+		expect(_blur(true, "outside")).toBe(1);
+		expect(_blur(true, "nothing")).toBe(1);
+	});
+	test("stays open when focus moves inside it", () => {
+		expect(_blur(true, "inside")).toBe(0);
+	});
+	test("does nothing when closed, so Tab can move past it", () => {
+		expect(_blur(false, "outside")).toBe(0);
+		expect(_blur(false, "nothing")).toBe(0);
 	});
 });
