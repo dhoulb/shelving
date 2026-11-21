@@ -6,7 +6,7 @@ A trigger with a panel that floats below it. Use it for a short menu or list tha
 
 - The first child is the trigger, such as a `<Button>` or an input. The other children go in the panel.
 - By default the panel is open when any panel child is truthy. Set `open` to control it yourself.
-- A tap outside the popover, or the Escape key, calls `onClose()`. When focus moves to another control outside the popover, focus goes back to the first control in the popover.
+- While the panel is open, `onClose()` is called when focus leaves the popover (a tap outside, or Tab past the last control) or the user presses Escape. The popover never holds focus.
 - The panel is as wide as the popover, and below the trigger. It scrolls when its content is taller than `--popover-height`.
 - `className` goes on the panel, not on the wrapper.
 - `<PopoverButton>` and `<PopoverButtonInput>` add the open and close state for you.
