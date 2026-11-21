@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import type { Collection } from "shelving/db";
-import { MockDBProvider, ThroughDBProvider } from "shelving/db";
+import { MemoryDBProvider, MockDBProvider, ThroughDBProvider } from "shelving/db";
 import type { Data } from "shelving/util/data";
 import type { OptionalItem } from "shelving/util/item";
-import { BASICS_COLLECTION, basic1, basic2, basic4, TransactionTestDBProvider } from "../../test/index.js";
+import { BASICS_COLLECTION, basic1, basic2, basic4, TransactionTestDBProvider, testDBDifferential } from "../../test/index.js";
+
+testDBDifferential("ThroughDBProvider", () => new ThroughDBProvider(new MemoryDBProvider<string>()));
 
 /** Wrapping provider that records the ids of reads and writes passing through it. */
 class _TestDBProvider extends ThroughDBProvider<string, Data> {

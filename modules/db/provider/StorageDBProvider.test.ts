@@ -14,6 +14,7 @@ import {
 	basic9,
 	basics,
 	expectUnorderedItems,
+	testDBDifferential,
 } from "../../test/index.js";
 
 /** Minimal in-memory `Storage` for tests (Bun has no `localStorage`). */
@@ -34,6 +35,12 @@ function createStorage(map = new Map<string, string>()): Storage {
 function dispatchStorage(storageArea: Storage, key: string | null, newValue: string | null): void {
 	globalThis.dispatchEvent(Object.assign(new Event("storage"), { storageArea, key, newValue }));
 }
+
+// A new provider that hydrates from the same storage must see the same items.
+let differentialStorage = createStorage();
+testDBDifferential("StorageDBProvider", () => new StorageDBProvider<string>((differentialStorage = createStorage()), "test:"), {
+	check: () => new StorageDBProvider<string>(differentialStorage, "test:").getQuery(BASICS_COLLECTION, {}),
+});
 
 test("StorageDBProvider: writes persist to storage and reads come from memory", async () => {
 	const map = new Map<string, string>();

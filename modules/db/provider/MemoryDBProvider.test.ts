@@ -11,11 +11,13 @@ import {
 	expectOrderedItems,
 	PEOPLE_COLLECTION,
 	person1,
+	testDBDifferential,
 	testDBProvider,
 } from "../../test/index.js";
 
 // Run the universal DBProvider contract suite against MemoryDBProvider.
 testDBProvider("MemoryDBProvider", () => new MemoryDBProvider<string>(), { transactions: true, nestedTransactions: true });
+testDBDifferential("MemoryDBProvider.transact()", () => new MemoryDBProvider<string>(), { wrap: (db, callback) => db.transact(callback) });
 
 describe("MemoryDBProvider.transact()", () => {
 	test("keeps writes made to the provider while the transaction is running", async () => {

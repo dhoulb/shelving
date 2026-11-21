@@ -1,6 +1,16 @@
 import { describe, expect, test } from "bun:test";
 import { MemoryDBProvider, MockDBProvider, RecordingDBProvider } from "shelving/db";
-import { BASICS_COLLECTION, basic1, basic2, basic4, basic999, TransactionTestDBProvider } from "../../test/index.js";
+import type { Data } from "shelving/util/data";
+import { BASICS_COLLECTION, basic1, basic2, basic4, basic999, TransactionTestDBProvider, testDBDifferential } from "../../test/index.js";
+
+// Replaying the recorded writes onto an empty provider must give the same items.
+testDBDifferential("RecordingDBProvider", () => new RecordingDBProvider(new MemoryDBProvider<string>()), {
+	check: async db => {
+		const replayed = new MemoryDBProvider<string>();
+		await (db as RecordingDBProvider<string, Data>).replayWrites(replayed);
+		return replayed.getQuery(BASICS_COLLECTION, {});
+	},
+});
 
 describe("RecordingDBProvider", () => {
 	test("records addItem() with an add operation", async () => {
