@@ -7,6 +7,7 @@ import {
 	type ReactElement,
 	Suspense,
 	startTransition,
+	useCallback,
 	useLayoutEffect,
 	useMemo,
 	useRef,
@@ -40,6 +41,7 @@ export interface DialogProps extends OptionalChildProps {
  * Modal `<dialog>` element that opens on mount.
  *
  * - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, or the Escape key.
+ * - It hears taps and close requests with native listeners, so a tap still closes it while React waits for a view transition to start (React ignores events then).
  * - It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>`.
  * - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
  * - A tap on a link calls `onClose(true)`: the dialog goes at once, so the page change gets the view transition. A separate close transition would take the page's transition types and hold the page change until it ends.
@@ -58,6 +60,9 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 	const hiddenRef = useRef(hidden);
 	hiddenRef.current = hidden;
 	const waiting = useRef<(() => void)[]>([]);
+	const closeRef = useRef(onClose);
+	closeRef.current = onClose;
+	const ref = useCallback((dialog: HTMLDialogElement) => _listen(dialog, closeRef), []);
 	// Resolve `show()` calls once React has committed the shown dialog.
 	useLayoutEffect(() => {
 		if (!hidden) for (const resolve of waiting.current.splice(0)) resolve();
@@ -86,20 +91,7 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 				<Suspense fallback={null}>
 					{/* The transition must wrap the `<dialog>`: React only animates a `<ViewTransition>` that comes before any DOM element in the inserted or deleted tree. Fade only on enter and exit, so an open dialog stays still while another dialog opens or closes. No update transition: the page ignores taps while a view transition runs, so a change inside an open dialog must not start one. */}
 					<ViewTransition default="none" enter={FADE_TRANSITION_CLASS} exit={FADE_TRANSITION_CLASS}>
-						{/** biome-ignore lint/a11y/useKeyWithClickEvents: Dialogs also show a close button. */}
-						<dialog
-							ref={_showModal}
-							className={getModuleClass(styles, "dialog")}
-							onClick={e => _closeOnClick(e, onClose)}
-							onCancel={e => {
-								// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
-								if (!onClose || !e.cancelable) return;
-								e.preventDefault();
-								onClose();
-							}}
-							onClose={onClose && (() => onClose())}
-							{...props}
-						>
+						<dialog ref={ref} className={getModuleClass(styles, "dialog")} {...props}>
 							<div className={getModuleClass(styles, "content")}>{children}</div>
 						</dialog>
 					</ViewTransition>
@@ -110,12 +102,32 @@ export const Dialog = memo(({ children, onClose, ...props }: DialogProps) => {
 });
 
 /**
- * Open a `<dialog>` as a modal when React attaches it.
+ * Open a `<dialog>` as a modal when React attaches it, and listen for taps and close requests on it.
  * - A ref callback, not a layout effect. React holds the layout effects of a view transition until its images are ready, and an image in a closed `<dialog>` is never ready, so a layout effect would never open a dialog with an image in it.
  * - The ref callback still runs inside the view transition's update, so the new snapshot shows the open dialog.
+ * - Native listeners, not React props: React ignores every event from the moment it asks for a view transition until the transition's update runs. A tap in that gap still reaches the page's own link handler, so the page changed and the dialog stayed open.
+ *
+ * @returns A function that removes the listeners.
  */
-function _showModal(dialog: HTMLDialogElement | null): void {
-	if (dialog && !dialog.open) dialog.showModal();
+function _listen(dialog: HTMLDialogElement, closeRef: { readonly current: DialogProps["onClose"] }): () => void {
+	if (!dialog.open) dialog.showModal();
+	const onClick = (e: globalThis.MouseEvent) => _closeOnClick(e, closeRef.current);
+	const onCancel = (e: Event) => {
+		// Keep the dialog open until the parent unmounts it. An uncancelable request closes natively and fires `onClose` from the `close` event.
+		const onClose = closeRef.current;
+		if (!onClose || !e.cancelable) return;
+		e.preventDefault();
+		onClose();
+	};
+	const onClose = () => closeRef.current?.();
+	dialog.addEventListener("click", onClick);
+	dialog.addEventListener("cancel", onCancel);
+	dialog.addEventListener("close", onClose);
+	return () => {
+		dialog.removeEventListener("click", onClick);
+		dialog.removeEventListener("cancel", onCancel);
+		dialog.removeEventListener("close", onClose);
+	};
 }
 
 /** Links and `<nav>` buttons always close the dialog. */
@@ -125,10 +137,10 @@ const CLOSE_SELECTOR = "a:any-link, nav button:enabled";
 const KEEP_SELECTOR = `button, input, select, textarea, label, .${getModuleClass(modalStyles, "modal")}`;
 
 /** When the user taps anywhere on a `<dialog>` element, close it, unless the tap is on a control or inside a `<Modal>`. */
-function _closeOnClick({ currentTarget, target }: MouseEvent<HTMLDialogElement>, onClose: DialogProps["onClose"]): void {
-	if (!(target instanceof Element)) return;
+function _closeOnClick({ currentTarget, target }: globalThis.MouseEvent, onClose: DialogProps["onClose"]): void {
+	if (!(target instanceof Element) || !(currentTarget instanceof HTMLDialogElement)) return;
 
-	// Ignore taps in a nested dialog. React events bubble through the React tree, so they can reach an outer dialog.
+	// Ignore taps in a nested dialog.
 	if (target.closest("dialog") !== currentTarget) return;
 
 	// A link changes the page, so close at once and leave the view transition to the page change.
