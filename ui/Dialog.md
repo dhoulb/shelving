@@ -6,6 +6,7 @@
 Modal `<dialog>` element that opens on mount.
 
 - Opens via `showModal()` when mounted, and closes on a tap anywhere on it, or the Escape key.
+- It hears taps and close requests with native listeners, so a tap still closes it while React waits for a view transition to start (React ignores events then).
 - It has no close button. Give the content an explicit button that closes it (for example "OK"), or add a `<DialogCloseButton>`.
 - A tap on a control (button, input, select, textarea, label) or inside a `<Modal>` panel does not close it. A tap on a link or a `<nav>` button always closes it.
 - A tap on a link calls `onClose(true)`: the dialog goes at once, so the page change gets the view transition. A separate close transition would take the page's transition types and hold the page change until it ends.
