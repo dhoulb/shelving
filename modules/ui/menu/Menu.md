@@ -7,6 +7,7 @@ A `<menu>` list of `<MenuItem>` children — the container for URL-aware navigat
 - Renders as a bare `<menu>` element (semantically equivalent to `<ul>` but more meaningful for menus). Place it inside a `<nav>` — or a `<SidebarLayout>` sidebar, which is already a `<nav>` landmark — if a navigation landmark is needed.
 - Nesting a `<Menu>` inside a `<MenuItem>` gets indented automatically via the `.menu .menu` descendant rule.
 - Pass `small` to make every item inside it small, including items in nested menus. See `<MenuItem>`.
+- To name a menu, put a `<MenuHeading>` above it. Its text lines up with the item text.
 
 ## Usage
 
