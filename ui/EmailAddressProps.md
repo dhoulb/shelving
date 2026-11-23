@@ -2,9 +2,9 @@
 
 - Kind: interface
 - Import: `import { EmailAddressProps } from "shelving/ui";`
-- Extends: `ClassProps`
+- Extends: `BlockVariants`
 
-Props for `EmailAddress` — an optional name and a nullable email string.
+Props for `EmailAddress` — an optional name and a nullable email string, plus the same variants as `Address`.
 
 ## Signatures
 

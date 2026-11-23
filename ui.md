@@ -339,8 +339,8 @@ The components below are listed in the index following this page; this is the sh
 
 - [AppProps](ui/AppProps.md): Props for <App> — the root Meta plus the application children.
 - [AddressProps](ui/AddressProps.md): Props for Address — colour, space, and typography variants plus required children.
-- [PhysicalAddressProps](ui/PhysicalAddressProps.md): Props for PhysicalAddress — an optional name and a nullable AddressData object.
-- [EmailAddressProps](ui/EmailAddressProps.md): Props for EmailAddress — an optional name and a nullable email string.
+- [PhysicalAddressProps](ui/PhysicalAddressProps.md): Props for PhysicalAddress — an optional name and a nullable AddressData object, plus the same variants as Address.
+- [EmailAddressProps](ui/EmailAddressProps.md): Props for EmailAddress — an optional name and a nullable email string, plus the same variants as Address.
 - [BlockProps](ui/BlockProps.md): Props for Block — colour, space, typography, and width variants plus an optional as element override.
 - [BlockquoteProps](ui/BlockquoteProps.md): Props for Blockquote — colour, space, and typography variants plus optional children.
 - [CaptionProps](ui/CaptionProps.md): Props for Caption — colour, space, and typography variants plus optional children.
