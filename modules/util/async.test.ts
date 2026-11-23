@@ -41,6 +41,24 @@ describe("Deferred", () => {
 		}, 50);
 		expect<string>(await promise.then()).toBe("ABC");
 	});
+	test("works without native Promise.withResolvers()", async () => {
+		const withResolvers = Promise.withResolvers;
+		// @ts-expect-error Remove the native method to test the fallback.
+		delete Promise.withResolvers;
+		try {
+			const { promise, resolve, reject } = createDeferred<string>();
+			expect(promise).toBeInstanceOf(Promise);
+			expect(resolve).toBeInstanceOf(Function);
+			expect(reject).toBeInstanceOf(Function);
+			resolve("ABC");
+			expect<string>(await promise).toBe("ABC");
+			const rejected = createDeferred<string>();
+			rejected.reject("ERR");
+			await expect(rejected.promise).rejects.toBe("ERR");
+		} finally {
+			Promise.withResolvers = withResolvers;
+		}
+	});
 });
 describe("awaitConcurrent()", () => {
 	test("Works correctly with successful resolution", async () => {

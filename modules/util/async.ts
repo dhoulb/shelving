@@ -169,12 +169,20 @@ export type Deferred<T = unknown> = {
 
 /**
  * Create a deferred to access the `resolve()` and `reject()` functions of a promise.
- * - See https://github.com/tc39/proposal-promise-with-resolvers/
+ * - Uses native `Promise.withResolvers()` where it exists, and a `new Promise()` executor where it does not.
+ * - See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
  *
  * @returns A `Deferred` exposing the promise and its `resolve()`/`reject()` functions.
  * @see https://shelving.cc/util/async/createDeferred
  */
 export function createDeferred<T = void>(): Deferred<T> {
+	// Remove this fallback when `Promise.withResolvers()` reaches 99% global support (see #475).
+	if (typeof Promise.withResolvers !== "function") return _createDeferredFallback<T>();
+	return Promise.withResolvers<T>();
+}
+
+/** Fallback for `createDeferred()` that copies `resolve()` and `reject()` out of a `new Promise()` executor. */
+function _createDeferredFallback<T>(): Deferred<T> {
 	let resolve: ValueCallback<T>;
 	let reject: ErrorCallback;
 	return {
