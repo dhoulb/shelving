@@ -84,6 +84,17 @@ describe("getBasedURI()", () => {
 		expect(getBasedURI(null)).toBeUndefined();
 		expect(getBasedURI("")).toBeUndefined();
 	});
+	test("falls back to `new URL()` when `URL.parse()` does not exist", () => {
+		const parse = URL.parse;
+		Reflect.deleteProperty(URL, "parse");
+		try {
+			expect(getBasedURI("./foo", "https://x.com/a/b")?.href).toBe("https://x.com/a/b/foo");
+			expect(getBasedURI("mailto:a@b")?.href).toBe("mailto:a@b");
+			expect(getBasedURI("./foo")).toBeUndefined();
+		} finally {
+			URL.parse = parse;
+		}
+	});
 });
 describe("matchURLPrefix()", () => {
 	test("resolves relative target against base and strips matched path", () => {

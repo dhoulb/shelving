@@ -107,8 +107,12 @@ export function assertURL(value: unknown, caller: AnyCaller = assertURL): assert
 export function getBasedURI(input: Nullish<PossibleURL>, base?: PossibleURL): ImmutableURI | undefined {
 	if (!input) return;
 	if (input instanceof URL) return input as ImmutableURI;
+	const baseURL = getBaseURL(base);
+	// Use `URL.parse()` where it exists, because it does not throw.
+	// @todo Remove the `try` / `catch` fallback when `URL.parse()` support reaches 99%.
+	if (URL.parse) return (URL.parse(input, baseURL) ?? undefined) as ImmutableURI | undefined;
 	try {
-		return new URL(input, getBaseURL(base)) as ImmutableURI;
+		return new URL(input, baseURL) as ImmutableURI;
 	} catch {
 		//
 	}

@@ -1,8 +1,38 @@
 import { describe, expect, test } from "bun:test";
 import { RequiredError } from "shelving/error";
-import { getURIParam, getURIParams, omitURIParam, omitURIParams, requireURIParam, withURIParam, withURIParams } from "shelving/util/uri";
+import {
+	getURI,
+	getURIParam,
+	getURIParams,
+	omitURIParam,
+	omitURIParams,
+	requireURIParam,
+	withURIParam,
+	withURIParams,
+} from "shelving/util/uri";
 import { ImmutableURL } from "shelving/util/url";
 
+describe("getURI()", () => {
+	test("returns a URI for a complete URI string", () => {
+		expect(getURI("https://a.com/foo")?.href).toBe("https://a.com/foo");
+		expect(getURI("mailto:a@b")?.href).toBe("mailto:a@b");
+	});
+	test("returns undefined for a relative or empty input", () => {
+		expect(getURI("./foo")).toBeUndefined();
+		expect(getURI("")).toBeUndefined();
+		expect(getURI(null)).toBeUndefined();
+	});
+	test("falls back to `new URL()` when `URL.parse()` does not exist", () => {
+		const parse = URL.parse;
+		Reflect.deleteProperty(URL, "parse");
+		try {
+			expect(getURI("https://a.com/foo")?.href).toBe("https://a.com/foo");
+			expect(getURI("./foo")).toBeUndefined();
+		} finally {
+			URL.parse = parse;
+		}
+	});
+});
 describe("getURIParams()", () => {
 	test("returns params from URL", () => {
 		expect(getURIParams("https://a.com/?a=1&b=2")).toEqual({ a: "1", b: "2" });
