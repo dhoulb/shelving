@@ -16,7 +16,8 @@
 		/* Box */
 		margin-block: var(--address-space);
 
-		/* Text */
+		/* Text: browsers make `<address>` italic, so reset it to normal. */
+		font-style: normal;
 		white-space: preserve wrap;
 	}
 }
