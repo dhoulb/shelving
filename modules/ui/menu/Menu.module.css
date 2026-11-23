@@ -76,6 +76,16 @@
 		}
 	}
 
+	/* A heading's text lines up with an item's text: the link's border plus its inline padding. */
+	.heading {
+		padding-inline: calc(var(--menu-stroke) + var(--menu-indent));
+
+		/* A small item has no border. */
+		&.small {
+			padding-inline: var(--menu-small-indent);
+		}
+	}
+
 	.item {
 		margin: 0;
 	}

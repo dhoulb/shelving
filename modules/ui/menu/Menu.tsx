@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { isArray } from "../../util/array.js";
 import { getLink, isURLActive, isURLProud } from "../../util/index.js";
+import { Label, type LabelProps } from "../block/Label.js";
 import { Clickable, type ClickableProps } from "../button/Clickable.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
@@ -15,6 +16,7 @@ const MENU_PROUD_CLASS = getModuleClass(MENU_CSS, "proud");
 const MENU_ACTIVE_CLASS = getModuleClass(MENU_CSS, "active");
 const MENU_SELECTED_CLASS = getModuleClass(MENU_CSS, "selected");
 const MENU_SMALL_CLASS = getModuleClass(MENU_CSS, "small");
+const MENU_HEADING_CLASS = getModuleClass(MENU_CSS, "heading");
 
 /**
  * Props for `<Menu>` — optional `<MenuItem>` `children`.
@@ -99,5 +101,36 @@ export function MenuItem({ href, children, small, selected, className, ...props 
 			</Clickable>
 			{proud && after}
 		</li>
+	);
+}
+
+/**
+ * Props for `<MenuHeading>` — `<Label>` props plus `small`.
+ *
+ * @see https://shelving.cc/ui/MenuHeadingProps
+ */
+export interface MenuHeadingProps extends LabelProps {
+	/** Line up with small items, as in a `<Menu small>`. */
+	readonly small?: boolean | undefined;
+}
+
+/**
+ * A heading for a `<Menu>`, with the `<Label>` style, indented so its text lines up with the text of each `<MenuItem>`.
+ * - Place it directly above the `<Menu>` it names.
+ * - Pass `small` when the menu below it is small.
+ *
+ * @kind component
+ * @see https://shelving.cc/ui/MenuHeading
+ */
+export function MenuHeading({ small, className, ...props }: MenuHeadingProps): ReactNode {
+	return (
+		<Label
+			{...props}
+			className={getClass(
+				MENU_HEADING_CLASS, //
+				small && MENU_SMALL_CLASS,
+				className,
+			)}
+		/>
 	);
 }
