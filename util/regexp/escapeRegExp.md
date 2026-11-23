@@ -5,6 +5,8 @@
 
 Escape special characters in a string regular expression.
 - Escapes any characters that have special meaning in a regular expression so the string matches literally.
+- Uses native `RegExp.escape()` where it exists, and a simpler pattern where it does not.
+- The escaped string can be different in each environment, but the regular expression always matches the same text.
 
 ## Signatures
 
