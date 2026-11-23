@@ -99,15 +99,22 @@ export function getRegExpSource(regexp: PossibleRegExp): string {
 /**
  * Escape special characters in a string regular expression.
  * - Escapes any characters that have special meaning in a regular expression so the string matches literally.
+ * - Uses native `RegExp.escape()` where it exists, and a simpler pattern where it does not.
+ * - The escaped string can be different in each environment, but the regular expression always matches the same text.
  *
  * @param pattern The string to escape.
  * @returns The escaped string, safe to use as a literal regular expression source.
  * @see https://shelving.cc/util/regexp/escapeRegExp
  */
 export function escapeRegExp(pattern: string): string {
-	return pattern.replace(REPLACE_ESCAPED, "\\$&");
+	// TODO: Remove the fallback when `RegExp.escape()` support reaches 99%.
+	return typeof RegExp.escape === "function" ? RegExp.escape(pattern) : pattern.replace(REPLACE_ESCAPED, _escapeChar);
 }
 const REPLACE_ESCAPED = /[-[\]/{}()*+?.\\^$|]/g;
+// `\-` is not valid in a `u` or `v` flag regular expression, so escape `-` as a hex code.
+function _escapeChar(char: string): string {
+	return char === "-" ? "\\x2d" : `\\${char}`;
+}
 
 /**
  * Create a regular expression that matches any one of a list of other expressions.

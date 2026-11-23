@@ -3,6 +3,7 @@ import { filterArray } from "shelving/util/filter";
 import {
 	createRegExpAll,
 	createRegExpAny,
+	escapeRegExp,
 	getMatch,
 	getMatchGroups,
 	isMatch,
@@ -76,4 +77,34 @@ test("getOptionalMatchGroups()", () => {
 });
 test("getMatchGroups()", () => {
 	expect(requireMatchGroups("abc123", /(?<str>[a-z]+)(?<num>[0-9]+)/)).toMatchObject({ str: "abc", num: "123" });
+});
+
+const ESCAPE_STRINGS = ["", "abc", "1 + 1 = 2", "a.b", "foo-bar", "x/y", "-[]/{}()*+?.\\^$|", "café ☕", "line\nbreak"];
+test("escapeRegExp()", () => {
+	expect(typeof RegExp.escape).toBe("function");
+	for (const str of ESCAPE_STRINGS) {
+		expect(new RegExp(`^${escapeRegExp(str)}$`).test(str)).toBe(true);
+		expect(new RegExp(`^${escapeRegExp(str)}$`, "u").test(str)).toBe(true);
+		expect(new RegExp(`^${escapeRegExp(str)}$`, "v").test(str)).toBe(true);
+	}
+	expect(new RegExp(`^${escapeRegExp("a.b")}$`).test("axb")).toBe(false);
+	expect(new RegExp(`^${escapeRegExp("a*")}$`).test("aaa")).toBe(false);
+});
+test("escapeRegExp() without native RegExp.escape()", () => {
+	const native = RegExp.escape;
+	// @ts-expect-error Remove native method to test the fallback.
+	delete RegExp.escape;
+	try {
+		expect(escapeRegExp("1 + 1 = 2")).toBe("1 \\+ 1 = 2");
+		expect(escapeRegExp("foo-bar")).toBe("foo\\x2dbar");
+		for (const str of ESCAPE_STRINGS) {
+			expect(new RegExp(`^${escapeRegExp(str)}$`).test(str)).toBe(true);
+			expect(new RegExp(`^${escapeRegExp(str)}$`, "u").test(str)).toBe(true);
+			expect(new RegExp(`^${escapeRegExp(str)}$`, "v").test(str)).toBe(true);
+		}
+		expect(new RegExp(`^${escapeRegExp("a.b")}$`).test("axb")).toBe(false);
+		expect(new RegExp(`^${escapeRegExp("a*")}$`).test("aaa")).toBe(false);
+	} finally {
+		RegExp.escape = native;
+	}
 });
