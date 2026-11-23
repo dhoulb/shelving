@@ -1,0 +1,3 @@
+import{v}from"./chunk-tck960dt.js";import{o}from"./chunk-yztzwd14.js";import{ve}from"./chunk-ftt4adep.js";function wn(e){return typeof e==="object"&&e!==null&&"type"in e}function Jp(e){return e===null||typeof e==="string"||wn(e)||o(e)}function ti(e){if(typeof e==="string")return e;if(wn(e)){if(e.type==="br")return`
+`;return ti(e.props.children)}if(v(e)){let t="";for(let n of e)t+=ti(n);return t}return""}function*Y(e){if(wn(e))yield e;else if(v(e))for(let t of e)yield*Y(t)}function Zp(e,t){return ve(Y(e),t)}function*nr(e,t){for(let n of Y(e))if(t(n))yield n}function em(e,t){if(!e)return t;if(!t)return e;return[e,t]}
+export{wn,Jp,ti,Y,Zp,nr,em};
