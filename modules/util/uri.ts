@@ -185,6 +185,9 @@ export function assertURI(value: unknown, caller: AnyCaller = assertURI): assert
 export function getURI(possible: Nullish<PossibleURI>): ImmutableURI | undefined {
 	if (!possible) return;
 	if (isURI(possible)) return possible;
+	// Use `URL.parse()` where it exists, because it does not throw.
+	// @todo Remove the `try` / `catch` fallback when `URL.parse()` support reaches 99%.
+	if (URL.parse) return (URL.parse(possible) ?? undefined) as ImmutableURI | undefined;
 	try {
 		return new URL(possible) as ImmutableURI;
 	} catch {
