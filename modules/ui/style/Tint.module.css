@@ -34,7 +34,9 @@
 		--tint-95: color-mix(in oklch, var(--tint-50), white 90%);
 		--tint-100: white;
 
-		/* Black or white, whichever reads better on `--tint-50`. */
+		/* Black or white, whichever reads better on `--tint-50`.
+		 * Do not use `contrast-color()` here. It picks by WCAG 2 contrast, so it gives black text on gray, red and pink,
+		 * where this formula gives white. It also gives no browser reach gain over this formula (see #478). */
 		--tint-contrast: oklch(from var(--tint-50) calc(clamp(0, (0.72 - l) * 1000, 1)) 0 0deg);
 	}
 
