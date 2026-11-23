@@ -9,7 +9,7 @@ Show an optional `AddressData` object correctly on screen.
 ## Signatures
 
 ```ts
-PhysicalAddress({ name, address, className }: PhysicalAddressProps): ReactElement
+PhysicalAddress({ name, address, ...props }: PhysicalAddressProps): ReactElement
 ```
 
 ## Parameters

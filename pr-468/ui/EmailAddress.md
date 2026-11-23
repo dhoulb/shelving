@@ -9,7 +9,7 @@ Show an optional email address string correctly on screen.
 ## Signatures
 
 ```ts
-EmailAddress({ name, email, className }: EmailAddressProps): ReactElement
+EmailAddress({ name, email, ...props }: EmailAddressProps): ReactElement
 ```
 
 ## Parameters

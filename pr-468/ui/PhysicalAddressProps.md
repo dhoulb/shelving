@@ -2,9 +2,9 @@
 
 - Kind: interface
 - Import: `import { PhysicalAddressProps } from "shelving/ui";`
-- Extends: `ClassProps`
+- Extends: `BlockVariants`
 
-Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object.
+Props for `PhysicalAddress` — an optional name and a nullable `AddressData` object, plus the same variants as `Address`.
 
 ## Signatures
 
