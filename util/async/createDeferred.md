@@ -4,7 +4,8 @@
 - Import: `import { createDeferred } from "shelving/util/async";`
 
 Create a deferred to access the `resolve()` and `reject()` functions of a promise.
-- See https://github.com/tc39/proposal-promise-with-resolvers/
+- Uses native `Promise.withResolvers()` where it exists, and a `new Promise()` executor where it does not.
+- See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
 
 ## Signatures
 
