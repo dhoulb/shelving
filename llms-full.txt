@@ -20764,6 +20764,7 @@ The components below are listed in the index following this page; this is the sh
 - [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a content slot.
 - [Menu](ui/Menu.md): A <menu> list of <MenuItem> children.
 - [MenuItem](ui/MenuItem.md): A <li> containing an <a> link, plus optional submenu content shown when this item is "proud".
+- [MenuHeading](ui/MenuHeading.md): A heading for a <Menu>, with the <Label> style, indented so its text lines up with the text of each <MenuItem>.
 - [Catcher](ui/Catcher.md): React error boundary that renders a fallback component when any descendant throws.
 - [ErrorNotice](ui/ErrorNotice.md): Render a caught error as an inline <Notice> with a retry button.
 - [PageCatcher](ui/PageCatcher.md): Error boundary for a whole page that renders a full <ErrorPage> fallback on error.
@@ -21025,6 +21026,7 @@ The components below are listed in the index following this page; this is the sh
 - [SidebarLayoutProps](ui/SidebarLayoutProps.md): Props for <SidebarLayout> — the sidebar column content, main children, and a right placement flag.
 - [MenuProps](ui/MenuProps.md): Props for <Menu> — optional <MenuItem> children.
 - [MenuItemProps](ui/MenuItemProps.md): Props for <MenuItem> — <Clickable> props plus children whose first node is the label and the rest the submenu.
+- [MenuHeadingProps](ui/MenuHeadingProps.md): Props for <MenuHeading> — <Label> props plus small.
 - [ErrorProps](ui/ErrorProps.md): Props for a component that renders a caught error reason.
 - [CatcherProps](ui/CatcherProps.md): Props for <Catcher> — the children to guard plus the as component used to render any caught error.
 - [IconProps](ui/IconProps.md): Props for <Icon> — the status to represent and optional icon size.
@@ -34039,6 +34041,7 @@ A `<menu>` list of `<MenuItem>` children — the container for URL-aware navigat
 - Renders as a bare `<menu>` element (semantically equivalent to `<ul>` but more meaningful for menus). Place it inside a `<nav>` — or a `<SidebarLayout>` sidebar, which is already a `<nav>` landmark — if a navigation landmark is needed.
 - Nesting a `<Menu>` inside a `<MenuItem>` gets indented automatically via the `.menu .menu` descendant rule.
 - Pass `small` to make every item inside it small, including items in nested menus. See `<MenuItem>`.
+- To name a menu, put a `<MenuHeading>` above it. Its text lines up with the item text.
 
 ## Usage
 
@@ -34246,6 +34249,100 @@ MenuItem({ href, children, small, selected, className, ...props }: MenuItemProps
 | `props` | `MenuItemProps` |  |
 | `.children` | `ReactNode \| readonly [ReactNode, ...ReactNode[]]` | The first child becomes the link label (rendered inside the `<a>`). - Any additional children form the submenu — only rendered when this item is "proud" (an ancestor of the current page). The caller is responsible for wrapping the submenu in a nested `<Menu>` if it wants the CSS `.menu .menu` descendant rules to apply. Read only. |
 | `.small` | `boolean \| undefined` | Make the item smaller: less padding and no minimum height. By default an item is as tall as a `<Button>`, so it is easy to tap. Read only. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactNode` |  |
+
+
+---
+
+# MenuHeadingProps
+
+- Kind: interface
+- Import: `import { MenuHeadingProps } from "shelving/ui";`
+- Extends: `LabelProps`
+
+Props for `<MenuHeading>` — `<Label>` props plus `small`.
+
+## Signatures
+
+```ts
+{
+	readonly small?: boolean | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `small` | `boolean \| undefined` | Line up with small items, as in a `<Menu small>`. Read only. Optional. |
+
+
+---
+
+# MenuHeading
+
+- Kind: component
+- Import: `import { MenuHeading } from "shelving/ui";`
+
+A heading for a `<Menu>`, with the `<Label>` style, indented so its text lines up with the text of each `<MenuItem>`.
+- Place it directly above the `<Menu>` it names.
+- Pass `small` when the menu below it is small.
+
+A heading for a `<Menu>`. It has the `<Label>` style (small, bold and uppercase), and it is indented so its text lines up with the text of each `<MenuItem>`.
+
+**Things to know:**
+
+- Place it directly above the `<Menu>` it names.
+- The indent follows the menu's own hooks (`--menu-stroke` and `--menu-indent`), so it stays in line when you change them.
+- Pass `small` when the menu below it is small. It then uses `--menu-small-indent`, the same as a small `<MenuItem>`.
+- Takes the same props as `<Label>`. It renders an `<h3>` by default; set `level` to change the element.
+
+## Usage
+
+```tsx live
+import { Menu, MenuHeading, MenuItem } from "shelving/ui";
+
+<MenuHeading>Account</MenuHeading>
+<Menu>
+	<MenuItem href="/profile">Profile</MenuItem>
+	<MenuItem href="/billing">Billing</MenuItem>
+</Menu>
+```
+
+### Small menu
+
+```tsx live
+import { Menu, MenuHeading, MenuItem } from "shelving/ui";
+
+<MenuHeading small>Help</MenuHeading>
+<Menu small>
+	<MenuItem href="/contact">Contact</MenuItem>
+	<MenuItem href="/terms">Terms</MenuItem>
+</Menu>
+```
+
+## Styling
+
+It has no hooks of its own. It reads these `<Menu>` hooks for its left and right padding: `--menu-stroke` plus `--menu-indent`, or `--menu-small-indent` when small. All other styles come from `<Label>`.
+
+
+## Signatures
+
+```ts
+MenuHeading({ small, className, ...props }: MenuHeadingProps): ReactNode
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `props` | `MenuHeadingProps` |  |
+| `.small` | `boolean \| undefined` | Line up with small items, as in a `<Menu small>`. Read only. Optional. |
 
 ## Returns
 

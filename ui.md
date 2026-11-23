@@ -194,6 +194,7 @@ The components below are listed in the index following this page; this is the sh
 - [SidebarLayout](ui/SidebarLayout.md): Layout with a fixed-width side column (typically navigation) next to a content slot.
 - [Menu](ui/Menu.md): A <menu> list of <MenuItem> children.
 - [MenuItem](ui/MenuItem.md): A <li> containing an <a> link, plus optional submenu content shown when this item is "proud".
+- [MenuHeading](ui/MenuHeading.md): A heading for a <Menu>, with the <Label> style, indented so its text lines up with the text of each <MenuItem>.
 - [Catcher](ui/Catcher.md): React error boundary that renders a fallback component when any descendant throws.
 - [ErrorNotice](ui/ErrorNotice.md): Render a caught error as an inline <Notice> with a retry button.
 - [PageCatcher](ui/PageCatcher.md): Error boundary for a whole page that renders a full <ErrorPage> fallback on error.
@@ -455,6 +456,7 @@ The components below are listed in the index following this page; this is the sh
 - [SidebarLayoutProps](ui/SidebarLayoutProps.md): Props for <SidebarLayout> — the sidebar column content, main children, and a right placement flag.
 - [MenuProps](ui/MenuProps.md): Props for <Menu> — optional <MenuItem> children.
 - [MenuItemProps](ui/MenuItemProps.md): Props for <MenuItem> — <Clickable> props plus children whose first node is the label and the rest the submenu.
+- [MenuHeadingProps](ui/MenuHeadingProps.md): Props for <MenuHeading> — <Label> props plus small.
 - [ErrorProps](ui/ErrorProps.md): Props for a component that renders a caught error reason.
 - [CatcherProps](ui/CatcherProps.md): Props for <Catcher> — the children to guard plus the as component used to render any caught error.
 - [IconProps](ui/IconProps.md): Props for <Icon> — the status to represent and optional icon size.
