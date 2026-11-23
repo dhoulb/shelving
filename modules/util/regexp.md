@@ -7,6 +7,7 @@ Typed wrappers and combinators for working with regular expressions. They let yo
 - `Matchable` is `string | RegExp`. When a `string` is used as a `Matchable`, matching uses `===` equality rather than `RegExp.test()`.
 - `createRegExpAny([])` returns `NEVER_REGEXP` (matches nothing); `createRegExpAll([])` returns `ALWAYS_REGEXP` (matches everything) — consistent with "any of nothing" vs "all of nothing" semantics.
 - `NamedRegExp<T>` and `TypedRegExp<T>` are typed interfaces that carry capture group shapes through to `exec()` return values, avoiding manual casting.
+- `escapeRegExp()` uses native `RegExp.escape()` where it exists. The escaped string is different in older environments, but it matches the same text. Do not depend on the exact escaped string.
 - `getMatch()` returns `undefined` instead of `null` on no-match, fitting the rest of the util `get*` convention.
 
 ## Usage
@@ -32,7 +33,7 @@ import { getRegExp, getRegExpSource, escapeRegExp, createRegExpAny, createRegExp
 
 getRegExp("\\d+", "g"); // /\d+/g
 getRegExpSource(/\d+/); // "\\d+"
-escapeRegExp("1 + 1 = 2"); // "1 \\+ 1 \\= 2"
+new RegExp(escapeRegExp("1 + 1 = 2")).test("1 + 1 = 2"); // true
 
 createRegExpAny([/foo/, /bar/]); // /(?:foo)|(?:bar)/
 createRegExpAll([/foo/, /bar/]); // /^(?=.*?(?:foo))(?=.*?(?:bar))/
