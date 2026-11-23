@@ -16,6 +16,12 @@ test("INLINE_RULE <strong>", () => {
 	expect(PARSER.parse("BEFORE *AAA*", "inline")).toMatchObject(["BEFORE ", { type: "strong", props: { children: "AAA" } }]);
 	expect(PARSER.parse("*AAA* AFTER", "inline")).toMatchObject([{ type: "strong", props: { children: "AAA" } }, " AFTER"]);
 
+	// Matching is non-greedy, also when the first span is one character.
+	expect(PARSER.parse("**A** and **B**", "inline")).toMatchObject([
+		{ type: "strong", props: { children: "A" } },
+		" and ",
+		{ type: "strong", props: { children: "B" } },
+	]);
 	// Matching is non-greedy.
 	expect(PARSER.parse("*AAA* *AAA*", "inline")).toMatchObject([
 		{ type: "strong", props: { children: "AAA" } },

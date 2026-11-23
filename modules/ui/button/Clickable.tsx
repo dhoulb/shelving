@@ -2,7 +2,7 @@ import type { MouseEvent, ReactElement, ReactNode } from "react";
 import { useInstance } from "../../react/useInstance.js";
 import { useStore } from "../../react/useStore.js";
 import { BusyStore } from "../../store/BusyStore.js";
-import { isURLActive } from "../../util/index.js";
+import { isURL, isURLActive } from "../../util/index.js";
 import { getLink } from "../../util/link.js";
 import type { Path } from "../../util/path.js";
 import type { ImmutableURI, URIString } from "../../util/uri.js";
@@ -95,8 +95,8 @@ export function LinkClickable({
 	const { url, root } = requireMeta();
 	const link = disabled ? undefined : getLink(href, url, root);
 
-	// Is this link "active" compared to the current URL?
-	const active = isURLActive(link, url);
+	// Is this link "active" compared to the current URL? Only a true `scheme://host` URL can be (not `mailto:` or `tel:`).
+	const active = isURL(link) && isURLActive(link, url);
 
 	return (
 		<a //

@@ -27,7 +27,7 @@ export const INLINE_RULE = createMarkupRule<{
 	createWordRegExp(
 		// Marker run is bounded (`{1,8}`) and the inner span is bounded (`{0,2000}?`) so a long run of
 		// unclosed markers can't force O(n²) backtracking — real emphasis never approaches these limits.
-		`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}]){1,8})(?<text>(?!\\k<char>)\\S(?:[\\s\\S]{0,2000}?(?!\\k<char>)\\S)?)\\k<wrap>`,
+		`(?<wrap>(?<char>[${Object.keys(INLINE_CHARS).join("")}]){1,8})(?<text>(?!\\k<char>)\\S(?:[\\s\\S]{0,2000}?(?!\\k<char>)\\S)??)\\k<wrap>`,
 	),
 	(key, { char, text }, parser) => {
 		const Inline = INLINE_CHARS[char];
