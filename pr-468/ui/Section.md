@@ -1,0 +1,86 @@
+# Section
+
+- Kind: component
+- Import: `import { Section } from "shelving/ui";`
+
+`<section>` block with section-level spacing.
+- Pass `as` to render a different semantic element.
+
+A landmark content region — renders a `<section>` with block-level spacing and a constrained content width. `Section.tsx` exports the whole family of semantic landmarks (`<Section>`, `<Header>`, `<Footer>`, `<Figure>`) — they share `SectionProps` and differ only in the HTML element they render.
+
+**Things to know:**
+
+- Pick the component whose HTML element matches the semantic meaning rather than reaching for a generic `<Block>`. `<Section>` is a `<section>`, `<Figure>` a `<figure>`, and so on.
+- Every section centres its content and caps the line length, but it adds **no inline padding of its own**, so its content can run to the edge of its container. Keep content off the edges by placing the section inside something that already pads — a `<Panel>`, a `<Block indent="normal">`, or a layout that pads its scroll area — or by giving the section its own `indent` variant (`<Section indent="normal">`).
+- Sections default to the `--width-normal` content width, so most of the time you set no width at all. Pass `width="narrow"` / `"wide"` / `"full"` (or `"fit"`) to change that, and the usual `color` / `space` / `indent` / typography variants to retint, respace, and inset.
+- Pair `Figure` with `<Caption>` for a `<figure>` / `<figcaption>` pair.
+
+## Usage
+
+### Structured page section
+
+```tsx live
+import { Section, Heading, Definitions } from "shelving/ui";
+
+<Section width="narrow">
+	<Heading>Account details</Heading>
+	<Definitions>
+		<dt>Name</dt>
+		<dd>Alice Smith</dd>
+		<dt>Email</dt>
+		<dd>alice@example.com</dd>
+		<dt>Plan</dt>
+		<dd>Pro</dd>
+	</Definitions>
+</Section>;
+```
+
+### Landmark elements
+
+```tsx live
+import { Footer, Header, Link, Paragraph, Section, Small, Subheading, Title } from "shelving/ui";
+
+<Header indent="normal">
+	<Title>Welcome</Title>
+</Header>
+<Section indent="normal">
+	<Subheading>Get started</Subheading>
+	<Paragraph>Read the <Link href="https://shelving.cc/guides">guides</Link> first.</Paragraph>
+</Section>
+<Footer indent="normal">
+	<Small>© 2026</Small>
+</Footer>
+```
+
+## Styling
+
+`Section` exposes hooks for its width and rhythm; it paints no colour of its own, so it inherits the surrounding tint.
+
+Override these hooks at `:root`.
+
+| Variable          | Styles                            | Default                       |
+| ----------------- | --------------------------------- | ----------------------------- |
+| `--section-width` | Content width                     | `var(--width-normal)` (55rem) |
+| `--section-space` | Outer block margin (top + bottom) | `var(--space-section)` (2rem) |
+
+**Global tokens it reads:** `--space-section` and `--width-normal` (the default content width). The `width` variant (`narrow` / `normal` / `wide` / `full` / `fit`) and the `indent` variant (inline padding, via `getIndentClass()`) come from the shared `shelving/ui` styling system.
+
+
+## Signatures
+
+```ts
+Section({ as: Element = "section", children, ...variants }: SectionProps): ReactElement
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `variants` | `SectionProps` |  |
+| `.as` | `BlockElement \| undefined` | Element this `<Section>` renders as, e.g. "header" to output a "<header>" Defaults to `"section"`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ReactElement` |  |
