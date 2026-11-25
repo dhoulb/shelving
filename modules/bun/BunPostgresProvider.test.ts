@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { SQL } from "bun";
 import { BunPostgresProvider } from "shelving/bun";
-import { PostgresMigrator } from "shelving/db";
+import { Collection, PostgresMigrator } from "shelving/db";
 import { UnsupportedError } from "shelving/error";
+import { STRING, VECTOR } from "shelving/schema";
 import type { Data } from "shelving/util/data";
 import { BASICS_COLLECTION, basic1, basic2, basic999, testDBDifferential, testDBProvider, testSQLMigrator } from "../test/index.js";
 
@@ -201,3 +202,18 @@ if (POSTGRES_URL) {
 		expect((await provider.requireItem(BASICS_COLLECTION, "counter")).num).toBe(3);
 	}, 30000); // Contended serializable transactions back off between retries, so allow extra time.
 }
+
+describe("BunPostgresProvider vectors (mock)", () => {
+	const VECTORS = new Collection("vectors", STRING, { vector: VECTOR(2) });
+	test("binds a vector as a plain array of numbers", async () => {
+		const mock = _createMockSQL({ rows: [[]] });
+		const provider = new BunPostgresProvider<string, Data>(mock.sql);
+		await provider.setItem(VECTORS, "v1", { vector: new Float32Array([0.5, 1]) });
+		expect(mock.queries[0]!.values).toContainEqual([0.5, 1]);
+	});
+	test("throws for a nearest query", async () => {
+		const provider = new BunPostgresProvider<string, Data>(_createMockSQL().sql);
+		expect(provider.getQuery(VECTORS, { "vector~": new Float32Array([1, 0]), $limit: 5 })).rejects.toThrow(UnsupportedError);
+		expect(provider.countQuery(VECTORS, { "vector~": new Float32Array([1, 0]) })).rejects.toThrow(UnsupportedError);
+	});
+});

@@ -12,6 +12,7 @@ import { NumberSchema } from "./NumberSchema.js";
 import type { SchemaOptions } from "./Schema.js";
 import { Schema } from "./Schema.js";
 import { getSourceSchema } from "./ThroughSchema.js";
+import { VectorSchema } from "./VectorSchema.js";
 
 /**
  * Options for `QuerySchema`.
@@ -78,6 +79,11 @@ function _validateQueryProp(data: DataSchema<Data>, key: string, value: unknown)
 		const array = getSourceSchema(_requireProp(data, key.slice(0, -2)));
 		if (!(array instanceof ArraySchema)) throw "Must be array prop";
 		return array.items.validate(value);
+	}
+	if (key.endsWith("~")) {
+		const vector = getSourceSchema(_requireProp(data, key.slice(0, -1)));
+		if (!(vector instanceof VectorSchema)) throw "Must be vector prop";
+		return vector.validate(value);
 	}
 	if (key.endsWith("<=") || key.endsWith(">=")) return _requireProp(data, key.slice(0, -2)).validate(value);
 	if (key.endsWith("<") || key.endsWith(">")) return _requireProp(data, key.slice(0, -1)).validate(value);

@@ -4,8 +4,17 @@ import type { ImmutableArray } from "../../util/array.js";
 import type { Data } from "../../util/data.js";
 import type { Segments } from "../../util/index.js";
 import type { Identifier, Item, Items, ItemsSequence, OptionalItem, OptionalItemSequence } from "../../util/item.js";
-import { getQueryFilters, getQueryLimit, getQueryOrders, type Query, type QueryFilter, type QueryOrder } from "../../util/query.js";
+import {
+	getQueryFilters,
+	getQueryLimit,
+	getQueryNearest,
+	getQueryOrders,
+	type Query,
+	type QueryFilter,
+	type QueryOrder,
+} from "../../util/query.js";
 import { getUpdates, type Update, type Updates } from "../../util/update.js";
+import { isVectorArray } from "../../util/vector.js";
 import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
 
@@ -14,6 +23,7 @@ import { DBProvider } from "./DBProvider.js";
  *
  * - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
  * - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+ * - A `VectorArray` value becomes a plain array of numbers, so it binds like any other array (`getVectorArray()` reads it back).
  *
  * @see https://shelving.cc/db/SQLFragment
  */
@@ -32,7 +42,7 @@ export class SQLFragment {
 					outStrings.push(value.strings[n + 1] ?? "");
 				}
 			} else {
-				outValues.push(value);
+				outValues.push(isVectorArray(value) ? Array.from(value) : value);
 				outStrings.push("");
 			}
 			outStrings[outStrings.length - 1] += strings[i + 1] ?? "";
@@ -324,10 +334,13 @@ export abstract class SQLProvider<I extends Identifier = Identifier, T extends D
 	 * - Returns an empty fragment when the query has no filters.
 	 *
 	 * @param query The query whose filters become the `WHERE` clause.
+	 * @throws `UnsupportedError` if the query has a nearest sort (`key~`), because SQL cannot sort by a vector here.
 	 * @example this.sqlWhere(query); // WHERE x = 1
 	 * @see https://shelving.cc/db/SQLProvider/sqlWhere
 	 */
 	sqlWhere(query: Query<Item>) {
+		if (getQueryNearest(query, this.sqlWhere))
+			throw new UnsupportedError("SQL providers do not support nearest queries", { query, caller: this.sqlWhere });
 		const filters = getQueryFilters(query);
 		if (!filters.length) return this.sql``;
 		return this.sql` WHERE ${this.sqlConcat(

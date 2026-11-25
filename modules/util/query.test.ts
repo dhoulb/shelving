@@ -8,9 +8,11 @@ import {
 	getQueryFilters,
 	getQueryItemsAfter,
 	getQueryKey,
+	getQueryNearest,
 	getQueryOrders,
 	matchQueryItem,
 	queryItems,
+	sortNearestItems,
 	sortQueryItems,
 } from "shelving/util/query";
 import type { BasicData } from "../test/index.js";
@@ -293,5 +295,40 @@ describe("getQueryKey()", () => {
 	});
 	test("ignores undefined values", () => {
 		expect(getQueryKey({ a: 1, b: undefined })).toBe(getQueryKey({ a: 1 }));
+	});
+});
+
+describe("nearest queries", () => {
+	type VectorData = { id: string; group: string; vector: Float32Array };
+	const v = (...numbers: number[]) => new Float32Array(numbers);
+	const a: VectorData = { id: "a", group: "x", vector: v(1, 0) };
+	const b: VectorData = { id: "b", group: "x", vector: v(0.6, 0.8) };
+	const c: VectorData = { id: "c", group: "y", vector: v(0, 1) };
+	test("getQueryNearest() reads the key~ prop", () => {
+		expect(getQueryNearest<VectorData>({ "vector~": v(1, 0) })).toEqual({ key: ["vector"], value: v(1, 0) });
+		expect(getQueryNearest<VectorData>({ group: "x" })).toBeUndefined();
+	});
+	test("getQueryNearest() throws for a value that is not a vector", () => {
+		expect(() => getQueryNearest({ "vector~": [1, 0] })).toThrow('Query "vector~" must be vector');
+	});
+	test("getQueryNearest() throws for two nearest sorts, or a nearest sort with $order", () => {
+		expect(() => getQueryNearest({ "a~": v(1), "b~": v(1) })).toThrow("Query can only have one nearest sort");
+		expect(() => getQueryNearest<VectorData>({ "vector~": v(1, 0), $order: "id" })).toThrow("Nearest query cannot have $order");
+	});
+	test("getQueryFilters() does not treat key~ as a filter", () => {
+		expect(getQueryFilters<VectorData>({ "vector~": v(1, 0) })).toEqual([]);
+	});
+	test("sortNearestItems() puts the highest dot product first", () => {
+		expect(sortNearestItems([c, a, b], { key: ["vector"], value: v(1, 0) })).toEqual([a, b, c]);
+	});
+	test("sortNearestItems() reads vectors stored as JSON, and leaves out items with no vector of the right size", () => {
+		const json = { id: "j", vector: JSON.parse(JSON.stringify(v(0.9, 0.1))) };
+		const none = { id: "n" };
+		const short = { id: "s", vector: v(1) };
+		const sorted = sortNearestItems<{ id: string; vector?: unknown }>([none, c, short, json], { key: ["vector"], value: v(1, 0) });
+		expect(sorted).toEqual([json, c]);
+	});
+	test("queryItems() filters, then sorts by nearest, then limits", () => {
+		expect([...queryItems([a, b, c], { group: "x", "vector~": v(0, 1), $limit: 1 })]).toEqual([b]);
 	});
 });

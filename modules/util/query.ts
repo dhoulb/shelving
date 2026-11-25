@@ -12,11 +12,13 @@ import { getProps } from "./object.js";
 import { serialise } from "./serialise.js";
 import { compareAscending, compareDescending, sortArray } from "./sort.js";
 import type { Segments } from "./string.js";
+import { getDotProduct, getVectorArray, isVectorArray, type VectorArray } from "./vector.js";
 
 /**
  * Query that can be applied to a list of data objects.
  *
  * - Keys encode filters: `key` (is), `!key` (not), arrays for in/out, `key<`/`key<=`/`key>`/`key>=` for ranges, and `key[]` for array contains.
+ * - `key~` with a `VectorArray` sorts by nearest: the items whose vector at `key` has the highest dot product with it come first (see `getQueryNearest()`). It replaces `$order`.
  * - `$order` sets the sort order (prefix `!` for descending) and `$limit` caps the number of results.
  *
  * @see https://shelving.cc/util/query/Query
@@ -27,6 +29,8 @@ export type Query<T extends Data = Data> = {
 	readonly [K in LeafDataPath<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
 	readonly [K in LeafDataPath<T> as `${K}[]`]?: LeafData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
+} & {
+	readonly [K in LeafDataPath<T> as LeafData<T>[K] extends VectorArray ? `${K}~` : never]?: VectorArray | undefined; // nearest
 } & {
 	readonly $order?:
 		| `${LeafDataPath<T>}`
@@ -64,6 +68,16 @@ export type QueryOrder = {
 	direction: "asc" | "desc";
 };
 
+/**
+ * A "nearest" sort that can be applied to a list of data objects: the items whose vector at `key` has the highest dot product with `value` come first.
+ *
+ * @see https://shelving.cc/util/query/QueryNearest
+ */
+export type QueryNearest = {
+	key: Segments;
+	value: VectorArray;
+};
+
 /** Map `Filter` operators to corresponding `Match` function. */
 const MATCHERS: {
 	[T in QueryFilter as T["operator"]]: Match<[unknown, T["value"]]>;
@@ -91,7 +105,7 @@ export function getQueryFilters<T extends Data>(query: Query<T>): ImmutableArray
 }
 function* yieldQueryFilters<T extends Data>(query: Query<T>): Iterable<QueryFilter> {
 	for (const [key, value] of getProps<Data>(query)) {
-		if (key === "$order" || key === "$limit" || value === undefined) continue;
+		if (key === "$order" || key === "$limit" || key.endsWith("~") || value === undefined) continue;
 		if (key.startsWith("!"))
 			yield isArray(value)
 				? { key: splitDataPath(key.slice(1)), operator: "out", value }
@@ -121,6 +135,30 @@ function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | 
 		if (key.startsWith("!")) yield { key: splitDataPath(key.slice(1)), direction: "desc" };
 		else yield { key: splitDataPath(key), direction: "asc" };
 	}
+}
+
+/**
+ * Get the "nearest" sort of a query, from its `key~` prop, or `undefined` if it has none.
+ * - A query has at most one nearest sort. It replaces `$order`, so a query cannot have both.
+ * - A nearest query cannot page with `getQueryAfter()` or `getQueryBefore()`, because those need an `$order`. Ask for a bigger `$limit` instead.
+ *
+ * @param query The query to read.
+ * @returns The decoded `QueryNearest`, or `undefined` if the query has no `key~` prop.
+ * @param caller The function to name in the error.
+ * @throws {RequiredError} If a `key~` prop is not a `VectorArray`, the query has more than one, or it also has an `$order`.
+ * @example getQueryNearest({ "vector~": v, $limit: 10 }) // { key: ["vector"], value: v }
+ * @see https://shelving.cc/util/query/getQueryNearest
+ */
+export function getQueryNearest<T extends Data>(query: Query<T>, caller: AnyCaller = getQueryNearest): QueryNearest | undefined {
+	let nearest: QueryNearest | undefined;
+	for (const [key, value] of getProps<Data>(query)) {
+		if (!key.endsWith("~") || value === undefined) continue;
+		if (!isVectorArray(value)) throw new RequiredError(`Query "${key}" must be vector`, { received: value, caller });
+		if (nearest) throw new RequiredError("Query can only have one nearest sort", { query, caller });
+		nearest = { key: splitDataPath(key.slice(0, -1)), value };
+	}
+	if (nearest && query.$order !== undefined) throw new RequiredError("Nearest query cannot have $order", { query, caller });
+	return nearest;
 }
 
 /**
@@ -154,6 +192,7 @@ export function getQueryKey<T extends Data>(query: Query<T> | undefined): string
 /**
  * Query a set of data items using a query.
  * - Filters, then sorts, then limits the items according to the query.
+ * - A nearest sort (`key~`) replaces `$order`.
  *
  * @param items The iterable of data items to query.
  * @param query The query to apply (filters, sort order, and limit).
@@ -161,7 +200,10 @@ export function getQueryKey<T extends Data>(query: Query<T> | undefined): string
  * @see https://shelving.cc/util/query/queryItems
  */
 export function queryItems<T extends Data>(items: Iterable<T>, query: Query<T>): Iterable<T> {
-	return limitQueryItems(sortQueryItems(filterQueryItems(items, getQueryFilters(query)), getQueryOrders(query)), getQueryLimit(query));
+	const filtered = filterQueryItems(items, getQueryFilters(query));
+	const nearest = getQueryNearest(query);
+	const sorted = nearest ? sortNearestItems(filtered, nearest) : sortQueryItems(filtered, getQueryOrders(query));
+	return limitQueryItems(sorted, getQueryLimit(query));
 }
 
 /**
@@ -223,6 +265,25 @@ export function compareQueryItems<T extends Data>(left: T, right: T, orders: Imm
 /**  Sort a set of data items using a set of orders. */
 export function sortQueryItems<T extends Data>(items: Iterable<T>, orders: ImmutableArray<QueryOrder>): Iterable<T> {
 	return orders.length ? sortArray(items, compareQueryItems, orders) : items;
+}
+
+/**
+ * Sort a set of data items by a nearest sort: the highest dot product of the vector at `key` with `value` comes first.
+ * - The vector at `key` can be a `VectorArray` or any shape `getVectorArray()` reads, so providers that store data as JSON still sort correctly.
+ * - Items with no vector at `key`, or a vector of another size, are left out, the same as Firestore's `findNearest`.
+ *
+ * @param items The iterable of data items to sort.
+ * @param nearest The nearest sort to apply.
+ * @returns A new sorted array, without the items that have no vector of the right size.
+ * @see https://shelving.cc/util/query/sortNearestItems
+ */
+export function sortNearestItems<T extends Data>(items: Iterable<T>, { key, value }: QueryNearest): ImmutableArray<T> {
+	const scored: [T, number][] = [];
+	for (const item of items) {
+		const vector = getVectorArray(getDataProp(item, key), value.length);
+		if (vector) scored.push([item, getDotProduct(vector, value)]);
+	}
+	return scored.sort((a, b) => b[1] - a[1]).map(([item]) => item);
 }
 
 /** LImit a set of data items using a set of limit. */

@@ -32,4 +32,5 @@ export * from "./UpdatesSchema.js";
 export * from "./URISchema.js";
 export * from "./URLSchema.js";
 export * from "./UUIDSchema.js";
+export * from "./VectorSchema.js";
 export * from "./VideoSchema.js";

@@ -4,6 +4,12 @@ import { isArray } from "../util/array.js";
 import type { Data } from "../util/data.js";
 import type { AnyCaller } from "../util/function.js";
 import { isPlainObject } from "../util/object.js";
+import { isVectorArray, type VectorArray } from "../util/vector.js";
+
+// Constants.
+const _VECTOR_TYPE_KEY = "__type__";
+const _VECTOR_TYPE = "__vector__";
+const _VECTOR_VALUE_KEY = "value";
 
 /** JSON representation of a single value in the Firestore REST API. */
 export type FirestoreValue = {
@@ -27,6 +33,7 @@ export type FirestoreFields = { readonly [key: string]: FirestoreValue };
  * Convert a data value to its Firestore REST API JSON representation.
  *
  * - Safe integers become `integerValue` (which the REST API encodes as a string), other finite numbers become `doubleValue`.
+ * - A `VectorArray` (`Float32Array`) becomes a Firestore vector: a map with `__type__: "__vector__"` and every number as `doubleValue`.
  * - Arrays and plain objects convert recursively.
  *
  * @param value The value to convert (null, boolean, string, finite number, array, or plain object).
@@ -46,8 +53,28 @@ export function toFirestoreValue(value: unknown, caller: AnyCaller = toFirestore
 		throw new ValueError("Cannot convert non-finite number to Firestore value", { received: value, caller });
 	}
 	if (isArray(value)) return { arrayValue: { values: value.map(v => toFirestoreValue(v, caller)) } };
+	if (isVectorArray(value)) return toFirestoreVector(value);
 	if (isPlainObject(value)) return { mapValue: { fields: toFirestoreFields(value, caller) } };
 	throw new ValueError("Cannot convert value to Firestore value", { received: value, caller });
+}
+
+/**
+ * Convert a `VectorArray` to a Firestore vector value, for a vector field or a `findNearest` query.
+ * - Every number is a `doubleValue`, because Firestore refuses a vector that holds an `integerValue`.
+ *
+ * @param vector The vector to convert.
+ * @returns The Firestore vector value.
+ * @see https://shelving.cc/firebase/toFirestoreVector
+ */
+export function toFirestoreVector(vector: VectorArray): FirestoreValue {
+	return {
+		mapValue: {
+			fields: {
+				[_VECTOR_TYPE_KEY]: { stringValue: _VECTOR_TYPE },
+				[_VECTOR_VALUE_KEY]: { arrayValue: { values: Array.from(vector, n => ({ doubleValue: n })) } },
+			},
+		},
+	};
 }
 
 /**
@@ -92,6 +119,10 @@ export function toDataValue(value: FirestoreValue, caller: AnyCaller = toDataVal
 	if (value.referenceValue !== undefined) return value.referenceValue;
 	if (value.geoPointValue) return { latitude: value.geoPointValue.latitude ?? 0, longitude: value.geoPointValue.longitude ?? 0 };
 	if (value.arrayValue) return (value.arrayValue.values ?? []).map(v => toDataValue(v, caller));
+	if (value.mapValue?.fields?.[_VECTOR_TYPE_KEY]?.stringValue === _VECTOR_TYPE) {
+		const numbers = value.mapValue.fields[_VECTOR_VALUE_KEY]?.arrayValue?.values ?? [];
+		return Float32Array.from(numbers, v => Number(toDataValue(v, caller)));
+	}
 	if (value.mapValue) return toData(value.mapValue.fields, caller);
 	throw new ValueError("Cannot convert Firestore value to value", { received: value, caller });
 }
