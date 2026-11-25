@@ -1,4 +1,4 @@
-import { createContext, type ReactElement, type ReactNode, use } from "react";
+import { createContext, type ReactElement, type ReactNode, use, useRef } from "react";
 import type { AnyCaller } from "shelving/util/function";
 import { DBCache } from "../db/cache/DBCache.js";
 import type { Collection } from "../db/collection/Collection.js";
@@ -10,7 +10,6 @@ import type { Data } from "../util/data.js";
 import type { Identifier, Item } from "../util/item.js";
 import type { Nullish } from "../util/null.js";
 import type { Query } from "../util/query.js";
-import { useInstance } from "./useInstance.js";
 import { useStore } from "./useStore.js";
 
 /**
@@ -39,23 +38,37 @@ export interface DBContext<I extends Identifier, T extends Data> {
 		query: Query<Item<II, TT>>,
 	): QueryStore<II, TT>;
 
-	/** Create a new `DBCache` and provide it as context to child nodes, to allow them to use `useItem()` and `useQuery()` */
-	readonly DBContext: ({ children }: { children: ReactNode }) => ReactElement;
+	/** Provide a `DBCache` as context to child nodes, to allow them to use `useItem()` and `useQuery()` */
+	readonly DBContext: (props: DBContextProps<I, T>) => ReactElement;
 
 	/** Return the underlying `DBCache` for `<DBContext>` */
 	requireDBCache(): DBCache<I, T>;
 }
 
 /**
+ * Props for the `<DBContext>` component returned by `createDBContext()`.
+ *
+ * @see https://shelving.cc/react/DBContextProps
+ */
+export interface DBContextProps<I extends Identifier, T extends Data> {
+	readonly children?: ReactNode;
+	/** The provider to read from, in place of the one given to `createDBContext()`. The context makes its own `DBCache` for it, and a new one when it changes. */
+	readonly provider?: DBProvider<I, T> | undefined;
+	/** A `DBCache` you made, used as it is. It wins over `provider`. */
+	readonly cache?: DBCache<I, T> | undefined;
+}
+
+/**
  * Create a data context
  * - Allows React elements to call `useItem()` and `useQuery()` to access items/queries in a database provider.
+ * - The provider can be given here, or to each `<DBContext>` as its `provider` or `cache` prop, so each tree can have its own database.
  * - If the database is (or wraps) a `MemoryDBProvider`, the returned stores seed from it synchronously.
  *
- * @param provider `DBProvider` the created context resolves item and query stores against.
+ * @param provider Default `DBProvider` the created context resolves item and query stores against, when a `<DBContext>` gets no `provider` or `cache` prop.
  *
  * @see https://shelving.cc/react/createDBContext
  */
-export function createDBContext<I extends Identifier, T extends Data>(provider: DBProvider<I, T>): DBContext<I, T> {
+export function createDBContext<I extends Identifier, T extends Data>(provider?: DBProvider<I, T>): DBContext<I, T> {
 	const CacheContext = createContext<DBCache<I, T> | undefined>(undefined);
 
 	function requireDBCache(caller: AnyCaller = requireDBCache): DBCache<I, T> {
@@ -78,9 +91,13 @@ export function createDBContext<I extends Identifier, T extends Data>(provider: 
 		return useStore(collection && query ? requireDBCache(useQuery).getQuery(collection, query) : undefined);
 	}
 
-	function DBContext({ children }: { children: ReactNode }): ReactElement {
-		const cache = useInstance(DBCache, provider);
-		return <CacheContext value={cache}>{children}</CacheContext>;
+	function DBContext({ children, provider: given = provider, cache }: DBContextProps<I, T>): ReactElement {
+		const made = useRef<DBCache<I, T>>(undefined);
+		if (!cache) {
+			if (!given) throw new RequiredError("<DBContext> needs a provider or a cache", { caller: DBContext });
+			if (made.current?.provider !== given) made.current = new DBCache(given);
+		}
+		return <CacheContext value={cache ?? made.current}>{children}</CacheContext>;
 	}
 
 	return { requireDBCache, useItem, useQuery, DBContext } as DBContext<I, T>;

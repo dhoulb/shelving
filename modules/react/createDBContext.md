@@ -44,3 +44,17 @@ function App() {
 ```
 
 Both hooks accept nullish arguments — passing `undefined` for the collection, id, or query returns `undefined` instead of a store, keeping the hook call unconditional. Calling either hook outside a `<DBContext>` throws a `RequiredError`.
+
+## One provider per tree
+
+Leave out the provider when you call `createDBContext()`, and give each `<DBContext>` its own with the `provider` prop. Then each tree has its own database, for example one per server render or one per signed-in session. The context makes a `DBCache` for the provider, and a new one when the provider changes (it does not dispose the old one).
+
+```tsx
+const { DBContext, useItem } = createDBContext<string, Data>();
+
+function Root({ db }: { db: MemoryDBProvider<string, Data> }) {
+	return <DBContext provider={db}>{/* … */}</DBContext>;
+}
+```
+
+To use a `DBCache` you made yourself, for example to read it outside React, pass it as the `cache` prop. A `cache` prop wins over `provider`. With no `cache`, no `provider` prop and no provider given to `createDBContext()`, `<DBContext>` throws a `RequiredError`.
