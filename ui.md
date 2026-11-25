@@ -270,6 +270,8 @@ The components below are listed in the index following this page; this is the sh
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.
 - [getTagClass()](ui/getTagClass.md): Build the combined className string for a <Tag> from its styling variants.
 - [Message()](ui/Message.md): Status-coloured paragraph used for inline feedback messages.
+- [setMetaDepth()](ui/setMetaDepth.md): Save the depth of a page's meta: one more than its parent's.
+- [getMetaDepth()](ui/getMetaDepth.md): Get how many <Page> elements a meta is nested in (0 outside any <Page>).
 - [requireNavigation()](ui/requireNavigation.md): Read the current NavigationSequence from context, throwing if used outside <Navigation>.
 - [getBlockClass()](ui/getBlockClass.md): Get the combined className string for a block from its styling variants.
 - [getColorClass()](ui/getColorClass.md): CSS class that applies color tinting to an element.

@@ -6,6 +6,7 @@
 Convert a data value to its Firestore REST API JSON representation.
 
 - Safe integers become `integerValue` (which the REST API encodes as a string), other finite numbers become `doubleValue`.
+- A `VectorArray` (`Float32Array`) becomes a Firestore vector: a map with `__type__: "__vector__"` and every number as `doubleValue`.
 - Arrays and plain objects convert recursively.
 
 ## Signatures

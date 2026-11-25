@@ -46,6 +46,7 @@ Query objects use encoded key names alongside plain field names:
 { "!status": "banned" }     // not-equal  (!key)
 { "count>": 10 }            // greater-than (key>)
 { "tags[]": "typescript" }  // array-contains (key[])
+{ "vector~": vector }       // nearest first (key~), needs $limit
 { $order: "name" }          // order by field
 { $limit: 20 }              // page size
 ```

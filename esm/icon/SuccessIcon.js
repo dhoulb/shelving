@@ -1,1 +1,1 @@
-import{es}from"../chunk-hfd9aa6p.js";export{es as SuccessIcon};
+import{as}from"../chunk-y3y7k0fh.js";export{as as SuccessIcon};

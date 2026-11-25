@@ -1,1 +1,1 @@
-import{Zi}from"../chunk-2ztx1tcg.js";export{Zi as ShrinkIcon};
+import{ns}from"../chunk-jx57cfdt.js";export{ns as ShrinkIcon};

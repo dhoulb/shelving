@@ -6,6 +6,7 @@
 Query that can be applied to a list of data objects.
 
 - Keys encode filters: `key` (is), `!key` (not), arrays for in/out, `key<`/`key<=`/`key>`/`key>=` for ranges, and `key[]` for array contains.
+- `key~` with a `VectorArray` sorts by nearest: the items whose vector at `key` has the highest dot product with it come first (see `getQueryNearest()`). It replaces `$order`.
 - `$order` sets the sort order (prefix `!` for descending) and `$limit` caps the number of results.
 
 ## Signatures
@@ -17,6 +18,8 @@ Query that can be applied to a list of data objects.
 	readonly [K in LeafDataPath<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
 	readonly [K in LeafDataPath<T> as `${K}[]`]?: LeafData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
+} & {
+	readonly [K in LeafDataPath<T> as LeafData<T>[K] extends VectorArray ? `${K}~` : never]?: VectorArray | undefined; // nearest
 } & {
 	readonly $order?:
 		| `${LeafDataPath<T>}`
@@ -34,3 +37,4 @@ Query that can be applied to a list of data objects.
 - [LeafData](../data/LeafData.md): Helper type to get a flattened data object with only leaf nodes of the data, flattened into a.c.b format. i.e. LeafData<{ a: { a2: number } }> produces { "a.a2": number }
 - [ImmutableArray](../array/ImmutableArray.md): Immutable array: an array that cannot be changed.
 - `X`
+- [VectorArray](../vector/VectorArray.md): A vector of numbers, for example a text embedding, stored as a Float32Array.

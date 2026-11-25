@@ -126,6 +126,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 
 - [getQueryFilters()](query/getQueryFilters.md): Get the QueryFilter objects decoded from a query.
 - [getQueryOrders()](query/getQueryOrders.md): Get the QueryOrder objects decoded from a query.
+- [getQueryNearest()](query/getQueryNearest.md): Get the "nearest" sort of a query, from its key~ prop, or undefined if it has none.
 - [getQueryLimit()](query/getQueryLimit.md): Get the limit for a query.
 - [getQueryKey()](query/getQueryKey.md): Get a cache key for a query, so two queries with the same filters, order, and limit get the same key.
 - [queryItems()](query/queryItems.md): Query a set of data items using a query.
@@ -134,6 +135,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 - [filterQueryItems()](query/filterQueryItems.md): Filter a set of data items using a set of filters.
 - [compareQueryItems()](query/compareQueryItems.md): Compare two data items using a set of orders.
 - [sortQueryItems()](query/sortQueryItems.md): Sort a set of data items using a set of orders.
+- [sortNearestItems()](query/sortNearestItems.md): Sort a set of data items by a nearest sort: the highest dot product of the vector at key with value comes first.
 - [limitQueryItems()](query/limitQueryItems.md): LImit a set of data items using a set of limit.
 - [getQueryBefore()](query/getQueryBefore.md): Get a query for the items that sort at or before a specified item.
 - [getQueryAfter()](query/getQueryAfter.md): Get a query for the items that sort at or after a specified item.
@@ -144,4 +146,5 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 - [Query](query/Query.md): Query that can be applied to a list of data objects.
 - [QueryFilter](query/QueryFilter.md): A single filter that can be applied to a list of data objects.
 - [QueryOrder](query/QueryOrder.md): A single sort order that can be applied to a list of data objects.
+- [QueryNearest](query/QueryNearest.md): A "nearest" sort that can be applied to a list of data objects: the items whose vector at key has the highest dot product with value come first.
 - [QueryItems](query/QueryItems.md): A query and the items that answer it, e.g. one page of results from an API endpoint.

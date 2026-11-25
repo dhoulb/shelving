@@ -117,6 +117,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [REQUIRED()](schema/REQUIRED.md): Create a RequiredSchema that wraps a source schema and rejects a falsy result.
 - [getSourceSchema()](schema/getSourceSchema.md): Get the innermost source of a wrapper schema, or the schema itself if it is not a ThroughSchema.
 - [UPDATES()](schema/UPDATES.md): Create an UpdatesSchema for the data object of a DataSchema.
+- [VECTOR()](schema/VECTOR.md): Create a VectorSchema for a vector of an exact size.
 
 ## Classes
 
@@ -154,6 +155,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [URISchema](schema/URISchema.md): Schema that defines a valid absolute URI string.
 - [URLSchema](schema/URLSchema.md): Schema that defines a valid absolute or relative URL string.
 - [UUIDSchema](schema/UUIDSchema.md): Schema that defines a valid UUID string (versions 1-5). Defaults to any-version validation.
+- [VectorSchema](schema/VectorSchema.md): Schema that defines a valid vector of numbers (a VectorArray), for example a text embedding.
 - [VideoSchema](schema/VideoSchema.md): Schema that validates the file name of a video.
 
 ## Interfaces
@@ -185,6 +187,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [URISchemaOptions](schema/URISchemaOptions.md): Options for URISchema.
 - [URLSchemaOptions](schema/URLSchemaOptions.md): Options for URLSchema.
 - [UUIDSchemaOptions](schema/UUIDSchemaOptions.md): Options for a UUIDSchema.
+- [VectorSchemaOptions](schema/VectorSchemaOptions.md): Allowed options for VectorSchema.
 
 ## Types
 

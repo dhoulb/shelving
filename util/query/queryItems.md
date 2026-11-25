@@ -5,6 +5,7 @@
 
 Query a set of data items using a query.
 - Filters, then sorts, then limits the items according to the query.
+- A nearest sort (`key~`) replaces `$order`.
 
 ## Signatures
 

@@ -50,6 +50,7 @@ const provider = new FirestoreProvider({
 - **Updates**: `DBProvider.updateItem()` uses an update mask plus field transforms — `+=` maps to `increment`, `+[]` to `appendMissingElements`, `-[]` to `removeAllFromArray` — and fails if the item does not exist.
 - **Query writes**: `setQuery()` / `updateQuery()` / `deleteQuery()` read the matching document names (a `__name__`-only query) then commit writes in batches of 500.
 - **Values**: safe integers store as Firestore integers, other finite numbers as doubles; integers beyond `Number.MAX_SAFE_INTEGER` lose precision when read back. Foreign types written by other clients (timestamps, references, bytes) read back as their string form. Data read from Firestore is unvalidated — wrap the provider in `ValidationDBProvider` to guarantee types.
+- **Vectors**: a `Float32Array` (`VectorArray`) stores as a Firestore vector, with every number as a double, and reads back as a `Float32Array`. A `key~` query sends `findNearest` with `DOT_PRODUCT` distance and the query `$limit`. Firestore needs a vector index on the prop, plus any equality filter used with it.
 - **Transactions**: retried up to 5 times with jittered exponential backoff on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
 
 ## Testing
@@ -68,6 +69,7 @@ This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which sta
 ## Functions
 
 - [toFirestoreValue()](firebase/toFirestoreValue.md): Convert a data value to its Firestore REST API JSON representation.
+- [toFirestoreVector()](firebase/toFirestoreVector.md): Convert a VectorArray to a Firestore vector value, for a vector field or a findNearest query.
 - [toFirestoreFields()](firebase/toFirestoreFields.md): Convert a data object to Firestore REST API document fields.
 - [toDataValue()](firebase/toDataValue.md): Convert a Firestore REST API JSON value back to a data value.
 - [toData()](firebase/toData.md): Convert Firestore REST API document fields back to a data object.

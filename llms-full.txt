@@ -140,6 +140,7 @@ See [Releases](https://github.com/dhoulb/shelving/releases) on GitHub.
 - [shelving/util/url](util/url.md): These helpers work specifically with hierarchical scheme://host URLs (a strict subset of URIs), and add path-matching, base-URL resolution, and active/proud link detection. They exist to handle the common navigation and routing tasks that plain URI helpers do not cover.
 - [shelving/util/uuid](util/uuid.md): Three small helpers for generating and validating UUIDs. They exist to provide a normalised, dash-free UUID format and a safe way to parse untrusted input strings.
 - [shelving/util/validate](util/validate.md): These helpers define the Validator<T> interface and utility functions for applying validators to single values, arrays, dictionaries, and full data objects. They exist to give all Shelving validators a common contract and to collect field-level errors before throwing — rather than stopping at the first failure.
+- [shelving/util/vector](util/vector.md): Store and compare vectors of numbers, for example text embeddings for search. A VectorArray is a Float32Array.
 - [shelving/util/xml](util/xml.md): Two small helpers for producing XML strings from data objects. They exist for cases where you need to serialise a plain data structure to XML without pulling in a full XML library.
 
 
@@ -4235,6 +4236,7 @@ Query objects use encoded key names alongside plain field names:
 { "!status": "banned" }     // not-equal  (!key)
 { "count>": 10 }            // greater-than (key>)
 { "tags[]": "typescript" }  // array-contains (key[])
+{ "vector~": vector }       // nearest first (key~), needs $limit
 { $order: "name" }          // order by field
 { $limit: 20 }              // page size
 ```
@@ -6894,6 +6896,7 @@ SQL fragment made from template strings plus embedded expressions, ready to be c
 
 - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
 - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+- A `VectorArray` value becomes a plain array of numbers, so it binds like any other array (`getVectorArray()` reads it back).
 
 ## Signatures
 
@@ -9399,6 +9402,7 @@ const provider = new FirestoreProvider({
 - **Updates**: `DBProvider.updateItem()` uses an update mask plus field transforms — `+=` maps to `increment`, `+[]` to `appendMissingElements`, `-[]` to `removeAllFromArray` — and fails if the item does not exist.
 - **Query writes**: `setQuery()` / `updateQuery()` / `deleteQuery()` read the matching document names (a `__name__`-only query) then commit writes in batches of 500.
 - **Values**: safe integers store as Firestore integers, other finite numbers as doubles; integers beyond `Number.MAX_SAFE_INTEGER` lose precision when read back. Foreign types written by other clients (timestamps, references, bytes) read back as their string form. Data read from Firestore is unvalidated — wrap the provider in `ValidationDBProvider` to guarantee types.
+- **Vectors**: a `Float32Array` (`VectorArray`) stores as a Firestore vector, with every number as a double, and reads back as a `Float32Array`. A `key~` query sends `findNearest` with `DOT_PRODUCT` distance and the query `$limit`. Firestore needs a vector index on the prop, plus any equality filter used with it.
 - **Transactions**: retried up to 5 times with jittered exponential backoff on contention (`ABORTED`), so `transact()` callbacks must have no side effects other than through their provider. Firestore limits a transaction to 270 seconds with a 60-second idle timeout.
 
 ## Testing
@@ -9417,6 +9421,7 @@ This wraps `bun test ./modules/firebase` in `firebase emulators:exec`, which sta
 ## Functions
 
 - [toFirestoreValue()](firebase/toFirestoreValue.md): Convert a data value to its Firestore REST API JSON representation.
+- [toFirestoreVector()](firebase/toFirestoreVector.md): Convert a VectorArray to a Firestore vector value, for a vector field or a findNearest query.
 - [toFirestoreFields()](firebase/toFirestoreFields.md): Convert a data object to Firestore REST API document fields.
 - [toDataValue()](firebase/toDataValue.md): Convert a Firestore REST API JSON value back to a data value.
 - [toData()](firebase/toData.md): Convert Firestore REST API document fields back to a data object.
@@ -9595,6 +9600,7 @@ JSON representation of the fields of a Firestore document in the Firestore REST 
 Convert a data value to its Firestore REST API JSON representation.
 
 - Safe integers become `integerValue` (which the REST API encodes as a string), other finite numbers become `doubleValue`.
+- A `VectorArray` (`Float32Array`) becomes a Firestore vector: a map with `__type__: "__vector__"` and every number as `doubleValue`.
 - Arrays and plain objects convert recursively.
 
 ## Signatures
@@ -9627,6 +9633,35 @@ toFirestoreValue(value: unknown, caller: AnyCaller = toFirestoreValue): Firestor
 ```ts
 toFirestoreValue(123) // { integerValue: "123" }
 ```
+
+
+---
+
+# toFirestoreVector()
+
+- Kind: function
+- Import: `import { toFirestoreVector } from "shelving/firebase";`
+
+Convert a `VectorArray` to a Firestore vector value, for a vector field or a `findNearest` query.
+- Every number is a `doubleValue`, because Firestore refuses a vector that holds an `integerValue`.
+
+## Signatures
+
+```ts
+toFirestoreVector(vector: VectorArray): FirestoreValue
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `vector` | `VectorArray` | The vector to convert. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `FirestoreValue` | The Firestore vector value. |
 
 
 ---
@@ -12374,6 +12409,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [REQUIRED()](schema/REQUIRED.md): Create a RequiredSchema that wraps a source schema and rejects a falsy result.
 - [getSourceSchema()](schema/getSourceSchema.md): Get the innermost source of a wrapper schema, or the schema itself if it is not a ThroughSchema.
 - [UPDATES()](schema/UPDATES.md): Create an UpdatesSchema for the data object of a DataSchema.
+- [VECTOR()](schema/VECTOR.md): Create a VectorSchema for a vector of an exact size.
 
 ## Classes
 
@@ -12411,6 +12447,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [URISchema](schema/URISchema.md): Schema that defines a valid absolute URI string.
 - [URLSchema](schema/URLSchema.md): Schema that defines a valid absolute or relative URL string.
 - [UUIDSchema](schema/UUIDSchema.md): Schema that defines a valid UUID string (versions 1-5). Defaults to any-version validation.
+- [VectorSchema](schema/VectorSchema.md): Schema that defines a valid vector of numbers (a VectorArray), for example a text embedding.
 - [VideoSchema](schema/VideoSchema.md): Schema that validates the file name of a video.
 
 ## Interfaces
@@ -12442,6 +12479,7 @@ QUERY(PERSON).validate({ "address.street": "Main" }); // throws "address.street:
 - [URISchemaOptions](schema/URISchemaOptions.md): Options for URISchema.
 - [URLSchemaOptions](schema/URLSchemaOptions.md): Options for URLSchema.
 - [UUIDSchemaOptions](schema/UUIDSchemaOptions.md): Options for a UUIDSchema.
+- [VectorSchemaOptions](schema/VectorSchemaOptions.md): Allowed options for VectorSchema.
 
 ## Types
 
@@ -17170,6 +17208,154 @@ NULLABLE_UUID.validate(null) // null
 
 ---
 
+# VectorSchemaOptions
+
+- Kind: interface
+- Import: `import { VectorSchemaOptions } from "shelving/schema";`
+- Extends: `SchemaOptions`
+
+Allowed options for `VectorSchema`.
+
+## Signatures
+
+```ts
+{
+	readonly size: number;
+	readonly value?: VectorArray | undefined;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `size` | `number` | The exact number of numbers in the vector. Read only. |
+| `value` | `VectorArray \| undefined` | Default vector used when the input is `undefined`. Read only. Defaults to `` A vector of `size` zeros ``. |
+
+
+---
+
+# VectorSchema
+
+- Kind: class
+- Import: `import { VectorSchema } from "shelving/schema";`
+- Extends: `Schema<VectorArray>`
+
+Schema that defines a valid vector of numbers (a `VectorArray`), for example a text embedding.
+
+- Coerces with `getVectorArray()`: a `Float32Array`, an array of finite numbers, or the object that `JSON.stringify()` makes of a `Float32Array`.
+- The vector must have exactly `size` numbers.
+- It does not scale the vector: a joined vector (see `mergeVectors()`) is not length 1 on purpose.
+
+Validates a value into a `VectorArray` (a `Float32Array`) with an exact number of numbers, for example a text embedding. It accepts a `Float32Array`, an array of finite numbers, or the object that `JSON.stringify()` makes of a `Float32Array`. Other values, and vectors of the wrong size, throw. A missing value falls back to a vector of zeros.
+
+It does not scale the vector to length 1, because a joined vector (see `mergeVectors()`) is not length 1 on purpose.
+
+`VECTOR()` is the sugar factory.
+
+## Usage
+
+```ts
+import { VECTOR } from "shelving/schema";
+
+const EMBEDDING = VECTOR(3);
+
+EMBEDDING.validate([0.5, -0.5, 0]); // Float32Array [0.5, -0.5, 0]
+EMBEDDING.validate({ "0": 0.5, "1": -0.5, "2": 0 }); // Float32Array [0.5, -0.5, 0]  (JSON form)
+EMBEDDING.validate([1, 2]); // Throws "Must be vector with 3 numbers"
+EMBEDDING.validate(undefined); // Float32Array [0, 0, 0]  (default)
+```
+
+### Nearest queries
+
+A collection prop with a `VectorSchema` can be queried with a `key~` prop. See `shelving/util/vector` for an example.
+
+
+## Signatures
+
+```ts
+new VectorSchema({ size, value = new Float32Array(size), ...options }: VectorSchemaOptions)
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `options` | `VectorSchemaOptions` |  |
+| `.size` | `number` | The exact number of numbers in the vector. Read only. |
+| `.value` | `VectorArray \| undefined` | Default vector used when the input is `undefined`. Read only. Defaults to `` A vector of `size` zeros ``. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorSchema` |  |
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `size` | `number` | Read only. |
+
+## Methods
+
+- [VectorSchema.validate()](schema/VectorSchema/validate.md): Validate an unknown value and coerce it to a vector.
+
+
+---
+
+# VectorSchema.validate()
+
+- Kind: method
+- Member of: `VectorSchema`
+
+Validate an unknown value and coerce it to a vector.
+
+## Signatures
+
+```ts
+validate(unsafeValue?: unknown): VectorArray
+```
+
+
+---
+
+# VECTOR()
+
+- Kind: function
+- Import: `import { VECTOR } from "shelving/schema";`
+
+Create a `VectorSchema` for a vector of an exact size.
+
+Sugar factory for `VectorSchema`.
+
+## Signatures
+
+```ts
+VECTOR(size: number): VectorSchema
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `size` | `number` | The exact number of numbers in the vector. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorSchema` |  |
+
+## Examples
+
+```ts
+VECTOR(768).validate(embedding);
+```
+
+
+---
+
 # VideoSchema
 
 - Kind: class
@@ -20840,6 +21026,8 @@ The components below are listed in the index following this page; this is the sh
 - [requireMetaURL()](ui/requireMetaURL.md): Read the current Meta context and derive URL helpers (path and params) from its url.
 - [getTagClass()](ui/getTagClass.md): Build the combined className string for a <Tag> from its styling variants.
 - [Message()](ui/Message.md): Status-coloured paragraph used for inline feedback messages.
+- [setMetaDepth()](ui/setMetaDepth.md): Save the depth of a page's meta: one more than its parent's.
+- [getMetaDepth()](ui/getMetaDepth.md): Get how many <Page> elements a meta is nested in (0 outside any <Page>).
 - [requireNavigation()](ui/requireNavigation.md): Read the current NavigationSequence from context, throwing if used outside <Navigation>.
 - [getBlockClass()](ui/getBlockClass.md): Get the combined className string for a block from its styling variants.
 - [getColorClass()](ui/getColorClass.md): CSS class that applies color tinting to an element.
@@ -36027,23 +36215,123 @@ close(): void
 
 ---
 
+# setMetaDepth()
+
+- Kind: function
+- Import: `import { setMetaDepth } from "shelving/ui";`
+
+Save the depth of a page's meta: one more than its parent's.
+
+## Signatures
+
+```ts
+setMetaDepth(meta: Meta, parent: Meta): void
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `meta` | `Meta` |  |
+| `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
+| `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
+| `.ordinal` | `number \| undefined` | Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. Read only. Optional. |
+| `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
+| `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
+| `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |
+| `.image` | `string \| undefined` | Read only. Optional. |
+| `.language` | `string \| undefined` | Language code (used for `lang` tag in HTML). Read only. Optional. |
+| `.csp` | `MetaCSP \| undefined` | Read only. Optional. |
+| `.tags` | `MetaTags \| undefined` | Read only. Optional. |
+| `.links` | `MetaLinks \| undefined` | Read only. Optional. |
+| `.modules` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.scripts` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.stylesheets` | `MetaAssets \| undefined` | Read only. Optional. |
+| `parent` | `Meta` |  |
+| `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
+| `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
+| `.ordinal` | `number \| undefined` | Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. Read only. Optional. |
+| `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
+| `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
+| `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |
+| `.image` | `string \| undefined` | Read only. Optional. |
+| `.language` | `string \| undefined` | Language code (used for `lang` tag in HTML). Read only. Optional. |
+| `.csp` | `MetaCSP \| undefined` | Read only. Optional. |
+| `.tags` | `MetaTags \| undefined` | Read only. Optional. |
+| `.links` | `MetaLinks \| undefined` | Read only. Optional. |
+| `.modules` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.scripts` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.stylesheets` | `MetaAssets \| undefined` | Read only. Optional. |
+
+
+---
+
+# getMetaDepth()
+
+- Kind: function
+- Import: `import { getMetaDepth } from "shelving/ui";`
+
+Get how many `<Page>` elements a meta is nested in (`0` outside any `<Page>`).
+
+## Signatures
+
+```ts
+getMetaDepth(meta: Meta): number
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `meta` | `Meta` |  |
+| `.root` | `ImmutableURL \| undefined` | Base URL for the app (used to resolve `url` and set as `<base>` tag in `<Head>`). Read only. Optional. |
+| `.url` | `ImmutableURL \| undefined` | URL of the current page (used as the initial URL for routing, and as the page's canonical URL in `<Head>`). Read only. Optional. |
+| `.stack` | `AbsolutePath \| null \| undefined` | Root path of the current stack (for example `"/home"`). Set it above `<Navigation>` to choose the stack the app opens in. `<Navigation>` publishes the live stack, which is `null` for a floating page. Read only. Optional. |
+| `.ordinal` | `number \| undefined` | Position of the current page in its stack, where `0` is the root. `<Navigation>` publishes it, and `<RouteCache>` and `<Router>` key each page by its stack and ordinal. `undefined` without the Navigation API. Read only. Optional. |
+| `.app` | `string \| undefined` | Title of the entire application. Read only. Optional. |
+| `.title` | `string \| undefined` | Title of the current page (set as `<title>` in `<Head>` Read only. Optional. |
+| `.description` | `string \| undefined` | Description of the current page. Read only. Optional. |
+| `.image` | `string \| undefined` | Read only. Optional. |
+| `.language` | `string \| undefined` | Language code (used for `lang` tag in HTML). Read only. Optional. |
+| `.csp` | `MetaCSP \| undefined` | Read only. Optional. |
+| `.tags` | `MetaTags \| undefined` | Read only. Optional. |
+| `.links` | `MetaLinks \| undefined` | Read only. Optional. |
+| `.modules` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.scripts` | `MetaAssets \| undefined` | Read only. Optional. |
+| `.stylesheets` | `MetaAssets \| undefined` | Read only. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `number` |  |
+
+
+---
+
 # Head
 
 - Kind: component
 - Import: `import { Head } from "shelving/ui";`
 
 Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
-- Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
+- On the server, emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
+- In the browser, it emits only links, stylesheets and scripts, and sets `document.title`. The browser ignores the other tags after the page loads (only crawlers and link previews read them, from the server HTML), and React never removes duplicate `<title>` and `<meta>` tags, so each nested or stacked `<Page>` would add its own copies.
+- In the browser, the title is the title of the deepest `<Page>` on the page the browser history is on (the same `stack` and `ordinal`). It updates on each navigation, so a page kept in its stack (for swipe-back) gets its title back when you return to it.
 - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
 - When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationSequence.replace()` with it. It only does this for the page the browser history is on (the same `stack` and `ordinal`), so a page shown ahead of history, such as a swipe-back preview, leaves history alone. Outside `<Navigation>` it does not touch history.
 
-Low-level emitter of hoistable head metadata from the current `Meta` context. It outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
+Low-level emitter of hoistable head metadata from the current `Meta` context. On the server it outputs `<title>`, `<meta>`, `<link>`, stylesheet, module, and script elements inline, and React 19 hoists each one into the document `<head>`. It also syncs `window.history` to the page URL.
 
 **Things to know:**
 
 - `<Page>` renders `<Head>` automatically — you rarely need it directly.
 - It does not render `<base>`, which is not hoistable; that lives in the `<HTML>` shell.
 - The composed title combines the page `title` with the app name from context.
+- In the browser it emits only links, stylesheets and scripts, and sets `document.title` instead of a `<title>`. The browser ignores `<meta>` tags after the page loads (crawlers and link previews read them from the server HTML), and React never removes duplicate `<title>` and `<meta>` tags, so nested and stacked pages would pile them up.
+- The title in the browser comes from the deepest `<Page>` on the page the browser history is on (same `stack` and `ordinal`), and it updates on each navigation.
 
 ## Usage
 
@@ -36173,7 +36461,7 @@ Props for `<Page>` — per-page `Meta` (title, description, etc.) plus the page 
 - Import: `import { Page } from "shelving/ui";`
 
 Wrap a single page (or screen) within an app, applying its meta and head tags.
-- Sets the document title and other head metadata via `<Head>`, which emits hoistable tags inline; React 19 hoists each one into the document `<head>`. `<base>` is not emitted here — it lives in the `<HTML>` shell's `<Head>`.
+- Sets the document title and other head metadata via `<Head>`. On the server it emits hoistable tags inline, and React 19 hoists each one into the document `<head>`. In the browser it sets only the title (the deepest `<Page>` wins). `<base>` is not emitted here — it lives in the `<HTML>` shell's `<Head>`.
 - Also updates `window.history` to match the page URL.
 
 Wraps one page (or screen) inside an app, applying its per-page metadata. It merges `PossibleMeta` props into context and emits hoistable head tags (title, description, meta, links, stylesheets, scripts) that React 19 lifts into the document `<head>`. It also updates `window.history` to match the page URL.
@@ -36182,7 +36470,8 @@ Wraps one page (or screen) inside an app, applying its per-page metadata. It mer
 
 - Accepts `PossibleMeta` props (`app`, `root`, `url`, `title`, `description`, `language`, `tags`, `links`, `stylesheets`, `modules`, `scripts`) and merges them with the surrounding `Meta` context.
 - The page title is composed with the app name from context — `title="User profile"` under `app="My App"` renders `"User profile - My App"`.
-- It renders `<Head>` inline; React 19 hoists each `<title>`, `<meta>`, `<link>`, and `<script>` into `<head>`, so no portal is needed. `<base>` is the exception — that lives in `<HTML>`.
+- It renders `<Head>` inline. On the server, React 19 hoists each `<title>`, `<meta>`, `<link>`, and `<script>` into `<head>`, so no portal is needed. `<base>` is the exception — that lives in `<HTML>`.
+- In the browser, `<Head>` sets only `document.title` (from the deepest `<Page>` on the current history entry) and emits links and assets. It emits no `<meta>` tags there: the browser ignores them after load, and React never removes duplicates.
 
 ## Usage
 
@@ -63260,6 +63549,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 
 - [getQueryFilters()](util/query/getQueryFilters.md): Get the QueryFilter objects decoded from a query.
 - [getQueryOrders()](util/query/getQueryOrders.md): Get the QueryOrder objects decoded from a query.
+- [getQueryNearest()](util/query/getQueryNearest.md): Get the "nearest" sort of a query, from its key~ prop, or undefined if it has none.
 - [getQueryLimit()](util/query/getQueryLimit.md): Get the limit for a query.
 - [getQueryKey()](util/query/getQueryKey.md): Get a cache key for a query, so two queries with the same filters, order, and limit get the same key.
 - [queryItems()](util/query/queryItems.md): Query a set of data items using a query.
@@ -63268,6 +63558,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 - [filterQueryItems()](util/query/filterQueryItems.md): Filter a set of data items using a set of filters.
 - [compareQueryItems()](util/query/compareQueryItems.md): Compare two data items using a set of orders.
 - [sortQueryItems()](util/query/sortQueryItems.md): Sort a set of data items using a set of orders.
+- [sortNearestItems()](util/query/sortNearestItems.md): Sort a set of data items by a nearest sort: the highest dot product of the vector at key with value comes first.
 - [limitQueryItems()](util/query/limitQueryItems.md): LImit a set of data items using a set of limit.
 - [getQueryBefore()](util/query/getQueryBefore.md): Get a query for the items that sort at or before a specified item.
 - [getQueryAfter()](util/query/getQueryAfter.md): Get a query for the items that sort at or after a specified item.
@@ -63278,6 +63569,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 - [Query](util/query/Query.md): Query that can be applied to a list of data objects.
 - [QueryFilter](util/query/QueryFilter.md): A single filter that can be applied to a list of data objects.
 - [QueryOrder](util/query/QueryOrder.md): A single sort order that can be applied to a list of data objects.
+- [QueryNearest](util/query/QueryNearest.md): A "nearest" sort that can be applied to a list of data objects: the items whose vector at key has the highest dot product with value come first.
 - [QueryItems](util/query/QueryItems.md): A query and the items that answer it, e.g. one page of results from an API endpoint.
 
 
@@ -63291,6 +63583,7 @@ matchQueryItem({ id: "2", status: "inactive", price: 3 }, filters); // false
 Query that can be applied to a list of data objects.
 
 - Keys encode filters: `key` (is), `!key` (not), arrays for in/out, `key<`/`key<=`/`key>`/`key>=` for ranges, and `key[]` for array contains.
+- `key~` with a `VectorArray` sorts by nearest: the items whose vector at `key` has the highest dot product with it come first (see `getQueryNearest()`). It replaces `$order`.
 - `$order` sets the sort order (prefix `!` for descending) and `$limit` caps the number of results.
 
 ## Signatures
@@ -63302,6 +63595,8 @@ Query that can be applied to a list of data objects.
 	readonly [K in LeafDataPath<T> as `${K}<` | `${K}<=` | `${K}>` | `${K}>=`]?: LeafData<T>[K] | undefined; // gt/gte/lt/lte
 } & {
 	readonly [K in LeafDataPath<T> as `${K}[]`]?: LeafData<T>[K] extends ImmutableArray<infer X> ? X | undefined : never; // contains
+} & {
+	readonly [K in LeafDataPath<T> as LeafData<T>[K] extends VectorArray ? `${K}~` : never]?: VectorArray | undefined; // nearest
 } & {
 	readonly $order?:
 		| `${LeafDataPath<T>}`
@@ -63319,6 +63614,7 @@ Query that can be applied to a list of data objects.
 - [LeafData](util/data/LeafData.md): Helper type to get a flattened data object with only leaf nodes of the data, flattened into a.c.b format. i.e. LeafData<{ a: { a2: number } }> produces { "a.a2": number }
 - [ImmutableArray](util/array/ImmutableArray.md): Immutable array: an array that cannot be changed.
 - `X`
+- [VectorArray](util/vector/VectorArray.md): A vector of numbers, for example a text embedding, stored as a Float32Array.
 
 
 ---
@@ -63384,6 +63680,37 @@ A single sort order that can be applied to a list of data objects.
 
 ---
 
+# QueryNearest
+
+- Kind: type
+- Import: `import { QueryNearest } from "shelving/util/query";`
+
+A "nearest" sort that can be applied to a list of data objects: the items whose vector at `key` has the highest dot product with `value` come first.
+
+## Signatures
+
+```ts
+{
+	key: Segments;
+	value: VectorArray;
+}
+```
+
+## Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `key` | `Segments` |  |
+| `value` | `VectorArray` |  |
+
+## Types
+
+- [Segments](util/string/Segments.md): Series of string segments with at least one segment (this is what you actually get back when you split a string).
+- [VectorArray](util/vector/VectorArray.md): A vector of numbers, for example a text embedding, stored as a Float32Array.
+
+
+---
+
 # getQueryFilters()
 
 - Kind: function
@@ -63436,6 +63763,49 @@ getQueryOrders({ $order }: Query<T>): ImmutableArray<QueryOrder>
 | Type | Description |
 | --- | --- |
 | `ImmutableArray<QueryOrder>` | Array of decoded `QueryOrder` objects (`!`-prefixed keys are descending, others ascending). |
+
+
+---
+
+# getQueryNearest()
+
+- Kind: function
+- Import: `import { getQueryNearest } from "shelving/util/query";`
+
+Get the "nearest" sort of a query, from its `key~` prop, or `undefined` if it has none.
+- A query has at most one nearest sort. It replaces `$order`, so a query cannot have both.
+- A nearest query cannot page with `getQueryAfter()` or `getQueryBefore()`, because those need an `$order`. Ask for a bigger `$limit` instead.
+
+## Signatures
+
+```ts
+getQueryNearest(query: Query<T>, caller: AnyCaller = getQueryNearest): QueryNearest | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `query` | `Query<T>` | The query to read. |
+| `caller` | `AnyCaller` | The function to name in the error. Defaults to `getQueryNearest`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `QueryNearest \| undefined` | The decoded `QueryNearest`, or `undefined` if the query has no `key~` prop. |
+
+## Throws
+
+| Type | Description |
+| --- | --- |
+| `RequiredError` | If a `key~` prop is not a `VectorArray`, the query has more than one, or it also has an `$order`. |
+
+## Examples
+
+```ts
+getQueryNearest({ "vector~": v, $limit: 10 }) // { key: ["vector"], value: v }
+```
 
 
 ---
@@ -63507,6 +63877,7 @@ getQueryKey(query: Query<T> | undefined): string
 
 Query a set of data items using a query.
 - Filters, then sorts, then limits the items according to the query.
+- A nearest sort (`key~`) replaces `$order`.
 
 ## Signatures
 
@@ -63675,6 +64046,39 @@ sortQueryItems(items: Iterable<T>, orders: ImmutableArray<QueryOrder>): Iterable
 | Type | Description |
 | --- | --- |
 | `Iterable<T>` |  |
+
+
+---
+
+# sortNearestItems()
+
+- Kind: function
+- Import: `import { sortNearestItems } from "shelving/util/query";`
+
+Sort a set of data items by a nearest sort: the highest dot product of the vector at `key` with `value` comes first.
+- The vector at `key` can be a `VectorArray` or any shape `getVectorArray()` reads, so providers that store data as JSON still sort correctly.
+- Items with no vector at `key`, or a vector of another size, are left out, the same as Firestore's `findNearest`.
+
+## Signatures
+
+```ts
+sortNearestItems(items: Iterable<T>, { key, value }: QueryNearest): ImmutableArray<T>
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `items` | `Iterable<T>` | The iterable of data items to sort. |
+| `nearest` | `QueryNearest` | The nearest sort to apply. |
+| `.key` | `Segments` |  |
+| `.value` | `VectorArray` |  |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `ImmutableArray<T>` | A new sorted array, without the items that have no vector of the right size. |
 
 
 ---
@@ -71799,6 +72203,473 @@ validateData(unsafeData: Data, validators: Validators<T>): T
 | Type | Description |
 | --- | --- |
 | `unknown` | `string` if one or more props did not validate (one `"key: message"` line per failure, joined by newlines). |
+
+
+---
+
+# shelving/util/vector
+
+- Kind: module
+- Import: `import { … } from "shelving/util/vector";`
+
+Store and compare vectors of numbers, for example text embeddings for search. A `VectorArray` is a `Float32Array`.
+
+- `getDotProduct()` scores two vectors. For two unit vectors (see `getUnitVector()`) the score is their cosine similarity: 1 is the same direction, 0 is unrelated.
+- `mergeVectors()` joins several vectors and numbers into one. The dot product of two joined vectors is the sum of the dot products of their parts, so one comparison scores several things at once.
+- `getWordVector()` makes a cheap vector from the words in a text, with no AI model. It matches words and parts of words, not meaning. Use it in tests and previews, or for name search.
+- `getVectorArray()` reads a `Float32Array`, an array of numbers, or the object that `JSON.stringify()` makes of a `Float32Array`. So a vector stored as JSON reads back with no loss.
+
+## Usage
+
+### Score two texts
+
+```ts
+import { getDotProduct, getWordVector } from "shelving/util";
+
+getDotProduct(getWordVector("cool dan"), getWordVector("cooldan94")); // About 0.4
+getDotProduct(getWordVector("cool dan"), getWordVector("mudlarks")); // About 0
+```
+
+### Join meaning, words and a number
+
+Scale each part to length 1 before the join. Put the weights in the query vector, not in the stored rows. Then you can change the weights with no rewrite of the rows.
+
+```ts
+import { getScaledVector, getUnitVector, getWordVector, mergeVectors } from "shelving/util";
+
+// Stored row: each part has length 1.
+const row = mergeVectors(getUnitVector(meaning), getWordVector(title), popularity);
+
+// Query: the weights set the balance between the parts.
+const query = mergeVectors(getScaledVector(queryMeaning, 0.7), getScaledVector(getWordVector(search), 0.3), 0.05);
+```
+
+### Find the nearest rows
+
+Give a collection prop a `VECTOR()` schema, then query it with a `key~` prop. The rows with the highest dot product come first. A nearest query must have a `$limit`, and cannot have an `$order`.
+
+```ts
+import { Collection } from "shelving/db";
+import { STRING, VECTOR } from "shelving/schema";
+
+const SEARCH = new Collection("search", STRING, { type: STRING, vector: VECTOR(1026) });
+
+const rows = await db.getQuery(SEARCH, { type: "challenge", "vector~": query, $limit: 20 });
+```
+
+- `MemoryDBProvider` sorts with `getDotProduct()`.
+- `FirestoreProvider` sends a `findNearest` query with `DOT_PRODUCT` distance. Firestore needs a vector index on the prop (and on any equality filter you use with it).
+- SQL providers store the vector as JSON, but throw for a nearest query.
+
+
+## Functions
+
+- [isVectorArray()](util/vector/isVectorArray.md): Is an unknown value a VectorArray (optionally with an exact size)?
+- [assertVectorArray()](util/vector/assertVectorArray.md): Assert that an unknown value is a VectorArray (optionally with an exact size).
+- [getVectorArray()](util/vector/getVectorArray.md): Get a VectorArray from a possible vector, or undefined if the value is not one.
+- [requireVectorArray()](util/vector/requireVectorArray.md): Get a VectorArray from a possible vector, or throw if the value is not one.
+- [getVectorLength()](util/vector/getVectorLength.md): Get the length (magnitude) of a vector.
+- [getUnitVector()](util/vector/getUnitVector.md): Get a vector scaled to length 1, so the dot product of two unit vectors is their cosine similarity.
+- [getScaledVector()](util/vector/getScaledVector.md): Get a vector with every number multiplied by a weight.
+- [mergeVectors()](util/vector/mergeVectors.md): Join several vectors and single numbers into one longer vector, in order.
+- [getDotProduct()](util/vector/getDotProduct.md): Get the dot product of two vectors: the sum of their numbers multiplied in pairs.
+- [getWordVector()](util/vector/getWordVector.md): Get a cheap vector of the words in a text, with no AI model.
+
+## Types
+
+- [VectorArray](util/vector/VectorArray.md): A vector of numbers, for example a text embedding, stored as a Float32Array.
+- [PossibleVectorArray](util/vector/PossibleVectorArray.md): A value that getVectorArray() can turn into a VectorArray.
+
+
+---
+
+# VectorArray
+
+- Kind: type
+- Import: `import { VectorArray } from "shelving/util/vector";`
+
+A vector of numbers, for example a text embedding, stored as a `Float32Array`.
+- Float32 keeps about 7 significant digits, which is more than search needs, in 4 bytes per number.
+- `JSON.stringify()` turns a `Float32Array` into an object like `{"0":0.1,"1":-0.2}`. That loses nothing, and `getVectorArray()` reads it back.
+
+## Signatures
+
+```ts
+Float32Array
+```
+
+## Types
+
+- `Float32Array`
+
+
+---
+
+# PossibleVectorArray
+
+- Kind: type
+- Import: `import { PossibleVectorArray } from "shelving/util/vector";`
+
+A value that `getVectorArray()` can turn into a `VectorArray`.
+
+## Signatures
+
+```ts
+VectorArray | ImmutableArray<number> | { readonly [index: string]: number }
+```
+
+## Types
+
+- [VectorArray](util/vector/VectorArray.md): A vector of numbers, for example a text embedding, stored as a Float32Array.
+- [ImmutableArray](util/array/ImmutableArray.md): Immutable array: an array that cannot be changed.
+
+
+---
+
+# isVectorArray()
+
+- Kind: function
+- Import: `import { isVectorArray } from "shelving/util/vector";`
+
+Is an unknown value a `VectorArray` (optionally with an exact size)?
+
+## Signatures
+
+```ts
+isVectorArray(value: unknown, size?: number): value is VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `value` | `unknown` | The value to check. |
+| `size` | `number` | The exact number of items the vector must have, or `undefined` for any size. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `value is VectorArray` | `true` if the value is a `Float32Array` of that size. |
+
+## Examples
+
+```ts
+isVectorArray(new Float32Array(3), 3) // true
+```
+
+
+---
+
+# assertVectorArray()
+
+- Kind: function
+- Import: `import { assertVectorArray } from "shelving/util/vector";`
+
+Assert that an unknown value is a `VectorArray` (optionally with an exact size).
+
+## Signatures
+
+```ts
+assertVectorArray(value: unknown, size?: number, caller: AnyCaller = assertVectorArray): asserts value is VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `value` | `unknown` | The value to check. |
+| `size` | `number` | The exact number of items the vector must have, or `undefined` for any size. Optional. |
+| `caller` | `AnyCaller` | Defaults to `assertVectorArray`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `asserts value is VectorArray` |  |
+
+## Throws
+
+| Type | Description |
+| --- | --- |
+| `RequiredError` | If the value is not a `Float32Array` of that size. |
+
+
+---
+
+# getVectorArray()
+
+- Kind: function
+- Import: `import { getVectorArray } from "shelving/util/vector";`
+
+Get a `VectorArray` from a possible vector, or `undefined` if the value is not one.
+- A `Float32Array` is returned as it is.
+- An array of finite numbers becomes a new `Float32Array`.
+- An object whose keys are `"0"` to `"n-1"` with finite number values (what `JSON.stringify()` makes of a `Float32Array`) becomes a new `Float32Array`.
+
+## Signatures
+
+```ts
+getVectorArray(value: unknown, size?: number): VectorArray | undefined
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `value` | `unknown` | The value to convert. |
+| `size` | `number` | The exact number of items the vector must have, or `undefined` for any size. Optional. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray \| undefined` | The vector, or `undefined` if the value is not a vector of that size. |
+
+## Examples
+
+```ts
+getVectorArray([0.5, -0.5]) // Float32Array [0.5, -0.5]
+```
+
+
+---
+
+# requireVectorArray()
+
+- Kind: function
+- Import: `import { requireVectorArray } from "shelving/util/vector";`
+
+Get a `VectorArray` from a possible vector, or throw if the value is not one.
+
+## Signatures
+
+```ts
+requireVectorArray(value: unknown, size?: number, caller: AnyCaller = requireVectorArray): VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `value` | `unknown` | The value to convert (see `getVectorArray()` for the shapes it takes). |
+| `size` | `number` | The exact number of items the vector must have, or `undefined` for any size. Optional. |
+| `caller` | `AnyCaller` | Defaults to `requireVectorArray`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray` | The vector. |
+
+## Throws
+
+| Type | Description |
+| --- | --- |
+| `RequiredError` | If the value is not a vector of that size. |
+
+
+---
+
+# getVectorLength()
+
+- Kind: function
+- Import: `import { getVectorLength } from "shelving/util/vector";`
+
+Get the length (magnitude) of a vector.
+
+## Signatures
+
+```ts
+getVectorLength(vector: VectorArray): number
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `vector` | `VectorArray` | The vector to measure. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `number` | The square root of the sum of the squares of its numbers. |
+
+
+---
+
+# getUnitVector()
+
+- Kind: function
+- Import: `import { getUnitVector } from "shelving/util/vector";`
+
+Get a vector scaled to length 1, so the dot product of two unit vectors is their cosine similarity.
+- A vector of all zeros has no direction, so it is returned as it is.
+
+## Signatures
+
+```ts
+getUnitVector(vector: VectorArray): VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `vector` | `VectorArray` | The vector to scale. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray` | A new vector of length 1, or the input when it is all zeros. |
+
+## Examples
+
+```ts
+getUnitVector(new Float32Array([3, 4])) // Float32Array [0.6, 0.8]
+```
+
+
+---
+
+# getScaledVector()
+
+- Kind: function
+- Import: `import { getScaledVector } from "shelving/util/vector";`
+
+Get a vector with every number multiplied by a weight.
+
+## Signatures
+
+```ts
+getScaledVector(vector: VectorArray, weight: number): VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `vector` | `VectorArray` | The vector to scale. |
+| `weight` | `number` | The number to multiply by. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray` | A new vector, or the input when the weight is 1. |
+
+
+---
+
+# mergeVectors()
+
+- Kind: function
+- Import: `import { mergeVectors } from "shelving/util/vector";`
+
+Join several vectors and single numbers into one longer vector, in order.
+- The dot product of two joined vectors is the sum of the dot products of their parts. So one comparison can score several things at once (for example meaning, words, and popularity), and the weights of the parts set the balance.
+
+## Signatures
+
+```ts
+mergeVectors(...parts: ImmutableArray<VectorArray | number>): VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `parts` | `ImmutableArray<VectorArray \| number>` | The vectors and numbers to join. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray` | A new vector with every part's numbers in order. |
+
+## Examples
+
+```ts
+mergeVectors(new Float32Array([1, 2]), 3) // Float32Array [1, 2, 3]
+```
+
+
+---
+
+# getDotProduct()
+
+- Kind: function
+- Import: `import { getDotProduct } from "shelving/util/vector";`
+
+Get the dot product of two vectors: the sum of their numbers multiplied in pairs.
+- For two unit vectors (see `getUnitVector()`) this is their cosine similarity: 1 is the same direction, 0 is unrelated.
+- Missing numbers in the shorter vector count as zero.
+
+## Signatures
+
+```ts
+getDotProduct(left: VectorArray, right: VectorArray): number
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `left` | `VectorArray` | The first vector. |
+| `right` | `VectorArray` | The second vector. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `number` | The dot product. |
+
+## Examples
+
+```ts
+getDotProduct(new Float32Array([1, 2]), new Float32Array([3, 4])) // 11
+```
+
+
+---
+
+# getWordVector()
+
+- Kind: function
+- Import: `import { getWordVector } from "shelving/util/vector";`
+
+Get a cheap vector of the words in a text, with no AI model.
+- Simplifies the text (see `simplifyString()`), then hashes each word, and each three-letter piece of each word, into one of `size` slots, and scales the result to length 1.
+- So texts that share words, or parts of words, get similar vectors: `cool dan` is close to `cooldan94`, and `runn` is close to `running`.
+- It does not know meaning: `hills` is not close to `incline`. Use an embedding model when meaning matters.
+- The same text and size always give the same vector.
+
+## Signatures
+
+```ts
+getWordVector(text: string, size = 256): VectorArray
+```
+
+## Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `text` | `string` | The text to turn into a vector. |
+| `size` | `unknown` | The number of slots. Fewer slots means more unrelated pieces share a slot. Defaults to `256`. |
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `VectorArray` | A unit vector, or all zeros for a text with no letters or numbers. |
+
+## Examples
+
+```ts
+getDotProduct(getWordVector("cool dan"), getWordVector("cooldan94")) // About 0.4
+```
 
 
 ---
