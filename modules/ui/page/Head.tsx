@@ -1,16 +1,21 @@
 import { type ReactElement, use, useEffect } from "react";
 import type { ArrayItem } from "../../util/array.js";
 import { getProps, type Prop } from "../../util/object.js";
+import { runSequence } from "../../util/sequence.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { NavigationContext } from "../router/NavigationContext.js";
+import type { NavigationSequence } from "../router/NavigationSequence.js";
 import { joinTitles, type MetaAssets, type MetaLinks, type MetaTags } from "../util/meta.js";
+import { getMetaDepth } from "./depth.js";
 
 /** Meta tags with a capital first letter and hyphens, e.g. `Content-Security-Policy` or `Accept`, are `http-equiv=""` tags. */
 const R_HTTP_EQUIV = /^[A-Z][a-zA-Z0-9]*(-[A-Z][a-zA-Z0-9]*)*$/;
 
 /**
  * Emit the current page's head metadata, and replace the browser URL with the page's canonical URL.
- * - Emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
+ * - On the server, emits hoistable head elements (title, meta, links, stylesheets, scripts) inline; React 19 hoists each one into the document `<head>`.
+ * - In the browser, it emits only links, stylesheets and scripts, and sets `document.title`. The browser ignores the other tags after the page loads (only crawlers and link previews read them, from the server HTML), and React never removes duplicate `<title>` and `<meta>` tags, so each nested or stacked `<Page>` would add its own copies.
+ * - In the browser, the title is the title of the deepest `<Page>` on the page the browser history is on (the same `stack` and `ordinal`). It updates on each navigation, so a page kept in its stack (for swipe-back) gets its title back when you return to it.
  * - Does not render `<base>` (not hoistable — that lives in `<Head>` in the `<HTML>` shell component).
  * - When the meta `url` differs from the browser URL (a page that knows its canonical URL), calls `NavigationSequence.replace()` with it. It only does this for the page the browser history is on (the same `stack` and `ordinal`), so a page shown ahead of history, such as a swipe-back preview, leaves history alone. Outside `<Navigation>` it does not touch history.
  *
@@ -32,17 +37,69 @@ export function Head(): ReactElement {
 	}, [nav, url, stack, ordinal]);
 
 	const fullTitle = joinTitles(title, app);
+
+	// In the browser, set the document title from the deepest page the browser history is on.
+	const depth = getMetaDepth(meta);
+	useEffect(() => {
+		if (!fullTitle) return;
+		const head: _TitleHead = { title: fullTitle, depth, stack, ordinal, nav };
+		_HEADS.add(head);
+		_queueTitle();
+		const stop = nav && runSequence(nav, _queueTitle);
+		return () => {
+			stop?.();
+			_HEADS.delete(head);
+			_queueTitle();
+		};
+	}, [fullTitle, depth, stack, ordinal, nav]);
+
+	const server = typeof document === "undefined";
 	return (
 		<>
-			{fullTitle && <title>{fullTitle}</title>}
-			{description && <meta name="description" content={description} />}
-			{tags && getProps(tags).map(_renderTag)}
+			{server && fullTitle && <title>{fullTitle}</title>}
+			{server && description && <meta name="description" content={description} />}
+			{server && tags && getProps(tags).map(_renderTag)}
 			{links && getProps(links).map(_renderLink)}
 			{stylesheets?.map(_renderStylesheet)}
 			{modules?.map(_renderModule)}
 			{scripts?.map(_renderScript)}
 		</>
 	);
+}
+
+type _TitleHead = {
+	readonly title: string;
+	readonly depth: number;
+	readonly stack: string | null;
+	readonly ordinal: number | undefined;
+	readonly nav: NavigationSequence | undefined;
+};
+
+/** Each `<Head>` in the browser that has a title. */
+const _HEADS = new Set<_TitleHead>();
+
+let _queued = false;
+
+/** Set the document title once, after every head in this change has updated. */
+function _queueTitle(): void {
+	if (_queued) return;
+	_queued = true;
+	queueMicrotask(() => {
+		_queued = false;
+		let title: string | undefined;
+		let depth = -1;
+		for (const head of _HEADS) {
+			if (head.nav) {
+				const current = head.nav.current();
+				if (current.stack !== head.stack || current.ordinal !== head.ordinal) continue;
+			}
+			if (head.depth >= depth) {
+				title = head.title;
+				depth = head.depth;
+			}
+		}
+		if (title !== undefined && document.title !== title) document.title = title;
+	});
 }
 
 function _renderTag([k, x]: Prop<MetaTags>): ReactElement | null {
