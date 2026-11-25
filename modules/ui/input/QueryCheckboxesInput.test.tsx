@@ -40,3 +40,19 @@ describe("ArrayCheckboxInputs", () => {
 		expect(values).toEqual([["a", "b"], []]);
 	});
 });
+
+describe("ArrayCheckboxInputs with items that have an id", () => {
+	test("checks a new copy of a checked item", () => {
+		const html = renderToStaticMarkup(
+			<ArrayCheckboxInputs name="x" items={[{ id: "a" }, { id: "b" }]} value={[{ id: "b" }]} onValue={PASSTHROUGH} formatter={v => v.id} />,
+		);
+		expect(html.match(/checked=""/g)?.length).toBe(1);
+	});
+	test("removes a checked item by its id", () => {
+		const values: (readonly { id: string }[] | undefined)[] = [];
+		const element = ArrayCheckboxInputs({ name: "x", items: [{ id: "a" }], value: [{ id: "a" }], onValue: v => values.push(v) });
+		const [a] = (element.props as { children: { props: { onValue(on: boolean): void } }[] }).children;
+		a?.props.onValue(false);
+		expect(values).toEqual([[]]);
+	});
+});

@@ -6,7 +6,7 @@ Combo box that queries a list of items and lets the user pick any number of them
 
 - It works like `<QueryRadiosInput>`: the same `schema`, `onQuery()`, `formatter`, `popover` and `empty` props, and the same loading, empty and error states.
 - The popover stays open while the user checks items.
-- Checked items stay in the value when a new search does not return them. Items are compared with `===`, so `onQuery()` must return the same objects each time (or primitives).
+- Checked items stay in the value when a new search does not return them. Items are compared with `===`, or by `id` when both are objects with an `id` property, so `onQuery()` can return new copies of the same items.
 - Show your own button to act on the checked items, for example "Invite".
 
 ## Usage
