@@ -18,7 +18,7 @@ getQueryNearest(query: Query<T>, caller: AnyCaller = getQueryNearest): QueryNear
 | Param | Type | Description |
 | --- | --- | --- |
 | `query` | `Query<T>` | The query to read. |
-| `caller` | `AnyCaller` | Defaults to `getQueryNearest`. |
+| `caller` | `AnyCaller` | The function to name in the error. Defaults to `getQueryNearest`. |
 
 ## Returns
 

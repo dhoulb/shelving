@@ -6896,6 +6896,7 @@ SQL fragment made from template strings plus embedded expressions, ready to be c
 
 - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
 - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+- A `VectorArray` value becomes a plain array of numbers, so it binds like any other array (`getVectorArray()` reads it back).
 
 ## Signatures
 
@@ -17313,7 +17314,7 @@ Validate an unknown value and coerce it to a vector.
 ## Signatures
 
 ```ts
-validate(unsafeValue: unknown = this.value): VectorArray
+validate(unsafeValue?: unknown): VectorArray
 ```
 
 
@@ -63683,7 +63684,7 @@ getQueryNearest(query: Query<T>, caller: AnyCaller = getQueryNearest): QueryNear
 | Param | Type | Description |
 | --- | --- | --- |
 | `query` | `Query<T>` | The query to read. |
-| `caller` | `AnyCaller` | Defaults to `getQueryNearest`. |
+| `caller` | `AnyCaller` | The function to name in the error. Defaults to `getQueryNearest`. |
 
 ## Returns
 
@@ -63953,7 +63954,7 @@ sortQueryItems(items: Iterable<T>, orders: ImmutableArray<QueryOrder>): Iterable
 
 Sort a set of data items by a nearest sort: the highest dot product of the vector at `key` with `value` comes first.
 - The vector at `key` can be a `VectorArray` or any shape `getVectorArray()` reads, so providers that store data as JSON still sort correctly.
-- Items with no vector at `key` sort last.
+- Items with no vector at `key`, or a vector of another size, are left out, the same as Firestore's `findNearest`.
 
 ## Signatures
 
@@ -63974,7 +63975,7 @@ sortNearestItems(items: Iterable<T>, { key, value }: QueryNearest): ImmutableArr
 
 | Type | Description |
 | --- | --- |
-| `ImmutableArray<T>` | A new sorted array. |
+| `ImmutableArray<T>` | A new sorted array, without the items that have no vector of the right size. |
 
 
 ---

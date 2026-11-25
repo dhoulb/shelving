@@ -8,5 +8,5 @@ Validate an unknown value and coerce it to a vector.
 ## Signatures
 
 ```ts
-validate(unsafeValue: unknown = this.value): VectorArray
+validate(unsafeValue?: unknown): VectorArray
 ```

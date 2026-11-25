@@ -7,6 +7,7 @@ SQL fragment made from template strings plus embedded expressions, ready to be c
 
 - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
 - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+- A `VectorArray` value becomes a plain array of numbers, so it binds like any other array (`getVectorArray()` reads it back).
 
 ## Signatures
 

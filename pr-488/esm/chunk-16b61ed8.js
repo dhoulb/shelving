@@ -1,2 +1,0 @@
-import{Cr,rt,ot}from"./chunk-z3t0drzk.js";import{s}from"./chunk-6h12vwam.js";import{jt,ct}from"./chunk-3sq897c1.js";class cr extends ct{payload;constructor(o,e,r,i=0){let t=new jt(o),y=r&&(async(a)=>{if(i>0)await ot(Cr(i),rt(a));let n=t.loading?await ot(t.next,rt(a)):t.value;return r(n,a)});super(e,y);this.payload=t,p(this)}async[Symbol.asyncDispose](){await s(this.payload,super[Symbol.asyncDispose]())}}async function p(o){for await(let e of o.payload.next)o.invalidate(),o.refresh()}
-export{cr};
