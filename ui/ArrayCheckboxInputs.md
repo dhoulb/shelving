@@ -4,7 +4,8 @@
 - Import: `import { ArrayCheckboxInputs } from "shelving/ui";`
 
 Output a list of `<CheckboxInput>` elements for each item in an array, to pick any number of them.
-- The value is the array of checked items, in the order they were checked. Items are compared with `===`.
+- The value is the array of checked items, in the order they were checked.
+- Items are compared with `===`, or by `id` when both are objects with an `id` property, so a new copy of a checked item stays checked.
 - Checked items that are not in `items` stay in the value.
 - The items can be any type, and can be formatted for output through an optional `formatter()` function.
 
@@ -12,7 +13,7 @@ A column of checkboxes, one for each item in an array. The user picks any number
 
 **Things to know:**
 
-- The items can be any type. `onValue()` gets the array of checked items, in the order they were checked. Items are compared with `===`.
+- The items can be any type. `onValue()` gets the array of checked items, in the order they were checked. Items are compared with `===`, or by `id` when both are objects with an `id` property.
 - Checked items that are not in `items` stay in the value.
 - `formatter` turns an item into the label (default `formatValue()`). It can return any `ReactNode`.
 - With `required`, the user must check at least one item.
