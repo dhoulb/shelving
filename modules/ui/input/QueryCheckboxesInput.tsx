@@ -17,7 +17,7 @@ export interface QueryCheckboxesInputProps<I, O> extends QueryInputBaseProps<I, 
  * - Shows an input based on a `schema` of type `I`; its values are piped to the `onQuery()` callback.
  * - Shows a `<Popover>` with a checkbox list of returned items. The value is the array of checked items. The popover stays open while the user checks items.
  * - With `popover={false}`, shows the checkbox list inline below the input instead.
- * - Checked items stay checked when a new query does not return them. Items are compared with `===`, so `onQuery()` must return the same objects each time (or primitives).
+ * - Checked items stay checked when a new query does not return them. Items are compared with `===`, or by `id` when both are objects with an `id` property, so `onQuery()` can return new copies each time.
  * - Errors, loading, and empty states are handled automatically.
  *
  * @kind component
