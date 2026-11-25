@@ -14,6 +14,7 @@ import {
 	type QueryOrder,
 } from "../../util/query.js";
 import { getUpdates, type Update, type Updates } from "../../util/update.js";
+import { isVectorArray } from "../../util/vector.js";
 import type { Collection } from "../collection/Collection.js";
 import { DBProvider } from "./DBProvider.js";
 
@@ -22,6 +23,7 @@ import { DBProvider } from "./DBProvider.js";
  *
  * - Flattens eagerly: `SQLFragment` values are spliced inline at construction, so `values` only ever contains bindable parameters (or driver-specific identifier tokens) — never other fragments.
  * - Concrete providers can therefore pass `strings` / `values` straight to their driver, and detect fragments with a plain `instanceof` check.
+ * - A `VectorArray` value becomes a plain array of numbers, so it binds like any other array (`getVectorArray()` reads it back).
  *
  * @see https://shelving.cc/db/SQLFragment
  */
@@ -40,7 +42,7 @@ export class SQLFragment {
 					outStrings.push(value.strings[n + 1] ?? "");
 				}
 			} else {
-				outValues.push(value);
+				outValues.push(isVectorArray(value) ? Array.from(value) : value);
 				outStrings.push("");
 			}
 			outStrings[outStrings.length - 1] += strings[i + 1] ?? "";

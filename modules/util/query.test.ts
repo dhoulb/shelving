@@ -321,14 +321,12 @@ describe("nearest queries", () => {
 	test("sortNearestItems() puts the highest dot product first", () => {
 		expect(sortNearestItems([c, a, b], { key: ["vector"], value: v(1, 0) })).toEqual([a, b, c]);
 	});
-	test("sortNearestItems() reads vectors stored as JSON, and puts items with no vector last", () => {
+	test("sortNearestItems() reads vectors stored as JSON, and leaves out items with no vector of the right size", () => {
 		const json = { id: "j", vector: JSON.parse(JSON.stringify(v(0.9, 0.1))) };
 		const none = { id: "n" };
-		expect(sortNearestItems<{ id: string; vector?: unknown }>([none, c, json], { key: ["vector"], value: v(1, 0) })).toEqual([
-			json,
-			c,
-			none,
-		]);
+		const short = { id: "s", vector: v(1) };
+		const sorted = sortNearestItems<{ id: string; vector?: unknown }>([none, c, short, json], { key: ["vector"], value: v(1, 0) });
+		expect(sorted).toEqual([json, c]);
 	});
 	test("queryItems() filters, then sorts by nearest, then limits", () => {
 		expect([...queryItems([a, b, c], { group: "x", "vector~": v(0, 1), $limit: 1 })]).toEqual([b]);

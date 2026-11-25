@@ -42,7 +42,9 @@ export class VectorSchema extends Schema<VectorArray> {
 	 * @example VECTOR(2).validate([0.5, -0.5]); // Returns Float32Array [0.5, -0.5]
 	 * @see https://shelving.cc/schema/VectorSchema/validate
 	 */
-	validate(unsafeValue: unknown = this.value): VectorArray {
+	validate(unsafeValue?: unknown): VectorArray {
+		// A copy of the default, so a change to one item's vector never changes the default.
+		if (unsafeValue === undefined) return this.value.slice();
 		const vector = getVectorArray(unsafeValue, this.size);
 		if (!vector) throw `Must be vector with ${this.size} numbers`;
 		return vector;

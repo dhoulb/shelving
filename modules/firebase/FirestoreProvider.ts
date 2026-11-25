@@ -85,6 +85,14 @@ type _FirestoreQuery = {
 	};
 };
 
+/** The most results Firestore's `findNearest` returns. */
+const _NEAREST_LIMIT = 1000;
+
+/** A query without its nearest sort (`key~` props). */
+function _omitNearest<T extends Data>(query: Query<T>): Query<T> {
+	return Object.fromEntries(Object.entries(query).filter(([key]) => !key.endsWith("~"))) as Query<T>;
+}
+
 /** Get the last segment of a Firestore document name, i.e. its id. */
 function _getDocumentID<I extends string>(name: string): I {
 	return name.slice(name.lastIndexOf("/") + 1) as I; // `as I` needed: Firestore names are always plain strings.
@@ -136,6 +144,7 @@ function _getStructuredQuery<II extends string, TT extends Data>(
 		if (nearest) {
 			// A nearest sort is a `findNearest` block, which replaces `orderBy` and `limit`.
 			if (typeof limit !== "number") throw new RequiredError("Nearest query must have $limit", { query, caller });
+			if (limit > _NEAREST_LIMIT) throw new RequiredError(`Nearest query $limit must be ${_NEAREST_LIMIT} or less`, { query, caller });
 			structured.findNearest = {
 				vectorField: { fieldPath: joinDataPath(nearest.key) },
 				queryVector: toFirestoreVector(nearest.value),
@@ -377,7 +386,8 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 			const limit = query && getQueryLimit(query);
 			return typeof limit === "number" ? Math.min(total, limit) : total;
 		}
-		const structuredQuery = _getStructuredQuery(this._root, collection.name, query, false, this.countQuery);
+		// A count needs no nearest sort, and `runAggregationQuery` takes no `findNearest`.
+		const structuredQuery = _getStructuredQuery(this._root, collection.name, query && _omitNearest(query), false, this.countQuery);
 		if (!structuredQuery) return 0;
 		const results = (await this._request("runAggregationQuery", {
 			structuredAggregationQuery: { structuredQuery, aggregations: [{ alias: "count", count: {} }] },

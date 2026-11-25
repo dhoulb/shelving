@@ -129,6 +129,24 @@ describe("FirestoreProvider (protocol)", () => {
 		});
 	});
 
+	test("getQuery() throws for a key~ prop with a $limit over 1000", async () => {
+		const VECTORS = new Collection("vectors", STRING, { vector: VECTOR(2) });
+		const provider = new FirestoreProvider({ project: "test", fetch: _createStub().fetch });
+		const query = { "vector~": new Float32Array([1, 0]), $limit: 1001 };
+		expect(provider.getQuery(VECTORS, query)).rejects.toThrow("Nearest query $limit must be 1000 or less");
+	});
+
+	test("countQuery() leaves out a key~ prop", async () => {
+		const VECTORS = new Collection("vectors", STRING, { group: STRING, vector: VECTOR(2) });
+		const stub = _createStub({ json: [{ result: { aggregateFields: { count: { integerValue: "3" } } } }] });
+		const provider = new FirestoreProvider({ project: "test", fetch: stub.fetch });
+		expect(await provider.countQuery(VECTORS, { group: "a", "vector~": new Float32Array([1, 0]) })).toBe(3);
+		const aggregation = stub.requests[0]?.body.structuredAggregationQuery as { structuredQuery: Data } | undefined;
+		const structuredQuery = aggregation?.structuredQuery;
+		expect(structuredQuery).toBeDefined();
+		expect(structuredQuery?.findNearest).toBeUndefined();
+	});
+
 	test("getQuery() throws for a key~ prop with no $limit", async () => {
 		const VECTORS = new Collection("vectors", STRING, { vector: VECTOR(2) });
 		const provider = new FirestoreProvider({ project: "test", fetch: _createStub().fetch });

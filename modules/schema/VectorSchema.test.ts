@@ -38,3 +38,10 @@ describe("VectorSchema", () => {
 		expect(r1.length).toBe(2);
 	});
 });
+
+test("gives a new copy of the default each time", () => {
+	const schema = VECTOR(2);
+	const a = schema.validate(undefined);
+	a[0] = 1;
+	expect(schema.validate(undefined)).toEqual(new Float32Array(2));
+});

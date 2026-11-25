@@ -144,6 +144,7 @@ function* yieldQueryOrders(order: string | ImmutableArray<string | undefined> | 
  *
  * @param query The query to read.
  * @returns The decoded `QueryNearest`, or `undefined` if the query has no `key~` prop.
+ * @param caller The function to name in the error.
  * @throws {RequiredError} If a `key~` prop is not a `VectorArray`, the query has more than one, or it also has an `$order`.
  * @example getQueryNearest({ "vector~": v, $limit: 10 }) // { key: ["vector"], value: v }
  * @see https://shelving.cc/util/query/getQueryNearest
@@ -269,18 +270,18 @@ export function sortQueryItems<T extends Data>(items: Iterable<T>, orders: Immut
 /**
  * Sort a set of data items by a nearest sort: the highest dot product of the vector at `key` with `value` comes first.
  * - The vector at `key` can be a `VectorArray` or any shape `getVectorArray()` reads, so providers that store data as JSON still sort correctly.
- * - Items with no vector at `key` sort last.
+ * - Items with no vector at `key`, or a vector of another size, are left out, the same as Firestore's `findNearest`.
  *
  * @param items The iterable of data items to sort.
  * @param nearest The nearest sort to apply.
- * @returns A new sorted array.
+ * @returns A new sorted array, without the items that have no vector of the right size.
  * @see https://shelving.cc/util/query/sortNearestItems
  */
 export function sortNearestItems<T extends Data>(items: Iterable<T>, { key, value }: QueryNearest): ImmutableArray<T> {
 	const scored: [T, number][] = [];
 	for (const item of items) {
-		const vector = getVectorArray(getDataProp(item, key));
-		scored.push([item, vector ? getDotProduct(vector, value) : Number.NEGATIVE_INFINITY]);
+		const vector = getVectorArray(getDataProp(item, key), value.length);
+		if (vector) scored.push([item, getDotProduct(vector, value)]);
 	}
 	return scored.sort((a, b) => b[1] - a[1]).map(([item]) => item);
 }
