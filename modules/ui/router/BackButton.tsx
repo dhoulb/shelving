@@ -4,6 +4,7 @@ import type { AbsolutePath } from "../../util/path.js";
 import { Button, type ButtonProps } from "../button/Button.js";
 import { requireMeta } from "../misc/MetaContext.js";
 import { getClass } from "../util/css.js";
+import { useHydrated } from "../util/hydrated.js";
 import { NavigationContext } from "./NavigationContext.js";
 
 /**
@@ -29,7 +30,8 @@ export interface BackButtonProps extends Omit<ButtonProps, "href" | "onClick"> {
 export function BackButton({ href, className, title = "Back", children = <LeftIcon />, ...props }: BackButtonProps): ReactElement | null {
 	const nav = use(NavigationContext);
 	const { stack = null, ordinal } = requireMeta();
-	const parent = nav && ordinal ? nav.history(stack)[ordinal - 1] : undefined;
+	// History is browser-only, so a server render and the hydrating render use `href`.
+	const parent = useHydrated() && nav && ordinal ? nav.history(stack)[ordinal - 1] : undefined;
 	const target = parent ?? href;
 	if (!target) return null;
 	return (

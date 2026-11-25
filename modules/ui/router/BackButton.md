@@ -11,7 +11,7 @@ The back button for a page header. It goes back to the page before this one in t
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
 - Without the browser Navigation API, and in a server render, it links to `href`.
-- In a server-rendered app the server always renders `href`, and the browser may render the page before this one. React then warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+- In a server-rendered app, the render that hydrates also links to `href`, so it matches the server HTML. Then it renders again and links to the page before this one.
 
 ## Usage
 

@@ -11,7 +11,7 @@ A button for one stack in a tab bar. It acts like a tab button in a phone app.
 - `stack` must be one of the `stacks` on `<Navigation>`.
 - It takes the usual `<Button>` props, except `href`, `onClick` and `selected`.
 - Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while its stack is the starting stack.
-- In a server-rendered app, the server renders a link and the browser renders a button, so React warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+- In a server-rendered app, the render that hydrates is also a link, so it matches the server HTML. Then it renders again as a button.
 
 ## Usage
 

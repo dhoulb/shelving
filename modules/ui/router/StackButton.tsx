@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import type { AbsolutePath } from "../../util/path.js";
 import { Button, type ButtonProps } from "../button/Button.js";
 import { requireMetaURL } from "../misc/MetaContext.js";
+import { useHydrated } from "../util/hydrated.js";
 import { requireNavigation } from "./NavigationContext.js";
 
 /**
@@ -20,7 +21,7 @@ export interface StackButtonProps extends Omit<ButtonProps, "href" | "onClick" |
  * - Tap the current stack's button: go back to its root path.
  * - Tap it again on the root path: scroll the page to the top.
  * - It is selected while its stack is the current stack.
- * - Without the browser Navigation API (and in a server render) it is a plain link to the stack's root.
+ * - Without the browser Navigation API (and in a server render, and while it hydrates) it is a plain link to the stack's root.
  *
  * @kind component
  * @see https://shelving.cc/ui/StackButton
@@ -28,9 +29,10 @@ export interface StackButtonProps extends Omit<ButtonProps, "href" | "onClick" |
 export function StackButton({ stack, ...props }: StackButtonProps): ReactElement {
 	const nav = requireNavigation();
 	const { stack: current, ordinal, path } = requireMetaURL();
+	const hydrated = useHydrated();
 
-	// No Navigation API (or a server render): a plain link to the root, selected while its stack is the current stack.
-	if (ordinal === undefined) return <Button {...props} href={stack} selected={current === stack} />;
+	// No Navigation API, a server render, or the hydrating render: a plain link to the root, selected while its stack is the current stack.
+	if (!hydrated || ordinal === undefined) return <Button {...props} href={stack} selected={current === stack} />;
 
 	const onClick = () => {
 		if (current !== stack) return nav.forward(nav.history(stack).at(-1) ?? stack, stack);
