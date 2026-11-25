@@ -6,7 +6,8 @@ Wraps one page (or screen) inside an app, applying its per-page metadata. It mer
 
 - Accepts `PossibleMeta` props (`app`, `root`, `url`, `title`, `description`, `language`, `tags`, `links`, `stylesheets`, `modules`, `scripts`) and merges them with the surrounding `Meta` context.
 - The page title is composed with the app name from context — `title="User profile"` under `app="My App"` renders `"User profile - My App"`.
-- It renders `<Head>` inline; React 19 hoists each `<title>`, `<meta>`, `<link>`, and `<script>` into `<head>`, so no portal is needed. `<base>` is the exception — that lives in `<HTML>`.
+- It renders `<Head>` inline. On the server, React 19 hoists each `<title>`, `<meta>`, `<link>`, and `<script>` into `<head>`, so no portal is needed. `<base>` is the exception — that lives in `<HTML>`.
+- In the browser, `<Head>` sets only `document.title` (from the deepest `<Page>` on the current history entry) and emits links and assets. It emits no `<meta>` tags there: the browser ignores them after load, and React never removes duplicates.
 
 ## Usage
 
