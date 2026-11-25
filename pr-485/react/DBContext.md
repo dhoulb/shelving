@@ -25,7 +25,7 @@ Bundle of hooks and a provider component returned by `createDBContext()`.
 		collection: Collection<string, II, TT>, //
 		query: Query<Item<II, TT>>,
 	): QueryStore<II, TT>;
-	readonly DBContext: (props: DBContextProps<I, T>) => ReactElement;
+	readonly DBContext: ({ children }: { children: ReactNode }) => ReactElement;
 	requireDBCache(): DBCache<I, T>;
 }
 ```
@@ -34,7 +34,7 @@ Bundle of hooks and a provider component returned by `createDBContext()`.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `DBContext` | `(props: DBContextProps<I, T>) => ReactElement` | Provide a `DBCache` as context to child nodes, to allow them to use `useItem()` and `useQuery()` Read only. |
+| `DBContext` | `({ children }: { children: ReactNode }) => ReactElement` | Create a new `DBCache` and provide it as context to child nodes, to allow them to use `useItem()` and `useQuery()` Read only. |
 
 ## Methods
 

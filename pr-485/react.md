@@ -93,7 +93,5 @@ function Toggle() {
 ## Interfaces
 
 - [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
-- [APIContextProps](react/APIContextProps.md): Props for the <APIContext> component returned by createAPIContext().
 - [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
-- [DBContextProps](react/DBContextProps.md): Props for the <DBContext> component returned by createDBContext().
 - [SequenceTransitionOptions](react/SequenceTransitionOptions.md): Options for useSequenceTransition().

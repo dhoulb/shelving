@@ -11514,9 +11514,7 @@ function Toggle() {
 ## Interfaces
 
 - [APIContext](react/APIContext.md): Bundle of hooks and a provider component returned by createAPIContext()
-- [APIContextProps](react/APIContextProps.md): Props for the <APIContext> component returned by createAPIContext().
 - [DBContext](react/DBContext.md): Bundle of hooks and a provider component returned by createDBContext().
-- [DBContextProps](react/DBContextProps.md): Props for the <DBContext> component returned by createDBContext().
 - [SequenceTransitionOptions](react/SequenceTransitionOptions.md): Options for useSequenceTransition().
 
 
@@ -11535,7 +11533,7 @@ Bundle of hooks and a provider component returned by `createAPIContext()`
 {
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP): EndpointStore<PP, RR>;
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined;
-	readonly APIContext: (props: APIContextProps<P, R>) => ReactElement;
+	readonly APIContext: (props: ChildProps) => ReactElement;
 	requireAPICache(): APICache<P, R>;
 }
 ```
@@ -11544,7 +11542,7 @@ Bundle of hooks and a provider component returned by `createAPIContext()`
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `APIContext` | `(props: APIContextProps<P, R>) => ReactElement` | Provide an `APICache` as context to child nodes, to allow them to use `useAPI()` Read only. |
+| `APIContext` | `(props: ChildProps) => ReactElement` | Create a new `APICache` and provide it as context to child nodes, to allow them to use `useAPI()` Read only. |
 
 ## Methods
 
@@ -11587,34 +11585,6 @@ requireAPICache(): APICache<P, R>
 
 ---
 
-# APIContextProps
-
-- Kind: interface
-- Import: `import { APIContextProps } from "shelving/react";`
-
-Props for the `<APIContext>` component returned by `createAPIContext()`.
-
-## Signatures
-
-```ts
-{
-	readonly children?: ReactNode;
-	readonly provider?: APIProvider<P, R> | undefined;
-	readonly cache?: APICache<P, R> | undefined;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `children` | `ReactNode` | Read only. Optional. |
-| `provider` | `APIProvider<P, R> \| undefined` | The provider to call, in place of the one given to `createAPIContext()`. The context makes its own `APICache` for it, and a new one when it changes. Read only. Optional. |
-| `cache` | `APICache<P, R> \| undefined` | An `APICache` you made, used as it is. It wins over `provider`. Read only. Optional. |
-
-
----
-
 # createAPIContext()
 
 - Kind: function
@@ -11622,8 +11592,7 @@ Props for the `<APIContext>` component returned by `createAPIContext()`.
 
 Create an API context.
 - Allows React elements to call `useAPI()` to access endpoint stores in an API provider.
-- Each mounted `APIContext` gets its own in-memory store cache, unless it gets a `cache` prop.
-- The provider can be given here, or to each `<APIContext>` as its `provider` or `cache` prop, so each tree can have its own API.
+- Each mounted `APIContext` gets its own in-memory store cache.
 
 Create a React context for a Shelving `shelving/api` provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory `APICache`, so independent subtrees can use independent providers.
 
@@ -11664,32 +11633,18 @@ function App() {
 
 `useAPI` accepts a nullish endpoint — passing `undefined` returns `undefined` instead of a store, which keeps the hook call unconditional. Calling `useAPI` outside an `<APIContext>` throws a `RequiredError`.
 
-## One provider per tree
-
-Leave out the provider when you call `createAPIContext()`, and give each `<APIContext>` its own with the `provider` prop. Then each tree has its own API client, for example one per server render or one per signed-in session. The context makes an `APICache` for the provider, and a new one when the provider changes (it does not dispose the old one).
-
-```tsx
-const { APIContext, useAPI } = createAPIContext();
-
-function Root({ api }: { api: APIProvider }) {
-	return <APIContext provider={api}>{/* … */}</APIContext>;
-}
-```
-
-To use an `APICache` you made yourself, for example so code outside React can invalidate its results, pass it as the `cache` prop. A `cache` prop wins over `provider`. With no `cache`, no `provider` prop and no provider given to `createAPIContext()`, `<APIContext>` throws a `RequiredError`.
-
 
 ## Signatures
 
 ```ts
-createAPIContext(provider?: APIProvider<P, R>): APIContext<P, R>
+createAPIContext(provider: APIProvider<P, R>): APIContext<P, R>
 ```
 
 ## Parameters
 
 | Param | Type | Description |
 | --- | --- | --- |
-| `provider` | `APIProvider<P, R>` | Default `APIProvider` the created context resolves endpoint stores against, when an `<APIContext>` gets no `provider` or `cache` prop. Optional. |
+| `provider` | `APIProvider<P, R>` | `APIProvider` the created context resolves endpoint stores against. |
 
 ## Returns
 
@@ -11727,7 +11682,7 @@ Bundle of hooks and a provider component returned by `createDBContext()`.
 		collection: Collection<string, II, TT>, //
 		query: Query<Item<II, TT>>,
 	): QueryStore<II, TT>;
-	readonly DBContext: (props: DBContextProps<I, T>) => ReactElement;
+	readonly DBContext: ({ children }: { children: ReactNode }) => ReactElement;
 	requireDBCache(): DBCache<I, T>;
 }
 ```
@@ -11736,7 +11691,7 @@ Bundle of hooks and a provider component returned by `createDBContext()`.
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `DBContext` | `(props: DBContextProps<I, T>) => ReactElement` | Provide a `DBCache` as context to child nodes, to allow them to use `useItem()` and `useQuery()` Read only. |
+| `DBContext` | `({ children }: { children: ReactNode }) => ReactElement` | Create a new `DBCache` and provide it as context to child nodes, to allow them to use `useItem()` and `useQuery()` Read only. |
 
 ## Methods
 
@@ -11797,34 +11752,6 @@ requireDBCache(): DBCache<I, T>
 
 ---
 
-# DBContextProps
-
-- Kind: interface
-- Import: `import { DBContextProps } from "shelving/react";`
-
-Props for the `<DBContext>` component returned by `createDBContext()`.
-
-## Signatures
-
-```ts
-{
-	readonly children?: ReactNode;
-	readonly provider?: DBProvider<I, T> | undefined;
-	readonly cache?: DBCache<I, T> | undefined;
-}
-```
-
-## Properties
-
-| Property | Type | Description |
-| --- | --- | --- |
-| `children` | `ReactNode` | Read only. Optional. |
-| `provider` | `DBProvider<I, T> \| undefined` | The provider to read from, in place of the one given to `createDBContext()`. The context makes its own `DBCache` for it, and a new one when it changes. Read only. Optional. |
-| `cache` | `DBCache<I, T> \| undefined` | A `DBCache` you made, used as it is. It wins over `provider`. Read only. Optional. |
-
-
----
-
 # createDBContext()
 
 - Kind: function
@@ -11832,7 +11759,6 @@ Props for the `<DBContext>` component returned by `createDBContext()`.
 
 Create a data context
 - Allows React elements to call `useItem()` and `useQuery()` to access items/queries in a database provider.
-- The provider can be given here, or to each `<DBContext>` as its `provider` or `cache` prop, so each tree can have its own database.
 - If the database is (or wraps) a `MemoryDBProvider`, the returned stores seed from it synchronously.
 
 Create a React context for a Shelving `shelving/db` provider. Call `createDBContext(provider)` once, outside any component, to produce a `<DBContext>` wrapper component plus `useItem` and `useQuery` hooks. Each mounted `<DBContext>` gets its own in-memory `DBCache`; if the provider is (or wraps) a `MemoryDBProvider`, the returned stores seed from it synchronously.
@@ -11880,32 +11806,18 @@ function App() {
 
 Both hooks accept nullish arguments — passing `undefined` for the collection, id, or query returns `undefined` instead of a store, keeping the hook call unconditional. Calling either hook outside a `<DBContext>` throws a `RequiredError`.
 
-## One provider per tree
-
-Leave out the provider when you call `createDBContext()`, and give each `<DBContext>` its own with the `provider` prop. Then each tree has its own database, for example one per server render or one per signed-in session. The context makes a `DBCache` for the provider, and a new one when the provider changes (it does not dispose the old one).
-
-```tsx
-const { DBContext, useItem } = createDBContext<string, Data>();
-
-function Root({ db }: { db: MemoryDBProvider<string, Data> }) {
-	return <DBContext provider={db}>{/* … */}</DBContext>;
-}
-```
-
-To use a `DBCache` you made yourself, for example to read it outside React, pass it as the `cache` prop. A `cache` prop wins over `provider`. With no `cache`, no `provider` prop and no provider given to `createDBContext()`, `<DBContext>` throws a `RequiredError`.
-
 
 ## Signatures
 
 ```ts
-createDBContext(provider?: DBProvider<I, T>): DBContext<I, T>
+createDBContext(provider: DBProvider<I, T>): DBContext<I, T>
 ```
 
 ## Parameters
 
 | Param | Type | Description |
 | --- | --- | --- |
-| `provider` | `DBProvider<I, T>` | Default `DBProvider` the created context resolves item and query stores against, when a `<DBContext>` gets no `provider` or `cache` prop. Optional. |
+| `provider` | `DBProvider<I, T>` | `DBProvider` the created context resolves item and query stores against. |
 
 ## Returns
 

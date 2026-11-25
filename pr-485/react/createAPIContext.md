@@ -5,8 +5,7 @@
 
 Create an API context.
 - Allows React elements to call `useAPI()` to access endpoint stores in an API provider.
-- Each mounted `APIContext` gets its own in-memory store cache, unless it gets a `cache` prop.
-- The provider can be given here, or to each `<APIContext>` as its `provider` or `cache` prop, so each tree can have its own API.
+- Each mounted `APIContext` gets its own in-memory store cache.
 
 Create a React context for a Shelving `shelving/api` provider. Call `createAPIContext(provider)` once, outside any component, to produce an `<APIContext>` wrapper component and a `useAPI` hook. Each mounted `<APIContext>` gets its own in-memory `APICache`, so independent subtrees can use independent providers.
 
@@ -47,32 +46,18 @@ function App() {
 
 `useAPI` accepts a nullish endpoint — passing `undefined` returns `undefined` instead of a store, which keeps the hook call unconditional. Calling `useAPI` outside an `<APIContext>` throws a `RequiredError`.
 
-## One provider per tree
-
-Leave out the provider when you call `createAPIContext()`, and give each `<APIContext>` its own with the `provider` prop. Then each tree has its own API client, for example one per server render or one per signed-in session. The context makes an `APICache` for the provider, and a new one when the provider changes (it does not dispose the old one).
-
-```tsx
-const { APIContext, useAPI } = createAPIContext();
-
-function Root({ api }: { api: APIProvider }) {
-	return <APIContext provider={api}>{/* … */}</APIContext>;
-}
-```
-
-To use an `APICache` you made yourself, for example so code outside React can invalidate its results, pass it as the `cache` prop. A `cache` prop wins over `provider`. With no `cache`, no `provider` prop and no provider given to `createAPIContext()`, `<APIContext>` throws a `RequiredError`.
-
 
 ## Signatures
 
 ```ts
-createAPIContext(provider?: APIProvider<P, R>): APIContext<P, R>
+createAPIContext(provider: APIProvider<P, R>): APIContext<P, R>
 ```
 
 ## Parameters
 
 | Param | Type | Description |
 | --- | --- | --- |
-| `provider` | `APIProvider<P, R>` | Default `APIProvider` the created context resolves endpoint stores against, when an `<APIContext>` gets no `provider` or `cache` prop. Optional. |
+| `provider` | `APIProvider<P, R>` | `APIProvider` the created context resolves endpoint stores against. |
 
 ## Returns
 
