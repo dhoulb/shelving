@@ -10,6 +10,7 @@ import { SubmitButton } from "../button/SubmitButton.js";
 import { requestDialogClose } from "../dialog/Dialog.js";
 import { type BlockVariants, getBlockClass } from "../style/Block.js";
 import { getClass, getModuleClass } from "../util/css.js";
+import { useHydrated } from "../util/hydrated.js";
 import { type NoticeCallback, notifySuccess, notifyThrown } from "../util/notice.js";
 import type { ClassProps, OptionalChildProps } from "../util/props.js";
 import FORM_CSS from "./Form.module.css";
@@ -79,10 +80,12 @@ export function Form({
 	// Create a form store instance and subscribe to changes in it.
 	const store = useStore(useInstance(FormStore, schema, initialData, messages));
 	const busy = useStore(store.busy).value;
+	// The store's random id is not in a server render, so the hydrating render matches it.
+	const hydrated = useHydrated();
 
 	return (
 		<form
-			id={store.id}
+			id={hydrated ? store.id : undefined}
 			key={store.key}
 			onSubmit={async e => {
 				// Stop the page reloading.
