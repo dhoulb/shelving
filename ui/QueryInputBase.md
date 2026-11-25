@@ -15,6 +15,7 @@ Text input that queries a list of items, then shows the list in a popover or inl
 QueryInputBase({
 	schema,
 	onQuery,
+	delay = SECOND,
 	popover = true,
 	empty = `No ${schema.many}`,
 	list,
