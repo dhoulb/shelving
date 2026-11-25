@@ -228,3 +228,17 @@ describe("MemoryTable times", () => {
 		expect(values).toEqual([[], []]);
 	});
 });
+
+describe("MemoryDBProvider.clear()", () => {
+	test("forgets every item and query", async () => {
+		const db = new MemoryDBProvider<string>();
+		await db.setItem(BASICS_COLLECTION, "basic1", basic1);
+		await db.setItem(PEOPLE_COLLECTION, "person1", person1);
+		db.getTable(BASICS_COLLECTION).setQueryTime({});
+		db.clear();
+		expect(await db.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
+		expect(await db.getItem(PEOPLE_COLLECTION, "person1")).toBe(undefined);
+		expect(db.getTable(BASICS_COLLECTION).getItemTime("basic1")).toBe(undefined);
+		expect(db.getTable(BASICS_COLLECTION).getQueryTime({})).toBe(undefined);
+	});
+});

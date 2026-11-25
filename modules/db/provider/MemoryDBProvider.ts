@@ -141,6 +141,18 @@ export class MemoryDBProvider<I extends Identifier = Identifier, T extends Data 
 	}
 
 	/**
+	 * Forget every item and query in every table, so the provider is empty again.
+	 * - Each table forgets its items, item times and query times, so stores that read it go back to loading, not to missing.
+	 * - Open sequences stay open and get the change, like after any other write.
+	 *
+	 * @example provider.clear();
+	 * @see https://shelving.cc/db/MemoryDBProvider/clear
+	 */
+	clear(): void {
+		for (const table of Object.values(this._tables)) table?.clear();
+	}
+
+	/**
 	 * Clone this provider into a new plain `MemoryDBProvider` containing the same items.
 	 *
 	 * - Shallow: new tables and maps sharing the same (immutable) item instances, so cloning is cheap and unchanged items keep their identity.
@@ -509,6 +521,22 @@ export class MemoryTable<I extends Identifier, T extends Data> implements AsyncD
 			this.setItems(items);
 			yield items;
 		}
+	}
+
+	/**
+	 * Forget every item and query in this table, so it is empty again.
+	 * - Removes every item, item time and query time, so stores that read the table go back to loading, not to missing.
+	 * - Only resolves `next` when the table knew something.
+	 *
+	 * @example table.clear();
+	 * @see https://shelving.cc/db/MemoryTable/clear
+	 */
+	clear(): void {
+		const known = this._data.size || this._times.size || this._queryTimes.size;
+		this._data.clear();
+		this._times.clear();
+		this._queryTimes.clear();
+		if (known) this._next.resolve(false);
 	}
 
 	/**

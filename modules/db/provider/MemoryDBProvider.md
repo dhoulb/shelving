@@ -33,6 +33,17 @@ table.setItems(items);
 table.setQueryTime({ user: "dave" }); // `items` is the complete answer to this query.
 ```
 
+## Clear
+
+`MemoryDBProvider.clear()` empties every table: items, item times and query times. Stores that read the provider go back to loading, and open sequences get the change. Use it to start again with no data, for example before each server render of an app that keeps one provider in memory.
+
+```ts
+const db = new MemoryDBProvider();
+await db.setItem(USERS, "u1", { name: "Dave" });
+db.clear();
+await db.getItem(USERS, "u1"); // undefined
+```
+
 ## Transactions
 
 `MemoryDBProvider.transact()` hands the callback a shallow snapshot clone of the provider (see `MemoryDBProvider.clone()`) wrapped in a `RecordingDBProvider` to record its operations, then replays the recorded writes onto the real provider with `RecordingDBProvider.replayWrites()` when the callback resolves — so live subscriptions fire naturally on commit, and a thrown callback commits nothing:

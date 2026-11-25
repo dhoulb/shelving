@@ -175,6 +175,12 @@ export class StorageTable<I extends Identifier, T extends Data> extends MemoryTa
 		super.invalidateItem(id);
 	}
 
+	// Override to also remove every item from storage, so they do not come back on the next load.
+	override clear(): void {
+		for (const id of this._data.keys()) this._storage.removeItem(this._key(id));
+		super.clear();
+	}
+
 	// Implement `AsyncDisposable`
 	override async [Symbol.asyncDispose](): Promise<void> {
 		await awaitDispose(
