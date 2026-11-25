@@ -24,11 +24,17 @@ export interface QueryInputBaseProps<I, O> extends InputProps {
 
 	/**
 	 * Called with the current text value to return matching items whenever the text input changes.
-	 * - Automatically debounced, so only called after a short delay.
+	 * - Debounced: only called once the text has not changed for `delay`.
 	 * - Automatically shows a loading state while loading.
 	 * - Returning `undefined` signals to close the popover (or, with `popover={false}`, to show no list).
 	 */
 	onQuery: PayloadFetchCallback<I, ImmutableArray<O> | undefined>;
+
+	/**
+	 * How long the text must stay the same before `onQuery()` is called, in milliseconds.
+	 * @default 1000
+	 */
+	delay?: number | undefined;
 
 	/** Format an item of type `O` for display in the list, for example as text or as an avatar. */
 	formatter?: ((value: O) => ReactNode) | undefined;
@@ -63,6 +69,7 @@ interface QueryInputBaseFrameProps<I, O> extends QueryInputBaseProps<I, O> {
 export function QueryInputBase<I, O>({
 	schema,
 	onQuery,
+	delay = SECOND,
 	popover = true,
 	empty = `No ${schema.many}`,
 	list,
@@ -73,7 +80,7 @@ export function QueryInputBase<I, O>({
 	const latest = useRef(onQuery);
 	latest.current = onQuery;
 	const query = (useRef<typeof onQuery>(undefined).current ??= (payload, signal) => latest.current(payload, signal));
-	const store = useStore(useInstance(PayloadFetchStore, NONE, undefined, query, SECOND));
+	const store = useStore(useInstance(PayloadFetchStore, NONE, undefined, query, delay));
 	const busy = useStore(store.busy).value;
 
 	// Inline, query the schema's default value at once, so the list shows before anything is typed.

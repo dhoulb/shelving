@@ -4,7 +4,7 @@ Combo box that queries a list of items and lets the user pick one. The text in t
 
 **Things to know:**
 
-- `onQuery()` is debounced (one second). Loading and empty states show in an `<Empty>`, and errors in an `<ErrorNotice>`.
+- `onQuery()` is debounced: one second by default, or `delay` milliseconds. Loading and empty states show in an `<Empty>`, and errors in an `<ErrorNotice>`.
 - By default the list shows in a `<Popover>`, which closes when the user picks an item.
 - With `popover={false}` the list shows inline, below the input, like a `<select>` list box. It queries the schema's default value on mount, so the list shows before the user types. Picking an item keeps the list.
 - `formatter` can return any `ReactNode`, for example an avatar, not only a string.
