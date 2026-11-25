@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { ARRAY, DATA, NULLABLE, NUMBER, QUERY, QuerySchema, STRING } from "shelving/schema";
+import { ARRAY, DATA, NULLABLE, NUMBER, QUERY, QuerySchema, STRING, VECTOR } from "shelving/schema";
 import type { Query } from "shelving/util/query";
 
 const SUB = DATA({ str: STRING, num: NUMBER });
@@ -66,5 +66,17 @@ describe("validate()", () => {
 	});
 	test("removes undefined filters", () => {
 		expect(QUERY_SCHEMA.validate({ str: undefined, $limit: undefined })).toEqual({});
+	});
+});
+
+describe("nearest (key~)", () => {
+	const VECTOR_QUERY = QUERY(DATA({ str: STRING, vector: VECTOR(2) }));
+	test("validates the value with the vector prop's schema", () => {
+		expect(VECTOR_QUERY.validate({ "vector~": [0.5, 0.5] })).toEqual({ "vector~": new Float32Array([0.5, 0.5]) });
+		expect(() => VECTOR_QUERY.validate({ "vector~": [1] })).toThrow("Must be vector with 2 numbers");
+	});
+	test("throws for a prop that is not a vector", () => {
+		expect(() => VECTOR_QUERY.validate({ "str~": [1, 2] })).toThrow("Must be vector prop");
+		expect(() => VECTOR_QUERY.validate({ "nope~": [1, 2] })).toThrow();
 	});
 });

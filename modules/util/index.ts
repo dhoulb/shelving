@@ -66,4 +66,5 @@ export * from "./uri.js";
 export * from "./url.js";
 export * from "./uuid.js";
 export * from "./validate.js";
+export * from "./vector.js";
 export * from "./xml.js";

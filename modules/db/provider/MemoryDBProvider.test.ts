@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { MemoryDBProvider } from "shelving/db";
+import { Collection, MemoryDBProvider } from "shelving/db";
+import { STRING, VECTOR } from "shelving/schema";
 import { runMicrotasks } from "shelving/util/async";
 import { runSequence } from "shelving/util/sequence";
 import type { BasicItem } from "../../test/index.js";
@@ -226,5 +227,17 @@ describe("MemoryTable times", () => {
 		await runMicrotasks();
 		stop();
 		expect(values).toEqual([[], []]);
+	});
+});
+
+describe("MemoryDBProvider nearest queries", () => {
+	test("sorts by the highest dot product, after filters", async () => {
+		const VECTORS = new Collection("vectors", STRING, { group: STRING, vector: VECTOR(2) });
+		const db = new MemoryDBProvider<string>();
+		await db.setItem(VECTORS, "a", { group: "x", vector: new Float32Array([1, 0]) });
+		await db.setItem(VECTORS, "b", { group: "x", vector: new Float32Array([0.6, 0.8]) });
+		await db.setItem(VECTORS, "c", { group: "y", vector: new Float32Array([0, 1]) });
+		const items = await db.getQuery(VECTORS, { group: "x", "vector~": new Float32Array([0, 1]), $limit: 2 });
+		expect(items.map(item => item.id)).toEqual(["b", "a"]);
 	});
 });

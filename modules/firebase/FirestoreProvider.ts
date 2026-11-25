@@ -1,5 +1,6 @@
 import type { Collection } from "../db/collection/Collection.js";
 import { DBProvider } from "../db/provider/DBProvider.js";
+import { RequiredError } from "../error/RequiredError.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { UnsupportedError } from "../error/UnsupportedError.js";
 import { type ImmutableArray, isArray, type MutableArray } from "../util/array.js";
@@ -14,17 +15,19 @@ import { isPlainObject } from "../util/object.js";
 import {
 	getQueryFilters,
 	getQueryLimit,
+	getQueryNearest,
 	getQueryOrders,
 	limitQueryItems,
 	type Query,
 	type QueryOrder,
+	sortNearestItems,
 	sortQueryItems,
 } from "../util/query.js";
 import { getRandom, getRandomKey } from "../util/random.js";
 import type { Updates } from "../util/update.js";
 import { getUpdates } from "../util/update.js";
 import type { FirestoreFields, FirestoreValue } from "./value.js";
-import { toData, toFirestoreFields, toFirestoreValue } from "./value.js";
+import { toData, toFirestoreFields, toFirestoreValue, toFirestoreVector } from "./value.js";
 
 // Constants.
 const WRITE_BATCH = 500;
@@ -74,6 +77,12 @@ type _FirestoreQuery = {
 	orderBy?: ImmutableArray<Data>;
 	limit?: number;
 	select?: { fields: ImmutableArray<{ fieldPath: string }> };
+	findNearest?: {
+		vectorField: { fieldPath: string };
+		queryVector: FirestoreValue;
+		distanceMeasure: "DOT_PRODUCT";
+		limit: number;
+	};
 };
 
 /** Get the last segment of a Firestore document name, i.e. its id. */
@@ -122,9 +131,21 @@ function _getStructuredQuery<II extends string, TT extends Data>(
 			const k = joinDataPath(key);
 			return { field: { fieldPath: k === "id" ? "__name__" : k }, direction: direction === "asc" ? "ASCENDING" : "DESCENDING" };
 		});
-		if (orders.length) structured.orderBy = orders;
 		const limit = getQueryLimit(query);
-		if (typeof limit === "number") structured.limit = limit;
+		const nearest = getQueryNearest(query, caller);
+		if (nearest) {
+			// A nearest sort is a `findNearest` block, which replaces `orderBy` and `limit`.
+			if (typeof limit !== "number") throw new RequiredError("Nearest query must have $limit", { query, caller });
+			structured.findNearest = {
+				vectorField: { fieldPath: joinDataPath(nearest.key) },
+				queryVector: toFirestoreVector(nearest.value),
+				distanceMeasure: "DOT_PRODUCT",
+				limit,
+			};
+		} else {
+			if (orders.length) structured.orderBy = orders;
+			if (typeof limit === "number") structured.limit = limit;
+		}
 	}
 	const [firstFilter] = filters;
 	if (filters.length > 1) structured.where = { compositeFilter: { op: "AND", filters } };
@@ -373,7 +394,9 @@ export class FirestoreProvider<I extends string = string, T extends Data = Data>
 		const queries = _splitQuery(query);
 		if (queries && query) {
 			const items = (await Promise.all(queries.map(q => this.getQuery(collection, q)))).flat();
-			return Array.from(limitQueryItems(sortQueryItems(items, _getFirestoreOrders(query)), getQueryLimit(query)));
+			const nearest = getQueryNearest(query, this.getQuery);
+			const sorted = nearest ? sortNearestItems(items, nearest) : sortQueryItems(items, _getFirestoreOrders(query));
+			return Array.from(limitQueryItems(sorted, getQueryLimit(query)));
 		}
 		const structuredQuery = _getStructuredQuery(this._root, collection.name, query, false, this.getQuery);
 		if (!structuredQuery) return [];

@@ -87,3 +87,20 @@ describe("toFirestoreFields() / toData()", () => {
 		expect(toData(toFirestoreFields(deep))).toEqual(deep);
 	});
 });
+
+describe("vectors", () => {
+	const VECTOR_VALUE = {
+		mapValue: {
+			fields: {
+				__type__: { stringValue: "__vector__" },
+				value: { arrayValue: { values: [{ doubleValue: 0 }, { doubleValue: 1.5 }, { doubleValue: 1 }] } },
+			},
+		},
+	};
+	test("toFirestoreValue() writes a Float32Array as a vector map of doubles", () => {
+		expect(toFirestoreValue(new Float32Array([0, 1.5, 1]))).toEqual(VECTOR_VALUE);
+	});
+	test("toDataValue() reads a vector map back as a Float32Array", () => {
+		expect(toDataValue(VECTOR_VALUE)).toEqual(new Float32Array([0, 1.5, 1]));
+	});
+});
