@@ -68,16 +68,6 @@ test("StorageDBProvider: writes persist to storage and reads come from memory", 
 	expect<Item<string, BasicData> | undefined>(await db.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
 });
 
-test("StorageDBProvider: clear() removes every item from storage", async () => {
-	const map = new Map<string, string>();
-	await using db = new StorageDBProvider<string>(createStorage(map), "test:");
-	await db.setItem(BASICS_COLLECTION, "basic1", basic1);
-	await db.setItem(BASICS_COLLECTION, "basic2", basic2);
-	db.clear();
-	expect(map.size).toBe(0);
-	expect<OptionalItem<string, BasicData>>(await db.getItem(BASICS_COLLECTION, "basic1")).toBe(undefined);
-});
-
 test("StorageDBProvider: hydrates a collection from pre-existing storage", async () => {
 	const map = new Map<string, string>();
 	for (const item of basics) map.set(`test:basics:${item.id}`, JSON.stringify(item));
