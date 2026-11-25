@@ -63,5 +63,4 @@ const table = provider.getTable(users);
 - [MemoryTable.deleteQuery()](MemoryTable/deleteQuery.md)
 - [MemoryTable.setItems()](MemoryTable/setItems.md)
 - [MemoryTable.setItemsSequence()](MemoryTable/setItemsSequence.md)
-- [MemoryTable.clear()](MemoryTable/clear.md): Forget every item and query in this table, so it is empty again.
 - [MemoryTable.clone()](MemoryTable/clone.md): Clone this table into a new plain MemoryTable containing the same items.

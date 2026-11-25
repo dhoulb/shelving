@@ -11,7 +11,7 @@ Bundle of hooks and a provider component returned by `createAPIContext()`
 {
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Endpoint<PP, RR>, payload: PP): EndpointStore<PP, RR>;
 	useAPI<PP extends P, RR extends R>(this: void, endpoint: Nullish<Endpoint<PP, RR>>, payload: PP): EndpointStore<PP, RR> | undefined;
-	readonly APIContext: (props: ChildProps) => ReactElement;
+	readonly APIContext: (props: APIContextProps<P, R>) => ReactElement;
 	requireAPICache(): APICache<P, R>;
 }
 ```
@@ -20,7 +20,7 @@ Bundle of hooks and a provider component returned by `createAPIContext()`
 
 | Property | Type | Description |
 | --- | --- | --- |
-| `APIContext` | `(props: ChildProps) => ReactElement` | Create a new `APICache` and provide it as context to child nodes, to allow them to use `useAPI()` Read only. |
+| `APIContext` | `(props: APIContextProps<P, R>) => ReactElement` | Provide an `APICache` as context to child nodes, to allow them to use `useAPI()` Read only. |
 
 ## Methods
 

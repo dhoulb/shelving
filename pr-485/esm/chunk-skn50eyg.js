@@ -1,0 +1,2 @@
+import{jo}from"./chunk-9jp7n70b.js";function cr(r=Number.MIN_SAFE_INTEGER,e=Number.MAX_SAFE_INTEGER){return Math.round(Math.random()*(e-r)+r)}function dd(r,e,t){let n;do n=cr(e,t);while(n===r);return n}function Ne(r=12){return Array.from({length:r},o).join("")}var m="0123456789abcdefghjkmnpqrstvwxyz";function o(){return Ol(m)}function Ol(r){return r[cr(0,r.length-1)]}function cd(r){return jo(r[cr(0,r.length-1)])}
+export{cr,dd,Ne,Ol,cd};
