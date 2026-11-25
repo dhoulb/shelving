@@ -20871,6 +20871,7 @@ The components below are listed in the index following this page; this is the sh
 - [focusFirstFocusable()](ui/focusFirstFocusable.md): Focus on the first focusable element inside an element.
 - [loopFocus()](ui/loopFocus.md): Loop focus inside an element so it can't escape — refocus the first focusable child when focus moves out.
 - [eventLoopFocus()](ui/eventLoopFocus.md): Loop focus inside an element in response to a blur event — a ready-made onBlur handler that traps focus.
+- [useHydrated()](ui/useHydrated.md): Whether this render can use browser-only state (such as navigation history).
 - [isKeyboardOpen()](ui/isKeyboardOpen.md): Is the on-screen keyboard open (or still closing)?
 - [waitForKeyboard()](ui/waitForKeyboard.md): Lower the on-screen keyboard, and wait until it is down.
 - [joinMetaCSP()](ui/joinMetaCSP.md): Turn a deconstructed MetaCSP into a Content-Security-Policy string.
@@ -27910,6 +27911,7 @@ The entry point for shelving forms. `Form` creates a `FormStore` from a `schema`
 
 - If you provide no `children`, `Form` renders `<FormFields>` (one auto-input per schema property), then a full-width solid `<SubmitButton>` with `space="none"`, then `<FormMessage>`. A usable form is one prop away. The button has no margin of its own, so the gap above it is the last field's margin, the same as the gap between fields. Set `submit={false}` for no default button.
 - Pass `data` to pre-populate an edit form. Pass `messages` (a string or dictionary) to seed initial field errors — useful when a server returns validation failures.
+- The `<form>` gets its `id` (`FormStore.id`, a random key) after hydration, so a server render and the render that hydrates make the same HTML.
 - The whole `<fieldset>` is disabled while a submit is in flight, so inputs and buttons lock automatically.
 - The `<fieldset>` uses `display: contents`, so it has no box of its own. Child margins merge with the margins outside the form, the same as in any other block. A form does not trim its children.
 - A successful submit inside a `<dialog>` closes the dialog automatically, through `requestDialogClose()`, so a `<Dialog>` can animate out.
@@ -36277,7 +36279,7 @@ The back button for a page header. It goes back to the page before this one in t
 - Its default content is a `<LeftIcon>` and its default `title` is "Back". Pass `children` and `title` to change them.
 - It takes the usual `<Button>` props, except `onClick`.
 - Without the browser Navigation API, and in a server render, it links to `href`.
-- In a server-rendered app the server always renders `href`, and the browser may render the page before this one. React then warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+- In a server-rendered app, the render that hydrates also links to `href`, so it matches the server HTML. Then it renders again and links to the page before this one.
 
 ## Usage
 
@@ -37548,7 +37550,7 @@ Button for one stack in a tab bar.
 - Tap the current stack's button: go back to its root path.
 - Tap it again on the root path: scroll the page to the top.
 - It is selected while its stack is the current stack.
-- Without the browser Navigation API (and in a server render) it is a plain link to the stack's root.
+- Without the browser Navigation API (and in a server render, and while it hydrates) it is a plain link to the stack's root.
 
 A button for one stack in a tab bar. It acts like a tab button in a phone app.
 
@@ -37561,7 +37563,7 @@ A button for one stack in a tab bar. It acts like a tab button in a phone app.
 - `stack` must be one of the `stacks` on `<Navigation>`.
 - It takes the usual `<Button>` props, except `href`, `onClick` and `selected`.
 - Without the browser Navigation API, and in a server render, it is a plain link to the stack's root. It is selected while its stack is the starting stack.
-- In a server-rendered app, the server renders a link and the browser renders a button, so React warns about a hydration mismatch on the first render. A client-only app (with `<App>`) has no mismatch.
+- In a server-rendered app, the render that hydrates is also a link, so it matches the server HTML. Then it renders again as a button.
 
 ## Usage
 
@@ -42386,6 +42388,30 @@ eventLoopFocus({ currentTarget, relatedTarget }: { currentTarget: Element; relat
 ```ts
 <div onBlur={eventLoopFocus}>…</div>
 ```
+
+
+---
+
+# useHydrated()
+
+- Kind: function
+- Import: `import { useHydrated } from "shelving/ui";`
+
+Whether this render can use browser-only state (such as navigation history).
+- `false` in a server render, and in the first client render that hydrates server HTML, so both make the same HTML.
+- `true` in every other client render. After hydration, React renders again with `true`.
+
+## Signatures
+
+```ts
+useHydrated(): boolean
+```
+
+## Returns
+
+| Type | Description |
+| --- | --- |
+| `boolean` |  |
 
 
 ---

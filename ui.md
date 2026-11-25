@@ -301,6 +301,7 @@ The components below are listed in the index following this page; this is the sh
 - [focusFirstFocusable()](ui/focusFirstFocusable.md): Focus on the first focusable element inside an element.
 - [loopFocus()](ui/loopFocus.md): Loop focus inside an element so it can't escape — refocus the first focusable child when focus moves out.
 - [eventLoopFocus()](ui/eventLoopFocus.md): Loop focus inside an element in response to a blur event — a ready-made onBlur handler that traps focus.
+- [useHydrated()](ui/useHydrated.md): Whether this render can use browser-only state (such as navigation history).
 - [isKeyboardOpen()](ui/isKeyboardOpen.md): Is the on-screen keyboard open (or still closing)?
 - [waitForKeyboard()](ui/waitForKeyboard.md): Lower the on-screen keyboard, and wait until it is down.
 - [joinMetaCSP()](ui/joinMetaCSP.md): Turn a deconstructed MetaCSP into a Content-Security-Policy string.

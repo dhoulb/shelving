@@ -13,6 +13,7 @@ The entry point for shelving forms. `Form` creates a `FormStore` from a `schema`
 
 - If you provide no `children`, `Form` renders `<FormFields>` (one auto-input per schema property), then a full-width solid `<SubmitButton>` with `space="none"`, then `<FormMessage>`. A usable form is one prop away. The button has no margin of its own, so the gap above it is the last field's margin, the same as the gap between fields. Set `submit={false}` for no default button.
 - Pass `data` to pre-populate an edit form. Pass `messages` (a string or dictionary) to seed initial field errors — useful when a server returns validation failures.
+- The `<form>` gets its `id` (`FormStore.id`, a random key) after hydration, so a server render and the render that hydrates make the same HTML.
 - The whole `<fieldset>` is disabled while a submit is in flight, so inputs and buttons lock automatically.
 - The `<fieldset>` uses `display: contents`, so it has no box of its own. Child margins merge with the margins outside the form, the same as in any other block. A form does not trim its children.
 - A successful submit inside a `<dialog>` closes the dialog automatically, through `requestDialogClose()`, so a `<Dialog>` can animate out.
