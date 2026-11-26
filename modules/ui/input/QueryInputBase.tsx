@@ -48,6 +48,7 @@ export interface QueryInputBaseProps<I, O> extends InputProps {
 
 	/**
 	 * Message that shows in an `<Empty>` when the query returns `[]` (set to `""` to show no message).
+	 * - Inline, it shows only once something is typed: an empty input that finds nothing shows nothing.
 	 * @default `No ${schema.many}`, e.g. "No users"
 	 */
 	empty?: ReactNode | undefined;
@@ -64,7 +65,7 @@ interface QueryInputBaseFrameProps<I, O> extends QueryInputBaseProps<I, O> {
  * - Shared by `QueryRadiosInput` and `QueryCheckboxesInput`, which each render their own list.
  * - The text input is never required: the picked items are the value, not the text.
  * - The store is kept when the parent renders again with a new `onQuery()`, so the list does not load again.
- * - Errors show in an `<ErrorNotice>`. Loading and empty states show in an `<Empty>`.
+ * - Errors show in an `<ErrorNotice>`. Loading and empty states show in an `<Empty>`. Inline, the empty state waits until something is typed.
  */
 export function QueryInputBase<I, O>({
 	schema,
@@ -82,6 +83,9 @@ export function QueryInputBase<I, O>({
 	const query = (useRef<typeof onQuery>(undefined).current ??= (payload, signal) => latest.current(payload, signal));
 	const store = useStore(useInstance(PayloadFetchStore, NONE, undefined, query, delay));
 	const busy = useStore(store.busy).value;
+	// Something is typed: the payload is not the schema's default. Watched, because a new search that also finds nothing does not change the results.
+	const payload = useStore(store.payload);
+	const typed = !payload.loading && payload.value !== schema.value;
 
 	// Inline, query the schema's default value at once, so the list shows before anything is typed.
 	useEffect(() => {
@@ -103,7 +107,7 @@ export function QueryInputBase<I, O>({
 		<ErrorNotice reason={store.reason} />
 	) : store.value?.length ? (
 		list(store.value, close)
-	) : empty && store.value ? (
+	) : empty && store.value && typed ? (
 		<Empty>{typeof empty === "string" ? <Paragraph>{empty}</Paragraph> : empty}</Empty>
 	) : null;
 
