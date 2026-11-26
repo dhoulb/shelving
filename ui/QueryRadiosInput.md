@@ -17,7 +17,7 @@ Combo box that queries a list of items and lets the user pick one. The text in t
 - By default the list shows in a `<Popover>`, which closes when the user picks an item.
 - With `popover={false}` the list shows inline, below the input, like a `<select>` list box. It queries the schema's default value on mount, so the list shows before the user types. Picking an item keeps the list.
 - `formatter` can return any `ReactNode`, for example an avatar, not only a string.
-- The empty message is "No" plus the schema's `many`. Set `one: "user"` on the schema to show "No users", or set `empty` (`""` shows no message).
+- The empty message is "No" plus the schema's `many`. Set `one: "user"` on the schema to show "No users", or set `empty` (`""` shows no message). Inline (`popover={false}`), the empty message shows only once something is typed.
 - To pick more than one item, use `<QueryCheckboxesInput>`.
 
 ## Usage

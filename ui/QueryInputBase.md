@@ -7,7 +7,7 @@ Text input that queries a list of items, then shows the list in a popover or inl
 - Shared by `QueryRadiosInput` and `QueryCheckboxesInput`, which each render their own list.
 - The text input is never required: the picked items are the value, not the text.
 - The store is kept when the parent renders again with a new `onQuery()`, so the list does not load again.
-- Errors show in an `<ErrorNotice>`. Loading and empty states show in an `<Empty>`.
+- Errors show in an `<ErrorNotice>`. Loading and empty states show in an `<Empty>`. Inline, the empty state waits until something is typed.
 
 ## Signatures
 
