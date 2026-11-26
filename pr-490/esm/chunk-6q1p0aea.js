@@ -1,0 +1,2 @@
+import{r}from"./chunk-90kryzxh.js";function mt(e){if(typeof process==="object"&&typeof process.env==="object")return process.env[e]}function zl(e,n=zl){let o=mt(e);if(typeof o!=="string")throw new r(`Environment variable "${e}" is required`,{caller:n});return o}function Qd(e){let n=mt(e)?.toLowerCase();if(n&&t.includes(n))return!0;if(n&&i.includes(n))return!1}var t=["1","on","yes","true"],i=["0","off","no","false"];function Ql(e,n=Ql){let o=mt(e);if(typeof o!=="boolean")throw new r(`Environment variable "${e}" must be boolean`,{caller:n});return o}
+export{mt,zl,Qd,Ql};
